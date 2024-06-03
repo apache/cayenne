@@ -21,6 +21,8 @@ package org.apache.cayenne.access.sqlbuilder.sqltree;
 
 import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
 
+import java.util.Objects;
+
 /**
  * @since 4.2
  */
@@ -44,5 +46,19 @@ public class TextNode extends Node {
 
     public CharSequence getText() {
         return text;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        TextNode textNode = (TextNode) o;
+        return Objects.equals(text, textNode.text);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), text);
     }
 }

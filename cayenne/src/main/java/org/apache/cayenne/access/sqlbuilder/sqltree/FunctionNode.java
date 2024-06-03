@@ -22,6 +22,8 @@ package org.apache.cayenne.access.sqlbuilder.sqltree;
 import org.apache.cayenne.access.sqlbuilder.NodeTreeVisitor;
 import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
 
+import java.util.Objects;
+
 /**
  * @since 4.2
  */
@@ -133,5 +135,19 @@ public class FunctionNode extends Node {
     protected boolean skipContent() {
         // has alias and not in result node
         return alias != null && notInResultNode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        FunctionNode that = (FunctionNode) o;
+        return Objects.equals(functionName, that.functionName) && Objects.equals(alias, that.alias);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), functionName, alias);
     }
 }

@@ -22,6 +22,8 @@ package org.apache.cayenne.access.sqlbuilder.sqltree;
 import org.apache.cayenne.access.sqlbuilder.NodeTreeVisitor;
 import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
 
+import java.util.Objects;
+
 /**
  * @since 4.2
  */
@@ -85,5 +87,19 @@ public class AliasedNode extends Node {
             }
         }
         return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        AliasedNode that = (AliasedNode) o;
+        return Objects.equals(alias, that.alias);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), alias);
     }
 }

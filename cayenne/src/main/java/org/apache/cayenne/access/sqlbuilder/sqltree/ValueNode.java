@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -274,5 +275,21 @@ public class ValueNode extends Node {
 
     public boolean isNeedBinding() {
         return needBinding;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        ValueNode valueNode = (ValueNode) o;
+        return isArray == valueNode.isArray
+                && needBinding == valueNode.needBinding
+                && Objects.equals(value, valueNode.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), value, isArray, needBinding);
     }
 }

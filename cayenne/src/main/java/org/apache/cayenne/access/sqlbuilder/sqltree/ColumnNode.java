@@ -22,6 +22,8 @@ package org.apache.cayenne.access.sqlbuilder.sqltree;
 import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
 import org.apache.cayenne.map.DbAttribute;
 
+import java.util.Objects;
+
 /**
  * @since 4.2
  */
@@ -76,5 +78,19 @@ public class ColumnNode extends Node {
     @Override
     public Node copy() {
         return new ColumnNode(table, column, alias, attribute);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        ColumnNode that = (ColumnNode) o;
+        return Objects.equals(table, that.table) && Objects.equals(column, that.column) && Objects.equals(alias, that.alias);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), table, column, alias);
     }
 }

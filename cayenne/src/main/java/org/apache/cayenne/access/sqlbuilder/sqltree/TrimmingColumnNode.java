@@ -22,6 +22,7 @@ package org.apache.cayenne.access.sqlbuilder.sqltree;
 import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
 
 import java.sql.Types;
+import java.util.Objects;
 
 /**
  * @since 4.2
@@ -156,5 +157,19 @@ public class TrimmingColumnNode extends Node {
     @Override
     public Node copy() {
         return new TrimmingColumnNode(columnNode.deepCopy());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        TrimmingColumnNode that = (TrimmingColumnNode) o;
+        return Objects.equals(columnNode, that.columnNode);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), columnNode);
     }
 }

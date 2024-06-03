@@ -149,4 +149,34 @@ public abstract class Node {
 
     public void appendChildrenEnd(QuotingAppendable buffer) {
     }
+
+    /**
+     * @param node to compare with
+     * @return true if this node and all it's children are equal to the given node
+     * @since 5.0
+     */
+    public boolean deepEquals(Node node) {
+        if(!equals(node) || childrenCount != node.childrenCount) {
+            return false;
+        }
+        for(int i=0; i<childrenCount; i++) {
+            if(!children[i].deepEquals(node.children[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Node node = (Node) o;
+        return type == node.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return type.hashCode();
+    }
 }

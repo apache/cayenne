@@ -115,7 +115,7 @@ public class OrderingStageTest {
         ColumnExtractorStage columnStage = new ColumnExtractorStage();
         columnStage.perform(context);
 
-        OrderingDistictStage orderingStage = new OrderingDistictStage();
+        OrderingDistinctStage orderingStage = new OrderingDistinctStage();
         orderingStage.perform(context);
 
         assertTrue(context.getQuery().isDistinct());

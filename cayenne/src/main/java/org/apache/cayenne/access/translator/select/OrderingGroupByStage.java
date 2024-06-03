@@ -21,21 +21,18 @@ package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.query.Ordering;
 
-/**
- * @since 4.2.1
- */
 class OrderingGroupByStage extends OrderingAbstractStage {
 
     @Override
     public void perform(TranslatorContext context) {
-        if(context.getQuery().getOrderings() == null) {
+        if (context.getQuery().getOrderings() == null) {
             return;
         }
 
         if (context.hasAggregate()) {
             // If query is GROUPING then we need to add the order column as a result column
             QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
-            for(Ordering ordering : context.getQuery().getOrderings()) {
+            for (Ordering ordering : context.getQuery().getOrderings()) {
                 processOrdering(qualifierTranslator, context, ordering);
             }
         }

@@ -21,6 +21,8 @@ package org.apache.cayenne.access.sqlbuilder.sqltree;
 
 import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
 
+import java.util.Objects;
+
 /**
  * @since 4.2
  */
@@ -39,5 +41,19 @@ public class OffsetNode extends Node {
     @Override
     public Node copy() {
         return new OffsetNode(offset);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        OffsetNode that = (OffsetNode) o;
+        return offset == that.offset;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), offset);
     }
 }

@@ -46,7 +46,7 @@ public class DefaultSelectTranslator implements SelectTranslator {
             new OrderingGroupByStage(),
             new GroupByStage(),
             new DistinctStage(),
-            new OrderingDistictStage(),
+            new OrderingDistinctStage(),
             new LimitOffsetStage(),
             new ColumnDescriptorStage(),
             new TableTreeQualifierStage(),

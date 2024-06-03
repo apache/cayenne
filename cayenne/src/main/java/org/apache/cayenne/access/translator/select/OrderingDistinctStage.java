@@ -21,23 +21,18 @@ package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.query.Ordering;
 
-import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
-
-/**
- * @since 4.2.1
- */
-class OrderingDistictStage extends OrderingAbstractStage {
+class OrderingDistinctStage extends OrderingAbstractStage {
 
     @Override
     public void perform(TranslatorContext context) {
-        if(context.getQuery().getOrderings() == null) {
+        if (context.getQuery().getOrderings() == null) {
             return;
         }
 
         if (isDistinct(context)) {
             // If query is DISTINCT then we need to add the order column as a result column
             QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
-            for(Ordering ordering : context.getQuery().getOrderings()) {
+            for (Ordering ordering : context.getQuery().getOrderings()) {
                 processOrdering(qualifierTranslator, context, ordering);
             }
         }
@@ -45,7 +40,7 @@ class OrderingDistictStage extends OrderingAbstractStage {
 
     private boolean isDistinct(TranslatorContext context) {
         return !context.isDistinctSuppression()
-            && (context.getQuery().isDistinct()
-            || context.getTableTree().hasToManyJoin());
+                && (context.getQuery().isDistinct()
+                || context.getTableTree().hasToManyJoin());
     }
 }
