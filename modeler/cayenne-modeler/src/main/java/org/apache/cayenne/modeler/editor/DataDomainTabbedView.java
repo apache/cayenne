@@ -23,29 +23,31 @@ import org.apache.cayenne.modeler.action.GenerateCodeAction;
 import org.apache.cayenne.modeler.action.dbimport.ReverseEngineeringToolMenuAction;
 import org.apache.cayenne.modeler.editor.cgen.domain.CgenTabController;
 import org.apache.cayenne.modeler.editor.dbimport.domain.DbImportTabController;
+import org.apache.cayenne.modeler.editor.validation.ValidationTabController;
 import org.apache.cayenne.modeler.event.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.DomainDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.graph.DataDomainGraphTab;
 
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 /**
  * DataDomain editing tabs container 
  */
-public class DataDomainTabbedView extends JTabbedPane 
+public class DataDomainTabbedView extends JTabbedPane
     implements ChangeListener, DomainDisplayListener {
     
     ProjectController mediator;
     
     DataDomainGraphTab graphTab;
-    private JScrollPane cgenView;
+    private JComponent cgenView;
     private CgenTabController cgenTabController;
-    private JScrollPane dbImportView;
+    private JComponent dbImportView;
     private DbImportTabController dbImportTabController;
+    private JComponent validationTabView;
+    private ValidationTabController validationTabController;
 
     /**
      * constructor
@@ -83,6 +85,10 @@ public class DataDomainTabbedView extends JTabbedPane
 
         graphTab = new DataDomainGraphTab(mediator);
         addTab("Graph", graphTab);
+
+        validationTabController = new ValidationTabController(mediator);
+        validationTabView = validationTabController.getView();
+        addTab("Validation", validationTabView);
     }
 
     public void stateChanged(ChangeEvent e) {
@@ -92,6 +98,8 @@ public class DataDomainTabbedView extends JTabbedPane
             cgenTabController.getView().initView();
         } else if(getSelectedComponent() == dbImportView) {
             dbImportTabController.getView().initView();
+        } else if(getSelectedComponent() == validationTabView) {
+            validationTabController.getView().initView();
         }
     }
 

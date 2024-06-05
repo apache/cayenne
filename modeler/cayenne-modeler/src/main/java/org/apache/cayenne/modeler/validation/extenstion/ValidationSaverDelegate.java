@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.validation.extenstion;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.project.extension.BaseSaverDelegate;
@@ -36,15 +35,15 @@ public class ValidationSaverDelegate extends BaseSaverDelegate {
         this.metaData = metaData;
     }
 
-    private Void printValidationConfig(ConfigurationNode entity) {
-        ValidationConfig validationConfig = metaData.get(entity, ValidationConfig.class);
+    private Void printValidationConfig(DataChannelDescriptor dataChannelDescriptor) {
+        ValidationConfig validationConfig = metaData.get(dataChannelDescriptor, ValidationConfig.class);
         if (validationConfig == null) {
             return null;
         }
 
         Set<Inspection> disabledInspections = EnumSet.allOf(Inspection.class);
         disabledInspections.removeAll(validationConfig.getEnabledInspections());
-        encoder.start("cgen").attribute("xmlns", ValidationExtension.NAMESPACE);
+        encoder.start("validation").attribute("xmlns", ValidationExtension.NAMESPACE);
         for (Inspection inspection : disabledInspections) {
             encoder.simpleTag(ValidationConfigHandler.EXCLUDE_TAG, inspection.name());
         }

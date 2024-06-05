@@ -27,11 +27,15 @@ public class ValidationConfig {
     private final Set<Inspection> enabledInspections;
 
     public ValidationConfig() {
-        this(Collections.unmodifiableSet(EnumSet.allOf(Inspection.class)));
+        this(EnumSet.allOf(Inspection.class));
+    }
+
+    public ValidationConfig(ValidationConfig other) {
+        this(other.enabledInspections);
     }
 
     public ValidationConfig(Set<Inspection> enabledInspections) {
-        this.enabledInspections = enabledInspections;
+        this.enabledInspections = Collections.unmodifiableSet(EnumSet.copyOf(enabledInspections));
     }
 
     public Set<Inspection> getEnabledInspections() {

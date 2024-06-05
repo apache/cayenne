@@ -167,6 +167,8 @@ public class DefaultActionManager implements ActionManager {
 
         registerAction(new LinkDataMapAction(application));
         registerAction(new LinkDataMapsAction(application));
+
+        registerAction(new UpdateValidationConfigAction(application));
     }
 
     private void initActions() {

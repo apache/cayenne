@@ -58,11 +58,11 @@ public class CayenneModelerModule implements Module {
         binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(true)).withoutScope();
 
         ProjectModule.extend(binder)
-                .addExtension(ValidationExtension.class)
                 .addExtension(InfoExtension.class)
                 .addExtension(GraphExtension.class)
                 .addExtension(DbImportExtension.class)
-                .addExtension(CgenExtension.class);
+                .addExtension(CgenExtension.class)
+                .addExtension(ValidationExtension.class);
 
         binder.bind(ProjectValidator.class).to(ConfigurableProjectValidator.class);
     }
