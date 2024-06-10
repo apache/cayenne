@@ -34,6 +34,7 @@ public abstract class _IvOther extends PersistentObject {
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
     public static final EntityProperty<IvBase> BASE = PropertyFactory.createEntity("base", IvBase.class);
+    public static final EntityProperty<IvImpl> IMPL = PropertyFactory.createEntity("impl", IvImpl.class);
     public static final ListProperty<IvImpl> IMPLS = PropertyFactory.createList("impls", IvImpl.class);
     public static final ListProperty<IvImpl> IMPLS_WITH_INVERSE = PropertyFactory.createList("implsWithInverse", IvImpl.class);
     public static final ListProperty<IvImplWithLock> IMPLS_WITH_LOCK = PropertyFactory.createList("implsWithLock", IvImplWithLock.class);
@@ -41,6 +42,7 @@ public abstract class _IvOther extends PersistentObject {
     protected String name;
 
     protected Object base;
+    protected Object impl;
     protected Object impls;
     protected Object implsWithInverse;
     protected Object implsWithLock;
@@ -61,6 +63,14 @@ public abstract class _IvOther extends PersistentObject {
 
     public IvBase getBase() {
         return (IvBase)readProperty("base");
+    }
+
+    public void setImpl(IvImpl impl) {
+        setToOneTarget("impl", impl, true);
+    }
+
+    public IvImpl getImpl() {
+        return (IvImpl)readProperty("impl");
     }
 
     public void addToImpls(IvImpl obj) {
@@ -113,6 +123,8 @@ public abstract class _IvOther extends PersistentObject {
                 return this.name;
             case "base":
                 return this.base;
+            case "impl":
+                return this.impl;
             case "impls":
                 return this.impls;
             case "implsWithInverse":
@@ -136,6 +148,9 @@ public abstract class _IvOther extends PersistentObject {
                 break;
             case "base":
                 this.base = val;
+                break;
+            case "impl":
+                this.impl = val;
                 break;
             case "impls":
                 this.impls = val;
@@ -164,6 +179,7 @@ public abstract class _IvOther extends PersistentObject {
         super.writeState(out);
         out.writeObject(this.name);
         out.writeObject(this.base);
+        out.writeObject(this.impl);
         out.writeObject(this.impls);
         out.writeObject(this.implsWithInverse);
         out.writeObject(this.implsWithLock);
@@ -174,6 +190,7 @@ public abstract class _IvOther extends PersistentObject {
         super.readState(in);
         this.name = (String)in.readObject();
         this.base = in.readObject();
+        this.impl = in.readObject();
         this.impls = in.readObject();
         this.implsWithInverse = in.readObject();
         this.implsWithLock = in.readObject();

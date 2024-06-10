@@ -70,6 +70,7 @@
 	<db-entity name="IV_OTHER">
 		<db-attribute name="BASE_ID" type="INTEGER"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="IMPL_ID" type="INTEGER"/>
 		<db-attribute name="NAME" type="VARCHAR" length="100"/>
 	</db-entity>
 	<db-entity name="IV_ROOT">
@@ -238,6 +239,9 @@
 	<db-relationship name="other3" source="IV_IMPL" target="IV_OTHER">
 		<db-attribute-pair source="OTHER3_ID" target="ID"/>
 	</db-relationship>
+	<db-relationship name="others" source="IV_IMPL" target="IV_OTHER" toMany="true">
+		<db-attribute-pair source="ID" target="IMPL_ID"/>
+	</db-relationship>
 	<db-relationship name="base" source="IV_IMPL_WITH_LOCK" target="IV_BASE_WITH_LOCK">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
@@ -246,6 +250,9 @@
 	</db-relationship>
 	<db-relationship name="base" source="IV_OTHER" target="IV_BASE">
 		<db-attribute-pair source="BASE_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="impl" source="IV_OTHER" target="IV_IMPL">
+		<db-attribute-pair source="IMPL_ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="impls" source="IV_OTHER" target="IV_IMPL" toMany="true">
 		<db-attribute-pair source="ID" target="OTHER_ID"/>
@@ -289,11 +296,13 @@
 	<obj-relationship name="children" source="IvConcrete" target="IvConcrete" deleteRule="Deny" db-relationship-path="children"/>
 	<obj-relationship name="parent" source="IvConcrete" target="IvConcrete" deleteRule="Nullify" db-relationship-path="parent"/>
 	<obj-relationship name="relatedAbstract" source="IvConcrete" target="IvAbstract" deleteRule="Nullify" db-relationship-path="concrete.relatedAbstract"/>
+	<obj-relationship name="implOthers" source="IvImpl" target="IvOther" deleteRule="Deny" db-relationship-path="impl.others"/>
 	<obj-relationship name="other1" source="IvImpl" target="IvOther" deleteRule="Nullify" db-relationship-path="impl.other1"/>
 	<obj-relationship name="other2" source="IvImpl" target="IvOther" deleteRule="Nullify" db-relationship-path="impl.other2"/>
 	<obj-relationship name="other3" source="IvImpl" target="IvOther" deleteRule="Nullify" db-relationship-path="impl.other3"/>
 	<obj-relationship name="other1" source="IvImplWithLock" target="IvOther" deleteRule="Nullify" db-relationship-path="impl.other1"/>
 	<obj-relationship name="base" source="IvOther" target="IvBase" deleteRule="Nullify" db-relationship-path="base"/>
+	<obj-relationship name="impl" source="IvOther" target="IvImpl" deleteRule="Nullify" db-relationship-path="impl.base"/>
 	<obj-relationship name="impls" source="IvOther" target="IvImpl" deleteRule="Deny" db-relationship-path="impls.base"/>
 	<obj-relationship name="implsWithInverse" source="IvOther" target="IvImpl" deleteRule="Deny" db-relationship-path="implsWithInverse.base"/>
 	<obj-relationship name="implsWithLock" source="IvOther" target="IvImplWithLock" deleteRule="Deny" db-relationship-path="impls.base"/>

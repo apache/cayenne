@@ -19,11 +19,7 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
-import org.apache.cayenne.access.flush.operation.GraphBasedDbRowOpSorter;
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Module;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKDep;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPk;
@@ -34,7 +30,7 @@ import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 @UseCayenneRuntime(CayenneProjects.MEANINGFUL_PK_PROJECT)
-@ExtraModules(DataContextEntityWithMeaningfulPKAndCustomDbRowOpSorterIT.GraphSorterModule.class)
+@ExtraModules(GraphSorterModule.class)
 public class DataContextEntityWithMeaningfulPKAndCustomDbRowOpSorterIT extends RuntimeCase {
 
     @Inject
@@ -80,10 +76,4 @@ public class DataContextEntityWithMeaningfulPKAndCustomDbRowOpSorterIT extends R
         context.commitChanges();
     }
 
-    public static class GraphSorterModule implements Module {
-        @Override
-        public void configure(Binder binder) {
-            binder.bind(DbRowOpSorter.class).to(GraphBasedDbRowOpSorter.class);
-        }
-    }
 }
