@@ -981,6 +981,12 @@ public class VerticalInheritanceIT extends RuntimeCase {
 		assertEquals("Impl 1", impl.getName());
 		// Ensure that subclass attributes were prefetched correctly
 		assertEquals("attr1", impl.getAttr1());
+
+		impl.setOther1(null);
+		impl.setOther2(null);
+		impl.setOther3(null);
+		context.commitChanges();
+		ivOtherTable.deleteAll();
 	}
 
 	/**
@@ -1012,6 +1018,12 @@ public class VerticalInheritanceIT extends RuntimeCase {
 		assertEquals("Impl 1", impl.getName());
 		// Ensure that subclass attributes were prefetched correctly
 		assertEquals("attr1", impl.getAttr1());
+
+		impl.setOther1(null);
+		impl.setOther2(null);
+		impl.setOther3(null);
+		context.commitChanges();
+		ivOtherTable.deleteAll();
 	}
 
 	/**
@@ -1043,6 +1055,12 @@ public class VerticalInheritanceIT extends RuntimeCase {
 		assertEquals("Impl 1", impl.getName());
 		// Ensure that subclass attributes were prefetched correctly
 		assertEquals("attr1", impl.getAttr1());
+
+		impl.setOther1(null);
+		impl.setOther2(null);
+		impl.setOther3(null);
+		context.commitChanges();
+		ivOtherTable.deleteAll();
 	}
 
 	/**
