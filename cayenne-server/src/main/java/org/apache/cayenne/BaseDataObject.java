@@ -428,10 +428,6 @@ public abstract class BaseDataObject extends PersistentObject implements DataObj
                 .getRelationship(relName);
         ObjRelationship revRel = rel.getReverseRelationship();
         if (revRel != null) {
-            Object oldTarget = val.readProperty(revRel.getName());
-            if (oldTarget != val && oldTarget instanceof DataObject && val instanceof BaseDataObject) {
-                ((BaseDataObject)val).unsetReverseRelationship(revRel.getName(), (DataObject) oldTarget);
-            }
             if (revRel.isToMany()) {
                 val.addToManyTarget(revRel.getName(), this, false);
             } else {

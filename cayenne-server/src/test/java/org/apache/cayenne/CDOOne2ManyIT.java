@@ -35,6 +35,7 @@ import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Date;
@@ -295,6 +296,7 @@ public class CDOOne2ManyIT extends ServerCase {
         context.commitChanges();
     }
 
+    @Ignore("See CAY-2851 for details")
     @Test
     public void testReplace() {
 

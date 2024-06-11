@@ -29,7 +29,6 @@ CAY-2841 Multi column ColumnSelect with SHARED_CACHE fails after 1st select
 CAY-2844 Joint prefetch doesn't use ObjEntity qualifier
 CAY-2848 Vertical Inheritance: Updating one-to-many with inverse nullifies other columns
 CAY-2850 Query using Clob comparison with empty String fails
-CAY-2851 Replace Existing OneToOne From New Object
 CAY-2853 Incorrect deletion of entities from flattened attributes
 
 ----------------------------------
