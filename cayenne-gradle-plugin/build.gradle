@@ -18,17 +18,19 @@
  ****************************************************************/
 plugins {
     id 'java-gradle-plugin'
+    id 'java'
 }
 
 def projectVersion = getProjectVersion()
 
 group 'org.apache.cayenne.plugins'
 version projectVersion
+
 def cayenneVersion = version
 
-apply plugin: 'java'
-
-sourceCompatibility = 11
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+}
 
 repositories {
     mavenLocal()
