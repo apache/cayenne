@@ -22,7 +22,7 @@
 	<parent>
 		<groupId>org.apache.cayenne</groupId>
 		<artifactId>cayenne-parent</artifactId>
-		<version>4.2.2-SNAPSHOT</version>
+		<version>4.2.1-SNAPSHOT</version>
 	</parent>
 	
 	<groupId>org.apache.cayenne.tutorials</groupId>
