@@ -480,7 +480,7 @@ public abstract class PersistentObject implements Persistent, Validating {
         ObjRelationship revRel = rel.getReverseRelationship();
         if (revRel != null) {
             Object oldTarget = val.readProperty(revRel.getName());
-            if (oldTarget != val && oldTarget instanceof Persistent && val instanceof PersistentObject) {
+            if (oldTarget != this && oldTarget instanceof Persistent && val instanceof PersistentObject) {
                 ((PersistentObject)val).unsetReverseRelationship(revRel.getName(), (Persistent) oldTarget);
             }
             if (revRel.isToMany()) {
