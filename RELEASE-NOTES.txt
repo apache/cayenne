@@ -67,6 +67,7 @@ CAY-2837 Deprecate TraversalHelper and move no-op implementations to TraversalHa
 CAY-2843 Use an IN clause for single field disjoint by ID prefetches
 CAY-2845 Deprecate DataObject in favour of Persistent
 CAY-2856 Upgrade Gradle to 8.8
+CAY-2857 Java 22 support
 
 Bug Fixes:
 
