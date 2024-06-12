@@ -35,7 +35,6 @@ import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Date;
@@ -296,7 +295,6 @@ public class CDOOne2ManyIT extends ServerCase {
         context.commitChanges();
     }
 
-    @Ignore("See CAY-2851 for details")
     @Test
     public void testReplace() {
 
@@ -337,6 +335,47 @@ public class CDOOne2ManyIT extends ServerCase {
         Gallery g3 = p3.getToGallery();
         assertNotNull(g3);
         assertEquals("rE", g3.getGalleryName());
+        assertEquals(1, g3.getPaintingArray().size());
+        assertSame(p3, g3.getPaintingArray().get(0));
+    }
+
+    @Test
+    public void testReplaceToSame() {
+
+        Painting p1 = context.newObject(Painting.class);
+        p1.setPaintingTitle("xa");
+
+        Gallery g1 = context.newObject(Gallery.class);
+        g1.setGalleryName("yTW");
+
+        p1.setToGallery(g1);
+
+        context.commitChanges();
+        ObjectContext context2 = runtime.newContext();
+
+        // test database data
+        Painting p2 = ObjectSelect.query(Painting.class).selectOne(context2);
+        Gallery g21 = p2.getToGallery();
+        assertNotNull(g21);
+        assertEquals("yTW", g21.getGalleryName());
+        assertEquals(1, g21.getPaintingArray().size());
+        assertSame(p2, g21.getPaintingArray().get(0));
+
+        g21.addToPaintingArray(p2);
+
+        // test before save
+        assertEquals(2, g21.getPaintingArray().size());
+        assertSame(p2, g21.getPaintingArray().get(0));
+
+        // do save II
+        context2.commitChanges();
+
+        ObjectContext context3 = runtime.newContext();
+
+        Painting p3 = ObjectSelect.query(Painting.class).selectOne(context3);
+        Gallery g3 = p3.getToGallery();
+        assertNotNull(g3);
+        assertEquals("yTW", g3.getGalleryName());
         assertEquals(1, g3.getPaintingArray().size());
         assertSame(p3, g3.getPaintingArray().get(0));
     }

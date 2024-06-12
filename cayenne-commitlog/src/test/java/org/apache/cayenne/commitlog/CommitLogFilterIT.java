@@ -243,11 +243,8 @@ public class CommitLogFilterIT extends AuditableServerCase {
         verify(mockListener).onPostCommit(any(ObjectContext.class), changeMap.capture());
 
         assertNotNull(changeMap.getValue());
-        // TODO: this assertions would fail, once CAY-2851 is fixed
-        assertEquals(4, changeMap.getValue().getUniqueChanges().size());
+        assertEquals(5, changeMap.getValue().getUniqueChanges().size());
 
-        // TODO: commented out until CAY-2851 is fixed
-        /*
         ObjectChange a1c = changeMap.getValue().getChanges().get(
             ObjectId.of("Auditable1", Auditable1.ID_PK_COLUMN, 1));
         assertNotNull(a1c);
@@ -263,7 +260,6 @@ public class CommitLogFilterIT extends AuditableServerCase {
         ToManyRelationshipChange a2c1 = a2c.getToManyRelationshipChanges().get(Auditable1.CHILDREN1.getName());
         assertEquals(0, a2c1.getAdded().size());
         assertEquals(1, a2c1.getRemoved().size());
-         */
 
         ObjectChange ac1c = changeMap.getValue().getChanges().get(
                 ObjectId.of("AuditableChild1", AuditableChild1.ID_PK_COLUMN, 1));

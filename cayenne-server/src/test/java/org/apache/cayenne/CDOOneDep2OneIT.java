@@ -29,7 +29,6 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.Timestamp;
@@ -146,7 +145,6 @@ public class CDOOneDep2OneIT extends CayenneDOTestBase {
 
     }
 
-    @Ignore("See CAY-2851 for details")
     @Test
     public void testReplaceOtherSide() throws Exception {
         String altPaintingName = "alt painting";
