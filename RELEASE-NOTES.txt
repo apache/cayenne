@@ -16,6 +16,7 @@ Changes/New Features:
 CAY-2849 Switch documentation to `hugo-asciidoctorj-extension`
 CAY-2852 Update velocity-engine-core dependency
 CAY-2856 Upgrade Gradle to 8.8
+CAY-2857 Java 22 support
 
 Bug Fixes:
 
