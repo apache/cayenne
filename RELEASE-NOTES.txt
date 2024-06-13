@@ -80,6 +80,7 @@ CAY-2763 Split expressions do not work with flattened relationships
 CAY-2764 Split expressions do not work with DB relationships
 CAY-2765 dbimport: check excluded catalogs and schemas for the SQLServer
 CAY-2769 Modeler: 'rootPath' attribute is missing
+CAY-2772 Bootique-style module "extenders" for smoother configuration
 CAY-2774 Overriding service ordering in DI List causes DIRuntimeException
 CAY-2777 Reverse relationship is not set with single table inheritance
 CAY-2782 Modeler: save button becomes active on DataMap comment field focus
