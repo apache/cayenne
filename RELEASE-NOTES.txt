@@ -61,17 +61,20 @@ CAY-2828 Rename values in `org.apache.cayenne.configuration.Constants`
 CAY-2829 Merge `BaseContext` with `DataContext` and deprecate it
 CAY-2830 Cleanup `DataContext` code
 CAY-2831 Upgrade Gradle to 8.5
+CAY-2833 Unify code related to the Cayenne model paths processing
 CAY-2834 v11 upgrade handler should update XMLPoolingDataSourceFactory package
 CAY-2835 Custom aggregate functions
 CAY-2837 Deprecate TraversalHelper and move no-op implementations to TraversalHandler
 CAY-2843 Use an IN clause for single field disjoint by ID prefetches
 CAY-2845 Deprecate DataObject in favour of Persistent
+CAY-2849 Switch documentation to `hugo-asciidoctorj-extension`
 CAY-2856 Upgrade Gradle to 8.8
 CAY-2857 Java 22 support
 
 Bug Fixes:
 
 CAY-2552 ColumnQuery with flattened attributes bug
+CAY-2621 Modeler: project is dirty after a no-change db import
 CAY-2732 Exception when creating ObjEntity from a DbEntity
 CAY-2748 Mutating the list returned from the local query cache changes the cache
 CAY-2755 Modeler: Entities are not sorted by name in the class generation view
