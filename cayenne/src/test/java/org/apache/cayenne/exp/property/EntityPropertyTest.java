@@ -89,13 +89,13 @@ public class EntityPropertyTest {
 
     @Test
     public void inIdCollection() {
-        Expression exp = property.inId(Arrays.asList(1, 2, 3));
+        Expression exp = property.idsInCollection(Arrays.asList(1, 2, 3));
         assertEquals(ExpressionFactory.exp("path in (1, 2, 3)"), exp);
     }
 
     @Test
     public void inIdVararg() {
-        Expression exp = property.inId(1, 2, 3);
+        Expression exp = property.idsIn(1, 2, 3);
         assertEquals(ExpressionFactory.exp("path in (1, 2, 3)"), exp);
     }
 
@@ -107,13 +107,13 @@ public class EntityPropertyTest {
 
     @Test
     public void ninIdCollection() {
-        Expression exp = property.ninId(Arrays.asList(1, 2, 3));
+        Expression exp = property.idsNotInCollection(Arrays.asList(1, 2, 3));
         assertEquals(ExpressionFactory.exp("path not in (1, 2, 3)"), exp);
     }
 
     @Test
     public void ninIdVararg() {
-        Expression exp = property.ninId(1, 2, 3);
+        Expression exp = property.idsNotIn(1, 2, 3);
         assertEquals(ExpressionFactory.exp("path not in (1, 2, 3)"), exp);
     }
 }

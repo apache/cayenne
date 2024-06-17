@@ -46,6 +46,7 @@ CAY-2795 Add unit tests for the Json type
 CAY-2802 Upgrade Gradle to 7.6.1
 CAY-2803 Test infrastructure: declarative custom DI modules in ServerCase
 CAY-2805 Stop calling exp parser internally
+CAY-2807 EntityProperty.inId(..) / ninId(..) - disambiguate method parameters
 CAY-2814 Select query iterator() and batchIterator() methods return incorrect results
 CAY-2817 Pagination flow refactoring
 CAY-2818 JDK 21 support

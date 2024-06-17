@@ -61,10 +61,28 @@ public class EntityProperty<E extends Persistent> extends BaseProperty<E> implem
         return ExpressionFactory.matchExp(getExpression(), id);
     }
 
+    /**
+     * @deprecated since 5.0 in favour of {@link #idsInCollection(Collection)}
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
     public Expression inId(Collection<Object> ids) {
         return ExpressionFactory.inExp(getExpression(), ids);
     }
 
+    /**
+     * @param ids to use for "IN" expression
+     * @return {@code IN} expression comparing path represented by this property with provided ids
+     *
+     * @since 5.0
+     */
+    public Expression idsInCollection(Collection<?> ids) {
+        return ExpressionFactory.inExp(getExpression(), ids);
+    }
+
+    /**
+     * @deprecated since 5.0 in favour of {@link #idsIn(Object...)}
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
     public Expression inId(Object firstId, Object... moreIds) {
         Object[] ids = new Object[moreIds.length + 1];
         ids[0] = firstId;
@@ -72,14 +90,42 @@ public class EntityProperty<E extends Persistent> extends BaseProperty<E> implem
         return ExpressionFactory.inExp(getExpression(), ids);
     }
 
+    /**
+     * @param ids to use for "IN" expression
+     * @return {@code IN} expression comparing path represented by this property with provided ids
+     *
+     * @since 5.0
+     */
+    public Expression idsIn(Object... ids) {
+        return ExpressionFactory.inExp(getExpression(), ids);
+    }
+
     public Expression neqId(Object id) {
         return ExpressionFactory.noMatchExp(getExpression(), id);
     }
 
+    /**
+     * @deprecated since 5.0 in favour of {@link #idsNotInCollection(Collection)}
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
     public Expression ninId(Collection<Object> ids) {
         return ExpressionFactory.notInExp(getExpression(), ids);
     }
 
+    /**
+     * @param ids collection of IDs to use for "{@code NOT IN}" expression
+     * @return {@code NOT IN} expression comparing path represented by this property with provided IDs
+     *
+     * @since 5.0
+     */
+    public Expression idsNotInCollection(Collection<?> ids) {
+        return ExpressionFactory.notInExp(getExpression(), ids);
+    }
+
+    /**
+     * @deprecated since 5.0 in favour of {@link #idsNotIn(Object...)}
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
     public Expression ninId(Object firstId, Object... moreIds) {
         Object[] ids = new Object[moreIds.length + 1];
         ids[0] = firstId;
@@ -87,6 +133,15 @@ public class EntityProperty<E extends Persistent> extends BaseProperty<E> implem
         return ExpressionFactory.notInExp(getExpression(), ids);
     }
 
+    /**
+     * @param ids to use for "{@code NOT IN}" expression
+     * @return {@code NOT IN} expression comparing path represented by this property with provided ids
+     *
+     * @since 5.0
+     */
+    public Expression idsNotIn(Object... ids) {
+        return ExpressionFactory.notInExp(getExpression(), ids);
+    }
 
     /**
      * {@inheritDoc}
