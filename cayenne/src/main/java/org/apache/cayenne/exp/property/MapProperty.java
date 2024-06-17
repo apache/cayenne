@@ -148,7 +148,7 @@ public class MapProperty<K, V extends Persistent> extends BaseProperty<Map<K, V>
      * @since 5.0
      */
     public Expression notContainsValuesCollection(Collection<V> values) {
-        return ExpressionFactory.inExp(getExpression(), values);
+        return ExpressionFactory.notInExp(getExpression(), values);
     }
 
     /**
