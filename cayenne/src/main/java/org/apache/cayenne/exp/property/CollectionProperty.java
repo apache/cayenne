@@ -65,42 +65,44 @@ public abstract class CollectionProperty<V extends Persistent, E extends Collect
 
     /**
      * @return An expression representing equality to a value.
+     * @deprecated since 5.0 in favour of {@link #containsValue(V)}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public Expression contains(V value) {
-        return ExpressionFactory.matchExp(getExpression(), value);
+        return containsValue(value);
     }
-
 
     /**
-     * @return An expression representing inequality to a value.
+     * @return An expression representing equality to a value.
+     * @deprecated since 5.0 in favour of {@link #notContainsValue(V)}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public Expression notContains(V value) {
-        return ExpressionFactory.noMatchExp(getExpression(), value);
+        return notContainsValue(value);
     }
-
-    // TODO: move all *contains* methods to RelationshipProperty once Property class is removed
 
     /**
      * @return An expression for finding objects with values in the given set.
+     * @deprecated since 5.0 in favour of {@link #containsValues(V...)}
      */
-    @SafeVarargs
-    public final Expression contains(V firstValue, V... moreValues) {
-
+    @SuppressWarnings("unchecked")
+    @Deprecated(since = "5.0", forRemoval = true)
+    public Expression contains(V firstValue, V... moreValues) {
         int moreValuesLength = moreValues != null ? moreValues.length : 0;
-
         Object[] values = new Object[moreValuesLength + 1];
         values[0] = firstValue;
 
         if (moreValuesLength > 0) {
             System.arraycopy(moreValues, 0, values, 1, moreValuesLength);
         }
-
         return ExpressionFactory.inExp(getExpression(), values);
     }
 
     /**
      * @return An expression for finding objects with values in the given set.
+     * @deprecated since 5.0 in favour of {@link #containsValuesCollection(Collection)}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public Expression contains(Collection<V> values) {
         return ExpressionFactory.inExp(getExpression(), values);
     }
@@ -115,7 +117,9 @@ public abstract class CollectionProperty<V extends Persistent, E extends Collect
 
     /**
      * @return An expression for finding objects with given id set
+     * @deprecated since 5.0 in favour of  {@link #containsIds(Object...)}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public Expression containsId(Object firstId, Object... moreId) {
 
         int moreValuesLength = moreId != null ? moreId.length : 0;
@@ -132,7 +136,9 @@ public abstract class CollectionProperty<V extends Persistent, E extends Collect
 
     /**
      * @return An expression for finding objects with given id set.
+     * @deprecated since 5.0 in favour of {@link #containsIdsCollection(Collection)}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public Expression containsId(Collection<Object> ids) {
         return ExpressionFactory.inExp(getExpression(), ids);
     }
@@ -147,7 +153,9 @@ public abstract class CollectionProperty<V extends Persistent, E extends Collect
 
     /**
      * @return An expression for finding objects without given id set.
+     * @deprecated since 5.0 in favour of {@link #notContainsIds(Object...)}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public Expression notContainsId(Object firstId, Object... moreId) {
 
         int moreValuesLength = moreId != null ? moreId.length : 0;
@@ -164,21 +172,27 @@ public abstract class CollectionProperty<V extends Persistent, E extends Collect
 
     /**
      * @return An expression for finding objects without given id set.
+     * @deprecated since 5.0 in favour of {@link #notContainsIdsCollection(Collection)}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public Expression notContainsId(Collection<Object> ids) {
         return ExpressionFactory.notInExp(getExpression(), ids);
     }
 
     /**
      * @return An expression for finding objects with values not in the given set.
+     * @deprecated since 5.0 in favour of {@link #notContainsValuesCollection(Collection)}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public Expression notContains(Collection<V> values) {
         return ExpressionFactory.notInExp(getExpression(), values);
     }
 
     /**
      * @return An expression for finding objects with values not in the given set.
+     * @deprecated since 5.0 in favour of {@link #notContainsValues(V...)}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     @SafeVarargs
     public final Expression notContains(V firstValue, V... moreValues) {
 
@@ -192,6 +206,91 @@ public abstract class CollectionProperty<V extends Persistent, E extends Collect
         }
 
         return ExpressionFactory.notInExp(getExpression(), values);
+    }
+
+    /**
+     * @return An expression representing equality to a value.
+     * @since 5.0
+     */
+    public Expression containsValue(V value) {
+        return ExpressionFactory.matchExp(getExpression(), value);
+    }
+
+    /**
+     * @return An expression representing inequality to a value.
+     * @since 5.0
+     */
+    public Expression notContainsValue(V value) {
+        return ExpressionFactory.noMatchExp(getExpression(), value);
+    }
+
+    /**
+     * @return An expression for finding objects with values in the given set.
+     * @since 5.0
+     */
+    @SafeVarargs
+    public final Expression containsValues(V... values) {
+        if(values == null || values.length == 0) {
+            throw new IllegalArgumentException("At least one value is expected.");
+        }
+        return ExpressionFactory.inExp(getExpression(), (Object[])values);
+    }
+
+    /**
+     * @return An expression for finding objects with values in the given set.
+     * @since 5.0
+     */
+    public Expression containsValuesCollection(Collection<V> values) {
+        return ExpressionFactory.inExp(getExpression(), values);
+    }
+
+    /**
+     * @return An expression for finding objects with given id set
+     * @since 5.0
+     */
+    public Expression containsIds(Object... ids) {
+        return ExpressionFactory.inExp(getExpression(), ids);
+    }
+
+    /**
+     * @return An expression for finding objects with given id set.
+     * @since 5.0
+     */
+    public Expression containsIdsCollection(Collection<?> ids) {
+        return ExpressionFactory.inExp(getExpression(), ids);
+    }
+
+    /**
+     * @return An expression for finding objects with given id set
+     * @since 5.0
+     */
+    public Expression notContainsIds(Object... ids) {
+        return ExpressionFactory.notInExp(getExpression(), ids);
+    }
+
+    /**
+     * @return An expression for finding objects without given id set.
+     * @since 5.0
+     */
+    public Expression notContainsIdsCollection(Collection<?> ids) {
+        return ExpressionFactory.notInExp(getExpression(), ids);
+    }
+
+    /**
+     * @return An expression for finding objects with values not in the given set.
+     * @since 5.0
+     */
+    public Expression notContainsValuesCollection(Collection<V> values) {
+        return ExpressionFactory.notInExp(getExpression(), values);
+    }
+
+    /**
+     * @return An expression for finding objects with values not in the given set.
+     * @since 5.0
+     */
+    @SafeVarargs
+    public final Expression notContainsValues(V... values) {
+        return ExpressionFactory.notInExp(getExpression(), (Object[])values);
     }
 
     /**

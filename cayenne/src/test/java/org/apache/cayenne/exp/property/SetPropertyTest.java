@@ -75,7 +75,7 @@ public class SetPropertyTest {
     @Test
     public void containsOne() {
         Artist artist = new Artist();
-        Expression exp = property.contains(artist);
+        Expression exp = property.containsValue(artist);
         assertEquals(ExpressionFactory.matchExp("path", artist), exp);
     }
 }

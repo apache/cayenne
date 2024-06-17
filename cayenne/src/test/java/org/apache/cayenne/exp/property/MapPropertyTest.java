@@ -68,7 +68,7 @@ public class MapPropertyTest {
     public void containsManyArray() {
         Artist artist1 = new Artist();
         Artist artist2 = new Artist();
-        Expression exp = property.contains(artist1, artist2);
+        Expression exp = property.containsValues(artist1, artist2);
         assertEquals(ExpressionFactory.inExp("path", Arrays.asList(artist1, artist2)), exp);
     }
 
@@ -76,7 +76,7 @@ public class MapPropertyTest {
     public void containsManyCollection() {
         Artist artist1 = new Artist();
         Artist artist2 = new Artist();
-        Expression exp = property.contains(Arrays.asList(artist1, artist2));
+        Expression exp = property.containsValuesCollection(Arrays.asList(artist1, artist2));
         assertEquals(ExpressionFactory.inExp("path", Arrays.asList(artist1, artist2)), exp);
     }
 
@@ -84,7 +84,7 @@ public class MapPropertyTest {
     public void notContainsManyArray() {
         Artist artist1 = new Artist();
         Artist artist2 = new Artist();
-        Expression exp = property.notContains(artist1, artist2);
+        Expression exp = property.notContainsValues(artist1, artist2);
         assertEquals(ExpressionFactory.notInExp("path", Arrays.asList(artist1, artist2)), exp);
     }
 
@@ -92,7 +92,7 @@ public class MapPropertyTest {
     public void notContainsManyCollection() {
         Artist artist1 = new Artist();
         Artist artist2 = new Artist();
-        Expression exp = property.notContains(Arrays.asList(artist1, artist2));
+        Expression exp = property.notContainsValuesCollection(Arrays.asList(artist1, artist2));
         assertEquals(ExpressionFactory.notInExp("path", Arrays.asList(artist1, artist2)), exp);
     }
 
@@ -104,13 +104,13 @@ public class MapPropertyTest {
 
     @Test
     public void containsManyIdArray() {
-        Expression exp = property.containsId(1, 2, 3);
+        Expression exp = property.containsIds(1, 2, 3);
         assertEquals(ExpressionFactory.exp("path in (1,2,3)"), exp);
     }
 
     @Test
     public void containsManyIdCollection() {
-        Expression exp = property.containsId(Arrays.asList(1, 2, 3));
+        Expression exp = property.containsIdsCollection(Arrays.asList(1, 2, 3));
         assertEquals(ExpressionFactory.exp("path in (1,2,3)"), exp);
     }
 
@@ -122,13 +122,13 @@ public class MapPropertyTest {
 
     @Test
     public void notContainsManyIdArray() {
-        Expression exp = property.notContainsId(1, 2, 3);
+        Expression exp = property.notContainsIds(1, 2, 3);
         assertEquals(ExpressionFactory.exp("path not in (1,2,3)"), exp);
     }
 
     @Test
     public void notContainsManyIdCollection() {
-        Expression exp = property.notContainsId(Arrays.asList(1, 2, 3));
+        Expression exp = property.notContainsIdsCollection(Arrays.asList(1, 2, 3));
         assertEquals(ExpressionFactory.exp("path not in (1,2,3)"), exp);
     }
 

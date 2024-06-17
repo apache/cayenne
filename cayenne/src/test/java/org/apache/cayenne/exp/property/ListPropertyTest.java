@@ -20,7 +20,8 @@
 package org.apache.cayenne.exp.property;
 
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -79,28 +80,84 @@ public class ListPropertyTest {
     @Test
     public void containsOne() {
         Artist artist = new Artist();
-        Expression exp = property.contains(artist);
+        Expression exp = property.containsValue(artist);
         assertEquals(ExpressionFactory.matchExp("path", artist), exp);
     }
 
     @Test
-    public void containsMany() {
-        Collection<Artist> artists = Arrays.asList(new Artist(), new Artist());
-        Expression exp = property.contains(artists);
+    public void containsArray() {
+        Artist[] artists = {new Artist(), new Artist()};
+        Expression exp = property.containsValues(artists);
+        assertEquals(ExpressionFactory.inExp("path", (Object[])artists), exp);
+    }
+
+    @Test
+    public void containsCollection() {
+        Set<Artist> artists = Set.of(new Artist(), new Artist());
+        Expression exp = property.containsValuesCollection(artists);
         assertEquals(ExpressionFactory.inExp("path", artists), exp);
+    }
+
+    @Test
+    public void containsId() {
+        int id = 1;
+        Expression exp = property.containsId(id);
+        assertEquals(ExpressionFactory.matchExp("path", id), exp);
+    }
+
+    @Test
+    public void containsIdsArray() {
+        Object[] ids = {new Artist(), new Artist()};
+        Expression exp = property.containsIds(ids);
+        assertEquals(ExpressionFactory.inExp("path", ids), exp);
+    }
+
+    @Test
+    public void containsIdsCollection() {
+        Set<Integer> ids = Set.of(1, 2, 3);
+        Expression exp = property.containsIdsCollection(ids);
+        assertEquals(ExpressionFactory.inExp("path", ids), exp);
     }
 
     @Test
     public void notContainsOne() {
         Artist artist = new Artist();
-        Expression exp = property.notContains(artist);
+        Expression exp = property.notContainsValue(artist);
         assertEquals(ExpressionFactory.noMatchExp("path", artist), exp);
     }
 
     @Test
-    public void notContainsMany() {
-        Collection<Artist> artists = Arrays.asList(new Artist(), new Artist());
-        Expression exp = property.notContains(artists);
+    public void notContainsArray() {
+        Artist[] artists = {new Artist(), new Artist()};
+        Expression exp = property.notContainsValues(artists);
+        assertEquals(ExpressionFactory.notInExp("path", (Object[])artists), exp);
+    }
+
+    @Test
+    public void notContainsCollection() {
+        List<Artist> artists = Arrays.asList(new Artist(), new Artist());
+        Expression exp = property.notContainsValuesCollection(artists);
         assertEquals(ExpressionFactory.notInExp("path", artists), exp);
+    }
+
+    @Test
+    public void notContainsId() {
+        int id = 1;
+        Expression exp = property.notContainsId(id);
+        assertEquals(ExpressionFactory.noMatchExp("path", id), exp);
+    }
+
+    @Test
+    public void notContainsIdsArray() {
+        Object[] ids = {new Artist(), new Artist()};
+        Expression exp = property.notContainsIds(ids);
+        assertEquals(ExpressionFactory.notInExp("path", ids), exp);
+    }
+
+    @Test
+    public void notContainsIdsCollection() {
+        Set<Integer> ids = Set.of(1, 2, 3);
+        Expression exp = property.notContainsIdsCollection(ids);
+        assertEquals(ExpressionFactory.notInExp("path", ids), exp);
     }
 }

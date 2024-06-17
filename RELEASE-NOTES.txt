@@ -71,6 +71,7 @@ CAY-2845 Deprecate DataObject in favour of Persistent
 CAY-2849 Switch documentation to `hugo-asciidoctorj-extension`
 CAY-2856 Upgrade Gradle to 8.8
 CAY-2857 Java 22 support
+CAY-2858 Redesign Collection and Map Property API
 
 Bug Fixes:
 
