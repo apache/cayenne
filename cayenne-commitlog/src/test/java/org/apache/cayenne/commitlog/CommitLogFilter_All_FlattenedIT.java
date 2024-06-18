@@ -26,9 +26,9 @@ import org.apache.cayenne.commitlog.model.ChangeMap;
 import org.apache.cayenne.commitlog.model.ObjectChange;
 import org.apache.cayenne.commitlog.model.ObjectChangeType;
 import org.apache.cayenne.commitlog.model.ToManyRelationshipChange;
-import org.apache.cayenne.commitlog.unit.FlattenedServerCase;
-import org.apache.cayenne.configuration.server.ServerRuntimeBuilder;
+import org.apache.cayenne.commitlog.unit.FlattenedRuntimeCase;
 import org.apache.cayenne.query.SelectById;
+import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.stubbing.Answer;
@@ -39,13 +39,13 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class CommitLogFilter_All_FlattenedIT extends FlattenedServerCase {
+public class CommitLogFilter_All_FlattenedIT extends FlattenedRuntimeCase {
 
 	protected ObjectContext context;
 	protected CommitLogListener mockListener;
 
 	@Override
-	protected ServerRuntimeBuilder configureCayenne() {
+	protected CayenneRuntimeBuilder configureCayenne() {
 		this.mockListener = mock(CommitLogListener.class);
 		return super.configureCayenne()
 				.addModule(b -> CommitLogModule.extend(b).addListener(mockListener));

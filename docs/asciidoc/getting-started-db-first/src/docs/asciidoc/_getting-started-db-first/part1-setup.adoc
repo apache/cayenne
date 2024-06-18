@@ -19,7 +19,7 @@ This chapter lists the recommended software used in the tutorial.
 
 ==== Java
 
-Cayenne 4.2 requires JDK 1.8 or newer.
+Cayenne 5.0 requires JDK 11 or newer.
 
 ==== IntelliJ IDEA IDE
 

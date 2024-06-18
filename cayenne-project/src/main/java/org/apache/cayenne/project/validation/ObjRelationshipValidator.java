@@ -55,7 +55,7 @@ class ObjRelationshipValidator extends ConfigurationNodeValidator {
                         "ObjRelationship name '%s' contains invalid characters: %s",
                         toString(relationship),
                         invalidChars);
-            } else if (helper.invalidDataObjectProperty(relationship.getName())) {
+            } else if (helper.invalidPersistentObjectProperty(relationship.getName())) {
                 addFailure(
                         validationResult,
                         relationship,

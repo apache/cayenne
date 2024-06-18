@@ -70,7 +70,7 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
     protected void initializeCombo(ObjAttributeTableModel model, int row, final JTable table) {
         super.initializeCombo(model, row, table);
         comboBoxPathChooser.setSelectedItem(model.getAttribute(row).getValue().getDbAttributePath());
-        savePath = this.model.getAttribute(row).getValue().getDbAttributePath();
+        savePath = this.model.getAttribute(row).getValue().getDbAttributePath().value();
     }
 
 
@@ -81,7 +81,7 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
 
     @Override
     protected String getPathToInitializeCombo(ObjAttributeTableModel model, int row) {
-        String pathString = model.getAttribute(row).getValue().getDbAttributePath();
+        String pathString = model.getAttribute(row).getValue().getDbAttributePath().value();
         if (pathString == null) {
             return "";
         }

@@ -47,13 +47,13 @@ Note that Cayenne code is unrecognized, that's because we need to include Cayenn
     <dependencies>
         <dependency>
             <groupId>org.apache.cayenne</groupId>
-            <artifactId>cayenne-server</artifactId>
+            <artifactId>cayenne</artifactId>
             <version>${cayenne.version}</version>
         </dependency>
     </dependencies>
 ----
 
-Additionally we need to tell `Maven compiler plugin` that our code uses Java 8: 
+Additionally we need to tell `Maven compiler plugin` that our code uses Java 11:
 [source,xml]
 ----
 <build>
@@ -62,8 +62,8 @@ Additionally we need to tell `Maven compiler plugin` that our code uses Java 8:
         <plugin>
             <artifactId>maven-compiler-plugin</artifactId>
             <configuration>
-                <source>1.8</source>
-                <target>1.8</target>
+                <source>11</source>
+                <target>11</target>
             </configuration>
         </plugin>
     ...

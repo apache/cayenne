@@ -25,8 +25,8 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.configuration.event.DataNodeEvent;
 import org.apache.cayenne.configuration.event.QueryEvent;
-import org.apache.cayenne.configuration.server.JNDIDataSourceFactory;
-import org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory;
+import org.apache.cayenne.configuration.runtime.JNDIDataSourceFactory;
+import org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
@@ -43,7 +43,6 @@ import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.AdapterMapping;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.FileFilters;
 import org.apache.cayenne.wocompat.EOModelProcessor;
 import org.slf4j.Logger;
@@ -59,7 +58,6 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 /**

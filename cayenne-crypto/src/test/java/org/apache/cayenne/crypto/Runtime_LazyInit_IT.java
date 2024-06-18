@@ -19,13 +19,13 @@
 package org.apache.cayenne.crypto;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.crypto.db.Table1;
 import org.apache.cayenne.crypto.db.Table4;
 import org.apache.cayenne.crypto.key.KeySource;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,7 +45,7 @@ public class Runtime_LazyInit_IT extends Runtime_AES128_Base {
     }
 
     @Override
-    protected ServerRuntime createRuntime(final Module crypto) {
+    protected CayenneRuntime createRuntime(final Module crypto) {
         Module cryptoWrapper = binder -> {
             crypto.configure(binder);
             binder.decorate(KeySource.class).after(LockingKeySourceDecorator.class);

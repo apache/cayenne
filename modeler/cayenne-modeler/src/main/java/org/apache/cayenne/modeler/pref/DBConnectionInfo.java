@@ -31,7 +31,7 @@ import javax.sql.DataSource;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
-import org.apache.cayenne.configuration.server.DbAdapterFactory;
+import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
 import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.modeler.Application;

@@ -22,15 +22,15 @@ package org.apache.cayenne.project.compatibility;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
-import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.runtime.CayenneRuntimeModuleProvider;
+import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.project.ProjectModule;
 
 /**
  * @since 4.1
  */
-public class ProjectCompatibilityModuleProvider implements CayenneServerModuleProvider {
+public class ProjectCompatibilityModuleProvider implements CayenneRuntimeModuleProvider {
 
     @Override
     public Module module() {
@@ -44,8 +44,8 @@ public class ProjectCompatibilityModuleProvider implements CayenneServerModulePr
 
     @Override
     public Collection<Class<? extends Module>> overrides() {
-        // compatibility module overrides XML loaders defined in ServerModule and
+        // compatibility module overrides XML loaders defined in CoreModule and
         // upgrade services from ProjectModule
-        return Arrays.asList(ServerModule.class, ProjectModule.class);
+        return Arrays.asList(CoreModule.class, ProjectModule.class);
     }
 }

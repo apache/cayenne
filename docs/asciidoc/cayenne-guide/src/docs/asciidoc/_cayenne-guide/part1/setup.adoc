@@ -32,7 +32,7 @@ include::../var.adoc[]
 
 |4.2
 |Java 1.8 or newer
-|Release Candidate
+|Stable
 
 |4.1
 |Java 1.8 -- Java 17
@@ -65,7 +65,7 @@ include::../var.adoc[]
 
 CayenneModeler GUI tool is intended to work with object relational mapping projects. While you can edit your XML by
 hand, it is rarely needed, as the Modeler is a pretty advanced tool included in Cayenne distribution. To obtain
-CayenneModeler, download Cayenne distribution archive from http://cayenne.apache.org/download.html matching the OS you
+CayenneModeler, download Cayenne distribution archive from https://cayenne.apache.org/download.html matching the OS you
 are using. Of course Java needs to be installed on the machine where you are going to run the Modeler.
 
 - OS X distribution contains CayenneModeler.app at the root of the distribution disk image.

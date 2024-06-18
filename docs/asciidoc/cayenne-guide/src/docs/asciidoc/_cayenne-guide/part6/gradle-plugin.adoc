@@ -39,8 +39,7 @@ cayenne.defaultDataMap 'datamap.map.xml'
 
 // add Cayenne dependencies to your project
 dependencies {
-    // this is a shortcut for 'org.apache.cayenne:cayenne-server:VERSION_OF_PLUGIN'
-    compile cayenne.dependency('server')
+    compile 'org.apache.cayenne:cayenne:{version}'
 }
 ----
 

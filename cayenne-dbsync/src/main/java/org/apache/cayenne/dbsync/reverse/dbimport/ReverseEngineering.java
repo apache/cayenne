@@ -247,7 +247,7 @@ public class ReverseEngineering extends SchemaContainer implements Serializable,
      * @return false
      * @deprecated since 5.0
      */
-    @Deprecated
+    @Deprecated(since = "5.0", forRemoval = true)
     public boolean isUsePrimitives() {
         return false;
     }
@@ -284,7 +284,7 @@ public class ReverseEngineering extends SchemaContainer implements Serializable,
      * does nothing
      * @deprecated since 5.0
      */
-    @Deprecated
+    @Deprecated(since = "5.0", forRemoval = true)
     public void setUsePrimitives(boolean usePrimitives) {
     }
 

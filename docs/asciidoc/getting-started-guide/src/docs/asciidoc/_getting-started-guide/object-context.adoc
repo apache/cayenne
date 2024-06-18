@@ -31,21 +31,20 @@ public class Main {
 }
 ----
 - The first thing you need to be able to access the database is to create a
-`ServerRuntime` object (which is essentially a wrapper around Cayenne stack) and
-use it to obtain an instance of an
-`ObjectContext`.
+`CayenneRuntime` object (which is essentially a wrapper around Cayenne stack) and
+use it to obtain an instance of an `ObjectContext`.
 
 [source,java]
 ----
 package org.example.cayenne;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.runtime.CayenneRuntime;
 
 public class Main {
 
     public static void main(String[] args) {
-        ServerRuntime cayenneRuntime = ServerRuntime.builder()
+        CayenneRuntime cayenneRuntime = CayenneRuntime.builder()
                         .addConfig("cayenne-project.xml")
                         .build();
         ObjectContext context = cayenneRuntime.newContext();
@@ -68,8 +67,8 @@ jars:
 ----
 <dependency>
    <groupId>org.apache.derby</groupId>
-   <artifactId>derby</artifactId>
-   <version>10.13.1.1</version>
+    <artifactId>derby</artifactId>
+    <version>10.14.2.0</version>
 </dependency>
 ----
 Now we are ready to run. Right click the "Main" class in IDEA and select "Run 'Main.main()'".

@@ -39,7 +39,26 @@ as an example) :
       .build();
 Two things to note here: (1) a module-specific extender is created using an "extend(Binder)" method of the module, and
 (2) an extender does not produce a Module, instead it adds services directly to the Binder. So it is usually invoked
-within a lambda that produces a Module, or within an app <odule.
+within a lambda that produces a Module, or within an app Module.
+
+* Per CAY-2822 `cayenne-server` module is renamed to `cayenne`, so you need to change
+that accordingly in your build scripts
+
+* Per CAY-2823 `ServerRuntime` is deprecated. You should change your code to use `org.apache.cayenne.runtime.CayenneRuntime` instead.
+
+* Per CAY-2824 `CayenneServerModuleProvider` renamed to `CayenneRuntimeModuleProvider` and moved to `org.apache.cayenne.runtime` package.
+If you are using auto-loading mechanism for your custom modules you need to change `META-INF.services` reference accordingly.
+
+* Per CAY-2825 package `org.apache.cayenne.configuration.server` renamed to `org.apache.cayenne.configuration.runtime`,
+fix your imports accordingly.
+
+* Per CAY-2826 `ServerModule` renamed to `CoreModule`
+
+* Per CAY-2828 `server` prefix removed from the names of runtime properties and named collections defined in `org.apache.cayenne.configuration.Constants`.
+You should change references in code, and in any scripts that could use them as system properties.
+
+* Per CAY-2845 `DataObject` interface and `BaseDataObject` class were deprecated and all logic moved to the `Persistent` interface
+and `PersistentObject` class . You should regenerate model classes via cgen tool in Cayenne Modeler or Maven/Gradle plugins.
 
 UPGRADING TO 4.2.M2
 

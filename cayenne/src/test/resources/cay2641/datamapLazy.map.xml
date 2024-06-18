@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
+	 project-version="11">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.cay_2641"/>
+	<db-entity name="ArtistLazy">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="5"/>
+		<db-attribute name="NAME" type="VARCHAR" length="10"/>
+		<db-attribute name="SURNAME" type="VARCHAR" length="10"/>
+	</db-entity>
+	<db-entity name="PaintingLazy">
+		<db-attribute name="ARTIST_ID" type="INTEGER" length="10"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+		<db-attribute name="NAME" type="VARCHAR" length="10"/>
+	</db-entity>
+	<obj-entity name="ArtistLazy" className="org.apache.cayenne.testdo.cay_2641.ArtistLazy" dbEntityName="ArtistLazy">
+		<obj-attribute name="name" type="java.lang.String" lazy="true" db-attribute-path="NAME"/>
+		<obj-attribute name="surname" type="java.lang.String" db-attribute-path="SURNAME"/>
+	</obj-entity>
+	<obj-entity name="PaintingLazy" className="org.apache.cayenne.testdo.cay_2641.PaintingLazy" lock-type="optimistic" dbEntityName="PaintingLazy">
+		<obj-attribute name="name" type="java.lang.String" lazy="true" db-attribute-path="NAME"/>
+	</obj-entity>
+	<db-relationship name="paintings" source="ArtistLazy" target="PaintingLazy" toMany="true">
+		<db-attribute-pair source="ID" target="ARTIST_ID"/>
+	</db-relationship>
+	<db-relationship name="artist" source="PaintingLazy" target="ArtistLazy">
+		<db-attribute-pair source="ARTIST_ID" target="ID"/>
+	</db-relationship>
+	<obj-relationship name="paintings" source="ArtistLazy" target="PaintingLazy" deleteRule="Deny" db-relationship-path="paintings"/>
+	<obj-relationship name="artist" source="PaintingLazy" target="ArtistLazy" deleteRule="Nullify" db-relationship-path="artist"/>
+	<query name="prefetchSelect" type="SelectQuery" root="obj-entity" root-name="PaintingLazy">
+		<prefetch type="disjoint"><![CDATA[artist]]></prefetch>
+	</query>
+	<query name="simpleSelect" type="SelectQuery" root="obj-entity" root-name="ArtistLazy"/>
+</data-map>

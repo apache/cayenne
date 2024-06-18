@@ -43,12 +43,12 @@ import org.apache.cayenne.query.QueryMetadata;
 
 /**
  * A panel that supports editing the properties a query not based on ObjEntity, but still
- * supporting DataObjects retrieval.
+ * supporting Persistent objects retrieval.
  * 
  */
 public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
 
-    protected JCheckBox dataObjects;
+    protected JCheckBox persistentObjects;
     protected JComboBox<ObjEntity> entities;
 
     public RawQueryPropertiesPanel(ProjectController mediator) {
@@ -57,7 +57,7 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
 
     protected void initController() {
         super.initController();
-        dataObjects.addItemListener(e -> setFetchingDataObjects(dataObjects.isSelected()));
+        persistentObjects.addItemListener(e -> setFetchingPersistentObjects(persistentObjects.isSelected()));
 
         entities.addActionListener(event -> {
             ObjEntity entity = (ObjEntity) entities.getModel().getSelectedItem();
@@ -79,8 +79,8 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
         builder.add(cacheStrategy, cc.xywh(3, 3, 5, 1));
         cacheGroupsLabel = builder.addLabel("Cache Group:", cc.xy(1, 7));
         builder.add(cacheGroups.getComponent(), cc.xywh(3, 7, 5, 1));
-        builder.addLabel("Fetch Data Objects:", cc.xy(1, 9));
-        builder.add(dataObjects, cc.xy(3, 9));
+        builder.addLabel("Fetch Persistent Objects:", cc.xy(1, 9));
+        builder.add(persistentObjects, cc.xy(3, 9));
         builder.add(entities, cc.xywh(5, 9, 3, 1));
         builder.addLabel("Fetch Offset, Rows:", cc.xy(1, 11));
         builder.add(fetchOffset.getComponent(), cc.xywh(3, 11, 3, 1));
@@ -96,7 +96,7 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
 
         // create widgets
 
-        dataObjects = new JCayenneCheckBox();
+        persistentObjects = new JCayenneCheckBox();
 
         entities = Application.getWidgetFactory().createUndoableComboBox();
         entities.setRenderer(CellRenderers.listRendererWithIcons());
@@ -113,7 +113,7 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
         super.initFromModel(query);
 
         boolean fetchingDO = !Boolean.valueOf(query.getProperties().get(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY));
-        dataObjects.setSelected(fetchingDO);
+        persistentObjects.setSelected(fetchingDO);
 
         // TODO: now we only allow ObjEntities from the current map,
         // since query root is fully resolved during map loading,
@@ -136,14 +136,14 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
 
     protected abstract ObjEntity getEntity(QueryDescriptor query);
 
-    protected void setFetchingDataObjects(boolean dataObjects) {
-        entities.setEnabled(dataObjects && isEnabled());
+    protected void setFetchingPersistentObjects(boolean fetchingPersistentObjects) {
+        entities.setEnabled(fetchingPersistentObjects && isEnabled());
 
-        if (!dataObjects) {
+        if (!fetchingPersistentObjects) {
             entities.getModel().setSelectedItem(null);
         }
 
         setQueryProperty(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY,
-                dataObjects ? Boolean.FALSE.toString() : Boolean.TRUE.toString());
+                fetchingPersistentObjects ? Boolean.FALSE.toString() : Boolean.TRUE.toString());
     }
 }

@@ -27,7 +27,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An annotation that adds commit log behavior to DataObjects.
+ * An annotation that adds commit log behavior to Persistent objects.
  *
  * @since 4.0
  */

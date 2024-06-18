@@ -49,31 +49,30 @@ public class ClassNameUpdater extends CayenneController {
         this.view = null;
         this.updatePerformed = false;
 
-        boolean askForServerUpdate = true;
+        boolean askForUpdate = true;
 
-        String oldServerName = entity.getClassName();
-        String suggestedServerName = suggestedServerClassName();
+        String oldName = entity.getClassName();
+        String suggestedName = suggestedClassName();
 
-        if (oldServerName == null || oldServerName.length() == 0) {
+        if (oldName == null || oldName.length() == 0) {
             // generic entity...
-            askForServerUpdate = false;
-        } else if (suggestedServerName == null || suggestedServerName.equals(oldServerName)) {
-            askForServerUpdate = false;
-        } else if (oldServerName.contains("UntitledObjEntity")) {
+            askForUpdate = false;
+        } else if (suggestedName == null || suggestedName.equals(oldName)) {
+            askForUpdate = false;
+        } else if (oldName.contains("UntitledObjEntity")) {
             // update without user interaction
-            entity.setClassName(suggestedServerName);
+            entity.setClassName(suggestedName);
             updatePerformed = true;
-            askForServerUpdate = false;
+            askForUpdate = false;
         }
 
-        if (askForServerUpdate) {
+        if (askForUpdate) {
             // start dialog
             view = new ClassNameUpdaterView();
-            view.getServerClass().setVisible(true);
-            view.getServerClass().setSelected(true);
-            view.getServerClass().setText("Change Class Name to '" + suggestedServerName + "'");
+            view.getClassName()
+                    .setText("Update class name to " + suggestedName + " to match current entity name?");
 
-            initBindings(suggestedServerName);
+            initBindings(suggestedName);
 
             view.pack();
             view.setModal(true);
@@ -85,7 +84,7 @@ public class ClassNameUpdater extends CayenneController {
         return this.updatePerformed;
     }
 
-    private String suggestedServerClassName() {
+    private String suggestedClassName() {
         String pkg = entity.getDataMap() == null ? null : entity.getDataMap().getDefaultPackage();
         return suggestedClassName(entity.getName(), pkg, entity.getClassName());
     }
@@ -114,14 +113,11 @@ public class ClassNameUpdater extends CayenneController {
         return DataMap.getNameWithPackage(pkg, entityName);
     }
 
-    protected void initBindings(final String suggestedServerName) {
+    protected void initBindings(final String suggestedName) {
 
         view.getUpdateButton().addActionListener(e -> {
-            if (view.getServerClass().isSelected()) {
-                entity.setClassName(suggestedServerName);
-                updatePerformed = true;
-            }
-
+            entity.setClassName(suggestedName);
+            updatePerformed = true;
             view.dispose();
         });
 

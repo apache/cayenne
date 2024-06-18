@@ -20,7 +20,7 @@
 package org.apache.cayenne.gen;
 
 import org.apache.cayenne.access.types.TimestampType;
-import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.exp.property.DateProperty;
@@ -70,7 +70,7 @@ public class PropertyUtilsTest {
         propertyUtils = DIBootstrap.createInjector(
                         new CgenCaseModule(testScope),
                         new CgenModule(),
-                        binder -> ServerModule.extend(binder).addUserExtendedType(new TimestampType()))
+                        binder -> CoreModule.extend(binder).addUserExtendedType(new TimestampType()))
                 .getInstance(ToolsUtilsFactory.class)
                 .createPropertyUtils(logger, importUtils);
     }

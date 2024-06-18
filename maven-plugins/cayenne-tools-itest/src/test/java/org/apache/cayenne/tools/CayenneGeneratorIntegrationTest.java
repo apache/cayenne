@@ -47,7 +47,7 @@ public class CayenneGeneratorIntegrationTest {
         startTest("single-classes-cust-template");
 
         assertContents("org/apache/cayenne/testdo/testmap/Artist.java", "Artist", "org.apache.cayenne.testdo.testmap",
-                "CayenneDataObject");
+                "PersistentObject");
         assertExists("org/apache/cayenne/testdo/testmap/_Artist.java");
     }
 
@@ -57,7 +57,7 @@ public class CayenneGeneratorIntegrationTest {
         startTest("single-classes1");
 
         assertContents("org/apache/cayenne/testdo/testmap/Artist.java", "Artist", "org.apache.cayenne.testdo.testmap",
-                "BaseDataObject");
+                "PersistentObject");
         assertExists("org/apache/cayenne/testdo/testmap/_Artist.java");
     }
 
@@ -66,7 +66,7 @@ public class CayenneGeneratorIntegrationTest {
     public void testSingleClasses2() throws Exception {
         startTest("single-classes2");
 
-        assertContents("Artist.java", "Artist", "org.apache.cayenne.testdo.testmap", "BaseDataObject");
+        assertContents("Artist.java", "Artist", "org.apache.cayenne.testdo.testmap", "PersistentObject");
         assertExists("_Artist.java");
         assertExists("org/apache/cayenne/testdo/testmap/Artist.java");
     }
@@ -79,7 +79,7 @@ public class CayenneGeneratorIntegrationTest {
         assertContents("org/apache/cayenne/testdo/testmap/Artist.java", "Artist", "org.apache.cayenne.testdo.testmap",
                 "_Artist");
         assertContents("org/apache/cayenne/testdo/testmap/auto/_Artist.java", "_Artist",
-                "org.apache.cayenne.testdo.testmap.auto", "BaseDataObject");
+                "org.apache.cayenne.testdo.testmap.auto", "PersistentObject");
     }
 
     /** Test pairs generation in the same directory. */
@@ -88,7 +88,7 @@ public class CayenneGeneratorIntegrationTest {
         startTest("pairs2");
 
         assertContents("Artist.java", "Artist", "org.apache.cayenne.testdo.testmap", "_Artist");
-        assertContents("_Artist.java", "_Artist", "org.apache.cayenne.testdo.testmap", "BaseDataObject");
+        assertContents("_Artist.java", "_Artist", "org.apache.cayenne.testdo.testmap", "PersistentObject");
         assertExists("org/apache/cayenne/testdo/testmap/Artist.java");
     }
 
@@ -103,7 +103,7 @@ public class CayenneGeneratorIntegrationTest {
         assertContents("org/apache/cayenne/testdo/testmap/Artist.java", "Artist", "org.apache.cayenne.testdo.testmap",
                 "_Artist");
         assertContents("org/apache/cayenne/testdo/testmap/superart/_Artist.java", "_Artist",
-                "org.apache.cayenne.testdo.testmap.superart", "BaseDataObject");
+                "org.apache.cayenne.testdo.testmap.superart", "PersistentObject");
     }
 
     @Test
@@ -113,7 +113,7 @@ public class CayenneGeneratorIntegrationTest {
         assertContents("org/apache/cayenne/testdo/embeddable/EmbedEntity1.java", "EmbedEntity1",
                 "org.apache.cayenne.testdo.embeddable", "_EmbedEntity1");
         assertContents("org/apache/cayenne/testdo/embeddable/auto/_EmbedEntity1.java", "_EmbedEntity1",
-                "org.apache.cayenne.testdo.embeddable.auto", "BaseDataObject");
+                "org.apache.cayenne.testdo.embeddable.auto", "PersistentObject");
         assertContents("org/apache/cayenne/testdo/embeddable/Embeddable1.java", "Embeddable1",
                 "org.apache.cayenne.testdo.embeddable", "_Embeddable1");
         assertContents("org/apache/cayenne/testdo/embeddable/auto/_Embeddable1.java", "_Embeddable1",

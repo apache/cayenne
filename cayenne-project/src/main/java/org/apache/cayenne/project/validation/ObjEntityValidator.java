@@ -61,7 +61,7 @@ class ObjEntityValidator extends ConfigurationNodeValidator {
                     entity.getName(),
                     className,
                     invalidChars);
-        } else if (helper.invalidDataObjectClass(className)) {
+        } else if (helper.invalidPersistentObjectClass(className)) {
             addFailure(
                     validationResult,
                     entity,
@@ -96,7 +96,7 @@ class ObjEntityValidator extends ConfigurationNodeValidator {
                     entity.getName(),
                     superClassName,
                     invalidChars);
-        } else if (helper.invalidDataObjectClass(superClassName)) {
+        } else if (helper.invalidPersistentObjectClass(superClassName)) {
             addFailure(
                     validationResult,
                     entity,

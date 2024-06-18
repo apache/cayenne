@@ -22,7 +22,7 @@
 	<parent>
 		<artifactId>cayenne-parent</artifactId>
 		<groupId>org.apache.cayenne</groupId>
-		<version>5.0.M1-SNAPSHOT</version>
+		<version>5.0-SNAPSHOT</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
@@ -37,7 +37,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
-			<artifactId>cayenne-server</artifactId>
+			<artifactId>cayenne</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -64,7 +64,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
-			<artifactId>cayenne-server</artifactId>
+			<artifactId>cayenne</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
 			<type>test-jar</type>

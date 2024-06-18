@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.relationship;
 
-import org.apache.cayenne.DataObject;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.lifecycle.id.IdCoder;
 
 /**
@@ -36,7 +36,7 @@ public class ObjectIdRelationshipHandler {
         return "cay:related:" + uuidPropertyName;
     }
 
-    public String objectIdPropertyName(DataObject object) {
+    public String objectIdPropertyName(Persistent object) {
 
         ObjectIdRelationship annotation = object.getClass().getAnnotation(
                 ObjectIdRelationship.class);
@@ -47,9 +47,7 @@ public class ObjectIdRelationshipHandler {
                             + object.getClass().getName());
         }
 
-        // TODO: I guess we'll need to cache this metadata for performance if we are to
-        // support inheritance lookups, etc.
-
+        // TODO: I guess we'll need to cache this metadata for performance if we are to support inheritance lookups, etc.
         return annotation.value();
     }
 
@@ -58,7 +56,7 @@ public class ObjectIdRelationshipHandler {
      * registered in the same ObjectContext. "from" argument is the object annotated with
      * UuidRelationship. Second argument can optionally be null.
      */
-    public void relate(DataObject from, DataObject to) {
+    public void relate(Persistent from, Persistent to) {
 
         if (from.getObjectContext() == null) {
             throw new IllegalArgumentException("'from' has null ObjectContext");

@@ -24,7 +24,7 @@
 	<groupId>org.apache.cayenne</groupId>
 	<name>cayenne-parent: Top-level parent of Cayenne modules</name>
 
-	<version>5.0.M1-SNAPSHOT</version>
+	<version>5.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<description>
@@ -39,7 +39,7 @@
 		<project.build.datetime>${maven.build.timestamp}</project.build.datetime>
 		<slf4j.version>1.7.36</slf4j.version>
 		<ant.version>1.10.12</ant.version>
-		<testcontainers.version>1.17.3</testcontainers.version>
+		<testcontainers.version>1.19.3</testcontainers.version>
 
 		<maven.compiler.target>11</maven.compiler.target>
 		<maven.compiler.source>11</maven.compiler.source>
@@ -51,6 +51,7 @@
 	<url>https://cayenne.apache.org/</url>
 	<modules>
 		<module>build-tools</module>
+		<module>cayenne</module>
 		<module>cayenne-ant</module>
 		<module>cayenne-cache-invalidation</module>
 		<module>cayenne-cgen</module>
@@ -63,7 +64,6 @@
 		<module>cayenne-lifecycle</module>
 		<module>cayenne-project</module>
 		<module>cayenne-project-compatibility</module>
-		<module>cayenne-server</module>
 		<module>cayenne-velocity</module>
 		<module>cayenne-osgi</module>
 		<module>maven-plugins</module>
@@ -1006,7 +1006,7 @@
 				<dependency>
 					<groupId>com.h2database</groupId>
 					<artifactId>h2</artifactId>
-					<version>2.1.214</version>
+					<version>2.2.220</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
@@ -1128,7 +1128,7 @@
 				<dependency>
 					<groupId>org.postgresql</groupId>
 					<artifactId>postgresql</artifactId>
-					<version>42.4.3</version>
+					<version>42.7.2</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
@@ -1145,7 +1145,7 @@
 				<dependency>
 					<groupId>org.postgresql</groupId>
 					<artifactId>postgresql</artifactId>
-					<version>42.4.3</version>
+					<version>42.7.2</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>

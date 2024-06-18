@@ -92,7 +92,7 @@ public class CayenneGeneratorTaskCrossMapRelationshipsTest {
 
 		File _a = new File(destDir, convertPath("org/apache/cayenne/testdo/cgen2/auto/_MyArtGroup.java"));
 		assertTrue(_a.exists());
-		assertContents(_a, "_MyArtGroup", "org.apache.cayenne.testdo.cgen2.auto", "BaseDataObject");
+		assertContents(_a, "_MyArtGroup", "org.apache.cayenne.testdo.cgen2.auto", "PersistentObject");
 		assertContents(_a, "import org.apache.cayenne.testdo.testmap.ArtGroup;");
 		assertContents(_a, " ArtGroup getToParentGroup()");
 		assertContents(_a, "setToParentGroup(ArtGroup toParentGroup)");

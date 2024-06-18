@@ -43,11 +43,11 @@ In advanced mode you can control almost all aspects of code generation including
 
 ==== Modeling Generic Persistent Classes
 
-Normally each ObjEntity is mapped to a specific Java class (such as Artist or Painting) that explicitly declare all entity properties as pairs of getters and setters. However Cayenne allows to map a completly generic class to any number of entities. The only expectation is that a generic class implements org.apache.cayenne.DataObject. So an ideal candidate for a generic class is CayenneDataObject, or some custom subclass of CayenneDataObject.
+Normally each ObjEntity is mapped to a specific Java class (such as Artist or Painting) that explicitly declare all entity properties as pairs of getters and setters. However, Cayenne allows to map a completely generic class to any number of entities. The only expectation is that a generic class implements `org.apache.cayenne.Persistent`. So an ideal candidate for a generic class is `GenericPersistentObject`, or some custom subclass of `GenericPersistentObject`.
 
-If you don't enter anything for Java Class of an ObjEntity, Cayenne assumes generic mapping and uses the following implicit rules to determine a class of a generic object. If DataMap "Custom Superclass" is set, runtime uses this class to instantiate new objects. If not, `org.apache.cayenne.CayenneDataObject` is used.
+If you don't enter anything for Java Class of an ObjEntity, Cayenne assumes generic mapping and uses the following implicit rules to determine a class of a generic object. If DataMap "Custom Superclass" is set, runtime uses this class to instantiate new objects. If not, `org.apache.cayenne.GenericPersistentObject` is used.
 
-Class generation procedures (either done in the Modeler or with Ant or Maven) would skip entities that are mapped to CayenneDataObject explicitly or have no class mapping.
+Class generation procedures (either done in the Modeler or with Ant or Maven) would skip entities that are mapped to `GenericPersistentObject` explicitly or have no class mapping.
 
 ==== Modeling Primary Key Generation Strategy
 
@@ -63,4 +63,4 @@ Cayenne will delegate PK generation to database (e.g. auto increment fields on M
 
 Strategy should be set per each `DbEntity` independently.
 
-image::../images/db-entity-pk.png[align="center"]
+image::../../images/db-entity-pk.png[align="center"]

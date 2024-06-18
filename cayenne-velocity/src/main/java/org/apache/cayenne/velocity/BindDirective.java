@@ -55,13 +55,13 @@ import org.apache.velocity.runtime.parser.node.Node;
  * "xyz" parameter in the context "bindings" collection.
  * </p>
  * <p>
- * <strong>Binding ID column of a DataObject value:</strong>
+ * <strong>Binding ID column of a Persistent value:</strong>
  * </p>
  * <p>
  * <code>"WHERE ID_COL1 = #bind($helper.cayenneExp($xyz, 'db:ID_COL2')) 
  * AND ID_COL2 = #bind($helper.cayenneExp($xyz, 'db:ID_COL2'))"</code> produces
  * <code>"WHERE ID_COL1 = ? AND ID_COL2 = ?"</code> and also places the values
- * of id columns of the DataObject parameter "xyz" in the context "bindings"
+ * of id columns of the Persistent parameter "xyz" in the context "bindings"
  * collection.
  * </p>
  * 

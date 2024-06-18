@@ -21,23 +21,23 @@ package org.apache.cayenne.dbsync.reverse.dbload;
 
 import java.sql.Connection;
 
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.dbsync.model.DetectedDbEntity;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.After;
 import org.junit.Before;
 
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class BaseLoaderIT extends ServerCase {
+@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
+public class BaseLoaderIT extends RuntimeCase {
 
     static final DbLoaderConfiguration EMPTY_CONFIG = new DbLoaderConfiguration();
 
@@ -45,10 +45,10 @@ public class BaseLoaderIT extends ServerCase {
     protected DbAdapter adapter;
 
     @Inject
-    protected ServerRuntime runtime;
+    protected CayenneRuntime runtime;
 
     @Inject
-    protected ServerCaseDataSourceFactory dataSourceFactory;
+    protected RuntimeCaseDataSourceFactory dataSourceFactory;
 
     @Inject
     protected UnitDbAdapter accessStackAdapter;

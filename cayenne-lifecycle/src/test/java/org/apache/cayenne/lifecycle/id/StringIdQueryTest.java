@@ -20,7 +20,7 @@ package org.apache.cayenne.lifecycle.id;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.QueryResponse;
-import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.junit.After;
@@ -37,13 +37,13 @@ import static org.junit.Assert.assertTrue;
 
 public class StringIdQueryTest {
 
-    private ServerRuntime runtime;
+    private CayenneRuntime runtime;
     private TableHelper e1Helper;
     private TableHelper e2Helper;
 
     @Before
     public void setUp() {
-        runtime = ServerRuntime.builder().addConfig("cayenne-lifecycle.xml").build();
+        runtime = CayenneRuntime.builder().addConfig("cayenne-lifecycle.xml").build();
         DBHelper dbHelper = new DBHelper(runtime.getDataSource("lifecycle-db"));
         e1Helper = new TableHelper(dbHelper, "E1", "ID");
         e2Helper = new TableHelper(dbHelper, "E2", "ID");

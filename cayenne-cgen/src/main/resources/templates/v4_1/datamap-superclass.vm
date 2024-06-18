@@ -16,7 +16,7 @@
 ##  under the License.
 ##
 ##Terminology:
-##	Base class - super superclass of entity, ie, org.apache.cayenne.CayenneDataObject or MyBaseClass
+##	Base class - super superclass of entity, ie, org.apache.cayenne.GenericPersistentObject or MyBaseClass
 ##  Super class - superclass of entity, ie,  org.apache.cayenne.art.auto._Artist
 ##	Sub class - class of entity, ie, org.apache.cayenne.art.Artist
 ##

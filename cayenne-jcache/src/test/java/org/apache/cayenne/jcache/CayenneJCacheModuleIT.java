@@ -23,18 +23,18 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ExtraModules;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.ExtraModules;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,9 +45,9 @@ import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
+@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 @ExtraModules(CayenneJCacheModuleIT.EhCacheModule.class)
-public class CayenneJCacheModuleIT extends ServerCase {
+public class CayenneJCacheModuleIT extends RuntimeCase {
 
     @Inject
     private DBHelper dbHelper;
@@ -56,7 +56,7 @@ public class CayenneJCacheModuleIT extends ServerCase {
     ObjectContext context;
 
     @Inject
-    ServerRuntime runtime;
+    CayenneRuntime runtime;
 
     private TableHelper tArtist;
 

@@ -22,7 +22,7 @@ package org.apache.cayenne.dbsync.reverse.configuration;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.project.ProjectModuleExtender;
 
-// this class exists so that ToolsModule can call "initAllExtensions()" that is protected in ServerModuleExtender.
+// this class exists so that ToolsModule can call "initAllExtensions()" that is protected in ProjectModuleExtender.
 class ToolsProjectModuleExtender extends ProjectModuleExtender {
 
     public ToolsProjectModuleExtender(Binder binder) {

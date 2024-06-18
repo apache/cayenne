@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -56,7 +56,7 @@ public class EntityArtifact implements Artifact {
     public String getQualifiedBaseClassName() {
         return (entity.getSuperClassName() != null)
                 ? entity.getSuperClassName()
-                : BaseDataObject.class.getName();
+                : PersistentObject.class.getName();
     }
 
     public String getQualifiedClassName() {

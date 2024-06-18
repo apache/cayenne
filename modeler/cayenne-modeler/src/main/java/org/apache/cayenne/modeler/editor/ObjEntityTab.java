@@ -245,7 +245,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
                 if (name == null) {
                     for (ObjAttribute objAttribute : entity.getAttributes()) {
                         if (objAttribute.getDbAttribute() == null) {
-                            objAttribute.setDbAttributePath(null);
+                            objAttribute.setDbAttributePath((String)null);
                         }
                     }
                 }

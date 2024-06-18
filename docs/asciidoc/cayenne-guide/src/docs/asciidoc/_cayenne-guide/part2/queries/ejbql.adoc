@@ -60,8 +60,8 @@ checks. However sometimes you may want a completely scriptable object query. Thi
 A more practical reason for picking EJBQL over `ObjectSelect` though is that the former offers a few extra capabilities,
 such as subqueries.
 
-Just like `ObjectSelect` `EJBQLQuery` can return a List of Object[] elements, where each entry in an array is either a
-DataObject or a scalar, depending on the query SELECT clause.
+Just like `ObjectSelect` `EJBQLQuery` can return a `List` of `Object[]` elements, where each entry in an array is either a
+`Persistent` or a scalar, depending on the query SELECT clause.
 [source, java]
 ----
 EJBQLQuery query = new EJBQLQuery("select a, COUNT(p) FROM Artist a JOIN a.paintings p GROUP BY a");

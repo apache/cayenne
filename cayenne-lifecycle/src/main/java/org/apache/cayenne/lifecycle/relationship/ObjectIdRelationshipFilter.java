@@ -20,8 +20,8 @@ package org.apache.cayenne.lifecycle.relationship;
 
 import org.apache.cayenne.DataChannelQueryFilter;
 import org.apache.cayenne.DataChannelQueryFilterChain;
-import org.apache.cayenne.DataObject;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.annotation.PostLoad;
 import org.apache.cayenne.annotation.PostPersist;
@@ -35,7 +35,7 @@ import org.apache.cayenne.query.Query;
  */
 public class ObjectIdRelationshipFilter implements DataChannelQueryFilter {
 
-    private ObjectIdRelationshipFaultingStrategy faultingStrategy;
+    private final ObjectIdRelationshipFaultingStrategy faultingStrategy;
 
     public ObjectIdRelationshipFilter() {
         this.faultingStrategy = createFaultingStrategy();
@@ -55,7 +55,7 @@ public class ObjectIdRelationshipFilter implements DataChannelQueryFilter {
 
     @PostUpdate(entityAnnotations = ObjectIdRelationship.class)
     @PostPersist(entityAnnotations = ObjectIdRelationship.class)
-    void postCommit(DataObject object) {
+    void postCommit(Persistent object) {
         // invalidate after commit to ensure UUID property is re-read...
         object.getObjectContext().invalidateObjects(object);
     }
@@ -65,7 +65,7 @@ public class ObjectIdRelationshipFilter implements DataChannelQueryFilter {
      * underlying faulting strategy.
      */
     @PostLoad(entityAnnotations = ObjectIdRelationship.class)
-    void postLoad(DataObject object) {
+    void postLoad(Persistent object) {
         faultingStrategy.afterObjectLoaded(object);
     }
 }

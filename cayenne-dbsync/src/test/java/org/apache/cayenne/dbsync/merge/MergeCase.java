@@ -20,7 +20,6 @@ package org.apache.cayenne.dbsync.merge;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.dbsync.DbSyncModule;
@@ -43,13 +42,14 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ExtraModules;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.ExtraModules;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.slf4j.Logger;
 import org.junit.Before;
 import org.slf4j.LoggerFactory;
@@ -63,24 +63,24 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
+@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 @ExtraModules(DbSyncModule.class)
-public abstract class MergeCase extends ServerCase {
+public abstract class MergeCase extends RuntimeCase {
 
     @Inject
     protected EntityResolver resolver;
     @Inject
     protected DataNode node;
     protected DataMap map;
-    private Logger logger = LoggerFactory.getLogger(MergeCase.class);
+    private final Logger logger = LoggerFactory.getLogger(MergeCase.class);
     @Inject
     private DBHelper dbHelper;
     @Inject
-    private ServerRuntime runtime;
+    private CayenneRuntime runtime;
     @Inject
     protected UnitDbAdapter accessStackAdapter;
     @Inject
-    private ServerCaseDataSourceFactory dataSourceFactory;
+    private RuntimeCaseDataSourceFactory dataSourceFactory;
 
     @Override
     public void cleanUpDB() throws Exception {

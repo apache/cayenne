@@ -18,7 +18,7 @@
 	<parent>
 		<groupId>org.apache.cayenne.tutorials</groupId>
 		<artifactId>cayenne-tutorials-parent</artifactId>
-		<version>5.0.M1-SNAPSHOT</version>
+		<version>5.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>tutorial</artifactId>
@@ -28,7 +28,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
-			<artifactId>cayenne-server</artifactId>
+			<artifactId>cayenne</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

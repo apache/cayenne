@@ -90,13 +90,13 @@ public class EOModelPrototypesTest {
         assertNotNull(vendorOE);
 
         ObjAttribute en = (ObjAttribute) estimateOE.getAttribute("estimateNumber");
-        assertEquals("DOCUMENT_NUMBER", en.getDbAttributePath());
+        assertEquals("DOCUMENT_NUMBER", en.getDbAttributePath().value());
 
         ObjAttribute in = (ObjAttribute) invoiceOE.getAttribute("invoiceNumber");
-        assertEquals("DOCUMENT_NUMBER", in.getDbAttributePath());
+        assertEquals("DOCUMENT_NUMBER", in.getDbAttributePath().value());
 
         ObjAttribute vn = (ObjAttribute) vendorOE.getAttribute("purchaseOrderNumber");
-        assertEquals("DOCUMENT_NUMBER", vn.getDbAttributePath());
+        assertEquals("DOCUMENT_NUMBER", vn.getDbAttributePath().value());
     }
 
     // TODO: move this test to EOModelProcessorInheritanceTst. The original problem had

@@ -23,7 +23,7 @@
     <parent>
         <artifactId>cayenne-docs-parent</artifactId>
         <groupId>org.apache.cayenne.docs</groupId>
-        <version>5.0.M1-SNAPSHOT</version>
+        <version>5.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>cayenne-asciidoc-parent</artifactId>
@@ -41,8 +41,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <asciidoctorj.version>2.5.4</asciidoctorj.version>
-        <asciidoctor.maven.plugin.version>2.2.2</asciidoctor.maven.plugin.version>
+        <asciidoctorj.version>2.5.12</asciidoctorj.version>
+        <asciidoctor.maven.plugin.version>2.2.6</asciidoctor.maven.plugin.version>
         <asciidoctorj.pdf.version>2.1.4</asciidoctorj.pdf.version>
         <cayenne.version>${project.version}</cayenne.version>
         <cayenne.major.version>5.0</cayenne.major.version>
@@ -51,7 +51,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.cayenne</groupId>
-            <artifactId>cayenne-server</artifactId>
+            <artifactId>cayenne</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -131,6 +131,26 @@
                                     <includes>
                                         <include>${project.artifactId}.html</include>
                                         <include>${project.artifactId}.toc.html</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>copy additional docs for site</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/site/${project.artifactId}/</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.directory}/tmp/${project.artifactId}/</directory>
+                                    <includes>
+                                        <include>*.html</include>
                                     </includes>
                                 </resource>
                             </resources>

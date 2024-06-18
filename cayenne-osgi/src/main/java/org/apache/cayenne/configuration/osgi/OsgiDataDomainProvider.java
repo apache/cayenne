@@ -21,7 +21,7 @@ package org.apache.cayenne.configuration.osgi;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.configuration.server.DataDomainProvider;
+import org.apache.cayenne.configuration.runtime.DataDomainProvider;
 import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;

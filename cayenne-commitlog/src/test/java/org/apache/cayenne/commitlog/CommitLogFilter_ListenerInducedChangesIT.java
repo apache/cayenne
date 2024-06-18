@@ -28,9 +28,9 @@ import org.apache.cayenne.commitlog.model.AttributeChange;
 import org.apache.cayenne.commitlog.model.ChangeMap;
 import org.apache.cayenne.commitlog.model.ObjectChange;
 import org.apache.cayenne.commitlog.model.ObjectChangeType;
-import org.apache.cayenne.commitlog.unit.AuditableServerCase;
-import org.apache.cayenne.configuration.server.ServerRuntimeBuilder;
+import org.apache.cayenne.commitlog.unit.AuditableRuntimeCase;
 import org.apache.cayenne.query.SelectById;
+import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -48,13 +48,13 @@ import static org.mockito.Mockito.*;
 /**
  * Testing capturing changes introduced by the pre-commit listeners.
  */
-public class CommitLogFilter_ListenerInducedChangesIT extends AuditableServerCase {
+public class CommitLogFilter_ListenerInducedChangesIT extends AuditableRuntimeCase {
 
 	protected ObjectContext context;
 	protected CommitLogListener mockListener;
 
 	@Override
-	protected ServerRuntimeBuilder configureCayenne() {
+	protected CayenneRuntimeBuilder configureCayenne() {
 		this.mockListener = mock(CommitLogListener.class);
 		return super.configureCayenne().addModule(
 				b -> CommitLogModule.extend(b).addListener(mockListener));

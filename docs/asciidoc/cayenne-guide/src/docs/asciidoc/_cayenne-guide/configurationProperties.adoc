@@ -71,35 +71,35 @@ Note that the property names below are defined as constants in `org.apache.cayen
    ** Possible values: any positive int
    ** Default value: 10000
 
-* `cayenne.server.contexts_sync_strategy`
+* `cayenne.contexts_sync_strategy`
    defines whether peer ObjectContexts should receive snapshot events after commits from other contexts. If true (_default_),
    the contexts would automatically synchronize their state with peers.
     ** Possible values: true, false
     ** Default value: false (since 4.1)
 
-* `cayenne.server.object_retain_strategy`
+* `cayenne.object_retain_strategy`
    defines fetched objects retain strategy for ObjectContexts. When weak or soft strategy is used, objects retained by ObjectContext
    that have no local changes can potentially get garbage collected when JVM feels like doing it.
     ** Possible values: weak, soft, hard
     ** Default value: weak
 
-* `cayenne.server.max_id_qualifier_size`
+* `cayenne.max_id_qualifier_size`
    defines a maximum number of ID qualifiers in the WHERE clause of queries that are generated for paginated queries and for DISJOINT_BY_ID prefetch processing.
    This is needed to avoid hitting WHERE clause size limitations and memory usage efficiency.
     ** Possible values: any positive int
     ** Default value: 10000
 
-* `cayenne.server.external_tx`
+* `cayenne.external_tx`
    defines whether runtime should use external transactions.
     ** Possible values: true, false
     ** Default value: false
 
-* `cayenne.server.query_execution_time_logging_threshold`
+* `cayenne.query_execution_time_logging_threshold`
    defines the minimum number of milliseconds a query must run before it is logged.
    A value less than or equal to zero disables logging.
    ** Default value: 0
 
-* `cayenne.server.domain.name`
+* `cayenne.domain.name`
    defines an optional name of the runtime DataDomain.
    If not specified, the name is inferred from the configuration name.
    ** Default value: none

@@ -22,8 +22,8 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.commitlog.db.AuditLog;
 import org.apache.cayenne.commitlog.db.Auditable2;
 import org.apache.cayenne.commitlog.model.ObjectChange;
-import org.apache.cayenne.commitlog.unit.AuditableServerCase;
-import org.apache.cayenne.configuration.server.ServerRuntimeBuilder;
+import org.apache.cayenne.commitlog.unit.AuditableRuntimeCase;
+import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,13 +34,13 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class CommitLogFilter_TxIT extends AuditableServerCase {
+public class CommitLogFilter_TxIT extends AuditableRuntimeCase {
 
 	protected ObjectContext context;
 	protected CommitLogListener listener;
 
 	@Override
-	protected ServerRuntimeBuilder configureCayenne() {
+	protected CayenneRuntimeBuilder configureCayenne() {
 		this.listener = (originatingContext, changes) -> {
 
 			// assert we are inside transaction

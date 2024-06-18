@@ -23,8 +23,8 @@ import java.io.File;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
-import org.apache.cayenne.configuration.server.DataSourceFactory;
-import org.apache.cayenne.configuration.server.DbAdapterFactory;
+import org.apache.cayenne.configuration.runtime.DataSourceFactory;
+import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
@@ -243,9 +243,9 @@ public class DbImporterTask extends Task {
     }
 
     /**
-     * @deprecated since 5.0
+     * @deprecated since 5.0 this method is unused and does nothing
      */
-    @Deprecated
+    @Deprecated(since = "5.0", forRemoval = true)
     public void setUsePrimitives(boolean flag) {
 
     }

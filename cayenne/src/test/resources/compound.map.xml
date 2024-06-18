@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
+	 project-version="11">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.compound"/>
+	<property name="defaultSuperclass" value="org.apache.cayenne.GenericPersistentObject"/>
+	<db-entity name="CHAR_FK_TEST">
+		<db-attribute name="FK_COL" type="CHAR" length="10"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+		<db-attribute name="PK" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="CHAR_PK_TEST">
+		<db-attribute name="OTHER_COL" type="CHAR" length="10"/>
+		<db-attribute name="PK_COL" type="CHAR" isPrimaryKey="true" isMandatory="true" length="10"/>
+	</db-entity>
+	<db-entity name="COMPOUND_FK_TEST">
+		<db-attribute name="F_KEY1" type="VARCHAR" length="20"/>
+		<db-attribute name="F_KEY2" type="VARCHAR" length="20"/>
+		<db-attribute name="NAME" type="VARCHAR" length="255"/>
+		<db-attribute name="PKEY" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="COMPOUND_INT_PK">
+		<db-attribute name="id1" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="id2" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="name" type="VARCHAR" length="100"/>
+	</db-entity>
+	<db-entity name="COMPOUND_PK_TEST">
+		<db-attribute name="KEY1" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="20"/>
+		<db-attribute name="KEY2" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="20"/>
+		<db-attribute name="NAME" type="VARCHAR" length="255"/>
+	</db-entity>
+	<db-entity name="compound_order">
+		<db-attribute name="info" type="VARCHAR" length="255"/>
+		<db-attribute name="order_number" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="compound_order_line">
+		<db-attribute name="order_line_number" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="order_number" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="compound_order_line_info">
+		<db-attribute name="info" type="VARCHAR" length="255"/>
+		<db-attribute name="order_line_number" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="order_number" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<obj-entity name="CharFkTestEntity" className="org.apache.cayenne.testdo.compound.CharFkTestEntity" dbEntityName="CHAR_FK_TEST">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="CharPkTestEntity" className="org.apache.cayenne.testdo.compound.CharPkTestEntity" dbEntityName="CHAR_PK_TEST">
+		<obj-attribute name="otherCol" type="java.lang.String" db-attribute-path="OTHER_COL"/>
+		<obj-attribute name="pkCol" type="java.lang.String" db-attribute-path="PK_COL"/>
+	</obj-entity>
+	<obj-entity name="CompoundFkTestEntity" className="org.apache.cayenne.testdo.compound.CompoundFkTestEntity" dbEntityName="COMPOUND_FK_TEST">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="CompoundIntPk" className="org.apache.cayenne.testdo.compound.CompoundIntPk" dbEntityName="COMPOUND_INT_PK">
+		<obj-attribute name="id1" type="java.lang.Integer" db-attribute-path="id1"/>
+		<obj-attribute name="id2" type="java.lang.Integer" db-attribute-path="id2"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
+	</obj-entity>
+	<obj-entity name="CompoundOrder" className="org.apache.cayenne.testdo.compound.CompoundOrder" dbEntityName="compound_order" superClassName="org.apache.cayenne.GenericPersistentObject">
+		<obj-attribute name="info" type="java.lang.String" db-attribute-path="info"/>
+	</obj-entity>
+	<obj-entity name="CompoundOrderLine" className="org.apache.cayenne.testdo.compound.CompoundOrderLine" dbEntityName="compound_order_line" superClassName="org.apache.cayenne.GenericPersistentObject">
+		<obj-attribute name="lineNumber" type="int" db-attribute-path="order_line_number"/>
+	</obj-entity>
+	<obj-entity name="CompoundOrderLineInfo" className="org.apache.cayenne.testdo.compound.CompoundOrderLineInfo" dbEntityName="compound_order_line_info" superClassName="org.apache.cayenne.GenericPersistentObject">
+		<obj-attribute name="info" type="java.lang.String" db-attribute-path="info"/>
+	</obj-entity>
+	<obj-entity name="CompoundPkTestEntity" className="org.apache.cayenne.testdo.compound.CompoundPkTestEntity" dbEntityName="COMPOUND_PK_TEST">
+		<obj-attribute name="key1" type="java.lang.String" db-attribute-path="KEY1"/>
+		<obj-attribute name="key2" type="java.lang.String" db-attribute-path="KEY2"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<db-relationship name="toCharPK" source="CHAR_FK_TEST" target="CHAR_PK_TEST">
+		<db-attribute-pair source="FK_COL" target="PK_COL"/>
+	</db-relationship>
+	<db-relationship name="charFKs" source="CHAR_PK_TEST" target="CHAR_FK_TEST" toMany="true">
+		<db-attribute-pair source="PK_COL" target="FK_COL"/>
+	</db-relationship>
+	<db-relationship name="toCompoundPk" source="COMPOUND_FK_TEST" target="COMPOUND_PK_TEST">
+		<db-attribute-pair source="F_KEY1" target="KEY1"/>
+		<db-attribute-pair source="F_KEY2" target="KEY2"/>
+	</db-relationship>
+	<db-relationship name="compoundFkArray" source="COMPOUND_PK_TEST" target="COMPOUND_FK_TEST" toMany="true">
+		<db-attribute-pair source="KEY1" target="F_KEY1"/>
+		<db-attribute-pair source="KEY2" target="F_KEY2"/>
+	</db-relationship>
+	<db-relationship name="lines" source="compound_order" target="compound_order_line" toDependentPK="true" toMany="true">
+		<db-attribute-pair source="order_number" target="order_number"/>
+	</db-relationship>
+	<db-relationship name="info" source="compound_order_line" target="compound_order_line_info" toDependentPK="true">
+		<db-attribute-pair source="order_number" target="order_number"/>
+		<db-attribute-pair source="order_line_number" target="order_line_number"/>
+	</db-relationship>
+	<db-relationship name="order" source="compound_order_line" target="compound_order">
+		<db-attribute-pair source="order_number" target="order_number"/>
+	</db-relationship>
+	<db-relationship name="line" source="compound_order_line_info" target="compound_order_line">
+		<db-attribute-pair source="order_number" target="order_number"/>
+		<db-attribute-pair source="order_line_number" target="order_line_number"/>
+	</db-relationship>
+	<obj-relationship name="toCharPK" source="CharFkTestEntity" target="CharPkTestEntity" db-relationship-path="toCharPK"/>
+	<obj-relationship name="charFKs" source="CharPkTestEntity" target="CharFkTestEntity" db-relationship-path="charFKs"/>
+	<obj-relationship name="toCompoundPk" source="CompoundFkTestEntity" target="CompoundPkTestEntity" db-relationship-path="toCompoundPk"/>
+	<obj-relationship name="lines" source="CompoundOrder" target="CompoundOrderLine" deleteRule="Deny" db-relationship-path="lines"/>
+	<obj-relationship name="info" source="CompoundOrderLine" target="CompoundOrderLineInfo" deleteRule="Nullify" db-relationship-path="info"/>
+	<obj-relationship name="order" source="CompoundOrderLine" target="CompoundOrder" deleteRule="Nullify" db-relationship-path="order"/>
+	<obj-relationship name="line" source="CompoundOrderLineInfo" target="CompoundOrderLine" deleteRule="Nullify" db-relationship-path="line"/>
+	<obj-relationship name="compoundFkArray" source="CompoundPkTestEntity" target="CompoundFkTestEntity" db-relationship-path="compoundFkArray"/>
+</data-map>

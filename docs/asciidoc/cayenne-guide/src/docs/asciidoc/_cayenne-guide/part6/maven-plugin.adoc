@@ -228,7 +228,7 @@ Example - a typical class generation scenario, where pairs of classes are genera
 .^|String
 .^|A comma-separated list of Perl5 patterns that defines which imported tables should have their primary key columns mapped as ObjAttributes. "*" would indicate all tables.
 
-.^|[[namingStrategy]]namingStrategy
+.^|namingStrategy
 .^|String
 .^|The naming strategy used for mapping database names to object entity names. Default is `o.a.c.dbsync.naming.DefaultObjectNameGenerator`.
 

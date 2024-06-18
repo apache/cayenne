@@ -19,24 +19,24 @@ include::../var.adoc[]
 
 ==== Maven
 
-To add Cayenne to your Maven project, include `cayenne-server` in your POM:
+To add Cayenne to your Maven project, include `cayenne` in your POM:
 
 [source,xml,subs="verbatim,attributes"]
 ----
 <dependency>
    <groupId>org.apache.cayenne</groupId>
-   <artifactId>cayenne-server</artifactId>
+   <artifactId>cayenne</artifactId>
    <version>{version}</version>
 </dependency>
 ----
 
 ==== Gradle
 
-To add Cayenne to your Gradle project, include `cayenne-server` module:
+To add Cayenne to your Gradle project, include `cayenne` module:
 
 [source, Groovy,subs="verbatim,attributes"]
 ----
-compile 'org.apache.cayenne:cayenne-server:{version}'
+compile 'org.apache.cayenne:cayenne:{version}'
 ----
 
 ==== Ant, etc.

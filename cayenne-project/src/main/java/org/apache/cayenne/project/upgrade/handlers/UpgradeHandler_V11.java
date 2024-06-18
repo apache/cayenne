@@ -71,6 +71,7 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
     @Override
     public void processProjectDom(UpgradeUnit upgradeUnit) {
         updateDomainSchemaAndVersion(upgradeUnit);
+        updateDataNodeConnectionPool(upgradeUnit);
     }
 
     @Override
@@ -165,6 +166,25 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
         renameQueryTemplates(upgradeUnit);
         dropCgenClientConfig(upgradeUnit);
         updateTemplates(upgradeUnit);
+    }
+
+    private void updateDataNodeConnectionPool(UpgradeUnit upgradeUnit) {
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        NodeList nodes;
+        try {
+            nodes = (NodeList) xpath.evaluate("/domain/node",
+                    upgradeUnit.getDocument(), XPathConstants.NODESET);
+        } catch (Exception e) {
+            return;
+        }
+
+        for (int j = 0; j < nodes.getLength(); j++) {
+            Element propertyElement = (Element) nodes.item(j);
+            String factory = propertyElement.getAttribute("factory");
+            if("org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory".equals(factory)) {
+                propertyElement.setAttribute("factory", "org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory");
+            }
+        }
     }
 
     private void renameQueryTemplates(UpgradeUnit upgradeUnit) {

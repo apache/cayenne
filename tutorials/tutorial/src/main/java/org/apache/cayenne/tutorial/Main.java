@@ -22,8 +22,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.tutorial.persistent.Artist;
 import org.apache.cayenne.tutorial.persistent.Gallery;
 import org.apache.cayenne.tutorial.persistent.Painting;
@@ -33,7 +33,7 @@ public class Main {
     public static void main(String[] args) {
 
         // starting Cayenne
-        ServerRuntime cayenneRuntime = ServerRuntime.builder()
+        CayenneRuntime cayenneRuntime = CayenneRuntime.builder()
                 .addConfig("cayenne-project.xml")
                 .build();
 

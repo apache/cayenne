@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.jcache;
 
-import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.di.Binder;
 
 /**
@@ -33,7 +33,7 @@ public class JCacheModuleExtender {
     }
 
     public JCacheModuleExtender setJCacheProviderConfig(String providerConfigURI) {
-        ServerModule.extend(binder).setProperty(JCacheConstants.JCACHE_PROVIDER_CONFIG, providerConfigURI);
+        CoreModule.extend(binder).setProperty(JCacheConstants.JCACHE_PROVIDER_CONFIG, providerConfigURI);
         return this;
     }
 }

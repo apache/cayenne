@@ -20,6 +20,7 @@
 package org.apache.cayenne.dbsync.merge.context;
 
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.value.Json;
 import org.apache.cayenne.value.Wkt;
 import org.apache.cayenne.dbsync.filter.NameFilter;
@@ -46,6 +47,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Implements methods for entity merging.
@@ -207,20 +209,14 @@ public class EntityMergeSupport {
         or.addDbRelationship(dr);
         Map<String, ObjEntity> objEntities = entity.getDataMap().getSubclassesForObjEntity(entity);
 
-        boolean hasFlattingAttributes = false;
         boolean needGeneratedEntity = !objEntities.containsKey(targetEntityName);
-
-        for (ObjEntity subObjEntity : objEntities.values()) {
-            for (ObjAttribute objAttribute : subObjEntity.getAttributes()) {
-                String path = objAttribute.getDbAttributePath();
-                if (path != null) {
-                    if (path.startsWith(or.getDbRelationshipPath())) {
-                        hasFlattingAttributes = true;
-                        break;
-                    }
-                }
-            }
-        }
+        boolean hasFlattingAttributes = objEntities.values()
+                .stream()
+                .flatMap(ent -> ent.getAttributes().stream())
+                .map(ObjAttribute::getDbAttributePath)
+                .filter(Objects::nonNull)
+                .filter(path -> path.length() > 1)
+                .anyMatch(path -> path.first().value().equals(dr.getName()));
 
         if (!hasFlattingAttributes) {
             if (needGeneratedEntity) {

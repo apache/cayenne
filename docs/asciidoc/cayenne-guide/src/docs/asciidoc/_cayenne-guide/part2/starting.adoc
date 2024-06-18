@@ -14,27 +14,27 @@
 
 === Starting Cayenne
 
-==== Starting and Stopping ServerRuntime
+==== Starting and Stopping CayenneRuntime
 
-In runtime Cayenne is accessed via `org.apache.cayenne.configuration.server.ServerRuntime`. ServerRuntime is created by calling a convenient builder:
+In runtime Cayenne is accessed via `org.apache.cayenne.runtime.CayenneRuntime`. CayenneRuntime is created by calling a convenient builder:
 
 [source, java]
 ----
-ServerRuntime runtime = ServerRuntime.builder()
+CayenneRuntime runtime = CayenneRuntime.builder()
                 .addConfig("com/example/cayenne-project.xml")
                 .build();
 ----
 
 The parameter you pass to the builder is a location of the main project file. Location is a '/'-separated path (same path separator is used on UNIX and Windows) that is resolved relative to the application classpath. The project file can be placed in the root package or in a subpackage (e.g. in the code above it is in "com/example" subpackage).
 
-ServerRuntime encapsulates a single Cayenne stack. Most applications will just have one ServerRuntime using it to create as many ObjectContexts as needed, access the Dependency Injection (DI) container and work with other Cayenne features. Internally ServerRuntime is just a thin wrapper around the DI container. Detailed features of the container are discussed in <<Customizing Cayenne Runtime>> chapter. Here we'll just show an example of how an application might turn on external transactions:
+CayenneRuntime encapsulates a single Cayenne stack. Most applications will just have one CayenneRuntime using it to create as many ObjectContexts as needed, access the Dependency Injection (DI) container and work with other Cayenne features. Internally CayenneRuntime is just a thin wrapper around the DI container. Detailed features of the container are discussed in <<Customizing Cayenne Runtime>> chapter. Here we'll just show an example of how an application might turn on external transactions:
 
 [source, java]
 ----
 Module extensions = binder ->
-      ServerModule.contributeProperties(binder)
-            .put(Constants.SERVER_EXTERNAL_TX_PROPERTY, "true");
-ServerRuntime runtime = ServerRuntime.builder()
+      CoreModule.extend(binder).setProperty(Constants.EXTERNAL_TX_PROPERTY, "true");
+
+CayenneRuntime runtime = CayenneRuntime.builder()
       .addConfig("com/example/cayenne-project.xml")
       .addModule(extensions)
       .build();
@@ -47,16 +47,15 @@ It is a good idea to shut down the runtime when it is no longer needed, usually 
 runtime.shutdown();
 ----
 
-
 When a runtime object has the same scope as the application, this may not be always necessary, however in some cases it is essential, and is generally considered a good practice. E.g. in a web container hot redeploy of a webapp will cause resource leaks and eventual OutOfMemoryError if the application fails to shutdown CayenneRuntime.
 
 ==== Merging Multiple Projects
 
-ServerRuntime requires at least one mapping project to run. But it can also take multiple projects and merge them together in a single configuration. This way different parts of a database can be mapped independently from each other (even by different software providers), and combined in runtime when assembling an application. Doing it is as easy as passing multiple project locations to ServerRuntime builder:
+CayenneRuntime requires at least one mapping project to run. But it can also take multiple projects and merge them together in a single configuration. This way different parts of a database can be mapped independently from each other (even by different software providers), and combined in runtime when assembling an application. Doing it is as easy as passing multiple project locations to CayenneRuntime builder:
 
 [source, java]
 ----
-ServerRuntime runtime = ServerRuntime.builder()
+CayenneRuntime runtime = CayenneRuntime.builder()
         .addConfig("com/example/cayenne-project.xml")
         .addConfig("org/foo/cayenne-library1.xml")
         .addConfig("org/foo/cayenne-library2.xml")
@@ -64,7 +63,6 @@ ServerRuntime runtime = ServerRuntime.builder()
 ----
 
 When the projects are merged, the following rules are applied:
-
 
 - The order of projects matters during merge. If there are two conflicting metadata objects belonging to two projects, an object from the last project takes precedence over the object from the first one. This makes possible to override pieces of metadata. This is also similar to how DI modules are merged in Cayenne.
 
@@ -80,7 +78,7 @@ When the projects are merged, the following rules are applied:
 
 ==== Web Applications
 
-Web applications can use a variety of mechanisms to configure and start the "services" they need, Cayenne being one of such services. Configuration can be done within standard Servlet specification objects like Servlets, Filters, or ServletContextListeners, or can use Spring, JEE CDI, etc. This is a user's architectural choice and Cayenne is agnostic to it and will happily work in any environment. As described above, all that is needed is to create an instance of ServerRuntime somewhere and provide the application code with means to access it. And shut it down when the application ends to avoid container leaks.
+Web applications can use a variety of mechanisms to configure and start the "services" they need, Cayenne being one of such services. Configuration can be done within standard servlet specification objects like Servlets, Filters, or ServletContextListeners, or can use Spring, JEE CDI, etc. This is a user's architectural choice and Cayenne is agnostic to it and will happily work in any environment. As described above, all that is needed is to create an instance of CayenneRuntime somewhere and provide the application code with means to access it, and to shut it down when the application ends to avoid container leaks.
 
 Still Cayenne includes a piece of web app configuration code that can assist in quickly setting up simple Cayenne-enabled web applications. We are talking about CayenneFilter. It is declared in web.xml:
 
@@ -100,19 +98,17 @@ Still Cayenne includes a piece of web app configuration code that can assist in 
  </web-app>
 ----
 
+When started by the web container, it creates a instance of CayenneRuntime and stores it in the ServletContext. Note that the name of a Cayenne XML project file is derived from the "filter-name". In the example above, CayenneFilter will look for an XML file "cayenne-project.xml". This can be overridden with the "configuration-location" init parameter.
 
-When started by the web container, it creates a instance of ServerRuntime and stores it in the ServletContext. Note that the name of Cayenne XML project file is derived from the "filter-name". In the example above CayenneFilter will look for an XML file "cayenne-project.xml". This can be overridden with "configuration-location" init parameter.
-
-When the application runs, all HTTP requests matching the filter url-pattern will have access to a session-scoped ObjectContext like this:
+When the application runs, all HTTP requests matching the filter url-pattern have access to a session-scoped ObjectContext like this:
 
 [source, java]
 ----
- ObjectContext context = BaseContext.getThreadObjectContext();
+ ObjectContext context = DataContext.getThreadObjectContext();
 ----
 
-Of course the ObjectContext scope, and other behavior of the Cayenne runtime can be customized via dependency injection. For this another filter init parameter called "extra-modules" is used. "extra-modules" is a comma or space-separated list of class names, with each class implementing Module interface. These optional custom modules are loaded after the the standard ones, which allows users to override all standard definitions.
+Of course, the ObjectContext scope and other behavior of the Cayenne runtime can be customized via dependency injection. For this, another filter init parameter called "extra-modules" is used. "extra-modules" is a comma- or space-separated list of class names, with each class implementing Module interface. These optional custom modules are loaded after the the standard ones, which allows users to override all standard definitions.
 
-For those interested in the DI container contents of the runtime created by CayenneFilter, it is the same ServerRuntime as would've been created by other means, but with an extra `org.apache.cayenne.configuration.web.WebModule` module that provides `org.apache.cayenne.configuration.web.RequestHandler` service. This is the service to override in the custom modules if you need to provide a different ObjectContext scope, etc.
+For those interested in the DI container contents of the runtime created by CayenneFilter, it is the same CayenneRuntime as would have been created by other means, but with an extra <code>org.apache.cayenne.configuration.web.WebModule</code> module that provides the <code>org.apache.cayenne.configuration.web.RequestHandler</code> service. This is the service to override in the custom modules if you need to provide a different ObjectContext scope, etc.
 
-NOTE: You should not think of CayenneFilter as the only way to start and use Cayenne in a web application. In fact CayenneFilter is entirely optional. Use it if you don't have any special design for application service management. If you do, simply integrate Cayenne into that design.
-
+NOTE: You should not think of CayenneFilter as the only way to start and use Cayenne in a web application. In fact, CayenneFilter is entirely optional. Use it if you don’t have any special design for application service management. If you do, simply integrate Cayenne into that design.

@@ -19,6 +19,7 @@
 package org.apache.cayenne.project.validation;
 
 import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.*;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
@@ -63,7 +64,7 @@ class ObjAttributeValidator extends ConfigurationNodeValidator {
                     "ObjAttribute name '%s' contains invalid characters: %s",
                     attribute.getName(),
                     invalidChars);
-        } else if (helper.invalidDataObjectProperty(attribute.getName())) {
+        } else if (helper.invalidPersistentObjectProperty(attribute.getName())) {
             addFailure(validationResult, attribute,
                     "ObjAttribute name '%s' is invalid",
                     attribute.getName());
@@ -73,10 +74,7 @@ class ObjAttributeValidator extends ConfigurationNodeValidator {
     private void checkSuperEntityAttributes(ObjAttribute attribute, ValidationResult validationResult) {
         // Check there is an attribute in entity and super entity at the same time
 
-        boolean selfAttribute = false;
-        if (attribute.getEntity().getDeclaredAttribute(attribute.getName()) != null) {
-            selfAttribute = true;
-        }
+        boolean selfAttribute = attribute.getEntity().getDeclaredAttribute(attribute.getName()) != null;
 
         ObjEntity superEntity = attribute.getEntity().getSuperEntity();
         if (selfAttribute && superEntity != null && superEntity.getAttribute(attribute.getName()) != null) {
@@ -167,26 +165,23 @@ class ObjAttributeValidator extends ConfigurationNodeValidator {
      */
     private void checkForDuplicates(ObjAttribute     attribute,
                                     ValidationResult validationResult) {
-        if ( attribute               != null &&
-             attribute.getName()     != null &&
-            !attribute.isInherited()) {
+        if (attribute != null
+                && attribute.getName() != null
+                && !attribute.isInherited()) {
 
             ObjEntity entity = attribute.getEntity();
+            CayennePath dbAttributePath = attribute.getDbAttributePath();
 
             for (ObjAttribute comparisonAttribute : entity.getAttributes()) {
-                if (attribute != comparisonAttribute) {
-                    String dbAttributePath = attribute.getDbAttributePath();
-
-                    if (dbAttributePath != null) {
-                        if (dbAttributePath.equals(comparisonAttribute.getDbAttributePath())) {
-                            addFailure(validationResult, attribute,
-                                 "ObjEntity '%s' contains a duplicate DbAttribute mapping ('%s' -> '%s')",
-                                 entity.getName(),
-                                 attribute.getName(),
-                                 dbAttributePath);
-                            return; // Duplicate found, stop.
-                        }
-                    }
+                if (attribute != comparisonAttribute
+                        && dbAttributePath != null
+                        && dbAttributePath.equals(comparisonAttribute.getDbAttributePath())) {
+                    addFailure(validationResult, attribute,
+                            "ObjEntity '%s' contains a duplicate DbAttribute mapping ('%s' -> '%s')",
+                            entity.getName(),
+                            attribute.getName(),
+                            dbAttributePath);
+                    return; // Duplicate found, stop.
                 }
             }
         }

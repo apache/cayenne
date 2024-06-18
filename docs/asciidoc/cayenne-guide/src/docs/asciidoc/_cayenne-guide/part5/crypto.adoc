@@ -56,15 +56,14 @@ strategy by injecting you own implementation of `o.a.c.crypto.map.ColumnMapper` 
 
 [source, java]
 ----
-ServerRuntime.builder()
-        .addModule(CryptoModule.extend()
-                .columnMapper(MyColumnMapper.class)
-                .module())
+CayenneRuntime runtime = CayenneRuntime.builder()
+        .addModule(binder -> CryptoModule.extend(binder)
+                .columnMapper(MyColumnMapper.class));
 ----
 
 Here is an example of how `ObjEntity` with two encrypted and two unencrypted properties can look like:
 
-image::../images/ext-crypto-obj-entity.png[align="left"]
+image::../../images/ext-crypto-obj-entity.png[align="left"]
 
 ===== Setup keystore
 
@@ -73,24 +72,22 @@ KeyStore.
 
 [source, java]
 ----
-ServerRuntime.builder()
-        .addModule(CryptoModule.extend()
-                .keyStore(this.getClass().getResource("keystore.jcek"), "my-password".toCharArray(), "my-key-alias")
-                .module())
+CayenneRuntime runtime = CayenneRuntime.builder()
+        .addModule(binder -> CryptoModule.extend(binder)
+                .keyStore(this.getClass().getResource("keystore.jcek"), "my-password".toCharArray(), "my-key-alias"));
 ----
 
 ===== Additional settings
 
-Additionally to `ColumnMapper` mentioned above you can customize other parts of `crypto module`. You can enable `gzip`
+In addition to `ColumnMapper` mentioned above you can customize other parts of `crypto module`. You can enable `gzip`
 compression and `HMAC` usage (later will ensure integrity of data).
 
 [source, java]
 ----
-ServerRuntime.builder()
-        .addModule(CryptoModule.extend()
+CayenneRuntime runtime = CayenneRuntime.builder()
+        .addModule(binder -> CryptoModule.extend(binder)
                 .compress()
-                .useHMAC()
-                .module())
+                .useHMAC());
 ----
 
 Another useful extension point is support for custom Java value types. To add support for your data type you need to
@@ -98,10 +95,9 @@ implement `o.a.c.crypto.transformer.value.BytesConverter` interface that will co
 
 [source, java]
 ----
-ServerRuntime.builder()
-        .addModule(CryptoModule.extend()
-                .objectToBytesConverter(MyClass.class, new MyClassBytesConverter())
-                .module())
+CayenneRuntime runtime = CayenneRuntime.builder()
+        .addModule(binder -> CryptoModule.extend(binder)
+                .objectToBytesConverter(MyClass.class, new MyClassBytesConverter()));
 ----
 
 NOTE: In addition to Java primitive types (and their object counterparts), `crypto module` supports encryption only

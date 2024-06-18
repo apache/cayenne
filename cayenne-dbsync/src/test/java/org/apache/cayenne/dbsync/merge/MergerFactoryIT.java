@@ -24,7 +24,7 @@ import static org.junit.Assert.assertNull;
 
 import java.sql.Types;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
@@ -161,7 +161,7 @@ public class MergerFactoryIT extends MergeCase {
         map.addObjEntity(objEntity);
 
         for (int i = 0; i < 5; i++) {
-            CayenneDataObject dao = (CayenneDataObject) context.newObject(objEntity
+            GenericPersistentObject dao = (GenericPersistentObject) context.newObject(objEntity
                     .getName());
             dao.writeProperty(oatr1.getName(), "test " + i);
         }

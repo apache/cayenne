@@ -290,7 +290,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
         ObjAttribute attributeNew;
         if (mediator.getEmbeddableNamesInCurrentDataDomain().contains(newType)) {
             attributeNew = new EmbeddedAttribute();
-            attributeNew.setDbAttributePath(null);
+            attributeNew.setDbAttributePath((String)null);
         } else {
             attributeNew = new ObjAttribute();
             attributeNew.setDbAttributePath(attribute.getDbAttributePath());

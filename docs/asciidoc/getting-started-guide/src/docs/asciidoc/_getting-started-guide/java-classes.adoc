@@ -33,7 +33,7 @@ Now go back to IDEA - you
 should see pairs of classes generated for each mapped entity. You probably also see that
 there's a bunch of red squiggles next to the newly generated Java classes in IDEA.
 This is because our project does not include Cayenne as a Maven dependency yet. Let's
-fix it now by adding "cayenne-server" artifact in the bottom of the `pom.xml` file.
+fix it now by adding "cayenne" artifact in the bottom of the `pom.xml` file.
 Also we should tell Maven compile plugin that our project needs Java 8.
 The resulting POM should look like this:
 
@@ -48,26 +48,26 @@ The resulting POM should look like this:
 
     <properties>
         <cayenne.version>{project-version}</cayenne.version> <!--1-->
-        <maven.compiler.source>1.8</maven.compiler.source> <!--2-->
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source> <!--2-->
+        <maven.compiler.target>11</maven.compiler.target>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.cayenne</groupId>
-            <artifactId>cayenne-server</artifactId>
+            <artifactId>cayenne</artifactId>
             <version>${cayenne.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.7.25</version>
+            <version>1.7.36</version>
         </dependency>
     </dependencies>
 </project>
 ----
 <1> Here you can specify the version of Cayenne you are actually using
-<2> Tell Maven to support Java 8
+<2> Tell Maven to support Java 11
 
 Your computer must be connected to the internet. Once you edit the `pom.xml`, IDEA
 will download the needed Cayenne jar file and add it to the project build path. As a

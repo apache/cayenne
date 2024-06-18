@@ -38,5 +38,5 @@ public interface AdhocObjectFactory {
      * 
      * @since 4.0
      */
-    Class<?> getJavaClass(String className);
+    <T> Class<? extends T> getJavaClass(String className);
 }

@@ -46,24 +46,23 @@ For advanced configuration and management please use provider specific options a
 JCache module supports custom configuration files for cache managers.
 [source, java]
 ----
-ServerRuntime.builder()
-        .addModule(binder ->
-                JCacheModule
-                    .contributeJCacheProviderConfig(binder, "cache-config.xml"));
+CayenneRuntime runtime = CayenneRuntime.builder()
+        .addModule(binder -> JCacheModule.extend(binder)
+            .setJCacheProviderConfig("cache-config.xml"));
 ----
 
-Also JCache module supports contribution of preconfigured cache manager.
+Also JCache module supports contribution of pre-configured cache manager.
 
 [source, java]
 ----
-ServerRuntime.builder()
+CayenneRuntime.builder()
         .addModule(binder ->
                 binder.bind(CacheManager.class).toInstance(customCacheManager));
 ----
 
 NOTE: You can read about using cache in Cayenne in xref:caching[this] chapter.
 
-You may else be interested in <<Cache invalidation extension>>.
+You may else be interested in <<ext-cache-invalidation,Cache invalidation extension>>.
 
 ===== Ehcache setup example
 Here is an example of using `ehcache` as cache manager.
@@ -82,10 +81,9 @@ If you need custom configuration you can contribute configuration file to JCache
 
 [source, java]
 ----
-ServerRuntime.builder()
-        .addModule(binder ->
-                JCacheModule
-                    .contributeJCacheProviderConfig(binder, "file:/ehcache.xml"));
+CayenneRuntime runtime = CayenneRuntime.builder()
+        .addModule(binder -> JCacheModule.extend(binder)
+            .setJCacheProviderConfig("file:/ehcache.xml"));
 ----
 
 As a result you will have `ehcache` manager as your default cache manager.

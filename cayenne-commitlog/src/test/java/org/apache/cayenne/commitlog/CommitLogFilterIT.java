@@ -24,9 +24,9 @@ import org.apache.cayenne.commitlog.db.Auditable1;
 import org.apache.cayenne.commitlog.db.AuditableChild1;
 import org.apache.cayenne.commitlog.db.AuditableChild1x;
 import org.apache.cayenne.commitlog.model.*;
-import org.apache.cayenne.commitlog.unit.AuditableServerCase;
-import org.apache.cayenne.configuration.server.ServerRuntimeBuilder;
+import org.apache.cayenne.commitlog.unit.AuditableRuntimeCase;
 import org.apache.cayenne.query.SelectById;
+import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -37,13 +37,13 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class CommitLogFilterIT extends AuditableServerCase {
+public class CommitLogFilterIT extends AuditableRuntimeCase {
 
     protected ObjectContext context;
     protected CommitLogListener mockListener;
 
     @Override
-    protected ServerRuntimeBuilder configureCayenne() {
+    protected CayenneRuntimeBuilder configureCayenne() {
         this.mockListener = mock(CommitLogListener.class);
         return super.configureCayenne()
                 .addModule(b -> CommitLogModule.extend(b).addListener(mockListener));
@@ -244,7 +244,23 @@ public class CommitLogFilterIT extends AuditableServerCase {
         verify(mockListener).onPostCommit(any(ObjectContext.class), changeMap.capture());
 
         assertNotNull(changeMap.getValue());
-        assertEquals(4, changeMap.getValue().getUniqueChanges().size());
+        assertEquals(5, changeMap.getValue().getUniqueChanges().size());
+
+        ObjectChange a1c = changeMap.getValue().getChanges().get(
+            ObjectId.of("Auditable1", Auditable1.ID_PK_COLUMN, 1));
+        assertNotNull(a1c);
+        assertEquals(ObjectChangeType.UPDATE, a1c.getType());
+        ToManyRelationshipChange a1c1 = a1c.getToManyRelationshipChanges().get(Auditable1.CHILDREN1.getName());
+        assertEquals(2, a1c1.getAdded().size());
+        assertEquals(1, a1c1.getRemoved().size());
+
+        ObjectChange a2c = changeMap.getValue().getChanges().get(
+            ObjectId.of("Auditable1", Auditable1.ID_PK_COLUMN, 2));
+        assertNotNull(a2c);
+        assertEquals(ObjectChangeType.UPDATE, a2c.getType());
+        ToManyRelationshipChange a2c1 = a2c.getToManyRelationshipChanges().get(Auditable1.CHILDREN1.getName());
+        assertEquals(0, a2c1.getAdded().size());
+        assertEquals(1, a2c1.getRemoved().size());
 
         ObjectChange ac1c = changeMap.getValue().getChanges().get(
                 ObjectId.of("AuditableChild1", AuditableChild1.ID_PK_COLUMN, 1));

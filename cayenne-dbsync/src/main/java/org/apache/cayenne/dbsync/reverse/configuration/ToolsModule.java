@@ -32,10 +32,10 @@ import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.RuntimeProperties;
-import org.apache.cayenne.configuration.server.DataSourceFactory;
-import org.apache.cayenne.configuration.server.DbAdapterFactory;
-import org.apache.cayenne.configuration.server.DefaultDbAdapterFactory;
-import org.apache.cayenne.configuration.server.PkGeneratorFactoryProvider;
+import org.apache.cayenne.configuration.runtime.DataSourceFactory;
+import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
+import org.apache.cayenne.configuration.runtime.DefaultDbAdapterFactory;
+import org.apache.cayenne.configuration.runtime.PkGeneratorFactoryProvider;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.DefaultDataChannelMetaData;
 import org.apache.cayenne.configuration.xml.HandlerFactory;
@@ -114,7 +114,7 @@ public class ToolsModule implements Module {
 
         new ToolsProjectModuleExtender(binder).initAllExtensions();
 
-        new ToolsServerModuleExtender(binder)
+        new ToolsCoreModuleExtender(binder)
                 .initAllExtensions()
 
                 .addAdapterDetector(FirebirdSniffer.class)
@@ -152,7 +152,7 @@ public class ToolsModule implements Module {
         binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
         binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
         binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
-        binder.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
+        binder.bind(Key.get(ResourceLocator.class, Constants.RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
 
         binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
         binder.bind(BatchTranslatorFactory.class).to(DefaultBatchTranslatorFactory.class);

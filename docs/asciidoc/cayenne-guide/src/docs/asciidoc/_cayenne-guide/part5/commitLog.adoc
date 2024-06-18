@@ -72,10 +72,9 @@ public class MyCommitLogListener implements CommitLogListener {
 +
 [source, java]
 ----
-ServerRuntime.builder()
-        .addModule(CommitLogModule.extend()
-                .addListener(MyCommitLogListener.class)
-                .module())
+CayenneRuntime.builder()
+        .addModule(binder -> CommitLogModule.extend(binder)
+                .addListener(MyCommitLogListener.class))
 ----
 +
 NOTE: You can use several listeners, but they all will get same changes.

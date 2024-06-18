@@ -4,7 +4,7 @@
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap http://cayenne.apache.org/schema/11/modelMap.xsd"
 	 project-version="11">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.testmap"/>
-	<property name="defaultSuperclass" value="org.apache.cayenne.CayenneDataObject"/>
+	<property name="defaultSuperclass" value="org.apache.cayenne.GenericPersistentObject"/>
 	<procedure name="cayenne_tst_out_proc">
 		<procedure-parameter name="in_param" type="INTEGER" direction="in"/>
 		<procedure-parameter name="out_param" type="INTEGER" direction="out"/>
@@ -400,9 +400,9 @@
 	<obj-entity name="GeneratedColumnTestEntity" className="org.apache.cayenne.testdo.generated.GeneratedColumnTestEntity" dbEntityName="GENERATED_COLUMN_TEST">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="GeneratedF1" className="org.apache.cayenne.testdo.generated.GeneratedF1" dbEntityName="GENERATED_F1" superClassName="org.apache.cayenne.CayenneDataObject">
+	<obj-entity name="GeneratedF1" className="org.apache.cayenne.testdo.generated.GeneratedF1" dbEntityName="GENERATED_F1" superClassName="org.apache.cayenne.GenericPersistentObject">
 	</obj-entity>
-	<obj-entity name="GeneratedF2" className="org.apache.cayenne.testdo.generated.GeneratedF2" dbEntityName="GENERATED_F2" superClassName="org.apache.cayenne.CayenneDataObject">
+	<obj-entity name="GeneratedF2" className="org.apache.cayenne.testdo.generated.GeneratedF2" dbEntityName="GENERATED_F2" superClassName="org.apache.cayenne.GenericPersistentObject">
 	</obj-entity>
 	<obj-entity name="LongEntity" className="org.apache.cayenne.testdo.numeric_types.LongEntity" dbEntityName="LONG_ENTITY">
 		<obj-attribute name="longField" type="java.lang.Long" db-attribute-path="LONG_FIELD"/>
@@ -428,7 +428,7 @@
 	<obj-entity name="NoPkTestEntity" className="org.apache.cayenne.testdo.no_pk.NoPkTestEntity" dbEntityName="NO_PK_TEST">
 		<obj-attribute name="attribute1" type="java.lang.Integer" db-attribute-path="ATTRIBUTE1"/>
 	</obj-entity>
-	<obj-entity name="Painting" className="org.apache.cayenne.testdo.testmap.Painting" dbEntityName="PAINTING" superClassName="org.apache.cayenne.testdo.testmap.ArtDataObject">
+	<obj-entity name="Painting" className="org.apache.cayenne.testdo.testmap.Painting" dbEntityName="PAINTING" superClassName="org.apache.cayenne.testdo.testmap.ArtPersistentObject">
 		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
 		<obj-attribute name="paintingDescription" type="java.lang.String" db-attribute-path="PAINTING_DESCRIPTION"/>
 		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
@@ -458,7 +458,7 @@
 		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
 		<obj-attribute name="textReview" type="java.lang.String" db-attribute-path="toPaintingInfo.TEXT_REVIEW"/>
 	</obj-entity>
-	<obj-entity name="ReturnTypesMap1" className="org.apache.cayenne.testdo.return_types.ReturnTypesMap1" dbEntityName="TYPES_MAPPING_TEST1" superClassName="org.apache.cayenne.CayenneDataObject">
+	<obj-entity name="ReturnTypesMap1" className="org.apache.cayenne.testdo.return_types.ReturnTypesMap1" dbEntityName="TYPES_MAPPING_TEST1" superClassName="org.apache.cayenne.GenericPersistentObject">
 		<obj-attribute name="bigintColumn" type="java.lang.Long" db-attribute-path="BIGINT_COLUMN"/>
 		<obj-attribute name="bitColumn" type="java.lang.Boolean" db-attribute-path="BIT_COLUMN"/>
 		<obj-attribute name="booleanColumn" type="java.lang.Boolean" db-attribute-path="BOOLEAN_COLUMN"/>
@@ -478,7 +478,7 @@
 		<obj-attribute name="tinyintColumn" type="java.lang.Byte" db-attribute-path="TINYINT_COLUMN"/>
 		<obj-attribute name="varcharColumn" type="java.lang.String" db-attribute-path="VARCHAR_COLUMN"/>
 	</obj-entity>
-	<obj-entity name="ReturnTypesMap2" className="org.apache.cayenne.testdo.return_types.ReturnTypesMap2" dbEntityName="TYPES_MAPPING_TEST2" superClassName="org.apache.cayenne.CayenneDataObject">
+	<obj-entity name="ReturnTypesMap2" className="org.apache.cayenne.testdo.return_types.ReturnTypesMap2" dbEntityName="TYPES_MAPPING_TEST2" superClassName="org.apache.cayenne.GenericPersistentObject">
 		<obj-attribute name="binaryColumn" type="byte[]" db-attribute-path="BINARY_COLUMN"/>
 		<obj-attribute name="blobColumn" type="byte[]" db-attribute-path="BLOB_COLUMN"/>
 		<obj-attribute name="longvarbinaryColumn" type="byte[]" db-attribute-path="LONGVARBINARY_COLUMN"/>

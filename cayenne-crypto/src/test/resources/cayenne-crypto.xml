@@ -5,7 +5,7 @@
 	 project-version="11">
 	<map name="datamap"/>
 	<node name="datanode"
-		 factory="org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory"
+		 factory="org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory"
 		 schema-update-strategy="org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy">
 		<map-ref name="datamap"/>
 		<data-source>

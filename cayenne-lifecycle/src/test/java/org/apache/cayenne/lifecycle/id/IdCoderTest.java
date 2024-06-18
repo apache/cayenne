@@ -19,8 +19,8 @@
 package org.apache.cayenne.lifecycle.id;
 
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.lifecycle.db.E1;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,11 +29,11 @@ import static org.junit.Assert.assertEquals;
 
 public class IdCoderTest {
 
-    private ServerRuntime runtime;
+    private CayenneRuntime runtime;
 
     @Before
     public void setUp() throws Exception {
-        runtime = ServerRuntime.builder().addConfig("cayenne-lifecycle.xml").build();
+        runtime = CayenneRuntime.builder().addConfig("cayenne-lifecycle.xml").build();
     }
 
     @After

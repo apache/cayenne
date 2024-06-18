@@ -22,14 +22,14 @@ package org.apache.cayenne.cache.invalidation;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
-import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.runtime.CayenneRuntimeModuleProvider;
+import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.di.Module;
 
 /**
  * @since 4.0
  */
-public class CacheInvalidationModuleProvider implements CayenneServerModuleProvider {
+public class CacheInvalidationModuleProvider implements CayenneRuntimeModuleProvider {
 
     @Override
     public Module module() {
@@ -43,6 +43,6 @@ public class CacheInvalidationModuleProvider implements CayenneServerModuleProvi
 
     @Override
     public Collection<Class<? extends Module>> overrides() {
-        return Collections.singletonList(ServerModule.class);
+        return Collections.singletonList(CoreModule.class);
     }
 }

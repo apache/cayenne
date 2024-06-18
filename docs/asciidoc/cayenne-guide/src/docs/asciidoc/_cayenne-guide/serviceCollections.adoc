@@ -17,7 +17,7 @@
 Note that the collection keys below are defined as constants in `org.apache.cayenne.configuration.Constants` interface.
 
 [#serviceCollections.table.table-bordered]
-.Service Collection Keys Present in ServerRuntime
+.Service Collection Keys Present in CayenneRuntime
 [cols="3,2,3"]
 |===
 |Collection Property |Type |Description
@@ -26,27 +26,27 @@ Note that the collection keys below are defined as constants in `org.apache.caye
 .^|`Map<String,String>`
 .^|Properties used by built-in Cayenne services. The keys in this map are the property names from the table in Appendix A.
 
-.^|`cayenne.server.adapter_detectors`
+.^|`cayenne.adapter_detectors`
 .^|`List<DbAdapterDetector>`
 .^|Contains objects that can discover the type of current database and install the correct DbAdapter in runtime.
 
-.^|`cayenne.server.domain_listeners`
+.^|`cayenne.domain_listeners`
 .^|`List<Object>`
 .^|Stores DataDomain listeners.
 
-.^|`cayenne.server.project_locations`
+.^|`cayenne.project_locations`
 .^|`List<String>`
 .^|Stores locations of the one of more project configuration files.
 
-.^|`cayenne.server.default_types`
+.^|`cayenne.default_types`
 .^|`List<ExtendedType>`
-.^|Stores default adapter-agnostic ExtendedTypes. Default ExtendedTypes can be overridden / extended by DB-specific DbAdapters as well as by user-provided types configured in another colltecion (see `"cayenne.server.user_types"`).
+.^|Stores default adapter-agnostic ExtendedTypes. Default ExtendedTypes can be overridden / extended by DB-specific DbAdapters as well as by user-provided types configured in another colltecion (see `"cayenne.user_types"`).
 
-.^|`cayenne.server.user_types`
+.^|`cayenne.user_types`
 .^|`List<ExtendedType>`
 .^|Stores a user-provided ExtendedTypes. This collection will be merged into a full list of ExtendedTypes and would override any ExtendedTypes defined in a default list, or by a DbAdapter.
 
-.^|`cayenne.server.type_factories`
+.^|`cayenne.type_factories`
 .^|`List<ExtendedTypeFactory>`
 .^|Stores default and user-provided ExtendedTypeFactories. ExtendedTypeFactory allows to define ExtendedTypes dynamically for the whole group of Java classes. E.g. Cayenne supplies a factory to map all Enums regardless of their type.
 

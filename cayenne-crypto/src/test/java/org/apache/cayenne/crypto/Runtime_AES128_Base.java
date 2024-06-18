@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.crypto;
 
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.crypto.key.JceksKeySourceTest;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 
@@ -29,7 +29,7 @@ import java.sql.SQLException;
 
 public class Runtime_AES128_Base {
 
-    protected ServerRuntime runtime;
+    protected CayenneRuntime runtime;
     protected TableHelper table1;
     protected TableHelper table2;
     protected TableHelper table4;
@@ -59,8 +59,8 @@ public class Runtime_AES128_Base {
         table8.deleteAll();
     }
 
-    protected ServerRuntime createRuntime(Module crypto) {
-        return ServerRuntime.builder().addConfig("cayenne-crypto.xml").addModule(crypto).build();
+    protected CayenneRuntime createRuntime(Module crypto) {
+        return CayenneRuntime.builder().addConfig("cayenne-crypto.xml").addModule(crypto).build();
     }
 
     protected Module createCryptoModule(boolean compress, boolean useHMAC) {

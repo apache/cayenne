@@ -47,7 +47,7 @@ public class SuperclassUpdateController extends DefaultsPreferencesController {
      */
     public void startupAction() {
         view = new DefaultsPreferencesView(ALL_CONTROL, UNINIT_CONTROL);
-        view.setTitle("Update DataObjects Superclass");
+        view.setTitle("Update Persistent objects Superclass");
         initController();
         
         view.pack();

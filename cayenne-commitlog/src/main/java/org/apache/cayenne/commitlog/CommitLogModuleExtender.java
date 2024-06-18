@@ -21,7 +21,7 @@ package org.apache.cayenne.commitlog;
 import org.apache.cayenne.commitlog.meta.AnnotationCommitLogEntityFactory;
 import org.apache.cayenne.commitlog.meta.CommitLogEntity;
 import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
-import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ListBuilder;
 
@@ -71,7 +71,7 @@ public class CommitLogModuleExtender {
     }
 
     protected CommitLogModuleExtender registerFilter(boolean inTx) {
-        ServerModule.extend(binder).addSyncFilter(CommitLogFilter.class, inTx);
+        CoreModule.extend(binder).addSyncFilter(CommitLogFilter.class, inTx);
         return this;
     }
 

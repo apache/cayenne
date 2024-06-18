@@ -75,7 +75,7 @@ but it requires (1+N) SQL statements to be executed, where N is the number of pr
 *Disjoint-by-ID prefetch semantics* is a variation of disjoint prefetch where related objects are matched against a set
 of IDs derived from the fetched main objects (or intermediate objects in a multi-step prefetch). Cayenne limits the
 size of the generated WHERE clause, as most DBs can't parse arbitrary large SQL. So prefetch queries are broken into
-smaller queries. The size of is controlled by the DI property `Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY`
+smaller queries. The size of is controlled by the DI property `Constants.MAX_ID_QUALIFIER_SIZE_PROPERTY`
 (the default number of conditions in the generated WHERE clause is 10000).
 Cayenne will generate (1 + N * M) SQL statements for each query using disjoint-by-ID prefetches,
 where N is the number of relationships to prefetch, and M is the number of queries for a given prefetch
@@ -101,7 +101,7 @@ different prefetches.
 `<<sqlselect,SQLSelect>>` query supports "JOINT" and "DISJOINT_BY_ID". It does not work with "DISJOINT", as the query does not provide
 enough information to Cayenne to build dependent prefetch queries. So "DISJOINT" will result in exception. "JOINT"
 prefetching requires a bit of effort shaping the SQL to include the right columns in the result and label them properly
-to be convertable into object properties. The main rules to follow are:
+to be convertible into object properties. The main rules to follow are:
 
 * Include _all_ columns from the root entity and every prefetched entity.
 * Label each prefetched entity columns as "dbRelationship.column".
@@ -138,7 +138,7 @@ Converting result set data to Persistent objects and registering these objects i
  operation comparable to the time spent running the query (and frequently exceeding it). Internally Cayenne builds the result as a list of DataRows,
  that are later converted to objects. Skipping the last step and using data in the form of DataRows can significantly increase performance.
 
-DataRow is a simply a map of values keyed by their DB column name. It is a ubiqutous representation of DB data used internally by Cayenne.
+DataRow is a simply a map of values keyed by their DB column name. It is a ubiquitous representation of DB data used internally by Cayenne.
 And it can be quite usable as is in the application in many cases. So performance sensitive selects should consider
 DataRows - it saves memory and CPU cycles. All selecting queries support DataRows option, e.g.:
 
@@ -341,11 +341,11 @@ This is unacceptable in most situations.
 - Synchronization will interfere with optimistic locking.
 
 So we've made a good case for disabling synchronization in most webapps. To do that, set to "false" the following DI property -
-`Constants.SERVER_CONTEXTS_SYNC_PROPERTY`, using one of the standard Cayenne DI approaches. E.g. from command line:
+`Constants.CONTEXTS_SYNC_PROPERTY`, using one of the standard Cayenne DI approaches. E.g. from command line:
 
 [source]
 ----
-$ java -Dcayenne.server.contexts_sync_strategy=false
+$ java -Dcayenne.contexts_sync_strategy=false
 ----
 
 Or by changing the standard properties Map in a custom extensions module:
@@ -356,8 +356,8 @@ public class MyModule implements Module {
 
     @Override
     public void configure(Binder binder) {
-        ServerModule.contributeProperties(binder)
-            .put(Constants.SERVER_CONTEXTS_SYNC_PROPERTY, "false");
+        CoreModule.contributeProperties(binder)
+            .put(Constants.CONTEXTS_SYNC_PROPERTY, "false");
     }
 }
 ----

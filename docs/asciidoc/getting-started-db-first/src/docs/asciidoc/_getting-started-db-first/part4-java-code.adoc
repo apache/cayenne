@@ -31,7 +31,7 @@ public class Main {
     }
 }
 ----
-* The first thing you need to be able to access the database is to create a `ServerRuntime` object
+* The first thing you need to be able to access the database is to create a `CayenneRuntime` object
 (which is essentially a wrapper around Cayenne stack) and use it to obtain an instance of an `ObjectContext`.
 +
 [source,java]
@@ -39,12 +39,12 @@ public class Main {
 package org.apache.cayenne.tutorial;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.runtime.CayenneRuntime;
 
 public class Main {
 
     public static void main(String[] args) {
-        ServerRuntime cayenneRuntime = ServerRuntime.builder()
+        CayenneRuntime cayenneRuntime = CayenneRuntime.builder()
             .dataSource(DataSourceBuilder
                     .url("jdbc:mysql://127.0.0.1:3306/cayenne_demo")
                     .driver("com.mysql.cj.jdbc.Driver")
@@ -80,14 +80,14 @@ The following piece of XML needs to be added to the `<dependencies>...</dependen
 [source,xml]
 ----
 <dependency>
-    <groupId>mysql</groupId>
-    <artifactId>mysql-connector-java</artifactId>
-    <version>6.0.5</version>
+    <groupId>com.mysql</groupId>
+    <artifactId>mysql-connector-j</artifactId>
+    <version>8.2.0</version>
 </dependency>
 <dependency>
     <groupId>org.slf4j</groupId>
     <artifactId>slf4j-simple</artifactId>
-    <version>1.7.25</version>
+    <version>1.7.36</version>
 </dependency>
 ----
 NOTE: Cayenne uses Slf4j logging API, here we will use simple backend that prints everything to console

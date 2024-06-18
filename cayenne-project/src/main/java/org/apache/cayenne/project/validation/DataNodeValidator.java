@@ -20,7 +20,7 @@ package org.apache.cayenne.project.validation;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory;
+import org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 

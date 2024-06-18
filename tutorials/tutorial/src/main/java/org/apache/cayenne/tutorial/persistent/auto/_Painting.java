@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
@@ -17,7 +17,7 @@ import org.apache.cayenne.tutorial.persistent.Gallery;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _Painting extends BaseDataObject {
+public abstract class _Painting extends PersistentObject {
 
     private static final long serialVersionUID = 1L; 
 

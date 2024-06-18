@@ -15,13 +15,13 @@
 [[re-modeler]]
 === Reverse Engineering in Cayenne Modeler
 
-Alternative aproach to using <<cdbimport>> is doing reverse engineering from <<CayenneModeler Application, CayenneModeler>>. Currently modeler GUI doesn't support all features of ant/maven tasks but it suffice for general DB import. Especially it's a good place to quickly start working on your data model.
+Alternative approach to using <<re-introduction,build tools>> is doing reverse engineering from <<CayenneModeler Application, CayenneModeler>>.
 
 You can find reverse engineering tool in dataMap view on *DbImport Tab*.
 
 ==== Reverse engineering options
 
-image::../images/re-modeler-reverseengineering-dialog.png[align="center"]
+image::../../images/re-modeler-reverseengineering-dialog.png[align="center"]
 
 Reverse Engineering dialog.
 
@@ -64,7 +64,7 @@ Here is a list of options to tune what will be processed by reverse engineering:
 Then you click `Run Import` or `Configure Connection` to set DataSource.
 If you don't have any DataSource yet you can create one from this menu.
 
-image::../images/re-modeler-datasource-select.png[align="center"]
+image::../../images/re-modeler-datasource-select.png[align="center"]
 
 Datasource selection dialog.
 

@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.cache.invalidation;
 
-import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.Module;
@@ -59,6 +59,6 @@ public class CacheInvalidationModule implements Module {
                 .addHandler(CacheGroupsHandler.class);
 
         // want the filter to be INSIDE transactions by default
-        ServerModule.extend(binder).addSyncFilter(CacheInvalidationFilter.class, true);
+        CoreModule.extend(binder).addSyncFilter(CacheInvalidationFilter.class, true);
     }
 }

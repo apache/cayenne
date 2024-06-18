@@ -75,7 +75,7 @@ public class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEdi
         JTextComponent textEditor = (JTextComponent) (comboBoxPathChooser).
                 getEditor().getEditorComponent();
         textEditor.addFocusListener(this);
-        savePath = this.model.getRelationship(row).getDbRelationshipPath();
+        savePath = this.model.getRelationship(row).getDbRelationshipPath().value();
     }
 
     @Override
@@ -149,7 +149,7 @@ public class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEdi
 
     @Override
     protected String getPathToInitializeCombo(ObjRelationshipTableModel model, int row) {
-        String pathString = model.getRelationship(row).getDbRelationshipPath();
+        String pathString = model.getRelationship(row).getDbRelationshipPath().value();
         if (pathString == null) {
             return "";
         }
@@ -181,7 +181,7 @@ public class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEdi
 
     @Override
     public void focusLost(FocusEvent focusEvent) {
-        String path = model.getRelationship(row).getDbRelationshipPath();
+        String path = model.getRelationship(row).getDbRelationshipPath().value();
         if(!changeObjEntity(path)) {
             JOptionPane.showMessageDialog(
                     Application.getFrame(),

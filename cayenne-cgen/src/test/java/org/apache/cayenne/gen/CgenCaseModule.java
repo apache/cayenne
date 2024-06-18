@@ -24,9 +24,9 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.gen.mock.CustomPropertyDescriptor;
 import org.apache.cayenne.unit.di.UnitTestLifecycleManager;
-import org.apache.cayenne.unit.di.server.ServerCaseExtraModules;
-import org.apache.cayenne.unit.di.server.ServerCaseLifecycleManager;
-import org.apache.cayenne.unit.di.server.ServerCaseProperties;
+import org.apache.cayenne.unit.di.runtime.RuntimeCaseExtraModules;
+import org.apache.cayenne.unit.di.runtime.RuntimeCaseLifecycleManager;
+import org.apache.cayenne.unit.di.runtime.RuntimeCaseProperties;
 
 /**
  * @since 4.2
@@ -40,9 +40,9 @@ public class CgenCaseModule implements Module {
     }
     @Override
     public void configure(Binder binder) {
-        binder.bind(UnitTestLifecycleManager.class).toInstance(new ServerCaseLifecycleManager(testScope));
-        binder.bind(ServerCaseProperties.class).to(ServerCaseProperties.class).in(testScope);
-        binder.bind(ServerCaseExtraModules.class).to(ServerCaseExtraModules.class).in(testScope);
+        binder.bind(UnitTestLifecycleManager.class).toInstance(new RuntimeCaseLifecycleManager(testScope));
+        binder.bind(RuntimeCaseProperties.class).to(RuntimeCaseProperties.class).in(testScope);
+        binder.bind(RuntimeCaseExtraModules.class).to(RuntimeCaseExtraModules.class).in(testScope);
 
         CgenModule.contributeUserProperties(binder)
                 .add(CustomPropertyDescriptor.class);

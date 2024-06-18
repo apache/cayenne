@@ -75,7 +75,7 @@ import static org.apache.cayenne.util.Util.isBlank;
  *  - process project model
  *  - save once again to cleanup and sort final XML
  *
- * 2. This cycle can be used by ServerRuntime to optionally support old project versions
+ * 2. This cycle can be used by CayenneRuntime to optionally support old project versions
  *
  *  - find all project and datamap resources
  *  - define set of upgrade handlers to process those resources

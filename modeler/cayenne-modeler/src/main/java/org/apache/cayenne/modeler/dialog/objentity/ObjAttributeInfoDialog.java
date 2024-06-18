@@ -161,11 +161,11 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 
 		view.getAttributeName().setText(attribute.getName());
 		if (attribute.getDbAttributePath() != null) {
-			if (attribute.getDbAttributePath().contains(".")) {
-				String path = attribute.getDbAttributePath();
+			if (attribute.getDbAttributePath().length() > 1) {
+				String path = attribute.getDbAttributePath().value();
 				view.getCurrentPathLabel().setText(path.replace(".", " -> "));
 			} else {
-				view.getCurrentPathLabel().setText(attribute.getDbAttributePath());
+				view.getCurrentPathLabel().setText(attribute.getDbAttributePath().value());
 			}
 		} else {
 			view.getCurrentPathLabel().setText("");
@@ -518,7 +518,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 			compareAndSetOverrideInEmbeddedAttribute(attributeSaved, overrides, currentOverrAttr);
 		}
 		if (attributeSaved instanceof EmbeddedAttribute) {
-			attributeSaved.setDbAttributePath(null);
+			attributeSaved.setDbAttributePath((String)null);
 			model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 2);
 		}
 

@@ -17,25 +17,25 @@
 
 ==== ObjectContext
 
-ObjectContext is an interface that users normally work with to access the database. It provides the API to execute database operations and to manage persistent objects. A context is obtained from the ServerRuntime:
+ObjectContext is an interface that users normally work with to access the database. It provides the API to execute database operations and to manage persistent objects. A context is obtained from the CayenneRuntime:
 
 [source, java]
 ----
 ObjectContext context = runtime.newContext();
 ----
 
-The call above creates a new instance of ObjectContext that can access the database via this runtime. ObjectContext is a single "work area" in Cayenne, storing persistent objects. ObjectContext guarantees that for each database row with a unique ID it will contain at most one instance of an object, thus ensuring object graph consistency between multiple selects (a feature called "uniquing"). At the same time different ObjectContexts will have independent copies of objects for each unique database row. This allows users to isolate object changes from one another by using separate ObjectContexts.
+The call above creates a new instance of ObjectContext that can access the database via this runtime. ObjectContext is a single "work area" in Cayenne, storing persistent objects. ObjectContext guarantees that, for each database row with a unique ID, it will contain at most one instance of an object, thus ensuring object graph consistency between multiple selects (a feature called "uniquing"). At the same time, different ObjectContexts will have independent copies of objects for each unique database row. This allows users to isolate object changes from one another by using separate ObjectContexts.
 
-These properties directly affect the strategies for scoping and sharing (or not sharing) ObjectContexts. Contexts that are only used to fetch objects from the database and whose objects are never modified by the application can be shared between mutliple users (and multiple threads). Contexts that store modified objects should be accessed only by a single user (e.g. a web application user might reuse a context instance between multiple web requests in the same HttpSession, thus carrying uncommitted changes to objects from request to request, until he decides to commit or rollback them). Even for a single user it might make sense to use mutliple ObjectContexts (e.g. request-scoped contexts to allow concurrent requests from the browser that change and commit objects independently).
+These properties directly affect the strategies for scoping and sharing (or not sharing) ObjectContexts. Contexts that are only used to fetch objects from the database and whose objects are never modified by the application can be shared between multiple users (and multiple threads). Contexts that store modified objects should be accessed only by a single user (e.g. a web application user might reuse a context instance between multiple web requests in the same HttpSession, thus carrying uncommitted changes to objects from request to request, until they decide to commit them or roll them back). Even for a single user it might make sense to use multiple ObjectContexts (e.g. request-scoped contexts to allow concurrent requests from the browser that change and commit objects independently).
 
-ObjectContext is serializable and does not permanently hold to any of the application resources. So it does not have to be closed. If the context is not used anymore, it should simply be allowed to go out of scope and get garbage collected, just like any other Java object.
+ObjectContext is serializable and does not permanently hold any of the application resources. So it does not have to be closed. If the context is not used anymore, it should simply be allowed to go out of scope and get garbage collected, just like any other Java object.
 
 
 ==== Persistent Object and its Lifecycle
 
-Cayenne can persist Java objects that implement `org.apache.cayenne.Persistent` interface. Generally persistent classes are generated from the model as described above, so users do not have to worry about superclass and property implementation details.
+Cayenne can persist Java objects that implement the `org.apache.cayenne.Persistent` interface. Generally, persistent classes are generated from the model as described above, so users do not have to worry about superclass and property implementation details.
 
-Persistent interface provides access to 3 persistence-related properties - _objectId_, _persistenceState_ and _objectContext_. All 3 are initialized by Cayenne runtime framework. Application code should not attempt to change them. However it is allowed to read them, which provides valuable runtime information. E.g. ObjectId can be used for quick equality check of 2 objects, knowing persistence state would allow highlighting changed objects, etc.
+The `Persistent` interface provides access to three persistence-related properties - _objectId_, _persistenceState_ and _objectContext_. All three are initialized by the Cayenne runtime framework. Your application code should not attempt to change them. However, it is allowed to read them, which provides valuable runtime information. E.g. ObjectId can be used for a quick equality check of two objects, knowing persistence state would allow highlighting changed objects, etc.
 
 Each persistent object belongs to a single ObjectContext, and can be in one of the following persistence states (as defined in `org.apache.cayenne.PersistenceState`) :
 
@@ -51,14 +51,14 @@ Each persistent object belongs to a single ObjectContext, and can be in one of t
 |*NEW*
 |The object is freshly registered in an ObjectContext, but has not been saved to the database yet and there is no matching database row.
 
-|*COMMITED*
+|*COMMITTED*
 |The object is registered in an ObjectContext, there is a row in the database corresponding to this object, and the object state corresponds to the last known state of the matching database row.
 
 |*MODIFIED*
 |The object is registered in an ObjectContext, there is a row in the database corresponding to this object, but the object in-memory state has diverged from the last known state of the matching database row.
 
 |*HOLLOW*
-|The object is registered in an ObjectContext, there is a row in the database corresponding to this object, but the object state is unknown. Whenever an application tries to access a property of such object, Cayenne attempts reading its values from the database and "inflate" the object, turning it to COMMITED.
+|The object is registered in an ObjectContext, there is a row in the database corresponding to this object, but the object state is unknown. Whenever an application tries to access a property of such object, Cayenne attempts reading its values from the database and "inflate" the object, turning it to COMMITTED.
 
 |*DELETED*
 |The object is registered in an ObjectContext and has been marked for deletion in-memory. The corresponding row in the database will get deleted upon ObjectContext commit, and the object state will be turned into TRANSIENT.
@@ -79,8 +79,8 @@ we create a `ObjectSelect` that matches all `Artist` objects present in the data
 to get the result.
 
 Some queries can be quite complex, returning multiple result sets or even updating the database.
-For such queries ObjectContext provides `performGenericQuery()` method.
-While not commonly-used, it is nevertheless important in some situations. E.g.:
+For such queries, ObjectContext provides the `performGenericQuery()` method.
+While not commonly used, it is nevertheless important in some situations. E.g.:
 
 [source, java]
 ----
@@ -99,20 +99,16 @@ Artist selectedArtist = artists.get(0);
 selectedArtist.setName("Dali");
 ----
 
-The first time the object property is changed, the object's state is automatically set to *MODIFIED* by Cayenne.
-Cayenne tracks all in-memory changes until a user calls `commitChanges`:
+The first time the object property is changed, the object's state is automatically set to *MODIFIED* by Cayenne. Cayenne tracks all in-memory changes until a user calls `commitChanges`:
 
 [source, java]
 ----
 context.commitChanges();
 ----
 
-At this point all in-memory changes are analyzed and a minimal set of SQL statements is issued in a single transaction
-to synchronize the database with the in-memory state. In our example `commitChanges` commits just one object,
-but generally it can be any number of objects.
+At this point, all in-memory changes are analyzed and a minimal set of SQL statements is issued in a single transaction to synchronize the database with the in-memory state. In our example, `commitChanges` commits just one object, but generally it can be any number of objects.
 
-If instead of commit, we wanted to reset all changed objects to the previously committed state,
-we'd call `rollbackChanges` instead:
+If, instead of commit, we wanted to reset all changed objects to the previously committed state, we'd call `rollbackChanges` instead:
 
 [source, java]
 ----
@@ -127,11 +123,9 @@ Artist newArtist = context.newObject(Artist.class);
 newArtist.setName("Picasso");
 ----
 
-It will only exist in memory until `commitChanges` is issued. On commit Cayenne might generate a new primary key
-(unless a user set it explicitly, or a PK was inferred from a relationship) and issue an
-`INSERT` SQL statement to permanently store the object.
+It only exists in memory until `commitChanges` is issued. On commit Cayenne might generate a new primary key (unless a user set it explicitly, or a PK was inferred from a relationship) and issue an `INSERT` SQL statement to permanently store the object.
 
-`deleteObjects` method takes one or more Persistent objects and marks them as *DELETED*:
+The `deleteObjects` method takes one or more `Persistent` objects and marks them as *DELETED*:
 
 [source, java]
 ----
@@ -139,16 +133,14 @@ context.deleteObjects(artist1);
 context.deleteObjects(artist2, artist3, artist4);
 ----
 
-Additionally `deleteObjects` processes all delete rules modeled for the affected objects.
+Additionally, `deleteObjects` processes all delete rules modeled for the affected objects.
 This may result in implicitly deleting or modifying extra related objects.
 Same as insert and update, delete operations are sent to the database only when `commitChanges` is called.
 Similarly `rollbackChanges` will undo the effect of `newObject` and `deleteObjects`.
 
 `localObject` returns a copy of a given persistent object that is _local_ to a given ObjectContext:
 
-Since an application often works with more than one context, `localObject` is a rather common operation.
-E.g. to improve performance a user might utilize a single shared context to select and cache data,
-and then occasionally transfer some selected objects to another context to modify and commit them:
+Since an application often works with more than one context, `localObject` is a rather common operation. E.g. to improve performance, a user might utilize a single shared context to select and cache data, and then occasionally transfer some selected objects to another context to modify and commit them:
 
 
 [source, java]
@@ -165,15 +157,11 @@ accessible via the `ObjectContext`:
 EntityResolver resolver = objectContext.getEntityResolver();
 ----
 
-Here we discussed the most commonly used subset of the ObjectContext API.
-There are other useful methods, e.g. those allowing to inspect registered objects state in bulk, etc.
-Check the latest JavaDocs for details.
+Here we discussed the most commonly-used subset of the ObjectContext API. There are other useful methods, e.g. those allowing you to inspect registered objects' state in bulk, etc. Check the latest JavaDocs for details.
 
 ==== Cayenne Helper Class
 
-There is a useful helper class called `Cayenne` (fully-qualified name `org.apache.cayenne.Cayenne`)
-that builds on ObjectContext API to provide a number of very common operations.
-E.g. get a primary key (most entities do not model PK as an object property) :
+There is a useful helper class called `Cayenne` (fully-qualified name `org.apache.cayenne.Cayenne`) that builds on the ObjectContext API to provide a number of very common operations. E.g. get a primary key (most entities do not model PK as an object property) :
 
 [source, java]
 ----
@@ -187,27 +175,18 @@ It also provides the reverse operation - finding an object given a known PK:
 Artist artist = Cayenne.objectForPK(context, Artist.class, 34579);
 ----
 
-For more flexibility, you could use <<SelectById>> query instead.
+For more flexibility, you could use the <<SelectById>> query instead.
 
-Feel free to explore `Cayenne` class API for other useful methods.
+Feel free to explore the `Cayenne` class API for other useful methods.
 
 ==== ObjectContext Nesting
-In all the examples shown so far an ObjectContext would directly connect to a database to select data
-or synchronize its state (either via commit or rollback). However another context can be used in all these scenarios
-instead of a database. This concept is called ObjectContext "nesting".
-Nesting is a parent/child relationship between two contexts, where child is a nested context and selects
-or commits its objects via a parent.
+In all the examples shown so far, an ObjectContext would directly connect to a database to select data or synchronize its state (either via commit or rollback). However, another context can be used in all these scenarios instead of a database. This concept is called ObjectContext "nesting". Nesting is a parent/child relationship between two contexts, where a child is a nested context and selects or commits its objects via a parent.
 
-Nesting is useful to create isolated object editing areas (child contexts) that need to
-all be committed to an intermediate in-memory store (parent context),
-or rolled back without affecting changes already recorded in the parent.
-Think cascading GUI dialogs, or parallel AJAX requests coming to the same session.
+Nesting is useful to create isolated object editing areas (child contexts) that all need to be committed to an intermediate in-memory store (parent context), or rolled back without affecting changes already recorded in the parent. Think cascading GUI dialogs, or parallel AJAX requests coming to the same session.
 
-In theory Cayenne supports any number of nesting levels, however applications should generally stay with one or two,
-as deep hierarchies will most certainly degrade the performance of the deeply nested child contexts.
-This is due to the fact that each context in a nesting chain has to update its own objects during most operations.
+In theory, Cayenne supports any number of nesting levels; however, applications should generally stay with one or two levels, as deep hierarchies will almost certainly degrade the performance of the deeply-nested child contexts. This is due to the fact that each context in a nesting chain has to update its own objects during most operations.
 
-To create a nested context, use an instance of ServerRuntime, passing it the desired parent:
+To create a nested context, use an instance of CayenneRuntime, passing it the desired parent:
 
 [source, java]
 ----
@@ -215,9 +194,7 @@ ObjectContext parent = runtime.newContext();
 ObjectContext nested = runtime.newContext(parent);
 ----
 
-From here a nested context operates just like a regular context (you can perform queries,
-create and delete objects, etc.). The only difference is that commit and rollback operations
-can either be limited to synchronization with the parent, or cascade all the way to the database:
+From here, a nested context operates just like a regular context (you can perform queries, create and delete objects, etc...). The only difference is that commit and rollback operations can either be limited to synchronization with the parent, or cascade all the way to the database:
 
 [source, java]
 ----
@@ -241,37 +218,32 @@ nested.rollbackChanges();
 
 ==== Generic Persistent Objects
 
-As described in the CayenneModeler chapter, Cayenne supports mapping of completely generic classes
-to specific entities. Although for conveniece most applications should stick with entity-specific class mappings,
-the generic feature offers some interesting possibilities, such as creating mappings completely
-on the fly in a running application, etc.
+As described in the CayenneModeler chapter, Cayenne supports mapping of completely generic classes to specific entities. Although for convenience most applications should stick with entity-specific class mappings, the generic feature offers some interesting possibilities, such as creating mappings completely on the fly in a running application.
 
-Generic objects are first class citizens in Cayenne, and all common persistent operations apply to them as well.
-There are some pecularities however, described below.
+Generic objects are first-class citizens in Cayenne, and all common persistent operations apply to them as well. There are some peculiarities, however, described below.
 
-When creating a new generic object, either cast your ObjectContext to DataContext
-(that provides `newObject(String)` API), or provide your object with an explicit ObjectId:
+When creating a generic object, either cast your ObjectContext to `DataContext` (that provides `newObject(String)` API), or provide your object with an explicit ObjectId:
 
 [source, java]
 ----
-DataObject generic = (DataObject)context.newObject("GenericEntity");
+Persistent generic = context.newObject("GenericEntity");
 ----
 
 [source, java]
 ----
-DataObject generic = new CayenneDataObject();
+Persistent generic = new GenericPersistentObject();
 generic.setObjectId(ObjectId.of("GenericEntity"));
 context.registerNewObject(generic);
 ----
 
-ObjectSelect for a generic object should be created passing entity name String, instead of just a Java class:
+ObjectSelect for a generic object should be created by passing the entity name String, instead of just a Java class:
 
 [source, java]
 ----
-ObjectSelect<DataObject> query = ObjectSelect.query(DataObject.class, "GenericEntity");
+ObjectSelect<Persistent> query = ObjectSelect.query(Persistent.class, "GenericEntity");
 ----
 
-Use DataObject API to access and modify properties of a generic object:
+Use Persistent API to access and modify properties of a generic object:
 
 [source, java]
 ----
@@ -279,7 +251,7 @@ String name = (String) generic.readProperty("name");
 generic.writeProperty("name", "New Name");
 ----
 
-This is how an application can obtain entity name of a generic object:
+This is how an application can obtain the entity name of a generic object:
 
 [source, java]
 ----
@@ -289,29 +261,14 @@ String entityName = generic.getObjectId().getEntityName();
 
 ==== Transactions
 
-Considering how much attention is given to managing transactions in most other ORMs,
-transactions have been conspicuously absent from the ObjectContext discussion till now.
-The reason is that transactions are seamless in Cayenne in all but a few special cases.
-ObjectContext is an in-memory container of objects that is disconnected from the database,
-except when it needs to run an operation. So it does not care about any surrounding transaction scope.
-Sure enough all database operations are transactional, so when an application does a commit,
-all SQL execution is wrapped in a database transaction. But this is done behind the scenes
-and is rarely a concern to the application code.
+Considering how much attention is given to managing transactions in most other ORMs, transactions have been conspicuously absent from the ObjectContext discussion till now. The reason is that transactions are seamless in Cayenne in all but a few special cases. ObjectContext is an in-memory container of objects that is disconnected from the database, except when it needs to run an operation. So it does not care about any surrounding transaction scope. Sure enough, all database operations are transactional, so when an application does a commit, all SQL execution is wrapped in a database transaction. But this is done behind the scenes and is rarely a concern to the application code.
 
 Two cases where transactions need to be taken into consideration are container- and
 application-managed transactions.
 
-If you are using Spring, EJB or another environment that manages transactions,
-you'll likely need to switch Cayenne runtime into "external transactions mode".
-This is done by setting DI configuration property defined in `Constants.SERVER_EXTERNAL_TX_PROPERTY` (see Appendix A).
-If this property is set to "true", Cayenne assumes that JDBC Connections obtained by runtime
-whenever that might happen are all coming from a transactional DataSource managed by the container.
-In this case Cayenne does not attempt to commit or rollback the connections, leaving it up to the container
-to do that when appropriate.
+If you are using Spring, EJB or another environment that manages transactions, you’ll likely need to switch the Cayenne runtime into "external transactions mode". This is done by setting the DI configuration property defined in `Constants.EXTERNAL_TX_PROPERTY` (see Appendix A). If this property is set to "true", Cayenne assumes that JDBC Connections obtained by runtime, whenever that might happen, are all coming from a transactional DataSource managed by the container. In this case, Cayenne does not attempt to commit or roll back the connections, leaving it up to the container to do that when appropriate.
 
-In the second scenario, an application might need to define its own transaction scope that spans more
-than one Cayenne operation. E.g. two sequential commits that need to be rolled back together in case of failure.
-This can be done via `ServerRuntime.performInTransaction` method:
+In the second scenario, an application might need to define its own transaction scope that spans more than one Cayenne operation. E.g. two sequential commits that need to be rolled back together in case of failure. This can be done via the `CayenneRuntime.performInTransaction` method:
 
 [source, java]
 ----
@@ -339,9 +296,9 @@ You can control transaction isolation level and propagation logic using `Transac
 
 [source, java]
 ----
-TransactionDescriptor descriptor = new TransactionDescriptor(
-                Connection.TRANSACTION_SERIALIZABLE,
-                TransactionPropagation.REQUIRES_NEW
-        );
-transactionManager.performInTransaction(transactionalOperation, descriptor);
+TransactionDescriptor descriptor = TransactionDescriptor.builder()
+        .isolation(Connection.TRANSACTION_SERIALIZABLE)
+        .propagation(TransactionPropagation.REQUIRES_NEW)
+        .build();
+runtime.performInTransaction(transactionalOperation, descriptor);
 ----

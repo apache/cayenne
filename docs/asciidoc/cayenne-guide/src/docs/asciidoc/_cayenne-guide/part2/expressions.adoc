@@ -14,18 +14,11 @@
 
 === Expressions
 
-Cayenne provides a simple yet powerful object-based expression language. The most common use of expressions are to build
-qualifiers and orderings of queries that are later converted to SQL by Cayenne and to evaluate in-memory against specific
-objects (to access certain values in the object graph or to perform in-memory object filtering and sorting).
-Cayenne provides API to build expressions in the code and a parser to create expressions from strings.
+Cayenne provides a simple, yet powerful, object-based expression language. The most common uses of expressions are to build qualifiers and orderings of queries that are later converted to SQL by Cayenne and to evaluate in-memory against specific objects (to access certain values in the object graph or to perform in-memory object filtering and sorting). Cayenne provides an API to build expressions in the code and a parser to create expressions from strings.
 
 ==== Path Expressions
 
-Before discussing how to build expressions, it is important to understand one group of expressions widely used
-in Cayenne - path expressions. There are two types of path expressions - object and database, used for navigating graphs
-of connected objects or joined DB tables respectively. Object paths are much more commonly used, as after all
-Cayenne is supposed to provide a degree of isolation of the object model from the database. However database paths
-are helpful in certain situations. General structure of path expressions is the following:
+Before discussing how to build expressions, it is important to understand one group of expressions widely used in Cayenne - path expressions. There are two types of path expressions - object and database, used for navigating graphs of connected objects or joined DB tables, respectively. Object paths are much more commonly used, as, after all, Cayenne is supposed to provide a degree of isolation of the object model from the database. However, database paths are helpful in certain situations. The general structure of path expressions is the following:
 
 [source, java]
 ----
@@ -34,7 +27,7 @@ are helpful in certain situations. General structure of path expressions is the 
 
 - `db:` is an optional prefix indicating that the following path is a DB path. Otherwise it is an object path.
 
-- `segment` is a name of a property (relationship or attribute in Cayenne terms) in the path. Path must have at least one segment; segments are separated by dot (".").
+- `segment` is a name of a property (relationship or attribute in Cayenne terms) in the path. The path must have at least one segment; segments are separated by dot (".").
 
 - `+` An "OUTER JOIN" path component. Currently "+" only has effect when translated to SQL as OUTER JOIN. When evaluating expressions in memory, it is ignored.
 
@@ -53,26 +46,22 @@ is a named foreign key constraint. But DbRelationship names are usually chosen a
 without regard to constraints naming or even constraints presence).
 A database path therefore might look like this - `db:dbrelationshipX.dbrelationshipY.COLUMN_Z"`. More specific examples:
 
-- `db:NAME` - can be used to navigate to the value of "NAME" column of some unspecified table.
+- `db:NAME` - can be used to navigate to a value in the "NAME" column of some unspecified table.
 
 - `db:artist.artistExhibits.exhibit.CLOSING_DATE` - can be used to match a closing date of any of the exhibits of a related artist record.
 
-Cayenne supports "aliases" in path Expressions. E.g. the same expression can be written using explicit path or an alias:
+Cayenne supports "aliases" in path expressions. E.g. the same expression can be written using the explicit path or an alias:
 
 - `artist.exhibits.closingDate` - full path
 
 - `e.closingDate` - alias "e" is used for `artist.exhibits`.
 
-SelectQuery using the second form of the path expression must be made aware of the alias via `SelectQuery.aliasPathSplits(..)`,
-otherwise an Exception will be thrown.
-The main use of aliases is to allow users to control how SQL joins are generated if the same path is encountered more than once in any given Expression.
-Each alias for any given path would result in a separate join. Without aliases, a single join will be used for a group of matching paths.
+SelectQuery using the second form of the path expression must be made aware of the alias via `SelectQuery.aliasPathSplits(..)`;
+otherwise, an `Exception` will be thrown. The main use of aliases is to allow users to control how SQL joins are generated if the same path is encountered more than once in any given `Expression`. Each alias for any given path would result in a separate join. Without aliases, a single join will be used for a group of matching paths.
 
 ==== Creating Expressions from Strings
 
-While in most cases users are likely to rely on API from the following section for expression creation, we'll start by showing String expressions,
-as this will help to understand the semantics. A Cayenne expression can be represented as a String,
-which can be converted to an expression object using `ExpressionFactory.exp` static method. Here is an example:
+While in most cases users are likely to rely on the API from the following section for expression creation, we'll start by showing String expressions, as this will help you understand the semantics. A Cayenne expression can be represented as a String, which can be converted to an expression object using the `ExpressionFactory.exp` static method. Here is an example:
 
 
 [source, java]
@@ -81,11 +70,7 @@ String expString = "name like 'A%' and price < 1000";
 Expression exp = ExpressionFactory.exp(expString);
 ----
 
-This particular expression may be used to match Paintings whose names that start with "A" and whose price is less than $1000.
-While this example is pretty self-explanatory, there are a few points worth mentioning. "name" and "price" here are object paths discussed earlier.
-As always, paths themselves are not attached to a specific root entity and can be applied to any entity that has similarly named attributes or relationships.
-So when we are saying that this expression "may be used to match Paintings", we are implying that there may be other entities, for which this expression is valid.
-Now the expression details...
+This particular expression may be used to match Paintings whose names start with "A" and whose price is less than $1000. While this example is pretty self-explanatory, there are a few points worth mentioning. "name" and "price" here are object paths discussed earlier. As always, paths themselves are not attached to a specific root entity and can be applied to any entity that has similarly named attributes or relationships. So, when we say that this expression "may be used to match Paintings", we are implying that there may be other entities for which this expression is valid. Now the expression details...
 
 Character constants that are not paths or numeric values should be enclosed in single or double quotes. Two of the expressions below are equivalent:
 
@@ -116,8 +101,8 @@ Grouping with parenthesis:
 value = (price + 250.00) * 3
 ----
 
-Path prefixes. Object expressions are unquoted strings, optionally prefixed by `obj:` (usually they are not prefixed at all actually).
-Database expressions are always prefixed with `db:`. A special kind of prefix, not discussed yet is `enum:` that prefixes an enumeration constant:
+Path prefixes. Object expressions are unquoted strings, optionally prefixed by `obj:` (usually they are not prefixed at all).
+Database expressions are always prefixed with `db:`. A special kind of prefix, not discussed yet, is `enum:` that prefixes an enumeration constant:
 
 [source, java]
 ----
@@ -137,8 +122,7 @@ db:NAME = 'Salvador Dali'
 name = enum:org.foo.EnumClass.VALUE1
 ----
 
-Binary conditions are expressions that contain a path on the left, a value on the right, and some operation between them, such as equals, like, etc.
-They can be used as qualifiers in SelectQueries:
+Binary conditions are expressions that contain a path on the left, a value on the right, and some operation between them, such as equals like, etc. They can be used as qualifiers in SelectQueries:
 
 [source, java]
 ----
@@ -146,10 +130,7 @@ name like 'A%'
 ----
 
 
-Parameters. Expressions can contain named parameters (names that start with "$") that can be substituted with values either by name or by position.
-Parameterized expressions allow to create reusable expression templates. Also if an Expression contains a complex object that doesn't have a simple
-String representation (e.g. a Date, a DataObject, an ObjectId), parameterizing such expression is the only way to represent it as String.
-Here are the examples of both positional and named parameter bindings:
+Parameters. Expressions can contain named parameters (names that start with "$") that can be substituted with values either by name or by position. Parameterized expressions let you create reusable expression templates. Also, if an expression contains a complex object that doesn’t have a simple String representation (e.g. a `Date`, a `Persistent`, an `ObjectId`), parameterizing the expression is the only way to represent it as String. Here are examples of both positional and named parameter bindings:
 
 [source, java]
 ----
@@ -170,7 +151,7 @@ Positional binding is usually shorter. You can pass positional bindings to the `
 Expression qualifier = ExpressionFactory.exp("name = $name", "Monet");
 ----
 
-In parameterized expressions with LIKE clause, SQL wildcards must be part of the values in the Map and not the expression string itself:
+In parameterized expressions with a LIKE clause, SQL wildcards must be part of the values in the Map and not the expression string itself:
 
 [source, java]
 ----
@@ -181,13 +162,11 @@ When matching on a relationship, the value parameter must be either a Persistent
 
 [source, java]
 ----
-Artist dali = ... // asume we fetched this one already
+Artist dali = ... // assume we fetched this one already
 Expression qualifier = ExpressionFactory.exp("artist = $artist", dali);
 ----
 
-When using positional binding, Cayenne would expect values for all parameters to be present. Binding by name offers extra flexibility:
-subexpressions with uninitialized parameters are automatically pruned from the expression.
-So e.g. if certain parts of the expression criteria are not provided to the application, you can still build a valid expression:
+When you use positional binding, Cayenne expects values for all parameters to be present. Binding by name offers extra flexibility: sub-expressions with uninitialized parameters are automatically pruned from the expression. So, e.g., if certain parts of the expression criteria are not provided to the application, you can still build a valid expression
 
 
 [source, java]
@@ -202,16 +181,13 @@ Expression qualifier1 = template.params(p1);
 // the $date parameter
 ----
 
-Null handling. Handling of Java nulls as operands is no different from normal values. Instead of using special conditional operators,
-like SQL does (`IS NULL`, `IS NOT NULL`), "=" and "!=" expressions are used directly with null values. It is up to Cayenne to translate expressions with nulls to the valid SQL.
+Null handling. Handling of Java nulls as operands is no different handling from normal values. Instead of using special conditional operators, like SQL does (`IS NULL`, `IS NOT NULL`), "=" and "!=" expressions are used directly with null values. It is up to Cayenne to translate expressions with nulls to the valid SQL.
 
 //NOTE: A formal definition of the expression grammar is provided in xref:appendixC[Appendix C]
 
 ==== Creating Expressions via API
 
-Creating expressions from Strings is a powerful and dynamic approach, however a safer alternative is to use Java API.
-It provides compile-time checking of expressions validity. The API in question is provided by `ExpressionFactory` class (that we've seen already),
-Property class and Expression class itself. `ExpressionFactory` contains a number of self-explanatory static methods that can be used to build expressions. E.g.:
+Creating expressions from Strings is a powerful and dynamic approach, however a safer alternative is to use the Java API. It provides compile-time checking of the expression's validity. The API in question is provided by the `ExpressionFactory` class (that we've seen already), the Property class and the Expression class itself. `ExpressionFactory` contains a number of self-explanatory static methods that can be used to build expressions. E.g.:
 
 [source, java]
 ----
@@ -221,12 +197,9 @@ Expression e2 = ExpressionFactory.lessExp("price", 1000);
 Expression finalExp = e1.andExp(e2);
 ----
 
-NOTE: The last line in the example above shows how to create a new expression by "chaining" two other expressions.
-A common error when chaining expressions is to assume that "andExp" and "orExp" append another expression to the current expression.
-In fact a new expression is created. I.e. Expression API treats existing expressions as immutable.
+NOTE: The last line in the example above shows how to create a new expression by "chaining" two other expressions. A common error when chaining expressions is to assume that "andExp" and "orExp" append another expression to the current expression. In fact, a new expression is created. Expression API treats existing expressions as immutable.
 
-As discussed earlier, Cayenne supports aliases in path Expressions, allowing to control how SQL joins are generated
-if the same path is encountered more than once in the same Expression. Two ExpressionFactory methods allow to implicitly generate aliases to "split" match paths into individual joins if needed:
+As discussed earlier, Cayenne supports aliases in path Expressions, so you can control how SQL joins are generated if the same path is encountered more than once in the same Expression. Two ExpressionFactory methods let you implicitly generate aliases to "split" match paths into individual joins if needed:
 
 [source, java]
 ----
@@ -234,12 +207,9 @@ Expression matchAllExp(String path, Collection values)
 Expression matchAllExp(String path, Object... values)
 ----
 
-"Path" argument to both of these methods can use a split character (a pipe symbol '|') instead of dot to indicate that relationship
-following a path should be split into a separate set of joins, one per collection value. There can only be one split at most in any given path.
-Split must always precede a relationship. E.g. `"|exhibits.paintings"`, `"exhibits|paintings"`, etc.
-Internally Cayenne would generate distinct aliases for each of the split expressions, forcing separate joins.
+The "Path" argument to both of these methods can use a split character (a pipe symbol '|') instead of a dot to indicate that the relationship following a path should be split into a separate set of joins, one per collection value. There can only be one split at most in any given path. The split must always precede a relationship. E.g. `"|exhibits.paintings"`, `"exhibits|paintings"`, etc. Internally, Cayenne generates distinct aliases for each of the split expressions, forcing separate joins.
 
-While ExpressionFactory is pretty powerful, there's an even easier way to create expression using static Property objects generated by Cayenne for each persistent class.
+While ExpressionFactory is pretty powerful, there's an even easier way to create an expression using static Property objects generated by Cayenne for each persistent class.
 Some examples:
 
 [source, java]
@@ -247,20 +217,18 @@ Some examples:
 // Artist.NAME is generated by Cayenne and has a type of Property<String>
 Expression e1 = Artist.NAME.eq("Pablo");
 
-// Chaining multiple properties into a path..
+// Chaining multiple properties into a path.
 // Painting.ARTIST is generated by Cayenne and has a type of Property<Artist>
 Expression e2 = Painting.ARTIST.dot(Artist.NAME).eq("Pablo");
 ----
 
-Property objects provide the API mostly analogius to ExpressionFactory, though it is significantly shorter and is aware of the value types.
+Property objects provide the API mostly analogous to ExpressionFactory, though it is significantly shorter and is aware of the value types.
 It provides compile-time checks of both property names and types of arguments in conditions. We will use Property-based API in further examples.
 
 [[evaluate]]
 ==== Evaluating Expressions in Memory
 
-When used in a query, an expression is converted to SQL WHERE clause (or ORDER BY clause) by Cayenne during query execution.
-Thus the actual evaluation against the data is done by the database engine. However the same expressions can also be used
-for accessing object properties, calculating values, in-memory filtering.
+When used in a query, an expression is converted to a SQL WHERE or ORDER BY clause by Cayenne during query execution. Thus the actual evaluation against the data is done by the database engine. However, the same expressions can also be used for accessing object properties, calculating values, and in-memory filtering.
 
 
 Checking whether an object satisfies an expression:

@@ -17,8 +17,7 @@
 :sectnums:
 :sectnumlevels: 2
 // use custom header
-:cayenne-header: _upgrade-guide/header.html
-:cayenne-header-position: body
+:hugo-header: _upgrade-guide/header.html
 // base path to java code include
 :cayenne-root: {basedir}/../../..
 
@@ -36,7 +35,7 @@ is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND
 See the License for the specific language governing permissions and limitations under the License._#
 
 
-This guide highlights the new features and changes introduced in Apache Cayenne 4.2. For a full list of changes consult
+This guide highlights the new features and changes introduced in Apache Cayenne 5.0. For a full list of changes consult
 RELEASE-NOTES.txt included in Cayenne download. For release-specific upgrade instructions check UPGRADE.txt.
 
 include::_upgrade-guide/new-features.adoc[]

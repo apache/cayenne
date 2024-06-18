@@ -21,9 +21,9 @@ include::../var.adoc[]
 
 An ORM system consists of three parts: database, OR mapping and persistent Java classes. These parts always need to be kept in sync with each other for the application to work. "DB-first" flow is a common and practical approach to synchronization that assumes the database to be the master source of the metadata, with other two parts synchronized from the DB as the schema evolves. Cayenne provides a number of tools to automate and control it. Here is how "DB-first" flow is typically implemented:
 
-- A SQL migrations framework is used to bring a local DB to a certain version. This is outside of the scope of Cayenne and is done with a third-party tool, such as Liquibase or Flyway.
+- A SQL migrations framework is used to bring a local DB to a certain version. This is outside the scope of Cayenne and is done with a third-party tool, such as Liquibase or Flyway.
 
-- OR mapping model (Cayenne XML files) are synchronized with the state of the database using `"cdbimport"` tool provdied by Cayenne.
+- OR mapping model (Cayenne XML files) are synchronized with the state of the database using `"cdbimport"` tool provided by Cayenne.
 
 - Object layer of the OR mapping model is customized to the developer liking, usually via CayenneModeler. Subsequent runs of `"cdbimport"` will not override any customizations that you make.
 

@@ -18,15 +18,15 @@
 
 Cayenne runtime is built around a small powerful dependency injection (DI) container. Just like other popular DI technologies, such as Spring or Guice, Cayenne DI container manages sets of interdependent objects and allows users to configure them. These objects are regular Java objects. We are calling them "services" in this document to distinguish from all other objects that are not configured in the container and are not managed. DI container is responsible for service instantiation, injecting correct dependencies, maintaining service instances scope, and dispatching scope events to services.
 
-The services are configured in special Java classes called "modules". Each module defines binding of service interfaces to implementation instances, implementation types or providers of implementation instances. There are no XML configuration files, and all the bindings are type-safe. The container supports injection into instance variables and constructor parameters based on the @Inject annotation. This mechanism is very close to Google Guice.
+The services are configured in special Java classes called "modules". Each module defines binding of service interfaces to implementation instances, implementation types or providers of implementation instances. There are no XML configuration files, and all the bindings are type-safe. The container supports injection into instance variables and constructor parameters based on the `@Inject` annotation. This mechanism is very close to Google Guice.
 
-The discussion later in this chapter demonstrates a standalone DI container. But keep in mind that Cayenne already has a built-in Injector, and a set of default modules. A Cayenne user would normally only use the API below to write custom extension modules that will be loaded in that existing container when creating ServerRuntime. See "Starting and Stopping ServerRuntime" chapter for an example of passing an extension module to Cayenne.
+The discussion later in this chapter demonstrates a standalone DI container. But keep in mind that Cayenne already has a built-in Injector, and a set of default modules. A Cayenne user would normally only use the API below to write custom extension modules that will be loaded in that existing container when creating CayenneRuntime. See "Starting and Stopping CayenneRuntime" chapter for an example of passing an extension module to Cayenne.
 
-Cayenne DI probably has ~80% of the features expected in a DI container and has no dependency on the rest of Cayenne, so in theory can be used as an application-wide DI engine. But it's primary purpose is still to serve Cayenne. Hence there are no plans to expand it beyond Cayenne needs. It is an ideal "embedded" DI that does not interfere with Spring, Guice or any other such framework present elsewhere in the application.
+Cayenne DI probably has ~80% of the features expected in a DI container and has no dependency on the rest of Cayenne, so in theory can be used as an application-wide DI engine. But its primary purpose is still to serve Cayenne. Hence there are no plans to expand it beyond Cayenne needs. It is an ideal "embedded" DI that does not interfere with Spring, Guice or any other such framework present elsewhere in the application.
 
 ===== DI Bindings API
 
-To have a working DI container, we need three things: service interfaces and classes, a module that describes service bindings, a container that loads the module, and resolves the depedencies. Let's start with service interfaces and classes:
+To have a working DI container, we need three things: service interfaces and classes, a module that describes service bindings, a container that loads the module, and resolves the dependencies. Let's start with service interfaces and classes:
 
 [source, Java]
 ----
@@ -150,7 +150,7 @@ binder.bind(Key.get(Service2.class, "i2")).to(Service2Impl.class);
 ----
 
 
-Another types of confiuguration that can be bound in the container are lists and maps. They will be discussed in the following chapters.
+Another types of configuration that can be bound in the container are lists and maps. They will be discussed in the following chapters.
 
 ===== Service Lifecycle
 
@@ -159,7 +159,7 @@ is "singleton", meaning that a binding would result in creation of only one serv
 as well as injected into classes that declare it as a dependency.
 
 Singleton scope dispatches a "BeforeScopeEnd" event to interested services. This event occurs before the scope is shutdown,
-i.e. when `Injector.shutdown()` is called. Note that the built-in Cayenne injector is shutdown behind the scenes when `ServerRuntime.shutdown()` is invoked.
+i.e. when `Injector.shutdown()` is called. Note that the built-in Cayenne injector is shutdown behind the scenes when `CayenneRuntime.shutdown()` is invoked.
 Services may register as listeners for this event by annotating a no-argument method with `@BeforeScopeEnd` annotation.
 Such method should be implemented if a service needs to clean up some resources, stop threads, etc.
 
@@ -176,7 +176,7 @@ can be created as instances of `org.apache.cayenne.di.spi.DefaultScope` with sta
 
 ===== Overriding Services
 
-Cayenne DI allows to override services already definied in the current module, or more commonly - some other module
+Cayenne DI allows to override services already defined in the current module, or more commonly - some other module
 in the the same container. Actually there's no special API to override a service, you'd just bind the service key again
 with a new implementation or provider. The last binding for a key takes precedence. This means that the order of modules is important when configuring a container.
 The built-in Cayenne injector ensures that Cayenne standard modules are loaded first, followed by optional user extension modules.
@@ -185,8 +185,8 @@ This way the application can override the standard services in Cayenne.
 ==== Customization Strategies
 
 The previous section discussed how Cayenne DI works in general terms. Since Cayenne users will mostly be dealing with
-an existing Injector provided by ServerRuntime, it is important to understand how to build custom extensions to a preconfigured container.
-As shown in "Starting and Stopping ServerRuntime" chapter, custom extensions are done by writing an application
+an existing Injector provided by CayenneRuntime, it is important to understand how to build custom extensions to a preconfigured container.
+As shown in "Starting and Stopping CayenneRuntime" chapter, custom extensions are done by writing an application
 DI module (or multiple modules) that configures service overrides. This section shows all the configuration possibilities in detail,
 including changing properties of the existing services, contributing services to standard service lists and maps, and overriding service implementations.
 All the code examples later in this section are assumed to be placed in an application module "configure" method:
@@ -203,7 +203,7 @@ public class MyExtensionsModule implements Module {
 [source, Java]
 ----
 Module extensions = new MyExtensionsModule();
-ServerRuntime runtime = ServerRuntime.builder()
+CayenneRuntime runtime = CayenneRuntime.builder()
         .addConfig("com/example/cayenne-mydomain.xml")
         .addModule(extensions)
         .build();
@@ -219,11 +219,11 @@ There are two ways to set service properties. The most obvious one is to pass it
 
 [source]
 ----
-$ java -Dcayenne.server.contexts_sync_strategy=false ...
+$ java -Dcayenne.contexts_sync_strategy=false ...
 ----
 
 A second one is to contribute a property to `o.a.c.configuration.DefaultRuntimeProperties.properties` map (see the next section on how to do that).
-This map contains the default property values and can accept application-specific values, overrding the defaults.
+This map contains the default property values and can accept application-specific values, overriding the defaults.
 
 Note that if a property value is a name of a Java class, when this Java class is instantiated by Cayenne,
 the container performs injection of instance variables. So even the dynamically specified Java classes can use @Inject annotation to get a hold of other Cayenne services.
@@ -236,13 +236,13 @@ The map value will be ignored. This way Cayenne runtime can be reconfigured duri
 Cayenne can be extended by adding custom objects to named maps or lists bound in DI. We are calling these lists/maps "service collections".
 A service collection allows things like appending a custom strategy to a list of built-in strategies.
 E.g. an application that needs to install a custom DbAdapter for some database type may contribute an instance of custom
-DbAdapterDetector to a `o.a.c.configuration.server.DefaultDbAdapterFactory.detectors` list:
+DbAdapterDetector to a `o.a.c.configuration.runtime.DefaultDbAdapterFactory.detectors` list:
 
 [source, Java]
 ----
 public class MyDbAdapterDetector implements DbAdapterDetector {
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
-        // check if we support this database and retun custom adapter
+        // check if we support this database and return custom adapter
         ...
     }
 }
@@ -250,20 +250,20 @@ public class MyDbAdapterDetector implements DbAdapterDetector {
 
 [source, Java]
 ----
-ServerModule.contributeAdapterDetectors(binder)
-    .add(MyDbAdapterDetector.class);
+CoreModule.extend(binder)
+    .addAdapterDetector(MyDbAdapterDetector.class);
 ----
 
 The names of built-in collections are listed in "Appendix B".
 
 ===== Alternative Service Implementations
 
-As mentioned above, custom modules are loaded by ServerRuntime after the built-in modules.
+As mentioned above, custom modules are loaded by CayenneRuntime after the built-in modules.
 So it is easy to redefine a built-in service in Cayenne by rebinding desired implementations or providers.
 To do that, first we need to know what those services to redefine are.
 While we describe some of them in the following sections, the best way to get a full list
 is to check the source code of the Cayenne version you are using and
-namely look in `org.apache.cayenne.configuration.server.ServerModule` - the main built-in module in Cayenne.
+namely look in `org.apache.cayenne.configuration.runtime.CoreModule` - the main built-in module in Cayenne.
 
 Now an example of overriding `JdbcEventLogger` service. The default implementation of this service
 is provided by `Slf4jJdbcEventLogger`. But if we want to use `FormattedSlf4jJdbcEventLogger`
@@ -333,20 +333,20 @@ public class MoneyValueObjectType implements ValueObjectType<Money, BigDecimal> 
 }
 ----
 
-Last step is to register this new type in `ServerRuntime`:
+Last step is to register this new type in `CayenneRuntime`:
 
 [source, Java]
 ----
-ServerRuntime runtime = ServerRuntime.builder()
+CayenneRuntime runtime = CayenneRuntime.builder()
     .addConfig("cayenne-project.xml")
     .addModule(binder ->
-        ServerModule.contributeValueObjectTypes(binder)
-            .add(MoneyValueObjectType.class))
+        CoreModule.extend(binder)
+            .addValueObjectType(MoneyValueObjectType.class))
     .build();
 ----
 
 More examples of implementation you can find in
-https://github.com/apache/cayenne/blob/master/cayenne-server/src/main/java/org/apache/cayenne/access/types/LocalDateValueType.java[cayenne-server].
+https://github.com/apache/cayenne/blob/master/cayenne/src/main/java/org/apache/cayenne/access/types/LocalDateValueType.java[cayenne core].
 
 ===== Extended Types
 
@@ -429,10 +429,10 @@ public class DoubleArrayType implements ExtendedType {
 [source, Java]
 ----
 // add DoubleArrayType to list of user types
-ServerRuntime runtime = ServerRuntime.builder()
+CayenneRuntime runtime = CayenneRuntime.builder()
                 .addConfig("cayenne-project.xml")
                 .addModule(binder ->
-                    ServerModule.contributeUserTypes(binder)
+                    CoreModule.contributeUserTypes(binder)
                         .add(new DoubleArrayType()))
                 .build();
 ----

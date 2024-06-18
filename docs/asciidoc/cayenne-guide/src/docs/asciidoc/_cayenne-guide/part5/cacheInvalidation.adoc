@@ -70,16 +70,15 @@ public class CustomInvalidationHandler implements InvalidationHandler {
 }
 ----
 
-Now we'll set up it's usage by `ServerRuntime`:
+Now we'll set up it's usage by `CayenneRuntime`:
 
 [source, java]
 ----
-ServerRuntime.builder()
-        .addModule(CacheInvalidationModule.extend()
+CayenneRuntime.builder()
+        .addModule(binder -> CacheInvalidationModule.extend(binder)
                 // optionally you can disable @CacheGroups annotation processing
                 .noCacheGroupsHandler()
-                .addHandler(CustomInvalidationHandler.class)
-                .module())
+                .addHandler(CustomInvalidationHandler.class))
 ----
 
 NOTE: You can combine as many invalidation handlers as you need.

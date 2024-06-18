@@ -97,7 +97,7 @@ Cayenne supports combination of different schemas and catalogs, and it filters d
 </dbimport>
 ----
 
-In the example above, Cayenne reverse engineering process contains three catalogs named as shop_01, shop_02 and shop_03, each of wich has their own schemas. Cayenne will load all data only from the declared catalogs and schemas.
+In the example above, Cayenne reverse engineering process contains three catalogs named as shop_01, shop_02 and shop_03, each of which has their own schemas. Cayenne will load all data only from the declared catalogs and schemas.
 
 If you want to load everything from database, you could simply declare catalog specification alone.
 

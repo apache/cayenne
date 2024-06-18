@@ -260,9 +260,9 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
         }
 
         @Override
-        protected void setFetchingDataObjects(boolean dataObjects) {
-            super.setFetchingDataObjects(dataObjects);
-            if(!dataObjects) {
+        protected void setFetchingPersistentObjects(boolean fetchingPersistentObjects) {
+            super.setFetchingPersistentObjects(fetchingPersistentObjects);
+            if(!fetchingPersistentObjects) {
                 setEntity(null);
             }
         }

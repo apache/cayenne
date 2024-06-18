@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.velocity;
 
-import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
+import org.apache.cayenne.runtime.CayenneRuntimeModuleProvider;
 import org.apache.cayenne.unit.util.ModuleProviderChecker;
 import org.junit.Test;
 
@@ -29,7 +29,7 @@ import org.junit.Test;
 public class VelocityModuleProviderTest {
 
     @Test
-    public void testServerAutoLoadable() {
-        ModuleProviderChecker.testProviderPresent(VelocityServerModuleProvider.class, CayenneServerModuleProvider.class);
+    public void testAutoLoadable() {
+        ModuleProviderChecker.testProviderPresent(VelocityModuleProvider.class, CayenneRuntimeModuleProvider.class);
     }
 }

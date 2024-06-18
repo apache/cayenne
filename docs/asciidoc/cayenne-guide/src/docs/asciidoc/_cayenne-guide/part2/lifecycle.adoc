@@ -18,11 +18,11 @@ An application might be interested in getting notified when a Persistent object 
 
 All this can be achieved by declaring callback methods either in Persistent objects or in non-persistent listener classes defined by the application (further simply called "listeners"). There are eight types of lifecycle events supported by Cayenne, listed later in this chapter. When any such event occurs (e.g. an object is committed), Cayenne would invoke all appropriate callbacks. Persistent objects would receive their own events, while listeners would receive events from any objects.
 
-Cayenne allows to build rather powerful and complex "workflows" or "processors" tied to objects lifecycle, especially with listeners, as they have full access to the application evnironment outside Cayenne. This power comes from such features as filtering which entity events are sent to a given listener and the ability to create a common operation context for multiple callback invocations. All of these are discussed later in this chapter.
+Cayenne allows to build rather powerful and complex "workflows" or "processors" tied to objects lifecycle, especially with listeners, as they have full access to the application environment outside Cayenne. This power comes from such features as filtering which entity events are sent to a given listener and the ability to create a common operation context for multiple callback invocations. All of these are discussed later in this chapter.
 
 ==== Types of Lifecycle Events
 
-Cayenne defines the following 8 types of lifecycle events for which callbacks can be regsitered:
+Cayenne defines the following 8 types of lifecycle events for which callbacks can be registered:
 
 [#lifecycleEvent.table.table-bordered]
 .Lifecycle Event Types
@@ -64,7 +64,7 @@ Callback methods on Persistent classes are mapped in CayenneModeler for each Obj
 
 [source, Java]
 ----
-public abstract class _Order extends CayenneDataObject {
+public abstract class _Order extends PersistentObject {
     protected abstract void onNewOrder();
 }
 
@@ -81,7 +81,7 @@ As `onNewOrder()` is already declared in the mapping, it does not need to be reg
 
 As a rule callback methods do not have any knowledge of the outside application, and can only access the state of the object itself and possibly the state of other persistent objects via object's own ObjectContext.
 
-NOTE: Validation and callbacks: There is a clear overlap in functionality between object callbacks and `DataObject.validateForX()` methods. In the future validation may be completely superceeded by callbacks. It is a good idea to use "validateForX" strictly for validation (or not use it at all). Updating the state before commit should be done via callbacks.
+NOTE: Validation and callbacks: There is a clear overlap in functionality between object callbacks and `PersistentObject.validateForX()` methods. In the future validation may be completely superseded by callbacks. It is a good idea to use "validateForX" strictly for validation (or not use it at all). Updating the state before commit should be done via callbacks.
 
 ==== Callbacks on Non-Persistent Listeners
 
@@ -98,7 +98,7 @@ A listener is simply some application class that has one or more annotated callb
 }
 ----
 
-Notice that the example above contains an annotation on the callback method that defines the type of the event this method should be called for. Before we go into annotation details, we'll show how to create and register a listener with Cayenne. It is always a user responsibility to register desired application listeners, usually right after ServerRuntime is started. Here is an example:
+Notice that the example above contains an annotation on the callback method that defines the type of the event this method should be called for. Before we go into annotation details, we'll show how to create and register a listener with Cayenne. It is always a user responsibility to register desired application listeners, usually right after CayenneRuntime is started. Here is an example:
 
 First let's define 2 simple listeners.
 
@@ -128,14 +128,14 @@ public class Listener2 {
 
 Ignore the annotations for a minute. The important point here is that the listeners are arbitrary classes unmapped and unknown to Cayenne, that contain some callback methods. Now let's register them with runtime:
 
-[source, Java]
+[source,Java]
 ----
-ServerRuntime runtime = ServerRuntime.builder()
+CayenneRuntime runtime = CayenneRuntime.builder()
        // ..
        .addModule(binder ->
-            ServerModule.contributeDomainListeners()
-                .add(Listener1.class)
-                .add(new Listener2())
+            CoreModule.extend(bidner)
+                .addListener(Listener1.class)
+                .addListener(new Listener2())
        )
        // ..
        .build();
@@ -152,19 +152,19 @@ Now let's discuss the annotations. There are eight annotations exactly matching 
 // belonging to MyEntity1, MyEntity2 or their subclasses
 @PostRemove({ MyEntity1.class, MyEntity2.class })
 void postRemove(Persistent object) {
-    ...
+    // ...
 }
 ----
 
 [source, Java]
 ----
-// similar example with multipe annotations on a single method
+// similar example with multiple annotations on a single method
 // each matching just one entity
 @PostPersist(MyEntity1.class)
 @PostRemove(MyEntity1.class)
 @PostUpdate(MyEntity1.class)
 void postCommit(MyEntity1 object) {
-    ...
+    // ...
 }
 ----
 
@@ -254,11 +254,11 @@ Now since this is both a filter and a listener, it needs to be registered as suc
 [source, Java]
 ----
 // this will also add filter as a listener
-ServerRuntime runtime = ServerRuntime.builder()
+CayenneRuntime runtime = CayenneRuntime.builder()
         // ..
         .addModule(b ->
-                ServerModule.contributeDomainSyncFilters(b)
-                        .add(CommittedObjectCounter.class)
+                CoreModule.extend(b)
+                        .addSyncFilter(CommittedObjectCounter.class)
         )
         // ..
         .build();

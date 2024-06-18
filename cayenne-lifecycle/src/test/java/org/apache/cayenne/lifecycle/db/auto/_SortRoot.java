@@ -2,7 +2,7 @@ package org.apache.cayenne.lifecycle.db.auto;
 
 import java.util.List;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.exp.property.ListProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.lifecycle.db.SortDep;
@@ -13,7 +13,7 @@ import org.apache.cayenne.lifecycle.db.SortDep;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _SortRoot extends CayenneDataObject {
+public abstract class _SortRoot extends GenericPersistentObject {
 
     private static final long serialVersionUID = 1L; 
 

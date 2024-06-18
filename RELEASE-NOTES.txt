@@ -8,7 +8,7 @@ To browse individual bug reports check out project issue tracker:
 https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
-Release: 5.0.M1
+Release: 5.0-M1
 Date:
 ----------------------------------
 Changes/New Features:
@@ -19,6 +19,8 @@ CAY-2715 Support ANY and ALL expressions for subqueries
 CAY-2737 Cayenne 5.0: cleanup deprecated code
 CAY-2741 Cleanup TransactionDescriptor and deprecate DefaultTransactionDescriptor
 CAY-2742 Switch minimum required Java version to 11
+CAY-2744 Remove ROP support
+CAY-2746 Cleanup root pom.xml
 CAY-2747 Update project XML version to 11
 CAY-2751 Simplify DataNode configuration
 CAY-2752 Rename queryTemplate to dataMapTemplate in the cgen config
@@ -26,23 +28,55 @@ CAY-2753 Remove VPP support in the ant task
 CAY-2754 Add SELF property to the cgen templates
 CAY-2756 Modeler: simplify cgen UI
 CAY-2757 Modeler: Create custom templates from defaults
+CAY-2758 Refactoring code for a extended TemplateType class
+CAY-2759 Add utility methods to the SELF property
 CAY-2760 ObjectContext.userProperties need a way to clear properties
 CAY-2761 Modeler: Editor for the cgen templates
 CAY-2766 Modeler: Improving the work with velocity templates for class generation
 CAY-2767 Modeler: upgrade deprecated code in custom components
+CAY-2771 Switch to GitHub actions
 CAY-2773 Switch master to "5.0"
 CAY-2776 Upgrade Gradle to 7.6
 CAY-2780 Modeler: Multiple configurations for classes generation
 CAY-2781 Enable 'Create PK properties' by default in the cgen configuration
 CAY-2784 Remove 'Use Java primitive types' option from dbimport
+CAY-2785 Modeler: improve folder selection for cgen
 CAY-2788 DbImport: Add fallback option for the batch attribute loader
 CAY-2795 Add unit tests for the Json type
 CAY-2802 Upgrade Gradle to 7.6.1
 CAY-2803 Test infrastructure: declarative custom DI modules in ServerCase
 CAY-2805 Stop calling exp parser internally
+CAY-2807 EntityProperty.inId(..) / ninId(..) - disambiguate method parameters
+CAY-2814 Select query iterator() and batchIterator() methods return incorrect results
+CAY-2817 Pagination flow refactoring
+CAY-2818 JDK 21 support
+CAY-2819 DataContext.performIteratedQuery() method should be unified with iterator() method
+CAY-2820 Remove `server` from the components naming
+CAY-2821 Change development versioning schema
+CAY-2822 Rename `cayenne-server` module to `cayenne`
+CAY-2823 Merge `ServerRuntime` back to `CayenneRuntime` and deprecate it
+CAY-2824 Rename CayenneServerModuleProvider to CayenneRuntimeModuleProvider
+CAY-2825 Rename package `o.a.c.configuration.server` to `o.a.c.configuration.runtime`
+CAY-2826 Rename `ServerModule` to `CoreModule`
+CAY-2828 Rename values in `org.apache.cayenne.configuration.Constants`
+CAY-2829 Merge `BaseContext` with `DataContext` and deprecate it
+CAY-2830 Cleanup `DataContext` code
+CAY-2831 Upgrade Gradle to 8.5
+CAY-2833 Unify code related to the Cayenne model paths processing
+CAY-2834 v11 upgrade handler should update XMLPoolingDataSourceFactory package
+CAY-2835 Custom aggregate functions
+CAY-2837 Deprecate TraversalHelper and move no-op implementations to TraversalHandler
+CAY-2843 Use an IN clause for single field disjoint by ID prefetches
+CAY-2845 Deprecate DataObject in favour of Persistent
+CAY-2849 Switch documentation to `hugo-asciidoctorj-extension`
+CAY-2856 Upgrade Gradle to 8.8
+CAY-2857 Java 22 support
+CAY-2858 Redesign Collection and Map Property API
 
 Bug Fixes:
 
+CAY-2552 ColumnQuery with flattened attributes bug
+CAY-2621 Modeler: project is dirty after a no-change db import
 CAY-2732 Exception when creating ObjEntity from a DbEntity
 CAY-2748 Mutating the list returned from the local query cache changes the cache
 CAY-2755 Modeler: Entities are not sorted by name in the class generation view
@@ -50,10 +84,35 @@ CAY-2762 Modeler: Difference in toolbars colors on OSX
 CAY-2763 Split expressions do not work with flattened relationships
 CAY-2764 Split expressions do not work with DB relationships
 CAY-2765 dbimport: check excluded catalogs and schemas for the SQLServer
+CAY-2769 Modeler: 'rootPath' attribute is missing
+CAY-2772 Bootique-style module "extenders" for smoother configuration
 CAY-2774 Overriding service ordering in DI List causes DIRuntimeException
 CAY-2777 Reverse relationship is not set with single table inheritance
 CAY-2782 Modeler: save button becomes active on DataMap comment field focus
 CAY-2783 DbEntity to ObjEntity synchronization should check mandatory flag for primitive java types
+CAY-2786 Modeler: field outputDir work incorrect
+CAY-2789 MalformedJsonException thrown when reading manually edited JSON data in Postgres
+CAY-2790 EOModel import: NPE importing EOFetchSpecification
 CAY-2792 Fix Insertion Order For Reflexive DataObjects
+CAY-2794 Fix Incorrect JavaType for Vertical-Inheritance Attributes
+CAY-2796 Cayenne custom json formatter produces invalid json
 CAY-2800 Modeler saves map.xml files with schema ordering error
 CAY-2801 Incorrect equals() implementation in IdGenerationMarker could cause data missing in the commit
+CAY-2806 Incorrect processing of unicode escape syntax in JSON
+CAY-2809 Cayenne Expression grammar doesn't allow custom function as an argument for string functions
+CAY-2810 Can't use custom operator expression with aggregate functions
+CAY-2811 Incorrect SQL building using ColumnQuery with ASTScalar
+CAY-2813 Regression: Constants.CI_PROPERTY flag is no longer working for MySQL
+CAY-2815 Incorrect translation of aliased expression
+CAY-2827 Saved data-source XML data doesn't correspond to the XSD schema
+CAY-2838 Vertical Inheritance: Problem setting db attribute to null via flattened path
+CAY-2840 Vertical Inheritance: Missing subclass attributes with joint prefetch
+CAY-2841 Multi column ColumnSelect with SHARED_CACHE fails after 1st select
+CAY-2844 Joint prefetch doesn't use ObjEntity qualifier
+CAY-2842 Prevent duplicate select columns when using distinct with order by
+CAY-2847 Improve duplicate select column detection when using order by
+CAY-2848 Vertical Inheritance: Updating one-to-many with inverse nullifies other columns
+CAY-2850 Query using Clob comparison with empty String fails
+CAY-2851 Replace Existing OneToOne From New Object
+CAY-2853 Incorrect deletion of entities from flattened attributes
+CAY-2854 Improve delete prevention detection of flattened attribute row
