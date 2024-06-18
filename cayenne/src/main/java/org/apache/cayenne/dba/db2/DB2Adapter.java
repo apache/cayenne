@@ -134,6 +134,14 @@ public class DB2Adapter extends JdbcAdapter {
     }
 
     /**
+     * @since 5.0
+     */
+    @Override
+    public boolean typeSupportsScale(int type) {
+        return type != Types.TIME && super.typeSupportsScale(type);
+    }
+
+    /**
      * @since 4.2
      */
     @Override

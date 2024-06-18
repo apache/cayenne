@@ -430,4 +430,12 @@ public class UnitDbAdapter {
     public boolean supportScalarAsExpression(){
         return false;
     }
+
+    /**
+     * Returns true if the target database has time type with fractional seconds.
+     * @since 5.0
+     */
+    public boolean supportsPreciseTime() {
+        return true;
+    }
 }

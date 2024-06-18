@@ -32,6 +32,7 @@ import org.apache.cayenne.resource.ResourceLocator;
 
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.sql.Types;
 import java.util.List;
 
 /**
@@ -96,4 +97,11 @@ public class Oracle8Adapter extends OracleAdapter {
 		return super.findResource(name);
 	}
 
+	/**
+	 * @since 5.0
+	 */
+	@Override
+	public boolean typeSupportsScale(int type) {
+		return type != Types.TIMESTAMP && super.typeSupportsScale(type);
+	}
 }

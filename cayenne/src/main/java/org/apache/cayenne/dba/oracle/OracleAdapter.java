@@ -301,6 +301,14 @@ public class OracleAdapter extends JdbcAdapter {
 	}
 
 	/**
+	 * @since 5.0
+	 */
+	@Override
+	public boolean typeSupportsScale(int type) {
+		return type != Types.TIME && super.typeSupportsScale(type);
+	}
+
+	/**
 	 * @since 3.0
 	 */
 	final class OracleBooleanType implements ExtendedType<Boolean> {

@@ -311,6 +311,13 @@ public class TypesMapping {
 	}
 
 	/**
+	 * @since 5.0
+	 */
+	public static boolean isDateTime(int type) {
+		return type == TIME || type == TIMESTAMP;
+	}
+
+	/**
 	 * Returns an array of string names of the default JDBC data types.
 	 */
 	public static String[] getDatabaseTypes() {

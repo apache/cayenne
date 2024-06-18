@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
 import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalField;
 
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
@@ -36,6 +37,7 @@ import org.apache.cayenne.testdo.java8.LocalDateTestEntity;
 import org.apache.cayenne.testdo.java8.LocalDateTimeTestEntity;
 import org.apache.cayenne.testdo.java8.LocalTimeTestEntity;
 import org.apache.cayenne.testdo.java8.PeriodTestEntity;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
@@ -51,6 +53,9 @@ public class Java8TimeIT extends RuntimeCase {
 
 	@Inject
 	private DataContext context;
+
+	@Inject
+	private UnitDbAdapter unitDbAdapter;
 
 	@Inject
 	private DBHelper dbHelper;
@@ -101,10 +106,14 @@ public class Java8TimeIT extends RuntimeCase {
 
 		LocalTimeTestEntity testRead = ObjectSelect.query(LocalTimeTestEntity.class).selectOne(context);
 
+		TemporalField testValue = unitDbAdapter.supportsPreciseTime()
+				? ChronoField.MILLI_OF_DAY
+				: ChronoField.SECOND_OF_DAY;
+
 		assertNotNull(testRead.getTime());
 		assertEquals(LocalTime.class, testRead.getTime().getClass());
 		assertEquals(localTime.toSecondOfDay(), testRead.getTime().toSecondOfDay());
-
+		assertEquals(localTime.get(testValue), testRead.getTime().get(testValue));
 	}
 
 	@Test

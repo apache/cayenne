@@ -111,6 +111,16 @@ public interface DbAdapter {
 	boolean typeSupportsLength(int type);
 
 	/**
+	 * Returns true if supplied type can have a scale attribute as a part of column definition.
+	 *
+	 * @param type sql type code
+	 * @return <code>true</code> if a given type supports scale
+	 *
+	 * @since 5.0
+	 */
+	boolean typeSupportsScale(int type);
+
+	/**
 	 * Returns a collection of SQL statements needed to drop a database table.
 	 *
 	 * @since 3.0
