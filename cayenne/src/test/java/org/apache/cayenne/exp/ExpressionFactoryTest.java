@@ -191,6 +191,12 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
+	public void testInExpEmpty() {
+		Expression in = ExpressionFactory.inExp("abc", List.of());
+		assertEquals(ExpressionFactory.expFalse(), in);
+	}
+
+	@Test
 	public void testNotInExp1() {
 		Expression exp = ExpressionFactory.notInExp("abc", "a", "b");
 		assertEquals(Expression.NOT_IN, exp.getType());
@@ -210,6 +216,12 @@ public class ExpressionFactoryTest {
 		List<Object> v = new ArrayList<>();
 		Expression exp = ExpressionFactory.notInExp("abc", v);
 		assertEquals(Expression.TRUE, exp.getType());
+	}
+
+	@Test
+	public void testNotInExpEmpty() {
+		Expression in = ExpressionFactory.notInExp("abc", List.of());
+		assertEquals(ExpressionFactory.expTrue(), in);
 	}
 
 	@Test
