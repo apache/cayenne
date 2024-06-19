@@ -89,9 +89,9 @@ public class ValidationTabController implements DomainListener {
         });
     }
 
-    private void updateConfig(DataChannelDescriptor e) {
-        System.out.println("ValidationTabController.updateConfig");
-        ValidationConfig config = metaData.get(e, ValidationConfig.class);
+    private void updateConfig(DataChannelDescriptor dataChannel) {
+        ValidationConfig config = Optional.ofNullable(metaData.get(dataChannel, ValidationConfig.class))
+                .orElseGet(ValidationConfig::new);
         Set<Inspection> configInspections = config.getEnabledInspections();
         enabledInspections = configInspections.isEmpty()
                 ? EnumSet.noneOf(Inspection.class)

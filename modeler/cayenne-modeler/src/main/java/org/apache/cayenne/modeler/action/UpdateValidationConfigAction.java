@@ -10,6 +10,7 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.validation.ValidationConfig;
 
 import java.awt.event.ActionEvent;
+import java.util.Optional;
 
 /**
  * Requires parameters provided with {@link UpdateValidationConfigAction#putDataChannel(DataChannelDescriptor)}
@@ -38,7 +39,8 @@ public class UpdateValidationConfigAction extends CayenneAction {
         ValidationConfig config = (ValidationConfig) getValue(CONFIG_PARAM);
         CayenneUndoManager undoManager = application.getUndoManager();
         DataChannelMetaData metaData = application.getMetaData();
-        ValidationConfig oldConfig = metaData.get(dataChannel, ValidationConfig.class);
+        ValidationConfig oldConfig = Optional.ofNullable(metaData.get(dataChannel, ValidationConfig.class))
+                .orElseGet(ValidationConfig::new);
         metaData.add(dataChannel, config);
 
         if (undoable && !reverberated) {

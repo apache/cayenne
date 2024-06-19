@@ -35,24 +35,27 @@ public class ValidationSaverDelegate extends BaseSaverDelegate {
         this.metaData = metaData;
     }
 
+    @Override
+    public Void visitDataChannelDescriptor(DataChannelDescriptor channelDescriptor) {
+        return printValidationConfig(channelDescriptor);
+    }
+
     private Void printValidationConfig(DataChannelDescriptor dataChannelDescriptor) {
         ValidationConfig validationConfig = metaData.get(dataChannelDescriptor, ValidationConfig.class);
         if (validationConfig == null) {
             return null;
         }
-
         Set<Inspection> disabledInspections = EnumSet.allOf(Inspection.class);
         disabledInspections.removeAll(validationConfig.getEnabledInspections());
+        if (disabledInspections.isEmpty()) {
+            return null;
+        }
+
         encoder.start("validation").attribute("xmlns", ValidationExtension.NAMESPACE);
         for (Inspection inspection : disabledInspections) {
             encoder.simpleTag(ValidationConfigHandler.EXCLUDE_TAG, inspection.name());
         }
         encoder.end();
         return null;
-    }
-
-    @Override
-    public Void visitDataChannelDescriptor(DataChannelDescriptor channelDescriptor) {
-        return printValidationConfig(channelDescriptor);
     }
 }
