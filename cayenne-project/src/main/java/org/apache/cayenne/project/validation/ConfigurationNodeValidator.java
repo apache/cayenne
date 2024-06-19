@@ -100,16 +100,6 @@ public abstract class ConfigurationNodeValidator<T extends ConfigurationNode> {
             }
             return this;
         }
-
-        protected Performer<N> perform(ValidationAction<N> validationAction) {
-            validationAction.perform(node, validationResult);
-            return this;
-        }
-
-        protected Performer<N> perform(Runnable validationAction) {
-            validationAction.run();
-            return this;
-        }
     }
 
     protected interface ValidationAction<N> {

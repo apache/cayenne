@@ -23,6 +23,9 @@ import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.project.extension.LoaderDelegate;
 
+/**
+ * @since 5.0
+ */
 public class ValidationLoaderDelegate implements LoaderDelegate {
 
     private final DataChannelMetaData metaData;

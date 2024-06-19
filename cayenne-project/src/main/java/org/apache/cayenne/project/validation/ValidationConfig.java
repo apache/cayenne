@@ -22,6 +22,9 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
+/**
+ * @since 5.0
+ */
 public class ValidationConfig {
 
     private final Set<Inspection> enabledInspections;

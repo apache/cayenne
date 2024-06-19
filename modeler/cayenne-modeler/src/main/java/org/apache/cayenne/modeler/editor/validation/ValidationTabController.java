@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor.validation;
 
-import com.sun.source.tree.Tree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.DomainEvent;
 import org.apache.cayenne.configuration.event.DomainListener;
@@ -29,14 +28,12 @@ import org.apache.cayenne.project.validation.Inspection;
 import org.apache.cayenne.project.validation.ValidationConfig;
 import org.apache.cayenne.swing.components.tree.CheckBoxNodeData;
 
-import javax.swing.*;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.util.EnumSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -58,7 +55,6 @@ public class ValidationTabController implements DomainListener {
 
     @Override
     public void domainChanged(DomainEvent e) {
-        System.out.println("ValidationTabController.domainChanged");
         updateConfig(e.getDomain());
     }
 
@@ -67,7 +63,6 @@ public class ValidationTabController implements DomainListener {
     }
 
     void onViewLoaded() {
-        System.out.println("ValidationTabController.onViewLoaded");
         projectController.addDomainListener(this);
         updateConfig(projectController.getCurrentDataChanel());
         initListeners();
@@ -122,7 +117,6 @@ public class ValidationTabController implements DomainListener {
         }
 
         private void handleEvent(TreeModelEvent e) {
-            System.out.println("InspectionTreeModelListener.handleEvent");
             boolean inspectionsUpdated = false;
             for (Object child : e.getChildren()) {
                 if (!(child instanceof DefaultMutableTreeNode)) {
@@ -144,7 +138,6 @@ public class ValidationTabController implements DomainListener {
                     inspectionsUpdated = enabledInspections.remove(inspection);
                 }
             }
-            System.out.println("inspectionsUpdated = " + inspectionsUpdated);
             if (inspectionsUpdated) {
                 projectController.getApplication()
                         .getActionManager()

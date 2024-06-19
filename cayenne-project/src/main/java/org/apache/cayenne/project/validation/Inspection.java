@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.project.validation;
 
+/**
+ * @since 5.0
+ */
 public enum Inspection {
     DATA_CHANNEL_NO_NAME(Group.DATA_CHANNEL, "Empty data domain name", "Inspection description"),
 
@@ -136,6 +139,9 @@ public enum Inspection {
         return readableName();
     }
 
+    /**
+     * @since 5.0
+     */
     public enum Group {
         DATA_CHANNEL("Data channel"),
         DATA_NODE("Data node"),
