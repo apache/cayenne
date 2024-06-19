@@ -25,7 +25,7 @@ import org.apache.cayenne.validation.ValidationResult;
 
 import java.util.function.Supplier;
 
-public class ProcedureQueryValidator extends BaseQueryValidator<ProcedureQueryDescriptor> {
+class ProcedureQueryValidator extends BaseQueryValidator<ProcedureQueryDescriptor> {
 
     /**
      * @param configSupplier the config defining the behavior of this validator.

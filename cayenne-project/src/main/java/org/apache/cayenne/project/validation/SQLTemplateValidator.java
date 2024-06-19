@@ -26,7 +26,7 @@ import org.apache.cayenne.validation.ValidationResult;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public class SQLTemplateValidator extends BaseQueryValidator<SQLTemplateDescriptor> {
+class SQLTemplateValidator extends BaseQueryValidator<SQLTemplateDescriptor> {
 
     /**
      * @param configSupplier the config defining the behavior of this validator.

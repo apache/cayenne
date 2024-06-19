@@ -26,7 +26,7 @@ import org.apache.cayenne.validation.ValidationResult;
 
 import java.util.function.Supplier;
 
-public class DataMapValidator extends ConfigurationNodeValidator<DataMap> {
+class DataMapValidator extends ConfigurationNodeValidator<DataMap> {
 
     /**
      * @param configSupplier the config defining the behavior of this validator.

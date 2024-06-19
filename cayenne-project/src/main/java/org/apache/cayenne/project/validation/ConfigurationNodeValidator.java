@@ -22,6 +22,7 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.validation.SimpleValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -73,9 +74,10 @@ public abstract class ConfigurationNodeValidator<T extends ConfigurationNode> {
             this.validationResult = validationResult;
         }
 
-        protected Performer<N> performIfEnabled(Inspection inspection, ValidationAction<N> validationAction) {
+        protected Performer<N> performIfEnabled(Inspection inspection,
+                                                BiConsumer<N, ValidationResult> validationAction) {
             if (configSupplier.get().isEnabled(inspection)) {
-                validationAction.perform(node, validationResult);
+                validationAction.accept(node, validationResult);
             }
             return this;
         }
@@ -87,9 +89,9 @@ public abstract class ConfigurationNodeValidator<T extends ConfigurationNode> {
             return this;
         }
 
-        protected Performer<N> performIf(Predicate<N> predicate, ValidationAction<N> validationAction) {
+        protected Performer<N> performIf(Predicate<N> predicate, BiConsumer<N, ValidationResult> validationAction) {
             if (predicate.test(node)) {
-                validationAction.perform(node, validationResult);
+                validationAction.accept(node, validationResult);
             }
             return this;
         }
@@ -100,10 +102,5 @@ public abstract class ConfigurationNodeValidator<T extends ConfigurationNode> {
             }
             return this;
         }
-    }
-
-    protected interface ValidationAction<N> {
-
-        void perform(N node, ValidationResult validationResult);
     }
 }

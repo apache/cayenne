@@ -30,7 +30,7 @@ import java.util.function.Supplier;
 /**
  * Base validation for all query types
  */
-public abstract class BaseQueryValidator<T extends QueryDescriptor> extends ConfigurationNodeValidator<T> {
+abstract class BaseQueryValidator<T extends QueryDescriptor> extends ConfigurationNodeValidator<T> {
 
     /**
      * @param configSupplier the config defining the behavior of this validator.

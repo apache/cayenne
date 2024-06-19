@@ -24,7 +24,7 @@ import org.apache.cayenne.validation.ValidationResult;
 
 import java.util.function.Supplier;
 
-public class EmbeddableAttributeValidator extends ConfigurationNodeValidator<EmbeddableAttribute> {
+class EmbeddableAttributeValidator extends ConfigurationNodeValidator<EmbeddableAttribute> {
 
     /**
      * @param configSupplier the config defining the behavior of this validator.

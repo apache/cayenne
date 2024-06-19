@@ -27,7 +27,7 @@ import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
-public class ProcedureValidator extends ConfigurationNodeValidator<Procedure> {
+class ProcedureValidator extends ConfigurationNodeValidator<Procedure> {
 
     /**
      * @param configSupplier the config defining the behavior of this validator.

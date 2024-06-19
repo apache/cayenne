@@ -26,7 +26,7 @@ import org.apache.cayenne.validation.ValidationResult;
 
 import java.util.function.Supplier;
 
-public class DataNodeValidator extends ConfigurationNodeValidator<DataNodeDescriptor> {
+class DataNodeValidator extends ConfigurationNodeValidator<DataNodeDescriptor> {
 
     /**
      * @param configSupplier the config defining the behavior of this validator.

@@ -30,7 +30,7 @@ import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.validation.ValidationResult;
 
-public class SelectQueryValidator extends BaseQueryValidator<SelectQueryDescriptor> {
+class SelectQueryValidator extends BaseQueryValidator<SelectQueryDescriptor> {
 
     /**
      * @param configSupplier the config defining the behavior of this validator.

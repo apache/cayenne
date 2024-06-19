@@ -24,7 +24,7 @@ import org.apache.cayenne.validation.ValidationResult;
 
 import java.util.function.Supplier;
 
-public class EJBQLQueryValidator extends BaseQueryValidator<EJBQLQueryDescriptor> {
+class EJBQLQueryValidator extends BaseQueryValidator<EJBQLQueryDescriptor> {
 
     /**
      * @param configSupplier the config defining the behavior of this validator.

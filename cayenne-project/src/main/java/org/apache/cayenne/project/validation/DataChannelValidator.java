@@ -24,7 +24,7 @@ import org.apache.cayenne.validation.ValidationResult;
 
 import java.util.function.Supplier;
 
-public class DataChannelValidator extends ConfigurationNodeValidator<DataChannelDescriptor> {
+class DataChannelValidator extends ConfigurationNodeValidator<DataChannelDescriptor> {
 
     /**
      * @param configSupplier the config defining the behavior of this validator.

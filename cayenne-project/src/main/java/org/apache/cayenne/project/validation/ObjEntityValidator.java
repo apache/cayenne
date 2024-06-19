@@ -26,7 +26,7 @@ import org.apache.cayenne.validation.ValidationResult;
 
 import java.util.function.Supplier;
 
-public class ObjEntityValidator extends ConfigurationNodeValidator<ObjEntity> {
+class ObjEntityValidator extends ConfigurationNodeValidator<ObjEntity> {
 
     /**
      * @param configSupplier the config defining the behavior of this validator.
