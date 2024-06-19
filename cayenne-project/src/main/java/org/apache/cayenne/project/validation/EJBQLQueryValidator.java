@@ -22,14 +22,16 @@ import org.apache.cayenne.project.validation.EJBQLStatementValidator.PositionExc
 import org.apache.cayenne.map.EJBQLQueryDescriptor;
 import org.apache.cayenne.validation.ValidationResult;
 
+import java.util.function.Supplier;
+
 public class EJBQLQueryValidator extends BaseQueryValidator<EJBQLQueryDescriptor> {
 
     /**
-     * @param validationConfig the config defining the behavior of this validator.
+     * @param configSupplier the config defining the behavior of this validator.
      * @since 5.0
      */
-    public EJBQLQueryValidator(ValidationConfig validationConfig) {
-        super(validationConfig);
+    public EJBQLQueryValidator(Supplier<ValidationConfig> configSupplier) {
+        super(configSupplier);
     }
 
     @Override
@@ -40,9 +42,6 @@ public class EJBQLQueryValidator extends BaseQueryValidator<EJBQLQueryDescriptor
     }
 
     private void validateSyntax(EJBQLQueryDescriptor query, ValidationResult validationResult) {
-        if (!validationConfig.isEnabled(Inspection.EJBQL_QUERY_INVALID_SYNTAX)) {
-            return;
-        }
         PositionException message = new EJBQLStatementValidator().validateEJBQL(query);
         if (message != null) {
             addFailure(validationResult, query, "Error in EJBQL query '%s' syntax", query.getName());

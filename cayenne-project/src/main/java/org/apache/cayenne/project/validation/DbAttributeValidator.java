@@ -23,14 +23,16 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
+import java.util.function.Supplier;
+
 public class DbAttributeValidator extends ConfigurationNodeValidator<DbAttribute> {
 
     /**
-     * @param validationConfig the config defining the behavior of this validator.
+     * @param configSupplier the config defining the behavior of this validator.
      * @since 5.0
      */
-    public DbAttributeValidator(ValidationConfig validationConfig) {
-        super(validationConfig);
+    public DbAttributeValidator(Supplier<ValidationConfig> configSupplier) {
+        super(configSupplier);
     }
 
     @Override

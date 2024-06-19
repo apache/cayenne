@@ -29,6 +29,6 @@ import org.apache.cayenne.project.validation.ValidationConfig;
 public class ConfigurableProjectValidator extends DefaultProjectValidator {
 
     public ConfigurableProjectValidator(@Inject Application application) {
-        super(application.getMetaData().get(application.getProject().getRootNode(), ValidationConfig.class));
+        super(() -> application.getMetaData().get(application.getProject().getRootNode(), ValidationConfig.class));
     }
 }

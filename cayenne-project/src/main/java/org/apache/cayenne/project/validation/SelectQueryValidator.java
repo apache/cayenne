@@ -19,6 +19,7 @@
 package org.apache.cayenne.project.validation;
 
 import java.util.Iterator;
+import java.util.function.Supplier;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
@@ -32,11 +33,11 @@ import org.apache.cayenne.validation.ValidationResult;
 public class SelectQueryValidator extends BaseQueryValidator<SelectQueryDescriptor> {
 
     /**
-     * @param validationConfig the config defining the behavior of this validator.
+     * @param configSupplier the config defining the behavior of this validator.
      * @since 5.0
      */
-    public SelectQueryValidator(ValidationConfig validationConfig) {
-        super(validationConfig);
+    public SelectQueryValidator(Supplier<ValidationConfig> configSupplier) {
+        super(configSupplier);
     }
 
     @Override

@@ -41,7 +41,7 @@ public class ObjAttributeWrapper implements Wrapper<ObjAttribute>, Configuration
     private final ObjAttribute objAttribute;
     private final ValidationResult validationResult;
 
-    private final ObjAttributeWrapperValidator validator = new ObjAttributeWrapperValidator(new ValidationConfig());
+    private final ObjAttributeWrapperValidator validator = new ObjAttributeWrapperValidator(ValidationConfig::new);
 
     // TODO: for now name is only wrapped attribute we validating but this
     //       can be extended to other ObjAttribute fields as well

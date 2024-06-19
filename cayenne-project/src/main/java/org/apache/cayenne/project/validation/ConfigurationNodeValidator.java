@@ -23,6 +23,7 @@ import org.apache.cayenne.validation.SimpleValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * A base superclass of various node validators.
@@ -31,14 +32,14 @@ import java.util.function.Predicate;
  */
 public abstract class ConfigurationNodeValidator<T extends ConfigurationNode> {
 
-    protected final ValidationConfig validationConfig;
+    protected final Supplier<ValidationConfig> configSupplier;
 
     /**
-     * @param validationConfig the config defining the behavior of this validator.
+     * @param configSupplier the config defining the behavior of this validator.
      * @since 5.0
      */
-    public ConfigurationNodeValidator(ValidationConfig validationConfig) {
-        this.validationConfig = validationConfig;
+    public ConfigurationNodeValidator(Supplier<ValidationConfig> configSupplier) {
+        this.configSupplier = configSupplier;
     }
 
     /**
@@ -73,14 +74,14 @@ public abstract class ConfigurationNodeValidator<T extends ConfigurationNode> {
         }
 
         protected Performer<N> performIfEnabled(Inspection inspection, ValidationAction<N> validationAction) {
-            if (validationConfig.isEnabled(inspection)) {
+            if (configSupplier.get().isEnabled(inspection)) {
                 validationAction.perform(node, validationResult);
             }
             return this;
         }
 
         protected Performer<N> performIfEnabled(Inspection inspection, Runnable validationAction) {
-            if (validationConfig.isEnabled(inspection)) {
+            if (configSupplier.get().isEnabled(inspection)) {
                 validationAction.run();
             }
             return this;

@@ -25,31 +25,33 @@ import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class ObjAttributeValidator extends ConfigurationNodeValidator<ObjAttribute> {
 
     /**
-     * @param validationConfig the config defining the behavior of this validator.
+     * @param configSupplier the config defining the behavior of this validator.
      * @since 5.0
      */
-    public ObjAttributeValidator(ValidationConfig validationConfig) {
-        super(validationConfig);
+    public ObjAttributeValidator(Supplier<ValidationConfig> configSupplier) {
+        super(configSupplier);
     }
 
     @Override
     public void validate(ObjAttribute node, ValidationResult validationResult) {
+        ValidationConfig config = configSupplier.get();
         on(node, validationResult)
                 .performIfEnabled(Inspection.OBJ_ATTRIBUTE_NO_NAME, this::checkForName)
                 .performIfEnabled(Inspection.OBJ_ATTRIBUTE_INVALID_NAME, this::validateName)
                 .performIfEnabled(Inspection.OBJ_ATTRIBUTE_NO_TYPE, this::checkForType)
                 .performIf(n -> n instanceof EmbeddedAttribute
-                                && validationConfig.isEnabled(Inspection.OBJ_ATTRIBUTE_NO_EMBEDDABLE),
+                                && config.isEnabled(Inspection.OBJ_ATTRIBUTE_NO_EMBEDDABLE),
                         () -> checkForEmbeddable((EmbeddedAttribute) node, validationResult))
                 .performIf(n -> n instanceof EmbeddedAttribute
-                                && validationConfig.isEnabled(Inspection.OBJ_ATTRIBUTE_INVALID_MAPPING),
+                                && config.isEnabled(Inspection.OBJ_ATTRIBUTE_INVALID_MAPPING),
                         () -> validateDbAttributeMapping((EmbeddedAttribute) node, validationResult))
                 .performIf(n -> !(n instanceof EmbeddedAttribute)
-                                && validationConfig.isEnabled(Inspection.OBJ_ATTRIBUTE_INVALID_MAPPING),
+                                && config.isEnabled(Inspection.OBJ_ATTRIBUTE_INVALID_MAPPING),
                         this::validateDbAttributeMapping)
                 .performIfEnabled(Inspection.OBJ_ATTRIBUTE_PATH_DUPLICATE, this::checkForPathDuplicates)
                 .performIfEnabled(Inspection.OBJ_ATTRIBUTE_SUPER_NAME_DUPLICATE,

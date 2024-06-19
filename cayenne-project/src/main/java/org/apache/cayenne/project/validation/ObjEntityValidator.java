@@ -24,14 +24,16 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
+import java.util.function.Supplier;
+
 public class ObjEntityValidator extends ConfigurationNodeValidator<ObjEntity> {
 
     /**
-     * @param validationConfig the config defining the behavior of this validator.
+     * @param configSupplier the config defining the behavior of this validator.
      * @since 5.0
      */
-    public ObjEntityValidator(ValidationConfig validationConfig) {
-        super(validationConfig);
+    public ObjEntityValidator(Supplier<ValidationConfig> configSupplier) {
+        super(configSupplier);
     }
 
     @Override

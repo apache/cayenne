@@ -42,6 +42,8 @@ import org.apache.cayenne.validation.ValidationResult;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * @since 3.1
@@ -49,38 +51,41 @@ import java.util.Map;
 public class DefaultProjectValidator implements ProjectValidator {
 
     protected final Map<Class<? extends ConfigurationNode>, ConfigurationNodeValidator<?>> validators;
+    protected final ValidationConfig defaultConfig;
 
-    protected DefaultProjectValidator(ValidationConfig validationConfig) {
-        validators = prepareValidators(validationConfig);
+    protected DefaultProjectValidator(Supplier<ValidationConfig> configSupplier) {
+        defaultConfig = new ValidationConfig();
+        validators = prepareValidators(() -> Optional.ofNullable(configSupplier.get()).orElse(defaultConfig));
     }
 
     public DefaultProjectValidator() {
-        this(new ValidationConfig());
+        this(() -> null);
     }
 
     public ValidationResult validate(ConfigurationNode node) {
         return node.acceptVisitor(new ValidationVisitor());
     }
 
-    private static Map<Class<? extends ConfigurationNode>, ConfigurationNodeValidator<?>> prepareValidators(ValidationConfig validationConfig) {
+    private static Map<Class<? extends ConfigurationNode>, ConfigurationNodeValidator<?>> prepareValidators(
+            Supplier<ValidationConfig> configSupplier) {
         Map<Class<? extends ConfigurationNode>, ConfigurationNodeValidator<?>> validators = new HashMap<>();
-        validators.put(DataChannelDescriptor.class, new DataChannelValidator(validationConfig));
-        validators.put(DataNodeDescriptor.class, new DataNodeValidator(validationConfig));
-        validators.put(DataMap.class, new DataMapValidator(validationConfig));
-        validators.put(ObjEntity.class, new ObjEntityValidator(validationConfig));
-        validators.put(ObjAttribute.class, new ObjAttributeValidator(validationConfig));
-        validators.put(ObjRelationship.class, new ObjRelationshipValidator(validationConfig));
-        validators.put(DbEntity.class, new DbEntityValidator(validationConfig));
-        validators.put(DbAttribute.class, new DbAttributeValidator(validationConfig));
-        validators.put(DbRelationship.class, new DbRelationshipValidator(validationConfig));
-        validators.put(Embeddable.class, new EmbeddableValidator(validationConfig));
-        validators.put(EmbeddableAttribute.class, new EmbeddableAttributeValidator(validationConfig));
-        validators.put(Procedure.class, new ProcedureValidator(validationConfig));
-        validators.put(ProcedureParameter.class, new ProcedureParameterValidator(validationConfig));
-        validators.put(SelectQueryDescriptor.class, new SelectQueryValidator(validationConfig));
-        validators.put(ProcedureQueryDescriptor.class, new ProcedureQueryValidator(validationConfig));
-        validators.put(EJBQLQueryDescriptor.class, new EJBQLQueryValidator(validationConfig));
-        validators.put(SQLTemplateDescriptor.class, new SQLTemplateValidator(validationConfig));
+        validators.put(DataChannelDescriptor.class, new DataChannelValidator(configSupplier));
+        validators.put(DataNodeDescriptor.class, new DataNodeValidator(configSupplier));
+        validators.put(DataMap.class, new DataMapValidator(configSupplier));
+        validators.put(ObjEntity.class, new ObjEntityValidator(configSupplier));
+        validators.put(ObjAttribute.class, new ObjAttributeValidator(configSupplier));
+        validators.put(ObjRelationship.class, new ObjRelationshipValidator(configSupplier));
+        validators.put(DbEntity.class, new DbEntityValidator(configSupplier));
+        validators.put(DbAttribute.class, new DbAttributeValidator(configSupplier));
+        validators.put(DbRelationship.class, new DbRelationshipValidator(configSupplier));
+        validators.put(Embeddable.class, new EmbeddableValidator(configSupplier));
+        validators.put(EmbeddableAttribute.class, new EmbeddableAttributeValidator(configSupplier));
+        validators.put(Procedure.class, new ProcedureValidator(configSupplier));
+        validators.put(ProcedureParameter.class, new ProcedureParameterValidator(configSupplier));
+        validators.put(SelectQueryDescriptor.class, new SelectQueryValidator(configSupplier));
+        validators.put(ProcedureQueryDescriptor.class, new ProcedureQueryValidator(configSupplier));
+        validators.put(EJBQLQueryDescriptor.class, new EJBQLQueryValidator(configSupplier));
+        validators.put(SQLTemplateDescriptor.class, new SQLTemplateValidator(configSupplier));
         return validators;
     }
 

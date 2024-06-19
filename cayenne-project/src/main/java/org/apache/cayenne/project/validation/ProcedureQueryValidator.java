@@ -23,14 +23,16 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureQueryDescriptor;
 import org.apache.cayenne.validation.ValidationResult;
 
+import java.util.function.Supplier;
+
 public class ProcedureQueryValidator extends BaseQueryValidator<ProcedureQueryDescriptor> {
 
     /**
-     * @param validationConfig the config defining the behavior of this validator.
+     * @param configSupplier the config defining the behavior of this validator.
      * @since 5.0
      */
-    public ProcedureQueryValidator(ValidationConfig validationConfig) {
-        super(validationConfig);
+    public ProcedureQueryValidator(Supplier<ValidationConfig> configSupplier) {
+        super(configSupplier);
     }
 
     @Override

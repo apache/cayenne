@@ -19,6 +19,7 @@
 package org.apache.cayenne.project.validation;
 
 import java.sql.Types;
+import java.util.function.Supplier;
 
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.ProcedureParameter;
@@ -28,11 +29,11 @@ import org.apache.cayenne.validation.ValidationResult;
 public class ProcedureParameterValidator extends ConfigurationNodeValidator<ProcedureParameter> {
 
     /**
-     * @param validationConfig the config defining the behavior of this validator.
+     * @param configSupplier the config defining the behavior of this validator.
      * @since 5.0
      */
-    public ProcedureParameterValidator(ValidationConfig validationConfig) {
-        super(validationConfig);
+    public ProcedureParameterValidator(Supplier<ValidationConfig> configSupplier) {
+        super(configSupplier);
     }
 
     @Override

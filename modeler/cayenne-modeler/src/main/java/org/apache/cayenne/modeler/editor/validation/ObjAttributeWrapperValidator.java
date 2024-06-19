@@ -25,14 +25,16 @@ import org.apache.cayenne.project.validation.ConfigurationNodeValidator;
 import org.apache.cayenne.project.validation.ValidationConfig;
 import org.apache.cayenne.validation.ValidationResult;
 
+import java.util.function.Supplier;
+
 public class ObjAttributeWrapperValidator extends ConfigurationNodeValidator<ObjAttributeWrapper> {
 
     /**
-     * @param validationConfig the config defining the behavior of this validator.
+     * @param configSupplier the config defining the behavior of this validator.
      * @since 5.0
      */
-    public ObjAttributeWrapperValidator(ValidationConfig validationConfig) {
-        super(validationConfig);
+    public ObjAttributeWrapperValidator(Supplier<ValidationConfig> configSupplier) {
+        super(configSupplier);
     }
 
     @Override

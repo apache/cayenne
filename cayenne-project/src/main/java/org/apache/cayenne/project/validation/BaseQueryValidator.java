@@ -25,17 +25,19 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
+import java.util.function.Supplier;
+
 /**
  * Base validation for all query types
  */
 public abstract class BaseQueryValidator<T extends QueryDescriptor> extends ConfigurationNodeValidator<T> {
 
     /**
-     * @param validationConfig the config defining the behavior of this validator.
+     * @param configSupplier the config defining the behavior of this validator.
      * @since 5.0
      */
-    public BaseQueryValidator(ValidationConfig validationConfig) {
-        super(validationConfig);
+    public BaseQueryValidator(Supplier<ValidationConfig> configSupplier) {
+        super(configSupplier);
     }
 
     @Override

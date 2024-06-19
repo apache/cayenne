@@ -24,14 +24,16 @@ import org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
+import java.util.function.Supplier;
+
 public class DataNodeValidator extends ConfigurationNodeValidator<DataNodeDescriptor> {
 
     /**
-     * @param validationConfig the config defining the behavior of this validator.
+     * @param configSupplier the config defining the behavior of this validator.
      * @since 5.0
      */
-    public DataNodeValidator(ValidationConfig validationConfig) {
-        super(validationConfig);
+    public DataNodeValidator(Supplier<ValidationConfig> configSupplier) {
+        super(configSupplier);
     }
 
     @Override

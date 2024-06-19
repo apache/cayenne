@@ -22,14 +22,16 @@ import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
+import java.util.function.Supplier;
+
 public class EmbeddableAttributeValidator extends ConfigurationNodeValidator<EmbeddableAttribute> {
 
     /**
-     * @param validationConfig the config defining the behavior of this validator.
+     * @param configSupplier the config defining the behavior of this validator.
      * @since 5.0
      */
-    public EmbeddableAttributeValidator(ValidationConfig validationConfig) {
-        super(validationConfig);
+    public EmbeddableAttributeValidator(Supplier<ValidationConfig> configSupplier) {
+        super(configSupplier);
     }
 
     @Override

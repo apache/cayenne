@@ -22,14 +22,16 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
+import java.util.function.Supplier;
+
 public class DataChannelValidator extends ConfigurationNodeValidator<DataChannelDescriptor> {
 
     /**
-     * @param validationConfig the config defining the behavior of this validator.
+     * @param configSupplier the config defining the behavior of this validator.
      * @since 5.0
      */
-    public DataChannelValidator(ValidationConfig validationConfig) {
-        super(validationConfig);
+    public DataChannelValidator(Supplier<ValidationConfig> configSupplier) {
+        super(configSupplier);
     }
 
     @Override

@@ -29,15 +29,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class DbRelationshipValidator extends ConfigurationNodeValidator<DbRelationship> {
 
     /**
-     * @param validationConfig the config defining the behavior of this validator.
+     * @param configSupplier the config defining the behavior of this validator.
      * @since 5.0
      */
-    public DbRelationshipValidator(ValidationConfig validationConfig) {
-        super(validationConfig);
+    public DbRelationshipValidator(Supplier<ValidationConfig> configSupplier) {
+        super(configSupplier);
     }
 
     @Override

@@ -24,14 +24,16 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
+import java.util.function.Supplier;
+
 public class DataMapValidator extends ConfigurationNodeValidator<DataMap> {
 
     /**
-     * @param validationConfig the config defining the behavior of this validator.
+     * @param configSupplier the config defining the behavior of this validator.
      * @since 5.0
      */
-    public DataMapValidator(ValidationConfig validationConfig) {
-        super(validationConfig);
+    public DataMapValidator(Supplier<ValidationConfig> configSupplier) {
+        super(configSupplier);
     }
 
     @Override

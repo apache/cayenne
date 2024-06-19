@@ -24,15 +24,16 @@ import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class SQLTemplateValidator extends BaseQueryValidator<SQLTemplateDescriptor> {
 
     /**
-     * @param validationConfig the config defining the behavior of this validator.
+     * @param configSupplier the config defining the behavior of this validator.
      * @since 5.0
      */
-    public SQLTemplateValidator(ValidationConfig validationConfig) {
-        super(validationConfig);
+    public SQLTemplateValidator(Supplier<ValidationConfig> configSupplier) {
+        super(configSupplier);
     }
 
     @Override
