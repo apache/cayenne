@@ -209,6 +209,26 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 */
 	public static final int SCALAR = 56;
 
+	/**
+	 * @since 5.0
+	 */
+	public static final int CASE_WHEN = 57;
+
+	/**
+	 * @since 5.0
+	 */
+	public static final int WHEN = 58;
+
+	/**
+	 * @since 5.0
+	 */
+	public static final int THEN = 59;
+
+	/**
+	 * @since 5.0
+	 */
+	public static final int ELSE = 60;
+
 	protected int type = -1;
 
 	/**
