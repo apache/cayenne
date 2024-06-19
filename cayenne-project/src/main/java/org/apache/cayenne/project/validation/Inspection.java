@@ -143,7 +143,7 @@ public enum Inspection {
      * @since 5.0
      */
     public enum Group {
-        DATA_CHANNEL("Data channel"),
+        DATA_CHANNEL("Data domain"),
         DATA_NODE("Data node"),
         DATA_MAP("Data map"),
         OBJ_ENTITY("Obj entity"),
