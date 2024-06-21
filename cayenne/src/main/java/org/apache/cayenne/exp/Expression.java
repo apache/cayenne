@@ -446,6 +446,28 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	public abstract Expression notExp();
 
 	/**
+	 * Returns expression that will be dynamically resolved to proper subqueries based on a relationships used
+	 * (if no relationships are present in the original expression no subqueries will be used).
+	 *
+	 * @return exists expression
+	 *
+	 * @see ExpressionFactory#exists(Expression)
+	 * @since 5.0
+	 */
+	public abstract Expression exists();
+
+	/**
+	 * Returns expression that will be dynamically resolved to proper subqueries based on a relationships used
+	 * (if no relationships are present in the original expression no subqueries will be used).
+	 *
+	 * @return not exists expression
+	 *
+	 * @see ExpressionFactory#notExists(Expression)
+	 * @since 5.0
+	 */
+	public abstract Expression notExists();
+
+	/**
 	 * Returns a count of operands of this expression. In real life there are
 	 * unary (count == 1), binary (count == 2) and ternary (count == 3)
 	 * expressions.

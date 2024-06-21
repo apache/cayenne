@@ -48,6 +48,7 @@ CAY-2803 Test infrastructure: declarative custom DI modules in ServerCase
 CAY-2805 Stop calling exp parser internally
 CAY-2807 EntityProperty.inId(..) / ninId(..) - disambiguate method parameters
 CAY-2814 Select query iterator() and batchIterator() methods return incorrect results
+CAY-2816 (NOT) EXIST usability - provide simple expression syntax
 CAY-2817 Pagination flow refactoring
 CAY-2818 JDK 21 support
 CAY-2819 DataContext.performIteratedQuery() method should be unified with iterator() method

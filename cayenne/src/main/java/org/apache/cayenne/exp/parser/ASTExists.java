@@ -20,15 +20,16 @@
 package org.apache.cayenne.exp.parser;
 
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 
 /**
  * @since 4.2
  */
 public class ASTExists extends ConditionNode {
 
-    public ASTExists(ASTSubquery subquery) {
+    public ASTExists(Expression expression) {
         super(0);
-        jjtAddChild(subquery, 0);
+        jjtAddChild((SimpleNode)expression, 0);
     }
 
     ASTExists(int id) {
@@ -51,6 +52,22 @@ public class ASTExists extends ConditionNode {
     }
 
     @Override
+    public void jjtSetParent(Node n) {
+        parent = n;
+    }
+
+    @Override
+    public void setOperand(int index, Object value) {
+        Node node = (value == null || value instanceof Node) ? (Node) value : new ASTScalar(value);
+        jjtAddChild(node, index);
+
+        // set the parent, as jjtAddChild doesn't do it...
+        if (node != null) {
+            ((SimpleNode)node).parent = this;
+        }
+    }
+
+    @Override
     public Expression shallowCopy() {
         return new ASTExists(id);
     }
@@ -58,5 +75,23 @@ public class ASTExists extends ConditionNode {
     @Override
     public int getType() {
         return Expression.EXISTS;
+    }
+
+    /**
+     * @inheritDoc
+     * @since 5.0
+     */
+    @Override
+    public Expression exists() {
+        return this;
+    }
+
+    /**
+     * @inheritDoc
+     * @since 5.0
+     */
+    @Override
+    public Expression notExists() {
+        return ExpressionFactory.notExists((Expression) getOperand(0));
     }
 }

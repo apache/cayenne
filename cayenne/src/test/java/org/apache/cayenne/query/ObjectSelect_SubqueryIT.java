@@ -80,6 +80,30 @@ public class ObjectSelect_SubqueryIT extends RuntimeCase {
     }
 
     @Test
+    public void selectQuery_existsExpressionSimple() {
+        long count = ObjectSelect.query(Artist.class)
+                .where(Artist.PAINTING_ARRAY.exists())
+                .selectCount(context);
+        assertEquals(5L, count);
+    }
+
+    @Test
+    public void selectQuery_existsExpression() {
+        long count = ObjectSelect.query(Artist.class)
+                .where(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).like("painting%").exists())
+                .selectCount(context);
+        assertEquals(5L, count);
+    }
+
+    @Test
+    public void selectQuery_simpleNotExistsExpression() {
+        long count = ObjectSelect.query(Artist.class)
+                .where(Artist.PAINTING_ARRAY.notExists())
+                .selectCount(context);
+        assertEquals(15L, count);
+    }
+
+    @Test
     public void selectQuery_existsWithExpressionFromParentQuery() {
         Expression exp = Painting.TO_ARTIST.eq(Artist.ARTIST_ID_PK_PROPERTY.enclosing())
                 .andExp(Painting.PAINTING_TITLE.like("painting%"))

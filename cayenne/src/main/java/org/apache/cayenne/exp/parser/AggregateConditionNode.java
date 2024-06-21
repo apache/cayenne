@@ -21,7 +21,9 @@ package org.apache.cayenne.exp.parser;
 
 import java.util.function.Function;
 
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.exp.ExpressionFactory;
 
 /**
  * Superclass of aggregated conditional nodes such as NOT, AND, OR. Performs
@@ -95,5 +97,23 @@ public abstract class AggregateConditionNode extends SimpleNode {
 		}
 
 		super.jjtAddChild(n, i);
+	}
+
+	/**
+	 * @inheritDoc
+	 * @since 5.0
+	 */
+	@Override
+	public Expression exists() {
+		return ExpressionFactory.exists(this);
+	}
+
+	/**
+	 * @inheritDoc
+	 * @since 5.0
+	 */
+	@Override
+	public Expression notExists() {
+		return ExpressionFactory.notExists(this);
 	}
 }
