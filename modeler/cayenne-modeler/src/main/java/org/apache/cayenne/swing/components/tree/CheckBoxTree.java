@@ -42,8 +42,8 @@ public class CheckBoxTree extends JPanel {
     private static final String TOGGLE_ROW_ACTION_KEY = "toggleRow";
     private static final String SELECTION_BACKGROUND_COLOR_KEY = "Tree.selectionBackground";
 
-    private final JTree labelTree;
-    private final JTree checkBoxTree;
+    protected final JTree labelTree;
+    protected final JTree checkBoxTree;
 
     public CheckBoxTree(TreeModel model) {
         labelTree = new JTree(model);
@@ -63,22 +63,6 @@ public class CheckBoxTree extends JPanel {
     private void init() {
         initRender();
         initListeners();
-    }
-
-    private void initListeners() {
-        labelTree.getModel().addTreeModelListener(new CheckBoxTreeModelEventHandler());
-        checkBoxTree.setModel(labelTree.getModel());
-
-        labelTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-        labelTree.addMouseListener(new TreeFullWidthMouseClickHandler(labelTree));
-        checkBoxTree.setSelectionModel(labelTree.getSelectionModel());
-
-        labelTree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), TOGGLE_ROW_ACTION_KEY);
-        checkBoxTree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), TOGGLE_ROW_ACTION_KEY);
-        labelTree.getActionMap().put(TOGGLE_ROW_ACTION_KEY, new ToggleRowAction());
-        checkBoxTree.getActionMap().put(TOGGLE_ROW_ACTION_KEY, new ToggleRowAction());
-
-        labelTree.addTreeWillExpandListener(new ShareExpandListener(checkBoxTree));
     }
 
     private void initRender() {
@@ -103,22 +87,20 @@ public class CheckBoxTree extends JPanel {
         add(checkBoxTree, BorderLayout.EAST);
     }
 
-    private static int countCheckedChildren(TreeModel model, DefaultMutableTreeNode parentNode) {
-        int childCount = model.getChildCount(parentNode);
-        int checkCount = 0;
-        for (int i = 0; i < childCount; i++) {
-            Object childComponent = model.getChild(parentNode, i);
-            if (!(childComponent instanceof DefaultMutableTreeNode)) {
-                continue;
-            }
-            DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) childComponent;
-            if (!(childNode.getUserObject() instanceof CheckBoxNodeData)) {
-                continue;
-            }
-            CheckBoxNodeData childData = (CheckBoxNodeData) childNode.getUserObject();
-            checkCount += childData.isSelected() ? 1 : 0;
-        }
-        return checkCount;
+    private void initListeners() {
+        labelTree.getModel().addTreeModelListener(new CheckBoxTreeModelEventHandler());
+        checkBoxTree.setModel(labelTree.getModel());
+
+        labelTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+        labelTree.addMouseListener(new TreeFullWidthMouseClickHandler(labelTree));
+        checkBoxTree.setSelectionModel(labelTree.getSelectionModel());
+
+        labelTree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), TOGGLE_ROW_ACTION_KEY);
+        checkBoxTree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), TOGGLE_ROW_ACTION_KEY);
+        labelTree.getActionMap().put(TOGGLE_ROW_ACTION_KEY, new ToggleRowAction());
+        checkBoxTree.getActionMap().put(TOGGLE_ROW_ACTION_KEY, new ToggleRowAction());
+
+        labelTree.addTreeWillExpandListener(new ShareExpandListener(checkBoxTree));
     }
 
     private static class CheckBoxTreeModelEventHandler implements TreeModelListener {
@@ -190,6 +172,24 @@ public class CheckBoxTree extends JPanel {
             model.valueForPathChanged(parentPath, parentDataChanged);
         }
 
+        private static int countCheckedChildren(TreeModel model, DefaultMutableTreeNode parentNode) {
+            int childCount = model.getChildCount(parentNode);
+            int checkCount = 0;
+            for (int i = 0; i < childCount; i++) {
+                Object childComponent = model.getChild(parentNode, i);
+                if (!(childComponent instanceof DefaultMutableTreeNode)) {
+                    continue;
+                }
+                DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) childComponent;
+                if (!(childNode.getUserObject() instanceof CheckBoxNodeData)) {
+                    continue;
+                }
+                CheckBoxNodeData childData = (CheckBoxNodeData) childNode.getUserObject();
+                checkCount += childData.isSelected() ? 1 : 0;
+            }
+            return checkCount;
+        }
+
         private void propagateCheckBoxState(TreeModel model, TreePath childPath, CheckBoxNodeData.State parentState) {
             if (parentState == CheckBoxNodeData.State.INDETERMINATE) {
                 return;
@@ -215,7 +215,6 @@ public class CheckBoxTree extends JPanel {
             });
         }
     }
-
 
     private static class ShareExpandListener implements TreeWillExpandListener {
 

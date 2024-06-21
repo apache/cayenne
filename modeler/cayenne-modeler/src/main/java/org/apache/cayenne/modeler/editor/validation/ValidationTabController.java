@@ -76,7 +76,7 @@ public class ValidationTabController implements DomainListener {
         enabledInspections = configInspections.isEmpty()
                 ? EnumSet.noneOf(Inspection.class)
                 : EnumSet.copyOf(configInspections);
-        view.refreshSelectedInspections(enabledInspections);
+        view.inspectionTree.refreshSelectedInspections(enabledInspections);
     }
 
     private class InspectionTreeModelListener implements TreeModelListener {
