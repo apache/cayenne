@@ -33,7 +33,6 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.util.EnumSet;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -85,8 +84,7 @@ public class ValidationTabController implements DomainListener {
     }
 
     private void updateConfig(DataChannelDescriptor dataChannel) {
-        ValidationConfig config = Optional.ofNullable(metaData.get(dataChannel, ValidationConfig.class))
-                .orElseGet(ValidationConfig::new);
+        ValidationConfig config = ValidationConfig.fromMetadata(metaData, dataChannel);
         Set<Inspection> configInspections = config.getEnabledInspections();
         enabledInspections = configInspections.isEmpty()
                 ? EnumSet.noneOf(Inspection.class)

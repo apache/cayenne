@@ -18,8 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.project.validation;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -47,5 +51,9 @@ public class ValidationConfig {
 
     public boolean isEnabled(Inspection inspection) {
         return enabledInspections.contains(inspection);
+    }
+
+    public static ValidationConfig fromMetadata(DataChannelMetaData metaData, DataChannelDescriptor dataChannel) {
+        return Optional.ofNullable(metaData.get(dataChannel, ValidationConfig.class)).orElseGet(ValidationConfig::new);
     }
 }

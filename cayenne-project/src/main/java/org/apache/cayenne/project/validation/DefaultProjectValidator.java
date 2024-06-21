@@ -42,7 +42,6 @@ import org.apache.cayenne.validation.ValidationResult;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -51,15 +50,15 @@ import java.util.function.Supplier;
 public class DefaultProjectValidator implements ProjectValidator {
 
     protected final Map<Class<? extends ConfigurationNode>, ConfigurationNodeValidator<?>> validators;
-    protected final ValidationConfig defaultConfig;
+    protected ValidationConfig defaultConfig;
 
     protected DefaultProjectValidator(Supplier<ValidationConfig> configSupplier) {
-        defaultConfig = new ValidationConfig();
-        validators = prepareValidators(() -> Optional.ofNullable(configSupplier.get()).orElse(defaultConfig));
+        validators = prepareValidators(configSupplier);
     }
 
     public DefaultProjectValidator() {
-        this(() -> null);
+        defaultConfig = new ValidationConfig();
+        validators = prepareValidators(() -> defaultConfig);
     }
 
     public ValidationResult validate(ConfigurationNode node) {

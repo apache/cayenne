@@ -44,10 +44,7 @@ public class ValidationSaverDelegate extends BaseSaverDelegate {
     }
 
     private Void printValidationConfig(DataChannelDescriptor dataChannelDescriptor) {
-        ValidationConfig validationConfig = metaData.get(dataChannelDescriptor, ValidationConfig.class);
-        if (validationConfig == null) {
-            return null;
-        }
+        ValidationConfig validationConfig = ValidationConfig.fromMetadata(metaData, dataChannelDescriptor);
         Set<Inspection> disabledInspections = EnumSet.allOf(Inspection.class);
         disabledInspections.removeAll(validationConfig.getEnabledInspections());
         if (disabledInspections.isEmpty()) {
