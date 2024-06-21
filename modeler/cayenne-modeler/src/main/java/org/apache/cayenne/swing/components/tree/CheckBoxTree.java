@@ -86,7 +86,6 @@ public class CheckBoxTree extends JPanel {
         labelTree.setShowsRootHandles(true);
         labelTree.setUI(new FullWidthPaintTreeUI());
         labelTree.setCellRenderer(new LabelTreeCellRenderer());
-        labelTree.setOpaque(false);
 
         checkBoxTree.setRootVisible(false);
         checkBoxTree.setEditable(true);
@@ -98,7 +97,6 @@ public class CheckBoxTree extends JPanel {
         });
         checkBoxTree.setCellRenderer(new CheckBoxTreeCellRenderer());
         checkBoxTree.setCellEditor(new CheckBoxTreeCellEditor(checkBoxTree));
-        checkBoxTree.setOpaque(false);
 
         setLayout(new BorderLayout());
         add(labelTree, BorderLayout.CENTER);

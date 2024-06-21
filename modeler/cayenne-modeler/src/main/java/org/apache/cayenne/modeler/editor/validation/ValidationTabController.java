@@ -31,7 +31,6 @@ import org.apache.cayenne.swing.components.tree.CheckBoxNodeData;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreePath;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -69,18 +68,6 @@ public class ValidationTabController implements DomainListener {
 
     private void initListeners() {
         view.inspectionTree.getModel().addTreeModelListener(new InspectionTreeModelListener());
-        view.inspectionTree.getSelectionModel().addTreeSelectionListener(e -> {
-            TreePath path = e.getNewLeadSelectionPath();
-            if (path == null || !(path.getLastPathComponent() instanceof DefaultMutableTreeNode)) {
-                return;
-            }
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
-            if (!(node.getUserObject() instanceof CheckBoxNodeData)) {
-                return;
-            }
-
-            view.showDescription((CheckBoxNodeData) node.getUserObject());
-        });
     }
 
     private void updateConfig(DataChannelDescriptor dataChannel) {

@@ -24,7 +24,6 @@ import org.apache.cayenne.swing.components.tree.CheckBoxNodeData;
 import org.apache.cayenne.swing.components.tree.CheckBoxTree;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeModel;
@@ -40,11 +39,9 @@ import java.util.Set;
  */
 public class ValidationTab extends JPanel {
 
+    final ValidationTabController controller;
     Map<Inspection, TreePath> inspectionPathMap;
     CheckBoxTree inspectionTree;
-    JTextArea descriptionArea;
-
-    final ValidationTabController controller;
 
     public ValidationTab(ValidationTabController controller) {
         this.controller = controller;
@@ -52,11 +49,19 @@ public class ValidationTab extends JPanel {
     }
 
     public void initView() {
-        removeAll();
-        setLayout(new BorderLayout());
-        JPanel inspectionPanel = new JPanel();
-        inspectionPanel.setLayout(new BorderLayout());
+        resetView();
 
+        inspectionTree = initTree();
+        JScrollPane scrollableInspectionPane = new JScrollPane(inspectionTree);
+        scrollableInspectionPane.getVerticalScrollBar().setUnitIncrement(12);
+
+        setLayout(new BorderLayout());
+        add(scrollableInspectionPane, BorderLayout.CENTER);
+
+        controller.onViewLoaded();
+    }
+
+    CheckBoxTree initTree() {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode();
         Map<Inspection.Group, MutableTreeNode> groupNodes = new EnumMap<>(Inspection.Group.class);
         for (Inspection inspection : Inspection.values()) {
@@ -65,32 +70,12 @@ public class ValidationTab extends JPanel {
             inspectionPathMap.put(inspection, new TreePath(inspectionNode.getPath()));
         }
         TreeModel treeModel = new ChangeOptimizingTreeModel(root);
-        inspectionTree = new CheckBoxTree(treeModel);
+        return new CheckBoxTree(treeModel);
+    }
 
-        inspectionTree.setBorder(new EmptyBorder(10, 10 ,10 ,10));
-        inspectionPanel.add(inspectionTree, BorderLayout.CENTER);
-
-        JPanel descriptionPanel = new JPanel();
-        descriptionPanel.setLayout(new BoxLayout(descriptionPanel, BoxLayout.Y_AXIS));
-        descriptionPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        descriptionPanel.setMinimumSize(new Dimension(0, 0));
-
-        descriptionArea = new JTextArea();
-        descriptionArea.setLineWrap(true);
-        descriptionArea.setWrapStyleWord(true);
-        descriptionArea.setEditable(false);
-        descriptionPanel.add(descriptionArea);
-
-        JScrollPane scrollableInspectionPane = new JScrollPane(inspectionPanel);
-        scrollableInspectionPane.getVerticalScrollBar().setUnitIncrement(12);
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-                scrollableInspectionPane,
-                descriptionPanel
-        );
-        splitPane.setDividerLocation(450);
-        this.add(splitPane);
-
-        controller.onViewLoaded();
+    void resetView() {
+        removeAll();
+        inspectionPathMap.clear();
     }
 
     void refreshSelectedInspections(Set<Inspection> selectedInspections) {
@@ -102,17 +87,6 @@ public class ValidationTab extends JPanel {
             CheckBoxNodeData data = (CheckBoxNodeData) node.getUserObject();
 
             model.valueForPathChanged(path, data.withState(selectedInspections.contains(inspection)));
-        }
-    }
-
-    void showDescription(CheckBoxNodeData data) {
-        Object value = data.getValue();
-        if (value instanceof Inspection) {
-            descriptionArea.setText(((Inspection) value).description() + ".");
-        } else if (value instanceof Inspection.Group) {
-            descriptionArea.setText(((Inspection.Group) value).readableName() + " inspections.");
-        } else {
-            descriptionArea.setText("");
         }
     }
 
