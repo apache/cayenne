@@ -35,7 +35,7 @@ import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
 import org.apache.cayenne.modeler.util.DefaultWidgetFactory;
 import org.apache.cayenne.modeler.util.WidgetFactory;
 import org.apache.cayenne.modeler.validation.ConfigurableProjectValidator;
-import org.apache.cayenne.modeler.validation.extenstion.ValidationExtension;
+import org.apache.cayenne.modeler.validation.extension.ValidationExtension;
 import org.apache.cayenne.project.ProjectModule;
 import org.apache.cayenne.project.extension.ExtensionAwareHandlerFactory;
 import org.apache.cayenne.project.extension.info.InfoExtension;

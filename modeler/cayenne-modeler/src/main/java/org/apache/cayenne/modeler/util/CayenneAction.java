@@ -115,7 +115,7 @@ public abstract class CayenneAction extends AbstractAction {
     }
 
     /**
-     * Returns the name of the icon that should be used for buttons. Name will be reolved
+     * Returns the name of the icon that should be used for buttons. Name will be resolved
      * relative to <code>RESOURCE_PATH</code>. Default implementation returns
      * <code>null</code>.
      */
