@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.undo;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.action.UpdateValidationConfigAction;
 import org.apache.cayenne.project.validation.ValidationConfig;
 
@@ -31,13 +29,10 @@ import javax.swing.undo.CannotUndoException;
  */
 public class UpdateValidationConfigUndoableEdit extends CayenneUndoableEdit {
 
-    private final DataChannelDescriptor dataChannel;
     private final ValidationConfig oldConfig;
     private final ValidationConfig newConfig;
 
-    public UpdateValidationConfigUndoableEdit(DataChannelDescriptor dataChannel,
-                                              ValidationConfig oldConfig, ValidationConfig newConfig) {
-        this.dataChannel = dataChannel;
+    public UpdateValidationConfigUndoableEdit(ValidationConfig oldConfig, ValidationConfig newConfig) {
         this.oldConfig = oldConfig;
         this.newConfig = newConfig;
     }
