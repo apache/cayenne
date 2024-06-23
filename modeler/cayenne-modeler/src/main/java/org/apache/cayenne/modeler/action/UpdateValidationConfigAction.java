@@ -12,46 +12,44 @@ import org.apache.cayenne.project.validation.ValidationConfig;
 import java.awt.event.ActionEvent;
 
 /**
- * Requires parameters provided with {@link UpdateValidationConfigAction#putDataChannel(DataChannelDescriptor)}
- * and {@link UpdateValidationConfigAction#putConfig(ValidationConfig)}.
+ * Requires config provided with {@link UpdateValidationConfigAction#putConfig(ValidationConfig)}.
  *
  * @since 5.0
  * */
 public class UpdateValidationConfigAction extends CayenneAction {
 
-    public static final String DATA_CHANNEL_PARAM = "dataChannel";
-    public static final String CONFIG_PARAM = "config";
+    public static final String ACTION_NAME = "Update ValidationConfig";
 
-    private static final String ACTION_NAME = "Update ValidationConfig";
+    private static final String CONFIG_PARAM = "config";
 
     private boolean undoable;
-    private boolean reverberated;
 
     public UpdateValidationConfigAction(Application application) {
         super(ACTION_NAME, application);
         undoable = true;
     }
 
+    protected UpdateValidationConfigAction(String name, Application application) {
+        super(name, application);
+    }
+
+    public void performAction(Object source) {
+        performAction(new ActionEvent(source, ActionEvent.ACTION_PERFORMED, null));
+    }
+
     @Override
     public void performAction(ActionEvent e) {
-        DataChannelDescriptor dataChannel = (DataChannelDescriptor) getValue(DATA_CHANNEL_PARAM);
-        ValidationConfig config = (ValidationConfig) getValue(CONFIG_PARAM);
-        CayenneUndoManager undoManager = application.getUndoManager();
         DataChannelMetaData metaData = application.getMetaData();
+        DataChannelDescriptor dataChannel = ((DataChannelDescriptor) application.getProject().getRootNode());
+        ValidationConfig config = (ValidationConfig) getValue(CONFIG_PARAM);
         ValidationConfig oldConfig = ValidationConfig.fromMetadata(metaData, dataChannel);
         metaData.add(dataChannel, config);
 
-        if (undoable && !reverberated) {
+        if (undoable) {
+            CayenneUndoManager undoManager = application.getUndoManager();
             undoManager.addEdit(new UpdateValidationConfigUndoableEdit(dataChannel, oldConfig, config));
         }
-        reverberated = true;
-        getProjectController().fireDomainEvent(new DomainEvent(this, dataChannel));
-        reverberated = false;
-    }
-
-    public UpdateValidationConfigAction putDataChannel(DataChannelDescriptor dataChannel) {
-        putValue(DATA_CHANNEL_PARAM, dataChannel);
-        return this;
+        getProjectController().fireDomainEvent(new DomainEvent(e.getSource(), dataChannel));
     }
 
     public UpdateValidationConfigAction putConfig(ValidationConfig config) {

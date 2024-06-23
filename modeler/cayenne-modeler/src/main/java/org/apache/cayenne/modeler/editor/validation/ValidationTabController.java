@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor.validation;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.DomainEvent;
 import org.apache.cayenne.configuration.event.DomainListener;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
@@ -44,6 +43,7 @@ public class ValidationTabController implements DomainListener {
     private final ValidationTab view;
 
     private Set<Inspection> enabledInspections;
+    private InspectionTreeModelListener inspectionTreeModelListener;
 
     public ValidationTabController(ProjectController projectController) {
         this.projectController = projectController;
@@ -53,7 +53,10 @@ public class ValidationTabController implements DomainListener {
 
     @Override
     public void domainChanged(DomainEvent e) {
-        updateConfig(e.getDomain());
+        // get rid of reverberated config updates
+        view.inspectionTree.getModel().removeTreeModelListener(inspectionTreeModelListener);
+        configUpdated(ValidationConfig.fromMetadata(metaData, e.getDomain()));
+        view.inspectionTree.getModel().addTreeModelListener(inspectionTreeModelListener);
     }
 
     public ValidationTab getView() {
@@ -62,17 +65,17 @@ public class ValidationTabController implements DomainListener {
 
     void onViewLoaded() {
         projectController.addDomainListener(this);
-        updateConfig(projectController.getCurrentDataChanel());
+        configUpdated(ValidationConfig.fromMetadata(metaData, projectController.getCurrentDataChanel()));
         initListeners();
     }
 
     private void initListeners() {
-        view.inspectionTree.getModel().addTreeModelListener(new InspectionTreeModelListener());
+        inspectionTreeModelListener = new InspectionTreeModelListener();
+        view.inspectionTree.getModel().addTreeModelListener(inspectionTreeModelListener);
     }
 
-    private void updateConfig(DataChannelDescriptor dataChannel) {
-        ValidationConfig config = ValidationConfig.fromMetadata(metaData, dataChannel);
-        Set<Inspection> configInspections = config.getEnabledInspections();
+    private void configUpdated(ValidationConfig updatedConfig) {
+        Set<Inspection> configInspections = updatedConfig.getEnabledInspections();
         enabledInspections = configInspections.isEmpty()
                 ? EnumSet.noneOf(Inspection.class)
                 : EnumSet.copyOf(configInspections);
@@ -127,10 +130,9 @@ public class ValidationTabController implements DomainListener {
                 projectController.getApplication()
                         .getActionManager()
                         .getAction(UpdateValidationConfigAction.class)
-                        .putDataChannel(projectController.getCurrentDataChanel())
                         .putConfig(new ValidationConfig(enabledInspections))
                         .setUndoable(true)
-                        .performAction(null);
+                        .performAction(this);
             }
         }
     }

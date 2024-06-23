@@ -19,6 +19,7 @@
 package org.apache.cayenne.modeler.undo;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.action.UpdateValidationConfigAction;
 import org.apache.cayenne.project.validation.ValidationConfig;
 
@@ -49,18 +50,16 @@ public class UpdateValidationConfigUndoableEdit extends CayenneUndoableEdit {
     @Override
     public void redo() throws CannotRedoException {
         actionManager.getAction(UpdateValidationConfigAction.class)
-                .putDataChannel(dataChannel)
                 .putConfig(newConfig)
                 .setUndoable(false)
-                .performAction(null);
+                .performAction(this);
     }
 
     @Override
     public void undo() throws CannotUndoException {
         actionManager.getAction(UpdateValidationConfigAction.class)
-                .putDataChannel(dataChannel)
                 .putConfig(oldConfig)
                 .setUndoable(false)
-                .performAction(null);
+                .performAction(this);
     }
 }
