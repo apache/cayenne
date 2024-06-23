@@ -54,6 +54,7 @@ import org.apache.cayenne.modeler.action.RevertAction;
 import org.apache.cayenne.modeler.action.SaveAction;
 import org.apache.cayenne.modeler.action.SaveAsAction;
 import org.apache.cayenne.modeler.action.ShowLogConsoleAction;
+import org.apache.cayenne.modeler.action.ShowValidationConfigAction;
 import org.apache.cayenne.modeler.action.UndoAction;
 import org.apache.cayenne.modeler.action.ValidateAction;
 import org.apache.cayenne.modeler.action.dbimport.ReverseEngineeringToolMenuAction;
@@ -239,9 +240,10 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         toolMenu.add(getAction(GenerateDBAction.class).buildMenu());
         toolMenu.add(getAction(MigrateAction.class).buildMenu());
 
-        // Menu for opening Log console
         toolMenu.addSeparator();
+        toolMenu.add(getAction(ShowValidationConfigAction.class).buildMenu());
 
+        // Menu for opening Log console
         logMenu = getAction(ShowLogConsoleAction.class).buildCheckBoxMenu();
 
         if (!LogConsole.getInstance().getConsoleProperty(LogConsole.DOCKED_PROPERTY)

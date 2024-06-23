@@ -37,7 +37,7 @@ public class ValidationConfigHandler extends NamespaceAwareNestedTagHandler {
     static final String EXCLUDE_TAG = "exclude";
 
     private final DataChannelMetaData metaData;
-    private final Set<Inspection> disabledInspections;
+    private final EnumSet<Inspection> disabledInspections;
 
     ValidationConfigHandler(NamespaceAwareNestedTagHandler parentHandler, DataChannelMetaData metaData) {
         super(parentHandler);
@@ -72,8 +72,7 @@ public class ValidationConfigHandler extends NamespaceAwareNestedTagHandler {
     }
 
     private void createConfig() {
-        Set<Inspection> enabledInspections = EnumSet.allOf(Inspection.class);
-        enabledInspections.removeAll(disabledInspections);
+        Set<Inspection> enabledInspections = EnumSet.complementOf(disabledInspections);
         loaderContext.addDataChannelListener(dataChannel -> {
             metaData.add(dataChannel, new ValidationConfig(enabledInspections));
         });

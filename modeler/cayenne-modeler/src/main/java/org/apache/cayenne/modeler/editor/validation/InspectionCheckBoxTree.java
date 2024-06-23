@@ -47,7 +47,7 @@ class InspectionCheckBoxTree extends CheckBoxTree {
         checkBoxTree.addMouseMotionListener(new ToolTipHandler(checkBoxTree));
     }
 
-    public void refreshSelectedInspections(Set<Inspection> selectedInspections) {
+    public void refreshEnabledInspections(Set<Inspection> enabledInspections) {
         TreeModel model = getModel();
         for (var inspectionPath : inspectionPathCache.entrySet()) {
             Inspection inspection = inspectionPath.getKey();
@@ -55,8 +55,12 @@ class InspectionCheckBoxTree extends CheckBoxTree {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
             CheckBoxNodeData data = (CheckBoxNodeData) node.getUserObject();
 
-            model.valueForPathChanged(path, data.withState(selectedInspections.contains(inspection)));
+            model.valueForPathChanged(path, data.withState(enabledInspections.contains(inspection)));
         }
+    }
+
+    public void selectInspection(Inspection inspection) {
+        getSelectionModel().setSelectionPath(inspectionPathCache.get(inspection));
     }
 
     public static InspectionCheckBoxTree build() {

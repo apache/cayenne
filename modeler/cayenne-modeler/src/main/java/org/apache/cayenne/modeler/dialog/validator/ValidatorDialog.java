@@ -24,30 +24,30 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerFrame;
+import org.apache.cayenne.modeler.action.ActionManager;
+import org.apache.cayenne.modeler.action.DisableValidationInspectionAction;
+import org.apache.cayenne.modeler.action.ShowValidationOptionAction;
 import org.apache.cayenne.modeler.action.ValidateAction;
+import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.util.CayenneDialog;
+import org.apache.cayenne.project.validation.Inspection;
+import org.apache.cayenne.project.validation.ProjectValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.List;
 
 /**
  * Dialog for displaying validation errors.
- * 
  */
 public class ValidatorDialog extends CayenneDialog {
 
@@ -100,7 +100,14 @@ public class ValidatorDialog extends CayenneDialog {
         problemsTable.setRowMargin(3);
         problemsTable.setCellSelectionEnabled(false);
         problemsTable.setRowSelectionAllowed(true);
+        problemsTable.setTableHeader(null);
         problemsTable.setDefaultRenderer(ValidationFailure.class, new ValidationRenderer());
+
+        ActionManager actionManager = Application.getInstance().getActionManager();
+        JPopupMenu popup = new JPopupMenu();
+        popup.add(actionManager.getAction(ShowValidationOptionAction.class).buildMenu());
+        popup.add(actionManager.getAction(DisableValidationInspectionAction.class).buildMenu());
+        TablePopupHandler.install(problemsTable, popup);
 
         // assemble
         CellConstraints cc = new CellConstraints();
@@ -126,9 +133,10 @@ public class ValidatorDialog extends CayenneDialog {
     }
 
     private void initController() {
-
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        problemsTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         problemsTable.getSelectionModel().addListSelectionListener(e -> showFailedObject());
+        problemsTable.getSelectionModel().addListSelectionListener(new DisableInspectionSelectionListener());
 
         closeButton.addActionListener(e -> {
             setVisible(false);
@@ -137,18 +145,6 @@ public class ValidatorDialog extends CayenneDialog {
 
         refreshButton.addActionListener(e -> Application.getInstance().getActionManager()
                 .getAction(ValidateAction.class).actionPerformed(e));
-
-        this.problemsTable.addMouseListener(new MouseAdapter() {
-
-            public void mouseClicked(MouseEvent e) {
-                int row = problemsTable.rowAtPoint(e.getPoint());
-
-                // if this happens to be a selected row, re-run object selection
-                if (row >= 0 && problemsTable.getSelectedRow() == row) {
-                    showFailedObject();
-                }
-            }
-        });
     }
 
     protected void refreshFromModel(List<ValidationFailure> list) {
@@ -157,11 +153,12 @@ public class ValidatorDialog extends CayenneDialog {
     }
 
     private void showFailedObject() {
-        if (problemsTable.getSelectedRow() >= 0) {
-            ValidationFailure obj = (ValidationFailure) problemsTable.getModel().getValueAt(
-                    problemsTable.getSelectedRow(), 0);
-            ValidationDisplayHandler.getErrorMsg(obj).displayField(getMediator(), super.getParentEditor());
+        if (problemsTable.getSelectedRow() < 0) {
+            return;
         }
+        ValidationFailure failure = (ValidationFailure) problemsTable.getModel()
+                .getValueAt(problemsTable.getSelectedRow(), 0);
+        ValidationDisplayHandler.getErrorMsg(failure).displayField(getMediator(), super.getParentEditor());
     }
 
     class ValidatorTableModel extends AbstractTableModel {
@@ -186,16 +183,16 @@ public class ValidatorDialog extends CayenneDialog {
             return " ";
         }
 
-        public Class getColumnClass(int columnIndex) {
+        public Class<?> getColumnClass(int columnIndex) {
             return ValidationFailure.class;
         }
     }
 
     // a renderer for the error message
-    class ValidationRenderer extends DefaultTableCellRenderer {
+    static class ValidationRenderer extends DefaultTableCellRenderer {
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                boolean hasFocus, int row, int column) {
+                                                       boolean hasFocus, int row, int column) {
 
             boolean error = false;
             if (value != null) {
@@ -206,6 +203,24 @@ public class ValidatorDialog extends CayenneDialog {
 
             setBackground(error ? ERROR_COLOR : WARNING_COLOR);
             return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        }
+    }
+
+    class DisableInspectionSelectionListener implements ListSelectionListener {
+
+        @Override
+        public void valueChanged(ListSelectionEvent e) {
+            ActionManager actionManager = Application.getInstance().getActionManager();
+            ValidationFailure failure = (ValidationFailure) problemsTable.getModel().getValueAt(e.getFirstIndex(), 0);
+            Inspection inspection = failure instanceof ProjectValidationFailure
+                    ? ((ProjectValidationFailure) failure).getInspection()
+                    : null;
+
+            actionManager.getAction(DisableValidationInspectionAction.class)
+                    .putInspection(inspection)
+                    .setEnabled(inspection != null);
+            actionManager.getAction(ShowValidationOptionAction.class)
+                    .putInspection(inspection);
         }
     }
 }

@@ -23,6 +23,8 @@ import org.apache.cayenne.configuration.event.DomainListener;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.UpdateValidationConfigAction;
+import org.apache.cayenne.modeler.event.ValidationConfigDisplayEvent;
+import org.apache.cayenne.modeler.event.ValidationConfigDisplayListener;
 import org.apache.cayenne.project.validation.Inspection;
 import org.apache.cayenne.project.validation.ValidationConfig;
 import org.apache.cayenne.swing.components.tree.CheckBoxNodeData;
@@ -36,7 +38,7 @@ import java.util.Set;
 /**
  * @since 5.0
  */
-public class ValidationTabController implements DomainListener {
+public class ValidationTabController implements DomainListener, ValidationConfigDisplayListener {
 
     private final ProjectController projectController;
     private final DataChannelMetaData metaData;
@@ -59,12 +61,21 @@ public class ValidationTabController implements DomainListener {
         view.inspectionTree.getModel().addTreeModelListener(inspectionTreeModelListener);
     }
 
+    @Override
+    public void validationOptionChanged(ValidationConfigDisplayEvent event) {
+        Inspection inspection = event.getInspection();
+        if (inspection != null) {
+            view.inspectionTree.selectInspection(inspection);
+        }
+    }
+
     public ValidationTab getView() {
         return view;
     }
 
     void onViewLoaded() {
         projectController.addDomainListener(this);
+        projectController.addValidationConfigDisplayListener(this);
         configUpdated(ValidationConfig.fromMetadata(metaData, projectController.getCurrentDataChanel()));
         initListeners();
     }
@@ -79,7 +90,7 @@ public class ValidationTabController implements DomainListener {
         enabledInspections = configInspections.isEmpty()
                 ? EnumSet.noneOf(Inspection.class)
                 : EnumSet.copyOf(configInspections);
-        view.inspectionTree.refreshSelectedInspections(enabledInspections);
+        view.inspectionTree.refreshEnabledInspections(enabledInspections);
     }
 
     private class InspectionTreeModelListener implements TreeModelListener {
