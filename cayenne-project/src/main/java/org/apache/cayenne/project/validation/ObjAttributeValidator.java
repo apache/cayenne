@@ -39,20 +39,12 @@ class ObjAttributeValidator extends ConfigurationNodeValidator<ObjAttribute> {
 
     @Override
     public void validate(ObjAttribute node, ValidationResult validationResult) {
-        ValidationConfig config = configSupplier.get();
         on(node, validationResult)
                 .performIfEnabled(Inspection.OBJ_ATTRIBUTE_NO_NAME, this::checkForName)
                 .performIfEnabled(Inspection.OBJ_ATTRIBUTE_INVALID_NAME, this::validateName)
                 .performIfEnabled(Inspection.OBJ_ATTRIBUTE_NO_TYPE, this::checkForType)
-                .performIf(n -> n instanceof EmbeddedAttribute
-                                && config.isEnabled(Inspection.OBJ_ATTRIBUTE_NO_EMBEDDABLE),
-                        () -> checkForEmbeddable((EmbeddedAttribute) node, validationResult))
-                .performIf(n -> n instanceof EmbeddedAttribute
-                                && config.isEnabled(Inspection.OBJ_ATTRIBUTE_INVALID_MAPPING),
-                        () -> validateDbAttributeMapping((EmbeddedAttribute) node, validationResult))
-                .performIf(n -> !(n instanceof EmbeddedAttribute)
-                                && config.isEnabled(Inspection.OBJ_ATTRIBUTE_INVALID_MAPPING),
-                        this::validateDbAttributeMapping)
+                .performIfEnabled(Inspection.OBJ_ATTRIBUTE_NO_EMBEDDABLE, this::checkForEmbeddable)
+                .performIfEnabled(Inspection.OBJ_ATTRIBUTE_INVALID_MAPPING, this::validateDbAttributeMapping)
                 .performIfEnabled(Inspection.OBJ_ATTRIBUTE_PATH_DUPLICATE, this::checkForPathDuplicates)
                 .performIfEnabled(Inspection.OBJ_ATTRIBUTE_SUPER_NAME_DUPLICATE,
                         this::checkOnNameDuplicatesInSuperEntity);
@@ -90,8 +82,11 @@ class ObjAttributeValidator extends ConfigurationNodeValidator<ObjAttribute> {
         }
     }
 
-    private void checkForEmbeddable(EmbeddedAttribute attribute, ValidationResult validationResult) {
-        Embeddable embeddable = attribute.getEmbeddable();
+    private void checkForEmbeddable(ObjAttribute attribute, ValidationResult validationResult) {
+        if (!(attribute instanceof EmbeddedAttribute)) {
+            return;
+        }
+        Embeddable embeddable = ((EmbeddedAttribute) attribute).getEmbeddable();
         if (embeddable == null) {
             String msg = attribute.getType() == null
                     ? "EmbeddedAttribute '%s' has no Embeddable"
@@ -100,7 +95,15 @@ class ObjAttributeValidator extends ConfigurationNodeValidator<ObjAttribute> {
         }
     }
 
-    private void validateDbAttributeMapping(EmbeddedAttribute attribute, ValidationResult validationResult) {
+    private void validateDbAttributeMapping(ObjAttribute attribute, ValidationResult validationResult) {
+        if (attribute instanceof EmbeddedAttribute) {
+            validateDbAttributeMappingEmbedded(((EmbeddedAttribute) attribute), validationResult);
+        } else {
+            validateDbAttributeMappingGeneral(attribute, validationResult);
+        }
+    }
+
+    private void validateDbAttributeMappingEmbedded(EmbeddedAttribute attribute, ValidationResult validationResult) {
         Embeddable embeddable = attribute.getEmbeddable();
         if (embeddable == null) {
             return;
@@ -120,7 +123,7 @@ class ObjAttributeValidator extends ConfigurationNodeValidator<ObjAttribute> {
         }
     }
 
-    private void validateDbAttributeMapping(ObjAttribute attribute, ValidationResult validationResult) {
+    private void validateDbAttributeMappingGeneral(ObjAttribute attribute, ValidationResult validationResult) {
         if (attribute.getEntity().isAbstract()) {
             // nothing to validate
             // abstract entity does not have to define a dbAttribute
