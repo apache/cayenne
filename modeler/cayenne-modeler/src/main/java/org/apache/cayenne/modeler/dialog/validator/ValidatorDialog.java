@@ -136,7 +136,7 @@ public class ValidatorDialog extends CayenneDialog {
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         problemsTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         problemsTable.getSelectionModel().addListSelectionListener(e -> showFailedObject());
-        problemsTable.getSelectionModel().addListSelectionListener(new DisableInspectionSelectionListener());
+        problemsTable.getSelectionModel().addListSelectionListener(new ContextMenuSelectionListener());
 
         closeButton.addActionListener(e -> {
             setVisible(false);
@@ -206,21 +206,32 @@ public class ValidatorDialog extends CayenneDialog {
         }
     }
 
-    class DisableInspectionSelectionListener implements ListSelectionListener {
+    class ContextMenuSelectionListener implements ListSelectionListener {
 
         @Override
         public void valueChanged(ListSelectionEvent e) {
-            ActionManager actionManager = Application.getInstance().getActionManager();
-            ValidationFailure failure = (ValidationFailure) problemsTable.getModel().getValueAt(e.getFirstIndex(), 0);
+            int index = problemsTable.getSelectedRow();
+            if (e.getValueIsAdjusting() || index < 0) {
+                // not valid
+                setActionsFor(null);
+                return;
+            }
+
+            ValidationFailure failure = (ValidationFailure) problemsTable.getModel().getValueAt(index, 0);
             Inspection inspection = failure instanceof ProjectValidationFailure
                     ? ((ProjectValidationFailure) failure).getInspection()
                     : null;
+            setActionsFor(inspection);
+        }
 
+        private void setActionsFor(Inspection inspection) {
+            ActionManager actionManager = Application.getInstance().getActionManager();
             actionManager.getAction(DisableValidationInspectionAction.class)
                     .putInspection(inspection)
                     .setEnabled(inspection != null);
             actionManager.getAction(ShowValidationOptionAction.class)
                     .putInspection(inspection);
         }
+
     }
 }
