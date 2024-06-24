@@ -215,6 +215,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         fileMenu.add(getAction(ExitAction.class).buildMenu());
 
         projectMenu.add(getAction(ValidateAction.class).buildMenu());
+        projectMenu.add(getAction(ShowValidationConfigAction.class).buildMenu());
         projectMenu.addSeparator();
         projectMenu.add(getAction(CreateNodeAction.class).buildMenu());
         projectMenu.add(getAction(CreateDataMapAction.class).buildMenu());
@@ -240,10 +241,8 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         toolMenu.add(getAction(GenerateDBAction.class).buildMenu());
         toolMenu.add(getAction(MigrateAction.class).buildMenu());
 
-        toolMenu.addSeparator();
-        toolMenu.add(getAction(ShowValidationConfigAction.class).buildMenu());
-
         // Menu for opening Log console
+        toolMenu.addSeparator();
         logMenu = getAction(ShowLogConsoleAction.class).buildCheckBoxMenu();
 
         if (!LogConsole.getInstance().getConsoleProperty(LogConsole.DOCKED_PROPERTY)
