@@ -22,9 +22,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DomainDisplayEvent;
-import org.apache.cayenne.modeler.event.ValidationConfigDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.project.validation.Inspection;
 
 import java.awt.event.ActionEvent;
 
@@ -35,18 +33,14 @@ public class ShowValidationConfigAction extends CayenneAction {
 
     public static final String ACTION_NAME = "Show validation config";
 
-    private static final String INSPECTION_PARAM = "inspection";
-
     public ShowValidationConfigAction(Application application) {
         super(ACTION_NAME, application);
     }
 
     @Override
     public void performAction(ActionEvent e) {
-        Inspection inspection = (Inspection) getValue(INSPECTION_PARAM);
         ProjectController controller = getProjectController();
         DataChannelDescriptor dataChannel = (DataChannelDescriptor) controller.getProject().getRootNode();
         controller.fireDomainDisplayEvent(new DomainDisplayEvent(this, dataChannel));
-        controller.fireValidationConfigDisplayEvent(new ValidationConfigDisplayEvent(this, dataChannel, inspection));
     }
 }
