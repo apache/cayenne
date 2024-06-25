@@ -82,8 +82,12 @@ public class GenericPlatformInitializer implements PlatformInitializer {
         UIManager.put("SplitPane.border",               BorderFactory.createEmptyBorder());
         UIManager.put("ToolBar.border",                 BorderFactory.createEmptyBorder(1, 1, 1, 1));
         UIManager.put("CheckBoxHeader.border",          BorderFactory.createEmptyBorder(0, 15, 0, 0));
-        UIManager.put("MenuItem.selectionBackground",   greyHighlight);
-        UIManager.put("MenuItem.selectionForeground",   Color.BLACK);
+        UIManager.put("MenuItem.selectionBackground",            greyHighlight);
+        UIManager.put("CheckBoxMenuItem.selectionBackground",    greyHighlight);
+        UIManager.put("RadioButtonMenuItem.selectionBackground", greyHighlight);
+        UIManager.put("MenuItem.selectionForeground",            Color.BLACK);
+        UIManager.put("CheckBoxMenuItem.selectionForeground",    Color.BLACK);
+        UIManager.put("RadioButtonMenuItem.selectionForeground", Color.BLACK);
         // this one is custom for MainToolBar
         UIManager.put("MainToolBar.border",             BorderFactory.createLineBorder(Color.GRAY));
     }
