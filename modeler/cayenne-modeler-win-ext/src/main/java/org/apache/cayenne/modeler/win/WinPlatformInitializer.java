@@ -67,9 +67,15 @@ public class WinPlatformInitializer implements PlatformInitializer {
         UIManager.put("Separator.background",   darkGrey);
         UIManager.put("Separator.foreground",   darkGrey);
         UIManager.put("Separator.opaque",       Boolean.TRUE);
-        UIManager.put("MenuItem.selectionBackground",   darkGrey);
-        UIManager.put("MenuItem.selectionForeground",   Color.BLACK);
-        UIManager.put("MenuItem.opaque",        Boolean.TRUE);
+        UIManager.put("MenuItem.selectionBackground",            darkGrey);
+        UIManager.put("CheckBoxMenuItem.selectionBackground",    darkGrey);
+        UIManager.put("RadioButtonMenuItem.selectionBackground", darkGrey);
+        UIManager.put("MenuItem.selectionForeground",            Color.BLACK);
+        UIManager.put("CheckBoxMenuItem.selectionForeground",    Color.BLACK);
+        UIManager.put("RadioButtonMenuItem.selectionForeground", Color.BLACK);
+        UIManager.put("MenuItem.opaque",            Boolean.TRUE);
+        UIManager.put("CheckBoxMenuItem.opaque",    Boolean.TRUE);
+        UIManager.put("RadioButtonMenuItem.opaque", Boolean.TRUE);
         UIManager.put("Button.border", BorderFactory.createEmptyBorder());
     }
 }
