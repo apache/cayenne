@@ -29,6 +29,9 @@ import java.awt.*;
  */
 public class CheckBoxTreeCellRenderer extends JCheckBox implements TreeCellRenderer {
 
+    private static final String TREE_SELECTION_BACKGROUND = "Tree.selectionBackground";
+    private static final String TREE_BACKGROUND = "Tree.background";
+
     protected final TreeCellRenderer defaultRenderer;
 
     public CheckBoxTreeCellRenderer() {
@@ -49,11 +52,8 @@ public class CheckBoxTreeCellRenderer extends JCheckBox implements TreeCellRende
         }
         CheckBoxNodeData data = ((CheckBoxNodeData) node.getUserObject());
 
-        if (data.getState() != CheckBoxNodeData.State.INDETERMINATE) {
-            setSelected(data.isSelected());
-        } else {
-            setSelected(false);
-        }
+        setBackground(UIManager.getColor(selected ? TREE_SELECTION_BACKGROUND : TREE_BACKGROUND));
+        setSelected(data.getState() != CheckBoxNodeData.State.INDETERMINATE && data.isSelected());
 
         return this;
     }
