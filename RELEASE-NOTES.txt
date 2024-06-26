@@ -72,6 +72,7 @@ CAY-2849 Switch documentation to `hugo-asciidoctorj-extension`
 CAY-2856 Upgrade Gradle to 8.8
 CAY-2857 Java 22 support
 CAY-2858 Redesign Collection and Map Property API
+CAY-2862 Cleanup and upgrade Maven plugins dependencies
 
 Bug Fixes:
 

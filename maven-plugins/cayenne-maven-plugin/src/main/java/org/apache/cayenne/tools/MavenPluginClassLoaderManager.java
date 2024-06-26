@@ -66,8 +66,8 @@ public class MavenPluginClassLoaderManager implements ClassLoaderManager {
     }
 
     private ClassLoader buildClassLoader() {
-        @SuppressWarnings("unchecked")
-        final Set<Artifact> artifacts = project.getDependencyArtifacts();
+        @SuppressWarnings("deprecation")
+        Set<Artifact> artifacts = project.getDependencyArtifacts();
         if (artifacts != null) {
             for (final Artifact artifact : artifacts) {
                 addUrlFromArtifact(artifact);
