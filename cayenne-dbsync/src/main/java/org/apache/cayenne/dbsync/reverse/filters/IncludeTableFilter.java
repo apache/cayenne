@@ -18,11 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.reverse.filters;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
-* @since 4.0.
-*/
+ * @since 4.0.
+ */
 public class IncludeTableFilter implements Comparable<IncludeTableFilter> {
     public final Pattern pattern;
 
@@ -50,14 +51,14 @@ public class IncludeTableFilter implements Comparable<IncludeTableFilter> {
         this.relationshipFilter = relationshipFilter;
     }
 
-    public boolean isIncludeColumn (String name) {
+    public boolean isIncludeColumn(String name) {
         return columnsFilter.isIncluded(name);
     }
 
     /**
      * @since 4.1
      */
-    public boolean isIncludeRelationship (String name) {
+    public boolean isIncludeRelationship(String name) {
         return relationshipFilter.isIncluded(name);
     }
 
@@ -73,6 +74,18 @@ public class IncludeTableFilter implements Comparable<IncludeTableFilter> {
             return pattern.pattern().compareTo(o.pattern.pattern());
         }
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        IncludeTableFilter that = (IncludeTableFilter) o;
+
+        if (!Objects.equals(pattern, that.pattern)) return false;
+        if (!Objects.equals(columnsFilter, that.columnsFilter)) return false;
+        return Objects.equals(relationshipFilter, that.relationshipFilter);
     }
 
     @Override

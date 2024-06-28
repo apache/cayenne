@@ -30,6 +30,7 @@ import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.GetDbConnectionAction;
+import org.apache.cayenne.modeler.action.SortNodesAction;
 import org.apache.cayenne.modeler.action.dbimport.AddCatalogAction;
 import org.apache.cayenne.modeler.action.dbimport.AddExcludeColumnAction;
 import org.apache.cayenne.modeler.action.dbimport.AddExcludeProcedureAction;
@@ -68,6 +69,7 @@ class TreeToolbarPanel extends JToolBar {
     private JButton editButton;
     private JButton deleteButton;
     private JButton configureButton;
+    private JButton sortButton;
     private DbImportTree reverseEngineeringTree;
 
     private Map<Class, List<JButton>> levels;
@@ -170,6 +172,7 @@ class TreeToolbarPanel extends JToolBar {
         this.add(includeProcedureButton);
         this.add(excludeProcedureButton);
         this.add(editButton);
+        this.add(sortButton);
         this.addSeparator();
         this.add(deleteButton);
         this.add(configureButton);
@@ -198,6 +201,23 @@ class TreeToolbarPanel extends JToolBar {
         deleteButton.setEnabled(true);
     }
 
+
+
+    private void createButtons(DraggableTreePanel panel) {
+        schemaButton = createButton(AddSchemaAction.class, 0);
+        catalogButton = createButton(AddCatalogAction.class, 0);
+        includeTableButton = createButton(AddIncludeTableAction.class, 1);
+        excludeTableButton = createButton(AddExcludeTableAction.class, 2, ExcludeTable.class);
+        includeColumnButton = createButton(AddIncludeColumnAction.class, 2, IncludeColumn.class);
+        excludeColumnButton = createButton(AddExcludeColumnAction.class, 2, ExcludeColumn.class);
+        includeProcedureButton = createButton(AddIncludeProcedureAction.class, 2, IncludeProcedure.class);
+        excludeProcedureButton = createButton(AddExcludeProcedureAction.class, 3, ExcludeProcedure.class);
+        sortButton = createButton(SortNodesAction.class,0);
+        editButton = createButton(EditNodeAction.class, 0);
+        deleteButton = createDeleteButton(panel);
+        configureButton = createConfigureButton();
+    }
+
     private <T extends TreeManipulationAction> JButton createButton(Class<T> actionClass, int position) {
         TreeManipulationAction action = projectController.getApplication().getActionManager().getAction(actionClass);
         action.setTree(reverseEngineeringTree);
@@ -211,21 +231,15 @@ class TreeToolbarPanel extends JToolBar {
         return action.buildButton(position);
     }
 
-    private void createButtons(DraggableTreePanel panel) {
-        schemaButton = createButton(AddSchemaAction.class, 0);
-        catalogButton = createButton(AddCatalogAction.class, 0);
-        includeTableButton = createButton(AddIncludeTableAction.class, 1);
-        excludeTableButton = createButton(AddExcludeTableAction.class, 2, ExcludeTable.class);
-        includeColumnButton = createButton(AddIncludeColumnAction.class, 2, IncludeColumn.class);
-        excludeColumnButton = createButton(AddExcludeColumnAction.class, 2, ExcludeColumn.class);
-        includeProcedureButton = createButton(AddIncludeProcedureAction.class, 2, IncludeProcedure.class);
-        excludeProcedureButton = createButton(AddExcludeProcedureAction.class, 3, ExcludeProcedure.class);
-        editButton = createButton(EditNodeAction.class, 0);
+    private JButton createConfigureButton() {
+        GetDbConnectionAction action = projectController.getApplication().getActionManager().getAction(GetDbConnectionAction.class);
+        return action.buildButton(0);
+    }
+
+    private JButton createDeleteButton(DraggableTreePanel panel) {
         DeleteNodeAction deleteNodeAction = projectController.getApplication().getActionManager().getAction(DeleteNodeAction.class);
         deleteNodeAction.setTree(reverseEngineeringTree);
         deleteNodeAction.setPanel(panel);
-        deleteButton = deleteNodeAction.buildButton(0);
-        GetDbConnectionAction action = projectController.getApplication().getActionManager().getAction(GetDbConnectionAction.class);
-        configureButton = action.buildButton(0);
+        return deleteNodeAction.buildButton(0);
     }
 }
