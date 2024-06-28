@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.exp;
 
+import static org.apache.cayenne.exp.ExpressionFactory.betweenExp;
+import static org.apache.cayenne.exp.ExpressionFactory.caseWhen;
+import static org.apache.cayenne.exp.ExpressionFactory.pathExp;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -463,5 +466,21 @@ public class ExpressionTest {
 		StringBuilder buffer = new StringBuilder();
 		exp.appendAsString(buffer);
 		assertEquals("db:year.month.day.avg", buffer.toString());
+	}
+
+	@Test(expected = ExpressionException.class)
+	public void invalidQueryCaseWhenExpressionFactoryTest() {
+		caseWhen(
+				List.of((betweenExp("estimatedPrice", 0, 9)),
+						(betweenExp("estimatedPrice", 10, 20))),
+				List.of((pathExp("paintingDescription"))));
+	}
+
+	@Test (expected = UnsupportedOperationException.class)
+	public void testAppendAsEJBQLCaseWhen() throws IOException {
+		Expression caseWhen = ExpressionFactory.caseWhen(
+				List.of(ExpressionFactory.betweenExp("x",1,2)),
+				List.of(ExpressionFactory.pathExp("x")));
+		caseWhen.appendAsEJBQL(null, null, "x");
 	}
 }

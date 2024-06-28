@@ -17,27 +17,55 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.sqlbuilder.sqltree;
+package org.apache.cayenne.exp.parser;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.exp.Expression;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
+ * "ELSE" part of the case-when expression.
+ *
  * @since 5.0
  */
-public class CaseNode extends Node {
+public class ASTElse extends SimpleNode {
 
-    @Override
-    public QuotingAppendable append(QuotingAppendable buffer) {
-        return buffer.append(" CASE");
+    public ASTElse(Object node) {
+        super(0);
+        jjtAddChild((Node) node, 0);
+        connectChildren();
+    }
+
+
+    public ASTElse(int id) {
+        super(id);
     }
 
     @Override
-    public Node copy() {
-        return new CaseNode();
+    public Expression shallowCopy() {
+        return new ASTElse(id);
     }
 
     @Override
-    public void appendChildrenEnd(QuotingAppendable buffer) {
-            buffer.append(" END");
+    protected String getExpressionOperator(int index) {
+        return "else";
     }
+
+    @Override
+    protected Object evaluateNode(Object o) throws Exception {
+        return evaluateChild(0, o);
+    }
+
+    @Override
+    public int getType() {
+        return Expression.ELSE;
+    }
+
+    @Override
+    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
+        throw new UnsupportedOperationException("EJBQL 'else' is not supported");
+    }
+
+
 }
