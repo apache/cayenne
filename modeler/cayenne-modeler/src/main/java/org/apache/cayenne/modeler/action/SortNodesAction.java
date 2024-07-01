@@ -26,7 +26,7 @@ import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
 import org.apache.cayenne.modeler.editor.dbimport.DbImportSorter;
 
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @since 5.0
@@ -48,7 +48,7 @@ public class SortNodesAction extends TreeManipulationAction {
     public void performAction(ActionEvent e) {
         tree.stopEditing();
         ReverseEngineering reverseEngineeringOldCopy = new ReverseEngineering(tree.getReverseEngineering());
-        ArrayList<DbImportTreeNode> treeExpandList = tree.getTreeExpandList();
+        List<DbImportTreeNode> treeExpandList = tree.getTreeExpandList();
         DbImportSorter.sortSubtree(tree.getRootNode(), DbImportSorter.NODE_COMPARATOR_BY_TYPE_BY_NAME);
         putReverseEngineeringToUndoManager(reverseEngineeringOldCopy);
         getProjectController().setDirty(true);

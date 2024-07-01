@@ -40,6 +40,7 @@ import javax.swing.tree.TreePath;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.function.BiFunction;
 
 
@@ -212,7 +213,8 @@ public class DbImportTree extends JTree {
     }
 
     // Create list of expanded elements
-    private ArrayList<DbImportTreeNode> createTreeExpandList(DbImportTreeNode rootNode, ArrayList<DbImportTreeNode> resultList) {
+    private List<DbImportTreeNode> createTreeExpandList(DbImportTreeNode rootNode, List<DbImportTreeNode> resultList) {
+        System.out.println("DbImportTree.createTreeExpandList");
         for (int i = 0; i < rootNode.getChildCount(); i++) {
             DbImportTreeNode childNode = (DbImportTreeNode) rootNode.getChildAt(i);
             TreePath childPath = new TreePath(childNode.getPath());
@@ -231,7 +233,7 @@ public class DbImportTree extends JTree {
         return createTreeExpandList(getRootNode(), resultList);
     }
 
-    private void expandBeginningWithNode(DbImportTreeNode rootNode, ArrayList<DbImportTreeNode> list) {
+    private void expandBeginningWithNode(DbImportTreeNode rootNode, List<DbImportTreeNode> list) {
         for (int i = 0; i < rootNode.getChildCount(); i++) {
             DbImportTreeNode childNode = (DbImportTreeNode) rootNode.getChildAt(i);
             list.forEach((element) -> {
@@ -245,7 +247,7 @@ public class DbImportTree extends JTree {
         }
     }
 
-    public void expandTree(ArrayList<DbImportTreeNode> expandIndexesList) {
+    public void expandTree(List<DbImportTreeNode> expandIndexesList) {
         expandBeginningWithNode(getRootNode(), expandIndexesList);
     }
 

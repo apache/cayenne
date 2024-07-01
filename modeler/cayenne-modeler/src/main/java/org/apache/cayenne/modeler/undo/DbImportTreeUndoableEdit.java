@@ -27,7 +27,7 @@ import org.apache.cayenne.modeler.editor.dbimport.DbImportTree;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @since 4.1
@@ -56,7 +56,7 @@ public class DbImportTreeUndoableEdit extends AbstractUndoableEdit {
     public void redo() throws CannotRedoException {
         tree.stopEditing();
         tree.setReverseEngineering(this.nextReverseEngineering);
-        ArrayList<DbImportTreeNode> list = tree.getTreeExpandList();
+        List<DbImportTreeNode> list = tree.getTreeExpandList();
         projectController.getApplication().getMetaData().add(projectController.getCurrentDataMap(), tree.getReverseEngineering());
         projectController.setDirty(true);
         tree.translateReverseEngineeringToTree(tree.getReverseEngineering(), false);
@@ -67,7 +67,7 @@ public class DbImportTreeUndoableEdit extends AbstractUndoableEdit {
     public void undo() throws CannotUndoException {
         tree.stopEditing();
         tree.setReverseEngineering(this.previousReverseEngineering);
-        ArrayList<DbImportTreeNode> list = tree.getTreeExpandList();
+        List<DbImportTreeNode> list = tree.getTreeExpandList();
         projectController.getApplication().getMetaData().add(projectController.getCurrentDataMap(), tree.getReverseEngineering());
         projectController.setDirty(true);
         tree.translateReverseEngineeringToTree(tree.getReverseEngineering(), false);

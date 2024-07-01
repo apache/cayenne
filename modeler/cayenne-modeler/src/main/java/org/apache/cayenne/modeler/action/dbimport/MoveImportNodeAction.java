@@ -39,8 +39,8 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 
 import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
@@ -187,7 +187,7 @@ public class MoveImportNodeAction extends CayenneAction {
                 }
                 if ((paths.length > 1) && (targetTree.getSelectionPath() != null)) {
                     getProjectController().setDirty(true);
-                    ArrayList<DbImportTreeNode> expandList = targetTree.getTreeExpandList();
+                    List<DbImportTreeNode> expandList = targetTree.getTreeExpandList();
                     targetTree.translateReverseEngineeringToTree(targetTree.getReverseEngineering(), false);
                     targetTree.expandTree(expandList);
                 }
