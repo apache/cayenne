@@ -200,7 +200,7 @@ public class MoveImportNodeAction extends CayenneAction {
                 }
                 if (foundNode != null) {
                     DbImportSorter.sortSubtree((DbImportTreeNode) foundNode.getRoot(),DbImportSorter.NODE_COMPARATOR_BY_TYPE);
-                    targetTree.reloadModel();
+                    targetTree.reloadModelKeepingExpanded();
                     targetTree.setSelectionPath(new TreePath(foundNode.getLastChild().getPath()));
                 }
             } finally {

@@ -214,7 +214,6 @@ public class DbImportTree extends JTree {
 
     // Create list of expanded elements
     private List<DbImportTreeNode> createTreeExpandList(DbImportTreeNode rootNode, List<DbImportTreeNode> resultList) {
-        System.out.println("DbImportTree.createTreeExpandList");
         for (int i = 0; i < rootNode.getChildCount(); i++) {
             DbImportTreeNode childNode = (DbImportTreeNode) rootNode.getChildAt(i);
             TreePath childPath = new TreePath(childNode.getPath());
@@ -228,7 +227,18 @@ public class DbImportTree extends JTree {
         return resultList;
     }
 
-    public ArrayList<DbImportTreeNode> getTreeExpandList() {
+    public void reloadModelKeepingExpanded(DbImportTreeNode node) {
+        DbImportModel model = (DbImportModel) getModel();
+        List<DbImportTreeNode> nodesToExpand = getTreeExpandList();
+        model.reload(node);
+        expandTree(nodesToExpand);
+    }
+
+    public void reloadModelKeepingExpanded() {
+        reloadModelKeepingExpanded(getRootNode());
+    }
+
+    public List<DbImportTreeNode> getTreeExpandList() {
         ArrayList<DbImportTreeNode> resultList = new ArrayList<>();
         return createTreeExpandList(getRootNode(), resultList);
     }
@@ -260,15 +270,10 @@ public class DbImportTree extends JTree {
         }
     }
 
-    public void reloadModel(){
-        DbImportModel model = (DbImportModel)this.getModel();
-        model.reload();
-    }
-
     private void printIncludeTables(Collection<IncludeTable> collection, DbImportTreeNode parent) {
         for (IncludeTable includeTable : collection) {
             DbImportTreeNode node = !isTransferable ? new DbImportTreeNode(includeTable) : new TransferableNode(includeTable);
-            if (!node.getSimpleNodeName().equals("")) {
+            if (!node.getSimpleNodeName().isEmpty()) {
 
                 if (isTransferable && includeTable.getIncludeColumns().isEmpty() && includeTable.getExcludeColumns().isEmpty()) {
                     printParams(Collections.singletonList(new IncludeColumn("Loading...")), node);

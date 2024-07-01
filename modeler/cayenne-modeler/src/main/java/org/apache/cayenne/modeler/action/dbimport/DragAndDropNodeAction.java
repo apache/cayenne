@@ -26,9 +26,11 @@ import org.apache.cayenne.modeler.editor.dbimport.DbImportModel;
 import org.apache.cayenne.modeler.editor.dbimport.DbImportSorter;
 
 import javax.swing.JTree;
+import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @since 5.0
@@ -49,10 +51,14 @@ public class DragAndDropNodeAction extends TreeManipulationAction {
     public void performAction(ActionEvent e) {
         DbImportModel model = (DbImportModel) tree.getModel();
         ReverseEngineering reverseEngineeringOldCopy = new ReverseEngineering(tree.getReverseEngineering());
+        List<DbImportTreeNode> nodesToExpand = Arrays.stream(nodes)
+                .filter(node -> tree.isExpanded(new TreePath(node.getPath())))
+                .collect(Collectors.toList());
 
         for (DbImportTreeNode node : nodes) {
             if (checkDropPossibility(node)) {
                 int index = calculateDropIndex();
+                model.removeNodeFromParent(node);
                 model.insertNodeInto(node, dropLocationParentNode, index);
             }
         }
@@ -60,8 +66,8 @@ public class DragAndDropNodeAction extends TreeManipulationAction {
         DbImportSorter.syncUserObjectItems(dropLocationParentNode);
         DbImportSorter.syncUserObjectItems(sourceParentNode);
         putReverseEngineeringToUndoManager(reverseEngineeringOldCopy);
-        model.reload(dropLocationParentNode);
-        tree.expandTree(new ArrayList<>(Collections.singletonList(dropLocationParentNode)));
+        tree.reloadModelKeepingExpanded(dropLocationParentNode);
+        tree.expandTree(nodesToExpand);
     }
 
     private int calculateDropIndex() {

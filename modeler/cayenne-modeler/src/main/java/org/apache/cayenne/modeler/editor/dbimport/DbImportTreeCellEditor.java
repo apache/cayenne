@@ -122,7 +122,7 @@ public class DbImportTreeCellEditor extends DefaultTreeCellEditor {
         }
         if (tree.getSelectionPath() != null) {
             DbImportTreeNode selectedNode = (DbImportTreeNode) tree.getSelectionPath().getLastPathComponent();
-            ((DbImportModel) tree.getModel()).reload(selectedNode);
+            ((DbImportTree) tree).reloadModelKeepingExpanded(selectedNode);
         }
     }
 

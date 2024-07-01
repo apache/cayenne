@@ -39,7 +39,6 @@ public class PrintTablesBiFunction implements BiFunction<FilterContainer, DbImpo
 
     @Override
     public Void apply(FilterContainer filterContainer, DbImportTreeNode root) {
-        DbImportModel model = (DbImportModel) dbImportTree.getModel();
         boolean isTransferable = dbImportTree.isTransferable();
         if (root.getChildCount() != 0) {
             root.removeAllChildren();
@@ -58,7 +57,7 @@ public class PrintTablesBiFunction implements BiFunction<FilterContainer, DbImpo
             root.add(node);
             dbImportTree.packColumns(includeTable, node);
         }
-        model.reload(root);
+        dbImportTree.reloadModelKeepingExpanded(root);
 
         return null;
     }

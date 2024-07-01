@@ -394,15 +394,6 @@ public class DraggableTreePanel extends JScrollPane {
             return null;
         }
 
-
-        @Override
-        protected void exportDone(JComponent source, Transferable data, int action) {
-            if (importSourceTree == ImportSourceTree.TARGET_TREE && sourceParentNode != null) {
-                DbImportModel model = (DbImportModel) targetTree.getModel();
-                model.reload(sourceParentNode);
-            }
-        }
-
         @Override
         public int getSourceActions(JComponent c) {
             return TransferHandler.MOVE;

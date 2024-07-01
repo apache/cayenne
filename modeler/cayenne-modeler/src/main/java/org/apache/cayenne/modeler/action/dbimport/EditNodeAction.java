@@ -80,7 +80,7 @@ public class EditNodeAction extends TreeManipulationAction {
                 }
             }
             DbImportSorter.sortSingleNode(selectedElement.getParent(),DbImportSorter.NODE_COMPARATOR_BY_TYPE);
-            tree.reloadModel();
+            tree.reloadModelKeepingExpanded();
             tree.setSelectionPath(new TreePath(selectedElement.getPath()));
             selectedElement = null;
         }

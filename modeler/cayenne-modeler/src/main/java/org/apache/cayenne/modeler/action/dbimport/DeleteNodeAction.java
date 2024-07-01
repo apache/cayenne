@@ -117,7 +117,7 @@ public class DeleteNodeAction extends TreeManipulationAction {
         DbImportModel model = (DbImportModel) tree.getModel();
         model.removeNodeFromParent(selectedElement);
         getProjectController().setDirty(true);
-        model.reload(parentElement);
+        tree.reloadModelKeepingExpanded(parentElement);
     }
 
     @Override
