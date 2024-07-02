@@ -83,9 +83,12 @@ public class OSXPlatformInitializer implements PlatformInitializer {
         UIManager.put("SplitPane.border",             BorderFactory.createEmptyBorder());
         UIManager.put("SplitPane.background",         darkGrey);
         UIManager.put("Tree.rendererFillBackground",  Boolean.TRUE);
+        UIManager.put("Tree.paintLines",              Boolean.FALSE);
         UIManager.put("ComboBox.background",          Color.WHITE);
         UIManager.put("ComboBox.selectionBackground", darkGrey);
         UIManager.put("ComboBox.selectionForeground", Color.BLACK);
+        UIManager.put("CheckBox.background",          Color.WHITE);
+        UIManager.put("Tree.background",              Color.WHITE);
         UIManager.put("Tree.selectionForeground",     Color.BLACK);
         UIManager.put("Tree.selectionBackground",     lightGrey);
         UIManager.put("Tree.selectionBorderColor",    lightGrey);

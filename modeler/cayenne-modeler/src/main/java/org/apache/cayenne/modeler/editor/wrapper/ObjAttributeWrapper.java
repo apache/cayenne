@@ -20,12 +20,15 @@ package org.apache.cayenne.modeler.editor.wrapper;
 
 import java.util.List;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.editor.validation.ObjAttributeWrapperValidator;
 import org.apache.cayenne.modeler.util.ProjectUtil;
+import org.apache.cayenne.project.validation.ValidationConfig;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
@@ -33,12 +36,12 @@ import org.apache.cayenne.validation.ValidationResult;
  *  A wrapper for a ObjAttribute instance. Allows to add failures, that connected
  *  with attribute.
  */
-public class ObjAttributeWrapper implements Wrapper<ObjAttribute> {
+public class ObjAttributeWrapper implements Wrapper<ObjAttribute>, ConfigurationNode {
 
     private final ObjAttribute objAttribute;
     private final ValidationResult validationResult;
 
-    private final ObjAttributeWrapperValidator validator = new ObjAttributeWrapperValidator();
+    private final ObjAttributeWrapperValidator validator = new ObjAttributeWrapperValidator(ValidationConfig::new);
 
     // TODO: for now name is only wrapped attribute we validating but this
     //       can be extended to other ObjAttribute fields as well
@@ -170,4 +173,8 @@ public class ObjAttributeWrapper implements Wrapper<ObjAttribute> {
         return objAttribute.getDbAttributePath().value();
     }
 
+    @Override
+    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+        return visitor.visitObjAttribute(objAttribute);
+    }
 }

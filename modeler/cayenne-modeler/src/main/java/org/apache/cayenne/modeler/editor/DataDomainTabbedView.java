@@ -20,35 +20,38 @@ package org.apache.cayenne.modeler.editor;
 
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.GenerateCodeAction;
+import org.apache.cayenne.modeler.action.ShowValidationConfigAction;
 import org.apache.cayenne.modeler.action.dbimport.ReverseEngineeringToolMenuAction;
 import org.apache.cayenne.modeler.editor.cgen.domain.CgenTabController;
 import org.apache.cayenne.modeler.editor.dbimport.domain.DbImportTabController;
+import org.apache.cayenne.modeler.editor.validation.ValidationTabController;
 import org.apache.cayenne.modeler.event.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.DomainDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.graph.DataDomainGraphTab;
 
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 /**
- * DataDomain editing tabs container 
+ * DataDomain editing tabs container
  */
-public class DataDomainTabbedView extends JTabbedPane 
-    implements ChangeListener, DomainDisplayListener {
-    
+public class DataDomainTabbedView extends JTabbedPane implements ChangeListener, DomainDisplayListener {
+
     ProjectController mediator;
-    
+
     DataDomainGraphTab graphTab;
-    private JScrollPane cgenView;
+    private JComponent cgenView;
     private CgenTabController cgenTabController;
-    private JScrollPane dbImportView;
+    private JComponent dbImportView;
     private DbImportTabController dbImportTabController;
+    private JComponent validationTabView;
+    private ValidationTabController validationTabController;
 
     /**
      * constructor
+     *
      * @param mediator mediator instance
      */
     public DataDomainTabbedView(ProjectController mediator) {
@@ -61,7 +64,7 @@ public class DataDomainTabbedView extends JTabbedPane
      * create tabs
      */
     private void initView() {
-      
+
         setTabPlacement(JTabbedPane.TOP);
 
         // add panels to tabs
@@ -83,15 +86,21 @@ public class DataDomainTabbedView extends JTabbedPane
 
         graphTab = new DataDomainGraphTab(mediator);
         addTab("Graph", graphTab);
+
+        validationTabController = new ValidationTabController(mediator);
+        validationTabView = validationTabController.getView();
+        addTab("Validation", validationTabView);
     }
 
     public void stateChanged(ChangeEvent e) {
         if (getSelectedComponent() == graphTab) {
             graphTab.refresh();
-        } else if(getSelectedComponent() == cgenView) {
+        } else if (getSelectedComponent() == cgenView) {
             cgenTabController.getView().initView();
-        } else if(getSelectedComponent() == dbImportView) {
+        } else if (getSelectedComponent() == dbImportView) {
             dbImportTabController.getView().initView();
+        } else if (getSelectedComponent() == validationTabView) {
+            validationTabController.getView().initView();
         }
     }
 
@@ -100,17 +109,20 @@ public class DataDomainTabbedView extends JTabbedPane
             //need select an entity
             setSelectedComponent(graphTab);
         }
-        if(getSelectedComponent() == cgenView) {
+        if (getSelectedComponent() == cgenView) {
             fireStateChanged();
         }
-        if(e.getSource() instanceof GenerateCodeAction) {
+        if (e.getSource() instanceof GenerateCodeAction) {
             setSelectedComponent(cgenView);
         }
-        if(getSelectedComponent() == dbImportView) {
+        if (getSelectedComponent() == dbImportView) {
             fireStateChanged();
         }
-        if(e.getSource() instanceof ReverseEngineeringToolMenuAction) {
+        if (e.getSource() instanceof ReverseEngineeringToolMenuAction) {
             setSelectedComponent(dbImportView);
+        }
+        if (e.getSource() instanceof ShowValidationConfigAction) {
+            setSelectedComponent(validationTabView);
         }
     }
 }

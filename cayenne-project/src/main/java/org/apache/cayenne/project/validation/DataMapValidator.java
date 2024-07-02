@@ -24,45 +24,38 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
-class DataMapValidator extends ConfigurationNodeValidator {
+import java.util.function.Supplier;
 
-    void validate(DataMap map, ValidationResult validationResult) {
-        validateName(map, validationResult);
-        validateNodeLinks(map, validationResult);
-        validateJavaPackage(map, validationResult);
+class DataMapValidator extends ConfigurationNodeValidator<DataMap> {
+
+    /**
+     * @param configSupplier the config defining the behavior of this validator.
+     * @since 5.0
+     */
+    public DataMapValidator(Supplier<ValidationConfig> configSupplier) {
+        super(configSupplier);
     }
 
-    private void validateNodeLinks(DataMap map, ValidationResult validationResult) {
-        DataChannelDescriptor domain = map.getDataChannelDescriptor();
-        if (domain == null) {
-            return;
-        }
-
-        boolean unlinked = true;
-        int nodeCount = 0;
-        for (DataNodeDescriptor node : domain.getNodeDescriptors()) {
-            nodeCount++;
-            if (node.getDataMapNames().contains(map.getName())) {
-                unlinked = false;
-                break;
-            }
-        }
-
-        if (unlinked && nodeCount > 0) {
-            addFailure(validationResult, map, "DataMap is not linked to any DataNodes");
-        }
+    @Override
+    public void validate(DataMap node, ValidationResult validationResult) {
+        on(node, validationResult)
+                .performIfEnabled(Inspection.DATA_MAP_NO_NAME, this::checkForName)
+                .performIfEnabled(Inspection.DATA_MAP_NAME_DUPLICATE, this::checkForNameDuplicates)
+                .performIfEnabled(Inspection.DATA_MAP_NODE_LINKAGE, this::checkForNodeLinkage)
+                .performIfEnabled(Inspection.DATA_MAP_JAVA_PACKAGE, this::validateJavaPackage);
     }
 
-    private void validateName(DataMap map, ValidationResult validationResult) {
+    private void checkForName(DataMap map, ValidationResult validationResult) {
         String name = map.getName();
-
         if (Util.isEmptyString(name)) {
             addFailure(validationResult, map, "Unnamed DataMap");
-            return;
         }
+    }
 
+    private void checkForNameDuplicates(DataMap map, ValidationResult validationResult) {
+        String name = map.getName();
         DataChannelDescriptor domain = map.getDataChannelDescriptor();
-        if (domain == null) {
+        if (domain == null || Util.isEmptyString(name)) {
             return;
         }
 
@@ -71,7 +64,6 @@ class DataMapValidator extends ConfigurationNodeValidator {
             if (otherMap == map) {
                 continue;
             }
-
             if (name.equals(otherMap.getName())) {
                 addFailure(validationResult, map, "Duplicate DataMap name: %s", name);
                 return;
@@ -79,17 +71,37 @@ class DataMapValidator extends ConfigurationNodeValidator {
         }
     }
 
+    private void checkForNodeLinkage(DataMap map, ValidationResult validationResult) {
+        DataChannelDescriptor domain = map.getDataChannelDescriptor();
+        if (domain == null) {
+            return;
+        }
+
+        boolean linked = false;
+        int nodeCount = 0;
+        for (DataNodeDescriptor node : domain.getNodeDescriptors()) {
+            nodeCount++;
+            if (node.getDataMapNames().contains(map.getName())) {
+                linked = true;
+                break;
+            }
+        }
+
+        if (!linked && nodeCount > 0) {
+            addFailure(validationResult, map, "DataMap is not linked to any DataNodes");
+        }
+    }
+
     private void validateJavaPackage(DataMap map, ValidationResult validationResult) {
         String javaPackage = map.getDefaultPackage();
-
-        if(Util.isEmptyString(javaPackage)) {
+        if (Util.isEmptyString(javaPackage)) {
             addFailure(validationResult, map, "Java package is not set in DataMap '%s'", map.getName());
             return;
         }
 
         NameValidationHelper helper = NameValidationHelper.getInstance();
         String invalidChars = helper.invalidCharsInJavaClassName(javaPackage);
-        if(invalidChars != null) {
+        if (invalidChars != null) {
             addFailure(validationResult, map, "DataMap '%s' Java package '%s' contains invalid characters: %s",
                     map.getName(), javaPackage, invalidChars);
         }

@@ -23,22 +23,40 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureQueryDescriptor;
 import org.apache.cayenne.validation.ValidationResult;
 
-class ProcedureQueryValidator extends BaseQueryValidator {
+import java.util.function.Supplier;
 
-    void validate(ProcedureQueryDescriptor query, ValidationResult validationResult) {
-        validateName(query, validationResult);
-        validateRoot(query, validationResult);
-        validateCacheGroup(query, validationResult);
+class ProcedureQueryValidator extends BaseQueryValidator<ProcedureQueryDescriptor> {
+
+    /**
+     * @param configSupplier the config defining the behavior of this validator.
+     * @since 5.0
+     */
+    public ProcedureQueryValidator(Supplier<ValidationConfig> configSupplier) {
+        super(configSupplier);
     }
 
-    void validateRoot(ProcedureQueryDescriptor query, ValidationResult validationResult) {
+    @Override
+    protected ConfigurationNodeValidator<ProcedureQueryDescriptor>.Performer<ProcedureQueryDescriptor> validateQuery(
+            ProcedureQueryDescriptor query, ValidationResult validationResult) {
+        return super.validateQuery(query, validationResult)
+                .performIfEnabled(Inspection.PROCEDURE_QUERY_NO_ROOT, this::checkForRoot)
+                .performIfEnabled(Inspection.PROCEDURE_QUERY_INVALID_ROOT, this::validateRoot);
+    }
 
+    private void checkForRoot(ProcedureQueryDescriptor query, ValidationResult validationResult) {
         DataMap map = query.getDataMap();
         Object root = query.getRoot();
 
         if (root == null && map != null) {
-            addFailure(validationResult, query, "ProcedureQuery '%s' has no root", query
-                    .getName());
+            addFailure(validationResult, query, "ProcedureQuery '%s' has no root", query.getName());
+        }
+    }
+
+    private void validateRoot(ProcedureQueryDescriptor query, ValidationResult validationResult) {
+        DataMap map = query.getDataMap();
+        Object root = query.getRoot();
+        if (root == null) {
+            return;
         }
 
         // procedure query only supports procedure root
@@ -47,25 +65,13 @@ class ProcedureQueryValidator extends BaseQueryValidator {
 
             // procedure may have been deleted...
             if (map != null && map.getProcedure(procedure.getName()) != procedure) {
-                addFailure(
-                        validationResult,
-                        query,
-                        "ProcedureQuery '%s' has invalid Procedure root: %s",
-                        query.getName(),
-                        procedure.getName());
+                addFailure(validationResult, query, "ProcedureQuery '%s' has invalid Procedure root: %s",
+                        query.getName(), procedure.getName());
             }
-
-            return;
-        }
-
-        if (root instanceof String) {
+        } else if (root instanceof String) {
             if (map != null && map.getProcedure(root.toString()) == null) {
-                addFailure(
-                        validationResult,
-                        query,
-                        "ProcedureQuery '%s' has invalid Procedure root: %s",
-                        query.getName(),
-                        root);
+                addFailure(validationResult, query, "ProcedureQuery '%s' has invalid Procedure root: %s",
+                        query.getName(), root);
             }
         }
     }

@@ -23,42 +23,65 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
-class DbAttributeValidator extends ConfigurationNodeValidator {
+import java.util.function.Supplier;
 
-    void validate(DbAttribute attribute, ValidationResult validationResult) {
+class DbAttributeValidator extends ConfigurationNodeValidator<DbAttribute> {
+
+    /**
+     * @param configSupplier the config defining the behavior of this validator.
+     * @since 5.0
+     */
+    public DbAttributeValidator(Supplier<ValidationConfig> configSupplier) {
+        super(configSupplier);
+    }
+
+    @Override
+    public void validate(DbAttribute node, ValidationResult validationResult) {
+        on(node, validationResult)
+                .performIfEnabled(Inspection.DB_ATTRIBUTE_NO_NAME, this::checkForName)
+                .performIfEnabled(Inspection.DB_ATTRIBUTE_INVALID_NAME, this::validateName)
+                .performIfEnabled(Inspection.DB_ATTRIBUTE_NO_TYPE, this::checkForType)
+                .performIfEnabled(Inspection.DB_ATTRIBUTE_NO_LENGTH, this::checkForLength);
+    }
+
+    private void checkForName(DbAttribute attribute, ValidationResult validationResult) {
 
         // Must have name
         if (Util.isEmptyString(attribute.getName())) {
             addFailure(validationResult, attribute, "Unnamed DbAttribute");
-        } else {
-            NameValidationHelper helper = NameValidationHelper.getInstance();
-            String invalidChars = helper.invalidCharsInDbPathComponent(attribute
-                    .getName());
-
-            if (invalidChars != null) {
-                addFailure(
-                        validationResult,
-                        attribute,
-                        "DbAttribute name '%s' contains invalid characters: %s",
-                        attribute.getName(),
-                        invalidChars);
-            }
         }
+    }
+
+    private void validateName(DbAttribute attribute, ValidationResult validationResult) {
+        NameValidationHelper helper = NameValidationHelper.getInstance();
+        String name = attribute.getName();
+        String invalidChars = helper.invalidCharsInDbPathComponent(name);
+        if (Util.isEmptyString(name)) {
+            return;
+        }
+        if (invalidChars != null) {
+            addFailure(validationResult, attribute, "DbAttribute name '%s' contains invalid characters: %s",
+                    name, invalidChars);
+        }
+    }
+
+    private void checkForType(DbAttribute attribute, ValidationResult validationResult) {
 
         // all attributes must have type
         if (attribute.getType() == TypesMapping.NOT_DEFINED) {
             addFailure(validationResult, attribute, "DbAttribute has no type");
-        } else if (attribute.getMaxLength() < 0
+        }
+    }
+
+    private void checkForLength(DbAttribute attribute, ValidationResult validationResult) {
+        if (attribute.getMaxLength() < 0
                 && (attribute.getType() == java.sql.Types.VARCHAR
-                    || attribute.getType() == java.sql.Types.NVARCHAR
-                    || attribute.getType() == java.sql.Types.CHAR
-                    || attribute.getType() == java.sql.Types.NCHAR)) {
+                || attribute.getType() == java.sql.Types.NVARCHAR
+                || attribute.getType() == java.sql.Types.CHAR
+                || attribute.getType() == java.sql.Types.NCHAR)) {
             // VARCHAR and CHAR attributes must have max length
 
-            addFailure(
-                    validationResult,
-                    attribute,
-                    "Character DbAttribute '%s' doesn't have max length",
+            addFailure(validationResult, attribute, "Character DbAttribute '%s' doesn't have max length",
                     attribute.getName());
         }
     }

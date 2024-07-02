@@ -22,10 +22,25 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
-class DataChannelValidator extends ConfigurationNodeValidator {
+import java.util.function.Supplier;
 
-    void validate(DataChannelDescriptor domain, ValidationResult validationResult) {
+class DataChannelValidator extends ConfigurationNodeValidator<DataChannelDescriptor> {
 
+    /**
+     * @param configSupplier the config defining the behavior of this validator.
+     * @since 5.0
+     */
+    public DataChannelValidator(Supplier<ValidationConfig> configSupplier) {
+        super(configSupplier);
+    }
+
+    @Override
+    public void validate(DataChannelDescriptor node, ValidationResult validationResult) {
+        on(node, validationResult)
+                .performIfEnabled(Inspection.DATA_CHANNEL_NO_NAME, this::checkForName);
+    }
+
+    private void checkForName(DataChannelDescriptor domain, ValidationResult validationResult) {
         String name = domain.getName();
         if (Util.isEmptyString(name)) {
             addFailure(validationResult, domain, "Unnamed DataDomain");

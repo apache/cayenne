@@ -120,6 +120,8 @@ import org.apache.cayenne.modeler.event.ProjectSavedListener;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayListener;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.event.ValidationConfigDisplayEvent;
+import org.apache.cayenne.modeler.event.ValidationConfigDisplayListener;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.modeler.pref.ProjectStatePreferences;
@@ -595,6 +597,14 @@ public class ProjectController extends CayenneController {
         listenerList.remove(DomainListener.class, listener);
     }
 
+    public void addValidationConfigDisplayListener(ValidationConfigDisplayListener listener) {
+        listenerList.add(ValidationConfigDisplayListener.class, listener);
+    }
+
+    public void removeValidationConfigDisplayListener(ValidationConfigDisplayListener listener) {
+        listenerList.remove(ValidationConfigDisplayListener.class, listener);
+    }
+
     public void addDataNodeDisplayListener(DataNodeDisplayListener listener) {
         listenerList.add(DataNodeDisplayListener.class, listener);
     }
@@ -769,6 +779,15 @@ public class ProjectController extends CayenneController {
             getApplication().getActionManager().projectOpened();
         } else {
             getApplication().getActionManager().domainSelected();
+        }
+    }
+
+    /**
+     * @since 5.0
+     */
+    public void fireValidationConfigDisplayEvent(ValidationConfigDisplayEvent event) {
+        for (ValidationConfigDisplayListener listener : listenerList.getListeners(ValidationConfigDisplayListener.class)) {
+            listener.validationOptionChanged(event);
         }
     }
 

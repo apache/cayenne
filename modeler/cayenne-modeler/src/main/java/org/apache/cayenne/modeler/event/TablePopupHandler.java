@@ -21,9 +21,8 @@ package org.apache.cayenne.modeler.event;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import javax.swing.JPopupMenu;
-
-import org.apache.cayenne.modeler.util.CayenneTable;
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
 
 /**
  * A class to handle mouse right-click on table and show popup after selecting specified
@@ -31,14 +30,14 @@ import org.apache.cayenne.modeler.util.CayenneTable;
  */
 public class TablePopupHandler extends MouseAdapter {
 
-    private final CayenneTable table;
+    private final JTable table;
 
     private final JPopupMenu popup;
 
     /**
      * Creates new mouse handler for table, which shows specified popupmenu on right-click
      */
-    public TablePopupHandler(CayenneTable table, JPopupMenu popup) {
+    public TablePopupHandler(JTable table, JPopupMenu popup) {
         this.table = table;
         this.popup = popup;
     }
@@ -46,7 +45,7 @@ public class TablePopupHandler extends MouseAdapter {
     /**
      * Creates and installs mouse listener for a table
      */
-    public static void install(CayenneTable table, JPopupMenu popup) {
+    public static void install(JTable table, JPopupMenu popup) {
         table.addMouseListener(new TablePopupHandler(table, popup));
     }
 
@@ -63,15 +62,16 @@ public class TablePopupHandler extends MouseAdapter {
      */
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (e.isPopupTrigger()) {
-            table.cancelEditing();
-
-            int row = table.rowAtPoint(e.getPoint());
-            if (row != -1 && !table.getSelectionModel().isSelectedIndex(row)) {
-                table.setRowSelectionInterval(row, row);
-            }
-
-            popup.show(table, e.getX(), e.getY());
+        if (!e.isPopupTrigger()) {
+            return;
         }
+        table.editingCanceled(new ChangeEvent(this));
+
+        int row = table.rowAtPoint(e.getPoint());
+        if (row != -1 && !table.getSelectionModel().isSelectedIndex(row)) {
+            table.setRowSelectionInterval(row, row);
+        }
+
+        popup.show(table, e.getX(), e.getY());
     }
 }

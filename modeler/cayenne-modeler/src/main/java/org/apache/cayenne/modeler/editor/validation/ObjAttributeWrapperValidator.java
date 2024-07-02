@@ -22,28 +22,39 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.modeler.editor.ObjAttributeTableModel;
 import org.apache.cayenne.modeler.editor.wrapper.ObjAttributeWrapper;
 import org.apache.cayenne.project.validation.ConfigurationNodeValidator;
+import org.apache.cayenne.project.validation.ValidationConfig;
 import org.apache.cayenne.validation.ValidationResult;
 
-public class ObjAttributeWrapperValidator extends ConfigurationNodeValidator {
+import java.util.function.Supplier;
 
-    public boolean validate(ObjAttributeWrapper wrapper, ValidationResult validationResult) {
+public class ObjAttributeWrapperValidator extends ConfigurationNodeValidator<ObjAttributeWrapper> {
+
+    /**
+     * @param configSupplier the config defining the behavior of this validator.
+     * @since 5.0
+     */
+    public ObjAttributeWrapperValidator(Supplier<ValidationConfig> configSupplier) {
+        super(configSupplier);
+    }
+
+    @Override
+    public void validate(ObjAttributeWrapper node, ValidationResult validationResult) {
+        validateName(node, validationResult);
+    }
+
+    private void validateName(ObjAttributeWrapper wrapper, ValidationResult validationResult) {
         if (isAttributeNameOverlapped(wrapper)) {
             addFailure(validationResult, new AttributeValidationFailure(
                     ObjAttributeTableModel.OBJ_ATTRIBUTE,
                     "Duplicate attribute name."));
         }
-        
-        return wrapper.isValid();
     }
 
     /**
-     * @return false if entity has attribute with the same name.
+     * @return true if entity has attribute with the same name.
      */
-    private boolean isAttributeNameOverlapped(ObjAttributeWrapper attr) {
-    	ObjAttribute temp = attr.getEntity().getAttributeMap().get(attr.getName());
-    	if (temp != null && attr.getValue() != temp ){
-    		return true;
-    	}
-    	return false;
+    private boolean isAttributeNameOverlapped(ObjAttributeWrapper wrapper) {
+    	ObjAttribute otherAttribute = wrapper.getEntity().getAttributeMap().get(wrapper.getName());
+        return otherAttribute != null && wrapper.getValue() != otherAttribute;
     }
 }

@@ -24,25 +24,83 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
-class ObjEntityValidator extends ConfigurationNodeValidator {
+import java.util.function.Supplier;
 
-    void validate(ObjEntity entity, ValidationResult validationResult) {
+class ObjEntityValidator extends ConfigurationNodeValidator<ObjEntity> {
 
-        validateName(entity, validationResult);
-        validateClassName(entity, validationResult);
-        validateSuperClassName(entity, validationResult);
+    /**
+     * @param configSupplier the config defining the behavior of this validator.
+     * @since 5.0
+     */
+    public ObjEntityValidator(Supplier<ValidationConfig> configSupplier) {
+        super(configSupplier);
+    }
 
-        // validate DbEntity presence
-        if (entity.getDbEntity() == null && !entity.isAbstract()) {
-            addFailure(
-                    validationResult,
-                    entity,
-                    "ObjEntity '%s' has no DbEntity mapping",
-                    entity.getName());
+    @Override
+    public void validate(ObjEntity node, ValidationResult validationResult) {
+        on(node, validationResult)
+                .performIfEnabled(Inspection.OBJ_ENTITY_NO_NAME, this::checkForName)
+                .performIfEnabled(Inspection.OBJ_ENTITY_NAME_DUPLICATE, this::checkForNameDuplicates)
+                .performIfEnabled(Inspection.OBJ_ENTITY_NO_DB_ENTITY, this::checkForDbEntity)
+                .performIfEnabled(Inspection.OBJ_ENTITY_INVALID_CLASS, this::validateClassName)
+                .performIfEnabled(Inspection.OBJ_ENTITY_INVALID_SUPER_CLASS, this::validateSuperClassName);
+    }
+
+    private void checkForName(ObjEntity entity, ValidationResult validationResult) {
+
+        // Must have name
+        String name = entity.getName();
+        if (Util.isEmptyString(name)) {
+            addFailure(validationResult, entity, "Unnamed ObjEntity");
         }
     }
 
-    void validateClassName(ObjEntity entity, ValidationResult validationResult) {
+    private void checkForNameDuplicates(ObjEntity entity, ValidationResult validationResult) {
+        String name = entity.getName();
+        DataMap map = entity.getDataMap();
+        if (map == null || Util.isEmptyString(name)) {
+            return;
+        }
+
+        // check for duplicate names in the parent context
+        for (ObjEntity otherEnt : map.getObjEntities()) {
+            if (otherEnt == entity) {
+                continue;
+            }
+            if (name.equals(otherEnt.getName())) {
+                addFailure(validationResult, entity, "Duplicate ObjEntity name: '%s'", name);
+                break;
+            }
+        }
+
+        // check for duplicates in other DataMaps
+        DataChannelDescriptor domain = entity.getDataMap().getDataChannelDescriptor();
+        if (domain == null) {
+            return;
+        }
+        for (DataMap nextMap : domain.getDataMaps()) {
+            if (nextMap == map) {
+                continue;
+            }
+
+            ObjEntity conflictingEntity = nextMap.getObjEntity(name);
+            if (conflictingEntity != null
+                    && !Util.nullSafeEquals(conflictingEntity.getClassName(), entity.getClassName())) {
+                addFailure(validationResult, entity, "Duplicate ObjEntity name in another DataMap: '%s'", name);
+                break;
+            }
+        }
+    }
+
+    private void checkForDbEntity(ObjEntity entity, ValidationResult validationResult) {
+
+        // validate DbEntity presence
+        if (entity.getDbEntity() == null && !entity.isAbstract()) {
+            addFailure(validationResult, entity, "ObjEntity '%s' has no DbEntity mapping", entity.getName());
+        }
+    }
+
+    private void validateClassName(ObjEntity entity, ValidationResult validationResult) {
         String className = entity.getClassName();
 
         // if mapped to default class, ignore...
@@ -54,31 +112,18 @@ class ObjEntityValidator extends ConfigurationNodeValidator {
         String invalidChars = helper.invalidCharsInJavaClassName(className);
 
         if (invalidChars != null) {
-            addFailure(
-                    validationResult,
-                    entity,
-                    "ObjEntity '%s' Java class '%s' contains invalid characters: %s",
-                    entity.getName(),
-                    className,
-                    invalidChars);
+            addFailure(validationResult, entity, "ObjEntity '%s' Java class '%s' contains invalid characters: %s",
+                    entity.getName(), className, invalidChars);
         } else if (helper.invalidPersistentObjectClass(className)) {
-            addFailure(
-                    validationResult,
-                    entity,
-                    "Java class '%s' of ObjEntity '%s' is a reserved word",
-                    className,
-                    entity.getName());
+            addFailure(validationResult, entity, "Java class '%s' of ObjEntity '%s' is a reserved word",
+                    className, entity.getName());
         } else if (className.indexOf('.') < 0) {
-            addFailure(
-                    validationResult,
-                    entity,
-                    "Java class '%s' of ObjEntity '%s' is in a default package",
-                    className,
-                    entity.getName());
+            addFailure(validationResult, entity, "Java class '%s' of ObjEntity '%s' is in a default package",
+                    className, entity.getName());
         }
     }
 
-    void validateSuperClassName(ObjEntity entity, ValidationResult validationResult) {
+    private void validateSuperClassName(ObjEntity entity, ValidationResult validationResult) {
         String superClassName = entity.getSuperClassName();
 
         if (Util.isEmptyString(superClassName)) {
@@ -89,84 +134,17 @@ class ObjEntityValidator extends ConfigurationNodeValidator {
         String invalidChars = helper.invalidCharsInJavaClassName(superClassName);
 
         if (invalidChars != null) {
-            addFailure(
-                    validationResult,
-                    entity,
-                    "ObjEntity '%s' Java superclass '%s' contains invalid characters: %s",
-                    entity.getName(),
-                    superClassName,
-                    invalidChars);
+            addFailure(validationResult, entity, "ObjEntity '%s' Java superclass '%s' contains invalid characters: %s",
+                    entity.getName(), superClassName, invalidChars);
         } else if (helper.invalidPersistentObjectClass(superClassName)) {
-            addFailure(
-                    validationResult,
-                    entity,
-                    "ObjEntity '%s' Java superclass '%s' is a reserved word",
-                    entity.getName(),
-                    superClassName);
+            addFailure(validationResult, entity, "ObjEntity '%s' Java superclass '%s' is a reserved word",
+                    entity.getName(), superClassName);
         }
 
         if (entity.getDbEntityName() != null && entity.getSuperEntityName() != null) {
-            addFailure(
-                    validationResult,
-                    entity,
+            addFailure(validationResult, entity,
                     "Sub ObjEntity '%s' has database table declaration different from super ObjEntity '%s'",
-                    entity.getName(),
-                    entity.getSuperEntityName());
-        }
-    }
-
-    void validateName(ObjEntity entity, ValidationResult validationResult) {
-        String name = entity.getName();
-
-        // Must have name
-        if (Util.isEmptyString(name)) {
-            addFailure(validationResult, entity, "Unnamed ObjEntity");
-            return;
-        }
-
-        DataMap map = entity.getDataMap();
-        if (map == null) {
-            return;
-        }
-
-        // check for duplicate names in the parent context
-        for (ObjEntity otherEnt : map.getObjEntities()) {
-            if (otherEnt == entity) {
-                continue;
-            }
-
-            if (name.equals(otherEnt.getName())) {
-                addFailure(
-                        validationResult,
-                        entity,
-                        "Duplicate ObjEntity name: '%s'",
-                        name);
-                break;
-            }
-        }
-
-        // check for duplicates in other DataMaps
-        DataChannelDescriptor domain = entity.getDataMap().getDataChannelDescriptor();
-        if (domain != null) {
-            for (DataMap nextMap : domain.getDataMaps()) {
-                if (nextMap == map) {
-                    continue;
-                }
-
-                ObjEntity conflictingEntity = nextMap.getObjEntity(name);
-                if (conflictingEntity != null) {
-
-                    if (!Util.nullSafeEquals(conflictingEntity.getClassName(), entity
-                            .getClassName())) {
-                        addFailure(
-                                validationResult,
-                                entity,
-                                "Duplicate ObjEntity name in another DataMap: '%s'",
-                                name);
-                        break;
-                    }
-                }
-            }
+                    entity.getName(), entity.getSuperEntityName());
         }
     }
 }

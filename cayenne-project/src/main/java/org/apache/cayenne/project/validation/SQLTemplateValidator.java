@@ -19,49 +19,48 @@
 package org.apache.cayenne.project.validation;
 
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SQLTemplateDescriptor;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
-class SQLTemplateValidator extends BaseQueryValidator {
+class SQLTemplateValidator extends BaseQueryValidator<SQLTemplateDescriptor> {
 
-    void validate(SQLTemplateDescriptor query, ValidationResult validationResult) {
-        validateName(query, validationResult);
-        validateRoot(query, validationResult);
-        validateDefaultSQL(query, validationResult);
-        validateCacheGroup(query, validationResult);
+    /**
+     * @param configSupplier the config defining the behavior of this validator.
+     * @since 5.0
+     */
+    public SQLTemplateValidator(Supplier<ValidationConfig> configSupplier) {
+        super(configSupplier);
     }
 
-    void validateDefaultSQL(SQLTemplateDescriptor query, ValidationResult validationResult) {
-
-        if (Util.isEmptyString(query.getSql())) {
-            // see if there is at least one adapter-specific template...
-
-            for (Map.Entry<String, String> entry : query.getAdapterSql().entrySet()) {
-                if (!Util.isEmptyString(entry.getValue())) {
-                    return;
-                }
-            }
-
-            addFailure(
-                    validationResult,
-                    query,
-                    "SQLTemplate query '%s' has no default SQL template",
-                    query.getName());
-        }
+    @Override
+    protected ConfigurationNodeValidator<SQLTemplateDescriptor>.Performer<SQLTemplateDescriptor> validateQuery(
+            SQLTemplateDescriptor query, ValidationResult validationResult) {
+        return super.validateQuery(query, validationResult)
+                .performIfEnabled(Inspection.SQL_TEMPLATE_NO_ROOT, this::checkForRoot)
+                .performIfEnabled(Inspection.SQL_TEMPLATE_NO_DEFAULT_SQL, this::checkForDefaultSQL);
     }
 
-    void validateRoot(QueryDescriptor query, ValidationResult validationResult) {
+    private void checkForRoot(SQLTemplateDescriptor query, ValidationResult validationResult) {
         DataMap map = query.getDataMap();
         if (query.getRoot() == null && map != null) {
-            addFailure(
-                    validationResult,
-                    query,
-                    "SQLTemplate query '%s' has no root",
-                    query.getName());
+            addFailure(validationResult, query, "SQLTemplate query '%s' has no root", query.getName());
         }
+    }
+
+    private void checkForDefaultSQL(SQLTemplateDescriptor query, ValidationResult validationResult) {
+        if (!Util.isEmptyString(query.getSql())) {
+            return;
+        }
+        // see if there is at least one adapter-specific template...
+        for (Map.Entry<String, String> entry : query.getAdapterSql().entrySet()) {
+            if (!Util.isEmptyString(entry.getValue())) {
+                return;
+            }
+        }
+        addFailure(validationResult, query, "SQLTemplate query '%s' has no default SQL template", query.getName());
     }
 }
