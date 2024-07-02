@@ -397,6 +397,24 @@ public abstract class SimpleNode extends Expression implements Node {
 		return new ASTNot(this);
 	}
 
+	/**
+	 * @inheritDoc
+	 * @since 5.0
+	 */
+	@Override
+	public Expression exists() {
+		throw new UnsupportedOperationException("Can't use exists() operator with this expression");
+	}
+
+	/**
+	 * @inheritDoc
+	 * @since 5.0
+	 */
+	@Override
+	public Expression notExists() {
+		throw new UnsupportedOperationException("Can't use not exists() operator with this expression");
+	}
+
 	@Override
 	public Object evaluate(Object o) {
 		// wrap in try/catch to provide unified exception processing

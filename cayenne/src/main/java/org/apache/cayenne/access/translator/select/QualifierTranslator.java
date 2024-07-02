@@ -25,15 +25,16 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.sqlbuilder.ExpressionNodeBuilder;
 import org.apache.cayenne.access.sqlbuilder.ValueNodeBuilder;
-import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.sqlbuilder.sqltree.*;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHandler;
 import org.apache.cayenne.exp.parser.ASTCustomOperator;
 import org.apache.cayenne.exp.parser.ASTDbIdPath;
 import org.apache.cayenne.exp.parser.ASTDbPath;
+import org.apache.cayenne.exp.parser.ASTExists;
 import org.apache.cayenne.exp.parser.ASTFullObject;
 import org.apache.cayenne.exp.parser.ASTFunctionCall;
+import org.apache.cayenne.exp.parser.ASTNotExists;
 import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.exp.parser.ASTSubquery;
@@ -89,6 +90,9 @@ class QualifierTranslator implements TraversalHandler {
             return null;
         }
 
+        // expand complex expressions that could be only interpreted at the execution time
+        qualifier = expandExpression(qualifier);
+
         Node rootNode = new EmptyNode();
         expressionsToSkip.clear();
         boolean hasCurrentNode = currentNode != null;
@@ -112,6 +116,23 @@ class QualifierTranslator implements TraversalHandler {
             return child;
         }
         return rootNode;
+    }
+
+    /**
+     * Preprocess complex expressions that ExpressionFactory can't handle at the creation time.
+     * <br>
+     * Right we only expand {@code EXIST} expressions that could spawn several subqueries.
+     *
+     * @param qualifier to process
+     * @return qualifier with preprocessed complex expressions
+     */
+    Expression expandExpression(Expression qualifier) {
+        return qualifier.transform(o -> {
+            if(o instanceof ASTExists || o instanceof ASTNotExists) {
+                return new ExistsExpressionTranslator(context, (SimpleNode) o).translate();
+            }
+            return o;
+        });
     }
 
     @Override

@@ -23,7 +23,9 @@ package org.apache.cayenne.exp.parser;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.exp.ExpressionFactory;
 
 /**
  * Superclass of conditional expressions.
@@ -87,4 +89,30 @@ public abstract class ConditionNode extends SimpleNode {
     abstract protected int getRequiredChildrenCount();
 
     abstract protected Boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception;
+
+    /**
+     * Returns expression that will be dynamically resolved to proper subqueries based on a relationships used
+     * (if no relationships are present in the original expression no subqueries will be used).
+     *
+     * @return exists expression
+     *
+     * @see ExpressionFactory#exists(Expression)
+     * @since 5.0
+     */
+    public Expression exists() {
+        return ExpressionFactory.exists(this);
+    }
+
+    /**
+     * Returns expression that will be dynamically resolved to proper subqueries based on a relationships used
+     * (if no relationships are present in the original expression no subqueries will be used).
+     *
+     * @return not exists expression
+     *
+     * @see ExpressionFactory#notExists(Expression)
+     * @since 5.0
+     */
+    public Expression notExists() {
+        return ExpressionFactory.notExists(this);
+    }
 }

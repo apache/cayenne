@@ -1485,11 +1485,31 @@ public class ExpressionFactory {
 	}
 
 	/**
+	 * Builds expression representing EXIST subquery over a given path
+	 * @param exp expression to use for an EXISTS
+	 * @return expression representing exists subquery
+	 * @since 5.0
+	 */
+	public static Expression exists(Expression exp) {
+		return new ASTExists(exp);
+	}
+
+	/**
 	 * @param subQuery {@link org.apache.cayenne.query.ObjectSelect} or {@link ColumnSelect}
 	 * @since 4.2
 	 */
 	public static Expression notExists(FluentSelect<?, ?> subQuery) {
 		return new ASTNotExists(new ASTSubquery(subQuery));
+	}
+
+	/**
+	 * Builds expression representing NOT EXIST subquery over a given path
+	 * @param exp expression to use for an NOT EXISTS
+	 * @return expression representing exists subquery
+	 * @since 5.0
+	 */
+	public static Expression notExists(Expression exp) {
+		return new ASTNotExists(exp);
 	}
 
 	/**

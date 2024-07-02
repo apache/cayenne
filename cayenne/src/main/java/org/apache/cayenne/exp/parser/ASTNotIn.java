@@ -91,10 +91,13 @@ public class ASTNotIn extends ConditionNode {
         if (transformed instanceof ASTNotIn) {
             ASTNotIn exp = (ASTNotIn) transformed;
             if (exp.jjtGetNumChildren() == 2) {
-                ASTList list = (ASTList) exp.jjtGetChild(1);
-                Object[] objects = (Object[]) list.evaluate(null);
-                if (objects.length == 0) {
-                    transformed = new ASTTrue();
+                Node child = exp.jjtGetChild(1);
+                if(child instanceof ASTList) {
+                    ASTList list = (ASTList) child;
+                    Object[] objects = (Object[]) list.evaluate(null);
+                    if (objects.length == 0) {
+                        transformed = new ASTTrue();
+                    }
                 }
             }
         }
