@@ -51,7 +51,7 @@ import org.jsoup.Jsoup;
  * @since 4.1
  * @deprecated in favour of io.bootique.tools.asciidoctorj.HugoExtension
  */
-@Deprecated
+@Deprecated(since = "5.0", forRemoval = true)
 public class CayennePostProcessor extends Postprocessor {
 
     private static final String FRONT_MATTER = "front-matter";
