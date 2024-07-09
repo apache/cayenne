@@ -58,7 +58,7 @@ public class DeepMergeOperation {
     public <T extends Persistent> T merge(T peerInParentContext) {
         ClassDescriptor descriptor = entityResolver
                 .getClassDescriptor(peerInParentContext.getObjectId().getEntityName());
-        return merge(peerInParentContext, descriptor, new HashMap<ObjectId, Persistent>());
+        return merge(peerInParentContext, descriptor, new HashMap<>());
     }
 
     private <T extends Persistent> T merge(
@@ -75,7 +75,9 @@ public class DeepMergeOperation {
 
         Persistent seenTarget = seen.get(id);
         if (seenTarget != null) {
-            return (T) seenTarget;
+            @SuppressWarnings("unchecked")
+            T castTarget = (T) seenTarget;
+            return castTarget;
         }
 
         final T target = shallowMergeOperation.merge(peerInParentContext);
@@ -87,16 +89,13 @@ public class DeepMergeOperation {
             public boolean visitToOne(ToOneProperty property) {
 
                 if (!property.isFault(peerInParentContext)) {
-                    Persistent destinationSource = (Persistent) property
-                            .readProperty(peerInParentContext);
-
-                    Object destinationTarget = destinationSource != null ? merge(
-                            destinationSource,
-                            property.getTargetDescriptor(),
-                            seen) : null;
-
-                    Object oldTarget = property.isFault(target) ? null : property
-                            .readProperty(target);
+                    Persistent destinationSource = (Persistent) property.readProperty(peerInParentContext);
+                    Object destinationTarget = destinationSource != null
+                            ? merge(destinationSource, property.getTargetDescriptor(), seen)
+                            : null;
+                    Object oldTarget = property.isFault(target)
+                            ? null
+                            : property.readProperty(target);
                     property.writePropertyDirectly(target, oldTarget, destinationTarget);
                 }
 
@@ -109,29 +108,27 @@ public class DeepMergeOperation {
                     Object targetValue;
 
                     if (property instanceof ToManyMapProperty) {
-                        Map<?, ?> map = (Map) value;
-                        Map targetMap = new HashMap();
+                        Map<?, ?> map = (Map<?, ?>) value;
+                        Map<Object, Object> targetMap = new HashMap<>();
 
-                        for (Entry entry : map.entrySet()) {
+                        for (Entry<?, ?> entry : map.entrySet()) {
                             Object destinationSource = entry.getValue();
-                            Object destinationTarget = destinationSource != null ? merge(
-                                    (Persistent) destinationSource,
-                                    property.getTargetDescriptor(),
-                                    seen) : null;
+                            Object destinationTarget = destinationSource != null
+                                    ? merge((Persistent) destinationSource, property.getTargetDescriptor(), seen)
+                                    : null;
 
                             targetMap.put(entry.getKey(), destinationTarget);
                         }
                         targetValue = targetMap;
                     }
                     else {
-                        Collection collection = (Collection) value;
-                        Collection targetCollection = new ArrayList(collection.size());
+                        Collection<?> collection = (Collection<?>) value;
+                        Collection<Object> targetCollection = new ArrayList<>(collection.size());
 
                         for (Object destinationSource : collection) {
-                            Object destinationTarget = destinationSource != null ? merge(
-                                    (Persistent) destinationSource,
-                                    property.getTargetDescriptor(),
-                                    seen) : null;
+                            Object destinationTarget = destinationSource != null
+                                    ? merge((Persistent) destinationSource, property.getTargetDescriptor(), seen)
+                                    : null;
 
                             targetCollection.add(destinationTarget);
                         }
