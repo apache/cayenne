@@ -35,6 +35,7 @@ import org.apache.cayenne.modeler.dialog.db.load.TransferableNode;
 import javax.swing.JTree;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
+import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.util.ArrayList;
@@ -54,6 +55,8 @@ public class DbImportTree extends JTree {
 
     public DbImportTree(TreeNode node) {
         super(node);
+        setRowHeight(0);
+        setUI(new TreeUI());
         createTreeExpandListener();
     }
 
@@ -72,7 +75,7 @@ public class DbImportTree extends JTree {
         printParams(reverseEngineering.getExcludeColumns(), root);
         printParams(reverseEngineering.getIncludeProcedures(), root);
         printParams(reverseEngineering.getExcludeProcedures(), root);
-        DbImportSorter.sortSubtree(root,DbImportSorter.NODE_COMPARATOR_BY_TYPE);
+        DbImportSorter.sortSubtree(root, DbImportSorter.NODE_COMPARATOR_BY_TYPE);
         model.reload();
     }
 
@@ -376,5 +379,19 @@ public class DbImportTree extends JTree {
 
     public boolean isTransferable() {
         return isTransferable;
+    }
+
+    static class TreeUI extends BasicTreeUI {
+
+        @Override
+        protected boolean shouldPaintExpandControl(TreePath path, int row, boolean isExpanded,
+                                                   boolean hasBeenExpanded, boolean isLeaf) {
+            DbImportTreeNode node = (DbImportTreeNode) path.getLastPathComponent();
+            int childCount = node.getChildCount();
+            boolean onlyEnforcerChild = childCount == 1
+                    && node.getFirstChild().getClass() == DbImportTreeNode.ExpandableEnforcerNode.class;
+            return super.shouldPaintExpandControl(path, row, isExpanded, hasBeenExpanded, isLeaf)
+                    && (childCount > 1 || !onlyEnforcerChild);
+        }
     }
 }

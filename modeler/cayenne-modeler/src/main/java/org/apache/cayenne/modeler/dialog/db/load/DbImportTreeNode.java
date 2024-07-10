@@ -50,11 +50,19 @@ public class DbImportTreeNode extends DefaultMutableTreeNode {
         this(null);
     }
 
+    public DbImportTreeNode(Object userObject) {
+        this(userObject, true);
+    }
+
     private DbImportTreeNode(Object userObject, boolean allowsChildren) {
         super();
         this.userObject = userObject;
         this.allowsChildren = allowsChildren;
         parent = null;
+
+        if (userObject != null && (isCatalog() || isSchema() || isIncludeTable())) {
+            add(new ExpandableEnforcerNode());
+        }
     }
 
     public boolean isIncludeTable() {
@@ -249,5 +257,12 @@ public class DbImportTreeNode extends DefaultMutableTreeNode {
     @Override
     public DbImportTreeNode getLastChild() {
         return (DbImportTreeNode) super.getLastChild();
+    }
+
+    public static class ExpandableEnforcerNode extends DbImportTreeNode {
+
+        public ExpandableEnforcerNode() {
+            super("", false);
+        }
     }
 }

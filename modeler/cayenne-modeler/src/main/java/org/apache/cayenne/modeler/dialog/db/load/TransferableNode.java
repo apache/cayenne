@@ -45,7 +45,7 @@ public class TransferableNode extends DbImportTreeNode implements Transferable {
                                                                     includeTableFlavor, patternParamFlavor };
 
     public TransferableNode(Object userObject) {
-        this.userObject = userObject;
+        super(userObject);
     }
 
     @Override

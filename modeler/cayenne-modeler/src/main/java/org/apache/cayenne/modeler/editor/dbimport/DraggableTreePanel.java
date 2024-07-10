@@ -177,12 +177,6 @@ public class DraggableTreePanel extends JScrollPane {
         moveInvertButton = (CayenneAction.CayenneToolbarButton) actionInv.buildButton();
         moveInvertButton.setShowingText(true);
         moveInvertButton.setText(MOVE_INV_BUTTON_LABEL);
-
-
-        DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) sourceTree.getCellRenderer();
-        renderer.setLeafIcon(null);
-        renderer.setClosedIcon(null);
-        renderer.setOpenIcon(null);
     }
 
     private void initLevels() {
