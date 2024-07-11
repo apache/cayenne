@@ -52,19 +52,18 @@ public class ASTExists extends ConditionNode {
     }
 
     @Override
-    public void jjtSetParent(Node n) {
-        parent = n;
+    protected boolean isValidParent(Node n) {
+        return true;
     }
 
     @Override
-    public void setOperand(int index, Object value) {
-        Node node = (value == null || value instanceof Node) ? (Node) value : new ASTScalar(value);
-        jjtAddChild(node, index);
+    public void jjtSetParent(Node n) {
+        super.jjtSetParent(n);
+    }
 
-        // set the parent, as jjtAddChild doesn't do it...
-        if (node != null) {
-            ((SimpleNode)node).parent = this;
-        }
+    @Override
+    public void jjtAddChild(Node n, int i) {
+        super.jjtAddChild(n, i);
     }
 
     @Override

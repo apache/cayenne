@@ -39,17 +39,11 @@ public abstract class ConditionNode extends SimpleNode {
     }
 
     @Override
-    public void jjtSetParent(Node n) {
-        // this is a check that we can't handle properly
-        // in the grammar... do it here...
-
+    protected boolean isValidParent(Node n) {
         // disallow non-aggregated condition parents...
-        if (!(n instanceof AggregateConditionNode)) {
-            String label = (n instanceof SimpleNode) ? ((SimpleNode)n).expName() : String.valueOf(n);
-            throw new ExpressionException(expName() + ": invalid parent - " + label);
-        }
-
-        super.jjtSetParent(n);
+        return n instanceof AggregateConditionNode
+                || n instanceof ASTExists
+                || n instanceof ASTNotExists;
     }
 
     @Override

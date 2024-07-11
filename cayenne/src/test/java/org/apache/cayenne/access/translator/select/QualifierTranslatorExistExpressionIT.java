@@ -68,6 +68,25 @@ public class QualifierTranslatorExistExpressionIT extends RuntimeCase {
     }
 
     @Test
+    public void testExistsSimplePathParsed() {
+        Expression exp = ExpressionFactory
+                .exp("exists paintingArray");
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, exp);
+
+        DefaultSelectTranslator translator
+                = new DefaultSelectTranslator(query, runtime.getDataDomain().getDefaultNode().getAdapter(), context.getEntityResolver());
+
+        QualifierTranslator qualifierTranslator = translator.getContext().getQualifierTranslator();
+
+        Node node = qualifierTranslator.translate(query.getWhere());
+
+        assertSQL(" EXISTS (" +
+                "SELECT t1.PAINTING_ID FROM PAINTING t1 " +
+                "WHERE t1.ARTIST_ID = t0.ARTIST_ID" +
+                ")", node);
+    }
+
+    @Test
     public void testExistsSimplePathNoRelationship() {
         Expression exp = ExpressionFactory
                 .exp("artistName")
@@ -191,6 +210,28 @@ public class QualifierTranslatorExistExpressionIT extends RuntimeCase {
                 "SELECT t1.PAINTING_ID FROM PAINTING t1 " +
                 "WHERE ( ( t1.PAINTING_TITLE = 'test' ) OR ( t1.PAINTING_TITLE = 'test2' ) ) " +
                         "AND ( t1.ARTIST_ID = t0.ARTIST_ID )" +
+                ")", node);
+    }
+
+    @Test
+    public void testExistsAggConditionSameRootParser() {
+        Expression exp = ExpressionFactory
+                .exp("exists (paintingArray.paintingTitle = 'test' " +
+                        "or paintingArray.paintingTitle = 'test2')");
+
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, exp);
+
+        DefaultSelectTranslator translator
+                = new DefaultSelectTranslator(query, runtime.getDataDomain().getDefaultNode().getAdapter(), context.getEntityResolver());
+
+        QualifierTranslator qualifierTranslator = translator.getContext().getQualifierTranslator();
+
+        Node node = qualifierTranslator.translate(query.getWhere());
+
+        assertSQL(" EXISTS (" +
+                "SELECT t1.PAINTING_ID FROM PAINTING t1 " +
+                "WHERE ( ( t1.PAINTING_TITLE = 'test' ) OR ( t1.PAINTING_TITLE = 'test2' ) ) " +
+                "AND ( t1.ARTIST_ID = t0.ARTIST_ID )" +
                 ")", node);
     }
 

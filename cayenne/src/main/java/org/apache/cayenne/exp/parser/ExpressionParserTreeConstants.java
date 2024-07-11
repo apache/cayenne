@@ -6,71 +6,75 @@ public interface ExpressionParserTreeConstants
   public int JJTVOID = 0;
   public int JJTOR = 1;
   public int JJTAND = 2;
-  public int JJTNOT = 3;
-  public int JJTTRUE = 4;
-  public int JJTFALSE = 5;
-  public int JJTEQUAL = 6;
-  public int JJTNOTEQUAL = 7;
-  public int JJTLESSOREQUAL = 8;
-  public int JJTLESS = 9;
-  public int JJTGREATER = 10;
-  public int JJTGREATEROREQUAL = 11;
-  public int JJTLIKE = 12;
-  public int JJTLIKEIGNORECASE = 13;
-  public int JJTIN = 14;
-  public int JJTBETWEEN = 15;
-  public int JJTNOTLIKE = 16;
-  public int JJTNOTLIKEIGNORECASE = 17;
-  public int JJTNOTIN = 18;
-  public int JJTNOTBETWEEN = 19;
-  public int JJTLIST = 20;
-  public int JJTSCALAR = 21;
-  public int JJTBITWISEOR = 22;
-  public int JJTBITWISEXOR = 23;
-  public int JJTBITWISEAND = 24;
-  public int JJTBITWISELEFTSHIFT = 25;
-  public int JJTBITWISERIGHTSHIFT = 26;
-  public int JJTADD = 27;
-  public int JJTSUBTRACT = 28;
-  public int JJTMULTIPLY = 29;
-  public int JJTDIVIDE = 30;
-  public int JJTBITWISENOT = 31;
-  public int JJTNEGATE = 32;
-  public int JJTCUSTOMFUNCTION = 33;
-  public int JJTCUSTOMOPERATOR = 34;
-  public int JJTCUSTOMAGGREGATE = 35;
-  public int JJTCONCAT = 36;
-  public int JJTSUBSTRING = 37;
-  public int JJTTRIM = 38;
-  public int JJTLOWER = 39;
-  public int JJTUPPER = 40;
-  public int JJTLENGTH = 41;
-  public int JJTLOCATE = 42;
-  public int JJTABS = 43;
-  public int JJTSQRT = 44;
-  public int JJTMOD = 45;
-  public int JJTASTERISK = 46;
-  public int JJTCOUNT = 47;
-  public int JJTAVG = 48;
-  public int JJTMAX = 49;
-  public int JJTMIN = 50;
-  public int JJTSUM = 51;
-  public int JJTCURRENTDATE = 52;
-  public int JJTCURRENTTIME = 53;
-  public int JJTCURRENTTIMESTAMP = 54;
-  public int JJTEXTRACT = 55;
-  public int JJTDISTINCT = 56;
-  public int JJTNAMEDPARAMETER = 57;
-  public int JJTOBJPATH = 58;
-  public int JJTDBPATH = 59;
-  public int JJTENUM = 60;
-  public int JJTDBIDPATH = 61;
+  public int JJTNOTEXISTS = 3;
+  public int JJTEXISTS = 4;
+  public int JJTNOT = 5;
+  public int JJTTRUE = 6;
+  public int JJTFALSE = 7;
+  public int JJTEQUAL = 8;
+  public int JJTNOTEQUAL = 9;
+  public int JJTLESSOREQUAL = 10;
+  public int JJTLESS = 11;
+  public int JJTGREATER = 12;
+  public int JJTGREATEROREQUAL = 13;
+  public int JJTLIKE = 14;
+  public int JJTLIKEIGNORECASE = 15;
+  public int JJTIN = 16;
+  public int JJTBETWEEN = 17;
+  public int JJTNOTLIKE = 18;
+  public int JJTNOTLIKEIGNORECASE = 19;
+  public int JJTNOTIN = 20;
+  public int JJTNOTBETWEEN = 21;
+  public int JJTLIST = 22;
+  public int JJTSCALAR = 23;
+  public int JJTBITWISEOR = 24;
+  public int JJTBITWISEXOR = 25;
+  public int JJTBITWISEAND = 26;
+  public int JJTBITWISELEFTSHIFT = 27;
+  public int JJTBITWISERIGHTSHIFT = 28;
+  public int JJTADD = 29;
+  public int JJTSUBTRACT = 30;
+  public int JJTMULTIPLY = 31;
+  public int JJTDIVIDE = 32;
+  public int JJTBITWISENOT = 33;
+  public int JJTNEGATE = 34;
+  public int JJTCUSTOMFUNCTION = 35;
+  public int JJTCUSTOMOPERATOR = 36;
+  public int JJTCUSTOMAGGREGATE = 37;
+  public int JJTCONCAT = 38;
+  public int JJTSUBSTRING = 39;
+  public int JJTTRIM = 40;
+  public int JJTLOWER = 41;
+  public int JJTUPPER = 42;
+  public int JJTLENGTH = 43;
+  public int JJTLOCATE = 44;
+  public int JJTABS = 45;
+  public int JJTSQRT = 46;
+  public int JJTMOD = 47;
+  public int JJTASTERISK = 48;
+  public int JJTCOUNT = 49;
+  public int JJTAVG = 50;
+  public int JJTMAX = 51;
+  public int JJTMIN = 52;
+  public int JJTSUM = 53;
+  public int JJTCURRENTDATE = 54;
+  public int JJTCURRENTTIME = 55;
+  public int JJTCURRENTTIMESTAMP = 56;
+  public int JJTEXTRACT = 57;
+  public int JJTDISTINCT = 58;
+  public int JJTNAMEDPARAMETER = 59;
+  public int JJTOBJPATH = 60;
+  public int JJTDBPATH = 61;
+  public int JJTENUM = 62;
+  public int JJTDBIDPATH = 63;
 
 
   public String[] jjtNodeName = {
     "void",
     "Or",
     "And",
+    "NotExists",
+    "Exists",
     "Not",
     "True",
     "False",
@@ -132,4 +136,4 @@ public interface ExpressionParserTreeConstants
     "DbIdPath",
   };
 }
-/* JavaCC - OriginalChecksum=63a32433c19f70328fd7b81a7a325a5f (do not edit this line) */
+/* JavaCC - OriginalChecksum=41bf0c1a08dba85cdb6290dc482a9543 (do not edit this line) */

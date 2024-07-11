@@ -47,8 +47,8 @@ public class ASTAny extends ConditionNode {
     }
 
     @Override
-    public void jjtSetParent(Node n) {
-        parent = n;
+    protected boolean isValidParent(Node n) {
+        return true;
     }
 
     @Override

@@ -52,19 +52,8 @@ public class ASTNotExists extends ConditionNode {
     }
 
     @Override
-    public void jjtSetParent(Node n) {
-        parent = n;
-    }
-
-    @Override
-    public void setOperand(int index, Object value) {
-        Node node = (value == null || value instanceof Node) ? (Node) value : new ASTScalar(value);
-        jjtAddChild(node, index);
-
-        // set the parent, as jjtAddChild doesn't do it...
-        if (node != null) {
-            ((SimpleNode)node).parent = this;
-        }
+    protected boolean isValidParent(Node n) {
+        return true;
     }
 
     @Override

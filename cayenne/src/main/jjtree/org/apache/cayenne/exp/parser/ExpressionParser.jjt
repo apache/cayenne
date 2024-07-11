@@ -69,6 +69,11 @@ void andCondition() : {}
 
 void notCondition() : {}
 {
+    // note: `not exists` rule must be before `not` to avoid lookahead
+        <NOT_EXISTS> simpleCondition() #NotExists(1)
+    |
+	    <EXISTS> simpleCondition() #Exists(1)
+    |
 		( "not" | "!" ) simpleCondition() #Not(1)
 	|
 		simpleCondition()
@@ -553,6 +558,12 @@ TOKEN : /* aggregates */
 	|	<SUM: "sum" >
 	|	<COUNT: "count" >
 	|	<DISTINCT: "distinct">
+}
+
+TOKEN : /* exists */
+{
+    <EXISTS: "exists">
+    | <NOT_EXISTS: "not exists">
 }
 
 TOKEN : /* functions returning strings */
