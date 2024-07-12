@@ -23,7 +23,9 @@ package org.apache.cayenne.exp.parser;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.exp.ExpressionFactory;
 
 /**
  * Superclass of conditional expressions.
@@ -37,17 +39,11 @@ public abstract class ConditionNode extends SimpleNode {
     }
 
     @Override
-    public void jjtSetParent(Node n) {
-        // this is a check that we can't handle properly
-        // in the grammar... do it here...
-
+    protected boolean isValidParent(Node n) {
         // disallow non-aggregated condition parents...
-        if (!(n instanceof AggregateConditionNode)) {
-            String label = (n instanceof SimpleNode) ? ((SimpleNode)n).expName() : String.valueOf(n);
-            throw new ExpressionException(expName() + ": invalid parent - " + label);
-        }
-
-        super.jjtSetParent(n);
+        return n instanceof AggregateConditionNode
+                || n instanceof ASTExists
+                || n instanceof ASTNotExists;
     }
 
     @Override
@@ -87,4 +83,30 @@ public abstract class ConditionNode extends SimpleNode {
     abstract protected int getRequiredChildrenCount();
 
     abstract protected Boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception;
+
+    /**
+     * Returns expression that will be dynamically resolved to proper subqueries based on a relationships used
+     * (if no relationships are present in the original expression no subqueries will be used).
+     *
+     * @return exists expression
+     *
+     * @see ExpressionFactory#exists(Expression)
+     * @since 5.0
+     */
+    public Expression exists() {
+        return ExpressionFactory.exists(this);
+    }
+
+    /**
+     * Returns expression that will be dynamically resolved to proper subqueries based on a relationships used
+     * (if no relationships are present in the original expression no subqueries will be used).
+     *
+     * @return not exists expression
+     *
+     * @see ExpressionFactory#notExists(Expression)
+     * @since 5.0
+     */
+    public Expression notExists() {
+        return ExpressionFactory.notExists(this);
+    }
 }

@@ -339,7 +339,22 @@ public abstract class SimpleNode extends Expression implements Node {
 	}
 
 	public void jjtSetParent(Node n) {
+		if (!isValidParent(n)) {
+			String label = (n instanceof SimpleNode) ? ((SimpleNode)n).expName() : String.valueOf(n);
+			throw new ExpressionException(expName() + ": invalid parent - " + label);
+		}
 		parent = n;
+	}
+
+	/**
+	 * Additional parent check that we can't handle properly in the grammar
+	 * By default it just returns true.
+	 *
+	 * @param n potential parent node to check
+	 * @return true if node could be set as a parent for the current node
+	 */
+	protected boolean isValidParent(Node n) {
+		return true;
 	}
 
 	public Node jjtGetParent() {
@@ -395,6 +410,24 @@ public abstract class SimpleNode extends Expression implements Node {
 	@Override
 	public Expression notExp() {
 		return new ASTNot(this);
+	}
+
+	/**
+	 * @inheritDoc
+	 * @since 5.0
+	 */
+	@Override
+	public Expression exists() {
+		throw new UnsupportedOperationException("Can't use exists() operator with this expression");
+	}
+
+	/**
+	 * @inheritDoc
+	 * @since 5.0
+	 */
+	@Override
+	public Expression notExists() {
+		throw new UnsupportedOperationException("Can't use not exists() operator with this expression");
 	}
 
 	@Override

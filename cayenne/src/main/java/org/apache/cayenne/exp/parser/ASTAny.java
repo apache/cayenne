@@ -47,6 +47,11 @@ public class ASTAny extends ConditionNode {
     }
 
     @Override
+    protected boolean isValidParent(Node n) {
+        return true;
+    }
+
+    @Override
     protected String getExpressionOperator(int index) {
         return "ANY";
     }
@@ -54,5 +59,23 @@ public class ASTAny extends ConditionNode {
     @Override
     public int getType() {
         return Expression.ANY;
+    }
+
+    /**
+     * @inheritDoc
+     * @since 5.0
+     */
+    @Override
+    public Expression exists() {
+        throw new UnsupportedOperationException("Can't use exists() operator with ANY");
+    }
+
+    /**
+     * @inheritDoc
+     * @since 5.0
+     */
+    @Override
+    public Expression notExists() {
+        throw new UnsupportedOperationException("Can't use not exists() operator with ANY");
     }
 }

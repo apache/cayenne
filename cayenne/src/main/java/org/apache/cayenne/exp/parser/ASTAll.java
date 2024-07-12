@@ -52,7 +52,30 @@ public class ASTAll extends ConditionNode {
     }
 
     @Override
+    protected boolean isValidParent(Node n) {
+        return true;
+    }
+
+    @Override
     public int getType() {
         return Expression.ALL;
+    }
+
+    /**
+     * @inheritDoc
+     * @since 5.0
+     */
+    @Override
+    public Expression exists() {
+        throw new UnsupportedOperationException("Can't use exists() with ALL");
+    }
+
+    /**
+     * @inheritDoc
+     * @since 5.0
+     */
+    @Override
+    public Expression notExists() {
+        throw new UnsupportedOperationException("Can't use not exists() with ALL");
     }
 }

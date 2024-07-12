@@ -21,7 +21,9 @@ package org.apache.cayenne.exp.parser;
 
 import java.util.function.Function;
 
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.exp.ExpressionFactory;
 
 /**
  * Superclass of aggregated conditional nodes such as NOT, AND, OR. Performs
@@ -70,17 +72,10 @@ public abstract class AggregateConditionNode extends SimpleNode {
 	}
 
 	@Override
-	public void jjtSetParent(Node n) {
-		// this is a check that we can't handle properly
-		// in the grammar... do it here...
-
-		// disallow non-aggregated condition parents...
-		if (!(n instanceof AggregateConditionNode)) {
-			String label = (n instanceof SimpleNode) ? ((SimpleNode) n).expName() : String.valueOf(n);
-			throw new ExpressionException(expName() + ": invalid parent - " + label);
-		}
-
-		super.jjtSetParent(n);
+	protected boolean isValidParent(Node n) {
+		return n instanceof AggregateConditionNode
+				|| n instanceof ASTExists
+				|| n instanceof ASTNotExists;
 	}
 
 	@Override
@@ -95,5 +90,23 @@ public abstract class AggregateConditionNode extends SimpleNode {
 		}
 
 		super.jjtAddChild(n, i);
+	}
+
+	/**
+	 * @inheritDoc
+	 * @since 5.0
+	 */
+	@Override
+	public Expression exists() {
+		return ExpressionFactory.exists(this);
+	}
+
+	/**
+	 * @inheritDoc
+	 * @since 5.0
+	 */
+	@Override
+	public Expression notExists() {
+		return ExpressionFactory.notExists(this);
 	}
 }
