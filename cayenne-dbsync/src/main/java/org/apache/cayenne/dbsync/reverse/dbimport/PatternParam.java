@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
+import java.util.Objects;
+
 import static org.apache.cayenne.util.Util.isBlank;
 
 /**
@@ -78,16 +80,6 @@ public class PatternParam {
     }
 
     @Override
-    public String toString() {
-        return toString(new StringBuilder(), "").toString();
-    }
-
-    public StringBuilder toString(StringBuilder res, String s) {
-        res.append(s).append(getClass().getSimpleName()).append(": ").append(pattern).append("\n");
-        return res;
-    }
-
-    @Override
     public boolean equals(Object obj) {
         if (obj == this) {
             return true;
@@ -100,5 +92,20 @@ public class PatternParam {
         }
         PatternParam patternParam = (PatternParam) obj;
         return patternParam.getPattern().equals(pattern);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pattern);
+    }
+
+    @Override
+    public String toString() {
+        return toString(new StringBuilder(), "").toString();
+    }
+
+    public StringBuilder toString(StringBuilder res, String s) {
+        res.append(s).append(getClass().getSimpleName()).append(": ").append(pattern).append("\n");
+        return res;
     }
 }

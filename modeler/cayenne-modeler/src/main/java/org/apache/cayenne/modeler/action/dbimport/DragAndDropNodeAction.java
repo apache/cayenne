@@ -25,6 +25,7 @@ import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
 import org.apache.cayenne.modeler.editor.dbimport.DbImportModel;
 import org.apache.cayenne.modeler.editor.dbimport.DbImportSorter;
 
+import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
@@ -49,6 +50,9 @@ public class DragAndDropNodeAction extends TreeManipulationAction {
 
     @Override
     public void performAction(ActionEvent e) {
+        if (dropLocationDuplicateFound()) {
+            return;
+        }
         DbImportModel model = (DbImportModel) tree.getModel();
         ReverseEngineering reverseEngineeringOldCopy = new ReverseEngineering(tree.getReverseEngineering());
         List<DbImportTreeNode> nodesToExpand = Arrays.stream(nodes)
@@ -68,6 +72,25 @@ public class DragAndDropNodeAction extends TreeManipulationAction {
         putReverseEngineeringToUndoManager(reverseEngineeringOldCopy);
         tree.reloadModelKeepingExpanded(dropLocationParentNode);
         tree.expandTree(nodesToExpand);
+    }
+
+    private boolean dropLocationDuplicateFound() {
+        for (DbImportTreeNode node : nodes) {
+            if (dropLocationParentNode.isNodeChild(node)) {
+                // we are fine about this
+                continue;
+            }
+            int duplicateIndex = dropLocationParentNode.getChildNodes().indexOf(node);
+            if (duplicateIndex >= 0) {
+                JOptionPane.showMessageDialog(
+                        Application.getFrame(),
+                        dropLocationParentNode.getSimpleNodeName() + " already contains " + node.getSimpleNodeName(),
+                        "Error moving",
+                        JOptionPane.ERROR_MESSAGE);
+                return true;
+            }
+        }
+        return false;
     }
 
     private int calculateDropIndex() {

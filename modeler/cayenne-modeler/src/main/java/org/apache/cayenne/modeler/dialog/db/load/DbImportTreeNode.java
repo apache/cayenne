@@ -36,6 +36,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -66,56 +67,56 @@ public class DbImportTreeNode extends DefaultMutableTreeNode {
     }
 
     public boolean isIncludeTable() {
-        return (getUserObject().getClass() == IncludeTable.class);
+        return (getUserObjectClass() == IncludeTable.class);
     }
 
     public boolean isExcludeTable() {
-        return (getUserObject().getClass() == ExcludeTable.class);
+        return (getUserObjectClass() == ExcludeTable.class);
     }
 
     public boolean isIncludeColumn() {
-        return (getUserObject().getClass() == IncludeColumn.class);
+        return (getUserObjectClass() == IncludeColumn.class);
     }
 
     public boolean isExcludeColumn() {
-        return (getUserObject().getClass() == ExcludeColumn.class);
+        return (getUserObjectClass() == ExcludeColumn.class);
     }
 
     public boolean isExcludeProcedure() {
-        return (getUserObject().getClass() == ExcludeProcedure.class);
+        return (getUserObjectClass() == ExcludeProcedure.class);
     }
 
     public boolean isIncludeProcedure() {
-        return (getUserObject().getClass() == IncludeProcedure.class);
+        return (getUserObjectClass() == IncludeProcedure.class);
     }
 
     public boolean isLabel() {
-        return (getUserObject().getClass() == String.class);
+        return (getUserObjectClass() == String.class);
     }
 
     public boolean isSchema() {
-        return (getUserObject().getClass() == Schema.class);
+        return (getUserObjectClass() == Schema.class);
     }
 
     public boolean isCatalog() {
-        return (getUserObject().getClass() == Catalog.class);
+        return (getUserObjectClass() == Catalog.class);
     }
 
     public boolean isReverseEngineering() {
-        return (getUserObject().getClass() == ReverseEngineering.class);
+        return (getUserObjectClass() == ReverseEngineering.class);
     }
 
-    public DbImportTreeNode(Object userObject) {
-        this(userObject, true);
+    public Class<?> getUserObjectClass() {
+        return getUserObject() != null ? getUserObject().getClass() : null;
     }
 
     // Compare parents chain
     public boolean parentsIsEqual(DbImportTreeNode reverseEngineeringNode) {
         ArrayList<DbImportTreeNode> reverseEngineeringNodeParents;
         if (reverseEngineeringNode == null) {
-                reverseEngineeringNodeParents = new ArrayList<>();
+            reverseEngineeringNodeParents = new ArrayList<>();
         } else {
-             reverseEngineeringNodeParents = reverseEngineeringNode.getParents();
+            reverseEngineeringNodeParents = reverseEngineeringNode.getParents();
         }
         ArrayList<DbImportTreeNode> dbNodeParents = getParents();
         for (DbImportTreeNode node : reverseEngineeringNodeParents) {
@@ -148,7 +149,7 @@ public class DbImportTreeNode extends DefaultMutableTreeNode {
 
     @Override
     public DbImportTreeNode getParent() {
-        return (DbImportTreeNode)super.getParent();
+        return (DbImportTreeNode) super.getParent();
     }
 
     protected String getFormattedName(String className, String nodeName) {
@@ -202,13 +203,13 @@ public class DbImportTreeNode extends DefaultMutableTreeNode {
             return false;
         }
         DbImportTreeNode objNode = (DbImportTreeNode) obj;
-        if (!objNode.getSimpleNodeName().equals(this.getSimpleNodeName())) {
-            return false;
-        }
-        if (objNode.getUserObject().getClass() != this.getUserObject().getClass()) {
-            return false;
-        }
-        return true;
+        return Objects.equals(getSimpleNodeName(), objNode.getSimpleNodeName())
+                && getUserObjectClass() == objNode.getUserObjectClass();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getSimpleNodeName(), getUserObjectClass());
     }
 
     public boolean isLoaded() {
