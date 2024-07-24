@@ -209,7 +209,7 @@ class DataContextObjectCreator {
 
         ObjEntity entity;
         try {
-            entity = context.getEntityResolver().getObjEntity(object.getClass());
+            entity = context.getEntityResolver().getObjEntity(object.getObjectId().getEntityName());
         } catch (CayenneRuntimeException ex) {
             // ObjEntity cannot be fetched, ignored
             entity = null;

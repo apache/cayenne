@@ -83,6 +83,20 @@
 		<db-attribute name="SUB1_NAME" type="VARCHAR" length="100"/>
 		<db-attribute name="SUB1_PRICE" type="DOUBLE"/>
 	</db-entity>
+	<db-entity name="GEN_STUDENT">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="50"/>
+		<db-attribute name="REFERENCE" type="VARCHAR" isMandatory="true" length="10"/>
+		<db-attribute name="TYPE" type="CHAR" isMandatory="true" length="1"/>
+	</db-entity>
+	<db-entity name="GEN_BOY">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="TOY_TRUCKS" type="SMALLINT" length="4"/>
+	</db-entity>
+	<db-entity name="GEN_GIRL">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="TOY_DOLLS" type="SMALLINT" length="4"/>
+	</db-entity>
 	<db-entity name="IV_SUB1_SUB1">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="SUB1_SUB1_NAME" type="VARCHAR" length="100"/>
@@ -175,6 +189,19 @@
 	<obj-entity name="IvSub3" superEntityName="IvRoot" className="org.apache.cayenne.testdo.inheritance_vertical.IvSub3">
 		<qualifier><![CDATA[discriminator = "IvSub3"]]></qualifier>
 		<pre-persist method-name="onPrePersist"/>
+	</obj-entity>
+	<obj-entity name="GenStudent" abstract="true" dbEntityName="GEN_STUDENT">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+		<obj-attribute name="reference" type="java.lang.String" db-attribute-path="REFERENCE"/>
+		<obj-attribute name="type" type="java.lang.String" db-attribute-path="TYPE"/>
+	</obj-entity>
+	<obj-entity name="GenBoy" superEntityName="GenStudent">
+		<qualifier><![CDATA[type = "B"]]></qualifier>
+		<obj-attribute name="toyTrucks" type="java.lang.Short" db-attribute-path="boy.TOY_TRUCKS"/>
+	</obj-entity>
+	<obj-entity name="GenGirl" superEntityName="GenStudent">
+		<qualifier><![CDATA[type = "G"]]></qualifier>
+		<obj-attribute name="toyDolls" type="java.lang.Short" db-attribute-path="girl.TOY_DOLLS"/>
 	</obj-entity>
 	<db-relationship name="sub1" source="IV1_ROOT" target="IV1_SUB1" toDependentPK="true">
 		<db-attribute-pair source="ID" target="ID"/>
@@ -289,6 +316,18 @@
 	</db-relationship>
 	<db-relationship name="ivRoot1" source="IV_SUB3" target="IV_ROOT">
 		<db-attribute-pair source="IV_ROOT_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="student" source="GEN_BOY" target="GEN_STUDENT">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="student" source="GEN_GIRL" target="GEN_STUDENT">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="boy" source="GEN_STUDENT" target="GEN_BOY" toDependentPK="true">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="girl" source="GEN_STUDENT" target="GEN_GIRL" toDependentPK="true">
+		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
 	<obj-relationship name="x" source="Iv2Sub1" target="Iv2X" deleteRule="Nullify" db-relationship-path="sub1.x"/>
 	<obj-relationship name="relatedConcrete" source="IvAbstract" target="IvConcrete" deleteRule="Nullify" db-relationship-path="relatedConcrete.abstract"/>

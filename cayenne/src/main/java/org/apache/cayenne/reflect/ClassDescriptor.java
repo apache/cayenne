@@ -88,14 +88,25 @@ public interface ClassDescriptor {
     ClassDescriptor getSuperclassDescriptor();
 
     /**
-     * Returns the most "specialized" descriptor for a given class. This method assumes
-     * that the following is true:
+     * Returns the most "specialized" descriptor for a given class.
+     * This method assumes that the following is true:
      * 
      * <pre>
      * this.getObjectClass().isAssignableFrom(objectClass)
      * </pre>
+     * @deprecated since 5.0, will throw UnsupportedOperationException on invocation,
+     *             use {@link #getSubclassDescriptor(String)}
      */
-    ClassDescriptor getSubclassDescriptor(Class<?> objectClass);
+    @Deprecated(since = "5.0", forRemoval = true)
+    default ClassDescriptor getSubclassDescriptor(Class<?> unused) {
+        throw new UnsupportedOperationException("This method is deprecated, use getSubclassDescriptor(entityName) instead");
+    }
+
+    /**
+     * Returns the most "specialized" descriptor for a given entity name.
+     * @since 5.0
+     */
+    ClassDescriptor getSubclassDescriptor(String entityName);
 
     /**
      * Creates a new instance of a class described by this object.

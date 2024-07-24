@@ -83,7 +83,7 @@ public class DeepMergeOperation {
         final T target = shallowMergeOperation.merge(peerInParentContext);
         seen.put(id, target);
 
-        descriptor = descriptor.getSubclassDescriptor(peerInParentContext.getClass());
+        descriptor = descriptor.getSubclassDescriptor(id.getEntityName());
         descriptor.visitProperties(new PropertyVisitor() {
 
             public boolean visitToOne(ToOneProperty property) {

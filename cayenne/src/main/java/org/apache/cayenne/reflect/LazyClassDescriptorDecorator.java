@@ -147,9 +147,10 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
         return descriptor.getProperty(propertyName);
     }
 
-    public ClassDescriptor getSubclassDescriptor(Class<?> objectClass) {
+    @Override
+    public ClassDescriptor getSubclassDescriptor(String entityName) {
         checkDescriptorInitialized();
-        return descriptor.getSubclassDescriptor(objectClass);
+        return descriptor.getSubclassDescriptor(entityName);
     }
 
     public ClassDescriptor getSuperclassDescriptor() {
