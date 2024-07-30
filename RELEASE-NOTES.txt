@@ -79,6 +79,7 @@ Bug Fixes:
 
 CAY-2552 ColumnQuery with flattened attributes bug
 CAY-2621 Modeler: project is dirty after a no-change db import
+CAY-2667 Fix Issues with Generic Vertical Inheritance
 CAY-2732 Exception when creating ObjEntity from a DbEntity
 CAY-2748 Mutating the list returned from the local query cache changes the cache
 CAY-2755 Modeler: Entities are not sorted by name in the class generation view
