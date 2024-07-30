@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.reflect;
 
-import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjRelationship;
 
 /**
@@ -55,7 +54,7 @@ public interface ArcProperty extends PropertyDescriptor {
      * Returns a ClassDescriptor for the type of graph nodes pointed to by this
      * arc property. Note that considering that a target object may be a
      * subclass of the class handled by the descriptor, users of this method may
-     * need to call {@link ClassDescriptor#getSubclassDescriptor(Class)} before
+     * need to call {@link ClassDescriptor#getSubclassDescriptor(String)} before
      * using the descriptor to access objects.
      */
     ClassDescriptor getTargetDescriptor();

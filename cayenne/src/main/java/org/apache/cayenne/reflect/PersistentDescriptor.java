@@ -46,9 +46,7 @@ import java.util.Map.Entry;
  */
 public class PersistentDescriptor implements ClassDescriptor {
 
-	static final Integer TRANSIENT_STATE = PersistenceState.TRANSIENT;
 	static final Integer HOLLOW_STATE = PersistenceState.HOLLOW;
-	static final Integer COMMITTED_STATE = PersistenceState.COMMITTED;
 
 	protected ClassDescriptor superclassDescriptor;
 
@@ -85,7 +83,7 @@ public class PersistentDescriptor implements ClassDescriptor {
 		this.subclassDescriptors = new HashMap<>();
 
 		// must be a set as duplicate addition attempts are expected...
-		this.rootDbEntities = new HashSet<DbEntity>(1);
+		this.rootDbEntities = new HashSet<>(1);
 	}
 
 	public void setDiscriminatorColumns(Collection<ObjAttribute> columns) {
@@ -213,14 +211,11 @@ public class PersistentDescriptor implements ClassDescriptor {
 	/**
 	 * Adds a subclass descriptor that maps to a given class name.
 	 */
-	public void addSubclassDescriptor(String className, ClassDescriptor subclassDescriptor) {
-		// note that 'className' should be used instead of
-		// "subclassDescriptor.getEntity().getClassName()", as this method is
-		// called in
-		// the early phases of descriptor initialization and we do not want to
-		// trigger
-		// subclassDescriptor resolution just yet to prevent stack overflow.
-		subclassDescriptors.put(className, subclassDescriptor);
+	public void addSubclassDescriptor(String entityName, ClassDescriptor subclassDescriptor) {
+		// NOTE: 'entityName' should be used instead of "subclassDescriptor.getEntity().getName()",
+        // as this method is called in the early phases of descriptor initialization, and we do not want to
+		// trigger subclassDescriptor resolution just yet to prevent stack overflow.
+		subclassDescriptors.put(entityName, subclassDescriptor);
 	}
 
 	public ObjEntity getEntity() {
@@ -259,8 +254,8 @@ public class PersistentDescriptor implements ClassDescriptor {
 		this.objectClass = objectClass;
 	}
 
-	public ClassDescriptor getSubclassDescriptor(Class<?> objectClass) {
-		if (objectClass == null) {
+	public ClassDescriptor getSubclassDescriptor(String entityName) {
+		if (entityName == null) {
 			throw new IllegalArgumentException("Null objectClass");
 		}
 
@@ -268,22 +263,12 @@ public class PersistentDescriptor implements ClassDescriptor {
 			return this;
 		}
 
-		ClassDescriptor subclassDescriptor = subclassDescriptors.get(objectClass.getName());
-
-		// ascend via the class hierarchy (only doing it if there are multiple
-		// choices)
-		if (subclassDescriptor == null) {
-			Class<?> currentClass = objectClass;
-			while (subclassDescriptor == null && (currentClass = currentClass.getSuperclass()) != null) {
-				subclassDescriptor = subclassDescriptors.get(currentClass.getName());
-			}
-		}
-
+		ClassDescriptor subclassDescriptor = subclassDescriptors.get(entityName);
 		return subclassDescriptor != null ? subclassDescriptor : this;
 	}
 
 	public Collection<ObjAttribute> getDiscriminatorColumns() {
-		return allDiscriminatorColumns != null ? allDiscriminatorColumns : Collections.<ObjAttribute> emptyList();
+		return allDiscriminatorColumns != null ? allDiscriminatorColumns : Collections.emptyList();
 	}
 
 	public Collection<AttributeProperty> getIdProperties() {

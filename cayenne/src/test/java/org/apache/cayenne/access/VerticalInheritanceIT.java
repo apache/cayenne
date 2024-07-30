@@ -20,6 +20,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.EJBQLQuery;
@@ -1233,5 +1234,38 @@ public class VerticalInheritanceIT extends RuntimeCase {
 		assertEquals(Double.valueOf(42.0), result.getPrice());
 		assertEquals("mDA", result.getSub1Name());
 		assertEquals("3DQa", result.getSub1Sub1Name());
+	}
+
+	@Test
+	public void testInsertTwoGenericVerticalInheritanceObjects() {
+		// Generic DataObjects play nicer with a DataContext
+		final DataContext dataContext = (DataContext) context;
+
+		final Persistent girlEmma = dataContext.newObject("GenGirl");
+		final Persistent boyLuke = dataContext.newObject("GenBoy");
+
+		assertEquals("Girl is type G", girlEmma.readProperty("type"), "G");
+		assertEquals("Boy is type B", boyLuke.readProperty("type"), "B");
+
+		girlEmma.writeProperty("reference", "g1");
+		girlEmma.writeProperty("name", "Emma");
+		girlEmma.writeProperty("toyDolls", 5);
+
+		boyLuke.writeProperty("reference", "b1");
+		boyLuke.writeProperty("name", "Luke");
+		boyLuke.writeProperty("toyTrucks", 12);
+
+		context.commitChanges();
+
+		assertEquals(2, ObjectSelect.query(Persistent.class, "GenStudent").selectCount(context));
+
+		final List<Persistent> students = ObjectSelect.query(Persistent.class, "GenStudent").select(context);
+		assertTrue(students.contains(girlEmma));
+		assertTrue(students.contains(boyLuke));
+
+		final List<Persistent> girls = ObjectSelect.query(Persistent.class, "GenGirl").select(context);
+		assertEquals(1, girls.size());
+		final List<Persistent> boys = ObjectSelect.query(Persistent.class, "GenBoy").select(context);
+		assertEquals(1, boys.size());
 	}
 }

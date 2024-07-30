@@ -65,7 +65,8 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
     protected ClassDescriptor getDescriptor(ObjEntity entity, Class<?> entityClass) {
         String superEntityName = entity.getSuperEntityName();
 
-        ClassDescriptor superDescriptor = (superEntityName != null) ? descriptorMap.getDescriptor(superEntityName)
+        ClassDescriptor superDescriptor = (superEntityName != null)
+                ? descriptorMap.getDescriptor(superEntityName)
                 : null;
 
         PersistentDescriptor descriptor = createDescriptor();
@@ -175,7 +176,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
 
             for (EntityInheritanceTree child : inheritanceTree.getChildren()) {
                 ObjEntity childEntity = child.getEntity();
-                descriptor.addSubclassDescriptor(childEntity.getClassName(),
+                descriptor.addSubclassDescriptor(childEntity.getName(),
                         descriptorMap.getDescriptor(childEntity.getName()));
 
                 indexSubclassDescriptors(descriptor, child);
@@ -200,8 +201,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
         DbEntity dbEntity = entity.getDbEntity();
         if (dbEntity != null) {
             // descriptor takes care of weeding off duplicates, which are likely
-            // in cases
-            // of non-horizontal inheritance
+            // in cases of non-horizontal inheritance
             descriptor.addRootDbEntity(dbEntity);
         }
     }
