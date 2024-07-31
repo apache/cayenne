@@ -70,6 +70,13 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-mock</artifactId>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<!-- do not need this one -->
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.mockrunner</groupId>
@@ -80,6 +87,11 @@
 					<!-- this one have old Xerces dependency that clashes with JDK's one -->
 					<groupId>nekohtml</groupId>
 					<artifactId>nekohtml</artifactId>
+				</exclusion>
+				<exclusion>
+					<!-- don't use anything related to this, and this is an old version -->
+					<groupId>ant</groupId>
+					<artifactId>ant</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
