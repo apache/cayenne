@@ -41,6 +41,7 @@ CAY-2780 Modeler: Multiple configurations for classes generation
 CAY-2781 Enable 'Create PK properties' by default in the cgen configuration
 CAY-2784 Remove 'Use Java primitive types' option from dbimport
 CAY-2785 Modeler: improve folder selection for cgen
+CAY-2787 Modeler: Ability to sort DB Import rules
 CAY-2788 DbImport: Add fallback option for the batch attribute loader
 CAY-2795 Add unit tests for the Json type
 CAY-2802 Upgrade Gradle to 7.6.1
