@@ -55,6 +55,6 @@ public class PrintColumnsBiFunction implements BiFunction<FilterContainer, DbImp
         dbImportTree.packColumns(tableFilter, container);
 
         container.setLoaded(true);
-        model.reload(container);
+        dbImportTree.reloadModelKeepingExpanded(container);
     }
 }

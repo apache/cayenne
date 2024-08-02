@@ -30,10 +30,13 @@ import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,16 +46,15 @@ import java.util.Map;
 public class DbImportTreeCellRenderer extends DefaultTreeCellRenderer {
 
     protected DbImportTreeNode node;
-    private Map<Class, String> icons;
-    private Map<Class, String> transferableTreeIcons;
+    private Map<Class<?>, String> icons;
+    private Map<Class<?>, String> transferableTreeIcons;
 
     public DbImportTreeCellRenderer() {
-        super();
         initIcons();
-        initTrasferableTreeIcons();
+        initTransferableTreeIcons();
     }
 
-    private void initTrasferableTreeIcons() {
+    private void initTransferableTreeIcons() {
         transferableTreeIcons = new HashMap<>();
         transferableTreeIcons.put(Catalog.class, "icon-dbi-catalog.png");
         transferableTreeIcons.put(Schema.class, "icon-dbi-schema.png");
@@ -73,7 +75,7 @@ public class DbImportTreeCellRenderer extends DefaultTreeCellRenderer {
         icons.put(ExcludeProcedure.class, "icon-dbi-excludeProcedure.png");
     }
 
-    private ImageIcon getIconByNodeType(Class nodeClass, boolean isTransferable) {
+    private ImageIcon getIconByNodeType(Class<?> nodeClass, boolean isTransferable) {
         String iconName = !isTransferable ? icons.get(nodeClass) : transferableTreeIcons.get(nodeClass);
         if (iconName == null) {
             return null;
@@ -91,6 +93,44 @@ public class DbImportTreeCellRenderer extends DefaultTreeCellRenderer {
         super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
         node = (DbImportTreeNode) value;
         setIcon(getIconByNodeType(node.getUserObject().getClass(), ((DbImportTree) tree).isTransferable()));
-        return this;
+        return value instanceof DbImportTreeNode.ExpandableEnforcerNode
+                ? ExpandableEnforcer.getInstance()
+                : this;
+    }
+
+    @Override
+    public Icon getLeafIcon() {
+        return null;
+    }
+
+    @Override
+    public Icon getOpenIcon() {
+        return null;
+    }
+
+    @Override
+    public Icon getClosedIcon() {
+        return null;
+    }
+
+    private static class ExpandableEnforcer extends JLabel {
+
+        private static ExpandableEnforcer instance;
+
+        public ExpandableEnforcer() {
+            setPreferredSize(new Dimension(0, 0));
+        }
+
+        public static ExpandableEnforcer getInstance() {
+            if (instance == null) {
+                instance = new ExpandableEnforcer();
+            }
+            return instance;
+        }
+
+        @Override
+        public Dimension getPreferredSize() {
+            return super.getPreferredSize();
+        }
     }
 }

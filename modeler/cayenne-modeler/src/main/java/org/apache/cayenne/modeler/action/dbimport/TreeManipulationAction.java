@@ -190,7 +190,7 @@ public abstract class TreeManipulationAction extends CayenneAction {
         if (!updateSelected) {
             savedPath = new TreePath(parentElement.getPath());
         }
-        model.reload(updateSelected ? selectedElement : parentElement);
+        tree.reloadModelKeepingExpanded(updateSelected ? selectedElement : parentElement);
         if ((savedPath != null) && (parentElement.getUserObject().getClass() != ReverseEngineering.class)) {
             tree.setSelectionPath(savedPath);
         }

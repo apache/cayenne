@@ -26,6 +26,7 @@ import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.JTree;
+import javax.swing.UIManager;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.tree.DefaultTreeCellEditor;
@@ -44,6 +45,7 @@ public class DbImportTreeCellEditor extends DefaultTreeCellEditor {
 
     public DbImportTreeCellEditor(JTree tree, DefaultTreeCellRenderer renderer) {
         super(tree, renderer);
+        setFont(UIManager.getFont("Tree.font"));
         this.addCellEditorListener(new CellEditorListener() {
             @Override
             public void editingStopped(ChangeEvent e) {
@@ -73,8 +75,7 @@ public class DbImportTreeCellEditor extends DefaultTreeCellEditor {
         if (value instanceof DbImportTreeNode) {
             value = ((DbImportTreeNode) value).getSimpleNodeName();
         }
-        return super.getTreeCellEditorComponent(tree, value, isSelected, expanded,
-                leaf, row);
+        return super.getTreeCellEditorComponent(tree, value, isSelected, expanded, leaf, row);
     }
 
     @Override
@@ -122,7 +123,7 @@ public class DbImportTreeCellEditor extends DefaultTreeCellEditor {
         }
         if (tree.getSelectionPath() != null) {
             DbImportTreeNode selectedNode = (DbImportTreeNode) tree.getSelectionPath().getLastPathComponent();
-            ((DbImportModel) tree.getModel()).reload(selectedNode);
+            ((DbImportTree) tree).reloadModelKeepingExpanded(selectedNode);
         }
     }
 

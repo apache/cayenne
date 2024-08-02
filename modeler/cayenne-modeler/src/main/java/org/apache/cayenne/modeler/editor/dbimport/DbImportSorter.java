@@ -36,28 +36,32 @@ import java.util.List;
  * @since 5.0
  */
 public class DbImportSorter {
-    private static final Comparator<DbImportTreeNode> NODE_COMPARATOR = Comparator
+    public static final Comparator<DbImportTreeNode> NODE_COMPARATOR_BY_TYPE = Comparator
+            .comparing(DbImportTreeNode::getNodeType);
+
+
+    public static final Comparator<DbImportTreeNode> NODE_COMPARATOR_BY_TYPE_BY_NAME = Comparator
             .comparing(DbImportTreeNode::getNodeType)
             .thenComparing(DbImportTreeNode::getSimpleNodeName);
 
-    public static void sortSingleNode(DbImportTreeNode node) {
-        sortNodeItems(node);
+    public static void sortSingleNode(DbImportTreeNode node, Comparator<DbImportTreeNode> comparator) {
+        sortNodeItems(node, comparator);
         syncUserObjectItems(node);
     }
 
-    public static void sortSubtree(DbImportTreeNode root) {
-        sortSingleNode(root);
-        root.getChildNodes().forEach(DbImportSorter::sortSubtree);
+    public static void sortSubtree(DbImportTreeNode root,Comparator<DbImportTreeNode> comparator) {
+        sortSingleNode(root, comparator);
+        root.getChildNodes().forEach(r -> sortSubtree(r, comparator));
     }
 
-    private static void sortNodeItems(DbImportTreeNode node) {
+    private static void sortNodeItems(DbImportTreeNode node, Comparator<DbImportTreeNode> comparator) {
         List<DbImportTreeNode> childNodes = node.getChildNodes();
         node.removeAllChildren();
-        childNodes.sort(NODE_COMPARATOR);
+        childNodes.sort(comparator);
         childNodes.forEach(node::add);
     }
 
-    private static void syncUserObjectItems(DbImportTreeNode parentNode) {
+    public static void syncUserObjectItems(DbImportTreeNode parentNode) {
 
         Object userObject = parentNode.getUserObject();
 

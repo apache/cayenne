@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.reverse.filters;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
@@ -39,11 +41,11 @@ public class TableFilterTest {
 
     @Test
     public void testInclude() {
-        TreeSet<IncludeTableFilter> includes = new TreeSet<>();
+        List<IncludeTableFilter> includes = new ArrayList<>();
         includes.add(new IncludeTableFilter("aaa"));
         includes.add(new IncludeTableFilter("bb"));
 
-        TableFilter filter = new TableFilter(includes, new TreeSet<>(PatternFilter.PATTERN_COMPARATOR));
+        TableFilter filter = new TableFilter(includes, new ArrayList<>());
 
         assertTrue(filter.isIncludeTable("aaa"));
         assertFalse(filter.isIncludeTable("aa"));
@@ -56,11 +58,11 @@ public class TableFilterTest {
 
     @Test
     public void testExclude() {
-        TreeSet<Pattern> excludes = new TreeSet<>(PatternFilter.PATTERN_COMPARATOR);
+        List<Pattern> excludes = new ArrayList<>();
         excludes.add(Pattern.compile("aaa"));
         excludes.add(Pattern.compile("bb"));
 
-        TreeSet<IncludeTableFilter> includes = new TreeSet<>();
+        List<IncludeTableFilter> includes = new ArrayList<>();
         includes.add(new IncludeTableFilter(null, PatternFilter.INCLUDE_EVERYTHING));
 
         TableFilter filter = new TableFilter(includes, excludes);
@@ -76,11 +78,11 @@ public class TableFilterTest {
 
     @Test
     public void testIncludeExclude() {
-        TreeSet<Pattern> excludes = new TreeSet<>(PatternFilter.PATTERN_COMPARATOR);
+        List<Pattern> excludes = new ArrayList<>();
         excludes.add(Pattern.compile("aaa"));
         excludes.add(Pattern.compile("bb"));
 
-        TreeSet<IncludeTableFilter> includes = new TreeSet<>();
+        List<IncludeTableFilter> includes = new ArrayList<>();
         includes.add(new IncludeTableFilter("aa.*"));
 
         TableFilter filter = new TableFilter(includes, excludes);
@@ -96,11 +98,11 @@ public class TableFilterTest {
 
     @Test
     public void testGetTableFilter() {
-        TreeSet<IncludeTableFilter> includes = new TreeSet<IncludeTableFilter>();
+        List<IncludeTableFilter> includes = new ArrayList<>();
         includes.add(new IncludeTableFilter("aaa"));
         includes.add(new IncludeTableFilter("bb"));
 
-        TreeSet<Pattern> excludes = new TreeSet<>();
+        List<Pattern> excludes = new ArrayList<>();
 
         TableFilter filter = new TableFilter(includes, excludes);
 
@@ -112,4 +114,41 @@ public class TableFilterTest {
         assertNull(filter.getIncludeTableColumnFilter(""));
         assertNull(filter.getIncludeTableColumnFilter("bbbb"));
     }
+
+    @Test
+    public void testExcludePriority(){
+        List<IncludeTableFilter> includes = new ArrayList<>();
+        includes.add(new IncludeTableFilter("a"));
+
+        List<Pattern> excludes = new ArrayList<>();
+        excludes.add(Pattern.compile("a"));
+
+        TableFilter tableFilter = new TableFilter(includes, excludes);
+
+        assertNull( tableFilter.getIncludeTableColumnFilter("a"));
+    }
+
+    @Test
+    public void testPatternsOrder(){
+        List<IncludeTableFilter> includes = new ArrayList<>();
+        includes.add(new IncludeTableFilter("b"));
+        includes.add(new IncludeTableFilter("a"));
+
+        List<Pattern> excludes = new ArrayList<>();
+        excludes.add(Pattern.compile("b"));
+        excludes.add(Pattern.compile("a"));
+
+        TableFilter tableFilter = new TableFilter(includes, excludes);
+
+        assertEquals("b",tableFilter.getIncludes().get(0).pattern.pattern());
+        assertEquals("b",tableFilter.getExcludes().get(0).pattern());
+    }
+    @Test
+    public void testNullArguments(){
+        TableFilter tableFilter = new TableFilter(null, null);
+        assertNotNull(tableFilter);
+        assertThrows(NullPointerException.class, () -> tableFilter.isIncludeTable(null)  );
+
+    }
+
 }

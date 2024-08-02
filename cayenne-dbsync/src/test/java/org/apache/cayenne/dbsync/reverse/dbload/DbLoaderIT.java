@@ -22,6 +22,12 @@ package org.apache.cayenne.dbsync.reverse.dbload;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.dbsync.naming.NoStemStemmer;
+import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
+import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
+import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
+import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
+import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -42,6 +48,7 @@ import java.sql.Connection;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -65,6 +72,38 @@ public class DbLoaderIT extends RuntimeCase {
     private UnitDbAdapter accessStackAdapter;
 
     private Connection connection;
+
+
+    @Test
+    public void testLoadingOrder() throws Exception {
+        ReverseEngineering engineering = new ReverseEngineering();
+        IncludeTable artistTableWithExclusion = new IncludeTable("ARTIST");
+        artistTableWithExclusion.addExcludeColumn(new ExcludeColumn("DATE_OF_BIRTH"));
+        engineering.addIncludeTable(artistTableWithExclusion);
+        engineering.addIncludeTable(new IncludeTable("ARTIST"));
+
+        IncludeTable paintingTableWithExclusion = new IncludeTable("PAINTING");
+        paintingTableWithExclusion.addExcludeColumn(new ExcludeColumn("PAINTING_DESCRIPTION"));
+        engineering.addIncludeTable(new IncludeTable("PAINTING"));
+        engineering.addIncludeTable(paintingTableWithExclusion);
+
+        FiltersConfigBuilder configBuilder = new FiltersConfigBuilder(engineering);
+        FiltersConfig filtersConfig = configBuilder.build();
+
+        DbLoaderConfiguration dbLoaderConfiguration = new DbLoaderConfiguration();
+        dbLoaderConfiguration.setFiltersConfig(filtersConfig);
+
+        DbLoader loader = createDbLoader(dbLoaderConfiguration);
+        DataMap loaded = loader.load();
+        assertNotNull(loaded);
+
+        DbEntity artist = loaded.getDbEntity("ARTIST");
+        DbEntity painting = loaded.getDbEntity("PAINTING");
+        assertNotNull(artist);
+        assertNotNull(painting);
+        assertNull(getDbAttribute(artist,"DATE_OF_BIRTH"));
+        assertNotNull(getDbAttribute(painting,"PAINTING_DESCRIPTION"));
+    }
 
 
     /**
@@ -122,6 +161,10 @@ public class DbLoaderIT extends RuntimeCase {
 
     private DbLoader createDbLoader(boolean meaningfulPK, boolean meaningfulFK) {
         return new DbLoader(adapter, connection, CONFIG, null, new DefaultObjectNameGenerator(NoStemStemmer.getInstance()));
+    }
+
+    private DbLoader createDbLoader(DbLoaderConfiguration configuration) {
+        return new DbLoader(adapter, connection, configuration, null, new DefaultObjectNameGenerator(NoStemStemmer.getInstance()));
     }
 
     @After

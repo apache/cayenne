@@ -18,9 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
@@ -75,10 +76,10 @@ public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {
 
         FiltersConfig filters = dbImportConfiguration.getDbLoaderConfig().getFiltersConfig();
 
-        TreeSet<IncludeTableFilter> includes = new TreeSet<>();
+        List<IncludeTableFilter> includes = new ArrayList<>();
         includes.add(new IncludeTableFilter(null, new PatternFilter().exclude("^ETL_.*")));
 
-        TreeSet<Pattern> excludes = new TreeSet<>(PatternFilter.PATTERN_COMPARATOR);
+        List<Pattern> excludes = new ArrayList<>();
         excludes.add(PatternFilter.pattern("^ETL_.*"));
 
         assertEquals(filters.tableFilter(null, "NHL_STATS"),

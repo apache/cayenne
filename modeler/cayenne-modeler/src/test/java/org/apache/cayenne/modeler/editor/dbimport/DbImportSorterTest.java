@@ -47,22 +47,44 @@ public class DbImportSorterTest {
     }
 
     @Test
-    public void sortNodeTest(){
-        DbImportSorter.sortSingleNode(node);
+    public void sortByTypeByNameSingleNodeTest(){
+        DbImportSorter.sortSingleNode(node,DbImportSorter.NODE_COMPARATOR_BY_TYPE_BY_NAME);
 
-        assertEquals("a", node.getChildNodes().get(0).getSimpleNodeName());
-        assertEquals("b", node.getChildNodes().get(1).getSimpleNodeName());
-        assertEquals("c", node.getChildNodes().get(2).getSimpleNodeName());
+        // DbImportTreeNode.ExpandableEnforcerNode at index 0
+        assertEquals("a", node.getChildNodes().get(1).getSimpleNodeName());
+        assertEquals("b", node.getChildNodes().get(2).getSimpleNodeName());
+        assertEquals("c", node.getChildNodes().get(3).getSimpleNodeName());
+    }
+
+    @Test
+    public void sortByTypeSingleNodeTest(){
+        DbImportSorter.sortSingleNode(node,DbImportSorter.NODE_COMPARATOR_BY_TYPE);
+
+        // DbImportTreeNode.ExpandableEnforcerNode at index 0
+        assertEquals("a", node.getChildNodes().get(3).getSimpleNodeName());
+        assertEquals("b", node.getChildNodes().get(2).getSimpleNodeName());
+        assertEquals("c", node.getChildNodes().get(1).getSimpleNodeName());
     }
 
 
     @Test
-    public void sortNodeWithAllChildrenTest(){
-        DbImportSorter.sortSubtree(node);
+    public void sortByTypeByNameSubtreeTest(){
+        DbImportSorter.sortSubtree(node,DbImportSorter.NODE_COMPARATOR_BY_TYPE_BY_NAME);
 
-        DbImportTreeNode tableNode = node.getChildNodes().get(0);
-        DbImportTreeNode columnNode = tableNode.getChildNodes().get(0);
+        // DbImportTreeNode.ExpandableEnforcerNode at index 0
+        DbImportTreeNode tableNode = node.getChildNodes().get(1);
+        DbImportTreeNode columnNode = tableNode.getChildNodes().get(1);
         assertEquals("1", columnNode.getSimpleNodeName());
+    }
+
+    @Test
+    public void sortByTypeBySubtreeTest(){
+        DbImportSorter.sortSubtree(node,DbImportSorter.NODE_COMPARATOR_BY_TYPE);
+
+        // DbImportTreeNode.ExpandableEnforcerNode at index 0
+        DbImportTreeNode tableNode = node.getChildNodes().get(3);
+        DbImportTreeNode columnNode = tableNode.getChildNodes().get(1);
+        assertEquals("2", columnNode.getSimpleNodeName());
     }
 
 }

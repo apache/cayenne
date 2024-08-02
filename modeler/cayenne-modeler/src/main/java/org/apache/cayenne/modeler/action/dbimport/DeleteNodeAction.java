@@ -38,7 +38,7 @@ import org.apache.cayenne.modeler.editor.dbimport.DraggableTreePanel;
 
 import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @since 4.1
@@ -117,7 +117,7 @@ public class DeleteNodeAction extends TreeManipulationAction {
         DbImportModel model = (DbImportModel) tree.getModel();
         model.removeNodeFromParent(selectedElement);
         getProjectController().setDirty(true);
-        model.reload(parentElement);
+        tree.reloadModelKeepingExpanded(parentElement);
     }
 
     @Override
@@ -152,7 +152,7 @@ public class DeleteNodeAction extends TreeManipulationAction {
             }
             if (paths.length > 1) {
                 getProjectController().setDirty(true);
-                ArrayList<DbImportTreeNode> expandList = tree.getTreeExpandList();
+                List<DbImportTreeNode> expandList = tree.getTreeExpandList();
                 tree.translateReverseEngineeringToTree(tree.getReverseEngineering(), false);
                 tree.expandTree(expandList);
             } else {

@@ -20,9 +20,9 @@ package org.apache.cayenne.dbsync.reverse.filters;
 
 import org.apache.cayenne.util.Util;
 
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -63,16 +63,20 @@ public class PatternFilter {
         }
     };
 
-    private final SortedSet<Pattern> includes;
-    private final SortedSet<Pattern> excludes;
+    private final List<Pattern> includes;
+    private final List<Pattern> excludes;
 
     public PatternFilter() {
-        this.includes = new TreeSet<>(PATTERN_COMPARATOR);
-        this.excludes = new TreeSet<>(PATTERN_COMPARATOR);
+        this.includes = new ArrayList<>();
+        this.excludes = new ArrayList<>();
     }
 
-    public SortedSet<Pattern> getIncludes() {
+    public List<Pattern> getIncludes() {
         return includes;
+    }
+
+    public List<Pattern> getExcludes() {
+        return excludes;
     }
 
     public PatternFilter include(Pattern p) {
@@ -132,14 +136,29 @@ public class PatternFilter {
             return true;
         }
 
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof PatternFilter)) {
             return false;
         }
 
+        PatternFilter that = (PatternFilter) o;
 
-        PatternFilter filter = (PatternFilter) o;
-        return includes.equals(filter.includes)
-                && excludes.equals(filter.excludes);
+        if (includes == that.includes) {
+            return true;
+        }
+
+        if (includes.size() != that.includes.size()) {
+            return false;
+        }
+
+        // Check if the lists have the same patterns in the same order
+        for (int i = 0; i < includes.size(); i++) {
+            Pattern pattern = excludes.get(i);
+            Pattern thatPattern = that.excludes.get(i);
+            if (!pattern.pattern().equals(thatPattern.pattern())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -153,7 +172,7 @@ public class PatternFilter {
         } else if (includes.size() > 1) {
             res.append("(").append(Util.join(includes, " OR ")).append(")");
         } else {
-            res.append(includes.first().pattern());
+            res.append(includes.get(0).pattern());
         }
 
         if (!excludes.isEmpty()) {

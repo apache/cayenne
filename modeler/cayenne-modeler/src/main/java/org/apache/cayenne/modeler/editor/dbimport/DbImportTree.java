@@ -35,11 +35,13 @@ import org.apache.cayenne.modeler.dialog.db.load.TransferableNode;
 import javax.swing.JTree;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
+import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.function.BiFunction;
 
 
@@ -53,6 +55,8 @@ public class DbImportTree extends JTree {
 
     public DbImportTree(TreeNode node) {
         super(node);
+        setRowHeight(0);
+        setUI(new TreeUI());
         createTreeExpandListener();
     }
 
@@ -71,7 +75,7 @@ public class DbImportTree extends JTree {
         printParams(reverseEngineering.getExcludeColumns(), root);
         printParams(reverseEngineering.getIncludeProcedures(), root);
         printParams(reverseEngineering.getExcludeProcedures(), root);
-        DbImportSorter.sortSubtree(root);
+        DbImportSorter.sortSubtree(root, DbImportSorter.NODE_COMPARATOR_BY_TYPE);
         model.reload();
     }
 
@@ -212,7 +216,7 @@ public class DbImportTree extends JTree {
     }
 
     // Create list of expanded elements
-    private ArrayList<DbImportTreeNode> createTreeExpandList(DbImportTreeNode rootNode, ArrayList<DbImportTreeNode> resultList) {
+    private List<DbImportTreeNode> createTreeExpandList(DbImportTreeNode rootNode, List<DbImportTreeNode> resultList) {
         for (int i = 0; i < rootNode.getChildCount(); i++) {
             DbImportTreeNode childNode = (DbImportTreeNode) rootNode.getChildAt(i);
             TreePath childPath = new TreePath(childNode.getPath());
@@ -226,12 +230,23 @@ public class DbImportTree extends JTree {
         return resultList;
     }
 
-    public ArrayList<DbImportTreeNode> getTreeExpandList() {
+    public void reloadModelKeepingExpanded(DbImportTreeNode node) {
+        DbImportModel model = (DbImportModel) getModel();
+        List<DbImportTreeNode> nodesToExpand = getTreeExpandList();
+        model.reload(node);
+        expandTree(nodesToExpand);
+    }
+
+    public void reloadModelKeepingExpanded() {
+        reloadModelKeepingExpanded(getRootNode());
+    }
+
+    public List<DbImportTreeNode> getTreeExpandList() {
         ArrayList<DbImportTreeNode> resultList = new ArrayList<>();
         return createTreeExpandList(getRootNode(), resultList);
     }
 
-    private void expandBeginningWithNode(DbImportTreeNode rootNode, ArrayList<DbImportTreeNode> list) {
+    private void expandBeginningWithNode(DbImportTreeNode rootNode, List<DbImportTreeNode> list) {
         for (int i = 0; i < rootNode.getChildCount(); i++) {
             DbImportTreeNode childNode = (DbImportTreeNode) rootNode.getChildAt(i);
             list.forEach((element) -> {
@@ -245,7 +260,7 @@ public class DbImportTree extends JTree {
         }
     }
 
-    public void expandTree(ArrayList<DbImportTreeNode> expandIndexesList) {
+    public void expandTree(List<DbImportTreeNode> expandIndexesList) {
         expandBeginningWithNode(getRootNode(), expandIndexesList);
     }
 
@@ -258,15 +273,10 @@ public class DbImportTree extends JTree {
         }
     }
 
-    public void reloadModel(){
-        DbImportModel model = (DbImportModel)this.getModel();
-        model.reload();
-    }
-
     private void printIncludeTables(Collection<IncludeTable> collection, DbImportTreeNode parent) {
         for (IncludeTable includeTable : collection) {
             DbImportTreeNode node = !isTransferable ? new DbImportTreeNode(includeTable) : new TransferableNode(includeTable);
-            if (!node.getSimpleNodeName().equals("")) {
+            if (!node.getSimpleNodeName().isEmpty()) {
 
                 if (isTransferable && includeTable.getIncludeColumns().isEmpty() && includeTable.getExcludeColumns().isEmpty()) {
                     printParams(Collections.singletonList(new IncludeColumn("Loading...")), node);
@@ -369,5 +379,19 @@ public class DbImportTree extends JTree {
 
     public boolean isTransferable() {
         return isTransferable;
+    }
+
+    static class TreeUI extends BasicTreeUI {
+
+        @Override
+        protected boolean shouldPaintExpandControl(TreePath path, int row, boolean isExpanded,
+                                                   boolean hasBeenExpanded, boolean isLeaf) {
+            DbImportTreeNode node = (DbImportTreeNode) path.getLastPathComponent();
+            int childCount = node.getChildCount();
+            boolean onlyEnforcerChild = childCount == 1
+                    && node.getFirstChild().getClass() == DbImportTreeNode.ExpandableEnforcerNode.class;
+            return super.shouldPaintExpandControl(path, row, isExpanded, hasBeenExpanded, isLeaf)
+                    && (childCount > 1 || !onlyEnforcerChild);
+        }
     }
 }
