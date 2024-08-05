@@ -39,7 +39,7 @@
 		<project.build.datetime>${maven.build.timestamp}</project.build.datetime>
 		<slf4j.version>1.7.36</slf4j.version>
 		<ant.version>1.10.12</ant.version>
-		<testcontainers.version>1.20.0</testcontainers.version>
+		<testcontainers.version>1.20.1</testcontainers.version>
 
 		<maven.compiler.target>11</maven.compiler.target>
 		<maven.compiler.source>11</maven.compiler.source>
@@ -420,6 +420,14 @@
     			<groupId>org.slf4j</groupId>
     			<artifactId>slf4j-simple</artifactId>
     			<version>${slf4j.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<!-- This dependency update the one provided by the testcontainers,
+				 should be removed once testcontainers uses a version without active CVEs -->
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-compress</artifactId>
+				<version>1.26.2</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
