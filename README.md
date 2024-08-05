@@ -77,9 +77,9 @@ Here is example of Cayenne Maven plugin setup that will do it:
 
     <dependencies>
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.33</version>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>8.4.0</version>
         </dependency>
     </dependencies>
 
@@ -87,7 +87,7 @@ Here is example of Cayenne Maven plugin setup that will do it:
         <map>${project.basedir}/src/main/resources/demo.map.xml</map>
         <cayenneProject>${project.basedir}/src/main/resources/cayenne-demo.xml</cayenneProject>
         <dataSource>
-            <url>jdbc:mysql://localhost:3306/cayenne_demo</url>
+            <url>jdbc:mysql://localhost:3306/cayenne_demo?nullNamePatternMatchesAll=true</url>
             <driver>com.mysql.cj.jdbc.Driver</driver>
             <username>user</username>
             <password>password</password>
@@ -116,8 +116,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'org.apache.cayenne.plugins', name: 'cayenne-gradle-plugin', version: '4.2.1'
-        classpath 'mysql:mysql-connector-java:8.0.33'
+        classpath 'org.apache.cayenne.plugins:cayenne-gradle-plugin:4.2.1'
+        classpath 'com.mysql:mysql-connector-j:8.4.0'
     }
 }
 
@@ -129,7 +129,7 @@ cdbimport {
 
     dataSource {
         driver 'com.mysql.cj.jdbc.Driver'
-        url 'jdbc:mysql://127.0.0.1:3306/cayenne_demo'
+        url 'jdbc:mysql://127.0.0.1:3306/cayenne_demo?nullNamePatternMatchesAll=true'
         username 'user'
         password 'password'
     }
