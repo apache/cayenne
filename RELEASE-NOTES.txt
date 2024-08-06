@@ -104,6 +104,7 @@ CAY-2794 Fix Incorrect JavaType for Vertical-Inheritance Attributes
 CAY-2796 Cayenne custom json formatter produces invalid json
 CAY-2800 Modeler saves map.xml files with schema ordering error
 CAY-2801 Incorrect equals() implementation in IdGenerationMarker could cause data missing in the commit
+CAY-2804 LocalTimeValueType potential loss of precision
 CAY-2806 Incorrect processing of unicode escape syntax in JSON
 CAY-2809 Cayenne Expression grammar doesn't allow custom function as an argument for string functions
 CAY-2810 Can't use custom operator expression with aggregate functions
