@@ -15,6 +15,7 @@ Changes/New Features:
 
 CAY-2378 Switch usage of SelectQuery to ObjectSelect internally
 CAY-2498 Rename packages to prevent crossing package names
+CAY-2597 case-when implementation
 CAY-2715 Support ANY and ALL expressions for subqueries
 CAY-2737 Cayenne 5.0: cleanup deprecated code
 CAY-2741 Cleanup TransactionDescriptor and deprecate DefaultTransactionDescriptor
