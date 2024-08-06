@@ -17,27 +17,57 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.sqlbuilder.sqltree;
+package org.apache.cayenne.exp.parser;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.exp.Expression;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
+ * "THEN" part of the case-when expression.
+ *
  * @since 5.0
  */
-public class CaseNode extends Node {
+public class ASTThen extends SimpleNode {
 
+    public ASTThen(Object node) {
+        super(0);
+        jjtAddChild((Node) node, 0);
+        connectChildren();
+    }
+
+    public ASTThen(int id) {
+        super(id);
+    }
+
+    /**
+     * Creates a copy of this expression node, without copying children.
+     */
     @Override
-    public QuotingAppendable append(QuotingAppendable buffer) {
-        return buffer.append(" CASE");
+    public Expression shallowCopy() {
+        return new ASTThen(id);
     }
 
     @Override
-    public Node copy() {
-        return new CaseNode();
+    protected String getExpressionOperator(int index) {
+        return "then";
     }
 
     @Override
-    public void appendChildrenEnd(QuotingAppendable buffer) {
-            buffer.append(" END");
+    protected Object evaluateNode(Object o) throws Exception {
+        return evaluateChild(0, o);
     }
+
+    @Override
+    public int getType() {
+        return Expression.THEN;
+    }
+
+    @Override
+    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
+        throw new UnsupportedOperationException("EJBQL 'then' is not supported");
+    }
+
+
 }

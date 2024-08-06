@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.sql.Types;
 import java.text.DateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -40,7 +41,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.apache.cayenne.exp.ExpressionFactory.*;
+import static org.junit.Assert.*;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class AggregateExpInMemoryEvaluationIT extends RuntimeCase {
@@ -160,6 +162,78 @@ public class AggregateExpInMemoryEvaluationIT extends RuntimeCase {
 
         Object avg2 = avgExp.evaluate(artists.get(2));
         assertEquals(95.0, avg2);
+    }
+
+    @Test
+    public void testCaseWhenFirstCondition() {
+        Artist artist = ObjectSelect.query(Artist.class)
+                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
+                .selectFirst(context);
+
+        Expression caseWhenFirstCondition = caseWhen(
+                List.of(Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE).between(BigDecimal.ZERO, BigDecimal.valueOf(50)),
+                        Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE).between(BigDecimal.valueOf(51), BigDecimal.valueOf(100))),
+                List.of(Artist.ARTIST_NAME.getExpression(),
+                        Artist.DATE_OF_BIRTH.getExpression()),
+                Artist.ARTIST_ID_PK_PROPERTY.getExpression());
+
+        Object resultFirstCondition = caseWhenFirstCondition.evaluate(artist);
+        assertTrue(resultFirstCondition instanceof String);
+        assertEquals("artist1", resultFirstCondition);
+    }
+
+    @Test
+    public void testCaseWhenSecondCondition() {
+        Artist artist = ObjectSelect.query(Artist.class)
+                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
+                .selectFirst(context);
+
+        Expression caseWhenFirstCondition = caseWhen(
+                List.of(Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE).between(BigDecimal.ZERO, BigDecimal.valueOf(49)),
+                        Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE).between(BigDecimal.valueOf(51), BigDecimal.valueOf(100))),
+                List.of(Artist.ARTIST_NAME.getExpression(),
+                        Artist.DATE_OF_BIRTH.getExpression()),
+                Artist.ARTIST_ID_PK_PROPERTY.getExpression());
+
+        Object resultSecondCondition = caseWhenFirstCondition.evaluate(artist);
+        assertTrue(resultSecondCondition instanceof Date);
+    }
+
+    @Test
+    public void testCaseWhenDefaultCondition() {
+        Artist artist = ObjectSelect.query(Artist.class)
+                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
+                .selectFirst(context);
+
+        Expression caseWhenDefaultCondition = caseWhen(
+                List.of(Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE).between(BigDecimal.ZERO, BigDecimal.valueOf(1)),
+                        Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE).between(BigDecimal.valueOf(2), BigDecimal.valueOf(3))),
+                List.of(Artist.ARTIST_NAME.getExpression(),
+                        Artist.DATE_OF_BIRTH.getExpression()),
+                Artist.ARTIST_ID_PK_PROPERTY.getExpression());
+
+        Object resultDefaultCondition = caseWhenDefaultCondition.evaluate(artist);
+        assertTrue(resultDefaultCondition instanceof Long);
+        assertEquals(1L, (long)resultDefaultCondition);
+    }
+
+    @Test
+    public void testCaseWhenNoResultNoDefault() {
+        Artist artist = ObjectSelect.query(Artist.class)
+                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
+                .selectFirst(context);
+
+        Expression caseWhenNoResultNoDefault = caseWhen(
+                List.of(Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE).between(BigDecimal.ZERO, BigDecimal.valueOf(1))),
+                List.of(Artist.DATE_OF_BIRTH.getExpression())
+        );
+
+        Object resultNoResultNoDefault = caseWhenNoResultNoDefault.evaluate(artist);
+        assertNull(resultNoResultNoDefault);
     }
 
 }

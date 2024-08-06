@@ -268,6 +268,15 @@ class QualifierTranslator implements TraversalHandler {
                     objectNode(scalarVal, null);
                 }
                 return null;
+
+            case CASE_WHEN:
+                return new CaseNode();
+            case WHEN:
+                return new WhenNode();
+            case THEN:
+                return new ThenNode();
+            case ELSE:
+                return new ElseNode();
         }
         return null;
     }
@@ -409,7 +418,7 @@ class QualifierTranslator implements TraversalHandler {
             case BITWISE_AND: case BITWISE_LEFT_SHIFT: case BITWISE_OR: case BITWISE_RIGHT_SHIFT: case BITWISE_XOR:
             case OR: case AND: case LESS_THAN: case LESS_THAN_EQUAL_TO: case GREATER_THAN: case GREATER_THAN_EQUAL_TO:
             case TRUE: case FALSE: case ASTERISK: case EXISTS: case NOT_EXISTS: case SUBQUERY: case ENCLOSING_OBJECT: case FULL_OBJECT:
-            case SCALAR:
+            case SCALAR: case CASE_WHEN: case WHEN: case THEN: case ELSE:
                 return true;
         }
         return false;
