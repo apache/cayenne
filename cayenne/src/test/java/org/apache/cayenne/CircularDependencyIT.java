@@ -20,6 +20,8 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships.E1;
 import org.apache.cayenne.testdo.relationships.E2;
 import org.apache.cayenne.testdo.relationships.ReflexiveAndToOne;
@@ -28,7 +30,11 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.junit.After;
 import org.junit.Test;
+
+import java.sql.SQLException;
+import java.sql.Types;
 
 import static org.junit.Assert.*;
 
@@ -40,6 +46,27 @@ public class CircularDependencyIT extends RuntimeCase {
 
     @Inject
     private ObjectContext context;
+
+    @Inject
+    private DBHelper dbHelper;
+
+    @After
+    public void cleanUp() throws SQLException {
+        // manually cleanup circular references
+        TableHelper e1 = new TableHelper(dbHelper, "CYCLE_E1", "id", "e2_id", "text");
+        e1.setColumnTypes(Types.INTEGER, Types.INTEGER, Types.VARCHAR);
+        TableHelper e2 = new TableHelper(dbHelper, "CYCLE_E2", "id", "e1_id", "text");
+        e2.setColumnTypes(Types.INTEGER, Types.INTEGER, Types.VARCHAR);
+        TableHelper reflexive = new TableHelper(dbHelper, "REFLEXIVE_AND_TO_ONE", "REFLEXIVE_AND_TO_ONE_ID", "NAME", "PARENT_ID");
+
+        e1.update().set("e2_id", null, Types.INTEGER).execute();
+        e2.update().set("e1_id", null, Types.INTEGER).execute();
+        e1.deleteAll();
+        e2.deleteAll();
+
+        reflexive.update().set("PARENT_ID", null, Types.INTEGER).execute();
+        reflexive.deleteAll();
+    }
 
     @Test()
     public void testCycle() {
@@ -76,6 +103,7 @@ public class CircularDependencyIT extends RuntimeCase {
 
         e1.setText("e1 #" + 1);
         e2.setText("e2 #" + 2);
+        context.commitChanges();
 
         e1.setE2(e2);
         context.commitChanges();
