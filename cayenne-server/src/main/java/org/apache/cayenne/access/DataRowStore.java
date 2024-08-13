@@ -336,7 +336,7 @@ public class DataRowStore implements Serializable {
         if (deletedSnapshotIds.isEmpty()
                 && invalidatedSnapshotIds.isEmpty()
                 && updatedSnapshots.isEmpty()
-                && indirectlyModifiedIds.isEmpty()) {
+                && (indirectlyModifiedIds == null || indirectlyModifiedIds.isEmpty())) {
             logger.warn("postSnapshotsChangeEvent.. bogus call... no changes.");
             return;
         }

@@ -8,6 +8,16 @@ To browse individual bug reports check out project issue tracker:
 https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
+Release: 4.2.2
+Date:
+----------------------------------
+
+Bug Fixes:
+
+CAY-2866 DefaultDataDomainFlushAction breaks on circular relationship update
+
+
+----------------------------------
 Release: 4.2.1
 Date:
 ----------------------------------

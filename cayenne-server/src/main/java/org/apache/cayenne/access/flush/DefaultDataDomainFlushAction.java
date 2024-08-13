@@ -41,6 +41,8 @@ import org.apache.cayenne.access.flush.operation.DbRowOpMerger;
 import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
 import org.apache.cayenne.access.flush.operation.DbRowOp;
 import org.apache.cayenne.access.flush.operation.DbRowOpVisitor;
+import org.apache.cayenne.access.flush.operation.DeleteDbRowOp;
+import org.apache.cayenne.access.flush.operation.InsertDbRowOp;
 import org.apache.cayenne.access.flush.operation.OpIdFactory;
 import org.apache.cayenne.access.flush.operation.UpdateDbRowOp;
 import org.apache.cayenne.graph.CompoundDiff;
@@ -89,7 +91,9 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
         List<? extends Query> queries = createQueries(sortedOps);
         executeQueries(queries);
         createReplacementIds(objectStore, afterCommitDiff, sortedOps);
-        postprocess(context, objectStoreGraphDiff, afterCommitDiff, sortedOps);
+        // note: we are using here not filtered operations, but the original ones,
+        // as we need them all for the postprocessing
+        postprocess(context, objectStoreGraphDiff, afterCommitDiff, deduplicatedOps);
 
         return afterCommitDiff;
     }
@@ -139,8 +143,25 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
     }
 
     protected List<DbRowOp> filterOps(List<DbRowOp> dbRowOps) {
-        // clear phantom update (this can be from insert/delete of arc with transient object)
-        dbRowOps.forEach(row -> row.accept(PhantomDbRowOpCleaner.INSTANCE));
+        List<DbRowOp> opsToRemove = null;
+        for (DbRowOp row : dbRowOps) {
+            // clear phantom update (this can be from insert/delete of arc with transient object)
+            row.accept(PhantomDbRowOpCleaner.INSTANCE);
+            // check for an empty update that we may need to filter out
+            if (row.accept(EmptyRowChecker.INSTANCE)) {
+                if (opsToRemove == null) {
+                    opsToRemove = new ArrayList<>();
+                }
+                opsToRemove.add(row);
+            }
+        }
+
+        if(opsToRemove != null && !opsToRemove.isEmpty()) {
+            // make a duplicate, to keep original operations intact
+            dbRowOps = new ArrayList<>(dbRowOps);
+            dbRowOps.removeAll(opsToRemove);
+        }
+
         return dbRowOps;
     }
 
@@ -224,11 +245,30 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
 
         @Override
         public Void visitUpdate(UpdateDbRowOp dbRow) {
-            //
             if(dbRow.getChangeId().isTemporary() && !dbRow.getChangeId().isReplacementIdAttached()) {
                 dbRow.getValues().clear();
             }
             return null;
+        }
+    }
+
+    protected static class EmptyRowChecker implements DbRowOpVisitor<Boolean> {
+
+        protected static final EmptyRowChecker INSTANCE = new EmptyRowChecker();
+
+        @Override
+        public Boolean visitDelete(DeleteDbRowOp dbRow) {
+            return false;
+        }
+
+        @Override
+        public Boolean visitInsert(InsertDbRowOp dbRow) {
+            return false;
+        }
+
+        @Override
+        public Boolean visitUpdate(UpdateDbRowOp dbRow) {
+            return dbRow.getValues().isEmpty();
         }
     }
 }
