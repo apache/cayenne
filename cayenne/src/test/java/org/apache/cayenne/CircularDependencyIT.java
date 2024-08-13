@@ -22,6 +22,7 @@ package org.apache.cayenne;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.relationships.E1;
 import org.apache.cayenne.testdo.relationships.E2;
+import org.apache.cayenne.testdo.relationships.ReflexiveAndToOne;
 import org.apache.cayenne.unit.OracleUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -66,5 +67,35 @@ public class CircularDependencyIT extends RuntimeCase {
             }
         }
 
+    }
+
+    @Test
+    public void testUpdate() {
+        E1 e1 = context.newObject(E1.class);
+        E2 e2 = context.newObject(E2.class);
+
+        e1.setText("e1 #" + 1);
+        e2.setText("e2 #" + 2);
+
+        e1.setE2(e2);
+        context.commitChanges();
+
+        e2.setE1(e1);
+        context.commitChanges();
+    }
+
+    @Test
+    public void testUpdateSelfRelationship() {
+        ReflexiveAndToOne e1 = context.newObject(ReflexiveAndToOne.class);
+        ReflexiveAndToOne e2 = context.newObject(ReflexiveAndToOne.class);
+
+        e1.setName("e1 #" + 1);
+        e2.setName("e2 #" + 2);
+
+        e1.setToParent(e2);
+        context.commitChanges();
+
+        e2.setToParent(e1);
+        context.commitChanges();
     }
 }

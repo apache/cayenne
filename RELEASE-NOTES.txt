@@ -124,3 +124,4 @@ CAY-2850 Query using Clob comparison with empty String fails
 CAY-2851 Replace Existing OneToOne From New Object
 CAY-2853 Incorrect deletion of entities from flattened attributes
 CAY-2854 Improve delete prevention detection of flattened attribute row
+CAY-2866 DefaultDataDomainFlushAction breaks on circular relationship update
