@@ -78,6 +78,7 @@ CAY-2857 Java 22 support
 CAY-2858 Redesign Collection and Map Property API
 CAY-2862 Cleanup and upgrade Maven plugins dependencies
 CAY-2865 Upgrade test dependencies
+CAY-2867 Tweak GraphBasedDbRowOpSorter logic to allow related updates
 
 Bug Fixes:
 

@@ -76,4 +76,28 @@ public class DataContextEntityWithMeaningfulPKAndCustomDbRowOpSorterIT extends R
         context.commitChanges();
     }
 
+    @Test
+    public void test_MeaningfulPkWithFkUpdate() {
+        // setup
+        MeaningfulPKTest1 obj = context.newObject(MeaningfulPKTest1.class);
+        obj.setPkAttribute(1001);
+        obj.setDescr("aaa");
+        context.commitChanges();
+
+        MeaningfulPKDep dep = context.newObject(MeaningfulPKDep.class);
+        dep.setToMeaningfulPK(obj);
+        dep.setPk(10);
+        context.commitChanges();
+
+        // check that operations are sorted correctly
+        dep.setToMeaningfulPK(null);
+        obj.setPkAttribute(1002);
+        context.commitChanges();
+
+        // set relationship with a new PK
+        dep.setDescr("test");
+        dep.setToMeaningfulPK(obj);
+        context.commitChanges();
+    }
+
 }

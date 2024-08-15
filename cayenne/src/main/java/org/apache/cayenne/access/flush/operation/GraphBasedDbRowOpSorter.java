@@ -35,7 +35,9 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.graph.GraphManager;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ObjectIdQuery;
@@ -125,7 +127,7 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
         // get graph edges for reflexive relationships
         DbRowOpType opType = op.accept(rowOpTypeVisitor);
         relationships.getOrDefault(op.getEntity(), Collections.emptyList()).forEach(relationship ->
-            getParentsOpId(op, relationship).forEach(parentOpId ->
+            getParentsOpId(op, relationship).forEach((parentOpId, snapshot) ->
                 indexByDbId.getOrDefault(parentOpId, Collections.emptyList()).forEach(parentOp -> {
                     if(op == parentOp) {
                         return;
@@ -141,10 +143,25 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
                             }
                             break;
                         case UPDATE:
-                            if(parentOpType != DbRowOpType.DELETE) {
-                                graph.add(op, parentOp);
-                            } else {
-                                graph.add(parentOp, op);
+                            switch (parentOpType) {
+                                case INSERT:
+                                    graph.add(op, parentOp);
+                                    break;
+                                case DELETE:
+                                    graph.add(parentOp, op);
+                                    break;
+                                case UPDATE:
+                                    // Update will only depend on the operations where FK could be affected
+                                    Boolean fkReferenceUpdated = parentOp.accept(new FkUpdateChecker(relationship));
+                                    if (fkReferenceUpdated == Boolean.TRUE) {
+                                        // TODO: this sorting logic works only for the setting relationship to null case
+                                        //       if the meaningful PK is updated we got more places to cover, before fixing this logic
+                                        //       namely:
+                                        //          - no update would be generated for any dependent entities for the master PK update
+                                        //          - update would fail with constraint violation even if it is generated
+                                        graph.add(parentOp, op);
+                                    }
+                                    break;
                             }
                             break;
                         case DELETE:
@@ -170,21 +187,21 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
         });
     }
 
-    private List<EffectiveOpId> getParentsOpId(DbRowOp op, DbRelationship relationship) {
+    private Map<EffectiveOpId, Map<String, Object>> getParentsOpId(DbRowOp op, DbRelationship relationship) {
         List<Map<String, Object>> parentIdSnapshots = op.accept(new DbRowOpSnapshotVisitor(relationship));
         if(parentIdSnapshots.size() == 1) {
             EffectiveOpId id = effectiveIdFor(relationship, parentIdSnapshots.get(0));
             if(id != null) {
-                return Collections.singletonList(id);
+                return Collections.singletonMap(id, parentIdSnapshots.get(0));
             } else {
-                return Collections.emptyList();
+                return Collections.emptyMap();
             }
         } else {
-            List<EffectiveOpId> effectiveOpIds = new ArrayList<>(parentIdSnapshots.size());
+            Map<EffectiveOpId, Map<String, Object>> effectiveOpIds = new HashMap<>(parentIdSnapshots.size());
             parentIdSnapshots.forEach(snapshot -> {
                 EffectiveOpId id = this.effectiveIdFor(relationship, snapshot);
                 if(id != null) {
-                    effectiveOpIds.add(id);
+                    effectiveOpIds.put(id, snapshot);
                 }
             });
             return effectiveOpIds;
@@ -258,7 +275,7 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
             QueryResponse response = object.getObjectContext().getChannel().onQuery(null, query);
             @SuppressWarnings("unchecked")
             List<DataRow> result = (List<DataRow>) response.firstList();
-            if (result == null || result.size() == 0) {
+            if (result == null || result.isEmpty()) {
                 return Collections.emptyMap();
             }
 
@@ -309,6 +326,26 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
         @Override
         public DbRowOpType visitUpdate(UpdateDbRowOp dbRow) {
             return DbRowOpType.UPDATE;
+        }
+    }
+
+    private static class FkUpdateChecker implements DbRowOpVisitor<Boolean> {
+        private final DbRelationship relationship;
+
+        public FkUpdateChecker(DbRelationship relationship) {
+            this.relationship = relationship;
+        }
+
+        @Override
+        public Boolean visitUpdate(UpdateDbRowOp dbRow) {
+            for(DbJoin join : relationship.getJoins()) {
+                for (DbAttribute attribute : dbRow.getValues().getUpdatedAttributes()) {
+                    if (attribute.getName().equals(join.getTargetName())) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 }
