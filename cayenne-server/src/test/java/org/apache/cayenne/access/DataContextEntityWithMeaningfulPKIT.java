@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
@@ -249,5 +250,24 @@ public class DataContextEntityWithMeaningfulPKIT extends ServerCase {
         assertEquals("test2", depChild.getDescr());
         assertNotNull(depChild.getMeaningfulPk());
         assertNull(depChild.getMeaningfulPk().getPk());
+    }
+
+    @Test(expected = CayenneRuntimeException.class)
+    public void test_MeaningfulPkWithFkUpdate() {
+        // setup
+        MeaningfulPKTest1 obj = context.newObject(MeaningfulPKTest1.class);
+        obj.setPkAttribute(1001);
+        obj.setDescr("aaa");
+        context.commitChanges();
+
+        MeaningfulPKDep dep = context.newObject(MeaningfulPKDep.class);
+        dep.setToMeaningfulPK(obj);
+        dep.setPk(10);
+        context.commitChanges();
+
+        // this would fail as the DefaultDbRowOpSorter unable to deal with the meaningful PK update
+        dep.setToMeaningfulPK(null);
+        obj.setPkAttribute(1002);
+        context.commitChanges();
     }
 }

@@ -11,6 +11,9 @@ https://issues.apache.org/jira/browse/CAY
 Release: 4.2.2
 Date:
 ----------------------------------
+Changes/New Features:
+
+CAY-2867 Tweak GraphBasedDbRowOpSorter logic to allow related updates
 
 Bug Fixes:
 
