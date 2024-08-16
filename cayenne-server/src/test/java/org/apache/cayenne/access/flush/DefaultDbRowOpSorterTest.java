@@ -195,6 +195,8 @@ public class DefaultDbRowOpSorterTest {
         verify(entitySorter, times(3)).getDbEntityComparator();
         verify(entitySorter) // should call entity sorter
                 .sortObjectsForEntity(isNull(), any(List.class), eq(false));
+        verify(entitySorter) // should call entity sorter
+                .isReflexive(any(DbEntity.class));
         verifyNoMoreInteractions(entitySorter);
     }
 
