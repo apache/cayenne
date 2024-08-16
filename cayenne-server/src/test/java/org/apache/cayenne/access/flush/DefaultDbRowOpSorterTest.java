@@ -192,8 +192,32 @@ public class DefaultDbRowOpSorterTest {
 
         List<DbRowOp> sorted = sorter.sort(rows);
         assertEquals(expected, sorted); // no actual sorting is done
+        verify(entitySorter, times(3)).getDbEntityComparator();
         verify(entitySorter) // should call entity sorter
                 .sortObjectsForEntity(isNull(), any(List.class), eq(false));
+        verifyNoMoreInteractions(entitySorter);
+    }
+
+    @Test
+    public void sortReflexiveUpdates() {
+        ObjectId id1 = ObjectId.of("reflexive", "id", 1);
+        ObjectId id2 = ObjectId.of("reflexive", "id", 2);
+        ObjectId id3 = ObjectId.of("reflexive", "id", 3);
+        ObjectId id4 = ObjectId.of("reflexive", "id", 4);
+
+        DbEntity reflexive = mockEntity("reflexive");
+        DbRowOp op1 = new UpdateDbRowOp(mockObject(id1), reflexive, id1);
+        DbRowOp op2 = new UpdateDbRowOp(mockObject(id2), reflexive, id2);
+        DbRowOp op3 = new UpdateDbRowOp(mockObject(id3), reflexive, id3);
+        DbRowOp op4 = new UpdateDbRowOp(mockObject(id4), reflexive, id4);
+
+        List<DbRowOp> rows = Arrays.asList(op1, op2, op3, op4);
+        List<DbRowOp> expected = Arrays.asList(op1, op2, op3, op4);
+
+        List<DbRowOp> sorted = sorter.sort(rows);
+        assertEquals(expected, sorted); // no actual sorting is done
+        verify(entitySorter, times(3)).getDbEntityComparator();
+        verifyNoMoreInteractions(entitySorter); // shouldn't call entity sorter
     }
 
     private Persistent mockObject(ObjectId id) {

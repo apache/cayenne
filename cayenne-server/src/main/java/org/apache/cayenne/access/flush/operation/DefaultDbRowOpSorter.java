@@ -64,7 +64,8 @@ public class DefaultDbRowOpSorter implements DbRowOpSorter {
         for (int i = 0; i < sortedDbRows.size(); i++) {
             DbRowOp row = sortedDbRows.get(i);
             if (row.getEntity() != lastEntity) {
-                if(lastEntity != null && sorter.isReflexive(lastEntity)) {
+                // we do not sort update operations
+                if(lastEntity != null && !(lastRow instanceof UpdateDbRowOp) && sorter.isReflexive(lastEntity)) {
                     ObjEntity objEntity = resolver.getObjEntity(lastRow.getObject().getObjectId().getEntityName());
                     List<DbRowOp> reflexiveSublist = sortedDbRows.subList(start, idx);
                     sorter.sortObjectsForEntity(objEntity, reflexiveSublist, lastRow instanceof DeleteDbRowOp);
@@ -76,7 +77,7 @@ public class DefaultDbRowOpSorter implements DbRowOpSorter {
             idx++;
         }
         // sort last chunk
-        if(lastEntity != null && sorter.isReflexive(lastEntity)) {
+        if(lastEntity != null && !(lastRow instanceof UpdateDbRowOp) && sorter.isReflexive(lastEntity)) {
             ObjEntity objEntity = resolver.getObjEntity(lastRow.getObject().getObjectId().getEntityName());
             List<DbRowOp> reflexiveSublist = sortedDbRows.subList(start, idx);
             sorter.sortObjectsForEntity(objEntity, reflexiveSublist, lastRow instanceof DeleteDbRowOp);
@@ -116,7 +117,7 @@ public class DefaultDbRowOpSorter implements DbRowOpSorter {
                 return result;
             }
 
-            // 2. sort by entity relations
+            // 2. sort by entity relations, we don't really need this for updates, but do it for the stable result
             result = entitySorter.getDbEntityComparator().compare(left.getEntity(), right.getEntity());
             if(result != 0) {
                 // invert result for delete

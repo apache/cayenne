@@ -18,6 +18,7 @@ CAY-2867 Tweak GraphBasedDbRowOpSorter logic to allow related updates
 Bug Fixes:
 
 CAY-2866 DefaultDataDomainFlushAction breaks on circular relationship update
+CAY-2868 Regression: DefaultDbRowOpSorter shouldn't sort update operations
 
 
 ----------------------------------
