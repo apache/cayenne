@@ -22,7 +22,7 @@
 	<parent>
 		<groupId>org.apache.cayenne</groupId>
 		<artifactId>cayenne-parent</artifactId>
-		<version>5.0-SNAPSHOT</version>
+		<version>5.0-M1</version>
 	</parent>
 	<artifactId>cayenne</artifactId>
 	<name>cayenne: Cayenne Core</name>
