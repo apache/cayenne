@@ -24,7 +24,7 @@
 	<groupId>org.apache.cayenne</groupId>
 	<name>cayenne-parent: Top-level parent of Cayenne modules</name>
 
-	<version>5.0-SNAPSHOT</version>
+	<version>5.0-M1</version>
 	<packaging>pom</packaging>
 
 	<description>
@@ -281,7 +281,7 @@
 		<connection>scm:git:https://gitbox.apache.org/repos/asf/cayenne.git</connection>
 		<developerConnection>scm:git:https://gitbox.apache.org/repos/asf/cayenne.git</developerConnection>
 		<url>https://github.com/apache/cayenne</url>
-		<tag>HEAD</tag>
+		<tag>5.0-M1</tag>
 	</scm>
 	<organization>
 		<name>Apache Cayenne</name>
