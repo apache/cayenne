@@ -158,7 +158,7 @@ public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest {
         Element root = document.getDocumentElement();
 
         // check cgen config is updated
-        NodeList dbimport = root.getElementsByTagName("dbimport");
+        NodeList dbimport = root.getElementsByTagName("dbImport");
         assertEquals(1, dbimport.getLength());
         Node dbimportConfig = dbimport.item(0);
         assertEquals("http://cayenne.apache.org/schema/11/dbimport",

@@ -25,8 +25,8 @@
         <querySuperTemplate>templates/v4_1/datamap-superclass.vm</querySuperTemplate>
         <client>true</client>
     </cgen>
-    <dbimport xmlns="http://cayenne.apache.org/schema/10/dbimport">
+    <dbImport xmlns="http://cayenne.apache.org/schema/10/dbimport">
         <defaultPackage>org.example</defaultPackage>
         <usePrimitives>true</usePrimitives>
-    </dbimport>
+    </dbImport>
 </data-map>

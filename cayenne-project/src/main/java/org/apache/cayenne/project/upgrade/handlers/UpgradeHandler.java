@@ -105,7 +105,7 @@ public interface UpgradeHandler {
         }
         for (int j = 0; j < nodes.getLength(); j++) {
             Element element = (Element) nodes.item(j);
-            element.setAttribute("xmlns", "http://cayenne.apache.org/schema/"+getVersion()+"/"+extension);
+            element.setAttribute("xmlns", "http://cayenne.apache.org/schema/"+getVersion()+"/"+extension.toLowerCase());
         }
     }
 }

@@ -78,7 +78,7 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
     public void processDataMapDom(UpgradeUnit upgradeUnit) {
         updateDataMapSchemaAndVersion(upgradeUnit);
         updateExtensionSchema(upgradeUnit, "cgen");
-        updateExtensionSchema(upgradeUnit, "dbimport");
+        updateExtensionSchema(upgradeUnit, "dbImport");
         updateExtensionSchema(upgradeUnit, "graph");
         upgradeComments(upgradeUnit);
 
@@ -151,7 +151,7 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
         XPath xpath = XPathFactory.newInstance().newXPath();
         NodeList nodes;
         try {
-            nodes = (NodeList) xpath.evaluate("/data-map/*[local-name()='dbimport']/*[local-name()='usePrimitives']",
+            nodes = (NodeList) xpath.evaluate("/data-map/*[local-name()='dbImport']/*[local-name()='usePrimitives']",
                     upgradeUnit.getDocument(), XPathConstants.NODESET);
         } catch (Exception e) {
             return;
