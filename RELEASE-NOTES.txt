@@ -9,7 +9,7 @@ https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
 Release: 5.0-M1
-Date: Aug 20, 2024
+Date:
 ----------------------------------
 Changes/New Features:
 
@@ -79,6 +79,7 @@ CAY-2858 Redesign Collection and Map Property API
 CAY-2862 Cleanup and upgrade Maven plugins dependencies
 CAY-2865 Upgrade test dependencies
 CAY-2867 Tweak GraphBasedDbRowOpSorter logic to allow related updates
+CAY-2870 Modeler: Upgrade CayenneDataObject to GenericPersistentObject
 
 Bug Fixes:
 
@@ -127,3 +128,4 @@ CAY-2853 Incorrect deletion of entities from flattened attributes
 CAY-2854 Improve delete prevention detection of flattened attribute row
 CAY-2866 DefaultDataDomainFlushAction breaks on circular relationship update
 CAY-2868 Regression: DefaultDbRowOpSorter shouldn't sort update operations
+CAY-2869 Upgrade handler v11 removes db import configuration
