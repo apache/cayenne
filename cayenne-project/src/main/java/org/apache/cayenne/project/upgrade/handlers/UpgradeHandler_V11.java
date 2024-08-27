@@ -84,6 +84,7 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
 
         dropROPProperties(upgradeUnit);
         dropObjEntityClientInfo(upgradeUnit);
+        upgradeGenericObjEntity(upgradeUnit);
         updateCgenConfig(upgradeUnit);
         updateDbImportConfig(upgradeUnit);
     }
@@ -144,6 +145,24 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
             objEntityElement.removeAttribute("serverOnly");
             objEntityElement.removeAttribute("clientClassName");
             objEntityElement.removeAttribute("clientSuperClassName");
+        }
+    }
+
+    private void upgradeGenericObjEntity(UpgradeUnit upgradeUnit) {
+        NodeList objEntityNodes;
+        try {
+            XPath xpath = XPathFactory.newInstance().newXPath();
+            objEntityNodes = (NodeList) xpath.evaluate("/data-map/obj-entity", upgradeUnit.getDocument(), XPathConstants.NODESET);
+        } catch (Exception ex) {
+            return;
+        }
+
+        for (int j = 0; j < objEntityNodes.getLength(); j++) {
+            Element objEntityElement = (Element) objEntityNodes.item(j);
+            String className = objEntityElement.getAttribute("className");
+            if("org.apache.cayenne.CayenneDataObject".equals(className)) {
+                objEntityElement.setAttribute("className", "org.apache.cayenne.GenericPersistentObject");
+            }
         }
     }
 

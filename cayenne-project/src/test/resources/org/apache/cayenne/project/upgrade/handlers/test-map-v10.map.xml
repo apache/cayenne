@@ -11,7 +11,7 @@
         <db-attribute name="untitledAttr" type="CHAR" isPrimaryKey="true" isMandatory="true" length="10"/>
         <db-attribute name="untitledAttr1" type="DATE"/>
     </db-entity>
-    <obj-entity name="Artist" dbEntityName="Artist" clientClassName="tmp.Artist" clientSuperClassName="tmp.ClientSuperClass" serverOnly="false">
+    <obj-entity name="Artist" dbEntityName="Artist" className="org.apache.cayenne.CayenneDataObject" clientClassName="tmp.Artist" clientSuperClassName="tmp.ClientSuperClass" serverOnly="false">
         <info:property xmlns:info="http://cayenne.apache.org/schema/10/info" name="comment" value="test"/>
     </obj-entity>
     <cgen xmlns="http://cayenne.apache.org/schema/10/cgen">
