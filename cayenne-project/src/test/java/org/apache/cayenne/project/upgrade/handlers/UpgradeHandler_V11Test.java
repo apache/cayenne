@@ -74,7 +74,7 @@ public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest {
         assertEquals(1, objEntities.getLength());
         Node objEntity = objEntities.item(0);
         NamedNodeMap attributes = objEntity.getAttributes();
-        assertEquals(2, attributes.getLength());
+        assertEquals(3, attributes.getLength());
         assertEquals("Artist", attributes.getNamedItem("name").getNodeValue());
         assertEquals("Artist", attributes.getNamedItem("dbEntityName").getNodeValue());
         assertEquals("org.apache.cayenne.GenericPersistentObject", attributes.getNamedItem("className").getNodeValue());
