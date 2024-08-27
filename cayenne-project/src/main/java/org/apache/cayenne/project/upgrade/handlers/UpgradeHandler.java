@@ -38,6 +38,24 @@ import org.w3c.dom.NodeList;
 public interface UpgradeHandler {
 
     /**
+     * root tag for the cgen extension
+     * @since 5.0-M1
+     */
+    String CGEN = "cgen";
+
+    /**
+     * root tag for the dbImport extension
+     * @since 5.0-M1
+     */
+    String DB_IMPORT = "dbImport";
+
+    /**
+     * root tag for the graph extension
+     * @since 5.0-M1
+     */
+    String GRAPH = "graph";
+
+    /**
      * @return target version for this handler
      */
     String getVersion();
