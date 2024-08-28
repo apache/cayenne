@@ -9,7 +9,7 @@ https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
 Release: 5.0-M1
-Date:
+Date: Aug 28, 2024
 ----------------------------------
 Changes/New Features:
 
