@@ -21,7 +21,7 @@
     <parent>
         <artifactId>cayenne-parent</artifactId>
         <groupId>org.apache.cayenne</groupId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.0-M1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
