@@ -19,7 +19,7 @@ Bug Fixes:
 
 CAY-2866 DefaultDataDomainFlushAction breaks on circular relationship update
 CAY-2868 Regression: DefaultDbRowOpSorter shouldn't sort update operations
-
+CAY-2871 QualifierTranslator breaks on a relationship with a compound FK
 
 ----------------------------------
 Release: 4.2.1

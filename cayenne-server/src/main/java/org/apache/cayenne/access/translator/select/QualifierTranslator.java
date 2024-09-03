@@ -64,7 +64,9 @@ class QualifierTranslator implements TraversalHandler {
     QualifierTranslator(TranslatorContext context) {
         this.context = context;
         this.pathTranslator = context.getPathTranslator();
-        this.expressionsToSkip = new HashSet<>();
+        // must use identity comparison for the node skipping, or it could skip the wrong node
+        // and mess everything up, see for example CAY-2871
+        this.expressionsToSkip = Collections.newSetFromMap(new IdentityHashMap<>());
         this.nodeStack = new ArrayDeque<>();
     }
 
