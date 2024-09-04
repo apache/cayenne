@@ -36,6 +36,8 @@ import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -56,6 +58,7 @@ public class QualifierTranslatorIT extends RuntimeCase {
         TableHelper tCompoundPKTest = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
         tCompoundPKTest.setColumns("KEY1", "KEY2", "NAME");
         tCompoundPKTest.insert("PK1", "PK2", "BBB");
+        tCompoundPKTest.insert("PK3", "PK4", "CCC");
     }
 
     @Test
@@ -79,6 +82,31 @@ public class QualifierTranslatorIT extends RuntimeCase {
         node.visit(visitor);
 
         assertEquals(" ( ( ( t0.F_KEY1 = 'PK1' ) AND ( t0.F_KEY2 = 'PK2' ) ) AND t0.NAME LIKE 'test%' ) AND t0.NAME LIKE '%a%'", visitor.getSQLString());
+    }
+
+    @Test
+    public void testMultipleCompoundPK() {
+        List<CompoundPkTestEntity> testEntity = ObjectSelect.query(CompoundPkTestEntity.class)
+                .limit(2)
+                .select(context);
+        assertNotNull(testEntity);
+        assertEquals(2, testEntity.size());
+
+        ObjectSelect<CompoundFkTestEntity> query = ObjectSelect.query(CompoundFkTestEntity.class)
+                .where(CompoundFkTestEntity.TO_COMPOUND_PK.eq(testEntity.get(0)))
+                .or(CompoundFkTestEntity.TO_COMPOUND_PK.eq(testEntity.get(1)));
+
+        DefaultSelectTranslator translator
+                = new DefaultSelectTranslator(query, runtime.getDataDomain().getDefaultNode().getAdapter(), context.getEntityResolver());
+
+        QualifierTranslator qualifierTranslator = translator.getContext().getQualifierTranslator();
+
+        Node node = qualifierTranslator.translate(query.getWhere());
+
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new StringBuilderAppendable());
+        node.visit(visitor);
+
+        assertEquals(" ( ( t0.F_KEY1 = 'PK1' ) AND ( t0.F_KEY2 = 'PK2' ) ) OR ( ( t0.F_KEY1 = 'PK3' ) AND ( t0.F_KEY2 = 'PK4' ) )", visitor.getSQLString());
     }
 
 }
