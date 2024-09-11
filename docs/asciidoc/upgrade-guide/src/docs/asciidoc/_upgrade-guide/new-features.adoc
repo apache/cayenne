@@ -12,10 +12,56 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-== Java Version
-
-Minimum required JDK version is 11 or newer.
-Cayenne 5.0 is fully tested with Java 11, 17 and 21.
-
 == New Features
+
+=== New Dev Versioning Scheme
+
+From now on a snapshot version of Cayenne is a constant value, so the dev version of 5.0 will always be 5.0-SNAPSHOT.
+So you can always stay at the bleeding edge of development if needed.
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.apache.cayenne</groupId>
+    <artifactId>cayenne</artifactId>
+    <version>5.0-SNAPSHOT</version>
+</dependency>
+----
+
+=== New Class Generation UI
+
+The new Class Generation UI in the Cayenne Modeler simplifies configuration, allows multiple `cgen` setups per project,
+and includes a template editor.
+
+Custom templates are now part of the project XML configuration and don't require separate setup in either Modeler, or Maven/Gradle plugins.
+
+=== Improved `(not)exists` Queries
+
+In most cases, you don’t need to deal with a subquery for `(not)exists` queries, as it is now directly supported by the Expression API.
+That includes `Expression`, expression parser, and Property API.
+
+This feature can handle any expression and spawn several sub-queries per expression if needed.
+
+[source,java]
+----
+long count = ObjectSelect.query(Artist.class)
+        .where(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).like("painting%").exists())
+        .selectCount(context);
+----
+
+=== Improved SQL Support
+
+`ANY` and `ALL` subqueries are now supported, as well as `case-when` expressions.
+
+[source,java]
+----
+import static org.apache.cayenne.exp.ExpressionFactory.*;
+// ...
+Expression caseWhenExp = caseWhen(
+                List.of((betweenExp("estimatedPrice", 0, 9)),
+                        (betweenExp("estimatedPrice", 10, 20))),
+                List.of((wrapScalarValue("low")),
+                        (wrapScalarValue("high"))),
+                wrapScalarValue("error"));
+----
 

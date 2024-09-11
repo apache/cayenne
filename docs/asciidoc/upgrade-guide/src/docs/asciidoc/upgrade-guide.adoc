@@ -34,8 +34,8 @@ a copy of the License at https://www.apache.org/licenses/LICENSE-2.0_#
 is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and limitations under the License._#
 
-
 This guide highlights the new features and changes introduced in Apache Cayenne 5.0. For a full list of changes consult
 RELEASE-NOTES.txt included in Cayenne download. For release-specific upgrade instructions check UPGRADE.txt.
 
+include::_upgrade-guide/changes.adoc[]
 include::_upgrade-guide/new-features.adoc[]

@@ -1,0 +1,74 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+
+== Java Version
+
+Minimum required JDK version is 11 or newer. If your project requires Java 8, you should keep using Cayenne 4.2.
+Cayenne 5.0 is fully tested with Java 11, 17 and 21.
+
+== Incompatible Changes
+
+Apache Cayenne 5.0-M1 removes support for a multi-layered stack, so no more Cayenne ROP and all the related client parts.
+Moreover, this release renames every part that contains `server` in its name, including the main library.
+For all the details please consult `UPGRADE.txt`, as this document only highlights the most impactful changes.
+
+=== Main Library Renaming
+
+Main Cayenne artifact is renamed from `cayenne-server` to `cayenne`, so you need to change your dependencies accordingly
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.apache.cayenne</groupId>
+    <artifactId>cayenne</artifactId>
+    <version>{version}</version>
+</dependency>
+----
+
+=== Server Runtime and Module Deprecation
+
+`ServerRuntime` is deprecated and replaced by `CayenneRuntime`. As well as `ServerModule` renamed to `CoreModule`.
+
+[source,java]
+----
+CayenneRuntime runtime = CayenneRuntime.builder()
+                .addConfig("cayenne-project.xml")
+                .module(b -> CoreModule.extend(b).setProperty("some_property", "some_value"))
+                .build();
+----
+
+=== New Modules Extenders
+
+Each Cayenne module now provides a module-specific extender created with an "extend(Binder)" method.
+It is usually invoked within a lambda that produces a Module, or within an app Module.
+
+[source,java]
+----
+CayenneRuntime.builder(..)
+    .addModule(b -> CacheInvalidationModule.extend(b).addHandler(MyHandler.class))
+    .build();
+----
+
+=== Removal of Deprecated Modules
+
+- All modules related to the ROP functionality is completely gone.
+That includes `cayenne-rop-server`, `cayenne-client` and other related parts.
+- `cayenne-xmpp`, `cayenne-jms` and `cayenne-jgroups` event bridges are removed.
+- Finally `cayenne-joda` and `cayenne-web` modules are gone.
+
+=== Removal of Deprecated Code
+
+As always, code deprecated in earlier versions is gone. One notable class removed is `SelectQuery`, so you should use `ObjectSelect` from now on.
+
+
