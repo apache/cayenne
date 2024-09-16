@@ -13,6 +13,8 @@ Date:
 ----------------------------------
 Changes/New Features:
 
+CAY-2873 Change Orderings.orderedList() to accept a Collection rather than a List
+
 Bug Fixes:
 
 ----------------------------------
