@@ -95,11 +95,11 @@ public class Orderings extends ArrayList<Ordering> {
 	 * Returns an list sorted with these Orderings.
 	 * 
 	 * @param <T> the type of the list
-	 * @param list the list to sort
-	 * @return a sorted copy of the list
+	 * @param objects elements to sort
+	 * @return new List with ordered elements
 	 */
-	 public <T> List<T> orderedList(List<T> list) {
-	 	return Ordering.orderedList(list, this);
+	 public <T> List<T> orderedList(Collection<T> objects) {
+	 	return Ordering.orderedList(objects, this);
 	 }
 
 	 /**
