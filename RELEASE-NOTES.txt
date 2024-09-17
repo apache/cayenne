@@ -24,7 +24,7 @@ CAY-2871 QualifierTranslator breaks on a relationship with a compound FK
 
 ----------------------------------
 Release: 4.2.1
-Date:
+Date: Jun 20, 2024
 ----------------------------------
 Changes/New Features:
 
