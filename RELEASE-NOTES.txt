@@ -94,6 +94,7 @@ CAY-2611 Exclude system catalogs and schemas when run dbImport without config
 Bug Fixes:
 
 CAY-2417 Modeler: wrong title in attribute context menu
+CAY-2541 Performing query with expression with ObjectId throws NPE in some cases
 CAY-2553 Wrong disjoint prefetch query qualifier
 CAY-2565 Can't use new generated PK properties with dot() operator
 CAY-2573 DI field injection is triggered when creating sql Driver

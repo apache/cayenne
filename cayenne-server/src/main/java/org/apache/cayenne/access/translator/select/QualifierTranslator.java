@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -198,29 +199,43 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 		// superclass's
 		// impl.
 		matchingObject = false;
-
 		boolean first = true;
+		boolean needToProcessLiterals = true;
 
 		DbRelationship relationship = objectMatchTranslator.getRelationship();
-		if (!relationship.isToMany() && !relationship.isToPK()) {
+		if (relationship != null && !relationship.isToMany() && !relationship.isToPK()) {
+			needToProcessLiterals = false;
 			queryAssembler.dbRelationshipAdded(relationship, JoinType.INNER, objectMatchTranslator.getJoinSplitAlias());
 		}
 
-		Iterator<String> it = objectMatchTranslator.keys();
-		while (it.hasNext()) {
-			if (first) {
-				first = false;
-			} else {
-				out.append(" AND ");
+		Map<String, DbAttribute> attributes = objectMatchTranslator.attributes;
+		if(attributes != null) {
+			needToProcessLiterals = false;
+			Iterator<String> it = objectMatchTranslator.keys();
+			while (it.hasNext()) {
+				if (first) {
+					first = false;
+				} else {
+					out.append(" AND ");
+				}
+
+				String key = it.next();
+				DbAttribute attr = objectMatchTranslator.getAttribute(key);
+				Object val = objectMatchTranslator.getValue(key);
+
+				processColumn(attr);
+				out.append(objectMatchTranslator.getOperation());
+				appendLiteral(val, attr, objectMatchTranslator.getExpression());
 			}
+		}
 
-			String key = it.next();
-			DbAttribute attr = objectMatchTranslator.getAttribute(key);
-			Object val = objectMatchTranslator.getValue(key);
-
-			processColumn(attr);
-			out.append(objectMatchTranslator.getOperation());
-			appendLiteral(val, attr, objectMatchTranslator.getExpression());
+		if(needToProcessLiterals) {
+			DbAttribute attribute = paramsDbType(objectMatchTranslator.getExpression());
+			matchingObject = false;
+			appendLiteral(
+					objectMatchTranslator.getValue(attribute.getName()),
+					attribute,
+					objectMatchTranslator.getExpression());
 		}
 
 		objectMatchTranslator.reset();
@@ -236,8 +251,10 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 		if (!hasMoreChildren) {
 			return;
 		}
-
-		Appendable out = (matchingObject) ? new StringBuilder() : this.out;
+		boolean hasObjectsToMatch = objectMatchTranslator != null &&
+				(objectMatchTranslator.attributes != null ||
+				objectMatchTranslator.relationship != null);
+		Appendable out = (matchingObject && hasObjectsToMatch) ? new StringBuilder() : this.out;
 
 		try {
 			switch (node.getType()) {
