@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
 	<property name="defaultPackage" value="org.apache.cayenne.crypto.db"/>
 	<db-entity name="TABLE1">
 		<db-attribute name="CRYPTO_INT" type="BLOB"/>
@@ -78,7 +78,7 @@
 	<db-relationship name="table7s" source="TABLE1" target="TABLE7" toMany="true">
 		<db-attribute-pair source="ID" target="TABLE1_ID"/>
 	</db-relationship>
-	<db-relationship name="toTable1" source="TABLE7" target="TABLE1">
+	<db-relationship name="toTable1" source="TABLE7" target="TABLE1" fk="true">
 		<db-attribute-pair source="TABLE1_ID" target="ID"/>
 	</db-relationship>
 	<obj-relationship name="table7s" source="Table1" target="Table7" deleteRule="Deny" db-relationship-path="table7s"/>

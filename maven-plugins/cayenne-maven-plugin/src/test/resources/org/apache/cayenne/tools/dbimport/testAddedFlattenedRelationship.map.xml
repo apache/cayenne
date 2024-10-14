@@ -17,10 +17,10 @@
   ~  specific language governing permissions and limitations
   ~  under the License.
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap http://cayenne.apache.org/schema/11/modelMap.xsd"
-          project-version="11">
+          xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap http://cayenne.apache.org/schema/12/modelMap.xsd"
+          project-version="12">
 
     <db-entity name="A" schema="SCHEMA_01">
         <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>

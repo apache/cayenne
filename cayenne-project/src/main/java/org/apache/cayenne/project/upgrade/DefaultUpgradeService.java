@@ -187,8 +187,8 @@ public class DefaultUpgradeService implements UpgradeService {
             for(UpgradeUnit dataMapUnit : dataMapUnits) {
                 handler.processDataMapDom(dataMapUnit);
             }
+            handler.processAllDataMapDomes(dataMapUnits);
         }
-
         return allUnits;
     }
 

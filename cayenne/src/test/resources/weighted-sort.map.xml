@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.weighted_sort"/>
 	<db-entity name="SORT_DEP">
 		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
@@ -13,7 +13,7 @@
 	</db-entity>
 	<obj-entity name="SortDep" className="org.apache.cayenne.testdo.weighted_sort.SortDep" dbEntityName="SORT_DEP"/>
 	<obj-entity name="SortRoot" className="org.apache.cayenne.testdo.weighted_sort.SortRoot" dbEntityName="SORT_ROOT"/>
-	<db-relationship name="root" source="SORT_DEP" target="SORT_ROOT">
+	<db-relationship name="root" source="SORT_DEP" target="SORT_ROOT" fk="true">
 		<db-attribute-pair source="ROOT_ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="deps" source="SORT_ROOT" target="SORT_DEP" toMany="true">

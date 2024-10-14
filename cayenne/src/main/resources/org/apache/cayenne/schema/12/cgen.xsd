@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~   Licensed to the Apache Software Foundation (ASF) under one
+  ~  or more contributor license agreements.  See the NOTICE file
+  ~  distributed with this work for additional information
+  ~  regarding copyright ownership.  The ASF licenses this file
+  ~  to you under the Apache License, Version 2.0 (the
+  ~  "License"); you may not use this file except in compliance
+  ~  with the License.  You may obtain a copy of the License at
+  ~
+  ~    https://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing,
+  ~  software distributed under the License is distributed on an
+  ~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~  KIND, either express or implied.  See the License for the
+  ~  specific language governing permissions and limitations
+  ~  under the License.
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<xs:schema targetNamespace="http://cayenne.apache.org/schema/12/cgen"
+           elementFormDefault="qualified" version="12"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="cgen">
+        <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="name" minOccurs="0" type="xs:string"/>
+                    <xs:element name="excludeEntities" minOccurs="0" type="xs:string"/>
+                    <xs:element name="excludeEmbeddables" minOccurs="0" type="xs:string"/>
+                    <xs:element name="destDir" minOccurs="0" type="xs:string"/>
+                    <xs:element name="mode" minOccurs="0" type="xs:string"/>
+                    <xs:element name="template" minOccurs="0" type="xs:string"/>
+                    <xs:element name="superTemplate" minOccurs="0" type="xs:string"/>
+                    <xs:element name="embeddableTemplate" minOccurs="0" type="xs:string"/>
+                    <xs:element name="embeddableSuperTemplate" minOccurs="0" type="xs:string"/>
+                    <xs:element name="dataMapTemplate" minOccurs="0" type="xs:string"/>
+                    <xs:element name="dataMapSuperTemplate" minOccurs="0" type="xs:string"/>
+                    <xs:element name="outputPattern" minOccurs="0" type="xs:string"/>
+                    <xs:element name="makePairs" minOccurs="0" type="xs:boolean"/>
+                    <xs:element name="skipRelationshipsLoading" minOccurs="0" type="xs:boolean"/>
+                    <xs:element name="usePkgPath" minOccurs="0" type="xs:boolean"/>
+                    <xs:element name="overwrite" minOccurs="0" type="xs:boolean"/>
+                    <xs:element name="createPropertyNames" minOccurs="0" type="xs:boolean"/>
+                    <xs:element name="superPkg" minOccurs="0" type="xs:string"/>
+                    <xs:element name="createPKProperties" minOccurs="0" type="xs:boolean"/>
+                </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>
