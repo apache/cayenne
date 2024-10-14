@@ -113,7 +113,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 
 		for (DbEntity destination : entityResolver.getDbEntities()) {
 			for (DbRelationship candidate : destination.getRelationships()) {
-				if ((!candidate.isToMany() && !candidate.isToDependentPK()) || candidate.isToMasterPK()) {
+				if (candidate.isToMasterPK()) {
 					DbEntity origin = candidate.getTargetEntity();
 					boolean newReflexive = destination.equals(origin);
 

@@ -597,7 +597,7 @@ public class EOModelProcessor {
 
 			String relName = (String) relMap.get("name");
 			boolean toMany = "Y".equals(relMap.get("isToMany"));
-			boolean toDependentPK = "Y".equals(relMap.get("propagatesPrimaryKey"));
+			boolean isFK = !"Y".equals(relMap.get("propagatesPrimaryKey"));
 			ObjEntity target = helper.getDataMap().getObjEntity(targetName);
 
 			// target maybe null for cross-EOModel relationships
@@ -629,7 +629,7 @@ public class EOModelProcessor {
 					dbRel.setTargetEntityName(dbTarget);
 					dbRel.setToMany(toMany);
 					dbRel.setName(relName);
-					dbRel.setToDependentPK(toDependentPK);
+					dbRel.setFK(isFK);
 					dbSrc.addRelationship(dbRel);
 
 					List joins = (List) relMap.get("joins");

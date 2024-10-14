@@ -201,6 +201,7 @@ public class MergerFactoryIT extends MergeCase {
         r1.setSourceEntity(dbEntity);
         r1.setTargetEntityName(artistDbEntity);
         r1.setToMany(false);
+        r1.setFK(true);
         r1.addJoin(new DbJoin(r1, "ARTIST_ID", "ARTIST_ID"));
         dbEntity.addRelationship(r1);
 
@@ -262,6 +263,7 @@ r2 =     * Db -Rel 'toNewTableR2' - ARTIST 1 -> * NEW_TABLE" -- Not generated an
         r1.setSourceEntity(dbEntity);
         r1.setTargetEntityName(artistDbEntity);
         r1.setToMany(false);
+        r1.setFK(true);
         r1.addJoin(new DbJoin(r1, "ARTIST_ID", "ARTIST_ID"));
         dbEntity.addRelationship(r1);
 
