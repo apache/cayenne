@@ -20,12 +20,14 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Fault;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -51,6 +53,9 @@ public class DataContextPrefetchMultistepIT extends RuntimeCase {
 
     @Inject
     protected DataContext context;
+
+    @Inject
+    protected CayenneRuntime runtime;
 
     @Inject
     protected DBHelper dbHelper;
@@ -288,65 +293,158 @@ public class DataContextPrefetchMultistepIT extends RuntimeCase {
         assertEquals(0, exhibits.size());
     }
 
-	private Gallery createArtistWithPaintingInGallery() {
-		Artist artist = context.newObject(Artist.class);
-    	artist.setArtistName("Picasso");
-    	
-    	Painting painting = context.newObject(Painting.class);
-    	painting.setPaintingTitle("Guernica");
-    	artist.addToPaintingArray(painting);
-    	
-    	Gallery gallery = context.newObject(Gallery.class);
-    	gallery.setGalleryName("MOMA");
-    	painting.setToGallery(gallery);
-    	
-    	context.commitChanges();
-		return gallery;
-	}
-    
-    @Test
-    public void testPrefetchAcross2RelationshipsKeepingBoth_Joint() {
-    	Gallery gallery = createArtistWithPaintingInGallery();
-    	
-    	assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
-    	
-    	// Prefetch the artist through the two relationships
-    	ObjectSelect.query(Gallery.class)
-    		.prefetch(Gallery.PAINTING_ARRAY.joint())
-    		.prefetch(Gallery.PAINTING_ARRAY.dot(Painting.TO_ARTIST).joint())
-    		.select(context);
-    	
-    	assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+
+    private Gallery createArtistWithPaintingInGallery() {
+        Artist artist = context.newObject(Artist.class);
+        artist.setArtistName("Picasso");
+
+        Painting painting = context.newObject(Painting.class);
+        painting.setPaintingTitle("Guernica");
+        artist.addToPaintingArray(painting);
+
+        Gallery gallery = context.newObject(Gallery.class);
+        gallery.setGalleryName("MOMA");
+        painting.setToGallery(gallery);
+
+        context.commitChanges();
+        return gallery;
     }
 
     @Test
-    public void testPrefetchAcross2RelationshipsKeepingBoth_Disjoint() {
-    	Gallery gallery = createArtistWithPaintingInGallery();
-    	
-    	assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
-    	
-    	// Prefetch the artist through the two relationships
-    	ObjectSelect.query(Gallery.class)
-    		.prefetch(Gallery.PAINTING_ARRAY.joint())
-    		.prefetch(Gallery.PAINTING_ARRAY.dot(Painting.TO_ARTIST).disjoint())
-    		.select(context);
-    	
-    	assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+    public void testPrefetchAcross2RelationshipsKeepingBoth_JointAndJoint() {
+        Gallery gallery = createArtistWithPaintingInGallery();
+
+        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+
+        // Prefetch the artist through the two relationships
+        ObjectSelect.query(Gallery.class)
+                .prefetch(Gallery.PAINTING_ARRAY.joint())
+                .prefetch(Gallery.PAINTING_ARRAY.dot(Painting.TO_ARTIST).joint())
+                .select(context);
+
+        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
     }
-    
+
     @Test
-    public void testPrefetchAcross2RelationshipsKeepingBoth_DisjointById() {
-    	Gallery gallery = createArtistWithPaintingInGallery();
-    	
-    	assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
-    	
-    	// Prefetch the artist through the two relationships
-    	ObjectSelect.query(Gallery.class)
-    		.prefetch(Gallery.PAINTING_ARRAY.joint())
-    		.prefetch(Gallery.PAINTING_ARRAY.dot(Painting.TO_ARTIST).disjointById())
-    		.select(context);
-    	
-    	assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+    public void testPrefetchAcross2RelationshipsKeepingBoth_JointAndDisjoint() {
+        Gallery gallery = createArtistWithPaintingInGallery();
+
+        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+
+        ObjectContext objectContext = runtime.newContext();
+
+        // Prefetch the artist through the two relationships
+        Gallery gallery2 = ObjectSelect.query(Gallery.class)
+                .prefetch(Gallery.PAINTING_ARRAY.joint())
+                .prefetch(Gallery.PAINTING_ARRAY.dot(Painting.TO_ARTIST).disjoint())
+                .selectOne(objectContext);
+
+        assertNotNull(gallery2.getPaintingArray().get(0).getToArtist());
+        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
     }
-    
+
+    @Test
+    public void testPrefetchAcross2RelationshipsKeepingBoth_JointAndDisjointById() {
+        Gallery gallery = createArtistWithPaintingInGallery();
+
+        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+
+        // Prefetch the artist through the two relationships
+        ObjectSelect.query(Gallery.class)
+                .prefetch(Gallery.PAINTING_ARRAY.joint())
+                .prefetch(Gallery.PAINTING_ARRAY.dot(Painting.TO_ARTIST).disjointById())
+                .select(context);
+
+        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+    }
+
+    @Test
+    public void testPrefetchAcross2RelationshipsKeepingBoth_DisjointAndJoint() {
+        Gallery gallery = createArtistWithPaintingInGallery();
+
+        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+
+        // Prefetch the artist through the two relationships
+        ObjectSelect.query(Gallery.class)
+                .prefetch(Gallery.PAINTING_ARRAY.disjoint())
+                .prefetch(Gallery.PAINTING_ARRAY.dot(Painting.TO_ARTIST).joint())
+                .select(context);
+
+        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+    }
+
+    @Test
+    public void testPrefetchAcross2RelationshipsKeepingBoth_DisjointAndDisjoint() {
+        Gallery gallery = createArtistWithPaintingInGallery();
+
+        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+
+        // Prefetch the artist through the two relationships
+        ObjectSelect.query(Gallery.class)
+                .prefetch(Gallery.PAINTING_ARRAY.disjoint())
+                .prefetch(Gallery.PAINTING_ARRAY.dot(Painting.TO_ARTIST).disjoint())
+                .select(context);
+
+        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+    }
+
+    @Test
+    public void testPrefetchAcross2RelationshipsKeepingBoth_DisjointAndDisjointById() {
+        Gallery gallery = createArtistWithPaintingInGallery();
+
+        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+
+        // Prefetch the artist through the two relationships
+        ObjectSelect.query(Gallery.class)
+                .prefetch(Gallery.PAINTING_ARRAY.disjoint())
+                .prefetch(Gallery.PAINTING_ARRAY.dot(Painting.TO_ARTIST).disjointById())
+                .select(context);
+
+        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+    }
+
+    @Test
+    public void testPrefetchAcross2RelationshipsKeepingBoth_DisjointByIdAndJoint() {
+        Gallery gallery = createArtistWithPaintingInGallery();
+
+        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+
+        // Prefetch the artist through the two relationships
+        ObjectSelect.query(Gallery.class)
+                .prefetch(Gallery.PAINTING_ARRAY.disjointById())
+                .prefetch(Gallery.PAINTING_ARRAY.dot(Painting.TO_ARTIST).joint())
+                .select(context);
+
+        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+    }
+
+    @Test
+    public void testPrefetchAcross2RelationshipsKeepingBoth_DisjointByIdAndDisjoint() {
+        Gallery gallery = createArtistWithPaintingInGallery();
+
+        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+
+        // Prefetch the artist through the two relationships
+        ObjectSelect.query(Gallery.class)
+                .prefetch(Gallery.PAINTING_ARRAY.disjointById())
+                .prefetch(Gallery.PAINTING_ARRAY.dot(Painting.TO_ARTIST).disjoint())
+                .select(context);
+
+        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+    }
+
+    @Test
+    public void testPrefetchAcross2RelationshipsKeepingBoth_DisjointByIdAndDisjointById() {
+        Gallery gallery = createArtistWithPaintingInGallery();
+
+        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+
+        // Prefetch the artist through the two relationships
+        ObjectSelect.query(Gallery.class)
+                .prefetch(Gallery.PAINTING_ARRAY.disjointById())
+                .prefetch(Gallery.PAINTING_ARRAY.dot(Painting.TO_ARTIST).disjointById())
+                .select(context);
+
+        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+    }
 }
