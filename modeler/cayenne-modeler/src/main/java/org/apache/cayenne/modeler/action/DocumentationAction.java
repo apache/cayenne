@@ -38,12 +38,34 @@ public class DocumentationAction extends CayenneAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        String version = LocalizedStringsHandler.getString("cayenne.version");
-        String url = "https://cayenne.apache.org";
-        if(!"".equals(version)) {
-            String majorVersion = version.substring(0, version.lastIndexOf('.'));
-            url = url + "/docs/" + majorVersion + "/cayenne-guide/";
+        String url = "https://cayenne.apache.org/docs/";
+        String majorVersion = getMajorVersion();
+        if(!majorVersion.isEmpty()) {
+            url = url + majorVersion + "/cayenne-guide/";
         }
         BrowserControl.displayURL(url);
+    }
+
+    private static String getMajorVersion() {
+        String version = LocalizedStringsHandler.getString("cayenne.version");
+        if(version.isEmpty()) {
+            return "";
+        }
+        String majorVersion = version;
+        int dash = version.indexOf('-');
+        if (dash != -1) {
+            // trim down snapshot part
+            majorVersion = version.substring(0, dash);
+        }
+        // build a major version in form of 'X.Y'
+        String[] components = majorVersion.split("\\.");
+        switch (components.length) {
+            case 0:
+                return "";
+            case 1:
+                return components[0] + ".0";
+            default:
+                return String.join(".", components[0], components[1]);
+        }
     }
 }

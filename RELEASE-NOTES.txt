@@ -14,6 +14,7 @@ Date:
 Changes/New Features:
 
 CAY-2867 Tweak GraphBasedDbRowOpSorter logic to allow related updates
+CAY-2872 CayenneModeler "Documentation" link is broken
 CAY-2873 Change Orderings.orderedList() to accept a Collection rather than a List
 
 Bug Fixes:
