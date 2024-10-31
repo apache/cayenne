@@ -13,6 +13,7 @@ Date:
 ----------------------------------
 Changes/New Features:
 
+CAY-2871 QualifierTranslator breaks on a relationship with a compound FK
 CAY-2872 CayenneModeler "Documentation" link is broken
 CAY-2873 Change Orderings.orderedList() to accept a Collection rather than a List
 
