@@ -16,6 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.modeler.util;
 
 /**
@@ -26,21 +27,17 @@ public enum OperatingSystem {
     MAC_OS_X, WINDOWS, OTHER;
 
     private static final OperatingSystem os;
-
     static {
         String osName = System.getProperty("os.name");
 
         if (osName == null) {
             os = OTHER;
-        }
-        else {
+        } else {
             if (osName.startsWith("Windows")) {
                 os = WINDOWS;
-            }
-            else if (osName.startsWith("Mac OS X")) {
+            } else if (osName.startsWith("Mac OS X")) {
                 os = MAC_OS_X;
-            }
-            else {
+            } else {
                 os = OTHER;
             }
         }
