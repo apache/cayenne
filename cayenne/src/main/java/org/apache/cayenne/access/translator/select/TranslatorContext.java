@@ -205,7 +205,9 @@ public class TranslatorContext implements SQLGenerationContext {
     }
 
     boolean hasAggregate() {
-        if(hasAggregate != null) return hasAggregate;
+        if(hasAggregate != null) {
+            return hasAggregate;
+        }
 
         if(getQuery().getHavingQualifier() != null) {
             return (hasAggregate = true);

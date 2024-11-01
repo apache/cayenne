@@ -49,7 +49,11 @@ abstract class OrderingAbstractStage implements TranslationStage {
     }
 
     private boolean orderColumnAbsent(TranslatorContext context, Node orderingNode) {
-        return context.getResultNodeList().stream()
-                .noneMatch(result -> result.getNode().deepEquals(orderingNode));
+        for (ResultNodeDescriptor result : context.getResultNodeList()) {
+            if (result.getNode().deepEquals(orderingNode)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
