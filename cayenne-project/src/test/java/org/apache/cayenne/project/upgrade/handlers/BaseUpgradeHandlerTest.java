@@ -21,6 +21,8 @@ package org.apache.cayenne.project.upgrade.handlers;
 
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -56,6 +58,19 @@ abstract class BaseUpgradeHandlerTest {
                 documentFromResource(xmlResourceName));
         handler.processDataMapDom(unit);
         return unit.getDocument();
+    }
+
+    List<Document> processAllDataMapDomes(List<String> xmlResourceNames) throws Exception {
+        List<UpgradeUnit> upgradeUnits = new ArrayList<>(xmlResourceNames.size());
+        List<Document> documents = new ArrayList<>();
+        for (String xmlResourceName : xmlResourceNames) {
+            UpgradeUnit unit = new UpgradeUnit(new URLResource(getClass().getResource(xmlResourceName)),
+                    documentFromResource(xmlResourceName));
+            upgradeUnits.add(unit);
+            documents.add(unit.getDocument());
+        }
+        handler.processAllDataMapDomes(upgradeUnits);
+        return documents;
     }
 
     Document documentFromString(String xml) throws Exception {

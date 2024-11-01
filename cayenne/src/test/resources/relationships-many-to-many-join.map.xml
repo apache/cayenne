@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.relationships_many_to_many_join"/>
 	<db-entity name="X_AUTHOR">
 		<db-attribute name="AUTHOR_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -39,28 +39,28 @@
 	<obj-entity name="Song" className="org.apache.cayenne.testdo.relationships_many_to_many_join.Song" dbEntityName="X_SONG">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="SONG_NAME"/>
 	</obj-entity>
-	<db-relationship name="songAuthor" source="X_AUTHOR" target="X_SONGAUTHOR" toDependentPK="true" toMany="true">
+	<db-relationship name="songAuthor" source="X_AUTHOR" target="X_SONGAUTHOR" toMany="true">
 		<db-attribute-pair source="AUTHOR_ID" target="AUTHOR_ID"/>
 	</db-relationship>
-	<db-relationship name="selfJoinFrom" source="X_SELF" target="X_SELF_JOIN" toDependentPK="true" toMany="true">
+	<db-relationship name="selfJoinFrom" source="X_SELF" target="X_SELF_JOIN" toMany="true">
 		<db-attribute-pair source="SELF_ID" target="SELF_ID_FROM"/>
 	</db-relationship>
-	<db-relationship name="selfJoinTo" source="X_SELF" target="X_SELF_JOIN" toDependentPK="true" toMany="true">
+	<db-relationship name="selfJoinTo" source="X_SELF" target="X_SELF_JOIN" toMany="true">
 		<db-attribute-pair source="SELF_ID" target="SELF_ID_TO"/>
 	</db-relationship>
-	<db-relationship name="selfFrom" source="X_SELF_JOIN" target="X_SELF">
+	<db-relationship name="selfFrom" source="X_SELF_JOIN" target="X_SELF" fk="true">
 		<db-attribute-pair source="SELF_ID_FROM" target="SELF_ID"/>
 	</db-relationship>
-	<db-relationship name="selfTo" source="X_SELF_JOIN" target="X_SELF">
+	<db-relationship name="selfTo" source="X_SELF_JOIN" target="X_SELF" fk="true">
 		<db-attribute-pair source="SELF_ID_TO" target="SELF_ID"/>
 	</db-relationship>
-	<db-relationship name="songAuthor" source="X_SONG" target="X_SONGAUTHOR" toDependentPK="true" toMany="true">
+	<db-relationship name="songAuthor" source="X_SONG" target="X_SONGAUTHOR" toMany="true">
 		<db-attribute-pair source="SONG_ID" target="SONG_ID"/>
 	</db-relationship>
-	<db-relationship name="author" source="X_SONGAUTHOR" target="X_AUTHOR">
+	<db-relationship name="author" source="X_SONGAUTHOR" target="X_AUTHOR" fk="true">
 		<db-attribute-pair source="AUTHOR_ID" target="AUTHOR_ID"/>
 	</db-relationship>
-	<db-relationship name="song" source="X_SONGAUTHOR" target="X_SONG">
+	<db-relationship name="song" source="X_SONGAUTHOR" target="X_SONG" fk="true">
 		<db-attribute-pair source="SONG_ID" target="SONG_ID"/>
 	</db-relationship>
 	<obj-relationship name="selfChildren" source="SelfRelationship" target="SelfRelationshipSub" deleteRule="Deny" db-relationship-path="selfJoinFrom.selfTo"/>

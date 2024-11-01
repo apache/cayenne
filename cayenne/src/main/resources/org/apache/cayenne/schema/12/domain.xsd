@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~   Licensed to the Apache Software Foundation (ASF) under one
+  ~  or more contributor license agreements.  See the NOTICE file
+  ~  distributed with this work for additional information
+  ~  regarding copyright ownership.  The ASF licenses this file
+  ~  to you under the Apache License, Version 2.0 (the
+  ~  "License"); you may not use this file except in compliance
+  ~  with the License.  You may obtain a copy of the License at
+  ~
+  ~    https://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing,
+  ~  software distributed under the License is distributed on an
+  ~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~  KIND, either express or implied.  See the License for the
+  ~  specific language governing permissions and limitations
+  ~  under the License.
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<xs:schema targetNamespace="http://cayenne.apache.org/schema/12/domain"
+           elementFormDefault="qualified" version="12"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:cay="http://cayenne.apache.org/schema/12/domain">
+
+    <xs:element name="domain">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:property"/>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:map"/>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:node"/>
+                <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
+            </xs:sequence>
+            <xs:attribute name="project-version" use="required" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="property">
+        <xs:annotation>
+            <xs:documentation>A generic property used by other elements.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name="name" use="required" type="xs:string"/>
+            <xs:attribute name="value" use="required" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="map">
+        <xs:annotation>
+            <xs:documentation>Link to an external file with data map.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name="name" use="required" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="node">
+        <xs:annotation>
+            <xs:documentation>Data node description.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:map-ref"/>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:data-source"/>
+                <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
+            </xs:sequence>
+            <xs:attribute name="name" use="required" type="xs:string"/>
+            <xs:attribute name="factory" use="required" type="xs:string"/>
+            <xs:attribute name="adapter" type="xs:string"/>
+            <xs:attribute name="schema-update-strategy" type="xs:string"/>
+            <xs:attribute name="parameters" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="map-ref">
+        <xs:annotation>
+            <xs:documentation>A reference to a map.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name="name" use="required" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="data-source">
+        <xs:annotation>
+            <xs:documentation>Data source configuration.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="1" ref="cay:driver"/>
+                <xs:element minOccurs="0" maxOccurs="1" ref="cay:url"/>
+                <xs:element minOccurs="0" maxOccurs="1" ref="cay:connectionPool"/>
+                <xs:element minOccurs="0" maxOccurs="1" ref="cay:login"/>
+                <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="driver">
+        <xs:complexType>
+            <xs:attribute name="value" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="url">
+        <xs:complexType>
+            <xs:attribute name="value" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="connectionPool">
+        <xs:complexType>
+            <xs:attribute name="min" use="required" type="xs:int"/>
+            <xs:attribute name="max" use="required" type="xs:int"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="login">
+        <xs:complexType>
+            <xs:attribute name="userName" type="xs:string"/>
+            <xs:attribute name="password" type="xs:string"/>
+            <xs:attribute name="passwordLocation" type="xs:string"/>
+            <xs:attribute name="passwordSource" type="xs:string"/>
+            <xs:attribute name="encoderClass" type="xs:string"/>
+            <xs:attribute name="encoderKey" type="xs:string"/>
+            <xs:attribute name="encoderSalt" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

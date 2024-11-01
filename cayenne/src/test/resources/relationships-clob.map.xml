@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.relationships_clob"/>
 	<db-entity name="CLOB_DETAIL">
 		<db-attribute name="CLOB_DETAIL_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -21,7 +21,7 @@
 		<obj-attribute name="clobColumn" type="java.lang.String" db-attribute-path="CLOB_COLUMN"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<db-relationship name="master" source="CLOB_DETAIL" target="CLOB_MASTER">
+	<db-relationship name="master" source="CLOB_DETAIL" target="CLOB_MASTER" fk="true">
 		<db-attribute-pair source="CLOB_MASTER_ID" target="CLOB_MASTER_ID"/>
 	</db-relationship>
 	<db-relationship name="details" source="CLOB_MASTER" target="CLOB_DETAIL" toMany="true">

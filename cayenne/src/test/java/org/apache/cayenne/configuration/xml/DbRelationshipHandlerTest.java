@@ -50,7 +50,7 @@ public class DbRelationshipHandlerTest extends BaseHandlerTest {
         assertNotNull(relationship);
 
         assertEquals("PAINTING", relationship.getTargetEntityName());
-        assertTrue(relationship.isToDependentPK());
+        assertFalse(relationship.isFK());
         assertTrue(relationship.isToMany());
         assertEquals("ID", relationship.getJoins().get(0).getSourceName());
         assertEquals("ARTIST_ID", relationship.getJoins().get(0).getTargetName());

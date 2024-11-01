@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.locking"/>
 	<db-entity name="LOCKING_HELPER">
 		<db-attribute name="LOCKING_HELPER_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -33,13 +33,13 @@
 		<obj-attribute name="intColumnNull" type="int" lock="true" db-attribute-path="INT_COLUMN_NULL"/>
 		<obj-attribute name="name" type="java.lang.String" lock="true" db-attribute-path="NAME"/>
 	</obj-entity>
-	<db-relationship name="toRelLockingTest" source="LOCKING_HELPER" target="REL_LOCKING_TEST">
+	<db-relationship name="toRelLockingTest" source="LOCKING_HELPER" target="REL_LOCKING_TEST" fk="true">
 		<db-attribute-pair source="REL_LOCKING_TEST_ID" target="REL_LOCKING_TEST_ID"/>
 	</db-relationship>
 	<db-relationship name="lockingHelpers" source="REL_LOCKING_TEST" target="LOCKING_HELPER" toMany="true">
 		<db-attribute-pair source="REL_LOCKING_TEST_ID" target="REL_LOCKING_TEST_ID"/>
 	</db-relationship>
-	<db-relationship name="toSimpleLockingTest" source="REL_LOCKING_TEST" target="SIMPLE_LOCKING_TEST">
+	<db-relationship name="toSimpleLockingTest" source="REL_LOCKING_TEST" target="SIMPLE_LOCKING_TEST" fk="true">
 		<db-attribute-pair source="SIMPLE_LOCKING_TEST_ID" target="LOCKING_TEST_ID"/>
 	</db-relationship>
 	<db-relationship name="relaLockingTests" source="SIMPLE_LOCKING_TEST" target="REL_LOCKING_TEST" toMany="true">

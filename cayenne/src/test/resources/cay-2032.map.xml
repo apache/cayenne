@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.cay_2032"/>
 	<db-entity name="TEAM">
 		<db-attribute name="team_id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -19,10 +19,10 @@
 	<obj-entity name="Users" className="org.apache.cayenne.testdo.cay_2032.Users" dbEntityName="USERS">
 		<obj-attribute name="name" type="byte[]" db-attribute-path="name"/>
 	</obj-entity>
-	<db-relationship name="userHasTeam" source="TEAM" target="USER_HAS_TEAM" toMany="true">
+	<db-relationship name="userHasTeam" source="TEAM" target="USER_HAS_TEAM" fk="true" toMany="true">
 		<db-attribute-pair source="team_id" target="team_id"/>
 	</db-relationship>
-	<db-relationship name="userHasTeam" source="USERS" target="USER_HAS_TEAM" toMany="true">
+	<db-relationship name="userHasTeam" source="USERS" target="USER_HAS_TEAM" fk="true" toMany="true">
 		<db-attribute-pair source="user_id" target="user_id"/>
 	</db-relationship>
 	<db-relationship name="team" source="USER_HAS_TEAM" target="TEAM">

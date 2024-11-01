@@ -42,14 +42,14 @@ public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> 
     // Columns
     static final int NAME = 0;
     static final int TARGET = 1;
-    static final int TO_DEPENDENT_KEY = 2;
+    static final int FK = 2;
     static final int CARDINALITY = 3;
     static final int COMMENTS = 4;
 
     protected DbEntity entity;
 
     public DbRelationshipTableModel(DbEntity entity, ProjectController mediator,
-            Object eventSource) {
+                                    Object eventSource) {
 
         super(mediator, eventSource, new ArrayList<>(entity.getRelationships()));
         this.entity = entity;
@@ -72,8 +72,8 @@ public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> 
                 return "Name";
             case TARGET:
                 return "Target";
-            case TO_DEPENDENT_KEY:
-                return "To Dep PK";
+            case FK:
+                return "FK";
             case CARDINALITY:
                 return "To Many";
             case COMMENTS:
@@ -87,7 +87,7 @@ public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> 
         switch (col) {
             case TARGET:
                 return DbEntity.class;
-            case TO_DEPENDENT_KEY:
+            case FK:
             case CARDINALITY:
                 return Boolean.class;
             default:
@@ -110,8 +110,8 @@ public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> 
                 return rel.getName();
             case TARGET:
                 return rel.getTargetEntity();
-            case TO_DEPENDENT_KEY:
-                return rel.isToDependentPK() ? Boolean.TRUE : Boolean.FALSE;
+            case FK:
+                return rel.isFK() ? Boolean.TRUE : Boolean.FALSE;
             case CARDINALITY:
                 return rel.isToMany() ? Boolean.TRUE : Boolean.FALSE;
             case COMMENTS:
@@ -138,35 +138,33 @@ public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> 
             rel.setName((String) aValue);
             mediator.fireDbRelationshipEvent(e);
             fireTableCellUpdated(row, column);
-        } else if (column == TO_DEPENDENT_KEY) {
+        } else if (column == FK) {
             boolean flag = (Boolean) aValue;
 
-            // make sure reverse relationship "to-dep-pk" is unset.
-            if (flag) {
-                DbRelationship reverse = rel.getReverseRelationship();
-                if (reverse != null && reverse.isToDependentPK()) {
-                    String message = "Unset reverse relationship's \"To Dep PK\" setting?";
-                    int answer = JOptionPane.showConfirmDialog(
-                            Application.getFrame(),
-                            message);
-                    if (answer != JOptionPane.YES_OPTION) {
-                        // no action needed
-                        return;
-                    }
-
-                    // unset reverse
-                    reverse.setToDependentPK(false);
+            // set/unset FK at both ends of relationship.
+            DbRelationship reverse = rel.getReverseRelationship();
+            if (reverse != null) {
+                boolean isOKAnswer = JOptionPane.showConfirmDialog(Application.getFrame()
+                        , flag ? "Foreign key will be unset in reverse relationship" : "Foreign key will be set in reverse relationship"
+                        , "Warning"
+                        , JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION;
+                if (isOKAnswer) {
+                    rel.setFK(flag);
+                    reverse.setFK(!flag);
+                } else {
+                    rel.setFK(!flag);
+                    reverse.setFK(flag);
                 }
+            } else {
+                rel.setFK(flag);
             }
-
-            rel.setToDependentPK(flag);
             mediator.fireDbRelationshipEvent(new RelationshipEvent(eventSource, rel, entity));
         } else if (column == CARDINALITY) {
             rel.setToMany((Boolean) aValue);
             mediator.fireDbRelationshipEvent(new RelationshipEvent(eventSource, rel, entity));
 
             updateDependentObjRelationships(rel);
-        } else if(column == COMMENTS) {
+        } else if (column == COMMENTS) {
             setComment((String) aValue, rel);
             mediator.fireDbRelationshipEvent(new RelationshipEvent(eventSource, rel, entity));
         }
@@ -186,7 +184,7 @@ public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> 
 
         Collection<ObjRelationship> objRelationshipsForDbRelationship = ProjectUtil
                 .findObjRelationshipsForDbRelationship(mediator, relationship);
-        for(ObjRelationship objRelationship : objRelationshipsForDbRelationship) {
+        for (ObjRelationship objRelationship : objRelationshipsForDbRelationship) {
             objRelationship.recalculateToManyValue();
         }
     }
@@ -195,10 +193,10 @@ public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> 
         DbRelationship rel = getRelationship(row);
         if (rel == null) {
             return false;
-        } else if(col == TARGET) {
+        } else if (col == TARGET) {
             return false;
-        } else if (col == TO_DEPENDENT_KEY) {
-            return rel.isValidForDepPk();
+        } else if (col == FK) {
+            return rel.isValidForFk();
         }
         return true;
     }
@@ -217,8 +215,8 @@ public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> 
             case TARGET:
                 sortByElementProperty("targetEntityName", isAscent);
                 break;
-            case TO_DEPENDENT_KEY:
-                sortByElementProperty("toDependentPK", isAscent);
+            case FK:
+                sortByElementProperty("FK", isAscent);
                 break;
             case CARDINALITY:
                 sortByElementProperty("toMany", isAscent);

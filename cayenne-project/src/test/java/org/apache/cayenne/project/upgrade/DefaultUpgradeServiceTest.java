@@ -27,6 +27,7 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
@@ -68,9 +69,12 @@ public class DefaultUpgradeServiceTest {
         assertEquals(UpgradeType.UPGRADE_NEEDED, metaData.getUpgradeType());
 
         metaData = upgradeService.getUpgradeType(getResourceForVersion("11"));
-        assertEquals(UpgradeType.UPGRADE_NOT_NEEDED, metaData.getUpgradeType());
+        assertEquals(UpgradeType.UPGRADE_NEEDED, metaData.getUpgradeType());
 
         metaData = upgradeService.getUpgradeType(getResourceForVersion("12"));
+        assertEquals(UpgradeType.UPGRADE_NOT_NEEDED, metaData.getUpgradeType());
+
+        metaData = upgradeService.getUpgradeType(getResourceForVersion("99"));
         assertEquals(UpgradeType.DOWNGRADE_NEEDED, metaData.getUpgradeType());
     }
 
@@ -131,6 +135,7 @@ public class DefaultUpgradeServiceTest {
             verify(handler).processProjectDom(any(UpgradeUnit.class));
             // two data maps
             verify(handler, times(2)).processDataMapDom(any(UpgradeUnit.class));
+            verify(handler).processAllDataMapDomes(anyList());
             verifyNoMoreInteractions(handler);
         }
     }
@@ -138,7 +143,7 @@ public class DefaultUpgradeServiceTest {
     @Test
     public void readDocument() throws Exception {
         Document document = Util.readDocument(getClass().getResource("../cayenne-PROJECT1.xml"));
-        assertEquals("11", document.getDocumentElement().getAttribute("project-version"));
+        assertEquals(String.valueOf(Project.VERSION), document.getDocumentElement().getAttribute("project-version"));
     }
 
     private Document readDocument(URL url) throws Exception {

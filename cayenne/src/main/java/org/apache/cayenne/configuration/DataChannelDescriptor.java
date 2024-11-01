@@ -43,8 +43,8 @@ public class DataChannelDescriptor implements ConfigurationNode, Serializable, X
 	/**
 	 * The namespace in which the data map XML file will be created.
 	 */
-	public static final String SCHEMA_XSD = "http://cayenne.apache.org/schema/11/domain";
-	public static final String SCHEMA_XSD_LOCATION = "https://cayenne.apache.org/schema/11/domain.xsd";
+	public static final String SCHEMA_XSD = "http://cayenne.apache.org/schema/12/domain";
+	public static final String SCHEMA_XSD_LOCATION = "https://cayenne.apache.org/schema/12/domain.xsd";
 
 	protected String name;
 	protected Map<String, String> properties;

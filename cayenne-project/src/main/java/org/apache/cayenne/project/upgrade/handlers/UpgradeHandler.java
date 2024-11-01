@@ -29,6 +29,8 @@ import org.apache.cayenne.project.upgrade.UpgradeUnit;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import java.util.List;
+
 /**
  * Interface that upgrade handlers should implement.
  * Implementation also should be injected into DI stack in right order.
@@ -125,5 +127,9 @@ public interface UpgradeHandler {
             Element element = (Element) nodes.item(j);
             element.setAttribute("xmlns", "http://cayenne.apache.org/schema/"+getVersion()+"/"+extension.toLowerCase());
         }
+    }
+
+    default void processAllDataMapDomes(List<UpgradeUnit> dataMapUnits) {
+        //noop
     }
 }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.oneway"/>
 	<db-entity name="oneway_table1">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -24,7 +24,7 @@
 	</obj-entity>
 	<obj-entity name="OnewayTable3" className="org.apache.cayenne.testdo.oneway.OnewayTable3" dbEntityName="oneway_table3"/>
 	<obj-entity name="OnewayTable4" className="org.apache.cayenne.testdo.oneway.OnewayTable4" dbEntityName="oneway_table4"/>
-	<db-relationship name="toOneOneWayDb" source="oneway_table2" target="oneway_table1">
+	<db-relationship name="toOneOneWayDb" source="oneway_table2" target="oneway_table1" fk="true">
 		<db-attribute-pair source="TABLE1_ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="toManyOneWayDb" source="oneway_table3" target="oneway_table4" toMany="true">

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.mt"/>
 	<db-entity name="MT_JOIN45">
 		<db-attribute name="TABLE4_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -54,25 +54,25 @@
 	</obj-entity>
 	<obj-entity name="MtTable4" className="org.apache.cayenne.testdo.mt.MtTable4" dbEntityName="MT_TABLE4"/>
 	<obj-entity name="MtTable5" className="org.apache.cayenne.testdo.mt.MtTable5" dbEntityName="MT_TABLE5"/>
-	<db-relationship name="toTable4" source="MT_JOIN45" target="MT_TABLE4">
+	<db-relationship name="toTable4" source="MT_JOIN45" target="MT_TABLE4" fk="true">
 		<db-attribute-pair source="TABLE4_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="toTable5" source="MT_JOIN45" target="MT_TABLE5">
+	<db-relationship name="toTable5" source="MT_JOIN45" target="MT_TABLE5" fk="true">
 		<db-attribute-pair source="TABLE5_ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="table2Array" source="MT_TABLE1" target="MT_TABLE2" toMany="true">
 		<db-attribute-pair source="TABLE1_ID" target="TABLE1_ID"/>
 	</db-relationship>
-	<db-relationship name="table1" source="MT_TABLE2" target="MT_TABLE1">
+	<db-relationship name="table1" source="MT_TABLE2" target="MT_TABLE1" fk="true">
 		<db-attribute-pair source="TABLE1_ID" target="TABLE1_ID"/>
 	</db-relationship>
-	<db-relationship name="table3" source="MT_TABLE2" target="MT_TABLE3">
+	<db-relationship name="table3" source="MT_TABLE2" target="MT_TABLE3" fk="true">
 		<db-attribute-pair source="TABLE3_ID" target="TABLE3_ID"/>
 	</db-relationship>
 	<db-relationship name="table2Array" source="MT_TABLE3" target="MT_TABLE2" toMany="true">
 		<db-attribute-pair source="TABLE3_ID" target="TABLE3_ID"/>
 	</db-relationship>
-	<db-relationship name="joins" source="MT_TABLE4" target="MT_JOIN45" toDependentPK="true" toMany="true">
+	<db-relationship name="joins" source="MT_TABLE4" target="MT_JOIN45" toMany="true">
 		<db-attribute-pair source="ID" target="TABLE4_ID"/>
 	</db-relationship>
 	<db-relationship name="joins" source="MT_TABLE5" target="MT_JOIN45" toMany="true">

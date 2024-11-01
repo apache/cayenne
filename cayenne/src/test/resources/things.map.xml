@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.things"/>
 	<db-entity name="BAG">
 		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
@@ -54,14 +54,14 @@
 	<db-relationship name="BOXES" source="BAG" target="BOX" toMany="true">
 		<db-attribute-pair source="ID" target="BAG_ID"/>
 	</db-relationship>
-	<db-relationship name="BOX" source="BALL" target="BOX">
+	<db-relationship name="BOX" source="BALL" target="BOX" fk="true">
 		<db-attribute-pair source="BOX_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="THING" source="BALL" target="THING">
+	<db-relationship name="THING" source="BALL" target="THING" fk="true">
 		<db-attribute-pair source="THING_VOLUME" target="VOLUME"/>
 		<db-attribute-pair source="THING_WEIGHT" target="WEIGHT"/>
 	</db-relationship>
-	<db-relationship name="BAG" source="BOX" target="BAG">
+	<db-relationship name="BAG" source="BOX" target="BAG" fk="true">
 		<db-attribute-pair source="BAG_ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="BALLS" source="BOX" target="BALL" toMany="true">
@@ -73,13 +73,13 @@
 	<db-relationship name="BOX_THING" source="BOX" target="BOX_THING" toMany="true">
 		<db-attribute-pair source="ID" target="BOX_ID"/>
 	</db-relationship>
-	<db-relationship name="BOX" source="BOX_INFO" target="BOX">
+	<db-relationship name="BOX" source="BOX_INFO" target="BOX" fk="true">
 		<db-attribute-pair source="BOX_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="BOX" source="BOX_THING" target="BOX">
+	<db-relationship name="BOX" source="BOX_THING" target="BOX" fk="true">
 		<db-attribute-pair source="BOX_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="THING" source="BOX_THING" target="THING">
+	<db-relationship name="THING" source="BOX_THING" target="THING" fk="true">
 		<db-attribute-pair source="THING_VOLUME" target="VOLUME"/>
 		<db-attribute-pair source="THING_WEIGHT" target="WEIGHT"/>
 	</db-relationship>

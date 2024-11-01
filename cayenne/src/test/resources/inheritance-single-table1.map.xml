@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.inheritance_flat"/>
 	<db-entity name="GROUP_MEMBERS">
 		<db-attribute name="group_id" type="BIGINT" isMandatory="true"/>
@@ -47,28 +47,28 @@
 		<obj-attribute name="id" type="java.lang.Long" db-attribute-path="id"/>
 		<obj-attribute name="nickname" type="java.lang.String" db-attribute-path="nickname"/>
 	</obj-entity>
-	<db-relationship name="group" source="GROUP_MEMBERS" target="ROLES">
+	<db-relationship name="group" source="GROUP_MEMBERS" target="ROLES" fk="true">
 		<db-attribute-pair source="group_id" target="id"/>
 	</db-relationship>
-	<db-relationship name="role" source="GROUP_MEMBERS" target="ROLES">
+	<db-relationship name="role" source="GROUP_MEMBERS" target="ROLES" fk="true">
 		<db-attribute-pair source="role_id" target="id"/>
 	</db-relationship>
-	<db-relationship name="group" source="GROUP_PROPERTIES" target="ROLES">
+	<db-relationship name="group" source="GROUP_PROPERTIES" target="ROLES" fk="true">
 		<db-attribute-pair source="id" target="id"/>
 	</db-relationship>
 	<db-relationship name="group_members" source="ROLES" target="GROUP_MEMBERS" toMany="true">
 		<db-attribute-pair source="id" target="group_id"/>
 	</db-relationship>
-	<db-relationship name="group_properties" source="ROLES" target="GROUP_PROPERTIES" toDependentPK="true">
+	<db-relationship name="group_properties" source="ROLES" target="GROUP_PROPERTIES">
 		<db-attribute-pair source="id" target="id"/>
 	</db-relationship>
 	<db-relationship name="role_groups" source="ROLES" target="GROUP_MEMBERS" toMany="true">
 		<db-attribute-pair source="id" target="role_id"/>
 	</db-relationship>
-	<db-relationship name="user_properties" source="ROLES" target="USER_PROPERTIES" toDependentPK="true">
+	<db-relationship name="user_properties" source="ROLES" target="USER_PROPERTIES">
 		<db-attribute-pair source="id" target="id"/>
 	</db-relationship>
-	<db-relationship name="user" source="USER_PROPERTIES" target="ROLES">
+	<db-relationship name="user" source="USER_PROPERTIES" target="ROLES" fk="true">
 		<db-attribute-pair source="id" target="id"/>
 	</db-relationship>
 	<obj-relationship name="groupMembers" source="Group" target="Role" deleteRule="Nullify" db-relationship-path="group_members.role"/>

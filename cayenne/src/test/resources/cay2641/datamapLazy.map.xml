@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.cay_2641"/>
 	<db-entity name="ArtistLazy">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="5"/>
@@ -24,7 +24,7 @@
 	<db-relationship name="paintings" source="ArtistLazy" target="PaintingLazy" toMany="true">
 		<db-attribute-pair source="ID" target="ARTIST_ID"/>
 	</db-relationship>
-	<db-relationship name="artist" source="PaintingLazy" target="ArtistLazy">
+	<db-relationship name="artist" source="PaintingLazy" target="ArtistLazy" fk="true">
 		<db-attribute-pair source="ARTIST_ID" target="ID"/>
 	</db-relationship>
 	<obj-relationship name="paintings" source="ArtistLazy" target="PaintingLazy" deleteRule="Deny" db-relationship-path="paintings"/>

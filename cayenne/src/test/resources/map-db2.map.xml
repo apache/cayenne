@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.db2"/>
 	<db-entity name="CROSSDB_M2E1">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -23,10 +23,10 @@
 	<db-relationship name="listOfM2E2" source="CROSSDB_M2E1" target="CROSSDB_M2E2" toMany="true">
 		<db-attribute-pair source="ID" target="M2E1_ID"/>
 	</db-relationship>
-	<db-relationship name="toM1E1" source="CROSSDB_M2E2" target="CROSSDB_M1E1">
+	<db-relationship name="toM1E1" source="CROSSDB_M2E2" target="CROSSDB_M1E1" fk="true">
 		<db-attribute-pair source="M1E1_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="toM2E1" source="CROSSDB_M2E2" target="CROSSDB_M2E1">
+	<db-relationship name="toM2E1" source="CROSSDB_M2E2" target="CROSSDB_M2E1" fk="true">
 		<db-attribute-pair source="M2E1_ID" target="ID"/>
 	</db-relationship>
 	<obj-relationship name="listOfM2E2" source="CrossdbM2E1" target="CrossdbM2E2" db-relationship-path="listOfM2E2"/>

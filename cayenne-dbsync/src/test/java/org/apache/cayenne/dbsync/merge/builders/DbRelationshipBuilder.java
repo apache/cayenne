@@ -52,14 +52,19 @@ public class DbRelationshipBuilder extends DefaultBuilder<DbRelationship> {
         return this;
     }
 
-    public DbRelationshipBuilder from(DbEntity entity, String ... columns) {
+    public DbRelationshipBuilder from(DbEntity entity, String... columns) {
         obj.setSourceEntity(entity);
         this.from = columns;
 
         return this;
     }
 
-    public DbRelationshipBuilder to(String entityName, String ... columns) {
+    public DbRelationshipBuilder fK(boolean fk) {
+        obj.setFK(fk);
+        return this;
+    }
+
+    public DbRelationshipBuilder to(String entityName, String... columns) {
         obj.setTargetEntityName(entityName);
         this.to = columns;
 
@@ -78,6 +83,13 @@ public class DbRelationshipBuilder extends DefaultBuilder<DbRelationship> {
 
         for (int i = 0; i < from.length; i++) {
             obj.addJoin(new DbJoin(obj, from[i], to[i]));
+        }
+
+        DbJoin join = new DbJoin(obj);
+        if (!obj.isFK() && join.getTarget() != null && join.getSource() != null) {
+            if (join.getTarget().isPrimaryKey() && !join.getSource().isPrimaryKey()) {
+                obj.setFK(true);
+            }
         }
 
         return obj;

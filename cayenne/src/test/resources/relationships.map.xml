@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.relationships"/>
 	<db-entity name="CYCLE_E1">
 		<db-attribute name="e2_id" type="INTEGER"/>
@@ -48,31 +48,31 @@
 	<obj-entity name="RelationshipHelper" className="org.apache.cayenne.testdo.relationships.RelationshipHelper" dbEntityName="RELATIONSHIP_HELPER">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<db-relationship name="e2" source="CYCLE_E1" target="CYCLE_E2">
+	<db-relationship name="e2" source="CYCLE_E1" target="CYCLE_E2" fk="true">
 		<db-attribute-pair source="e2_id" target="id"/>
 	</db-relationship>
 	<db-relationship name="e2s" source="CYCLE_E1" target="CYCLE_E2" toMany="true">
 		<db-attribute-pair source="id" target="e1_id"/>
 	</db-relationship>
-	<db-relationship name="e1" source="CYCLE_E2" target="CYCLE_E1">
+	<db-relationship name="e1" source="CYCLE_E2" target="CYCLE_E1" fk="true">
 		<db-attribute-pair source="e1_id" target="id"/>
 	</db-relationship>
 	<db-relationship name="e1s" source="CYCLE_E2" target="CYCLE_E1" toMany="true">
 		<db-attribute-pair source="id" target="e2_id"/>
 	</db-relationship>
-	<db-relationship name="relationshipHelper" source="FK_OF_DIFFERENT_TYPE" target="RELATIONSHIP_HELPER">
+	<db-relationship name="relationshipHelper" source="FK_OF_DIFFERENT_TYPE" target="RELATIONSHIP_HELPER" fk="true">
 		<db-attribute-pair source="RELATIONSHIP_HELPER_FK" target="RELATIONSHIP_HELPER_ID"/>
 	</db-relationship>
-	<db-relationship name="toRelationshipHelper" source="MEANINGFUL_FK" target="RELATIONSHIP_HELPER">
+	<db-relationship name="toRelationshipHelper" source="MEANINGFUL_FK" target="RELATIONSHIP_HELPER" fk="true">
 		<db-attribute-pair source="RELATIONSHIP_HELPER_ID" target="RELATIONSHIP_HELPER_ID"/>
 	</db-relationship>
 	<db-relationship name="children" source="REFLEXIVE_AND_TO_ONE" target="REFLEXIVE_AND_TO_ONE" toMany="true">
 		<db-attribute-pair source="REFLEXIVE_AND_TO_ONE_ID" target="PARENT_ID"/>
 	</db-relationship>
-	<db-relationship name="toHelper" source="REFLEXIVE_AND_TO_ONE" target="RELATIONSHIP_HELPER">
+	<db-relationship name="toHelper" source="REFLEXIVE_AND_TO_ONE" target="RELATIONSHIP_HELPER" fk="true">
 		<db-attribute-pair source="RELATIONSHIP_HELPER_ID" target="RELATIONSHIP_HELPER_ID"/>
 	</db-relationship>
-	<db-relationship name="toParent" source="REFLEXIVE_AND_TO_ONE" target="REFLEXIVE_AND_TO_ONE">
+	<db-relationship name="toParent" source="REFLEXIVE_AND_TO_ONE" target="REFLEXIVE_AND_TO_ONE" fk="true">
 		<db-attribute-pair source="PARENT_ID" target="REFLEXIVE_AND_TO_ONE_ID"/>
 	</db-relationship>
 	<db-relationship name="fksOfDifferentType" source="RELATIONSHIP_HELPER" target="FK_OF_DIFFERENT_TYPE" toMany="true">

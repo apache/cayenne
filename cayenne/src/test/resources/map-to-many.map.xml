@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.map_to_many"/>
 	<db-entity name="ID_MAP_TO_MANY">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -28,13 +28,13 @@
 	<db-relationship name="targets" source="ID_MAP_TO_MANY" target="ID_MAP_TO_MANY_TARGET" toMany="true">
 		<db-attribute-pair source="ID" target="MAP_TO_MANY_ID"/>
 	</db-relationship>
-	<db-relationship name="mapToMany" source="ID_MAP_TO_MANY_TARGET" target="ID_MAP_TO_MANY">
+	<db-relationship name="mapToMany" source="ID_MAP_TO_MANY_TARGET" target="ID_MAP_TO_MANY" fk="true">
 		<db-attribute-pair source="MAP_TO_MANY_ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="targets" source="MAP_TO_MANY" target="MAP_TO_MANY_TARGET" toMany="true">
 		<db-attribute-pair source="ID" target="MAP_TO_MANY_ID"/>
 	</db-relationship>
-	<db-relationship name="mapToMany" source="MAP_TO_MANY_TARGET" target="MAP_TO_MANY">
+	<db-relationship name="mapToMany" source="MAP_TO_MANY_TARGET" target="MAP_TO_MANY" fk="true">
 		<db-attribute-pair source="MAP_TO_MANY_ID" target="ID"/>
 	</db-relationship>
 	<obj-relationship name="targets" source="IdMapToMany" target="IdMapToManyTarget" collection-type="java.util.Map" db-relationship-path="targets"/>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.deleterules"/>
 	<db-entity name="DELETE_CASCADE">
 		<db-attribute name="DELETE_CASCADE_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -35,13 +35,13 @@
 	<obj-entity name="DeleteRule" className="org.apache.cayenne.testdo.deleterules.DeleteRule" dbEntityName="DELETE_RULE">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<db-relationship name="cascade" source="DELETE_CASCADE" target="DELETE_RULE">
+	<db-relationship name="cascade" source="DELETE_CASCADE" target="DELETE_RULE" fk="true">
 		<db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
 	</db-relationship>
-	<db-relationship name="deny" source="DELETE_DENY" target="DELETE_RULE">
+	<db-relationship name="deny" source="DELETE_DENY" target="DELETE_RULE" fk="true">
 		<db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
 	</db-relationship>
-	<db-relationship name="nullify" source="DELETE_NULLIFY" target="DELETE_RULE">
+	<db-relationship name="nullify" source="DELETE_NULLIFY" target="DELETE_RULE" fk="true">
 		<db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
 	</db-relationship>
 	<db-relationship name="fromCascade" source="DELETE_RULE" target="DELETE_CASCADE" toMany="true">

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.relationships_delete_rules"/>
 	<db-entity name="DELETE_RULE_FLATA">
 		<db-attribute name="FLATA_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -30,22 +30,22 @@
 	<obj-entity name="DeleteRuleTest1" className="org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest1" dbEntityName="DELETE_RULE_TEST1"/>
 	<obj-entity name="DeleteRuleTest2" className="org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest2" dbEntityName="DELETE_RULE_TEST2"/>
 	<obj-entity name="DeleteRuleTest3" className="org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest3" dbEntityName="DELETE_RULE_TEST3"/>
-	<db-relationship name="joins" source="DELETE_RULE_FLATA" target="DELETE_RULE_JOIN" toDependentPK="true" toMany="true">
+	<db-relationship name="joins" source="DELETE_RULE_FLATA" target="DELETE_RULE_JOIN" toMany="true">
 		<db-attribute-pair source="FLATA_ID" target="FLATA_ID"/>
 	</db-relationship>
-	<db-relationship name="joins" source="DELETE_RULE_FLATB" target="DELETE_RULE_JOIN" toDependentPK="true" toMany="true">
+	<db-relationship name="joins" source="DELETE_RULE_FLATB" target="DELETE_RULE_JOIN" toMany="true">
 		<db-attribute-pair source="FLATB_ID" target="FLATB_ID"/>
 	</db-relationship>
-	<db-relationship name="toFlatA" source="DELETE_RULE_JOIN" target="DELETE_RULE_FLATA">
+	<db-relationship name="toFlatA" source="DELETE_RULE_JOIN" target="DELETE_RULE_FLATA" fk="true">
 		<db-attribute-pair source="FLATA_ID" target="FLATA_ID"/>
 	</db-relationship>
-	<db-relationship name="toFlatB" source="DELETE_RULE_JOIN" target="DELETE_RULE_FLATB">
+	<db-relationship name="toFlatB" source="DELETE_RULE_JOIN" target="DELETE_RULE_FLATB" fk="true">
 		<db-attribute-pair source="FLATB_ID" target="FLATB_ID"/>
 	</db-relationship>
 	<db-relationship name="deleteRuleTest3Array" source="DELETE_RULE_TEST1" target="DELETE_RULE_TEST3" toMany="true">
 		<db-attribute-pair source="DEL_RULE_TEST1_ID" target="DELETE_RULE_TEST_3_FK"/>
 	</db-relationship>
-	<db-relationship name="test2" source="DELETE_RULE_TEST1" target="DELETE_RULE_TEST2">
+	<db-relationship name="test2" source="DELETE_RULE_TEST1" target="DELETE_RULE_TEST2" fk="true">
 		<db-attribute-pair source="TEST2_ID" target="DEL_RULE_TEST2_ID"/>
 	</db-relationship>
 	<db-relationship name="deleteRuleTest3Array" source="DELETE_RULE_TEST2" target="DELETE_RULE_TEST3" toMany="true">
@@ -54,7 +54,7 @@
 	<db-relationship name="test1Array" source="DELETE_RULE_TEST2" target="DELETE_RULE_TEST1" toMany="true">
 		<db-attribute-pair source="DEL_RULE_TEST2_ID" target="TEST2_ID"/>
 	</db-relationship>
-	<db-relationship name="toDeleteRuleTest2" source="DELETE_RULE_TEST3" target="DELETE_RULE_TEST2">
+	<db-relationship name="toDeleteRuleTest2" source="DELETE_RULE_TEST3" target="DELETE_RULE_TEST2" fk="true">
 		<db-attribute-pair source="DELETE_RULE_TEST_3_FK" target="DEL_RULE_TEST2_ID"/>
 	</db-relationship>
 	<obj-relationship name="flatB" source="DeleteRuleFlatA" target="DeleteRuleFlatB" db-relationship-path="joins.toFlatB"/>

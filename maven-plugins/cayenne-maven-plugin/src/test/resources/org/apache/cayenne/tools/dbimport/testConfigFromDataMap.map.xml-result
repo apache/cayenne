@@ -17,10 +17,10 @@
 	specific language governing permissions and limitations
 	under the License.
 -->
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
 	<db-entity name="PARENT">
 		<db-attribute name="COL2" type="CHAR" length="20"/>
 		<db-attribute name="COL3" type="DECIMAL" length="10" scale="2"/>
@@ -32,7 +32,7 @@
 		<obj-attribute name="col3" type="java.math.BigDecimal" db-attribute-path="COL3"/>
 		<obj-attribute name="col4" type="java.lang.String" db-attribute-path="COL4"/>
 	</obj-entity>
-	<dbImport xmlns="http://cayenne.apache.org/schema/11/dbimport">
+	<dbImport xmlns="http://cayenne.apache.org/schema/12/dbimport">
 		<schema>
             <name>SCHEMA_01</name>
             <excludeColumn>COL5</excludeColumn>

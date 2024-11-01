@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.reflexive"/>
 	<db-entity name="OTHER">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -26,10 +26,10 @@
 	<db-relationship name="children" source="REFLEXIVE" target="REFLEXIVE" toMany="true">
 		<db-attribute-pair source="ID" target="PARENT_ID"/>
 	</db-relationship>
-	<db-relationship name="toOther" source="REFLEXIVE" target="OTHER">
+	<db-relationship name="toOther" source="REFLEXIVE" target="OTHER" fk="true">
 		<db-attribute-pair source="OTHER_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="toParent" source="REFLEXIVE" target="REFLEXIVE">
+	<db-relationship name="toParent" source="REFLEXIVE" target="REFLEXIVE" fk="true">
 		<db-attribute-pair source="PARENT_ID" target="ID"/>
 	</db-relationship>
 	<obj-relationship name="reflexives" source="Other" target="Reflexive" db-relationship-path="reflexives"/>

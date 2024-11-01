@@ -87,7 +87,7 @@ public class ArcValuesCreationHandlerTest {
         ObjectId targetId = ObjectId.of("test2", "id2", 2);
 
         DbRelationship relationship = DbRelBuilder.of("id1", "id2")
-                .withToDepPk().withDstPk().withSrcPk().build();
+                .withDstPk().withSrcPk().build();
 
         handler.processRelationship(relationship, srcId, targetId, true);
 
@@ -105,7 +105,7 @@ public class ArcValuesCreationHandlerTest {
         ObjectId targetId = ObjectId.of("test2", "id2", 2);
 
         DbRelationship relationship = DbRelBuilder.of("id1", "id2")
-                .withDstPk().withSrcPk().build();
+                .withFk().withDstPk().withSrcPk().build();
 
         handler.processRelationship(relationship, srcId, targetId, true);
 
@@ -164,7 +164,7 @@ public class ArcValuesCreationHandlerTest {
         private String dstName;
         private boolean srcPk;
         private boolean dstPk;
-        private boolean toDepPk;
+        private boolean fK;
 
         static DbRelBuilder of(String srcName, String dstName) {
             DbRelBuilder builder = new DbRelBuilder();
@@ -183,14 +183,14 @@ public class ArcValuesCreationHandlerTest {
             return this;
         }
 
-        DbRelBuilder withToDepPk() {
-            toDepPk = true;
+        DbRelBuilder withFk() {
+            fK = true;
             return this;
         }
 
         DbRelationship build() {
             DbRelationship relationship = mock(DbRelationship.class);
-            when(relationship.isToDependentPK()).thenReturn(toDepPk);
+            when(relationship.isFK()).thenReturn(fK);
             DbJoin join = mock(DbJoin.class);
             DbAttribute src = new DbAttribute(srcName);
             src.setPrimaryKey(srcPk);

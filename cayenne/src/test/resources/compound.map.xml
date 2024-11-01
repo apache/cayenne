@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.compound"/>
 	<property name="defaultSuperclass" value="org.apache.cayenne.GenericPersistentObject"/>
 	<db-entity name="CHAR_FK_TEST">
@@ -72,13 +72,13 @@
 		<obj-attribute name="key2" type="java.lang.String" db-attribute-path="KEY2"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<db-relationship name="toCharPK" source="CHAR_FK_TEST" target="CHAR_PK_TEST">
+	<db-relationship name="toCharPK" source="CHAR_FK_TEST" target="CHAR_PK_TEST" fk="true">
 		<db-attribute-pair source="FK_COL" target="PK_COL"/>
 	</db-relationship>
 	<db-relationship name="charFKs" source="CHAR_PK_TEST" target="CHAR_FK_TEST" toMany="true">
 		<db-attribute-pair source="PK_COL" target="FK_COL"/>
 	</db-relationship>
-	<db-relationship name="toCompoundPk" source="COMPOUND_FK_TEST" target="COMPOUND_PK_TEST">
+	<db-relationship name="toCompoundPk" source="COMPOUND_FK_TEST" target="COMPOUND_PK_TEST" fk="true">
 		<db-attribute-pair source="F_KEY1" target="KEY1"/>
 		<db-attribute-pair source="F_KEY2" target="KEY2"/>
 	</db-relationship>
@@ -86,17 +86,17 @@
 		<db-attribute-pair source="KEY1" target="F_KEY1"/>
 		<db-attribute-pair source="KEY2" target="F_KEY2"/>
 	</db-relationship>
-	<db-relationship name="lines" source="compound_order" target="compound_order_line" toDependentPK="true" toMany="true">
+	<db-relationship name="lines" source="compound_order" target="compound_order_line" toMany="true">
 		<db-attribute-pair source="order_number" target="order_number"/>
 	</db-relationship>
-	<db-relationship name="info" source="compound_order_line" target="compound_order_line_info" toDependentPK="true">
+	<db-relationship name="info" source="compound_order_line" target="compound_order_line_info">
 		<db-attribute-pair source="order_number" target="order_number"/>
 		<db-attribute-pair source="order_line_number" target="order_line_number"/>
 	</db-relationship>
-	<db-relationship name="order" source="compound_order_line" target="compound_order">
+	<db-relationship name="order" source="compound_order_line" target="compound_order" fk="true">
 		<db-attribute-pair source="order_number" target="order_number"/>
 	</db-relationship>
-	<db-relationship name="line" source="compound_order_line_info" target="compound_order_line">
+	<db-relationship name="line" source="compound_order_line_info" target="compound_order_line" fk="true">
 		<db-attribute-pair source="order_number" target="order_number"/>
 		<db-attribute-pair source="order_line_number" target="order_line_number"/>
 	</db-relationship>

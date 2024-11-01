@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
 	<property name="defaultPackage" value="org.apache.cayenne.commitlog.db"/>
 	<db-entity name="AUDITABLE1">
 		<db-attribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
@@ -104,28 +104,28 @@
 	<db-relationship name="auditable4s" source="AUDITABLE3" target="AUDITABLE4" toMany="true">
 		<db-attribute-pair source="ID" target="AUDITABLE3_ID"/>
 	</db-relationship>
-	<db-relationship name="auditable3" source="AUDITABLE4" target="AUDITABLE3">
+	<db-relationship name="auditable3" source="AUDITABLE4" target="AUDITABLE3" fk="true">
 		<db-attribute-pair source="AUDITABLE3_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="parent" source="AUDITABLE_CHILD1" target="AUDITABLE1">
+	<db-relationship name="parent" source="AUDITABLE_CHILD1" target="AUDITABLE1" fk="true">
 		<db-attribute-pair source="AUDITABLE1_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="parent" source="AUDITABLE_CHILD1X" target="AUDITABLE1">
+	<db-relationship name="parent" source="AUDITABLE_CHILD1X" target="AUDITABLE1" fk="true">
 		<db-attribute-pair source="AUDITABLE1_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="parent" source="AUDITABLE_CHILD3" target="AUDITABLE2">
+	<db-relationship name="parent" source="AUDITABLE_CHILD3" target="AUDITABLE2" fk="true">
 		<db-attribute-pair source="AUDITABLE2_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="e34s" source="E3" target="E34" toDependentPK="true" toMany="true">
+	<db-relationship name="e34s" source="E3" target="E34" toMany="true">
 		<db-attribute-pair source="ID" target="E3_ID"/>
 	</db-relationship>
-	<db-relationship name="e3" source="E34" target="E3">
+	<db-relationship name="e3" source="E34" target="E3" fk="true">
 		<db-attribute-pair source="E3_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="e4" source="E34" target="E4">
+	<db-relationship name="e4" source="E34" target="E4" fk="true">
 		<db-attribute-pair source="E4_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="e34s" source="E4" target="E34" toDependentPK="true" toMany="true">
+	<db-relationship name="e34s" source="E4" target="E34" toMany="true">
 		<db-attribute-pair source="ID" target="E4_ID"/>
 	</db-relationship>
 	<obj-relationship name="children1" source="Auditable1" target="AuditableChild1" deleteRule="Deny" db-relationship-path="children1"/>
@@ -137,16 +137,4 @@
 	<obj-relationship name="parent" source="AuditableChild3" target="Auditable2" deleteRule="Nullify" db-relationship-path="parent"/>
 	<obj-relationship name="e4s" source="E3" target="E4" deleteRule="Deny" db-relationship-path="e34s.e4"/>
 	<obj-relationship name="e3s" source="E4" target="E3" deleteRule="Deny" db-relationship-path="e34s.e3"/>
-	<cgen xmlns="http://cayenne.apache.org/schema/11/cgen">
-		<destDir>../java</destDir>
-		<mode>entity</mode>
-		<template>templates/v4_1/subclass.vm</template>
-		<superTemplate>templates/v4_1/superclass.vm</superTemplate>
-		<outputPattern>*.java</outputPattern>
-		<makePairs>true</makePairs>
-		<usePkgPath>true</usePkgPath>
-		<overwrite>false</overwrite>
-		<createPropertyNames>false</createPropertyNames>
-		<createPKProperties>false</createPKProperties>
-	</cgen>
 </data-map>

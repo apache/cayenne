@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
-	 project-version="11">
-	<property name="quoteSqlIdentifiers" value="true"/>
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.cay_2666"/>
+	<property name="quoteSqlIdentifiers" value="true"/>
 	<db-entity name="Cay2666">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
 		<db-attribute name="NAME$" type="VARCHAR" length="10"/>
@@ -12,29 +12,4 @@
 	<obj-entity name="Cay2666" className="org.apache.cayenne.testdo.cay_2666.CAY2666" dbEntityName="Cay2666">
 		<obj-attribute name="name$" type="java.lang.String" db-attribute-path="NAME$"/>
 	</obj-entity>
-	<dbImport xmlns="http://cayenne.apache.org/schema/11/dbimport">
-		<tableTypes>
-			<tableType>TABLE</tableType>
-			<tableType>VIEW</tableType>
-		</tableTypes>
-		<forceDataMapCatalog>false</forceDataMapCatalog>
-		<forceDataMapSchema>false</forceDataMapSchema>
-		<namingStrategy>org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator</namingStrategy>
-		<skipPrimaryKeyLoading>false</skipPrimaryKeyLoading>
-		<skipRelationshipsLoading>false</skipRelationshipsLoading>
-		<useJava7Types>false</useJava7Types>
-		<usePrimitives>true</usePrimitives>
-	</dbImport>
-	<cgen xmlns="http://cayenne.apache.org/schema/11/cgen">
-		<destDir>../../java</destDir>
-		<mode>entity</mode>
-		<template>templates/v4_1/subclass.vm</template>
-		<superTemplate>templates/v4_1/superclass.vm</superTemplate>
-		<outputPattern>*.java</outputPattern>
-		<makePairs>true</makePairs>
-		<usePkgPath>true</usePkgPath>
-		<overwrite>false</overwrite>
-		<createPropertyNames>false</createPropertyNames>
-		<createPKProperties>false</createPKProperties>
-	</cgen>
 </data-map>
