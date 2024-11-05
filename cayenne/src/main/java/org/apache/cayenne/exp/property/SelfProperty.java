@@ -28,9 +28,11 @@ import org.apache.cayenne.query.ObjectSelect;
 
 /**
  * Property that represents root entity
- * <br>
+ * <p>
  * Usage example: <code><pre>
- * List<Object[]> result = Artist.SELF.columnQuery(Artist.SELF, Artist.PAINTING_ARRAY.count()).select(context);
+ * List&lt;Object[]&gt; result = Artist.SELF
+ *     .columnQuery(Artist.SELF, Artist.PAINTING_ARRAY.count())
+ *     .select(context);
  * </pre></code>
  *
  * @since 5.0
