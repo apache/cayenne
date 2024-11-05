@@ -323,7 +323,7 @@ public class SelectById_RunIT extends RuntimeCase {
 		assertNotNull(md1);
 		assertNotNull(md1.getCacheKey());
 
-		SelectById<Painting> q2 = SelectById.queryId(Painting.class, singletonMap(Painting.PAINTING_ID_PK_COLUMN, 4))
+		SelectById<Painting> q2 = SelectById.queryMap(Painting.class, singletonMap(Painting.PAINTING_ID_PK_COLUMN, 4))
 				.localCache();
 		QueryMetadata md2 = q2.getMetaData(resolver);
 		assertNotNull(md2);
@@ -346,7 +346,7 @@ public class SelectById_RunIT extends RuntimeCase {
 		assertNotEquals(md1.getCacheKey(), md4.getCacheKey());
 
 		SelectById<Painting> q5 = SelectById
-				.queryId(Painting.class, ObjectId.of("Painting", Painting.PAINTING_ID_PK_COLUMN, 4))
+				.queryObjectId(Painting.class, ObjectId.of("Painting", Painting.PAINTING_ID_PK_COLUMN, 4))
 				.localCache();
 		QueryMetadata md5 = q5.getMetaData(resolver);
 		assertNotNull(md5);
