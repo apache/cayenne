@@ -5,6 +5,11 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
            current release and the release you are upgrading to.
 -------------------------------------------------------------------------------
 
+UPGRADING TO 5.0.M2
+
+* Per CAY-2859 SelectById query factory methods are redesigned with a bunch of old methods deprecated,
+so you should update your calls accordingly.
+
 UPGRADING TO 5.0.M1
 
 * Per CAY-2737 All code deprecated in Cayenne 4.1 and 4.2 was deleted, please review your code before upgrading.

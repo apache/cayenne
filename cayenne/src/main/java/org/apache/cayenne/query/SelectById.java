@@ -31,6 +31,7 @@ import org.apache.cayenne.map.ObjEntity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -55,19 +56,30 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	String cacheGroup;
 	PrefetchTreeNode prefetches;
 
-	public static <T> SelectById<T> query(Class<T> entityType, Object id) {
+	/* Object query factory methods */
+
+	/**
+	 * @since 5.0
+	 */
+	public static <T> SelectById<T> queryId(Class<T> entityType, Object id) {
 		QueryRoot root = new ByEntityTypeResolver(entityType);
 		IdSpec idSpec = new SingleScalarIdSpec(id);
 		return new SelectById<>(root, idSpec);
 	}
 
-	public static <T> SelectById<T> query(Class<T> entityType, Map<String, ?> id) {
+	/**
+	 * @since 5.0
+	 */
+	public static <T> SelectById<T> queryMap(Class<T> entityType, Map<String, ?> id) {
 		QueryRoot root = new ByEntityTypeResolver(entityType);
 		IdSpec idSpec = new SingleMapIdSpec(id);
 		return new SelectById<>(root, idSpec);
 	}
 
-	public static <T> SelectById<T> query(Class<T> entityType, ObjectId id) {
+	/**
+	 * @since 5.0
+	 */
+	public static <T> SelectById<T> queryObjectId(Class<T> entityType, ObjectId id) {
 		checkObjectId(id);
 		QueryRoot root = new ByEntityNameResolver(id.getEntityName());
 		IdSpec idSpec = new SingleMapIdSpec(id.getIdSnapshot());
@@ -75,8 +87,110 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
-	 * @since 4.2
+	 * @since 5.0
 	 */
+	public static <T> SelectById<T> queryIds(Class<T> entityType, Object... ids) {
+		QueryRoot root = new ByEntityTypeResolver(entityType);
+		IdSpec idSpec = new MultiScalarIdSpec(Arrays.asList(ids));
+		return new SelectById<>(root, idSpec);
+	}
+
+	/**
+	 * @since 5.0
+	 */
+	public static <T> SelectById<T> queryIdsCollection(Class<T> entityType, Collection<Object> ids) {
+		QueryRoot root = new ByEntityTypeResolver(entityType);
+		IdSpec idSpec = new MultiScalarIdSpec(ids);
+		return new SelectById<>(root, idSpec);
+	}
+
+	/**
+	 * @since 5.0
+	 */
+	@SafeVarargs
+	public static <T> SelectById<T> queryMaps(Class<T> entityType, Map<String, ?>... ids) {
+		QueryRoot root = new ByEntityTypeResolver(entityType);
+		IdSpec idSpec = MultiMapIdSpec.ofMap(ids);
+		return new SelectById<>(root, idSpec);
+	}
+
+	/**
+	 * @since 5.0
+	 */
+	public static <T> SelectById<T> queryMapsCollection(Class<T> entityType, Collection<Map<String, ?>> ids) {
+		QueryRoot root = new ByEntityTypeResolver(entityType);
+		IdSpec idSpec = MultiMapIdSpec.ofMapCollection(ids);
+		return new SelectById<>(root, idSpec);
+	}
+
+	/**
+	 * @since 5.0
+	 */
+	public static <T> SelectById<T> queryObjectIds(Class<T> entityType, ObjectId... ids) {
+		if(ids == null || ids.length == 0) {
+			throw new CayenneRuntimeException("Null or empty ids");
+		}
+		String entityName = ids[0].getEntityName();
+		for(ObjectId id : ids) {
+			checkObjectId(id, entityName);
+		}
+
+		QueryRoot root = new ByEntityNameResolver(entityName);
+		IdSpec idSpec = MultiMapIdSpec.ofObjectId(ids);
+		return new SelectById<>(root, idSpec);
+	}
+
+	/**
+	 * @since 5.0
+	 */
+	public static <T> SelectById<T> queryObjectIdsCollection(Class<T> entityType, Collection<ObjectId> ids) {
+		if(ids == null || ids.isEmpty()) {
+			throw new CayenneRuntimeException("Null or empty ids");
+		}
+		String entityName = ids.iterator().next().getEntityName();
+		for(ObjectId id : ids) {
+			checkObjectId(id, entityName);
+		}
+
+		QueryRoot root = new ByEntityNameResolver(entityName);
+		IdSpec idSpec = MultiMapIdSpec.ofObjectIdCollection(ids);
+		return new SelectById<>(root, idSpec);
+	}
+
+	/* Deprecated since 5.0 factory methods */
+
+	/**
+	 * @since 4.2
+	 * @deprecated since 5.0, use {@link #queryId(Class, Object)}
+	 */
+	@Deprecated(since = "5.0", forRemoval = true)
+	public static <T> SelectById<T> query(Class<T> entityType, Object id) {
+		return queryId(entityType, id);
+	}
+
+	/**
+	 * @since 4.2
+	 * @deprecated since 5.0, use {@link #queryMap(Class, Map)}
+	 */
+	@Deprecated(since = "5.0", forRemoval = true)
+	public static <T> SelectById<T> query(Class<T> entityType, Map<String, ?> id) {
+		return queryMap(entityType, id);
+	}
+
+	/**
+	 * @since 4.2
+	 * @deprecated since 5.0, use {@link #queryObjectId(Class, ObjectId)}
+	 */
+	@Deprecated(since = "5.0", forRemoval = true)
+	public static <T> SelectById<T> query(Class<T> entityType, ObjectId id) {
+		return queryObjectId(entityType, id);
+	}
+
+	/**
+	 * @since 4.2
+	 * @deprecated since 5.0, use {@link #queryIds(Class, Object...)}
+	 */
+	@Deprecated(since = "5.0", forRemoval = true)
 	public static <T> SelectById<T> query(Class<T> entityType, Object firstId, Object... otherIds) {
 		QueryRoot root = new ByEntityTypeResolver(entityType);
 		IdSpec idSpec = new MultiScalarIdSpec(firstId, otherIds);
@@ -85,7 +199,9 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 
 	/**
 	 * @since 4.2
+	 * @deprecated since 5.0, use {@link #queryIdsCollection(Class, Collection)}
 	 */
+	@Deprecated(since = "5.0", forRemoval = true)
 	public static <T> SelectById<T> query(Class<T> entityType, Collection<Object> ids) {
 		QueryRoot root = new ByEntityTypeResolver(entityType);
 		IdSpec idSpec = new MultiScalarIdSpec(ids);
@@ -94,17 +210,21 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 
 	/**
 	 * @since 4.2
+	 * @deprecated since 5.0, use {@link #queryMaps(Class, Map[])}
 	 */
+	@Deprecated(since = "5.0", forRemoval = true)
 	@SafeVarargs
 	public static <T> SelectById<T> query(Class<T> entityType, Map<String, ?> firstId, Map<String, ?>... otherIds) {
 		QueryRoot root = new ByEntityTypeResolver(entityType);
-		IdSpec idSpec = new MultiMapIdSpec(firstId, otherIds);
+		IdSpec idSpec = MultiMapIdSpec.ofMap(firstId, otherIds);
 		return new SelectById<>(root, idSpec);
 	}
 
 	/**
 	 * @since 4.2
+	 * @deprecated since 5.0, use {@link #queryObjectIds(Class, ObjectId...)}
 	 */
+	@Deprecated(since = "5.0", forRemoval = true)
 	public static <T> SelectById<T> query(Class<T> entityType, ObjectId firstId, ObjectId... otherIds) {
 		checkObjectId(firstId);
 		for(ObjectId id : otherIds) {
@@ -112,23 +232,35 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 		}
 
 		QueryRoot root = new ByEntityNameResolver(firstId.getEntityName());
-		IdSpec idSpec = new MultiMapIdSpec(firstId, otherIds);
+		IdSpec idSpec = MultiMapIdSpec.ofObjectId(firstId, otherIds);
 		return new SelectById<>(root, idSpec);
 	}
 
-	public static SelectById<DataRow> dataRowQuery(Class<?> entityType, Object id) {
+
+	/* DataRow factory methods */
+
+	/**
+	 * @since 5.0
+	 */
+	public static SelectById<DataRow> dataRowQueryId(Class<?> entityType, Object id) {
 		QueryRoot root = new ByEntityTypeResolver(entityType);
 		IdSpec idSpec = new SingleScalarIdSpec(id);
 		return new SelectById<>(root, idSpec, true);
 	}
 
-	public static SelectById<DataRow> dataRowQuery(Class<?> entityType, Map<String, ?> id) {
+	/**
+	 * @since 5.0
+	 */
+	public static SelectById<DataRow> dataRowQueryMap(Class<?> entityType, Map<String, ?> id) {
 		QueryRoot root = new ByEntityTypeResolver(entityType);
 		IdSpec idSpec = new SingleMapIdSpec(id);
 		return new SelectById<>(root, idSpec, true);
 	}
 
-	public static SelectById<DataRow> dataRowQuery(ObjectId id) {
+	/**
+	 * @since 5.0
+	 */
+	public static SelectById<DataRow> dataRowQueryObjectId(ObjectId id) {
 		checkObjectId(id);
 		QueryRoot root = new ByEntityNameResolver(id.getEntityName());
 		IdSpec idSpec = new SingleMapIdSpec(id.getIdSnapshot());
@@ -136,8 +268,107 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
-	 * @since 4.2
+	 * @since 5.0
 	 */
+	public static SelectById<DataRow> dataRowQueryIds(Class<?> entityType, Object... ids) {
+		QueryRoot root = new ByEntityTypeResolver(entityType);
+		IdSpec idSpec = new MultiScalarIdSpec(Arrays.asList(ids));
+		return new SelectById<>(root, idSpec, true);
+	}
+
+	/**
+	 * @since 5.0
+	 */
+	public static SelectById<DataRow> dataRowQueryIdsCollection(Class<?> entityType, Collection<Object> ids) {
+		QueryRoot root = new ByEntityTypeResolver(entityType);
+		IdSpec idSpec = new MultiScalarIdSpec(ids);
+		return new SelectById<>(root, idSpec, true);
+	}
+
+	/**
+	 * @since 5.0
+	 */
+	@SafeVarargs
+	public static SelectById<DataRow> dataRowQueryMaps(Class<?> entityType, Map<String, ?>... ids) {
+		QueryRoot root = new ByEntityTypeResolver(entityType);
+		IdSpec idSpec = MultiMapIdSpec.ofMap(ids);
+		return new SelectById<>(root, idSpec, true);
+	}
+
+	/**
+	 * @since 5.0
+	 */
+	public static SelectById<DataRow> dataRowQueryMapsCollection(Class<?> entityType, Collection<Map<String, ?>> ids) {
+		QueryRoot root = new ByEntityTypeResolver(entityType);
+		IdSpec idSpec = MultiMapIdSpec.ofMapCollection(ids);
+		return new SelectById<>(root, idSpec, true);
+	}
+
+	/**
+	 * @since 5.0
+	 */
+	public static SelectById<DataRow> dataRowQueryObjectIds(ObjectId... ids) {
+		if(ids == null || ids.length == 0) {
+			throw new CayenneRuntimeException("Null or empty ids");
+		}
+		String entityName = ids[0].getEntityName();
+		for(ObjectId id : ids) {
+			checkObjectId(id, entityName);
+		}
+
+		QueryRoot root = new ByEntityNameResolver(entityName);
+		IdSpec idSpec = MultiMapIdSpec.ofObjectId(ids);
+		return new SelectById<>(root, idSpec, true);
+	}
+
+	/**
+	 * @since 5.0
+	 */
+	public static SelectById<DataRow> dataRowQueryObjectIdsCollection(Collection<ObjectId> ids) {
+		if(ids == null || ids.isEmpty()) {
+			throw new CayenneRuntimeException("Null or empty ids");
+		}
+		String entityName = ids.iterator().next().getEntityName();
+		for(ObjectId id : ids) {
+			checkObjectId(id, entityName);
+		}
+
+		QueryRoot root = new ByEntityNameResolver(entityName);
+		IdSpec idSpec = MultiMapIdSpec.ofObjectIdCollection(ids);
+		return new SelectById<>(root, idSpec, true);
+	}
+
+	/* Deprecated since 5.0 DataRow factory methods */
+
+	/**
+	 * @deprecated since 5.0, use {@link #dataRowQueryId(Class, Object)}
+	 */
+	@Deprecated(since = "5.0", forRemoval = true)
+	public static SelectById<DataRow> dataRowQuery(Class<?> entityType, Object id) {
+		return dataRowQueryId(entityType, id);
+	}
+
+	/**
+	 * @deprecated since 5.0, use {@link #dataRowQueryMap(Class, Map)}
+	 */
+	@Deprecated(since = "5.0", forRemoval = true)
+	public static SelectById<DataRow> dataRowQuery(Class<?> entityType, Map<String, ?> id) {
+		return dataRowQueryMap(entityType, id);
+	}
+
+	/**
+	 * @deprecated since 5.0, use {@link #dataRowQueryObjectId(ObjectId)}
+	 */
+	@Deprecated(since = "5.0", forRemoval = true)
+	public static SelectById<DataRow> dataRowQuery(ObjectId id) {
+		return dataRowQueryObjectId(id);
+	}
+
+	/**
+	 * @since 4.2
+	 * @deprecated since 5.0, use {@link #dataRowQueryIds(Class, Object...)}
+	 */
+	@Deprecated(since = "5.0", forRemoval = true)
 	public static SelectById<DataRow> dataRowQuery(Class<?> entityType, Object firstId, Object... otherIds) {
 		QueryRoot root = new ByEntityTypeResolver(entityType);
 		IdSpec idSpec = new MultiScalarIdSpec(firstId, otherIds);
@@ -146,17 +377,21 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 
 	/**
 	 * @since 4.2
+	 * @deprecated since 5.0, use {@link #dataRowQueryMaps(Class, Map[])}
 	 */
+	@Deprecated(since = "5.0", forRemoval = true)
 	@SafeVarargs
 	public static SelectById<DataRow> dataRowQuery(Class<?> entityType, Map<String, ?> firstId, Map<String, ?>... otherIds) {
 		QueryRoot root = new ByEntityTypeResolver(entityType);
-		IdSpec idSpec = new MultiMapIdSpec(firstId, otherIds);
+		IdSpec idSpec = MultiMapIdSpec.ofMap(firstId, otherIds);
 		return new SelectById<>(root, idSpec, true);
 	}
 
 	/**
 	 * @since 4.2
+	 * @deprecated since 5.0, use {@link #dataRowQueryObjectIds(ObjectId...)}
 	 */
+	@Deprecated(since = "5.0", forRemoval = true)
 	public static SelectById<DataRow> dataRowQuery(ObjectId firstId, ObjectId... otherIds) {
 		checkObjectId(firstId);
 		for(ObjectId id : otherIds) {
@@ -164,7 +399,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 		}
 
 		QueryRoot root = new ByEntityNameResolver(firstId.getEntityName());
-		IdSpec idSpec = new MultiMapIdSpec(firstId, otherIds);
+		IdSpec idSpec = MultiMapIdSpec.ofObjectId(firstId, otherIds);
 		return new SelectById<>(root, idSpec, true);
 	}
 
@@ -378,6 +613,23 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 		return result;
 	}
 
+	@SafeVarargs
+	private static <E, R> Collection<R> foldArguments(Function<E, R> mapper, E... other) {
+		List<R> result = new ArrayList<>(other.length);
+		for(E next : other) {
+			result.add(mapper.apply(next));
+		}
+		return result;
+	}
+
+	private static <E, R> Collection<R> foldArguments(Function<E, R> mapper, Collection<E> other) {
+		List<R> result = new ArrayList<>(other.size());
+		for(E next : other) {
+			result.add(mapper.apply(next));
+		}
+		return result;
+	}
+
 	protected interface QueryRoot extends Serializable {
 		ObjEntity resolve(EntityResolver resolver);
 	}
@@ -437,12 +689,33 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 		private final Collection<Map<String, ?>> ids;
 
 		@SafeVarargs
-		protected MultiMapIdSpec(Map<String, ?> firstId, Map<String, ?>... otherIds) {
-			this.ids = foldArguments(Function.identity(), firstId, otherIds);
+        static MultiMapIdSpec ofMap(Map<String, ?> firstId, Map<String, ?>... otherIds) {
+			return new MultiMapIdSpec(foldArguments(Function.identity(), firstId, otherIds));
 		}
 
-		protected MultiMapIdSpec(ObjectId firstId, ObjectId... otherIds) {
-			this.ids = foldArguments(ObjectId::getIdSnapshot, firstId, otherIds);
+		@SafeVarargs
+		static MultiMapIdSpec ofMap(Map<String, ?>... ids) {
+			return new MultiMapIdSpec(foldArguments(Function.identity(), ids));
+		}
+
+		static MultiMapIdSpec ofObjectId(ObjectId firstId, ObjectId... otherIds) {
+			return new MultiMapIdSpec(foldArguments(ObjectId::getIdSnapshot, firstId, otherIds));
+		}
+
+		static MultiMapIdSpec ofObjectId(ObjectId... ids) {
+			return new MultiMapIdSpec(foldArguments(ObjectId::getIdSnapshot, ids));
+		}
+
+		static MultiMapIdSpec ofObjectIdCollection(Collection<ObjectId> ids) {
+			return new MultiMapIdSpec(foldArguments(ObjectId::getIdSnapshot, ids));
+		}
+
+		static MultiMapIdSpec ofMapCollection(Collection<Map<String, ?>> ids) {
+			return new MultiMapIdSpec(ids);
+		}
+
+		protected MultiMapIdSpec(Collection<Map<String, ?>> ids) {
+			this.ids = ids;
 		}
 
 		@Override
