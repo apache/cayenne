@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.toone"/>
 	<db-entity name="TOONE_DEP">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -12,10 +12,10 @@
 	</db-entity>
 	<obj-entity name="TooneDep" className="org.apache.cayenne.testdo.toone.TooneDep" dbEntityName="TOONE_DEP"/>
 	<obj-entity name="TooneMaster" className="org.apache.cayenne.testdo.toone.TooneMaster" dbEntityName="TOONE_MASTER"/>
-	<db-relationship name="toMaster" source="TOONE_DEP" target="TOONE_MASTER">
+	<db-relationship name="toMaster" source="TOONE_DEP" target="TOONE_MASTER" fk="true">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="toDependent" source="TOONE_MASTER" target="TOONE_DEP" toDependentPK="true">
+	<db-relationship name="toDependent" source="TOONE_MASTER" target="TOONE_DEP">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
 	<obj-relationship name="toMaster" source="TooneDep" target="TooneMaster" deleteRule="Nullify" db-relationship-path="toMaster"/>

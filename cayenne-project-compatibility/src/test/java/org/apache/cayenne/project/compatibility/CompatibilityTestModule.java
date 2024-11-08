@@ -35,6 +35,7 @@ import org.apache.cayenne.project.upgrade.UpgradeService;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V10;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V11;
+import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V12;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V7;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V8;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V9;
@@ -61,7 +62,8 @@ public class CompatibilityTestModule implements Module {
                 .add(UpgradeHandler_V8.class)
                 .add(UpgradeHandler_V9.class)
                 .add(UpgradeHandler_V10.class)
-                .add(UpgradeHandler_V11.class);
+                .add(UpgradeHandler_V11.class)
+                .add(UpgradeHandler_V12.class);
 
         binder.bind(ProjectSaver.class).toInstance(mock(ProjectSaver.class));
         binder.bind(DataChannelDescriptorLoader.class).toInstance(mock(DataChannelDescriptorLoader.class));

@@ -76,7 +76,7 @@ public class RelationshipsLoaderIT extends BaseLoaderIT {
 
         assertNotNull("No relationship to PAINTING_INFO", oneToOne);
         assertFalse("Relationship to PAINTING_INFO must be to-one", oneToOne.isToMany());
-        assertTrue("Relationship to PAINTING_INFO must be to-one", oneToOne.isToDependentPK());
+        assertTrue("Relationship to PAINTING_INFO must be to-one", !oneToOne.isFK());
     }
 
 //    private void assertUniqueConstraintsInRelationships(DataMap map) {

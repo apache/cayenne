@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.quotemap"/>
 	<property name="quoteSqlIdentifiers" value="true"/>
 	<db-entity name="QUOTED_ADDRESS">
@@ -33,7 +33,7 @@
 	<db-relationship name="personRel" source="QUOTED_ADDRESS" target="quote Person">
 		<db-attribute-pair source="ADDRESS ID" target="address_id"/>
 	</db-relationship>
-	<db-relationship name="addressRel" source="quote Person" target="QUOTED_ADDRESS">
+	<db-relationship name="addressRel" source="quote Person" target="QUOTED_ADDRESS" fk="true">
 		<db-attribute-pair source="address_id" target="ADDRESS ID"/>
 	</db-relationship>
 	<obj-relationship name="person_Rel" source="QuoteAdress" target="Quote_Person" deleteRule="Nullify" db-relationship-path="personRel"/>

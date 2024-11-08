@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap http://cayenne.apache.org/schema/11/modelMap.xsd"
+          project-version="12">
+    <property name="defaultPackage" value="tmp"/>
+    <db-entity name="Artist">
+        <db-attribute name="untitledAttr" type="CHAR" isPrimaryKey="true" isMandatory="true" length="10"/>
+        <db-attribute name="untitledAttr1" type="DATE"/>
+    </db-entity>
+    <obj-entity name="Artist" dbEntityName="Artist" className="org.apache.cayenne.CayenneDataObject">
+        <info:property xmlns:info="http://cayenne.apache.org/schema/11/info" name="comment" value="test"/>
+    </obj-entity>
+    <cgen xmlns="http://cayenne.apache.org/schema/11/cgen">
+        <destDir>../../../../target/cgenClasses</destDir>
+        <mode>entity</mode>
+        <template>org/apache/cayenne/project/upgrade/handlers/velocityTemplate.vm</template>
+        <superTemplate>/org/apache/cayenne/project/upgrade/handlers</superTemplate>
+        <embeddableTemplate>org/apache/cayenne/project/upgrade/handlers/velocityTemplate.vm</embeddableTemplate>
+        <embeddableSuperTemplate>../../testWrongPath</embeddableSuperTemplate>
+        <dataMapTemplate>org/apache/cayenne/project/upgrade/handlers/velocityTemplate.vm</dataMapTemplate>
+        <dataMapSuperTemplate>templates/v4_1/datamap-superclass.vm</dataMapSuperTemplate>
+    </cgen>
+    <dbImport xmlns="http://cayenne.apache.org/schema/11/dbimport">
+        <defaultPackage>org.example</defaultPackage>
+    </dbImport>
+</data-map>

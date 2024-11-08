@@ -87,11 +87,11 @@ public class DataMapBuilder extends DefaultBuilder<DataMap> {
         return this;
     }
 
-    public DataMapBuilder join(String from, String to) {
-        return join(null, from, to);
+    public DataMapBuilder join(String from, String to, boolean isFK) {
+        return join(null, from, to,isFK);
     }
 
-    public DataMapBuilder join(String name, String from, String to) {
+    public DataMapBuilder join(String name, String from, String to, boolean isFK) {
         String[] fromSplit = from.split("\\.");
         DbEntity fromEntity = obj.getDbEntity(fromSplit[0]);
         if (fromEntity == null) {
@@ -103,7 +103,7 @@ public class DataMapBuilder extends DefaultBuilder<DataMap> {
         fromEntity.addRelationship(new DbRelationshipBuilder(name)
                 .from(fromEntity, fromSplit[1])
                 .to(toSplit[0], toSplit[1])
-
+                .fK(isFK)
                 .build());
 
         return this;

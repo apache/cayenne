@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap http://cayenne.apache.org/schema/11/modelMap.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap http://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.testmap"/>
 	<property name="defaultCatalog" value="TEST_CATALOG"/>
 	<property name="defaultSuperclass" value="org.apache.cayenne.GenericPersistentObject"/>
@@ -177,7 +177,7 @@
 	<db-relationship name="toParentGroup" source="ARTGROUP" target="ARTGROUP">
 		<db-attribute-pair source="PARENT_GROUP_ID" target="GROUP_ID"/>
 	</db-relationship>
-	<db-relationship name="artistExhibitArray" source="ARTIST" target="ARTIST_EXHIBIT" toDependentPK="true" toMany="true">
+	<db-relationship name="artistExhibitArray" source="ARTIST" target="ARTIST_EXHIBIT" toMany="true">
 		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
 	</db-relationship>
 	<db-relationship name="artistGroupArray" source="ARTIST" target="ARTIST_GROUP" toMany="true">
@@ -186,10 +186,10 @@
 	<db-relationship name="paintingArray" source="ARTIST" target="PAINTING" toMany="true">
 		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
 	</db-relationship>
-	<db-relationship name="toArtist" source="ARTIST_EXHIBIT" target="ARTIST">
+	<db-relationship name="toArtist" source="ARTIST_EXHIBIT" target="ARTIST" fk="true">
 		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
 	</db-relationship>
-	<db-relationship name="toExhibit" source="ARTIST_EXHIBIT" target="EXHIBIT">
+	<db-relationship name="toExhibit" source="ARTIST_EXHIBIT" target="EXHIBIT" fk="true">
 		<db-attribute-pair source="EXHIBIT_ID" target="EXHIBIT_ID"/>
 	</db-relationship>
 	<db-relationship name="toArtist" source="ARTIST_GROUP" target="ARTIST">
@@ -198,7 +198,7 @@
 	<db-relationship name="toGroup" source="ARTIST_GROUP" target="ARTGROUP">
 		<db-attribute-pair source="GROUP_ID" target="GROUP_ID"/>
 	</db-relationship>
-	<db-relationship name="artistExhibitArray" source="EXHIBIT" target="ARTIST_EXHIBIT" toDependentPK="true" toMany="true">
+	<db-relationship name="artistExhibitArray" source="EXHIBIT" target="ARTIST_EXHIBIT" toMany="true">
 		<db-attribute-pair source="EXHIBIT_ID" target="EXHIBIT_ID"/>
 	</db-relationship>
 	<db-relationship name="toGallery" source="EXHIBIT" target="GALLERY">
@@ -216,17 +216,17 @@
 	<db-relationship name="toGallery" source="PAINTING" target="GALLERY">
 		<db-attribute-pair source="GALLERY_ID" target="GALLERY_ID"/>
 	</db-relationship>
-	<db-relationship name="toPaintingInfo" source="PAINTING" target="PAINTING_INFO" toDependentPK="true">
+	<db-relationship name="toPaintingInfo" source="PAINTING" target="PAINTING_INFO">
 		<db-attribute-pair source="PAINTING_ID" target="PAINTING_ID"/>
 	</db-relationship>
 	<db-relationship name="toArtist" source="PAINTING1" target="ARTIST">
 		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
 	</db-relationship>
-	<db-relationship name="painting" source="PAINTING_INFO" target="PAINTING">
+	<db-relationship name="painting" source="PAINTING_INFO" target="PAINTING" fk="true">
 		<db-attribute-pair source="PAINTING_ID" target="PAINTING_ID"/>
 	</db-relationship>
 	<obj-relationship name="artistArray" source="ArtGroup" target="Artist" collection-type="java.util.Map" lock="true" deleteRule="Cascade" db-relationship-path="artistGroupArray.toArtist">
-		<info:property xmlns:info="http://cayenne.apache.org/schema/11/info" name="comment" value="artistGroupArray.toArtist"/>
+		<info:property xmlns:info="http://cayenne.apache.org/schema/12/info" name="comment" value="artistGroupArray.toArtist"/>
 	</obj-relationship>
 	<obj-relationship name="childGroupsArray" source="ArtGroup" target="ArtGroup" deleteRule="Nullify" db-relationship-path="toChildGroups"/>
 	<obj-relationship name="toParentGroup" source="ArtGroup" target="ArtGroup" deleteRule="Nullify" db-relationship-path="toParentGroup"/>

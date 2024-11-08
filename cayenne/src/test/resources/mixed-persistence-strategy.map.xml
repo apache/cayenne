@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.mixed_persistence_strategy"/>
 	<property name="defaultSuperclass" value="org.apache.cayenne.GenericPersistentObject"/>
 	<db-entity name="MIXED_PERSISTENCE_STRATEGY">
@@ -25,7 +25,7 @@
 	<db-relationship name="details" source="MIXED_PERSISTENCE_STRATEGY" target="MIXED_PERSISTENCE_STRATEGY2" toMany="true">
 		<db-attribute-pair source="ID" target="MASTER_ID"/>
 	</db-relationship>
-	<db-relationship name="master" source="MIXED_PERSISTENCE_STRATEGY2" target="MIXED_PERSISTENCE_STRATEGY">
+	<db-relationship name="master" source="MIXED_PERSISTENCE_STRATEGY2" target="MIXED_PERSISTENCE_STRATEGY" fk="true">
 		<db-attribute-pair source="MASTER_ID" target="ID"/>
 	</db-relationship>
 	<obj-relationship name="details" source="MixedPersistenceStrategy" target="MixedPersistenceStrategy2" db-relationship-path="details"/>

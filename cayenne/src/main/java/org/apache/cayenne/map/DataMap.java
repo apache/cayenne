@@ -96,8 +96,8 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	 * The namespace in which the data map XML file will be created. This is
 	 * also the URI to locate a copy of the schema document.
 	 */
-	public static final String SCHEMA_XSD = "http://cayenne.apache.org/schema/11/modelMap";
-    public static final String SCHEMA_XSD_LOCATION = "https://cayenne.apache.org/schema/11/modelMap.xsd";
+	public static final String SCHEMA_XSD = "http://cayenne.apache.org/schema/12/modelMap";
+    public static final String SCHEMA_XSD_LOCATION = "https://cayenne.apache.org/schema/12/modelMap.xsd";
 
 	protected String name;
 	protected String location;

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.relationships_to_one_fk"/>
 	<db-entity name="TO_ONE_FK1">
 		<db-attribute name="TO_ONE_FK1_FK" type="INTEGER" isMandatory="true"/>
@@ -13,7 +13,7 @@
 	</db-entity>
 	<obj-entity name="ToOneFK1" className="org.apache.cayenne.testdo.relationships_to_one_fk.ToOneFK1" dbEntityName="TO_ONE_FK1"/>
 	<obj-entity name="ToOneFK2" className="org.apache.cayenne.testdo.relationships_to_one_fk.ToOneFK2" dbEntityName="TO_ONE_FK2"/>
-	<db-relationship name="toPK" source="TO_ONE_FK1" target="TO_ONE_FK2">
+	<db-relationship name="toPK" source="TO_ONE_FK1" target="TO_ONE_FK2" fk="true">
 		<db-attribute-pair source="TO_ONE_FK1_FK" target="TO_ONE_FK2_PK"/>
 	</db-relationship>
 	<db-relationship name="toOneToFK" source="TO_ONE_FK2" target="TO_ONE_FK1">

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.generic"/>
 	<db-entity name="GENERIC1">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -22,7 +22,7 @@
 	<db-relationship name="generic2s" source="GENERIC1" target="GENERIC2" toMany="true">
 		<db-attribute-pair source="ID" target="GENERIC1_ID"/>
 	</db-relationship>
-	<db-relationship name="toGeneric1" source="GENERIC2" target="GENERIC1">
+	<db-relationship name="toGeneric1" source="GENERIC2" target="GENERIC1" fk="true">
 		<db-attribute-pair source="GENERIC1_ID" target="ID"/>
 	</db-relationship>
 	<obj-relationship name="generic2s" source="Generic1" target="Generic2" deleteRule="Cascade" db-relationship-path="generic2s"/>
