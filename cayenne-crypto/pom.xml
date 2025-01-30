@@ -80,25 +80,6 @@
                     </execution>
                 </executions>
             </plugin>
-			<plugin>
-				<groupId>org.apache.cayenne.plugins</groupId>
-				<artifactId>cayenne-maven-plugin</artifactId>
-				<version>${project.version}</version>
-				<configuration>
-					<map>${project.basedir}/src/test/resources/datamap.map.xml</map>
-					<destDir>${project.basedir}/src/test/java</destDir>
-					<superPkg>org.apache.cayenne.crypto.db.auto</superPkg>
-					<force>true</force>
-				</configuration>
-				<executions>
-					<execution>
-						<id>default-cli</id>
-						<goals>
-							<goal>cgen</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
         </plugins>
 	</build>
 
