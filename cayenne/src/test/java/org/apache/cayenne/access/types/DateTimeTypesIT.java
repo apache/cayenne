@@ -47,7 +47,7 @@ import java.time.temporal.TemporalField;
 import static org.junit.Assert.*;
 
 @UseCayenneRuntime(CayenneProjects.DATE_TIME_PROJECT)
-public class DateTimeIT extends RuntimeCase {
+public class DateTimeTypesIT extends RuntimeCase {
 
 	@Inject
 	private DataContext context;

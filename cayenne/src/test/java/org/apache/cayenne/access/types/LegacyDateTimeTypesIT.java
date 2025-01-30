@@ -17,13 +17,10 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access;
-
-import java.sql.Time;
-import java.util.Calendar;
-import java.util.Date;
+package org.apache.cayenne.access.types;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.MappedSelect;
 import org.apache.cayenne.query.ObjectSelect;
@@ -34,15 +31,17 @@ import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import java.sql.Time;
+import java.util.Calendar;
+import java.util.Date;
+
+import static org.junit.Assert.*;
 
 /**
  * Tests Date handling in Cayenne.
  */
 @UseCayenneRuntime(CayenneProjects.LEGACY_DATE_TIME_PROJECT)
-public class DateTimeTypesIT extends RuntimeCase {
+public class LegacyDateTimeTypesIT extends RuntimeCase {
 
     @Inject
     private DataContext context;
