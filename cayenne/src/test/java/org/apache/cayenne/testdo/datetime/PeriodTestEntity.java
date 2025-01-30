@@ -17,11 +17,11 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.testdo.java8;
+package org.apache.cayenne.testdo.datetime;
 
-import org.apache.cayenne.testdo.java8.auto._DurationTestEntity;
+import org.apache.cayenne.testdo.datetime.auto._PeriodTestEntity;
 
-public class DurationTestEntity extends _DurationTestEntity {
+public class PeriodTestEntity extends _PeriodTestEntity {
 
     private static final long serialVersionUID = 1L; 
 

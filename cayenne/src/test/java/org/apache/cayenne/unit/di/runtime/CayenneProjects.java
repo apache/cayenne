@@ -40,6 +40,7 @@ public class CayenneProjects {
     public static final String INHERITANCE_SINGLE_TABLE1_PROJECT = "cayenne-inheritance-single-table1.xml";
     public static final String INHERITANCE_VERTICAL_PROJECT = "cayenne-inheritance-vertical.xml";
     public static final String JSON_PROJECT = "cayenne-json.xml";
+    public static final String LEGACY_DATE_TIME_PROJECT = "cayenne-legacy-date-time.xml";
     public static final String LIFECYCLE_CALLBACKS_ORDER_PROJECT = "cayenne-lifecycle-callbacks-order.xml";
     public static final String LIFECYCLES_PROJECT = "cayenne-lifecycles.xml";
     public static final String LOB_PROJECT = "cayenne-lob.xml";
@@ -81,7 +82,6 @@ public class CayenneProjects {
     public static final String CUSTOM_NAME_PROJECT = "custom-name-file.xml";
     public static final String WEIGHTED_SORT_PROJECT = "cayenne-weighted-sort.xml";
     public static final String HYBRID_DATA_OBJECT_PROJECT = "cayenne-hybrid-data-object.xml";
-    public static final String JAVA8 = "cayenne-java8.xml";
     public static final String INHERITANCE_WITH_ENUM_PROJECT = "cayenne-inheritance-with-enum.xml";
     public static final String LAZY_ATTRIBUTES_PROJECT = "cayenne-lazy-attributes.xml";
     public static final String CAY_2666 = "cay2666/cayenne-cay-2666.xml";

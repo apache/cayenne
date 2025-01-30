@@ -324,7 +324,7 @@
 	<obj-entity name="BooleanTestEntity" className="org.apache.cayenne.testdo.numeric_types.BooleanTestEntity" dbEntityName="BOOLEAN_TEST">
 		<obj-attribute name="booleanColumn" type="java.lang.Boolean" db-attribute-path="BOOLEAN_COLUMN"/>
 	</obj-entity>
-	<obj-entity name="CalendarEntity" className="org.apache.cayenne.testdo.date_time.CalendarEntity" dbEntityName="CALENDAR_TEST">
+	<obj-entity name="CalendarEntity" className="org.apache.cayenne.testdo.legacy_datetime.CalendarEntity" dbEntityName="CALENDAR_TEST">
 		<obj-attribute name="calendarField" type="java.util.Calendar" db-attribute-path="CALENDAR_FIELD"/>
 	</obj-entity>
 	<obj-entity name="CharFkTestEntity" className="org.apache.cayenne.testdo.compound.CharFkTestEntity" dbEntityName="CHAR_FK_TEST">
@@ -359,7 +359,7 @@
 		<obj-attribute name="key2" type="java.lang.String" db-attribute-path="KEY2"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="DateTestEntity" className="org.apache.cayenne.testdo.date_time.DateTestEntity" dbEntityName="DATE_TEST">
+	<obj-entity name="DateTestEntity" className="org.apache.cayenne.testdo.legacy_datetime.DateTestEntity" dbEntityName="DATE_TEST">
 		<obj-attribute name="dateColumn" type="java.util.Date" db-attribute-path="DATE_COLUMN"/>
 		<obj-attribute name="timeColumn" type="java.util.Date" db-attribute-path="TIME_COLUMN"/>
 		<obj-attribute name="timestampColumn" type="java.util.Date" db-attribute-path="TIMESTAMP_COLUMN"/>

@@ -3,5 +3,5 @@
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/domain https://cayenne.apache.org/schema/11/domain.xsd"
 	 project-version="11">
-	<map name="java8"/>
+	<map name="legacy-date-time"/>
 </domain>

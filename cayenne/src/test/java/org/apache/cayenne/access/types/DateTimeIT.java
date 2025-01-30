@@ -19,6 +19,22 @@
 
 package org.apache.cayenne.access.types;
 
+import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.testdo.datetime.DurationTestEntity;
+import org.apache.cayenne.testdo.datetime.LocalDateTestEntity;
+import org.apache.cayenne.testdo.datetime.LocalDateTimeTestEntity;
+import org.apache.cayenne.testdo.datetime.LocalTimeTestEntity;
+import org.apache.cayenne.testdo.datetime.PeriodTestEntity;
+import org.apache.cayenne.unit.UnitDbAdapter;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -28,28 +44,10 @@ import java.time.Period;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalField;
 
-import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
-import org.apache.cayenne.testdo.java8.DurationTestEntity;
-import org.apache.cayenne.testdo.java8.LocalDateTestEntity;
-import org.apache.cayenne.testdo.java8.LocalDateTimeTestEntity;
-import org.apache.cayenne.testdo.java8.LocalTimeTestEntity;
-import org.apache.cayenne.testdo.java8.PeriodTestEntity;
-import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
-@UseCayenneRuntime(CayenneProjects.JAVA8)
-public class Java8TimeIT extends RuntimeCase {
+@UseCayenneRuntime(CayenneProjects.DATE_TIME_PROJECT)
+public class DateTimeIT extends RuntimeCase {
 
 	@Inject
 	private DataContext context;
@@ -70,7 +68,7 @@ public class Java8TimeIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testJava8LocalDate_Null() {
+	public void testLocalDate_Null() {
 		LocalDateTestEntity localDateTestEntity = context.newObject(LocalDateTestEntity.class);
 		localDateTestEntity.setDate(null);
 
@@ -82,7 +80,7 @@ public class Java8TimeIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testJava8LocalDate() {
+	public void testLocalDate() {
 		LocalDateTestEntity localDateTestEntity = context.newObject(LocalDateTestEntity.class);
 		LocalDate localDate = LocalDate.now();
 		localDateTestEntity.setDate(localDate);
@@ -97,7 +95,7 @@ public class Java8TimeIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testJava8LocalTime() {
+	public void testLocalTime() {
 		LocalTimeTestEntity localTimeTestEntity = context.newObject(LocalTimeTestEntity.class);
 		LocalTime localTime = LocalTime.now();
 		localTimeTestEntity.setTime(localTime);
@@ -117,7 +115,7 @@ public class Java8TimeIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testJava8LocalDateTime() {
+	public void testLocalDateTime() {
 		LocalDateTimeTestEntity localDateTimeTestEntity = context.newObject(LocalDateTimeTestEntity.class);
 		// round up seconds fraction
 		// reason: on MySQL field should be defined as TIMESTAMP(fractionSecondsPrecision) to support it
@@ -135,7 +133,7 @@ public class Java8TimeIT extends RuntimeCase {
 	}
 
 	@Test
-	public void columnSelectWithJava8Type() {
+	public void columnSelectWithLocalDateTime() {
 		// round up seconds fraction
 		// reason: on MySQL field should be defined as TIMESTAMP(fractionSecondsPrecision) to support it
 		LocalDateTime localDateTime = LocalDateTime.now().with(ChronoField.NANO_OF_SECOND, 0);
@@ -157,7 +155,7 @@ public class Java8TimeIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testJava8Duration() {
+	public void testDuration() {
 		DurationTestEntity durationTestEntity = context.newObject(DurationTestEntity.class);
 		Duration duration = Duration.ofDays(10);
 		durationTestEntity.setDurationBigInt(duration);
@@ -197,7 +195,7 @@ public class Java8TimeIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testJava8Period() {
+	public void testPeriod() {
 		PeriodTestEntity periodTestEntity = context.newObject(PeriodTestEntity.class);
 		Period period = Period.of(100, 10, 5);
 		periodTestEntity.setPeriodField(period);

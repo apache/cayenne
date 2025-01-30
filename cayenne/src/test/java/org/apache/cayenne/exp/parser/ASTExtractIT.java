@@ -29,7 +29,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
-import org.apache.cayenne.testdo.date_time.DateTestEntity;
+import org.apache.cayenne.testdo.legacy_datetime.DateTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
@@ -43,7 +43,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @since 4.0
  */
-@UseCayenneRuntime(CayenneProjects.DATE_TIME_PROJECT)
+@UseCayenneRuntime(CayenneProjects.LEGACY_DATE_TIME_PROJECT)
 public class ASTExtractIT extends RuntimeCase {
 
     @Inject

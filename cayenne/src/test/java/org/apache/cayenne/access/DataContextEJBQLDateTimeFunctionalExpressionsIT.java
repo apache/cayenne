@@ -22,7 +22,7 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.testdo.date_time.DateTestEntity;
+import org.apache.cayenne.testdo.legacy_datetime.DateTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
@@ -35,7 +35,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.DATE_TIME_PROJECT)
+@UseCayenneRuntime(CayenneProjects.LEGACY_DATE_TIME_PROJECT)
 public class DataContextEJBQLDateTimeFunctionalExpressionsIT extends RuntimeCase {
 
     @Inject

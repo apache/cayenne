@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
+	 project-version="11">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.legacy_datetime"/>
+	<property name="defaultSuperclass" value="org.apache.cayenne.GenericPersistentObject"/>
+	<db-entity name="CALENDAR_TEST">
+		<db-attribute name="CALENDAR_FIELD" type="TIMESTAMP"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="DATE_TEST">
+		<db-attribute name="DATE_COLUMN" type="DATE"/>
+		<db-attribute name="DATE_TEST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="TIMESTAMP_COLUMN" type="TIMESTAMP"/>
+		<db-attribute name="TIME_COLUMN" type="TIME"/>
+	</db-entity>
+	<obj-entity name="CalendarEntity" className="org.apache.cayenne.testdo.legacy_datetime.CalendarEntity" dbEntityName="CALENDAR_TEST">
+		<obj-attribute name="calendarField" type="java.util.Calendar" db-attribute-path="CALENDAR_FIELD"/>
+	</obj-entity>
+	<obj-entity name="DateTestEntity" className="org.apache.cayenne.testdo.legacy_datetime.DateTestEntity" dbEntityName="DATE_TEST">
+		<obj-attribute name="dateColumn" type="java.util.Date" db-attribute-path="DATE_COLUMN"/>
+		<obj-attribute name="timeColumn" type="java.util.Date" db-attribute-path="TIME_COLUMN"/>
+		<obj-attribute name="timestampColumn" type="java.util.Date" db-attribute-path="TIMESTAMP_COLUMN"/>
+	</obj-entity>
+	<query name="SelectDateTest" type="SQLTemplate" root="data-map" root-name="date-time">
+		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="UPPER"/>
+		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
+		<sql><![CDATA[SELECT * FROM DATE_TEST]]></sql>
+	</query>
+</data-map>

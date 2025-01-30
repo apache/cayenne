@@ -16,13 +16,12 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.testdo.date_time;
+package org.apache.cayenne.testdo.datetime;
 
-import org.apache.cayenne.testdo.date_time.auto._CalendarEntity;
+import org.apache.cayenne.testdo.datetime.auto._LocalTimeTestEntity;
 
-public class CalendarEntity extends _CalendarEntity {
+public class LocalTimeTestEntity extends _LocalTimeTestEntity {
+
+    private static final long serialVersionUID = 1L; 
 
 }
-
-
-
