@@ -40,6 +40,7 @@
 		<slf4j.version>1.7.36</slf4j.version>
 		<ant.version>1.10.12</ant.version>
 		<testcontainers.version>1.20.1</testcontainers.version>
+		<mysql.connector.version>8.0.29</mysql.connector.version>
 
 		<maven.compiler.target>11</maven.compiler.target>
 		<maven.compiler.source>11</maven.compiler.source>
@@ -399,6 +400,12 @@
             	<version>10.14.2.0</version>
             	<scope>test</scope>
         	</dependency>
+			<dependency>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>${mysql.connector.version}</version>
+				<scope>test</scope>
+			</dependency>
 			<dependency>
 				<groupId>org.xmlunit</groupId>
 				<artifactId>xmlunit-matchers</artifactId>
@@ -1031,7 +1038,6 @@
 				<dependency>
 					<groupId>mysql</groupId>
 					<artifactId>mysql-connector-java</artifactId>
-					<version>8.0.29</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
@@ -1048,7 +1054,6 @@
 				<dependency>
 					<groupId>mysql</groupId>
 					<artifactId>mysql-connector-java</artifactId>
-					<version>8.0.29</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>

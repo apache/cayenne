@@ -18,6 +18,7 @@ CAY-2873 Change Orderings.orderedList() to accept a Collection rather than a Lis
 
 Bug Fixes:
 
+CAY-2701 MySQL DST-related LocalDateTime issues
 CAY-2871 QualifierTranslator breaks on a relationship with a compound FK
 CAY-2872 CayenneModeler "Documentation" link is broken
 

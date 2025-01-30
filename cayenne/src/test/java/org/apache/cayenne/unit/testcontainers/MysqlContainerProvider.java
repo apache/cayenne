@@ -18,13 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.unit.testcontainers;
 
-import java.util.Calendar;
-
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.utility.DockerImageName;
+
+import java.util.Calendar;
 
 public class MysqlContainerProvider extends TestContainerProvider {
 
