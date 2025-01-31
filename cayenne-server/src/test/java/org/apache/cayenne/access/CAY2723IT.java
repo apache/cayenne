@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -27,7 +26,6 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -40,26 +38,21 @@ public class CAY2723IT extends ServerCase {
     @Inject
     private DataChannelInterceptor queryInterceptor;
 
-    /**
-     * need to run this to ensure that PK generation doesn't affect main test
-     */
-    @Before
-    public void warmup() {
-        Painting painting = context.newObject(Painting.class);
-        painting.setPaintingTitle("test_warmup");
-        context.commitChanges();
-        int pk = Cayenne.intPKForObject(painting);
-
-        // push PK sequence one more time, to make sure the test wouldn't fail because of PK generation queries.
-        if(pk % JdbcPkGenerator.DEFAULT_PK_CACHE_SIZE == 0) {
-            painting = context.newObject(Painting.class);
-            painting.setPaintingTitle("test_warmup_2");
-            context.commitChanges();
-        }
-    }
-
     @Test
     public void phantomToDepPKUpdate() {
+        // try to trigger PK generator. so it wouldn't random fail the actual test
+        for (int i = 0; i < JdbcPkGenerator.DEFAULT_PK_CACHE_SIZE; i++) {
+            int queryCounter = queryInterceptor.runWithQueryCounter(() -> {
+                Painting painting = context.newObject(Painting.class);
+                painting.setPaintingTitle("test_warmup");
+                context.commitChanges();
+            });
+            // PK generator triggered, we are ready
+            if (queryCounter > 1) {
+                return;
+            }
+        }
+
         Painting painting = context.newObject(Painting.class);
         painting.setPaintingTitle("test_p_123");
 
