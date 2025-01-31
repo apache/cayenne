@@ -24,6 +24,7 @@ import org.apache.cayenne.access.sqlbuilder.SQLGenerationVisitor;
 import org.apache.cayenne.access.sqlbuilder.StringBuilderAppendable;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -107,6 +108,25 @@ public class QualifierTranslatorIT extends RuntimeCase {
         node.visit(visitor);
 
         assertEquals(" ( ( t0.F_KEY1 = 'PK1' ) AND ( t0.F_KEY2 = 'PK2' ) ) OR ( ( t0.F_KEY1 = 'PK3' ) AND ( t0.F_KEY2 = 'PK4' ) )", visitor.getSQLString());
+    }
+
+    @Test
+    public void testCAY_2879() {
+        ObjectSelect<CompoundFkTestEntity> query = ObjectSelect.query(CompoundFkTestEntity.class)
+                .where(ExpressionFactory.exp("name = -1"));
+
+        DefaultSelectTranslator translator
+                = new DefaultSelectTranslator(query, runtime.getDataDomain().getDefaultNode().getAdapter(), context.getEntityResolver());
+
+        QualifierTranslator qualifierTranslator = translator.getContext().getQualifierTranslator();
+
+        Node node = qualifierTranslator.translate(query.getWhere());
+
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new StringBuilderAppendable());
+        node.visit(visitor);
+
+        assertEquals(" t0.NAME = - 1", visitor.getSQLString());
+
     }
 
 }

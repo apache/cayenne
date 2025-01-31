@@ -21,6 +21,7 @@ Bug Fixes:
 CAY-2701 MySQL DST-related LocalDateTime issues
 CAY-2871 QualifierTranslator breaks on a relationship with a compound FK
 CAY-2872 CayenneModeler "Documentation" link is broken
+CAY-2879 Negative number for non parameterized ObjectSelect query not processed correctly
 
 ----------------------------------
 Release: 5.0-M1

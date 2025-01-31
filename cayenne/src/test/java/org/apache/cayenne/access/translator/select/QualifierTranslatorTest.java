@@ -310,8 +310,9 @@ public class QualifierTranslatorTest {
 
         {
             Node op = translate("-2");
-            assertThat(op, instanceOf(OpExpressionNode.class));
-            assertEquals("-", ((OpExpressionNode)op).getOp());
+            assertThat(op, instanceOf(FunctionNode.class));
+            assertEquals("-", ((FunctionNode)op).getFunctionName());
+            assertNull(((FunctionNode) op).getAlias());
             assertEquals(1, op.getChildrenCount());
         }
 
