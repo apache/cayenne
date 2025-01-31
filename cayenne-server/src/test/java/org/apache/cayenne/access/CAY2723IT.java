@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
@@ -46,6 +48,14 @@ public class CAY2723IT extends ServerCase {
         Painting painting = context.newObject(Painting.class);
         painting.setPaintingTitle("test_warmup");
         context.commitChanges();
+        int pk = Cayenne.intPKForObject(painting);
+
+        // push PK sequence one more time, to make sure the test wouldn't fail because of PK generation queries.
+        if(pk % JdbcPkGenerator.DEFAULT_PK_CACHE_SIZE == 0) {
+            painting = context.newObject(Painting.class);
+            painting.setPaintingTitle("test_warmup_2");
+            context.commitChanges();
+        }
     }
 
     @Test
