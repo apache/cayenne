@@ -175,7 +175,6 @@ class QualifierTranslator implements TraversalHandler {
             case SUBTRACT:
             case MULTIPLY:
             case DIVIDE:
-            case NEGATIVE:
             case BITWISE_AND:
             case BITWISE_LEFT_SHIFT:
             case BITWISE_OR:
@@ -188,7 +187,9 @@ class QualifierTranslator implements TraversalHandler {
             case GREATER_THAN:
             case GREATER_THAN_EQUAL_TO:
                 return new OpExpressionNode(expToStr(node.getType()));
-
+            case NEGATIVE:
+                // we need to add minus sign as a prefix, not a separator
+                return new FunctionNode(expToStr(node.getType()), null, false);
             case TRUE:
             case FALSE:
             case ASTERISK:
