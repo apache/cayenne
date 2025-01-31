@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
@@ -25,14 +26,11 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-@Ignore("This test fails on GitHub Actions, disabling for now")
 public class CAY2723IT extends RuntimeCase {
     @Inject
     private DataContext context;
@@ -40,13 +38,10 @@ public class CAY2723IT extends RuntimeCase {
     @Inject
     private DataChannelInterceptor queryInterceptor;
 
-    /**
-     * need to run this to ensure that PK generation doesn't affect main test
-     */
-    @Before
-    public void warmup() {
+    @Test
+    public void phantomToDepPKUpdate() {
         // try to trigger PK generator. so it wouldn't random fail the actual test
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < JdbcPkGenerator.DEFAULT_PK_CACHE_SIZE; i++) {
             int queryCounter = queryInterceptor.runWithQueryCounter(() -> {
                 Painting painting = context.newObject(Painting.class);
                 painting.setPaintingTitle("test_warmup");
@@ -54,13 +49,10 @@ public class CAY2723IT extends RuntimeCase {
             });
             // PK generator triggered, we are ready
             if (queryCounter > 1) {
-                return;
+                break;
             }
         }
-    }
 
-    @Test
-    public void phantomToDepPKUpdate() {
         Painting painting = context.newObject(Painting.class);
         painting.setPaintingTitle("test_p_123");
 
