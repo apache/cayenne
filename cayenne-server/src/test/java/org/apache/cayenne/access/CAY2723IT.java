@@ -49,7 +49,7 @@ public class CAY2723IT extends ServerCase {
             });
             // PK generator triggered, we are ready
             if (queryCounter > 1) {
-                return;
+                break;
             }
         }
 
