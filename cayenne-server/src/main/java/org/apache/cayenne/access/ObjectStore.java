@@ -66,7 +66,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ObjectStore implements Serializable, SnapshotEventListener, GraphManager {
 
     /**
-     * Actual content is ObjectId -> PersistentWrapper
+     * Actual content is ObjectId -> ObjectStorePersistentWrapper
      */
     protected Map<Object, Persistent> objectMap;
     protected Map<Object, ObjectDiff> changes;
@@ -1055,10 +1055,8 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * @since 4.1
      */
     public void markFlattenedPath(ObjectId objectId, String path, ObjectId id) {
-        ObjectStorePersistentWrapper wrapper = (ObjectStorePersistentWrapper) objectMap.computeIfAbsent(objectId, objId -> {
-            System.out.println("Synthetic node for " + objId);
-            return new ObjectStorePersistentWrapper(null);
-        });
+        ObjectStorePersistentWrapper wrapper = (ObjectStorePersistentWrapper) objectMap
+                .computeIfAbsent(objectId, objId -> new ObjectStorePersistentWrapper(null));
         wrapper.markFlattenedPath(path, id);
     }
 
