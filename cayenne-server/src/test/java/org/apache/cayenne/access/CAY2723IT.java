@@ -20,8 +20,8 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.testdo.testmap.PaintingInfo;
+import org.apache.cayenne.testdo.toone.TooneDep;
+import org.apache.cayenne.testdo.toone.TooneMaster;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -30,7 +30,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TOONE_PROJECT)
 public class CAY2723IT extends ServerCase {
     @Inject
     private DataContext context;
@@ -43,8 +43,7 @@ public class CAY2723IT extends ServerCase {
         // try to trigger PK generator. so it wouldn't random fail the actual test
         for (int i = 0; i < JdbcPkGenerator.DEFAULT_PK_CACHE_SIZE; i++) {
             int queryCounter = queryInterceptor.runWithQueryCounter(() -> {
-                Painting painting = context.newObject(Painting.class);
-                painting.setPaintingTitle("test_warmup");
+                context.newObject(TooneMaster.class);
                 context.commitChanges();
             });
             // PK generator triggered, we are ready
@@ -53,16 +52,12 @@ public class CAY2723IT extends ServerCase {
             }
         }
 
-        Painting painting = context.newObject(Painting.class);
-        painting.setPaintingTitle("test_p_123");
+        TooneMaster master = context.newObject(TooneMaster.class);
+        TooneDep dep = context.newObject(TooneDep.class);
+        master.setToDependent(dep);
+        master.setToDependent(null);
 
-        PaintingInfo paintingInfo = context.newObject(PaintingInfo.class);
-        paintingInfo.setTextReview("test_a_123");
-
-        painting.setToPaintingInfo(paintingInfo);
-        painting.setToPaintingInfo(null);
-
-        context.deleteObject(paintingInfo);
+        context.deleteObject(dep);
 
         // here should be only single insert of the painting object
         int queryCounter = queryInterceptor.runWithQueryCounter(() -> context.commitChanges());
