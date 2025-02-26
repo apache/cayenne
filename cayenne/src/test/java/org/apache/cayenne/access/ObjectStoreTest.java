@@ -42,7 +42,7 @@ public class ObjectStoreTest {
     @Before
     public void before() {
         DataRowStore sharedCache = mock(DataRowStore.class);
-        this.objectStore = new ObjectStore(sharedCache, new HashMap<Object, Persistent>());
+        this.objectStore = new ObjectStore(sharedCache, new HashMap<>());
     }
 
     @Test

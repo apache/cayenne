@@ -70,8 +70,7 @@ public class ObjectStoreGraphDiff implements GraphDiff {
         boolean noop = true;
 
         // build a new collection for validation as validation methods may
-        // result in
-        // ObjectStore modifications
+        // result in ObjectStore modifications
 
         Collection<Validating> objectsToValidate = null;
 
@@ -81,12 +80,12 @@ public class ObjectStoreGraphDiff implements GraphDiff {
 
                 noop = false;
 
-                if (diff.getObject() instanceof Validating) {
+                if (diff.object() instanceof Validating) {
                     if (objectsToValidate == null) {
                         objectsToValidate = new ArrayList<>();
                     }
 
-                    objectsToValidate.add((Validating) diff.getObject());
+                    objectsToValidate.add((Validating) diff.object());
                 }
 
             }

@@ -20,7 +20,7 @@ package org.apache.cayenne.access;
 
 import java.util.Map;
 
-import org.apache.cayenne.Persistent;
+import org.apache.cayenne.ObjectId;
 
 /**
  * A strategy for retaining objects in {@link ObjectStore}. The strategy can be weak, soft
@@ -30,5 +30,5 @@ import org.apache.cayenne.Persistent;
  */
 public interface ObjectMapRetainStrategy {
 
-    Map<Object, Persistent> createObjectMap();
+    Map<ObjectId, ObjectStoreEntry> createObjectMap();
 }

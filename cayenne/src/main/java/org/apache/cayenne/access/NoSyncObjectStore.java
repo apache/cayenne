@@ -20,7 +20,7 @@ package org.apache.cayenne.access;
 
 import java.util.Map;
 
-import org.apache.cayenne.Persistent;
+import org.apache.cayenne.ObjectId;
 
 /**
  * An {@link ObjectStore} which doesn't receive notifications 
@@ -30,7 +30,7 @@ import org.apache.cayenne.Persistent;
  */
 public class NoSyncObjectStore extends ObjectStore {
     
-    public NoSyncObjectStore(DataRowStore dataRowCache, Map<Object, Persistent> objectMap) {
+    public NoSyncObjectStore(DataRowStore dataRowCache, Map<ObjectId, ObjectStoreEntry> objectMap) {
         super(dataRowCache, objectMap);
     }
     
