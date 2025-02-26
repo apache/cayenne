@@ -22,6 +22,7 @@ Bug Fixes:
 CAY-2866 DefaultDataDomainFlushAction breaks on circular relationship update
 CAY-2868 Regression: DefaultDbRowOpSorter shouldn't sort update operations
 CAY-2871 QualifierTranslator breaks on a relationship with a compound FK
+CAY-2876 Memory leak in the ObjectStore
 CAY-2879 Negative number for non parameterized ObjectSelect query not processed correctly
 
 ----------------------------------

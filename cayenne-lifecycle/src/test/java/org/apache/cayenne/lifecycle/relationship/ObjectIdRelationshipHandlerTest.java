@@ -20,6 +20,8 @@ package org.apache.cayenne.lifecycle.relationship;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.lifecycle.db.E1;
 import org.apache.cayenne.lifecycle.db.UuidRoot1;
@@ -44,7 +46,11 @@ public class ObjectIdRelationshipHandlerTest {
 
     @Before
     public void setUp() throws Exception {
-        runtime = ServerRuntime.builder().addConfig("cayenne-lifecycle.xml").build();
+        runtime = ServerRuntime.builder()
+                // Using soft, as weak could lead to unloading data before test completes
+                .addModule(b -> ServerModule.contributeProperties(b)
+                        .put(Constants.SERVER_OBJECT_RETAIN_STRATEGY_PROPERTY, "soft"))
+                .addConfig("cayenne-lifecycle.xml").build();
 
         // a filter is required to invalidate root objects after commit
         ObjectIdRelationshipFilter filter = new ObjectIdRelationshipFilter();

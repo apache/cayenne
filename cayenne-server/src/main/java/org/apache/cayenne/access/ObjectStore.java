@@ -53,8 +53,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * ObjectStore stores objects using their ObjectId as a key. It works as a dedicated
@@ -66,6 +65,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ObjectStore implements Serializable, SnapshotEventListener, GraphManager {
 
+    /**
+     * Actual content is ObjectId -> ObjectStorePersistentWrapper
+     */
     protected Map<Object, Persistent> objectMap;
     protected Map<Object, ObjectDiff> changes;
 
@@ -73,6 +75,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * Map that tracks flattened paths for given object Id that is present in db.
      * Presence of path in this map is used to separate insert from update case of flattened records.
      * @since 4.1
+     * @deprecated since 4.2.2 it is unused
      */
     protected Map<Object, Map<String, ObjectId>> trackedFlattenedPaths;
 
@@ -138,7 +141,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     Collection<GraphDiff> getLifecycleEventInducedChanges() {
         return lifecycleEventInducedChanges != null
                 ? lifecycleEventInducedChanges
-                : Collections.<GraphDiff>emptyList();
+                : Collections.emptyList();
     }
 
     void registerLifecycleEventInducedChange(GraphDiff diff) {
@@ -166,10 +169,11 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
 
         if (objectDiff == null) {
 
-            Persistent object = objectMap.get(nodeId);
-            if (object == null) {
+            ObjectStorePersistentWrapper persistentWrapper = (ObjectStorePersistentWrapper)objectMap.get(nodeId);
+            if (persistentWrapper == null) {
                 throw new CayenneRuntimeException("No object is registered in context with Id %s", nodeId);
             }
+            Persistent object = persistentWrapper.dataObject();
 
             if (object.getPersistenceState() == PersistenceState.COMMITTED) {
                 object.setPersistenceState(PersistenceState.MODIFIED);
@@ -201,7 +205,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
                 }
             }
 
-            objectDiff = new ObjectDiff(object);
+            objectDiff = new ObjectDiff(persistentWrapper);
             objectDiff.setDiffId(++currentDiffId);
             changes.put(nodeId, objectDiff);
         }
@@ -213,13 +217,28 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
         return objectDiff;
     }
 
+    private Persistent getUnwrapped(Object nodeId) {
+        Persistent persistent = objectMap.get(nodeId);
+        if(persistent == null) {
+            return null;
+        }
+        return ((ObjectStorePersistentWrapper) persistent).dataObject();
+    }
+
     /**
      * Returns a number of objects currently registered with this ObjectStore.
      * 
      * @since 1.2
      */
     public int registeredObjectsCount() {
-        return objectMap.size();
+        AtomicInteger counter = new AtomicInteger();
+        objectMap.forEach((id, obj) -> {
+            ObjectStorePersistentWrapper wrapper = (ObjectStorePersistentWrapper) obj;
+            if(wrapper.hasObject()){
+                counter.incrementAndGet();
+            }
+        });
+        return counter.get();
     }
 
     /**
@@ -303,9 +322,6 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
             // remove object but not snapshot
             objectMap.remove(id);
             changes.remove(id);
-            if(id != null && trackedFlattenedPaths != null) {
-                trackedFlattenedPaths.remove(id);
-            }
             ids.add(id);
 
             object.setObjectContext(null);
@@ -391,7 +407,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
 
         for (Object id : changes.keySet()) {
 
-            Persistent object = objectMap.get(id);
+            Persistent object = getUnwrapped(id);
 
             // assume that no new or deleted objects are present (as otherwise commit
             // wouldn't have been phantom).
@@ -411,7 +427,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
 
         // scan through changed objects, set persistence state to committed
         for (Object id : changes.keySet()) {
-            Persistent object = objectMap.get(id);
+            Persistent object = getUnwrapped(id);
 
             switch (object.getPersistenceState()) {
                 case PersistenceState.DELETED:
@@ -508,7 +524,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * Returns an iterator over the registered objects.
      */
     public synchronized Iterator<Persistent> getObjectIterator() {
-        return objectMap.values().iterator();
+        return new WrapperIterator(objectMap.values().iterator());
     }
 
     /**
@@ -530,8 +546,9 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
         List<Persistent> filteredObjects = new ArrayList<>();
 
         for (Persistent object : objectMap.values()) {
-            if (object.getPersistenceState() == state) {
-                filteredObjects.add(object);
+            ObjectStorePersistentWrapper wrapper = (ObjectStorePersistentWrapper) object;
+            if (wrapper.hasObject() && object.getPersistenceState() == state) {
+                filteredObjects.add(wrapper.dataObject());
             }
         }
 
@@ -595,18 +612,22 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
 
         if (object != null) {
             object.setObjectId((ObjectId) newId);
-            objectMap.put(newId, object);
+            objectMap.merge(newId, object, (oldValue, newValue) -> {
+                ObjectStorePersistentWrapper oldWrapper = (ObjectStorePersistentWrapper) oldValue;
+                ObjectStorePersistentWrapper newWrapper = (ObjectStorePersistentWrapper) newValue;
+                if(oldWrapper.trackedFlattenedPaths != null) {
+                    if(newWrapper.trackedFlattenedPaths != null) {
+                        newWrapper.trackedFlattenedPaths.putAll(oldWrapper.trackedFlattenedPaths);
+                    } else {
+                        newWrapper.trackedFlattenedPaths = oldWrapper.trackedFlattenedPaths;
+                    }
+                }
+                return newWrapper;
+            });
 
             ObjectDiff change = changes.remove(nodeId);
             if (change != null) {
                 changes.put(newId, change);
-            }
-        }
-
-        if(trackedFlattenedPaths != null) {
-            Map<String, ObjectId> paths = trackedFlattenedPaths.remove(nodeId);
-            if(paths != null) {
-                trackedFlattenedPaths.put(newId, paths);
             }
         }
     }
@@ -619,7 +640,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     void processDeletedID(ObjectId nodeId) {
 
         // access object map directly - the method should be called in a synchronized context...
-        Persistent object = objectMap.get(nodeId);
+        Persistent object = getUnwrapped(nodeId);
 
         if (object != null) {
 
@@ -725,7 +746,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     void processIndirectlyModifiedIDs(Collection<ObjectId> indirectlyModifiedIDs) {
         for (ObjectId oid : indirectlyModifiedIDs) {
             // access object map directly - the method should be called in a synchronized context...
-            final DataObject object = (DataObject) objectMap.get(oid);
+            final DataObject object = (DataObject) getUnwrapped(oid);
 
             if (object == null || object.getPersistenceState() != PersistenceState.COMMITTED) {
                 continue;
@@ -779,7 +800,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     void processUpdatedSnapshot(ObjectId nodeId, DataRow diff) {
 
         // access object map directly - the method should be called in a synchronized context...
-        DataObject object = (DataObject) objectMap.get(nodeId);
+        DataObject object = (DataObject) getUnwrapped(nodeId);
 
         // no object, or HOLLOW object require no processing
         if (object != null) {
@@ -858,12 +879,12 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      */
     @Override
     public synchronized Object getNode(Object nodeId) {
-        return objectMap.get(nodeId);
+        return getUnwrapped(nodeId);
     }
 
     // non-synchronized version of getNode for private use
     final Object getNodeNoSync(Object nodeId) {
-        return objectMap.get(nodeId);
+        return getUnwrapped(nodeId);
     }
 
     /**
@@ -874,7 +895,15 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      */
     @Override
     public synchronized Collection<Object> registeredNodes() {
-        return new ArrayList<Object>(objectMap.values());
+        List<Object> values = new ArrayList<>(objectMap.size());
+        objectMap.forEach((id, persistent)
+                -> {
+            ObjectStorePersistentWrapper wrapper = (ObjectStorePersistentWrapper) persistent;
+            if(wrapper.hasObject()) {
+                values.add(wrapper.dataObject());
+            }
+        });
+        return values;
     }
 
     /**
@@ -882,7 +911,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      */
     @Override
     public synchronized void registerNode(Object nodeId, Object nodeObject) {
-        objectMap.put(nodeId, (Persistent) nodeObject);
+        objectMap.put(nodeId, new ObjectStorePersistentWrapper((Persistent) nodeObject));
     }
 
     /**
@@ -993,47 +1022,32 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * @since 4.1
      */
     boolean hasFlattenedPath(ObjectId objectId, String path) {
-        if(trackedFlattenedPaths == null) {
-            return false;
-        }
-        return trackedFlattenedPaths
-                .getOrDefault(objectId, Collections.emptyMap()).containsKey(path);
+        ObjectStorePersistentWrapper wrapper = (ObjectStorePersistentWrapper) objectMap.get(objectId);
+        return wrapper.hasFlattenedPath(path);
     }
 
     /**
      * @since 4.2
      */
     public ObjectId getFlattenedId(ObjectId objectId, String path) {
-        if(trackedFlattenedPaths == null) {
-            return null;
-        }
-
-        return trackedFlattenedPaths
-                .getOrDefault(objectId, Collections.emptyMap()).get(path);
+        ObjectStorePersistentWrapper wrapper = (ObjectStorePersistentWrapper) objectMap.get(objectId);
+        return wrapper.getFlattenedId(path);
     }
 
     /**
      * @since 4.2
      */
     public Collection<ObjectId> getFlattenedIds(ObjectId objectId) {
-        if(trackedFlattenedPaths == null) {
-            return Collections.emptyList();
-        }
-
-        return trackedFlattenedPaths
-                .getOrDefault(objectId, Collections.emptyMap()).values();
+        ObjectStorePersistentWrapper wrapper = (ObjectStorePersistentWrapper) objectMap.get(objectId);
+        return wrapper.getFlattenedIds();
     }
 
     /**
      * @since 4.2.1
      */
     public Map<String, ObjectId> getFlattenedPathIdMap(ObjectId objectId) {
-        if(trackedFlattenedPaths == null) {
-            return Collections.emptyMap();
-        }
-
-        return trackedFlattenedPaths
-                .getOrDefault(objectId, Collections.emptyMap());
+        ObjectStorePersistentWrapper wrapper = (ObjectStorePersistentWrapper) objectMap.get(objectId);
+        return wrapper.getFlattenedPathIdMap();
     }
 
     /**
@@ -1041,12 +1055,9 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * @since 4.1
      */
     public void markFlattenedPath(ObjectId objectId, String path, ObjectId id) {
-        if(trackedFlattenedPaths == null) {
-            trackedFlattenedPaths = new ConcurrentHashMap<>();
-        }
-        trackedFlattenedPaths
-                .computeIfAbsent(objectId, o -> new ConcurrentHashMap<>())
-                .put(path, id);
+        ObjectStorePersistentWrapper wrapper = (ObjectStorePersistentWrapper) objectMap
+                .computeIfAbsent(objectId, objId -> new ObjectStorePersistentWrapper(null));
+        wrapper.markFlattenedPath(path, id);
     }
 
     // an ObjectIdQuery optimized for retrieval of multiple snapshots - it can be reset
@@ -1088,6 +1099,31 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
         @Override
         public void undo(GraphChangeHandler handler) {
             throw new UnsupportedOperationException();
+        }
+    }
+
+    static class WrapperIterator implements Iterator<Persistent> {
+
+        final Iterator<ObjectStorePersistentWrapper> iterator;
+
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        WrapperIterator(Iterator<Persistent> iterator) {
+            this.iterator = (Iterator)iterator;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return iterator.hasNext();
+        }
+
+        @Override
+        public Persistent next() {
+            return iterator.next().dataObject();
+        }
+
+        @Override
+        public void remove() {
+            iterator.remove();
         }
     }
 }
