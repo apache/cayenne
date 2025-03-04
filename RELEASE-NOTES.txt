@@ -9,7 +9,7 @@ https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
 Release: 4.2.2
-Date:
+Date: March 04, 2025
 ----------------------------------
 Changes/New Features:
 
@@ -27,7 +27,7 @@ CAY-2879 Negative number for non parameterized ObjectSelect query not processed 
 
 ----------------------------------
 Release: 4.2.1
-Date: Jun 20, 2024
+Date: June 20, 2024
 ----------------------------------
 Changes/New Features:
 
