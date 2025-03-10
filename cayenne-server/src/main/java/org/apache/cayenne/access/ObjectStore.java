@@ -427,6 +427,9 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
             switch (object.getPersistenceState()) {
                 case PersistenceState.DELETED:
                     objectMap.remove(id);
+                    if(trackedFlattenedPaths != null) {
+                        trackedFlattenedPaths.remove(id);
+                    }
                     object.setObjectContext(null);
                     object.setPersistenceState(PersistenceState.TRANSIENT);
                     break;
@@ -651,9 +654,11 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
                     if (dataObject == null || delegate.shouldProcessDelete(dataObject)) {
                         objectMap.remove(nodeId);
                         changes.remove(nodeId);
+                        if(trackedFlattenedPaths != null) {
+                            trackedFlattenedPaths.remove(nodeId);
+                        }
 
-                        // setting DataContext to null will also set
-                        // state to transient
+                        // setting DataContext to null will also set state to transient
                         object.setObjectContext(null);
 
                         if (dataObject != null) {
