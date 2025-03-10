@@ -113,7 +113,7 @@ public class DataContextPrefetchMultistepIT extends RuntimeCase {
         // get garbage collected, and we won't be able to detect them
         // so ensure ObjectStore uses a regular map just for this test
 
-        context.getObjectStore().objectMap = new HashMap<>();
+        context.getObjectStore().objectMap = new HashMap<Object, Persistent>();
 
         // Check the target ArtistExhibit objects do not exist yet
 

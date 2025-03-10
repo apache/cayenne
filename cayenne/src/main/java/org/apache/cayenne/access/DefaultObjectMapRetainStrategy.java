@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
@@ -46,7 +46,7 @@ public class DefaultObjectMapRetainStrategy implements ObjectMapRetainStrategy {
         this.runtimeProperties = runtimeProperties;
     }
 
-    public Map<ObjectId, ObjectStoreEntry> createObjectMap() {
+    public Map<Object, Persistent> createObjectMap() {
         String strategy = runtimeProperties.get(Constants.OBJECT_RETAIN_STRATEGY_PROPERTY);
 
         if (strategy == null || WEAK_RETAIN_STRATEGY.equals(strategy)) {

@@ -21,8 +21,8 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.di.Inject;
@@ -152,7 +152,7 @@ public class DataContextSerializationIT extends RuntimeCase {
                 new DefaultRuntimeProperties(domain.getProperties()),
                 domain.getEventManager());
 
-        Map<ObjectId, ObjectStoreEntry> map = new HashMap<>();
+        Map<Object, Persistent> map = new HashMap<>();
 
         DataContext localCacheContext = new DataContext(domain, new ObjectStore(
                 snapshotCache,

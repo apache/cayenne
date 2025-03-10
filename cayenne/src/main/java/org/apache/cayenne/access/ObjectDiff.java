@@ -65,22 +65,23 @@ public class ObjectDiff extends NodeDiff {
     private Map<ArcOperation, ArcOperation> flatIds;
     private Map<ArcOperation, ArcOperation> phantomFks;
 
-    private final ObjectStoreEntry entry;
+    private Persistent object;
 
-    ObjectDiff(final ObjectStoreEntry entry) {
+    ObjectDiff(final Persistent object) {
 
-        super(entry.persistent().getObjectId());
+        super(object.getObjectId());
 
-        // retain the object, as ObjectStore may have weak references to registered objects,
-        // and we can't allow it to deallocate dirty objects.
-        this.entry = entry;
+        // retain the object, as ObjectStore may have weak references to
+        // registered
+        // objects and we can't allow it to deallocate dirty objects.
+        this.object = object;
 
-        EntityResolver entityResolver = object().getObjectContext().getEntityResolver();
+        EntityResolver entityResolver = object.getObjectContext().getEntityResolver();
 
-        this.entityName = object().getObjectId().getEntityName();
+        this.entityName = object.getObjectId().getEntityName();
         this.classDescriptor = entityResolver.getClassDescriptor(entityName);
 
-        int state = object().getPersistenceState();
+        int state = object.getPersistenceState();
 
         // take snapshot of simple properties and arcs used for optimistic
         // locking..
@@ -98,7 +99,7 @@ public class ObjectDiff extends NodeDiff {
 
                 @Override
                 public boolean visitAttribute(AttributeProperty property) {
-                    snapshot.put(property.getName(), property.readProperty(object()));
+                    snapshot.put(property.getName(), property.readProperty(object));
                     return true;
                 }
 
@@ -113,8 +114,8 @@ public class ObjectDiff extends NodeDiff {
                     
                     // eagerly resolve optimistically locked relationships
                     Object target = (lock && isUsedForLocking)
-                            ? property.readProperty(object())
-                            : property.readPropertyDirectly(object());
+                            ? property.readProperty(object)
+                            : property.readPropertyDirectly(object);
 
                     if (target instanceof Persistent) {
                         target = ((Persistent) target).getObjectId();
@@ -128,15 +129,15 @@ public class ObjectDiff extends NodeDiff {
         }
     }
 
-    Persistent object() {
-        return entry.persistent();
+    Object getObject() {
+        return object;
     }
 
     ClassDescriptor getClassDescriptor() {
         // class descriptor is initiated in constructor, but is nullified on
         // serialization
         if (classDescriptor == null) {
-            EntityResolver entityResolver = object().getObjectContext().getEntityResolver();
+            EntityResolver entityResolver = object.getObjectContext().getEntityResolver();
             this.classDescriptor = entityResolver.getClassDescriptor(entityName);
         }
 
@@ -151,7 +152,7 @@ public class ObjectDiff extends NodeDiff {
         Object value = arcSnapshot != null ? arcSnapshot.get(propertyName) : null;
 
         if (value instanceof Fault) {
-            Persistent target = (Persistent) ((Fault) value).resolveFault(object(), propertyName);
+            Persistent target = (Persistent) ((Fault) value).resolveFault(object, propertyName);
 
             value = target != null ? target.getObjectId() : null;
             arcSnapshot.put(propertyName, value);
@@ -166,7 +167,7 @@ public class ObjectDiff extends NodeDiff {
     public ObjectId getCurrentArcSnapshotValue(String propertyName) {
         Object value = currentArcSnapshot != null ? currentArcSnapshot.get(propertyName) : null;
         if (value instanceof Fault) {
-            Persistent target = (Persistent) ((Fault) value).resolveFault(object(), propertyName);
+            Persistent target = (Persistent) ((Fault) value).resolveFault(object, propertyName);
 
             value = target != null ? target.getObjectId() : null;
             currentArcSnapshot.put(propertyName, value);
@@ -327,7 +328,7 @@ public class ObjectDiff extends NodeDiff {
             return false;
         }
 
-        int state = object().getPersistenceState();
+        int state = object.getPersistenceState();
         if (state == PersistenceState.NEW || state == PersistenceState.DELETED) {
             return false;
         }
@@ -341,7 +342,7 @@ public class ObjectDiff extends NodeDiff {
             public boolean visitAttribute(AttributeProperty property) {
 
                 Object oldValue = snapshot.get(property.getName());
-                Object newValue = property.readProperty(object());
+                Object newValue = property.readProperty(object);
 
                 if (!property.equals(oldValue, newValue)) {
                     modFound[0] = true;
@@ -362,7 +363,7 @@ public class ObjectDiff extends NodeDiff {
                     return true;
                 }
 
-                Object newValue = property.readPropertyDirectly(object());
+                Object newValue = property.readPropertyDirectly(object);
                 if (newValue instanceof Fault) {
                     return true;
                 }
@@ -410,7 +411,7 @@ public class ObjectDiff extends NodeDiff {
             @Override
             public boolean visitAttribute(AttributeProperty property) {
 
-                Object newValue = property.readProperty(object());
+                Object newValue = property.readProperty(object);
 
                 // no baseline to compare
                 if (snapshot == null) {
