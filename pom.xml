@@ -24,7 +24,7 @@
 	<groupId>org.apache.cayenne</groupId>
 	<name>cayenne-parent: Top-level parent of Cayenne modules</name>
 
-	<version>4.2.3-SNAPSHOT</version>
+	<version>4.2.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<description>

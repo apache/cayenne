@@ -18,7 +18,7 @@
     <parent>
         <artifactId>cayenne-tutorials-parent</artifactId>
         <groupId>org.apache.cayenne.tutorials</groupId>
-        <version>4.2.3-SNAPSHOT</version>
+        <version>4.2.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>tutorial-rop-server-http2</artifactId>
