@@ -44,6 +44,8 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
+import org.apache.cayenne.util.SoftValueMap;
+import org.apache.cayenne.util.WeakValueMap;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -108,13 +110,23 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      */
     public ObjectStore(DataRowStore dataRowCache, Map<Object, Persistent> objectMap) {
         setDataRowCache(dataRowCache);
-        if (objectMap != null) {
-            this.objectMap = objectMap;
-        }
-        else {
+        setObjectMap(objectMap);
+        this.changes = new HashMap<>();
+    }
+
+    /**
+     * @since 4.2.2
+     */
+    void setObjectMap(Map<Object, Persistent> objectMap) {
+        if(objectMap == null) {
             throw new CayenneRuntimeException("Object map is null.");
         }
-        this.changes = new HashMap<>();
+        this.objectMap = objectMap;
+        if(objectMap instanceof SoftValueMap) {
+            ((SoftValueMap<Object, Persistent>) objectMap).setKeyCleanupCallback(this::onObjectKeyCleanup);
+        } else if(objectMap instanceof WeakValueMap) {
+            ((WeakValueMap<Object, Persistent>) objectMap).setKeyCleanupCallback(this::onObjectKeyCleanup);
+        }
     }
 
     /**
@@ -137,7 +149,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     Collection<GraphDiff> getLifecycleEventInducedChanges() {
         return lifecycleEventInducedChanges != null
                 ? lifecycleEventInducedChanges
-                : Collections.<GraphDiff>emptyList();
+                : Collections.emptyList();
     }
 
     void registerLifecycleEventInducedChange(GraphDiff diff) {
@@ -1034,6 +1046,16 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
         trackedFlattenedPaths
                 .computeIfAbsent(objectId, o -> new ConcurrentHashMap<>())
                 .put(path, id);
+    }
+
+    /**
+     * @param key object id that was removed from the {@link #objectMap}
+     * @since 4.2.2
+     */
+    void onObjectKeyCleanup(Object key) {
+        if(trackedFlattenedPaths != null) {
+            trackedFlattenedPaths.remove(key);
+        }
     }
 
     // an ObjectIdQuery optimized for retrieval of multiple snapshots - it can be reset
