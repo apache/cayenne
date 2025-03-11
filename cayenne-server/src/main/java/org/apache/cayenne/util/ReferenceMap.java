@@ -35,6 +35,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Map that transparently stores values as references and resolves them as needed.
@@ -81,6 +82,11 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
      * This is a lazily created set of entries that is essentially a view to actual data
      */
     protected transient Set<Entry<K, V>> entrySet;
+
+    /**
+     * @since 4.2.2
+     */
+    protected transient Consumer<K> keyCleanupCallback;
 
     public ReferenceMap() {
         map = new HashMap<>();
@@ -222,6 +228,17 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
     }
 
     /**
+     * Set callback that will be notified with a key on each value removal
+     * due to the corresponding value reference cleaned up by the GC.
+     *
+     * @param keyCleanupCallback callback to set
+     * @since 4.2.2
+     */
+    public void setKeyCleanupCallback(Consumer<K> keyCleanupCallback) {
+        this.keyCleanupCallback = keyCleanupCallback;
+    }
+
+    /**
      * Cleanup all references collected by GC so far
      */
     protected void checkReferenceQueue() {
@@ -247,6 +264,9 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
 
         for(K keyToRemove : keysToRemove) {
             map.remove(keyToRemove);
+            if(keyCleanupCallback != null) {
+                keyCleanupCallback.accept(keyToRemove);
+            }
         }
     }
 
