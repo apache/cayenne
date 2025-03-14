@@ -9,7 +9,7 @@ https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
 Release: 4.2.2
-Date:
+Date: March 14, 2025
 ----------------------------------
 Changes/New Features:
 
