@@ -14,7 +14,7 @@
 	<parent>
 		<artifactId>cayenne-parent</artifactId>
 		<groupId>org.apache.cayenne</groupId>
-		<version>4.2.2</version>
+		<version>4.2.3-SNAPSHOT</version>
 	</parent>
 	<artifactId>cayenne-lifecycle</artifactId>
 	<name>cayenne-lifecycle: Cayenne Lifecycle Utilities</name>
