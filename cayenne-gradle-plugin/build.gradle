@@ -79,7 +79,9 @@ task versionFile {
 }
 
 def processLicenseFile(fileName) {
-    def context = new VelocityContext(Map.of("binary", false))
+    Map<String, Object> params = new HashMap<>()
+    params.put("binary", false)
+    def context = new VelocityContext(params)
     def outputWriter = new FileWriter(new File("$buildDir/resources/main/META-INF/cayenne/${fileName}.txt"))
     def template
     def templateFile = new File("$buildDir/resources/tpl/META-INF/cayenne/${fileName}.txt.vm");
