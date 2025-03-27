@@ -16,16 +16,19 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+buildscript {
+    dependencies {
+        classpath 'org.apache.velocity:velocity-engine-core:2.4.1'
+    }
+}
+
+import org.apache.velocity.VelocityContext
+import org.apache.velocity.app.VelocityEngine
+
 plugins {
     id 'java-gradle-plugin'
     id 'java'
 }
-
-def projectVersion = getProjectVersion()
-
-group 'org.apache.cayenne.plugins'
-version projectVersion
-def cayenneVersion = version
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -35,6 +38,17 @@ repositories {
     mavenLocal()
     mavenCentral()
 }
+
+dependencies {
+    implementation gradleApi()
+    implementation localGroovy()
+}
+
+def projectVersion = getProjectVersion()
+
+group 'org.apache.cayenne.plugins'
+version projectVersion
+def cayenneVersion = version
 
 def getProjectVersion() {
     def pomFile = file('pom.xml')
@@ -53,11 +67,6 @@ if (classpathFile.file) {
     }
 }
 
-dependencies {
-    implementation gradleApi()
-    implementation localGroovy()
-}
-
 // Create file with cayenne-gradle-plugin version
 task versionFile {
     def resourceOutputDir = file("$buildDir/resources/main/")
@@ -69,10 +78,34 @@ task versionFile {
     }
 }
 
+def processLicenseFile(fileName) {
+    def context = new VelocityContext(Map.of("binary", false))
+    def outputWriter = new FileWriter(new File("$buildDir/resources/main/META-INF/cayenne/${fileName}.txt"))
+    def template
+    def templateFile = new File("$buildDir/resources/tpl/META-INF/cayenne/${fileName}.txt.vm");
+    if(templateFile.exists()) {
+        template = templateFile.text
+    } else {
+        throw new RuntimeException("Template file `$buildDir/resources/tpl/META-INF/cayenne/${fileName}.txt.vm` doesn't exist")
+    }
+
+    try {
+        new VelocityEngine().evaluate(context, outputWriter, fileName, template)
+        outputWriter.flush()
+    } finally {
+        outputWriter.close()
+    }
+}
+
 // Copy license and notice files
 task licenseFiles(type: Copy) {
     from '../build-tools/cayenne-legal/src/main/resources/'
-    into "$buildDir/resources/main/"
+    into "$buildDir/resources/tpl/"
+    doLast {
+        mkdir("$buildDir/resources/main/META-INF/cayenne/")
+        processLicenseFile("LICENSE")
+        processLicenseFile("NOTICE")
+    }
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
