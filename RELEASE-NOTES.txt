@@ -15,6 +15,7 @@ Changes/New Features:
 
 CAY-2859 Redesign SelectById factory methods
 CAY-2873 Change Orderings.orderedList() to accept a Collection rather than a List
+CAY-2884 Upgrade gradle to 8.13
 
 Bug Fixes:
 
@@ -23,6 +24,7 @@ CAY-2871 QualifierTranslator breaks on a relationship with a compound FK
 CAY-2872 CayenneModeler "Documentation" link is broken
 CAY-2876 Memory leak in the ObjectStore
 CAY-2879 Negative number for non parameterized ObjectSelect query not processed correctly
+CAY-2883 License and notice templates are not processed by the Gradle build
 
 ----------------------------------
 Release: 5.0-M1
