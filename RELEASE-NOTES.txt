@@ -18,6 +18,7 @@ CAY-2884 Upgrade gradle to 8.13
 Bug Fixes:
 
 CAY-2883 License and notice templates are not processed by the Gradle build
+CAY-2885 Modeler: DbImport fails to load DB schema view
 
 ----------------------------------
 Release: 4.2.2

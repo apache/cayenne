@@ -128,7 +128,7 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
 
     private void loadTables(DBConnectionInfo connectionInfo,
                             TreePath tablePath,
-                            DbImportView rootParent) throws SQLException {
+                            DbImportView rootParent) throws Exception {
         ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader()
                 .loadTables(connectionInfo,
                         getApplication().getClassLoadingService(),

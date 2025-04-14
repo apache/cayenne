@@ -125,9 +125,10 @@ public class DatabaseSchemaLoader {
     public ReverseEngineering loadTables(DBConnectionInfo connectionInfo,
                                          ClassLoadingService loadingService,
                                          TreePath path,
-                                         String[] tableTypesFromConfig) throws SQLException {
+                                         String[] tableTypesFromConfig) throws Exception {
         int pathIndex = 1;
         String catalogName = null, schemaName = null;
+        DbAdapter adapter = connectionInfo.makeAdapter(loadingService);
 
         Object userObject = getUserObjectOrNull(path, pathIndex);
         if (userObject != null) {
@@ -158,7 +159,10 @@ public class DatabaseSchemaLoader {
                     String table = resultSet.getString("TABLE_NAME");
                     String schema = resultSet.getString("TABLE_SCHEM");
                     String catalog = resultSet.getString("TABLE_CAT");
-                    packTable(table, catalog == null ? catalogName : catalog, schema, null);
+                    String realCatalogName = catalog == null || !adapter.supportsCatalogsOnReverseEngineering()
+                            ? catalogName
+                            : catalog;
+                    packTable(table, realCatalogName, schema, null);
                 }
                 if (!hasTables && (catalogName != null || schemaName != null)) {
                     packFilterContainer(catalogName, schemaName);
