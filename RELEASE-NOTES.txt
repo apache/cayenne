@@ -25,6 +25,7 @@ CAY-2872 CayenneModeler "Documentation" link is broken
 CAY-2876 Memory leak in the ObjectStore
 CAY-2879 Negative number for non parameterized ObjectSelect query not processed correctly
 CAY-2883 License and notice templates are not processed by the Gradle build
+CAY-2885 Modeler: DbImport fails to load DB schema view
 
 ----------------------------------
 Release: 5.0-M1
