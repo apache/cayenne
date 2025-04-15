@@ -64,6 +64,57 @@ import org.apache.cayenne.value.Wkt;
  */
 public final class ModelerUtil {
 
+    static final String[] REGISTERED_TYPE_NAMES;
+    static {
+        String[] nonPrimitivesNames = {
+                String.class.getName(),
+                BigDecimal.class.getName(),
+                BigInteger.class.getName(),
+                Boolean.class.getName(),
+                Byte.class.getName(),
+                Character.class.getName(),
+                Date.class.getName(),
+                java.util.Date.class.getName(),
+                Double.class.getName(),
+                Float.class.getName(),
+                Integer.class.getName(),
+                Long.class.getName(),
+                Short.class.getName(),
+                Time.class.getName(),
+                Timestamp.class.getName(),
+                GregorianCalendar.class.getName(),
+                Calendar.class.getName(),
+                UUID.class.getName(),
+                Serializable.class.getName(),
+                Json.class.getName(),
+                Wkt.class.getName(),
+                GeoJson.class.getName(),
+                "java.lang.Character[]",
+                "java.lang.Byte[]",
+                "java.time.LocalDate",
+                "java.time.LocalTime",
+                "java.time.LocalDateTime",
+                "java.time.Duration",
+                "java.time.Period"
+        };
+        Arrays.sort(nonPrimitivesNames);
+
+        String[] primitivesNames = {
+                "boolean", "byte", "byte[]", "char", "char[]", "double", "float", "int", "long", "short"
+        };
+
+        REGISTERED_TYPE_NAMES = new String[primitivesNames.length + nonPrimitivesNames.length + 1];
+
+        REGISTERED_TYPE_NAMES[0] = "";
+        System.arraycopy(primitivesNames, 0, REGISTERED_TYPE_NAMES, 1, primitivesNames.length);
+        System.arraycopy(
+                nonPrimitivesNames,
+                0,
+                REGISTERED_TYPE_NAMES,
+                primitivesNames.length + 1,
+                nonPrimitivesNames.length);
+    }
+
     /**
      * Returns the "name" property of the object.
      * 
@@ -110,55 +161,7 @@ public final class ModelerUtil {
     }
 
     public static String[] getRegisteredTypeNames() {
-        String[] nonPrimitivesNames = {
-                String.class.getName(),
-                BigDecimal.class.getName(),
-                BigInteger.class.getName(),
-                Boolean.class.getName(),
-                Byte.class.getName(),
-                Character.class.getName(),
-                Date.class.getName(),
-                java.util.Date.class.getName(),
-                Double.class.getName(),
-                Float.class.getName(),
-                Integer.class.getName(),
-                Long.class.getName(),
-                Short.class.getName(),
-                Time.class.getName(),
-                Timestamp.class.getName(),
-                GregorianCalendar.class.getName(),
-                Calendar.class.getName(),
-                UUID.class.getName(),
-                Serializable.class.getName(),
-                Json.class.getName(),
-                Wkt.class.getName(),
-                GeoJson.class.getName(),
-                "java.lang.Character[]",
-                "java.lang.Byte[]",
-                "java.time.LocalDate",
-                "java.time.LocalTime",
-                "java.time.LocalDateTime",
-                "java.time.Duration",
-                "java.time.Period"
-        };
-        Arrays.sort(nonPrimitivesNames);
-
-        String[] primitivesNames = {
-                "boolean", "byte", "byte[]", "char", "char[]", "double", "float", "int", "long", "short"
-        };
-
-        String[] finalList = new String[primitivesNames.length + nonPrimitivesNames.length + 1];
-
-        finalList[0] = "";
-        System.arraycopy(primitivesNames, 0, finalList, 1, primitivesNames.length);
-        System.arraycopy(
-                nonPrimitivesNames,
-                0,
-                finalList,
-                primitivesNames.length + 1,
-                nonPrimitivesNames.length);
-
-        return finalList;
+        return REGISTERED_TYPE_NAMES;
     }
 
     public static DataNodeDescriptor getNodeLinkedToMap(DataChannelDescriptor domain, DataMap map) {
