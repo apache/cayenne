@@ -157,7 +157,7 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
         statement.execute(lockString);
 
         // select
-        String selectString = super.pkSelectString(entityName);
+        String selectString = pkSelectString(entityName);
         adapter.getJdbcEventLogger().log(selectString);
         long pk;
         try (ResultSet rs = statement.executeQuery(selectString)) {
@@ -172,7 +172,7 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
         }
 
         // update
-        String updateString = super.pkUpdateString(entityName) + " AND NEXT_ID = " + pk;
+        String updateString = pkUpdateString(entityName) + " AND NEXT_ID = " + pk;
         adapter.getJdbcEventLogger().log(updateString);
         int updated = statement.executeUpdate(updateString);
         // optimistic lock failure...
