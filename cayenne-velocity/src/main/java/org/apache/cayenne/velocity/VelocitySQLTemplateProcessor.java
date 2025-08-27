@@ -33,7 +33,7 @@ import org.apache.velocity.runtime.RuntimeInstance;
 import org.apache.velocity.runtime.parser.ParseException;
 import org.apache.velocity.runtime.parser.node.ASTReference;
 import org.apache.velocity.runtime.parser.node.SimpleNode;
-import org.apache.velocity.runtime.visitor.BaseVisitor;
+import org.apache.velocity.runtime.parser.node.StandardParserDefaultVisitor;
 
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -50,7 +50,7 @@ import java.util.Map;
  */
 public class VelocitySQLTemplateProcessor implements SQLTemplateProcessor {
 
-	private final class PositionalParamMapper extends BaseVisitor {
+	private static final class PositionalParamMapper extends StandardParserDefaultVisitor {
 
 		private int i;
 		private List<Object> positionalParams;
