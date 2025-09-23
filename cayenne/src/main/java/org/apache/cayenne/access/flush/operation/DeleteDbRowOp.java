@@ -58,7 +58,7 @@ public class DeleteDbRowOp extends BaseDbRowOp implements DbRowOpWithQualifier {
         if(!(rowOp instanceof DeleteDbRowOp)) {
             return false;
         }
-        if(!rowOp.getEntity().getName().equals(getEntity().getName())) {
+        if(!entitiesHaveSameNameAndDataMap(rowOp)) {
             return false;
         }
         DeleteDbRowOp other = (DeleteDbRowOp) rowOp;

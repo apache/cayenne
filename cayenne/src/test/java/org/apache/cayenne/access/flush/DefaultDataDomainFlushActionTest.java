@@ -32,6 +32,7 @@ import org.apache.cayenne.access.flush.operation.DbRowOp;
 import org.apache.cayenne.access.flush.operation.DeleteDbRowOp;
 import org.apache.cayenne.access.flush.operation.InsertDbRowOp;
 import org.apache.cayenne.access.flush.operation.UpdateDbRowOp;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.DeleteBatchQuery;
@@ -168,6 +169,45 @@ public class DefaultDataDomainFlushActionTest {
         assertEquals(1, delete2.getRows().size());
     }
 
+    @Test
+    public void dontMergeSameTableNameOnDifferentDataMaps() {
+        DbEntity test1Datamap1 = mockEntity("test1", "datamap1");
+        DbEntity test1Datamap2 = mockEntity("test1", "datamap2");
+        DbEntity test2Datamap1 = mockEntity("test2", "datamap1");
+        DbEntity test2Datamap2 = mockEntity("test2", "datamap2");
+        DbEntity test3Datamap1 = mockEntity("test3", "datamap1");
+        DbEntity test3Datamap2 = mockEntity("test3", "datamap2");
+
+        ObjectId id1 = ObjectId.of("test1", "id", 1);
+        ObjectId id2 = ObjectId.of("test1", "id", 2);
+        ObjectId id3 = ObjectId.of("test2", "id", 3);
+        ObjectId id4 = ObjectId.of("test2", "id", 4);
+        ObjectId id5 = ObjectId.of("test3", "id", 5);
+        ObjectId id6 = ObjectId.of("test3", "id", 6);
+
+        UpdateDbRowOp update1 = new UpdateDbRowOp(mockObject(id3), test2Datamap1, id3);
+        update1.getValues().addValue(new DbAttribute("attr"), "abc", false);
+        update1.getValues().addValue(new DbAttribute("attr"), "abc", false);
+
+        UpdateDbRowOp update2 = new UpdateDbRowOp(mockObject(id4), test2Datamap2, id4);
+        update2.getValues().addValue(new DbAttribute("attr"), "def", false);
+        update2.getValues().addValue(new DbAttribute("attr"), "def", false);
+        List<DbRowOp> ops = List.of(
+                new InsertDbRowOp(mockObject(id1), test1Datamap1, id1),
+                new InsertDbRowOp(mockObject(id2), test1Datamap2, id2),
+                update1,
+                update2,
+                new DeleteDbRowOp(mockObject(id5), test3Datamap1, id5),
+                new DeleteDbRowOp(mockObject(id6), test3Datamap2, id6)
+        );
+
+        DefaultDataDomainFlushAction action = mock(DefaultDataDomainFlushAction.class);
+        when(action.createQueries((List<DbRowOp>) any(List.class))).thenCallRealMethod();
+
+        List<? extends Query> queries = action.createQueries(ops);
+        assertEquals(6, queries.size());
+    }
+
     private Persistent mockObject(ObjectId id) {
         Persistent persistent = mock(Persistent.class);
         when(persistent.getObjectId()).thenReturn(id);
@@ -176,12 +216,17 @@ public class DefaultDataDomainFlushActionTest {
     }
 
     private DbEntity mockEntity(String name) {
+        return mockEntity(name, "defaultMap");
+    }
+
+    private DbEntity mockEntity(String name, String datamapName) {
         DbAttribute attribute1 = new DbAttribute("id");
         attribute1.setPrimaryKey(true);
         DbAttribute attribute2 = new DbAttribute("attr");
         DbEntity testEntity = new DbEntity(name);
         testEntity.addAttribute(attribute1);
         testEntity.addAttribute(attribute2);
+        testEntity.setDataMap(new DataMap(datamapName));
         return testEntity;
     }
 }
