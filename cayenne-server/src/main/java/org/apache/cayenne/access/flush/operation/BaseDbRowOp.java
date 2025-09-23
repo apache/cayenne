@@ -76,4 +76,16 @@ public abstract class BaseDbRowOp implements DbRowOp {
     public String toString() {
         return entity.getName() + " " + changeId;
     }
+
+    protected boolean entitiesHaveSameNameAndDataMap(DbRowOp rowOp) {
+        return entitiesHaveSameName(rowOp) && entitiesHaveSameDataMap(rowOp);
+    }
+
+    boolean entitiesHaveSameName(DbRowOp rowOp) {
+        return rowOp.getEntity().getName().equals(getEntity().getName());
+    }
+
+    private boolean entitiesHaveSameDataMap(DbRowOp rowOp) {
+        return rowOp.getEntity().getDataMap().getName().equals(getEntity().getDataMap().getName());
+    }
 }
