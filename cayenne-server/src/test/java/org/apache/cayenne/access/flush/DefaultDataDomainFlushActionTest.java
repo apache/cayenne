@@ -191,14 +191,13 @@ public class DefaultDataDomainFlushActionTest {
         UpdateDbRowOp update2 = new UpdateDbRowOp(mockObject(id4), test2Datamap2, id4);
         update2.getValues().addValue(new DbAttribute("attr"), "def", false);
         update2.getValues().addValue(new DbAttribute("attr"), "def", false);
-        List<DbRowOp> ops = List.of(
-                new InsertDbRowOp(mockObject(id1), test1Datamap1, id1),
-                new InsertDbRowOp(mockObject(id2), test1Datamap2, id2),
-                update1,
-                update2,
-                new DeleteDbRowOp(mockObject(id5), test3Datamap1, id5),
-                new DeleteDbRowOp(mockObject(id6), test3Datamap2, id6)
-        );
+        List<DbRowOp> ops = new ArrayList<>();
+        ops.add(new InsertDbRowOp(mockObject(id1), test1Datamap1, id1));
+        ops.add(new InsertDbRowOp(mockObject(id2), test1Datamap2, id2));
+        ops.add(update1);
+        ops.add(update2);
+        ops.add(new DeleteDbRowOp(mockObject(id5), test3Datamap1, id5));
+        ops.add(new DeleteDbRowOp(mockObject(id6), test3Datamap2, id6));
 
         DefaultDataDomainFlushAction action = mock(DefaultDataDomainFlushAction.class);
         when(action.createQueries((List<DbRowOp>) any(List.class))).thenCallRealMethod();
