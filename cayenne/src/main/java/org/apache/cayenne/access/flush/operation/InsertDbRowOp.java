@@ -61,7 +61,7 @@ public class InsertDbRowOp extends BaseDbRowOp implements DbRowOpWithValues {
         if(!(rowOp instanceof InsertDbRowOp)) {
             return false;
         }
-        return rowOp.getEntity().getName().equals(getEntity().getName());
+        return entitiesHaveSameNameAndDataMap(rowOp);
     }
 
     @Override

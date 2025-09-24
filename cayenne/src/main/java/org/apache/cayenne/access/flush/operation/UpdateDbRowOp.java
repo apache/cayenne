@@ -57,7 +57,7 @@ public class UpdateDbRowOp extends BaseDbRowOp implements DbRowOpWithValues, DbR
         if(!(rowOp instanceof UpdateDbRowOp)) {
             return false;
         }
-        if(!rowOp.getEntity().getName().equals(getEntity().getName())) {
+        if(!entitiesHaveSameNameAndDataMap(rowOp)) {
             return false;
         }
         UpdateDbRowOp other = (UpdateDbRowOp) rowOp;
