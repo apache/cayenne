@@ -77,15 +77,13 @@ public abstract class BaseDbRowOp implements DbRowOp {
         return entity.getName() + " " + changeId;
     }
 
+    /**
+     * Internal check used in the batching ops logic
+     * @param rowOp to compare with
+     * @return true if another op has the same entity name and datamap
+     */
     protected boolean entitiesHaveSameNameAndDataMap(DbRowOp rowOp) {
-        return entitiesHaveSameName(rowOp) && entitiesHaveSameDataMap(rowOp);
-    }
-
-    boolean entitiesHaveSameName(DbRowOp rowOp) {
-        return rowOp.getEntity().getName().equals(getEntity().getName());
-    }
-
-    private boolean entitiesHaveSameDataMap(DbRowOp rowOp) {
-        return rowOp.getEntity().getDataMap().getName().equals(getEntity().getDataMap().getName());
+        return getEntity().getName().equals(rowOp.getEntity().getName())
+                && getEntity().getDataMap().getName().equals(rowOp.getEntity().getDataMap().getName());
     }
 }
