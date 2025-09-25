@@ -28,7 +28,7 @@
  * <pre>{@code
  * Painting painting = ...
  * Artist artist = ObjectSelect.query(Artist.class)
- *        .where(Artist.PAINTING_ARRAY.contains(painting))
+ *        .where(Artist.PAINTING_ARRAY.containsValue(painting))
  *        .and(Artist.DATE_OF_BIRTH.year().gt(1950))
  *        .and(Artist.ARTIST_NAME.like("Pablo%"))
  *        .orderBy(Artist.ARTIST_NAME.asc())
@@ -55,7 +55,7 @@
  *     <li>{@link org.apache.cayenne.exp.property.ListProperty}, {@link org.apache.cayenne.exp.property.SetProperty}
  *     and {@link org.apache.cayenne.exp.property.MapProperty} are for to-many relationships.<br>
  *     In addition to to-one related methods these properties support collection comparison methods
- *     like {@link org.apache.cayenne.exp.property.ListProperty#contains(org.apache.cayenne.Persistent) contains()}.
+ *     like {@link org.apache.cayenne.exp.property.ListProperty#containsValue(org.apache.cayenne.Persistent) contains()}.
  *     <br>
  *     <li>{@link org.apache.cayenne.exp.property.EmbeddableProperty} for embeddable objects
  *     <br>
