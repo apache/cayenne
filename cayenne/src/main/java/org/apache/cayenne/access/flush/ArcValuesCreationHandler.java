@@ -245,23 +245,6 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
         }
     }
 
-    // not interested in following events in this handler
-    @Override
-    public void nodeIdChanged(Object nodeId, Object newId) {
-    }
-
-    @Override
-    public void nodeCreated(Object nodeId) {
-    }
-
-    @Override
-    public void nodeRemoved(Object nodeId) {
-    }
-
-    @Override
-    public void nodePropertyChanged(Object nodeId, String property, Object oldValue, Object newValue) {
-    }
-
     private static class ValuePropagationVisitor implements DbRowOpVisitor<Void> {
         private final DbAttribute attribute;
         private final boolean add;

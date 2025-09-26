@@ -150,11 +150,6 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
     }
 
     @Override
-    public void nodeCreated(Object nodeId) {
-        // noop
-    }
-
-    @Override
     public void nodeRemoved(Object nodeId) {
         ObjectStore os = context.getObjectStore();
         synchronized (os) {

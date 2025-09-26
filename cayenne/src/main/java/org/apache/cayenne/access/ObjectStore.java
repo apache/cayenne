@@ -439,34 +439,9 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
         // re-register changed object ids
         if (!parentChanges.isNoop()) {
             parentChanges.apply(new GraphChangeHandler() {
-
-                @Override
-                public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
-                }
-
-                @Override
-                public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
-                }
-
-                @Override
-                public void nodeCreated(Object nodeId) {
-                }
-
                 @Override
                 public void nodeIdChanged(Object nodeId, Object newId) {
                     processIdChange(nodeId, newId);
-                }
-
-                @Override
-                public void nodePropertyChanged(
-                        Object nodeId,
-                        String property,
-                        Object oldValue,
-                        Object newValue) {
-                }
-
-                @Override
-                public void nodeRemoved(Object nodeId) {
                 }
             });
         }

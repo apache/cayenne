@@ -270,21 +270,5 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
                 hasArcDiff = true;
             }
         }
-
-        @Override
-        public void nodeIdChanged(Object nodeId, Object newId) {
-        }
-
-        @Override
-        public void nodeCreated(Object nodeId) {
-        }
-
-        @Override
-        public void nodeRemoved(Object nodeId) {
-        }
-
-        @Override
-        public void nodePropertyChanged(Object nodeId, String property, Object oldValue, Object newValue) {
-        }
     }
 }

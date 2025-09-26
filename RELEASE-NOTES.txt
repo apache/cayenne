@@ -17,6 +17,7 @@ CAY-2859 Redesign SelectById factory methods
 CAY-2873 Change Orderings.orderedList() to accept a Collection rather than a List
 CAY-2884 Upgrade gradle to 8.13
 CAY-2893 Update velocity-engine-core dependency
+CAY-2897 Add no-op default implementations to the GraphChangeHandler interface
 
 Bug Fixes:
 

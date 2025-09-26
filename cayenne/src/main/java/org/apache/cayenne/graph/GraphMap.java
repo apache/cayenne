@@ -71,39 +71,4 @@ public class GraphMap implements GraphManager {
         return nodes.remove(nodeId);
     }
 
-    // *** methods for tracking local changes declared in GraphChangeHandler interface
-
-    @Override
-    public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
-        // noop
-    }
-
-    @Override
-    public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
-        // noop
-    }
-
-    @Override
-    public void nodeCreated(Object nodeId) {
-        // noop
-    }
-
-    @Override
-    public void nodeRemoved(Object nodeId) {
-        // noop
-    }
-
-    @Override
-    public void nodeIdChanged(Object nodeId, Object newId) {
-        // noop
-    }
-
-    @Override
-    public void nodePropertyChanged(
-            Object nodeId,
-            String property,
-            Object oldValue,
-            Object newValue) {
-        // noop
-    }
 }

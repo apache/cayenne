@@ -144,10 +144,6 @@ public abstract class DataChannelSyncCallbackAction implements GraphChangeHandle
     }
 
     @Override
-    public void nodeIdChanged(Object nodeId, Object newId) {
-    }
-
-    @Override
     public void nodePropertyChanged(
             Object nodeId,
             String property,
