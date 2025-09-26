@@ -240,13 +240,4 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
         this.currentId = nodeId;
     }
 
-    @Override
-    public void nodeRemoved(Object nodeId) {
-        // noop
-    }
-
-    @Override
-    public void nodeIdChanged(Object nodeId, Object newId) {
-        // noop
-    }
 }

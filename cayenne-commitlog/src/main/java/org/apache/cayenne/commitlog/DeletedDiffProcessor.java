@@ -27,7 +27,6 @@ import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
 import org.apache.cayenne.commitlog.model.MutableChangeMap;
 import org.apache.cayenne.commitlog.model.MutableObjectChange;
 import org.apache.cayenne.commitlog.model.ObjectChangeType;
-import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.query.ObjectIdQuery;
@@ -123,30 +122,5 @@ class DeletedDiffProcessor implements GraphChangeHandler {
 			}
 
 		});
-	}
-
-	@Override
-	public void nodeIdChanged(Object nodeId, Object newId) {
-		// do nothing
-	}
-
-	@Override
-	public void nodeCreated(Object nodeId) {
-		// do nothing
-	}
-
-	@Override
-	public void nodePropertyChanged(Object nodeId, String property, Object oldValue, Object newValue) {
-		// do nothing
-	}
-
-	@Override
-	public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
-		// do nothing
-	}
-
-	@Override
-	public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
-		// do nothing
 	}
 }

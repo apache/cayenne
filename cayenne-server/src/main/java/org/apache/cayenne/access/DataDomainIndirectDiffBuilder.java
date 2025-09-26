@@ -155,24 +155,4 @@ final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
             }
         }
     }
-
-    @Override
-    public void nodeIdChanged(Object nodeId, Object newId) {
-        // noop
-    }
-
-    @Override
-    public void nodeCreated(Object nodeId) {
-        // noop
-    }
-
-    @Override
-    public void nodeRemoved(Object nodeId) {
-        // noop
-    }
-
-    @Override
-    public void nodePropertyChanged(Object nodeId, String property, Object oldValue, Object newValue) {
-        // noop
-    }
 }

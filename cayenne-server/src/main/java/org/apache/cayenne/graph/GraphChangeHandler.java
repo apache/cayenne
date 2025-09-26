@@ -32,34 +32,40 @@ public interface GraphChangeHandler {
     /**
      * Notifies implementing object that a node was assigned a new id.
      */
-    void nodeIdChanged(Object nodeId, Object newId);
+    default void nodeIdChanged(Object nodeId, Object newId) {
+    }
 
     /**
      * Notifies implementing object that a new node was created in the graph.
      */
-    void nodeCreated(Object nodeId);
+    default void nodeCreated(Object nodeId) {
+    }
 
     /**
      * Notifies implementing object that a node was removed from the graph.
      */
-    void nodeRemoved(Object nodeId);
+    default void nodeRemoved(Object nodeId) {
+    }
 
     /**
      * Notifies implementing object that a node's property was modified.
      */
-    void nodePropertyChanged(
+    default void nodePropertyChanged(
             Object nodeId,
             String property,
             Object oldValue,
-            Object newValue);
+            Object newValue) {
+    }
 
     /**
      * Notifies implementing object that a new arc was created between two nodes.
      */
-    void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId);
+    default void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
+    }
 
     /**
      * Notifies implementing object that an arc between two nodes was deleted.
      */
-    void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId);
+    default void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
+    }
 }
