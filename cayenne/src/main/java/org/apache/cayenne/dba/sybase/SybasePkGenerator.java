@@ -100,8 +100,8 @@ public class SybasePkGenerator extends JdbcPkGenerator {
 	@Override
 	public void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
 		super.createAutoPk(node, dbEntities);
-		super.runUpdate(node, safePkProcDrop());
-		super.runUpdate(node, unsafePkProcCreate());
+		runUpdate(node, safePkProcDrop());
+		runUpdate(node, unsafePkProcCreate());
 	}
 
 	@Override
@@ -139,8 +139,8 @@ public class SybasePkGenerator extends JdbcPkGenerator {
 	 */
 	@Override
 	public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
-		super.runUpdate(node, safePkProcDrop());
-		super.runUpdate(node, safePkTableDrop());
+		runUpdate(node, safePkProcDrop());
+		runUpdate(node, safePkTableDrop());
 	}
 
 	@Override
@@ -170,7 +170,7 @@ public class SybasePkGenerator extends JdbcPkGenerator {
 		try (Connection connection = node.getDataSource().getConnection()) {
 			try (CallableStatement statement = connection.prepareCall("{call auto_pk_for_table(?, ?)}")) {
 				statement.setString(1, entity.getName());
-				statement.setInt(2, super.getPkCacheSize());
+				statement.setInt(2, getPkCacheSize());
 
 				// can't use "executeQuery" per http://jtds.sourceforge.net/faq.html#expectingResultSet
 				statement.execute();
