@@ -159,7 +159,7 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
         @Override
         public Object readRow(ResultSet resultSet) {
             Object value = delegateReader.readRow(resultSet);
-            if(valueDecryptor == null) {
+            if(valueDecryptor == null || value == null) {
                 return value;
             }
             return valueDecryptor.decrypt(bytesDecryptor, value);

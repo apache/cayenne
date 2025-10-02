@@ -22,6 +22,7 @@ Bug Fixes:
 CAY-2883 License and notice templates are not processed by the Gradle build
 CAY-2885 Modeler: DbImport fails to load DB schema view
 CAY-2896 Inserting two identical objects into two datamaps stores both objects in the last used datamap
+CAY-2898 Crypto: NPE in a ColumnQuery
 
 ----------------------------------
 Release: 4.2.2

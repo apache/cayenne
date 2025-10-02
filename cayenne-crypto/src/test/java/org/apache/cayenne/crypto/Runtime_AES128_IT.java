@@ -334,6 +334,23 @@ public class Runtime_AES128_IT extends Runtime_AES128_Base {
     }
 
     @Test
+    public void test_ColumnQuerySingleScalarNull() {
+        ObjectContext context = runtime.newContext();
+
+        Table1 t1 = context.newObject(Table1.class);
+        t1.setCryptoInt(1);
+        t1.setCryptoString(null);
+        context.commitChanges();
+
+        List<String> result = ObjectSelect
+                .columnQuery(Table1.class, Table1.CRYPTO_STRING)
+                .select(context);
+
+        assertEquals(1, result.size());
+        assertNull(result.get(0));
+    }
+
+    @Test
     public void test_ColumnQueryMultipleScalars() {
         ObjectContext context = runtime.newContext();
 
