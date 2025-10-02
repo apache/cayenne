@@ -190,4 +190,72 @@ public class Runtime_AES128_GZIP_IT extends Runtime_AES128_Base {
         assertEquals(str+"A", result.get(0).getCryptoString());
     }
 
+    @Test
+    public void test_ScalarColumnQuery() throws SQLException {
+        // make sure compression is on...
+        byte[] cryptoBytes1 = CryptoUnitUtils.bytesOfSize(GZIP_THRESHOLD + 101);
+        byte[] cryptoBytes2 = CryptoUnitUtils.bytesOfSize(GZIP_THRESHOLD + 102);
+
+        ObjectContext context = runtime.newContext();
+
+        Table2 t1 = context.newObject(Table2.class);
+        t1.setPlainBytes("a".getBytes());
+        t1.setCryptoBytes(cryptoBytes1);
+
+        Table2 t2 = context.newObject(Table2.class);
+        t2.setPlainBytes("b".getBytes());
+        t2.setCryptoBytes(cryptoBytes2);
+
+        Table2 t3 = context.newObject(Table2.class);
+        t3.setPlainBytes("c".getBytes());
+        t3.setCryptoBytes(null);
+
+        context.commitChanges();
+
+        List<byte[]> result = ObjectSelect.query(Table2.class)
+                .column(Table2.CRYPTO_BYTES)
+                .orderBy(Table2.PLAIN_BYTES.asc())
+                .select(runtime.newContext());
+
+        assertEquals(3, result.size());
+        assertArrayEquals(cryptoBytes1, result.get(0));
+        assertArrayEquals(cryptoBytes2, result.get(1));
+        assertArrayEquals(null, result.get(2));
+    }
+
+    @Test
+    public void test_MultipleColumnsQuery() throws SQLException {
+        // make sure compression is on...
+        byte[] cryptoBytes1 = CryptoUnitUtils.bytesOfSize(GZIP_THRESHOLD + 101);
+        byte[] cryptoBytes2 = CryptoUnitUtils.bytesOfSize(GZIP_THRESHOLD + 102);
+
+        ObjectContext context = runtime.newContext();
+
+        Table2 t1 = context.newObject(Table2.class);
+        t1.setPlainBytes("a".getBytes());
+        t1.setCryptoBytes(cryptoBytes1);
+
+        Table2 t2 = context.newObject(Table2.class);
+        t2.setPlainBytes("b".getBytes());
+        t2.setCryptoBytes(cryptoBytes2);
+
+        Table2 t3 = context.newObject(Table2.class);
+        t3.setPlainBytes("c".getBytes());
+        t3.setCryptoBytes(null);
+
+        context.commitChanges();
+
+        List<Object[]> result = ObjectSelect.query(Table2.class)
+                .columns(Table2.CRYPTO_BYTES, Table2.PLAIN_BYTES)
+                .orderBy(Table2.PLAIN_BYTES.asc())
+                .select(runtime.newContext());
+
+        assertEquals(3, result.size());
+        assertArrayEquals(cryptoBytes1, (byte[])result.get(0)[0]);
+        assertArrayEquals("a".getBytes(), (byte[])result.get(0)[1]);
+        assertArrayEquals(cryptoBytes2, (byte[])result.get(1)[0]);
+        assertArrayEquals("b".getBytes(), (byte[])result.get(1)[1]);
+        assertArrayEquals(null, (byte[])result.get(2)[0]);
+    }
+
 }
