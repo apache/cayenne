@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.util;
 
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -81,13 +82,12 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
 
     @Override
     protected String getPathToInitializeCombo(ObjAttributeTableModel model, int row) {
-        String pathString = model.getAttribute(row).getValue().getDbAttributePath().value();
-        if (pathString == null) {
+        CayennePath path = model.getAttribute(row).getValue().getDbAttributePath();
+        if (path == null || path.isEmpty()) {
             return "";
         }
-        String[] pathStrings = pathString.split(Pattern.quote("."));
-        String lastStringInPath = pathStrings[pathStrings.length - 1];
-        return pathString.replaceAll(lastStringInPath + '$', "");
+        return path.parent()
+                .dot(path.last().value().replaceAll("\\$", "")).value();
     }
 
     @Override

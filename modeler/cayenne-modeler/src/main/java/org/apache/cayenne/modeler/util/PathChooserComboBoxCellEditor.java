@@ -244,10 +244,10 @@ public abstract class PathChooserComboBoxCellEditor<T extends CayenneTableModel<
                                                       boolean isSelected, boolean cellHasFocus) {
 
             JPanel panel = new JPanel(new BorderLayout());
-            JLabel label = new JLabel((String) value);
+            JLabel label = new JLabel(value.toString());
             panel.add(label);
 
-            Object currentNode = getCurrentNode((String) value);
+            Object currentNode = getCurrentNode(value.toString());
             if (treeModel.isLeaf(currentNode)) {
                 ListCellRenderer<Object> leafRenderer = CellRenderers.listRenderer();
                 return leafRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
