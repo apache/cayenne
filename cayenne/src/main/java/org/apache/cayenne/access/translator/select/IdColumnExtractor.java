@@ -23,6 +23,7 @@ import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResult;
+import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 
 /**
@@ -31,15 +32,18 @@ import org.apache.cayenne.map.ObjEntity;
 class IdColumnExtractor extends BaseColumnExtractor {
 
     private final DbEntity dbEntity;
+    private ObjEntity objEntity;
     private EntityResult result;
 
     IdColumnExtractor(TranslatorContext context, DbEntity dbEntity) {
         super(context);
         this.dbEntity = dbEntity;
+        this.objEntity = null;
     }
 
     IdColumnExtractor(TranslatorContext context, ObjEntity objEntity) {
         this(context, objEntity.getDbEntity());
+        this.objEntity = objEntity;
         if(context.getQuery().needsResultSetMapping()) {
             this.result = new EntityResult(objEntity.getName());
         }
@@ -48,9 +52,16 @@ class IdColumnExtractor extends BaseColumnExtractor {
     @Override
     public void extract(CayennePath prefix) {
         for (DbAttribute dba : dbEntity.getPrimaryKeys()) {
-            addDbAttribute(prefix, prefix, dba);
+            ResultNodeDescriptor resultNodeDescriptor = addDbAttribute(prefix, prefix, dba);
             if(result != null) {
                 result.addDbField(dba.getName(), prefix + dba.getName());
+            }
+            if(objEntity != null) {
+                // redefine PK type if there's a corresponding ObjAttribute for it
+                ObjAttribute meaningfulPK = objEntity.getAttributeForDbAttribute(dba);
+                if(meaningfulPK != null) {
+                    resultNodeDescriptor.setJavaType(meaningfulPK.getType());
+                }
             }
         }
         if(result != null) {
