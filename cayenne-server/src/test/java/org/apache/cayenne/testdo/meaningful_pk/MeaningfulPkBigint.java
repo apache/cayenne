@@ -17,28 +17,12 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.translator.select;
+package org.apache.cayenne.testdo.meaningful_pk;
 
-import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.testdo.meaningful_pk.auto._MeaningfulPkBigint;
 
-import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.table;
+public class MeaningfulPkBigint extends _MeaningfulPkBigint {
 
-/**
- * @since 4.2
- */
-abstract class BaseColumnExtractor implements ColumnExtractor {
+    private static final long serialVersionUID = 1L;
 
-    protected final TranslatorContext context;
-
-    BaseColumnExtractor(TranslatorContext context) {
-        this.context = context;
-    }
-
-    protected ResultNodeDescriptor addDbAttribute(String prefix, String labelPrefix, DbAttribute dba) {
-        String alias = context.getTableTree().aliasForPath(prefix);
-        String dataRowKey = labelPrefix != null ? labelPrefix + '.' + dba.getName() : dba.getName();
-        Node columnNode = table(alias).column(dba).build();
-        return context.addResultNode(columnNode, dataRowKey).setDbAttribute(dba);
-    }
 }

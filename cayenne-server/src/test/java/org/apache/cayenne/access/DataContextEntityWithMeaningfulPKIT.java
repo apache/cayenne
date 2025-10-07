@@ -31,6 +31,7 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKDep;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPk;
+import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkBigint;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkDep2;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkTest2;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -39,6 +40,7 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -270,4 +272,62 @@ public class DataContextEntityWithMeaningfulPKIT extends ServerCase {
         obj.setPkAttribute(1002);
         context.commitChanges();
     }
+
+    @Test
+    public void testPaginatedQuery() {
+        MeaningfulPk pkObj = context.newObject(MeaningfulPk.class);
+        pkObj.setPk("123");
+        context.commitChanges();
+
+        MeaningfulPk pkObj2 = context.newObject(MeaningfulPk.class);
+        pkObj2.setPk("124");
+        context.commitChanges();
+
+        MeaningfulPk pkObj3 = context.newObject(MeaningfulPk.class);
+        pkObj3.setPk("125");
+        context.commitChanges();
+
+        ObjectContext cleanContext = runtime.newContext();
+
+        List<MeaningfulPk> select = ObjectSelect.query(MeaningfulPk.class)
+                .orderBy(MeaningfulPk.PK.asc())
+                .pageSize(1)
+                .select(cleanContext);
+
+        assertEquals(3, select.size());
+        for(MeaningfulPk pk : select) {
+            assertNotNull(pk.getPk());
+            assertTrue(pk.getPk().startsWith("12"));
+        }
+    }
+
+
+    @Test
+    public void testPaginatedQueryBigInteger() {
+        MeaningfulPkBigint pkObj = context.newObject(MeaningfulPkBigint.class);
+        pkObj.setPk(BigInteger.valueOf(123));
+        context.commitChanges();
+
+        MeaningfulPkBigint pkObj2 = context.newObject(MeaningfulPkBigint.class);
+        pkObj2.setPk(BigInteger.valueOf(124));
+        context.commitChanges();
+
+        MeaningfulPkBigint pkObj3 = context.newObject(MeaningfulPkBigint.class);
+        pkObj3.setPk(BigInteger.valueOf(125));
+        context.commitChanges();
+
+        ObjectContext cleanContext = runtime.newContext();
+
+        List<MeaningfulPkBigint> select = ObjectSelect.query(MeaningfulPkBigint.class)
+                .orderBy(MeaningfulPk.PK.asc())
+                .pageSize(1)
+                .select(cleanContext);
+
+        assertEquals(3, select.size());
+        for(MeaningfulPkBigint pk : select) {
+            assertNotNull(pk.getPk());
+            assertTrue(pk.getPk().compareTo(BigInteger.valueOf(120)) > 0);
+        }
+    }
+
 }

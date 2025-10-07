@@ -9,6 +9,9 @@
 	<db-entity name="MEANINGFUL_PK">
 		<db-attribute name="PK" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="100"/>
 	</db-entity>
+	<db-entity name="MEANINGFUL_PK_BIGINT">
+		<db-attribute name="PK" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
 	<db-entity name="MEANINGFUL_PK_DEP">
 		<db-attribute name="DESCR" type="VARCHAR" length="50"/>
 		<db-attribute name="MASTER_PK" type="INTEGER"/>
@@ -41,6 +44,9 @@
 	</obj-entity>
 	<obj-entity name="MeaningfulPk" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPk" clientClassName="org.apache.cayenne.testdo.meaningful_pk.ClientMeaningfulPk" dbEntityName="MEANINGFUL_PK">
 		<obj-attribute name="pk" type="java.lang.String" db-attribute-path="PK"/>
+	</obj-entity>
+	<obj-entity name="MeaningfulPkBigint" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkBigint" dbEntityName="MEANINGFUL_PK_BIGINT">
+		<obj-attribute name="pk" type="java.math.BigInteger" db-attribute-path="PK"/>
 	</obj-entity>
 	<obj-entity name="MeaningfulPkDep2" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkDep2" clientClassName="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkDep2" dbEntityName="MEANINGFUL_PK_DEP2">
 		<obj-attribute name="descr" type="java.lang.String" db-attribute-path="DESCR"/>
