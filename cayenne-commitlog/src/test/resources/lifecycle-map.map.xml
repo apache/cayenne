@@ -24,6 +24,10 @@
 		<db-attribute name="CHAR_PROPERTY2" type="VARCHAR" length="200"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
+	<db-entity name="AUDITABLE5">
+		<db-attribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
 	<db-entity name="AUDITABLE_CHILD1">
 		<db-attribute name="AUDITABLE1_ID" type="INTEGER"/>
 		<db-attribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
@@ -38,6 +42,11 @@
 		<db-attribute name="AUDITABLE2_ID" type="INTEGER"/>
 		<db-attribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
 		<db-attribute name="CHAR_PROPERTY2" type="VARCHAR" length="200"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="AUDITABLE_CHILD5">
+		<db-attribute name="AUDITABLE5_ID" type="INTEGER"/>
+		<db-attribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
 	<db-entity name="AUDIT_LOG">
@@ -78,6 +87,9 @@
 		<obj-attribute name="charProperty1" type="java.lang.String" db-attribute-path="CHAR_PROPERTY1"/>
 		<obj-attribute name="charProperty2" type="java.lang.String" db-attribute-path="CHAR_PROPERTY2"/>
 	</obj-entity>
+	<obj-entity name="Auditable5" className="org.apache.cayenne.commitlog.db.Auditable5" dbEntityName="AUDITABLE5">
+		<obj-attribute name="charProperty1" type="java.lang.String" db-attribute-path="CHAR_PROPERTY1"/>
+	</obj-entity>
 	<obj-entity name="AuditableChild1" className="org.apache.cayenne.commitlog.db.AuditableChild1" dbEntityName="AUDITABLE_CHILD1">
 		<obj-attribute name="charProperty1" type="java.lang.String" db-attribute-path="CHAR_PROPERTY1"/>
 	</obj-entity>
@@ -87,6 +99,9 @@
 	<obj-entity name="AuditableChild3" className="org.apache.cayenne.commitlog.db.AuditableChild3" dbEntityName="AUDITABLE_CHILD3">
 		<obj-attribute name="charProperty1" type="java.lang.String" db-attribute-path="CHAR_PROPERTY1"/>
 		<obj-attribute name="charProperty2" type="java.lang.String" db-attribute-path="CHAR_PROPERTY2"/>
+	</obj-entity>
+	<obj-entity name="AuditableChild5" className="org.apache.cayenne.commitlog.db.AuditableChild5" dbEntityName="AUDITABLE_CHILD5">
+		<obj-attribute name="charProperty1" type="java.lang.String" db-attribute-path="CHAR_PROPERTY1"/>
 	</obj-entity>
 	<obj-entity name="E1" className="org.apache.cayenne.commitlog.db.E1" dbEntityName="E1"/>
 	<obj-entity name="E2" className="org.apache.cayenne.commitlog.db.E2" dbEntityName="E2"/>
@@ -107,6 +122,9 @@
 	<db-relationship name="auditable3" source="AUDITABLE4" target="AUDITABLE3">
 		<db-attribute-pair source="AUDITABLE3_ID" target="ID"/>
 	</db-relationship>
+	<db-relationship name="children" source="AUDITABLE5" target="AUDITABLE_CHILD5" toMany="true">
+		<db-attribute-pair source="ID" target="AUDITABLE5_ID"/>
+	</db-relationship>
 	<db-relationship name="parent" source="AUDITABLE_CHILD1" target="AUDITABLE1">
 		<db-attribute-pair source="AUDITABLE1_ID" target="ID"/>
 	</db-relationship>
@@ -115,6 +133,9 @@
 	</db-relationship>
 	<db-relationship name="parent" source="AUDITABLE_CHILD3" target="AUDITABLE2">
 		<db-attribute-pair source="AUDITABLE2_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="parent" source="AUDITABLE_CHILD5" target="AUDITABLE5">
+		<db-attribute-pair source="AUDITABLE5_ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="e34s" source="E3" target="E34" toDependentPK="true" toMany="true">
 		<db-attribute-pair source="ID" target="E3_ID"/>
@@ -132,9 +153,11 @@
 	<obj-relationship name="children" source="Auditable2" target="AuditableChild3" deleteRule="Deny" db-relationship-path="children"/>
 	<obj-relationship name="auditable4s" source="Auditable3" target="Auditable4" deleteRule="Deny" db-relationship-path="auditable4s"/>
 	<obj-relationship name="auditable3" source="Auditable4" target="Auditable3" deleteRule="Nullify" db-relationship-path="auditable3"/>
+	<obj-relationship name="children" source="Auditable5" target="AuditableChild5" deleteRule="Deny" db-relationship-path="children"/>
 	<obj-relationship name="parent" source="AuditableChild1" target="Auditable1" deleteRule="Nullify" db-relationship-path="parent"/>
 	<obj-relationship name="parent" source="AuditableChild1x" target="Auditable1" deleteRule="Nullify" db-relationship-path="parent"/>
 	<obj-relationship name="parent" source="AuditableChild3" target="Auditable2" deleteRule="Nullify" db-relationship-path="parent"/>
+	<obj-relationship name="parent" source="AuditableChild5" target="Auditable5" deleteRule="Nullify" db-relationship-path="parent"/>
 	<obj-relationship name="e4s" source="E3" target="E4" deleteRule="Deny" db-relationship-path="e34s.e4"/>
 	<obj-relationship name="e3s" source="E4" target="E3" deleteRule="Deny" db-relationship-path="e34s.e3"/>
 	<cgen xmlns="http://cayenne.apache.org/schema/10/cgen">
@@ -142,6 +165,10 @@
 		<mode>entity</mode>
 		<template>templates/v4_1/subclass.vm</template>
 		<superTemplate>templates/v4_1/superclass.vm</superTemplate>
+		<embeddableTemplate>templates/v4_1/embeddable-subclass.vm</embeddableTemplate>
+		<embeddableSuperTemplate>templates/v4_1/embeddable-superclass.vm</embeddableSuperTemplate>
+		<queryTemplate>templates/v4_1/datamap-subclass.vm</queryTemplate>
+		<querySuperTemplate>templates/v4_1/datamap-superclass.vm</querySuperTemplate>
 		<outputPattern>*.java</outputPattern>
 		<makePairs>true</makePairs>
 		<usePkgPath>true</usePkgPath>

@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.commitlog;
 
+import org.apache.cayenne.DataChannelSyncFilter;
 import org.apache.cayenne.commitlog.meta.AnnotationCommitLogEntityFactory;
 import org.apache.cayenne.commitlog.meta.CommitLogEntity;
 import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
@@ -25,6 +26,7 @@ import org.apache.cayenne.commitlog.meta.IncludeAllCommitLogEntityFactory;
 import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.tx.TransactionFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,10 +117,26 @@ public class CommitLogModuleExtender {
             }
 
             if (excludeFromTransaction) {
-                ServerModule.contributeDomainSyncFilters(binder).addAfter(CommitLogFilter.class, TransactionFilter.class);
+                ServerModule.contributeDomainSyncFilters(binder)
+                        .insertBefore(createDiffInitFilter(), TransactionFilter.class)
+                        .addAfter(CommitLogFilter.class, TransactionFilter.class);
             } else {
-                ServerModule.contributeDomainSyncFilters(binder).insertBefore(CommitLogFilter.class, TransactionFilter.class);
+                ServerModule.contributeDomainSyncFilters(binder)
+                        .insertBefore(CommitLogFilter.class, TransactionFilter.class);
             }
+        };
+    }
+
+    /**
+     * @return the filter that just initializes incoming Diff
+     */
+    private static DataChannelSyncFilter createDiffInitFilter() {
+        GraphChangeHandler noopHandler = new GraphChangeHandler() {};
+        return (originatingContext, changes, syncType, filterChain)
+                -> {
+            // see ObjectStoreGraphDiff.resolveDiff()
+            changes.apply(noopHandler);
+            return filterChain.onSync(originatingContext, changes, syncType);
         };
     }
 }
