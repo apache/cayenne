@@ -28,9 +28,10 @@ import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.InsertBatchQuery;
@@ -261,11 +262,10 @@ public class BatchAction extends BaseSQLAction {
 
 		ResultSet keysRS = statement.getGeneratedKeys();
 
-		// TODO: andrus, 7/4/2007 -
-		//  	(1) get the type of meaningful PK's from their ObjAttributes;
-		//  	(2) use a different form of Statement.execute - "execute(String,String[])" to be able to map
-		//  		generated column names (this way we can support multiple columns.. although need to check how well
-		// 			this works with most common drivers)
+		// TODO: andrus, 7/4/2007 - use a different form of Statement.execute -
+		//  "execute(String,String[])" to be able to map generated column names
+		// (this way we can support multiple columns..
+		// although need to check how well this works with most common drivers)
 
 		RowDescriptorBuilder builder = new RowDescriptorBuilder();
 
@@ -280,7 +280,7 @@ public class BatchAction extends BaseSQLAction {
 				// use column name from result set, but type and Java class from DB attribute
 				columns[0] = new ColumnDescriptor(keysRS.getMetaData(), 1);
 				columns[0].setJdbcType(key.getType());
-				columns[0].setJavaClass(key.getJavaClass());
+				columns[0].setJavaClass(typeForGeneratedPK(key));
 				builder.setColumns(columns);
 			} else {
 				builder.setResultSet(keysRS);
@@ -298,5 +298,17 @@ public class BatchAction extends BaseSQLAction {
 			objectIds.add(row.getObjectId());
 		}
 		observer.nextGeneratedRows(query, iterator, objectIds);
+	}
+
+	private String typeForGeneratedPK(DbAttribute key) {
+		String entityName = getQuery().getRows().get(0).getObjectId().getEntityName();
+		ObjEntity objEntity = dataNode.getEntityResolver().getObjEntity(entityName);
+		if(objEntity != null) {
+			ObjAttribute attributeForDbAttribute = objEntity.getAttributeForDbAttribute(key);
+			if(attributeForDbAttribute != null) {
+				return attributeForDbAttribute.getType();
+			}
+		}
+		return key.getJavaClass();
 	}
 }

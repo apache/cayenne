@@ -32,6 +32,7 @@ import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKDep;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPk;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkBigint;
+import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkBigintGenerated;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkDep2;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkTest2;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -327,4 +328,21 @@ public class DataContextEntityWithMeaningfulPKIT extends RuntimeCase {
             assertTrue(pk.getPk().compareTo(BigInteger.valueOf(120)) > 0);
         }
     }
+
+    @Test
+    public void testGeneratedBigIntegerPK() {
+        MeaningfulPkBigintGenerated pkObj1 = context.newObject(MeaningfulPkBigintGenerated.class);
+        MeaningfulPkBigintGenerated pkObj2 = context.newObject(MeaningfulPkBigintGenerated.class);
+        MeaningfulPkBigintGenerated pkObj3 = context.newObject(MeaningfulPkBigintGenerated.class);
+
+        context.commitChanges();
+
+        assertNotNull(pkObj1.getPk());
+        assertNotNull(pkObj2.getPk());
+        assertNotNull(pkObj3.getPk());
+        assertTrue(pkObj1.getPk().compareTo(BigInteger.ZERO) > 0);
+        assertTrue(pkObj2.getPk().compareTo(BigInteger.ZERO) > 0);
+        assertTrue(pkObj3.getPk().compareTo(BigInteger.ZERO) > 0);
+    }
+
 }
