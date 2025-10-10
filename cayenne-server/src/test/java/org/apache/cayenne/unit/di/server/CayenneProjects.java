@@ -75,6 +75,7 @@ public class CayenneProjects {
     public static final String SUS_PROJECT = "cayenne-sus.xml";
     public static final String TABLE_PRIMITIVES_PROJECT = "cayenne-table-primitives.xml";
     public static final String TESTMAP_PROJECT = "cayenne-testmap.xml";
+    public static final String MANY_TO_MANY_JOIN_TABLE_OBJ_ENTITY_PROJECT = "cayenne-many-to-many-joinTable-objEntity.xml";
     public static final String THINGS_PROJECT = "cayenne-things.xml";
     public static final String TOONE_PROJECT = "cayenne-toone.xml";
     public static final String UNSUPPORTED_DISTINCT_TYPES_PROJECT = "cayenne-unsupported-distinct-types.xml";
