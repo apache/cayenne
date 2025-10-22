@@ -193,9 +193,9 @@ public class OraclePkGenerator extends JdbcPkGenerator {
                 && keyGenerator.getGeneratorName() != null) {
 
             Integer size = keyGenerator.getKeyCacheSize();
-            return (size != null && size >= 1) ? size : super.getPkCacheSize();
+            return (size != null && size >= 1) ? size : getPkCacheSize();
         } else {
-            return super.getPkCacheSize();
+            return getPkCacheSize();
         }
     }
 
