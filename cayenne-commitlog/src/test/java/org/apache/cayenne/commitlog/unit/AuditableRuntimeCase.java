@@ -42,6 +42,9 @@ public abstract class AuditableRuntimeCase {
 	protected TableHelper auditable3;
 	protected TableHelper auditable4;
 
+	protected TableHelper auditable5;
+	protected TableHelper auditableChild5;
+
 	protected TableHelper auditLog;
 
 	@Before
@@ -68,6 +71,10 @@ public abstract class AuditableRuntimeCase {
 		this.auditable4 = new TableHelper(dbHelper, "AUDITABLE4").setColumns("ID", "CHAR_PROPERTY1", "CHAR_PROPERTY2",
 				"AUDITABLE3_ID");
 
+		this.auditable5 = new TableHelper(dbHelper, "AUDITABLE5").setColumns("ID", "CHAR_PROPERTY1");
+		this.auditableChild5 = new TableHelper(dbHelper, "AUDITABLE_CHILD5").setColumns("ID", "AUDITABLE5_ID",
+				"CHAR_PROPERTY1");
+
 		this.auditableChild1.deleteAll();
 		this.auditableChild1x.deleteAll();
 		this.auditable1.deleteAll();
@@ -75,6 +82,8 @@ public abstract class AuditableRuntimeCase {
 		this.auditable2.deleteAll();
 		this.auditable4.deleteAll();
 		this.auditable3.deleteAll();
+		this.auditableChild5.deleteAll();
+		this.auditable5.deleteAll();
 
 		this.auditLog.deleteAll();
 	}

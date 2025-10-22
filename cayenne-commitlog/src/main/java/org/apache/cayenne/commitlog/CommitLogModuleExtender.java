@@ -18,12 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.commitlog;
 
+import org.apache.cayenne.DataChannelSyncFilter;
 import org.apache.cayenne.commitlog.meta.AnnotationCommitLogEntityFactory;
 import org.apache.cayenne.commitlog.meta.CommitLogEntity;
 import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
 import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ListBuilder;
+import org.apache.cayenne.graph.GraphChangeHandler;
 
 /**
  * A builder of a custom extensions module for {@link CommitLogModule} that customizes its services and installs
@@ -60,6 +62,7 @@ public class CommitLogModuleExtender {
      * within the transaction, so listeners can commit their code together with the main commit.
      */
     public CommitLogModuleExtender excludeFromTransaction() {
+        CoreModule.extend(binder).addSyncFilter(createDiffInitFilter(), true);
         return registerFilter(false);
     }
 
@@ -99,5 +102,18 @@ public class CommitLogModuleExtender {
             commitLogListeners = binder.bindList(CommitLogListener.class);
         }
         return commitLogListeners;
+    }
+
+    /**
+     * @return the filter that just initializes incoming Diff
+     */
+    private static DataChannelSyncFilter createDiffInitFilter() {
+        GraphChangeHandler noopHandler = new GraphChangeHandler() {};
+        return (originatingContext, changes, syncType, filterChain)
+                -> {
+            // see ObjectStoreGraphDiff.resolveDiff()
+            changes.apply(noopHandler);
+            return filterChain.onSync(originatingContext, changes, syncType);
+        };
     }
 }
