@@ -28,6 +28,7 @@ CAY-2876 Memory leak in the ObjectStore
 CAY-2879 Negative number for non parameterized ObjectSelect query not processed correctly
 CAY-2883 License and notice templates are not processed by the Gradle build
 CAY-2885 Modeler: DbImport fails to load DB schema view
+CAY-2889 Make subclassing a PK Generator easier
 CAY-2896 Inserting two identical objects into two datamaps stores both objects in the last used datamap
 CAY-2898 Crypto: NPE in a ColumnQuery
 CAY-2900 Meaningful generated PKs could lead to the ClassCastException
