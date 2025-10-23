@@ -94,4 +94,46 @@ public class QueryCacheIT extends RuntimeCase {
         List<Artist> result2 = context1.performQuery(q);
         assertEquals("the list stored in the shared query cache cannot be mutated after being returned", 1, result2.size());
     }
+    
+    @Test
+    public void testLocalCacheRerunDoesntClobberNewerInMemoryState() {
+        
+        Artist a = context1.newObject(Artist.class);
+        a.setArtistName("artist");
+        context1.commitChanges();
+        
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).localCache(); // LOCAL CACHE
+        Artist result1 = query.selectFirst(context1);
+        assertEquals("should populate shared cache", "artist", result1.getArtistName());
+        
+        a.setArtistName("modified"); // change the name in memory, and on disk
+        context1.commitChanges();
+        
+        Artist result2 = ObjectSelect.query(Artist.class).selectFirst(context1);
+        assertEquals("should be no cache used", "modified", result2.getArtistName());
+        
+        Artist result3 = query.selectFirst(context1);
+        assertEquals("should use shared cache, but shouldn't wipe up newer in-memory data", "modified", result3.getArtistName());
+    }
+    
+    @Test
+    public void testSharedCacheRerunDoesntClobberNewerInMemoryState() {
+        
+        Artist a = context1.newObject(Artist.class);
+        a.setArtistName("artist");
+        context1.commitChanges();
+        
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).sharedCache(); // SHARED CACHE
+        Artist result1 = query.selectFirst(context1);
+        assertEquals("should populate shared cache", "artist", result1.getArtistName());
+        
+        a.setArtistName("modified"); // change the name in memory, and on disk
+        context1.commitChanges();
+        
+        Artist result2 = ObjectSelect.query(Artist.class).selectFirst(context1);
+        assertEquals("should be no cache used", "modified", result2.getArtistName());
+        
+        Artist result3 = query.selectFirst(context1);
+        assertEquals("should use shared cache, but shouldn't wipe out newer in-memory data", "modified", result3.getArtistName());
+    }
 }
