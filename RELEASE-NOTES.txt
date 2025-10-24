@@ -31,6 +31,7 @@ CAY-2885 Modeler: DbImport fails to load DB schema view
 CAY-2889 Make subclassing a PK Generator easier
 CAY-2896 Inserting two identical objects into two datamaps stores both objects in the last used datamap
 CAY-2898 Crypto: NPE in a ColumnQuery
+CAY-2899 CommitLog: missing lifecycle-induced changes in `excludeFromTransaction` mode
 CAY-2900 Meaningful generated PKs could lead to the ClassCastException
 
 ----------------------------------
