@@ -29,5 +29,6 @@
     </db-entity>
     <obj-entity name="Parent" className="Parent" dbEntityName="PARENT">
         <obj-attribute name="col2" type="java.lang.String" db-attribute-path="COL2"/>
+        <info:property xmlns:info="http://cayenne.apache.org/schema/10/info" name="comment" value="test"/>
     </obj-entity>
 </data-map>

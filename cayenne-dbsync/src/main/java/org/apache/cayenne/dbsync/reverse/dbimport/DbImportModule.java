@@ -34,6 +34,7 @@ import org.apache.cayenne.project.FileProjectSaver;
 import org.apache.cayenne.project.ProjectModule;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.project.extension.ExtensionAwareHandlerFactory;
+import org.apache.cayenne.project.extension.info.InfoExtension;
 
 /**
  * A DI module that bootstraps {@link DbImportAction}.
@@ -53,6 +54,7 @@ public class DbImportModule implements Module {
         binder.bind(DataChannelMetaData.class).to(DefaultDataChannelMetaData.class);
         binder.bind(HandlerFactory.class).to(ExtensionAwareHandlerFactory.class);
         ProjectModule.contributeExtensions(binder).add(DbImportExtension.class);
+        ProjectModule.contributeExtensions(binder).add(InfoExtension.class);
     }
 
 }
