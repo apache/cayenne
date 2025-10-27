@@ -34,6 +34,7 @@ CAY-2896 Inserting two identical objects into two datamaps stores both objects i
 CAY-2898 Crypto: NPE in a ColumnQuery
 CAY-2899 CommitLog: missing lifecycle-induced changes in `excludeFromTransaction` mode
 CAY-2900 Meaningful generated PKs could lead to the ClassCastException
+CAY-2901 Loosing comments on the existing ObjAttribute after DB import
 
 ----------------------------------
 Release: 5.0-M1
