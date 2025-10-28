@@ -48,13 +48,13 @@ public class ExpressionTest {
 	@Test
 	public void testToEJBQL_numericType_long() {
 		Expression e = ExpressionFactory.matchExp("consignment.parts", 1418342400L);
-		assertEquals("x.consignment.parts = 1418342400", e.toEJBQL("x"));
+		assertEquals("x.consignment.parts = 1418342400L", e.toEJBQL("x"));
 	}
 
 	@Test
 	public void testToEJBQL_numericType_float() {
 		Expression e = ExpressionFactory.greaterOrEqualExp("consignment.parts", Float.valueOf("3.145"));
-		assertEquals("x.consignment.parts >= 3.145", e.toEJBQL("x"));
+		assertEquals("x.consignment.parts >= 3.145f", e.toEJBQL("x"));
 	}
 
 	@Test
@@ -482,5 +482,20 @@ public class ExpressionTest {
 				List.of(ExpressionFactory.betweenExp("x",1,2)),
 				List.of(ExpressionFactory.pathExp("x")));
 		caseWhen.appendAsEJBQL(null, null, "x");
+	}
+
+	@Test
+	public void testNumericsToString() {
+		Expression exp1 = ExpressionFactory.exp("a = 123");
+		assertEquals("a = 123", exp1.toString());
+
+		Expression exp2 = ExpressionFactory.exp("a = 123L");
+		assertEquals("a = 123L", exp2.toString());
+
+		Expression exp3 = ExpressionFactory.exp("a = 123.0");
+		assertEquals("a = 123.0", exp3.toString());
+
+		Expression exp4 = ExpressionFactory.exp("a = 123.0f");
+		assertEquals("a = 123.0f", exp4.toString());
 	}
 }

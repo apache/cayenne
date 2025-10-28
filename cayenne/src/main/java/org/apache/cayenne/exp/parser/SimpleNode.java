@@ -22,12 +22,10 @@
 package org.apache.cayenne.exp.parser;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
@@ -88,7 +86,7 @@ public abstract class SimpleNode extends Expression implements Node {
 		}
 
 		if (scalar instanceof Integer || scalar instanceof Long || scalar instanceof Float || scalar instanceof Double) {
-			out.append(scalar.toString());
+			out.append(numericToString((Number)scalar));
 			return;
 		}
 
@@ -139,6 +137,8 @@ public abstract class SimpleNode extends Expression implements Node {
 			Enum<?> e = (Enum<?>) scalar;
 			out.append("enum:");
 			out.append(e.getClass().getName()).append(".").append(e.name());
+		} else if (scalar instanceof Number) {
+			appendAsEscapedString(out, numericToString((Number)scalar));
 		} else {
 			appendAsEscapedString(out, String.valueOf(scalar));
 		}
@@ -146,6 +146,15 @@ public abstract class SimpleNode extends Expression implements Node {
 		if (quote) {
 			out.append(quoteChar);
 		}
+	}
+
+	protected static String numericToString(Number number) {
+		if(number instanceof Long) {
+			return number + "L";
+		} else if(number instanceof Float) {
+			return number + "f";
+		}
+		return String.valueOf(number);
 	}
 
 	/**
