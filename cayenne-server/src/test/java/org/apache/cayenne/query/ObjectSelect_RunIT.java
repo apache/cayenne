@@ -236,4 +236,12 @@ public class ObjectSelect_RunIT extends ServerCase {
 			assertNotNull(artist);
 		}
 	}
+
+	@Test
+	public void test_CAY_2836_countWithOrdering() {
+		long count = ObjectSelect.query(Artist.class)
+				.orderBy(Artist.ARTIST_NAME.asc())
+				.selectCount(context);
+		assertEquals(20, count);
+	}
 }

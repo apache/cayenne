@@ -678,7 +678,10 @@ public class ObjectSelect<T> extends FluentSelect<T> implements ParameterizedQue
      * @return count of rows
      */
     public long selectCount(ObjectContext context) {
-        return count().selectOne(context);
+        ColumnSelect<Long> count = count();
+        // reset orderings, see CAY-2836
+        count.orderings = Collections.emptyList();
+        return count.selectOne(context);
     }
 
     @Override
