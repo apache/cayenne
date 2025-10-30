@@ -35,7 +35,6 @@ import org.apache.cayenne.project.ProjectModule;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.project.extension.ExtensionAwareHandlerFactory;
 import org.apache.cayenne.project.extension.info.InfoExtension;
-import org.apache.cayenne.project.extension.info.InfoExtension;
 
 /**
  * A DI module that bootstraps {@link DbImportAction}.
