@@ -25,9 +25,9 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ValueHolder;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -55,7 +55,7 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
     protected DataContext context;
 
     @Inject
-    protected CayenneRuntime runtime;
+    protected ServerRuntime runtime;
 
     @Inject
     protected DBHelper dbHelper;
