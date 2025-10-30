@@ -116,6 +116,20 @@ class HierarchicalObjectResolver {
 
             PrefetchProcessorNode processorNode = (PrefetchProcessorNode) node;
             PrefetchProcessorNode parentProcessorNode = (PrefetchProcessorNode) processorNode.getParent();
+            
+            // If parent is a joint node, defer processing until the joint node is processed
+            if (parentProcessorNode.getSemantics() == PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS) {
+                // Mark that we need to process this later, but don't fetch data now
+                return true;
+            }
+            
+            return processDisjointByIdNode(node);
+        }
+        
+        // Process a disjointById node without checking for deferral
+        private boolean processDisjointByIdNode(PrefetchTreeNode node) {
+            PrefetchProcessorNode processorNode = (PrefetchProcessorNode) node;
+            PrefetchProcessorNode parentProcessorNode = (PrefetchProcessorNode) processorNode.getParent();
             ObjRelationship relationship = processorNode.getIncoming().getRelationship();
 
             List<DbRelationship> dbRelationships = relationship.getDbRelationships();
@@ -135,6 +149,12 @@ class HierarchicalObjectResolver {
                 parentDataRows = ((PrefetchProcessorJointNode) parentProcessorNode).getResolvedRows();
             } else {
                 parentDataRows = parentProcessorNode.getDataRows();
+            }
+
+            // If parent data rows is null or empty, there's nothing to prefetch
+            if (parentDataRows == null || parentDataRows.isEmpty()) {
+                processorNode.setDataRows(new ArrayList<>());
+                return true;
             }
 
             int maxIdQualifierSize = context.getParentDataDomain().getMaxIdQualifierSize();
@@ -362,6 +382,17 @@ class HierarchicalObjectResolver {
                     processorNode.getResolvedRows(),
                     queryMetadata.isRefreshingObjects());
 
+            // Now process any deferred disjointById children
+            DisjointByIdProcessor byIdProcessor = new DisjointByIdProcessor();
+            for (PrefetchTreeNode child : node.getChildren()) {
+                if (child.isDisjointByIdPrefetch()) {
+                    // Now that the joint parent has been processed, we can fetch the disjointById data
+                    byIdProcessor.processDisjointByIdNode(child);
+                    // And resolve the objects
+                    startDisjointPrefetch(child);
+                }
+            }
+
             return true;
         }
 
@@ -444,6 +475,10 @@ class HierarchicalObjectResolver {
             }
 
             // linking by parent needed even if an object is already there (many-to-many case)
+            // we need the row for parent attachment even if object was already resolved
+            if (row == null) {
+                row = processorNode.rowFromFlatRow(currentFlatRow);
+            }
             processorNode.getParentAttachmentStrategy().linkToParent(row, object);
 
             processorNode.setLastResolved(object);
