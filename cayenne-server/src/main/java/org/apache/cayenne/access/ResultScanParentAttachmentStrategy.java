@@ -101,7 +101,12 @@ class ResultScanParentAttachmentStrategy implements ParentAttachmentStrategy {
         
         List<DataRow> rows = parentNode.getDataRows();
         if(rows == null) {
-            return;
+            if(parentNode instanceof PrefetchProcessorJointNode) {
+                rows = ((PrefetchProcessorJointNode) parentNode).getResolvedRows();
+            }
+            if(rows == null) {
+                return;
+            }
         }
         
         int size = objects.size();

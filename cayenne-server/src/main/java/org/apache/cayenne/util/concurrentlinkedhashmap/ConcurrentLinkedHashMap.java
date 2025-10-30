@@ -788,6 +788,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
 
     @Override
     public V remove(Object key) {
+    	if (key == null) return null; // this class does allow null to be used as a key or value (returning here prevents an NPE).
         final Node node = data.remove(key);
         if (node == null) {
             return null;
