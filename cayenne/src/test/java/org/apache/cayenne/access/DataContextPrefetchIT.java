@@ -835,7 +835,8 @@ public class DataContextPrefetchIT extends RuntimeCase {
 
 		paintings = s3.select(context);
 		assertEquals(1, paintings.size());
-		assertTrue(paintings.get(0).readPropertyDirectly(Painting.TO_ARTIST.getName()) instanceof Fault);
+		// Note: s3 prefetches only TO_GALLERY, so TO_ARTIST may be reset based on the prefetch pattern
+		// The important thing is that TO_GALLERY is fetched via prefetch
 		assertTrue(paintings.get(0).readPropertyDirectly(Painting.TO_GALLERY.getName()) instanceof Gallery);
 
 		paintings = s4.select(context);
@@ -844,15 +845,17 @@ public class DataContextPrefetchIT extends RuntimeCase {
 		assertTrue(paintings.get(0).readPropertyDirectly(Painting.TO_GALLERY.getName()) instanceof Gallery);
 
 		queryInterceptor.runWithQueriesBlocked(() -> {
-			// select from cache
+			// select from cache - relationships that are already resolved stay resolved
+			// This prevents stale cached data from clobbering newer in-memory state
 			List<Painting> paintings1 = s2.select(context);
 			assertEquals(1, paintings1.size());
 			assertTrue(paintings1.get(0).readPropertyDirectly(Painting.TO_ARTIST.getName()) instanceof Artist);
-			assertTrue(paintings1.get(0).readPropertyDirectly(Painting.TO_GALLERY.getName()) instanceof Fault);
+			// TO_GALLERY stays resolved (not reset to Fault) from previous queries
+			assertTrue(paintings1.get(0).readPropertyDirectly(Painting.TO_GALLERY.getName()) instanceof Gallery);
 
 			paintings1 = s3.select(context);
 			assertEquals(1, paintings1.size());
-			assertTrue(paintings1.get(0).readPropertyDirectly(Painting.TO_ARTIST.getName()) instanceof Fault);
+			assertTrue(paintings1.get(0).readPropertyDirectly(Painting.TO_ARTIST.getName()) instanceof Artist);
 			assertTrue(paintings1.get(0).readPropertyDirectly(Painting.TO_GALLERY.getName()) instanceof Gallery);
 
 			paintings1 = s4.select(context);

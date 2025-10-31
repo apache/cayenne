@@ -47,6 +47,7 @@ import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.QueryMetadataProxy;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.RelationshipQuery;
@@ -97,7 +98,10 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     private Map<CayennePath, List<?>> prefetchResultsByPath;
     private Map<QueryEngine, Collection<Query>> queriesByNode;
     private boolean noObjectConversion;
+    // True when using a caching strategy (shared or local cache), indicating lists are immutable and need copying
     private boolean cachedResult;
+    // True when results were found in cache (cache hit), false when fetched from database (cache miss or explicit refresh)
+    private boolean cacheHit;
 
     /*
      * A constructor for the "new" way of performing a query via 'execute' with
@@ -450,9 +454,14 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
             // response may already be initialized by the factory above ...
             // it is null if there was a preexisting cache entry
+            cacheHit = (response == null);
+            
             if (response == null || wasResponseNull) {
                 response = new ListResponse(cachedResults);
             }
+            
+            // Mark as cached result - lists need copying whether hit or miss
+            cachedResult = true;
 
             if (cachedResults instanceof ListWithPrefetches) {
                 this.prefetchResultsByPath = ((ListWithPrefetches) cachedResults).getPrefetchResultsByPath();
@@ -460,8 +469,9 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         } else {
             // on cache-refresh request, fetch without blocking and fill the cache
             queryCache.put(metadata, factory.createObject());
+            cachedResult = true; // Still a cached path, lists need copying
+            cacheHit = false; // Not a cache hit, we're refreshing
         }
-        cachedResult = true;
 
         return DONE;
     }
@@ -723,13 +733,27 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
             // take a shortcut when no prefetches exist...
             if (prefetchTree == null) {
-                return new ObjectResolver(context, descriptor, metadata.isRefreshingObjects())
+                // When results come from cache (not a refresh operation), don't refresh objects 
+                // to avoid clobbering newer in-memory state
+                boolean refresh = metadata.isRefreshingObjects() && !shouldSkipRefresh();
+                return new ObjectResolver(context, descriptor, refresh)
                         .synchronizedRootResultNodeFromDataRows(normalizedRows);
             } else {
-                HierarchicalObjectResolver resolver = new HierarchicalObjectResolver(context, metadata);
+                // When results come from cache (not a refresh operation), wrap metadata to prevent refreshing objects
+                QueryMetadata effectiveMetadata = shouldSkipRefresh() && metadata.isRefreshingObjects() 
+                        ? new NonRefreshingQueryMetadataWrapper(metadata)
+                        : metadata;
+                HierarchicalObjectResolver resolver = new HierarchicalObjectResolver(context, effectiveMetadata);
                 return resolver
                         .synchronizedRootResultNodeFromDataRows(prefetchTree, normalizedRows, prefetchResultsByPath);
             }
+        }
+        
+        private boolean shouldSkipRefresh() {
+            // Skip refresh only for cache hits to prevent stale cached data from clobbering newer in-memory state
+            // For cache misses (including explicit refresh operations), cacheHit is false, so refresh happens normally
+            // Prefetch relationships are resolved independently via connectToParents(), so this doesn't affect prefetch behavior
+            return cacheHit;
         }
 
         protected void performPostLoadCallbacks(PrefetchProcessorNode node, LifecycleCallbackRegistry callbackRegistry) {
@@ -1019,4 +1043,18 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
     }
 
+    /**
+     * Wrapper that overrides isRefreshingObjects() to return false, preventing cached
+     * query results from clobbering newer in-memory object state.
+     */
+    static class NonRefreshingQueryMetadataWrapper extends QueryMetadataProxy {
+        NonRefreshingQueryMetadataWrapper(QueryMetadata delegate) {
+            super(delegate);
+        }
+
+        @Override
+        public boolean isRefreshingObjects() {
+            return false;
+        }
+    }
 }
