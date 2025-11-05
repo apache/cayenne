@@ -46,14 +46,14 @@ dependencies {
 
 def projectVersion = getProjectVersion()
 
-group 'org.apache.cayenne.plugins'
-version projectVersion
+group = 'org.apache.cayenne.plugins'
+version = projectVersion
 def cayenneVersion = version
 
 def getProjectVersion() {
     def pomFile = file('pom.xml')
     if (pomFile.file) {
-        def pom = new XmlSlurper().parseText(file('pom.xml').text)
+        def pom = new groovy.xml.XmlSlurper().parseText(file('pom.xml').text)
         def pomVersion = pom.parent.version
         return pomVersion
     }
