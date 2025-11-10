@@ -150,14 +150,18 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 			// do some simple assertions to make sure all parts are in
 			assertNotNull(generatedSql);
 			assertTrue(generatedSql.startsWith("SELECT "));
-			assertTrue(generatedSql.indexOf(" FROM ") > 0);
-			if (generatedSql.contains("RTRIM")) {
-				assertTrue(generatedSql.indexOf("ARTIST_NAME) =") > generatedSql.indexOf("RTRIM("));
-			} else if (generatedSql.contains("TRIM")) {
-				assertTrue(generatedSql.indexOf("ARTIST_NAME) =") > generatedSql.indexOf("TRIM("));
-			} else {
-				assertTrue(generatedSql.indexOf("ARTIST_NAME =") > 0);
-			}
+
+			int iFrom = generatedSql.indexOf(" FROM ");
+			int iPaintingTable = generatedSql.indexOf(" PAINTING ");
+			int iArtistTable = generatedSql.indexOf(" ARTIST ");
+			int iName = generatedSql.indexOf("ARTIST_NAME =");
+			int iOrder = generatedSql.indexOf(" ORDER");
+
+			assertTrue(iFrom > 0);
+			assertTrue(iPaintingTable > iFrom);
+			assertTrue(iArtistTable > iPaintingTable);
+			assertTrue(iName > iArtistTable);
+			assertTrue(iOrder > iName);
 
 		} finally {
 			entity.setQualifier(null);
@@ -855,5 +859,32 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 
 		int totalJoins = translator.getContext().getTableCount() - 1;
 		assertEquals(4, totalJoins);
+	}
+
+	@Test
+	public void testDbEntityQualifier_JoinQuery() throws Exception {
+
+		final DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
+		entity.setQualifier(ExpressionFactory.exp("ARTIST_NAME = 'Should be on JOIN condition and not WHERE'"));
+
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
+				.where
+						(
+								Painting.TO_ARTIST.dot(Artist.DATE_OF_BIRTH).eq(new java.sql.Date(1, 0, 1))
+										.orExp(Painting.TO_GALLERY.dot(Gallery.GALLERY_NAME).like("G%"))
+						);
+
+		// If the DbEntity qualifier is set on the WHERE condition then the OR expression will fail to find matches
+
+		SelectTranslator transl = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver());
+		try {
+			String generatedSql = transl.getSql();
+			int whereNdx = generatedSql.indexOf(" WHERE ");
+			int joinNdx = generatedSql.indexOf(" JOIN ARTIST ");
+			assertTrue(generatedSql.substring(joinNdx, whereNdx).indexOf("ARTIST_NAME") > 0); // Should be in JOIN condition
+			assertTrue(generatedSql.indexOf("ARTIST_NAME", whereNdx) < 0); // Should not be part of WHERE
+		} finally {
+			entity.setQualifier(null);
+		}
 	}
 }

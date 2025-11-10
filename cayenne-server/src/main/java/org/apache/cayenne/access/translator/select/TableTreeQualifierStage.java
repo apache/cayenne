@@ -21,8 +21,6 @@ package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.parser.ASTDbPath;
-import org.apache.cayenne.exp.parser.ASTPath;
 
 /**
  * @since 4.2
@@ -32,8 +30,11 @@ class TableTreeQualifierStage implements TranslationStage {
     @Override
     public void perform(TranslatorContext context) {
         context.getTableTree().visit(node -> {
-            appendQualifier(context, node, node.getEntity().getQualifier());
-            appendQualifier(context, node, node.getAdditionalQualifier());
+            if(node.getRelationship() == null) {
+                // translate only root qualifier here, joined tables are processed in the `TableTreeStage`
+                appendQualifier(context, node, node.getEntity().getQualifier());
+                appendQualifier(context, node, node.getAdditionalQualifier());
+            }
         });
 
         if(context.getQualifierNode() != null) {
@@ -45,20 +46,7 @@ class TableTreeQualifierStage implements TranslationStage {
         if (dbQualifier == null) {
             return;
         }
-
-        String pathToRoot = node.getAttributePath().getPath();
-        dbQualifier = dbQualifier.transform(input -> {
-            if (input instanceof ASTPath) {
-                String path = ((ASTPath) input).getPath();
-                // here we are not only marking path as prefetch, but changing ObjPath to DB
-                // (without conversion, as it's a convenience option to allow path without "db:" in the Modeler)
-                if(!pathToRoot.isEmpty()) {
-                    path = pathToRoot + '.' + path;
-                }
-                return new ASTDbPath(path);
-            }
-            return input;
-        });
+        dbQualifier = TableTreeStage.translateToDbPath(node, dbQualifier);
         Node translatedQualifier = context.getQualifierTranslator().translate(dbQualifier);
         context.appendQualifierNode(translatedQualifier);
     }

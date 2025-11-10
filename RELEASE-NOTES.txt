@@ -21,6 +21,7 @@ CAY-2905 Upgrade Gradle to 8.14
 Bug Fixes:
 
 CAY-2836 ObjectSelect.selectCount() throws if a query contains ordering
+CAY-2863 DbEntity qualifiers are no longer applied to JOIN conditions
 CAY-2883 License and notice templates are not processed by the Gradle build
 CAY-2885 Modeler: DbImport fails to load DB schema view
 CAY-2887 Expressions: Incorrect serialization to string of numeric literals
