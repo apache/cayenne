@@ -54,9 +54,13 @@ public interface CayennePath extends Iterable<CayennePathSegment>, Serializable 
 
     /**
      * Prefetch path marker
-     * TODO: this marker used only for prefetch processing
      */
     int PREFETCH_MARKER = 1;
+
+    /**
+     * Marker denotes paths inside tree resolution logic
+     */
+    int TABLE_TREE_MARKER = 2;
 
     /**
      * Constant value for an empty path

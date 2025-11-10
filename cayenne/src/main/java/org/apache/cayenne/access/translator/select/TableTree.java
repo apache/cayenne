@@ -35,6 +35,9 @@ import org.apache.cayenne.map.JoinType;
  * @since 4.2
  */
 class TableTree {
+
+    public static final String CURRENT_ALIAS = "__current_table_alias__";
+
     /**
      * Tables mapped by db path it's spawned by.
      * Can be following:
@@ -61,6 +64,10 @@ class TableTree {
     }
 
     void addJoinTable(CayennePath path, DbRelationship relationship, JoinType joinType, Expression additionalQualifier) {
+        // skip adding new node if we are resolving table tree itself
+        if(path.marker() == CayennePath.TABLE_TREE_MARKER) {
+            return;
+        }
         TableTreeNode treeNode = tableNodes.get(path);
         if (treeNode != null) {
             return;
@@ -71,6 +78,10 @@ class TableTree {
     }
 
     String aliasForPath(CayennePath attributePath) {
+        // should be resolved dynamically by the caller
+        if(attributePath.marker() == CayennePath.TABLE_TREE_MARKER) {
+            return CURRENT_ALIAS;
+        }
         if(attributePath.isEmpty()) {
             return rootNode.getTableAlias();
         }

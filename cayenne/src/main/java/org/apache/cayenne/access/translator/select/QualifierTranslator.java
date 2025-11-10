@@ -36,6 +36,7 @@ import org.apache.cayenne.exp.parser.ASTFullObject;
 import org.apache.cayenne.exp.parser.ASTFunctionCall;
 import org.apache.cayenne.exp.parser.ASTNotExists;
 import org.apache.cayenne.exp.parser.ASTObjPath;
+import org.apache.cayenne.exp.parser.ASTPath;
 import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.exp.parser.ASTSubquery;
 import org.apache.cayenne.exp.parser.PatternMatchNode;
@@ -295,6 +296,9 @@ class QualifierTranslator implements TraversalHandler {
             return new EmptyNode();
         } else {
             String alias = context.getTableTree().aliasForPath(result.getLastAttributePath());
+            if(TableTree.CURRENT_ALIAS.equals(alias)) {
+                alias = node.getPathAliases().get(TableTree.CURRENT_ALIAS);
+            }
             return table(alias).column(result.getLastAttribute()).build();
         }
     }

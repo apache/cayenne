@@ -20,10 +20,16 @@
 package org.apache.cayenne.access.translator.select;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.cayenne.access.sqlbuilder.ExpressionNodeBuilder;
 import org.apache.cayenne.access.sqlbuilder.JoinNodeBuilder;
 import org.apache.cayenne.access.sqlbuilder.NodeBuilder;
+import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.parser.ASTDbPath;
+import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbJoin;
 
@@ -74,6 +80,36 @@ class TableTreeStage implements TranslationStage {
             }
         }
 
+        // append entity qualifiers
+        expressionNodeBuilder = appendQualifier(expressionNodeBuilder, context, node, node.getEntity().getQualifier());
+        expressionNodeBuilder = appendQualifier(expressionNodeBuilder, context, node, node.getAdditionalQualifier());
         return expressionNodeBuilder;
+    }
+
+    private static ExpressionNodeBuilder appendQualifier(ExpressionNodeBuilder joinBuilder,
+                                        TranslatorContext context,
+                                        TableTreeNode node,
+                                        Expression dbQualifier) {
+        if (dbQualifier == null) {
+            return joinBuilder;
+        }
+
+        dbQualifier = translateToDbPath(node, dbQualifier);
+        Node translatedQualifier = context.getQualifierTranslator().translate(dbQualifier);
+        return joinBuilder.and(() -> translatedQualifier);
+    }
+
+    static Expression translateToDbPath(TableTreeNode node, Expression dbQualifier) {
+        CayennePath pathToRoot = node.getAttributePath();
+        dbQualifier = dbQualifier.transform(input -> {
+            // here we are not only marking path, but changing ObjPath to DB
+            if (input instanceof ASTPath) {
+                ASTDbPath dbPath = new ASTDbPath(pathToRoot.dot(((ASTPath) input).getPath()).withMarker(CayennePath.TABLE_TREE_MARKER));
+                dbPath.setPathAliases(Map.of(TableTree.CURRENT_ALIAS, node.getTableAlias()));
+                return dbPath;
+            }
+            return input;
+        });
+        return dbQualifier;
     }
 }
