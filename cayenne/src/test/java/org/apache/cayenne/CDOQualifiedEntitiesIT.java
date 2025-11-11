@@ -101,9 +101,13 @@ public class CDOQualifiedEntitiesIT extends RuntimeCase {
     private void createJoinDataSet() throws Exception {
         tQualified3.insert(1, "O1", null);
         tQualified3.insert(2, "O2", accessStackAdapter.supportsBoolean() ? true : 1);
+        tQualified3.insert(3, "11", null);
+        tQualified3.insert(4, "12", accessStackAdapter.supportsBoolean() ? true : 1);
 
         tQualified4.insert(1, "SHOULD_SELECT", null, 1);
         tQualified4.insert(2, "SHOULD_NOT_SELECT", null, 2);
+        tQualified4.insert(3, "SHOULD_SELECT_TOO", null, 3);
+        tQualified4.insert(4, "SHOULD_NOT_SELECT_TOO", null, 4);
     }
 
     @Test
@@ -227,6 +231,20 @@ public class CDOQualifiedEntitiesIT extends RuntimeCase {
 
         assertEquals(1, result.size());
         assertEquals("SHOULD_SELECT", result.get(0).getName());
+    }
+
+    @Test
+    public void joinWithQualifierAndAliases() throws Exception {
+        createJoinDataSet();
+
+        List<Qualified4> result = ObjectSelect.query(Qualified4.class)
+                .where(Qualified4.QUALIFIED3.alias("a1").dot(Qualified3.NAME).like("O%"))
+                .or(Qualified4.QUALIFIED3.alias("a2").dot(Qualified3.NAME).like("1%"))
+                .select(context);
+
+        assertEquals(2, result.size());
+        assertEquals("SHOULD_SELECT", result.get(0).getName());
+        assertEquals("SHOULD_SELECT_TOO", result.get(1).getName());
     }
 
     @Test

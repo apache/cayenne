@@ -296,8 +296,9 @@ class QualifierTranslator implements TraversalHandler {
             return new EmptyNode();
         } else {
             String alias = context.getTableTree().aliasForPath(result.getLastAttributePath());
+            // special case when the path should be processed in the context of the current join clause
             if(TableTree.CURRENT_ALIAS.equals(alias)) {
-                alias = node.getPathAliases().get(TableTree.CURRENT_ALIAS);
+                alias = context.getTableTree().nonNullActiveNode().getTableAlias();
             }
             return table(alias).column(result.getLastAttribute()).build();
         }

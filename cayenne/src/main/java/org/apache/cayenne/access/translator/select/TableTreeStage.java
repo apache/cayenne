@@ -95,7 +95,10 @@ class TableTreeStage implements TranslationStage {
         }
 
         dbQualifier = translateToDbPath(node, dbQualifier);
+        // mark table tree node as current to process qualifier
+        context.getTableTree().setActiveNode(node);
         Node translatedQualifier = context.getQualifierTranslator().translate(dbQualifier);
+        context.getTableTree().setActiveNode(null);
         return joinBuilder.and(() -> translatedQualifier);
     }
 
@@ -104,9 +107,14 @@ class TableTreeStage implements TranslationStage {
         dbQualifier = dbQualifier.transform(input -> {
             // here we are not only marking path, but changing ObjPath to DB
             if (input instanceof ASTPath) {
-                ASTDbPath dbPath = new ASTDbPath(pathToRoot.dot(((ASTPath) input).getPath()).withMarker(CayennePath.TABLE_TREE_MARKER));
-                dbPath.setPathAliases(Map.of(TableTree.CURRENT_ALIAS, node.getTableAlias()));
-                return dbPath;
+                // we do not really care about the parent path, as we do not need to join any new table here.
+                // so we must tell the path processor that we are processing exactly this table
+                // TODO: should check qualifiers via related tables if that is even the thing
+                CayennePath path = ((ASTPath) input).getPath();
+                if(!pathToRoot.isEmpty()) {
+                    path = TableTree.CURRENT_ALIAS_PATH.dot(path);
+                }
+                return new ASTDbPath(path);
             }
             return input;
         });

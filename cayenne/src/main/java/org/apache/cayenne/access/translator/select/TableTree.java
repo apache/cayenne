@@ -37,6 +37,7 @@ import org.apache.cayenne.map.JoinType;
 class TableTree {
 
     public static final String CURRENT_ALIAS = "__current_table_alias__";
+    public static final CayennePath CURRENT_ALIAS_PATH = CayennePath.of("__current_table_alias__");
 
     /**
      * Tables mapped by db path it's spawned by.
@@ -50,6 +51,7 @@ class TableTree {
     private final TableTree parentTree;
     private final TableTreeNode rootNode;
 
+    private TableTreeNode activeNode;
     private int tableAliasSequence;
 
     TableTree(DbEntity root, TableTree parentTree) {
@@ -64,10 +66,6 @@ class TableTree {
     }
 
     void addJoinTable(CayennePath path, DbRelationship relationship, JoinType joinType, Expression additionalQualifier) {
-        // skip adding new node if we are resolving table tree itself
-        if(path.marker() == CayennePath.TABLE_TREE_MARKER) {
-            return;
-        }
         TableTreeNode treeNode = tableNodes.get(path);
         if (treeNode != null) {
             return;
@@ -78,12 +76,12 @@ class TableTree {
     }
 
     String aliasForPath(CayennePath attributePath) {
-        // should be resolved dynamically by the caller
-        if(attributePath.marker() == CayennePath.TABLE_TREE_MARKER) {
-            return CURRENT_ALIAS;
-        }
         if(attributePath.isEmpty()) {
             return rootNode.getTableAlias();
+        }
+        // should be resolved dynamically by the caller
+        if(CURRENT_ALIAS_PATH.equals(attributePath)) {
+            return CURRENT_ALIAS;
         }
         TableTreeNode node = tableNodes.get(attributePath);
         if (node == null) {
@@ -98,6 +96,17 @@ class TableTree {
             return parentTree.nextTableAlias();
         }
         return 't' + String.valueOf(tableAliasSequence++);
+    }
+
+    TableTreeNode nonNullActiveNode() {
+        if(activeNode == null) {
+            throw new CayenneRuntimeException("No active TableTree node found");
+        }
+        return activeNode;
+    }
+
+    void setActiveNode(TableTreeNode activeNode) {
+        this.activeNode = activeNode;
     }
 
     public int getNodeCount() {
