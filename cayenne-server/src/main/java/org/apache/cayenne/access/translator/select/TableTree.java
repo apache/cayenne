@@ -34,6 +34,9 @@ import org.apache.cayenne.util.Util;
  * @since 4.2
  */
 class TableTree {
+
+    static final String CURRENT_ALIAS = "__current_join_table";
+
     /**
      * Tables mapped by db path it's spawned by.
      * Can be following:
@@ -47,6 +50,7 @@ class TableTree {
 
     private final TableTreeNode rootNode;
 
+    private TableTreeNode activeNode;
     private int tableAliasSequence;
 
     TableTree(DbEntity root, TableTree parentTree) {
@@ -74,6 +78,9 @@ class TableTree {
         if(Util.isEmptyString(attributePath)) {
             return rootNode.getTableAlias();
         }
+        if(CURRENT_ALIAS.equals(attributePath)) {
+            return CURRENT_ALIAS;
+        }
         TableTreeNode node = tableNodes.get(attributePath);
         if (node == null) {
             throw new CayenneRuntimeException("No table for attribute '%s' found", attributePath);
@@ -96,6 +103,17 @@ class TableTree {
             return parentTree.nextTableAlias();
         }
         return 't' + String.valueOf(tableAliasSequence++);
+    }
+
+    TableTreeNode nonNullActiveNode() {
+        if(activeNode == null) {
+            throw new CayenneRuntimeException("No active TableTree node found");
+        }
+        return activeNode;
+    }
+
+    void setActiveNode(TableTreeNode activeNode) {
+        this.activeNode = activeNode;
     }
 
     public int getNodeCount() {

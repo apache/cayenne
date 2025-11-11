@@ -63,6 +63,13 @@ class DbPathProcessor extends PathProcessor<DbEntity> {
             return;
         }
 
+        // special case when the path should be processed in the context of the current join clause
+        if(TableTree.CURRENT_ALIAS.equals(next)) {
+            entity = context.getTableTree().nonNullActiveNode().getEntity();
+            appendCurrentPath(next);
+            return;
+        }
+
         throw new IllegalStateException("Unable to resolve path: " + currentDbPath.toString() + "." + next);
     }
 

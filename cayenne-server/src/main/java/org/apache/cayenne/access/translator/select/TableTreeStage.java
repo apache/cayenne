@@ -93,7 +93,10 @@ class TableTreeStage implements TranslationStage {
         }
 
         dbQualifier = translateToDbPath(node, dbQualifier);
+        // mark table tree node as current to process qualifier
+        context.getTableTree().setActiveNode(node);
         Node translatedQualifier = context.getQualifierTranslator().translate(dbQualifier);
+        context.getTableTree().setActiveNode(null);
         return joinBuilder.and(() -> translatedQualifier);
     }
 
@@ -102,8 +105,11 @@ class TableTreeStage implements TranslationStage {
         dbQualifier = dbQualifier.transform(input -> {
             if (input instanceof ASTPath) {
                 String path = ((ASTPath) input).getPath();
+                // we do not really care about the parent path, as we do not need to join any new table here.
+                // so we must tell the path processor that we are processing exactly this table
+                // TODO: should check qualifiers via related tables if that is even the thing
                 if(!pathToRoot.isEmpty()) {
-                    path = pathToRoot + '.' + path;
+                    path = TableTree.CURRENT_ALIAS + '.' + path;
                 }
                 return new ASTDbPath(path);
             }
