@@ -24,7 +24,7 @@
     <parent>
         <artifactId>cayenne-modeler-parent</artifactId>
         <groupId>org.apache.cayenne.modeler</groupId>
-        <version>4.2.3-SNAPSHOT</version>
+        <version>4.2.3</version>
     </parent>
 
     <name>cayenne-modeler-win-ext: Modeler Win Extensions</name>
