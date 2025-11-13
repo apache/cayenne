@@ -24,7 +24,7 @@
 	<parent>
 		<groupId>org.apache.cayenne.build-tools</groupId>
 		<artifactId>build-tools-parent</artifactId>
-		<version>4.2.3</version>
+		<version>4.2.4-SNAPSHOT</version>
 	</parent>
 
 	<description>Common Unit Test Utilities</description>
