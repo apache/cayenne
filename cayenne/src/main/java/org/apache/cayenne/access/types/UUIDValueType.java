@@ -25,6 +25,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 
 /**
  * @since 4.0
+ * @deprecated since 4.2, use {@link UUIDType} instead
  */
 public class UUIDValueType implements ValueObjectType<UUID, String> {
 
