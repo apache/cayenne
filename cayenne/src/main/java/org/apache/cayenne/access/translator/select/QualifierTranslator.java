@@ -214,6 +214,11 @@ class QualifierTranslator implements TraversalHandler {
             case GREATER_THAN_EQUAL_TO:
                 return new OpExpressionNode(expToStr(node.getType()));
             case NEGATIVE:
+                // If operand is a scalar null, produce NULL directly (no unary minus)
+                if (node.getOperandCount() > 0 && node.getOperand(0) == null) {
+                    expressionsToSkip.add(node);
+                    return new ValueNode(null, false, null, false);
+                }
                 // we need to add minus sign as a prefix, not a separator
                 return new FunctionNode(expToStr(node.getType()), null, false);
             case TRUE:
