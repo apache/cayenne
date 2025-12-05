@@ -25,6 +25,7 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.parser.ASTIn;
 import org.apache.cayenne.exp.parser.ASTList;
+import org.apache.cayenne.exp.parser.ASTNotIn;
 import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
@@ -34,7 +35,6 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -173,7 +173,6 @@ public class ExpressionIT extends RuntimeCase {
 	}
 
 	@Test
-	@Ignore("see https://issues.apache.org/jira/browse/CAY-2860")
 	public void testExplicitInEmpty() {
 		Artist a1 = context.newObject(Artist.class);
 		a1.setArtistName("Picasso");
@@ -182,6 +181,18 @@ public class ExpressionIT extends RuntimeCase {
 		ASTIn in = new ASTIn((SimpleNode) Artist.ARTIST_NAME.getExpression(), new ASTList(List.of()));
 		List<Artist> artists = ObjectSelect.query(Artist.class, in).select(context);
 		assertTrue(artists.isEmpty());
+	}
+
+	@Test
+	public void testExplicitNotInEmpty() {
+		Artist a1 = context.newObject(Artist.class);
+		a1.setArtistName("Picasso");
+		context.commitChanges();
+
+		ASTNotIn notIn = new ASTNotIn((SimpleNode) Artist.ARTIST_NAME.getExpression(), new ASTList(List.of()));
+		List<Artist> artists = ObjectSelect.query(Artist.class, notIn).select(context);
+		assertEquals(1, artists.size());
+		assertEquals("Picasso", artists.get(0).getArtistName());
 	}
 
 	/**
