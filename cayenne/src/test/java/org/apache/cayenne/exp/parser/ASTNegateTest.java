@@ -38,4 +38,12 @@ public class ASTNegateTest {
         assertEquals("-1", exp.toString());
     }
 
+    @Test
+    public void testEvaluate_null() {
+        ASTNegate negate = new ASTNegate();
+        negate.setOperand(0, new ASTScalar(null));
+
+        Object result = negate.evaluate(null);
+        assertNull(result);
+    }
 }
