@@ -24,6 +24,7 @@ Bug Fixes:
 
 CAY-2701 MySQL DST-related LocalDateTime issues
 CAY-2836 ObjectSelect.selectCount() throws if a query contains ordering
+CAY-2860 Translate (not)in expression with empty values
 CAY-2863 DbEntity qualifiers are no longer applied to JOIN conditions
 CAY-2871 QualifierTranslator breaks on a relationship with a compound FK
 CAY-2872 CayenneModeler "Documentation" link is broken
