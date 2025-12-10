@@ -34,6 +34,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -156,6 +157,39 @@ public class QualifierTranslatorTest {
             assertThat(notBetween.getChild(1), instanceOf(ValueNode.class));
             assertThat(notBetween.getChild(2), instanceOf(ValueNode.class));
         }
+    }
+
+    @Test
+    public void translateNegate_NullScalar() {
+        Node node = translate("-(null)");
+        assertThat(node, instanceOf(ValueNode.class));
+        assertNull(((ValueNode) node).getValue());
+
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new StringBuilderAppendable());
+        node.visit(visitor);
+        assertEquals(" NULL", visitor.getSQLString());
+    }
+
+    @Test
+    public void translateNegate_NumberScalar() {
+        Node node = translate("-1");
+        assertThat(node, instanceOf(FunctionNode.class));
+
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new StringBuilderAppendable());
+        node.visit(visitor);
+        assertEquals(" - 1", visitor.getSQLString());
+    }
+
+    @Test
+    public void translateNegate_NullParam() {
+        Expression exp = ExpressionFactory.exp("-$v").params(Collections.singletonMap("v", null));
+        Node node = translator.translate(exp);
+        assertThat(node, instanceOf(ValueNode.class));
+        assertNull(((ValueNode) node).getValue());
+
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new StringBuilderAppendable());
+        node.visit(visitor);
+        assertEquals(" NULL", visitor.getSQLString());
     }
 
     @Test
