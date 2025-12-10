@@ -26,12 +26,25 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.translator.select.FluentSelectWrapper;
 import org.apache.cayenne.access.translator.select.TranslatableQueryWrapper;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.TraversalHandler;
 import org.apache.cayenne.query.FluentSelect;
+import org.apache.cayenne.query.Ordering;
 
 /**
  * @since 4.2
  */
 public class ASTSubquery extends SimpleNode {
+
+    private static final TraversalHandler IN_MEMORY_VALIDATOR = new TraversalHandler() {
+        @Override
+        public void startNode(Expression node, Expression parentNode) {
+            if (node.getType() == Expression.ENCLOSING_OBJECT) {
+                throw new UnsupportedOperationException(
+                        "Can't evaluate subquery expression with enclosing object expression."
+                );
+            }
+        }
+    };
 
     private final TranslatableQueryWrapper query;
 
@@ -57,8 +70,19 @@ public class ASTSubquery extends SimpleNode {
         } else {
             throw new UnsupportedOperationException("Can't evaluate subquery expression against non-persistent object");
         }
-
+        validateForInmemory(query);
         return context.select(query.unwrap());
+    }
+
+    /**
+     * Check that we can execute this subquery directly
+     */
+    private void validateForInmemory(TranslatableQueryWrapper query) {
+        query.getQualifier().traverse(IN_MEMORY_VALIDATOR);
+        query.getHavingQualifier().traverse(IN_MEMORY_VALIDATOR);
+        for(Ordering ordering : query.getOrderings()) {
+            ordering.getSortSpec().traverse(IN_MEMORY_VALIDATOR);
+        }
     }
 
     @Override

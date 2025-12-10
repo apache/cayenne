@@ -19,8 +19,12 @@
 
 package org.apache.cayenne.exp.parser;
 
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * @since 4.2
@@ -43,7 +47,29 @@ public class ASTExists extends ConditionNode {
 
     @Override
     protected Boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
-        return null;
+        if(evaluatedChildren.length == 0) {
+            return Boolean.FALSE;
+        }
+        return notEmpty(evaluatedChildren[0]);
+    }
+
+    private Boolean notEmpty(Object child) {
+        if(child instanceof Boolean) {
+            return (Boolean)child;
+        }
+        if(child instanceof Collection) {
+            return !((Collection<?>)child).isEmpty();
+        }
+        if(child instanceof Map) {
+            return !((Map<?, ?>)child).isEmpty();
+        }
+        if(child instanceof Object[]) {
+            return ((Object[])child).length > 0;
+        }
+        if(child instanceof Persistent) {
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
     }
 
     @Override
