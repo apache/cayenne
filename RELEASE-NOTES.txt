@@ -34,6 +34,7 @@ CAY-2883 License and notice templates are not processed by the Gradle build
 CAY-2885 Modeler: DbImport fails to load DB schema view
 CAY-2887 Expressions: Incorrect serialization to string of numeric literals
 CAY-2889 Make subclassing a PK Generator easier
+CAY-2891 Expressions: incorrect SQL translation of the ASTNegate node with scalar argument
 CAY-2895 Incorrect Lazy Pagination Comparison for BigInteger PK
 CAY-2896 Inserting two identical objects into two datamaps stores both objects in the last used datamap
 CAY-2898 Crypto: NPE in a ColumnQuery
