@@ -117,12 +117,15 @@ public class ASTExistsIT extends RuntimeCase {
     }
 
     private void doEvaluateNoQuery(Expression exp) {
-        List<Artist> artistSelected = ObjectSelect.query(Artist.class, exp).select(context);
+        List<Artist> artistSelected = ObjectSelect.query(Artist.class, exp)
+                .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
+                .select(context);
 
         List<Artist> artists = ObjectSelect.query(Artist.class)
                 .prefetch(Artist.PAINTING_ARRAY.disjoint())
                 .prefetch(Artist.PAINTING_ARRAY.dot(Painting.TO_PAINTING_INFO).disjoint())
                 .prefetch(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).disjoint())
+                .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
                 .select(context);
 
         queryInterceptor.runWithQueriesBlocked(() -> {
@@ -138,6 +141,7 @@ public class ASTExistsIT extends RuntimeCase {
                 .prefetch(Artist.PAINTING_ARRAY.disjoint())
                 .prefetch(Artist.PAINTING_ARRAY.dot(Painting.TO_PAINTING_INFO).disjoint())
                 .prefetch(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).disjoint())
+                .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
                 .select(context);
 
         List<Artist> artistsFiltered = exp.filterObjects(artists);
