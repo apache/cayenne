@@ -41,8 +41,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <asciidoctorj.version>2.5.12</asciidoctorj.version>
-        <asciidoctor.maven.plugin.version>2.2.6</asciidoctor.maven.plugin.version>
+        <asciidoctorj.version>3.0.1</asciidoctorj.version>
+        <asciidoctor.maven.plugin.version>3.2.0</asciidoctor.maven.plugin.version>
         <asciidoctorj.pdf.version>2.1.4</asciidoctorj.pdf.version>
         <cayenne.version>${project.version}</cayenne.version>
         <cayenne.major.version>5.0</cayenne.major.version>
