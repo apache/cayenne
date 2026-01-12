@@ -125,7 +125,7 @@ public class CayennePostProcessor extends Postprocessor {
         tocDoc.select("div#toc").addClass("toc-side");
         String toc = tocDoc.body().html();
 
-        Object destDir = document.getOptions().get(Options.DESTINATION_DIR);
+        Object destDir = document.getOptions().get(Options.TO_DIR);
         Object docname = ((Map)document.getOptions().get(Options.ATTRIBUTES)).get("docname");
 
         Path path = FileSystems.getDefault().getPath((String) destDir, docname + ".toc.html");
