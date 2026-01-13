@@ -27,6 +27,7 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.cayenne.configuration.xml.ProjectVersion;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
@@ -57,7 +58,7 @@ public class DefaultUpgradeServiceTest {
     }
 
     @Test
-    public void getUpgradeType() throws Exception {
+    public void getUpgradeType() {
         UpgradeMetaData metaData = upgradeService.getUpgradeType(getResourceForVersion("5"));
         assertEquals(UpgradeType.INTERMEDIATE_UPGRADE_NEEDED, metaData.getUpgradeType());
 
@@ -75,15 +76,15 @@ public class DefaultUpgradeServiceTest {
     }
 
     @Test
-    public void getHandlersForVersion() throws Exception {
+    public void getHandlersForVersion() {
 
-        List<UpgradeHandler> handlers = upgradeService.getHandlersForVersion("6");
+        List<UpgradeHandler> handlers = upgradeService.getHandlersForVersion(ProjectVersion.V6);
         assertEquals(5, handlers.size());
 
-        handlers = upgradeService.getHandlersForVersion("9");
+        handlers = upgradeService.getHandlersForVersion(ProjectVersion.V9);
         assertEquals(2, handlers.size());
-        assertEquals("10", handlers.get(0).getVersion());
-        assertEquals("11", handlers.get(1).getVersion());
+        assertEquals(ProjectVersion.V10, handlers.get(0).getVersion());
+        assertEquals(ProjectVersion.V11, handlers.get(1).getVersion());
     }
 
     @Test
@@ -99,20 +100,13 @@ public class DefaultUpgradeServiceTest {
     }
 
     @Test
-    public void loadProjectVersion() throws Exception {
-        assertEquals("3.2.1.0", upgradeService.loadProjectVersion(getResourceForVersion("3.2.1.0")));
-        assertEquals("10", upgradeService.loadProjectVersion(getResourceForVersion("10")));
+    public void loadProjectVersion() {
+        assertEquals("3.21", upgradeService.loadProjectVersion(getResourceForVersion("3.2.1.0")).getAsString());
+        assertEquals(ProjectVersion.V10, upgradeService.loadProjectVersion(getResourceForVersion("10")));
     }
 
     @Test
-    public void decodeVersion() throws Exception {
-        assertEquals(1.2340, DefaultUpgradeService.decodeVersion("1.2.3.4"), 0.000001);
-        assertEquals(1.0004, DefaultUpgradeService.decodeVersion("1.0.0.0.4"), 0.000001);
-        assertEquals(10, DefaultUpgradeService.decodeVersion("10"), 0.000001);
-    }
-
-    @Test
-    public void upgradeDOM() throws Exception {
+    public void upgradeDOM() {
         Resource resource = new URLResource(getClass().getResource("../cayenne-PROJECT1.xml"));
 
         // Mock service so it will use actual reading but skip actual saving part
@@ -136,7 +130,7 @@ public class DefaultUpgradeServiceTest {
     }
 
     @Test
-    public void readDocument() throws Exception {
+    public void readDocument() {
         Document document = Util.readDocument(getClass().getResource("../cayenne-PROJECT1.xml"));
         assertEquals("11", document.getDocumentElement().getAttribute("project-version"));
     }
@@ -148,13 +142,12 @@ public class DefaultUpgradeServiceTest {
 
     private void createHandlers() {
         handlers = new ArrayList<>();
-        String[] versions = {"7", "8", "9", "10", "11"};
-        for(String version : versions) {
+        for (ProjectVersion version : ProjectVersion.KNOWN_VERSIONS) {
             handlers.add(createHandler(version));
         }
     }
 
-    private UpgradeHandler createHandler(String version) {
+    private UpgradeHandler createHandler(ProjectVersion version) {
         UpgradeHandler handler = mock(UpgradeHandler.class);
         when(handler.getVersion()).thenReturn(version);
         return handler;
@@ -163,5 +156,4 @@ public class DefaultUpgradeServiceTest {
     private Resource getResourceForVersion(String version) {
         return new URLResource(getClass().getResource("handlers/cayenne-project-v"+version+".xml"));
     }
-
 }

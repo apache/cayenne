@@ -25,6 +25,8 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.xml.ProjectVersion;
+import org.apache.cayenne.configuration.xml.Schema;
 import org.apache.cayenne.project.upgrade.UpgradeUnit;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -58,7 +60,7 @@ public interface UpgradeHandler {
     /**
      * @return target version for this handler
      */
-    String getVersion();
+    ProjectVersion getVersion();
 
     /**
      * Process DOM for the project root file (e.g. cayenne-project.xml)
@@ -84,13 +86,14 @@ public interface UpgradeHandler {
      */
     default void updateDomainSchemaAndVersion(UpgradeUnit upgradeUnit) {
         Element domain = upgradeUnit.getDocument().getDocumentElement();
+        ProjectVersion version = getVersion();
         // update schema
-        domain.setAttribute("xmlns","http://cayenne.apache.org/schema/"+getVersion()+"/domain");
+        domain.setAttribute("xmlns", Schema.buildNamespace(version, "domain"));
         domain.setAttribute("xmlns:xsi","http://www.w3.org/2001/XMLSchema-instance");
-        domain.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/"+getVersion()+"/domain " +
-                "https://cayenne.apache.org/schema/"+getVersion()+"/domain.xsd");
+        domain.setAttribute("xsi:schemaLocation", Schema.buildNamespace(version, "domain") + " " +
+                Schema.buildSchemaLocation(version, "domain"));
         // update version
-        domain.setAttribute("project-version", getVersion());
+        domain.setAttribute("project-version", version.getAsString());
     }
 
     /**
@@ -99,12 +102,13 @@ public interface UpgradeHandler {
      */
     default void updateDataMapSchemaAndVersion(UpgradeUnit upgradeUnit) {
         Element dataMap = upgradeUnit.getDocument().getDocumentElement();
+        ProjectVersion version = getVersion();
         // update schema
-        dataMap.setAttribute("xmlns","http://cayenne.apache.org/schema/"+getVersion()+"/modelMap");
-        dataMap.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/"+getVersion()+"/modelMap " +
-                "https://cayenne.apache.org/schema/"+getVersion()+"/modelMap.xsd");
+        dataMap.setAttribute("xmlns", Schema.buildNamespace(version, "modelMap"));
+        dataMap.setAttribute("xsi:schemaLocation", Schema.buildNamespace(version, "modelMap") + " " +
+                Schema.buildSchemaLocation(version, "modelMap"));
         // update version
-        dataMap.setAttribute("project-version", getVersion());
+        dataMap.setAttribute("project-version", version.getAsString());
     }
 
     /**
@@ -123,7 +127,7 @@ public interface UpgradeHandler {
         }
         for (int j = 0; j < nodes.getLength(); j++) {
             Element element = (Element) nodes.item(j);
-            element.setAttribute("xmlns", "http://cayenne.apache.org/schema/"+getVersion()+"/"+extension.toLowerCase());
+            element.setAttribute("xmlns", Schema.buildNamespace(getVersion(), extension.toLowerCase()));
         }
     }
 }
