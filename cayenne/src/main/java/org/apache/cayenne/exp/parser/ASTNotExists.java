@@ -42,8 +42,17 @@ public class ASTNotExists extends ConditionNode {
     }
 
     @Override
+    protected Object evaluateNode(Object o) throws Exception {
+        if (jjtGetNumChildren() != 1) {
+            return Boolean.FALSE;
+        }
+        Object firstChild = evaluateChild(0, o);
+        return evaluateSubNode(firstChild, null);
+    }
+
+    @Override
     protected Boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
-        return null;
+        return !ASTExists.notEmpty(o);
     }
 
     @Override

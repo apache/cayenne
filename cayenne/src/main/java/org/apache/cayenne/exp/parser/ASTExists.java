@@ -46,14 +46,20 @@ public class ASTExists extends ConditionNode {
     }
 
     @Override
-    protected Boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
-        if(evaluatedChildren.length == 0) {
+    protected Object evaluateNode(Object o) throws Exception {
+        if (jjtGetNumChildren() != 1) {
             return Boolean.FALSE;
         }
-        return notEmpty(evaluatedChildren[0]);
+        Object firstChild = evaluateChild(0, o);
+        return evaluateSubNode(firstChild, null);
     }
 
-    private Boolean notEmpty(Object child) {
+    @Override
+    protected Boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
+        return notEmpty(o);
+    }
+
+    static Boolean notEmpty(Object child) {
         if(child instanceof Boolean) {
             return (Boolean)child;
         }
