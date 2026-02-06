@@ -133,12 +133,18 @@ class HierarchicalObjectResolver {
             ObjRelationship relationship = processorNode.getIncoming().getRelationship();
 
             List<DbRelationship> dbRelationships = relationship.getDbRelationships();
-            CayennePath pathPrefix = CayennePath.EMPTY_PATH;
-            if (dbRelationships.size() > 1) {
+            CayennePath dataRowPrefix = CayennePath.EMPTY_PATH;
+            CayennePath qualifierPrefix = CayennePath.EMPTY_PATH;
+            if (relationship.isFkThroughInheritance()) {
+                for (int i = 0; i < dbRelationships.size() - 1; i++) {
+                    dataRowPrefix = dataRowPrefix.dot(dbRelationships.get(i).getName());
+                }
+            } else if (dbRelationships.size() > 1) {
                 // we need path prefix for flattened relationships
                 for (int i = dbRelationships.size() - 1; i >= 1; i--) {
-                    pathPrefix = pathPrefix.dot(dbRelationships.get(i).getReverseRelationship().getName());
+                    dataRowPrefix = dataRowPrefix.dot(dbRelationships.get(i).getReverseRelationship().getName());
                 }
+                qualifierPrefix = dataRowPrefix;
             }
 
             List<DataRow> parentDataRows;
@@ -159,7 +165,7 @@ class HierarchicalObjectResolver {
 
             int maxIdQualifierSize = context.getParentDataDomain().getMaxIdQualifierSize();
             List<DbJoin> joins = getDbJoins(relationship);
-            Map<DbJoin, String> joinToDataRowKey = getDataRowKeys(joins, pathPrefix);
+            Map<DbJoin, String> joinToDataRowKey = getDataRowKeys(joins, dataRowPrefix);
 
             List<PrefetchSelectQuery<DataRow>> queries = new ArrayList<>();
             PrefetchSelectQuery<DataRow> currentQuery = null;
@@ -171,7 +177,7 @@ class HierarchicalObjectResolver {
                 if (currentQuery == null
                         || (maxIdQualifierSize > 0 && qualifiersCount + joins.size() > maxIdQualifierSize)) {
 
-                    createDisjointByIdPrefetchQualifier(pathPrefix, currentQuery, joins, values);
+                    createDisjointByIdPrefetchQualifier(qualifierPrefix, currentQuery, joins, values);
 
                     currentQuery = new PrefetchSelectQuery<>(node.getPath(), relationship);
                     currentQuery.fetchDataRows();
@@ -192,12 +198,12 @@ class HierarchicalObjectResolver {
                 }
             }
             // add final part of values
-            createDisjointByIdPrefetchQualifier(pathPrefix, currentQuery, joins, values);
+            createDisjointByIdPrefetchQualifier(qualifierPrefix, currentQuery, joins, values);
 
             PrefetchTreeNode jointSubtree = node.cloneJointSubtree();
 
             Expression reversePath = null;
-            if (relationship.isSourceIndependentFromTargetChange()) {
+            if (relationship.isSourceIndependentFromTargetChange() && !relationship.isFkThroughInheritance()) {
                 reversePath = ExpressionFactory.dbPathExp(relationship.getReverseDbRelationshipPath());
             }
 
