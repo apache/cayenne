@@ -54,7 +54,7 @@ class EntityRowReader implements RowReader<DataRow> {
             this.entityName = classDescriptor.getEntity().getName();
         }
 
-        int segmentWidth = segmentMetadata.getFields().size();
+        int segmentWidth = segmentMetadata.getColumnCount();
         this.startIndex = segmentMetadata.getColumnOffset();
         this.converters = new ExtendedType[segmentWidth];
         this.types = new int[segmentWidth];
