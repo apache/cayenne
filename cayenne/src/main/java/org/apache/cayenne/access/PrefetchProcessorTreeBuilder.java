@@ -23,6 +23,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.path.CayennePath;
+import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.PrefetchProcessor;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
@@ -193,10 +194,13 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
             node.setParentAttachmentStrategy(new NoopParentAttachmentStrategy());
         } else if (node.isJointPrefetch()) {
             node.setParentAttachmentStrategy(new StackLookupParentAttachmentStrategy(node));
-        } else if (node.getIncoming().getRelationship().isSourceIndependentFromTargetChange()) {
-            node.setParentAttachmentStrategy(new JoinedIdParentAttachmentStrategy(context.getGraphManager(), node));
         } else {
-            node.setParentAttachmentStrategy(new ResultScanParentAttachmentStrategy(node));
+            ObjRelationship objRelationship = node.getIncoming().getRelationship();
+            if (objRelationship.isSourceIndependentFromTargetChange() && !objRelationship.isFkThroughInheritance()) {
+                node.setParentAttachmentStrategy(new JoinedIdParentAttachmentStrategy(context.getGraphManager(), node));
+            } else {
+                node.setParentAttachmentStrategy(new ResultScanParentAttachmentStrategy(node));
+            }
         }
 
         if (currentNode != null) {

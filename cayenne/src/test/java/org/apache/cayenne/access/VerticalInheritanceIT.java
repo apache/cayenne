@@ -28,6 +28,7 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_vertical.*;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -61,6 +62,9 @@ public class VerticalInheritanceIT extends RuntimeCase {
 
 	@Inject
 	protected CayenneRuntime runtime;
+
+	@Inject
+	protected DataChannelInterceptor queryInterceptor;
 
 	TableHelper ivAbstractTable;
 
@@ -1267,5 +1271,34 @@ public class VerticalInheritanceIT extends RuntimeCase {
 		assertEquals(1, girls.size());
 		final List<Persistent> boys = ObjectSelect.query(Persistent.class, "GenBoy").select(context);
 		assertEquals(1, boys.size());
+	}
+
+	@Test
+	public void testDisjointByIdPrefetch_ToOne_FkOnChildTable_NoExtraQuery() throws SQLException {
+		TableHelper ivOtherTable = new TableHelper(dbHelper, "IV_OTHER");
+		ivOtherTable.setColumns("ID", "NAME").setColumnTypes(Types.INTEGER, Types.VARCHAR);
+
+		TableHelper ivBaseTable = new TableHelper(dbHelper, "IV_BASE");
+		ivBaseTable.setColumns("ID", "NAME", "TYPE").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR);
+
+		TableHelper ivImplTable = new TableHelper(dbHelper, "IV_IMPL");
+		ivImplTable.setColumns("ID", "ATTR1", "OTHER1_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
+
+		ivOtherTable.insert(1, "other1");
+		ivBaseTable.insert(1, "Impl 1", "I");
+		ivImplTable.insert(1, "attr1", 1);
+
+		List<IvImpl> result = ObjectSelect.query(IvImpl.class)
+				.prefetch(IvImpl.OTHER1.disjointById())
+				.select(context);
+
+		assertEquals(1, result.size());
+		IvImpl impl = result.get(0);
+
+		queryInterceptor.runWithQueriesBlocked(() -> {
+			IvOther other = impl.getOther1();
+			assertNotNull(other);
+			assertEquals("other1", other.getName());
+		});
 	}
 }

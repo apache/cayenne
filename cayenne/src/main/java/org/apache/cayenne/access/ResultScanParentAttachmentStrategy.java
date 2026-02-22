@@ -20,6 +20,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjRelationship;
@@ -37,6 +38,7 @@ class ResultScanParentAttachmentStrategy implements ParentAttachmentStrategy {
     private final PrefetchProcessorNode parentNode;
     private final DbJoin[] joins;
     private final PrefetchProcessorNode node;
+    private final CayennePath prefix;
 
     // TODO: the ivar below makes this strategy STATEFUL and non-reusable. If we need a
     // stateless version down the line, will need to move this to the
@@ -56,12 +58,26 @@ class ResultScanParentAttachmentStrategy implements ParentAttachmentStrategy {
         ObjRelationship relationship = node.getIncoming().getRelationship();
 
         List<DbRelationship> dbRelationships = relationship.getDbRelationships();
-        if (dbRelationships.size() > 1) {
+        if (relationship.isFkThroughInheritance()) {
+            CayennePath flattenedPath = CayennePath.EMPTY_PATH;
+            for (int i = 0; i < dbRelationships.size() - 1; i++) {
+                flattenedPath = flattenedPath.dot(dbRelationships.get(i).getName());
+            }
+            prefix = flattenedPath;
+        } else if (dbRelationships.size() > 1) {
             throw new IllegalArgumentException(
                     "ResultScanParentAttachmentStrategy does not work for flattened relationships");
+        } else {
+            prefix = CayennePath.EMPTY_PATH;
         }
 
-        joins = dbRelationships.get(0).getJoins().toArray(new DbJoin[0]);
+        DbRelationship dbRelationship;
+        if (relationship.isFkThroughInheritance()) {
+            dbRelationship = dbRelationships.get(dbRelationships.size() - 1);
+        } else {
+            dbRelationship = dbRelationships.get(0);
+        }
+        joins = dbRelationship.getJoins().toArray(new DbJoin[0]);
     }
 
     public void linkToParent(DataRow row, Persistent object) {
@@ -118,11 +134,11 @@ class ResultScanParentAttachmentStrategy implements ParentAttachmentStrategy {
             if (joins.length > 1) {
                 List<Object> values = new ArrayList<>(joins.length);
                 for (DbJoin join : joins) {
-                    values.add(row.get(join.getSourceName()));
+                    values.add(row.get(prefix.dot(join.getSourceName()).toString()));
                 }
                 key = values;
             } else {
-                key = row.get(joins[0].getSourceName());
+                key = row.get(prefix.dot(joins[0].getSourceName()).toString());
             }
 
             List<Persistent> parents = partitionByChild.computeIfAbsent(key, k -> new ArrayList<>());
