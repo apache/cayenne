@@ -148,25 +148,23 @@ public class ReverseEngineeringConfigPanel extends JPanel {
             @Override
             protected void updateModel(String text) throws ValidationException {
                 ReverseEngineering reverseEngineering = getReverseEngineeringBySelectedMap();
-                if(text == null || text.isEmpty()) {
-                    String[] tableTypesFromReverseEngineering = reverseEngineering.getTableTypes();
-                    tableTypes.setText(String.join(",", tableTypesFromReverseEngineering));
+                if (text == null || text.isEmpty()) {
+                    text = "TABLE, VIEW";
                     JOptionPane.showMessageDialog(
                             Application.getFrame(),
-                            "Table types field can't be empty.",
-                            "Error setting table types",
-                            JOptionPane.ERROR_MESSAGE);
-                } else {
-                    reverseEngineering.getTableTypesCollection().clear();
-                    String[] types = text.split("\\s*,\\s*");
-                    for(String type : types) {
-                        if(!type.isEmpty()) {
-                            reverseEngineering.addTableType(type.trim());
-                        }
+                            "If table types field is empty, default value will be set \"TABLE, VIEW\".",
+                            null,
+                            JOptionPane.WARNING_MESSAGE);
+                }
+                reverseEngineering.getTableTypesCollection().clear();
+                String[] types = text.split("\\s*,\\s*");
+                for (String type : types) {
+                    if (!type.isEmpty()) {
+                        reverseEngineering.addTableType(type.trim());
                     }
-                    if(!dbImportView.isInitFromModel()) {
-                        projectController.setDirty(true);
-                    }
+                }
+                if (!dbImportView.isInitFromModel()) {
+                    projectController.setDirty(true);
                 }
             }
         };
