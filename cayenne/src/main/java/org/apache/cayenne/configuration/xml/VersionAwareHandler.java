@@ -53,9 +53,10 @@ public abstract class VersionAwareHandler extends NamespaceAwareNestedTagHandler
         return false;
     }
 
-    protected void validateVersion(Attributes attributes, String[] supportedVersions) {
+    protected void validateVersion(Attributes attributes, ProjectVersion[] supportedVersions) {
         String version = attributes.getValue("project-version");
-        if(Arrays.binarySearch(supportedVersions, version) < 0) {
+        boolean anyMatch = Arrays.stream(supportedVersions).map(ProjectVersion::getAsString).anyMatch(version::equals);
+        if (!anyMatch) {
             throw new CayenneRuntimeException("Unsupported project version: %s, please upgrade project using Modeler or " +
                     "include cayenne-project-compatibility module v%s",
                     version, LocalizedStringsHandler.getString("cayenne.version"));

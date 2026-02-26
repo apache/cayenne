@@ -22,6 +22,7 @@ import java.io.PrintWriter;
 
 import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.xml.ProjectVersion;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.project.extension.SaverDelegate;
 import org.apache.cayenne.util.XMLEncoder;
@@ -33,10 +34,10 @@ import org.apache.cayenne.util.XMLSerializable;
 class ConfigurationSaver extends BaseConfigurationNodeVisitor<Void> {
 
     private PrintWriter printWriter;
-    private String version;
+    private ProjectVersion version;
     private SaverDelegate delegate;
 
-    ConfigurationSaver(PrintWriter printWriter, String version, SaverDelegate delegate) {
+    ConfigurationSaver(PrintWriter printWriter, ProjectVersion version, SaverDelegate delegate) {
         this.printWriter = printWriter;
         this.version = version;
         this.delegate = delegate;

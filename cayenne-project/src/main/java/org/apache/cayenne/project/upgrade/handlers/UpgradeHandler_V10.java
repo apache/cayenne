@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.project.upgrade.handlers;
 
+import org.apache.cayenne.configuration.xml.ProjectVersion;
 import org.apache.cayenne.project.upgrade.UpgradeUnit;
 
 /**
@@ -32,8 +33,8 @@ import org.apache.cayenne.project.upgrade.UpgradeUnit;
 public class UpgradeHandler_V10 implements UpgradeHandler {
 
     @Override
-    public String getVersion() {
-        return "10";
+    public ProjectVersion getVersion() {
+        return ProjectVersion.V10;
     }
 
     @Override
