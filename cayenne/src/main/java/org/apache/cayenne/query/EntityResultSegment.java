@@ -40,6 +40,11 @@ public interface EntityResultSegment {
     Map<String, String> getFields();
 
     /**
+     * Returns the total number of columns in this segment.
+     */
+    int getColumnCount();
+
+    /**
      * Performs a reverse lookup of the column path for a given ResultSet label.
      */
     String getColumnPath(String resultSetLabel);

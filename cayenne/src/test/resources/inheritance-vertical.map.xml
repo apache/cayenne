@@ -44,6 +44,28 @@
 		<db-attribute name="NAME" type="VARCHAR" length="100"/>
 		<db-attribute name="RELATED_ABSTRACT_ID" type="INTEGER"/>
 	</db-entity>
+	<db-entity name="IV_DOCUMENT">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="TYPE" type="CHAR" isMandatory="true" length="1"/>
+	</db-entity>
+	<db-entity name="IV_DOCUMENT_A">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="IV_DOCUMENT_A_LINE">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="IV_DOCUMENT_B">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="RELATED_A_ID" type="INTEGER" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="IV_DOCUMENT_B_LINE">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="IV_DOCUMENT_LINE">
+		<db-attribute name="DOCUMENT_ID" type="INTEGER" isMandatory="true"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="TYPE" type="CHAR" isMandatory="true" length="1"/>
+	</db-entity>
 	<db-entity name="IV_GEN_KEY_ROOT">
 		<db-attribute name="DISCRIMINATOR" type="VARCHAR" length="10"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
@@ -141,6 +163,24 @@
 	<obj-entity name="IvConcrete" superEntityName="IvAbstract" className="org.apache.cayenne.testdo.inheritance_vertical.IvConcrete">
 		<qualifier><![CDATA[type = "S"]]></qualifier>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="concrete.NAME"/>
+	</obj-entity>
+	<obj-entity name="IvDocument" abstract="true" className="org.apache.cayenne.testdo.inheritance_vertical.IvDocument" dbEntityName="IV_DOCUMENT">
+		<obj-attribute name="type" type="java.lang.String" db-attribute-path="TYPE"/>
+	</obj-entity>
+	<obj-entity name="IvDocumentA" superEntityName="IvDocument" className="org.apache.cayenne.testdo.inheritance_vertical.IvDocumentA">
+		<qualifier><![CDATA[type = "A"]]></qualifier>
+	</obj-entity>
+	<obj-entity name="IvDocumentALine" superEntityName="IvDocumentLine" className="org.apache.cayenne.testdo.inheritance_vertical.IvDocumentALine">
+		<qualifier><![CDATA[type = "A"]]></qualifier>
+	</obj-entity>
+	<obj-entity name="IvDocumentB" superEntityName="IvDocument" className="org.apache.cayenne.testdo.inheritance_vertical.IvDocumentB">
+		<qualifier><![CDATA[type = "B"]]></qualifier>
+	</obj-entity>
+	<obj-entity name="IvDocumentBLine" superEntityName="IvDocumentLine" className="org.apache.cayenne.testdo.inheritance_vertical.IvDocumentBLine">
+		<qualifier><![CDATA[type = "B"]]></qualifier>
+	</obj-entity>
+	<obj-entity name="IvDocumentLine" abstract="true" className="org.apache.cayenne.testdo.inheritance_vertical.IvDocumentLine" dbEntityName="IV_DOCUMENT_LINE">
+		<obj-attribute name="type" type="java.lang.String" db-attribute-path="TYPE"/>
 	</obj-entity>
 	<obj-entity name="IvGenKeyRoot" className="org.apache.cayenne.testdo.inheritance_vertical.IvGenKeyRoot" dbEntityName="IV_GEN_KEY_ROOT">
 		<obj-attribute name="discriminator" type="java.lang.String" db-attribute-path="DISCRIMINATOR"/>
@@ -248,6 +288,42 @@
 	<db-relationship name="relatedAbstract" source="IV_CONCRETE" target="IV_ABSTRACT">
 		<db-attribute-pair source="RELATED_ABSTRACT_ID" target="ID"/>
 	</db-relationship>
+	<db-relationship name="a" source="IV_DOCUMENT" target="IV_DOCUMENT_A" toDependentPK="true">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="b" source="IV_DOCUMENT" target="IV_DOCUMENT_B" toDependentPK="true">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="lines" source="IV_DOCUMENT" target="IV_DOCUMENT_LINE" toMany="true">
+		<db-attribute-pair source="ID" target="DOCUMENT_ID"/>
+	</db-relationship>
+	<db-relationship name="document" source="IV_DOCUMENT_A" target="IV_DOCUMENT">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="relatedB" source="IV_DOCUMENT_A" target="IV_DOCUMENT_B">
+		<db-attribute-pair source="ID" target="RELATED_A_ID"/>
+	</db-relationship>
+	<db-relationship name="documentLine" source="IV_DOCUMENT_A_LINE" target="IV_DOCUMENT_LINE">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="document" source="IV_DOCUMENT_B" target="IV_DOCUMENT">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="relatedA" source="IV_DOCUMENT_B" target="IV_DOCUMENT_A">
+		<db-attribute-pair source="RELATED_A_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="documentLine" source="IV_DOCUMENT_B_LINE" target="IV_DOCUMENT_LINE">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="aLine" source="IV_DOCUMENT_LINE" target="IV_DOCUMENT_A_LINE" toDependentPK="true">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="bLine" source="IV_DOCUMENT_LINE" target="IV_DOCUMENT_B_LINE" toDependentPK="true">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="document" source="IV_DOCUMENT_LINE" target="IV_DOCUMENT">
+		<db-attribute-pair source="DOCUMENT_ID" target="ID"/>
+	</db-relationship>
 	<db-relationship name="sub1" source="IV_GEN_KEY_ROOT" target="IV_GEN_KEY_SUB" toDependentPK="true">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
@@ -335,6 +411,10 @@
 	<obj-relationship name="children" source="IvConcrete" target="IvConcrete" deleteRule="Deny" db-relationship-path="children"/>
 	<obj-relationship name="parent" source="IvConcrete" target="IvConcrete" deleteRule="Nullify" db-relationship-path="parent"/>
 	<obj-relationship name="relatedAbstract" source="IvConcrete" target="IvAbstract" deleteRule="Nullify" db-relationship-path="concrete.relatedAbstract"/>
+	<obj-relationship name="lines" source="IvDocument" target="IvDocumentLine" deleteRule="Deny" db-relationship-path="lines"/>
+	<obj-relationship name="relatedB" source="IvDocumentA" target="IvDocumentB" deleteRule="Nullify" db-relationship-path="a.relatedB.document"/>
+	<obj-relationship name="relatedA" source="IvDocumentB" target="IvDocumentA" deleteRule="Nullify" db-relationship-path="b.relatedA.document"/>
+	<obj-relationship name="document" source="IvDocumentLine" target="IvDocument" deleteRule="Nullify" db-relationship-path="document"/>
 	<obj-relationship name="implOthers" source="IvImpl" target="IvOther" deleteRule="Deny" db-relationship-path="impl.others"/>
 	<obj-relationship name="other1" source="IvImpl" target="IvOther" deleteRule="Nullify" db-relationship-path="impl.other1"/>
 	<obj-relationship name="other2" source="IvImpl" target="IvOther" deleteRule="Nullify" db-relationship-path="impl.other2"/>

@@ -22,6 +22,7 @@ import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
@@ -728,6 +729,55 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
 	@Test
+	public void testColumnQueryVerticallyInheritedToVerticallyInherited() throws SQLException {
+        TableHelper ivDocumentTable = new TableHelper(dbHelper, "IV_DOCUMENT");
+        ivDocumentTable.setColumns("ID", "TYPE").setColumnTypes(Types.INTEGER, Types.CHAR);
+
+        TableHelper ivDocumentLineTable = new TableHelper(dbHelper, "IV_DOCUMENT_LINE");
+        ivDocumentLineTable.setColumns("ID", "TYPE", "DOCUMENT_ID").setColumnTypes(Types.INTEGER, Types.CHAR, Types.INTEGER);
+
+        TableHelper IvDocumentATable = new TableHelper(dbHelper, "IV_DOCUMENT_A");
+        IvDocumentATable.setColumns("ID").setColumnTypes(Types.INTEGER);
+
+        TableHelper IvDocumentALineTable = new TableHelper(dbHelper, "IV_DOCUMENT_A_LINE");
+        IvDocumentALineTable.setColumns("ID").setColumnTypes(Types.INTEGER);
+
+        TableHelper IvDocumentBTable = new TableHelper(dbHelper, "IV_DOCUMENT_B");
+        IvDocumentBTable.setColumns("ID", "RELATED_A_ID").setColumnTypes(Types.INTEGER, Types.INTEGER);
+
+        TableHelper IvDocumentBLineTable = new TableHelper(dbHelper, "IV_DOCUMENT_B_LINE");
+        IvDocumentBLineTable.setColumns("ID").setColumnTypes(Types.INTEGER);
+
+        int documentAId = 1;
+        ivDocumentTable.insert(documentAId, "A");
+        IvDocumentATable.insert(documentAId);
+
+        int documentALineId = 2;
+        ivDocumentLineTable.insert(documentALineId, "A", documentAId);
+        IvDocumentALineTable.insert(documentALineId);
+
+        int documentBId = 3;
+        ivDocumentTable.insert(documentBId, "B");
+        IvDocumentBTable.insert(documentBId, documentAId);
+
+        int documentBLineId = 4;
+        ivDocumentLineTable.insert(documentBLineId, "B", documentBId);
+        IvDocumentBLineTable.insert(documentBLineId);
+
+        {
+            ObjectContext newContext = runtime.newContext();
+
+            IvDocument documentA = ObjectSelect.query(IvDocumentALine.class).where(ExpressionFactory.matchDbIdExp("ID", documentALineId)).column(IvDocumentALine.DOCUMENT).selectOne(newContext);
+            assertNotNull(documentA);
+            assertEquals(IvDocumentA.class, documentA.getClass());
+
+            IvDocument documentB = ObjectSelect.query(IvDocumentBLine.class).where(ExpressionFactory.matchDbIdExp("ID", documentBLineId)).column(IvDocumentBLine.DOCUMENT).selectOne(newContext);
+            assertNotNull(documentB);
+            assertEquals(IvDocumentB.class, documentB.getClass());
+        }
+	}
+
+	@Test
 	public void testDeleteFlattenedNoValues() throws SQLException {
 		ivAbstractTable.insert(1, null, "S");
 
@@ -1188,6 +1238,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
 	@Test
+//	@Ignore("Address CAY-2911")
 	public void testColumnSelectVerticalInheritance_Sub1Sub1() throws SQLException {
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
 		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");

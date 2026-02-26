@@ -151,8 +151,10 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
 
         int count = result.getDbAttributes().size();
         for(int i=0; i<count; i++) {
-            processTranslationResult(result, i);
-            addEntityResultField(result.getDbAttributes().get(i));
+            ResultNodeDescriptor resultNodeDescriptor = processTranslationResult(result, i);
+            if(resultNodeDescriptor != null) {
+                addEntityResultField(result.getDbAttributes().get(i));
+            }
         }
 
         return true;
