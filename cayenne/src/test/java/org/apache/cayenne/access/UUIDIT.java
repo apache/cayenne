@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.nio.ByteBuffer;
 import java.util.UUID;
 
 import org.apache.cayenne.Cayenne;
@@ -28,6 +29,7 @@ import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
+import org.apache.cayenne.testdo.uuid.UuidBinTestEntity;
 import org.apache.cayenne.testdo.uuid.UuidPkEntity;
 import org.apache.cayenne.testdo.uuid.UuidTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -49,10 +51,12 @@ public class UUIDIT extends RuntimeCase {
     private DBHelper dbHelper;
 
     private TableHelper uuidPkEntity;
+    private TableHelper uuidBinTable;
 
     @Before
     public void setUp() throws Exception {
         uuidPkEntity = new TableHelper(dbHelper, "UUID_PK_ENTITY", "ID");
+        uuidBinTable = new TableHelper(dbHelper, "UUID_BIN_TEST");
     }
 
     @Test
@@ -115,5 +119,33 @@ public class UUIDIT extends RuntimeCase {
                 .column(PropertyFactory.createBase(ExpressionFactory.dbPathExp("UUID"), UUID.class)).selectOne(context);
 
         assertEquals(id, readValue2);
+    }
+
+    @Test
+    public void testUUIDBinary_InsertSelect() {
+        UuidBinTestEntity test = context.newObject(UuidBinTestEntity.class);
+        UUID expected = UUID.randomUUID();
+        test.setUuid(expected);
+        context.commitChanges();
+
+        UuidBinTestEntity testRead = ObjectSelect.query(UuidBinTestEntity.class).selectFirst(context);
+        assertNotNull(testRead.getUuid());
+        assertEquals(expected, testRead.getUuid());
+    }
+
+    @Test
+    public void testUUIDBinary_RawBytes() throws Exception {
+        UuidBinTestEntity test = context.newObject(UuidBinTestEntity.class);
+        UUID expected = UUID.randomUUID();
+        test.setUuid(expected);
+        context.commitChanges();
+
+        byte[] raw = uuidBinTable.getBytes("UUID");
+        assertNotNull(raw);
+        assertEquals(16, raw.length);
+
+        ByteBuffer bb = ByteBuffer.wrap(raw);
+        UUID actual = new UUID(bb.getLong(), bb.getLong());
+        assertEquals(expected, actual);
     }
 }
