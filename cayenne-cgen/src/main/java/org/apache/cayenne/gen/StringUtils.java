@@ -22,6 +22,9 @@ package org.apache.cayenne.gen;
 import org.apache.cayenne.project.validation.NameValidationHelper;
 import org.apache.cayenne.util.Util;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 /**
  * Methods for mangling strings.
  */
@@ -156,6 +159,41 @@ public class StringUtils {
         else {
             return str + "s";
         }
+    }
+
+    /**
+     * Converts string to camel case string
+     * @param aString
+     * @param upOrDown
+     * @return camel cased version
+     */
+    public String camelCase(String aString, boolean upOrDown) {
+        if (aString == null || aString.length() == 0) {
+            return aString;
+        }
+        return Util.underscoredToJava(aString, upOrDown);
+    }
+
+    /**
+     * Converts string to lower case
+     * @param aString
+     * @return
+     */
+    public String toLowerCase(String aString) {
+        if (aString == null || aString.length() == 0) {
+            return aString;
+        }
+        return aString.toLowerCase();
+    }
+
+
+    public String dateAndTimeNow() {
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd--HH:mm");
+        Calendar calendar = Calendar.getInstance();
+        return formatter.format(  calendar.getTime());
+
+
     }
 
     /**
