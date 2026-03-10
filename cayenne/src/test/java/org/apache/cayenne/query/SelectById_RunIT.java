@@ -89,6 +89,66 @@ public class SelectById_RunIT extends RuntimeCase {
 	}
 
 	@Test
+	public void testNullPk() {
+		List<Artist> artists = SelectById.queryId(Artist.class, null).select(context);
+		assertEquals(0, artists.size());
+	}
+
+	@Test
+	public void testDataRowNullPk() {
+		List<DataRow> artists = SelectById.dataRowQueryId(Artist.class, null).select(context);
+		assertEquals(0, artists.size());
+	}
+
+	@Test
+	public void testEmptyPkMulti() {
+		List<Artist> artists = SelectById.queryIds(Artist.class).select(context);
+		assertEquals(0, artists.size());
+	}
+
+	@Test
+	public void testEmptyPkCollection() {
+		List<Artist> artists = SelectById.queryIdsCollection(Artist.class, Collections.emptyList()).select(context);
+		assertEquals(0, artists.size());
+	}
+
+	@Test
+	public void testEmptyMapPkMulti() {
+		List<Artist> artists = SelectById.queryMaps(Artist.class).select(context);
+		assertEquals(0, artists.size());
+	}
+
+	@Test
+	public void testEmptyMapPkCollection() {
+		List<Artist> artists = SelectById.queryMapsCollection(Artist.class, Collections.emptyList()).select(context);
+		assertEquals(0, artists.size());
+	}
+
+	@Test
+	public void testDataRowEmptyPkMulti() {
+		List<DataRow> artists = SelectById.dataRowQueryIds(Artist.class).select(context);
+		assertEquals(0, artists.size());
+	}
+
+	@Test
+	public void testDataRowEmptyPkCollection() {
+		List<DataRow> artists = SelectById.dataRowQueryIdsCollection(Artist.class, Collections.emptyList()).select(context);
+		assertEquals(0, artists.size());
+	}
+
+	@Test
+	public void testDataRowEmptyMapPkMulti() {
+		List<DataRow> artists = SelectById.dataRowQueryMaps(Artist.class).select(context);
+		assertEquals(0, artists.size());
+	}
+
+	@Test
+	public void testDataRowEmptyMapPkCollection() {
+		List<DataRow> artists = SelectById.dataRowQueryMapsCollection(Artist.class, Collections.emptyList()).select(context);
+		assertEquals(0, artists.size());
+	}
+
+	@Test
 	public void testIntPkMulti() throws Exception {
 		createTwoArtists();
 

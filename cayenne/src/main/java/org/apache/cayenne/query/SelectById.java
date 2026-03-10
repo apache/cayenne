@@ -72,7 +72,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	 */
 	public static <T> SelectById<T> queryMap(Class<T> entityType, Map<String, ?> id) {
 		QueryRoot root = new ByEntityTypeResolver(entityType);
-		IdSpec idSpec = new SingleMapIdSpec(id);
+		IdSpec idSpec = new SingleMapIdSpec(checkIdMap(id));
 		return new SelectById<>(root, idSpec);
 	}
 
@@ -90,6 +90,9 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	 * @since 5.0
 	 */
 	public static <T> SelectById<T> queryIds(Class<T> entityType, Object... ids) {
+		if(ids == null) {
+			throw new CayenneRuntimeException("Null ids");
+		}
 		QueryRoot root = new ByEntityTypeResolver(entityType);
 		IdSpec idSpec = new MultiScalarIdSpec(Arrays.asList(ids));
 		return new SelectById<>(root, idSpec);
@@ -99,6 +102,9 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	 * @since 5.0
 	 */
 	public static <T> SelectById<T> queryIdsCollection(Class<T> entityType, Collection<Object> ids) {
+		if(ids == null) {
+			throw new CayenneRuntimeException("Null ids");
+		}
 		QueryRoot root = new ByEntityTypeResolver(entityType);
 		IdSpec idSpec = new MultiScalarIdSpec(ids);
 		return new SelectById<>(root, idSpec);
@@ -109,6 +115,14 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	 */
 	@SafeVarargs
 	public static <T> SelectById<T> queryMaps(Class<T> entityType, Map<String, ?>... ids) {
+		if(ids == null) {
+			throw new CayenneRuntimeException("Null ids");
+		}
+
+		for(Map<String, ?> id : ids) {
+			checkIdMap(id);
+		}
+
 		QueryRoot root = new ByEntityTypeResolver(entityType);
 		IdSpec idSpec = MultiMapIdSpec.ofMap(ids);
 		return new SelectById<>(root, idSpec);
@@ -118,6 +132,11 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	 * @since 5.0
 	 */
 	public static <T> SelectById<T> queryMapsCollection(Class<T> entityType, Collection<Map<String, ?>> ids) {
+		if(ids == null) {
+			throw new CayenneRuntimeException("Null ids");
+		}
+
+		ids.forEach(SelectById::checkIdMap);
 		QueryRoot root = new ByEntityTypeResolver(entityType);
 		IdSpec idSpec = MultiMapIdSpec.ofMapCollection(ids);
 		return new SelectById<>(root, idSpec);
@@ -127,8 +146,8 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	 * @since 5.0
 	 */
 	public static <T> SelectById<T> queryObjectIds(Class<T> entityType, ObjectId... ids) {
-		if(ids == null || ids.length == 0) {
-			throw new CayenneRuntimeException("Null or empty ids");
+		if(ids == null) {
+			throw new CayenneRuntimeException("Null ids");
 		}
 		String entityName = ids[0].getEntityName();
 		for(ObjectId id : ids) {
@@ -144,8 +163,8 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	 * @since 5.0
 	 */
 	public static <T> SelectById<T> queryObjectIdsCollection(Class<T> entityType, Collection<ObjectId> ids) {
-		if(ids == null || ids.isEmpty()) {
-			throw new CayenneRuntimeException("Null or empty ids");
+		if(ids == null) {
+			throw new CayenneRuntimeException("Null ids");
 		}
 		String entityName = ids.iterator().next().getEntityName();
 		for(ObjectId id : ids) {
@@ -253,7 +272,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	 */
 	public static SelectById<DataRow> dataRowQueryMap(Class<?> entityType, Map<String, ?> id) {
 		QueryRoot root = new ByEntityTypeResolver(entityType);
-		IdSpec idSpec = new SingleMapIdSpec(id);
+		IdSpec idSpec = new SingleMapIdSpec(checkIdMap(id));
 		return new SelectById<>(root, idSpec, true);
 	}
 
@@ -271,6 +290,9 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	 * @since 5.0
 	 */
 	public static SelectById<DataRow> dataRowQueryIds(Class<?> entityType, Object... ids) {
+		if(ids == null) {
+			throw new CayenneRuntimeException("Null ids");
+		}
 		QueryRoot root = new ByEntityTypeResolver(entityType);
 		IdSpec idSpec = new MultiScalarIdSpec(Arrays.asList(ids));
 		return new SelectById<>(root, idSpec, true);
@@ -280,6 +302,9 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	 * @since 5.0
 	 */
 	public static SelectById<DataRow> dataRowQueryIdsCollection(Class<?> entityType, Collection<Object> ids) {
+		if(ids == null) {
+			throw new CayenneRuntimeException("Null ids");
+		}
 		QueryRoot root = new ByEntityTypeResolver(entityType);
 		IdSpec idSpec = new MultiScalarIdSpec(ids);
 		return new SelectById<>(root, idSpec, true);
@@ -290,6 +315,14 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	 */
 	@SafeVarargs
 	public static SelectById<DataRow> dataRowQueryMaps(Class<?> entityType, Map<String, ?>... ids) {
+		if(ids == null) {
+			throw new CayenneRuntimeException("Null ids");
+		}
+
+		for(Map<String, ?> id : ids) {
+			checkIdMap(id);
+		}
+
 		QueryRoot root = new ByEntityTypeResolver(entityType);
 		IdSpec idSpec = MultiMapIdSpec.ofMap(ids);
 		return new SelectById<>(root, idSpec, true);
@@ -299,6 +332,12 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	 * @since 5.0
 	 */
 	public static SelectById<DataRow> dataRowQueryMapsCollection(Class<?> entityType, Collection<Map<String, ?>> ids) {
+		if(ids == null) {
+			throw new CayenneRuntimeException("Null ids");
+		}
+
+		ids.forEach(SelectById::checkIdMap);
+
 		QueryRoot root = new ByEntityTypeResolver(entityType);
 		IdSpec idSpec = MultiMapIdSpec.ofMapCollection(ids);
 		return new SelectById<>(root, idSpec, true);
@@ -308,8 +347,8 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	 * @since 5.0
 	 */
 	public static SelectById<DataRow> dataRowQueryObjectIds(ObjectId... ids) {
-		if(ids == null || ids.length == 0) {
-			throw new CayenneRuntimeException("Null or empty ids");
+		if(ids == null) {
+			throw new CayenneRuntimeException("Null ids");
 		}
 		String entityName = ids[0].getEntityName();
 		for(ObjectId id : ids) {
@@ -325,8 +364,8 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	 * @since 5.0
 	 */
 	public static SelectById<DataRow> dataRowQueryObjectIdsCollection(Collection<ObjectId> ids) {
-		if(ids == null || ids.isEmpty()) {
-			throw new CayenneRuntimeException("Null or empty ids");
+		if(ids == null) {
+			throw new CayenneRuntimeException("Null ids");
 		}
 		String entityName = ids.iterator().next().getEntityName();
 		for(ObjectId id : ids) {
@@ -603,6 +642,14 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 		}
 	}
 
+	private static Map<String, ?> checkIdMap(Map<String, ?> id) {
+		if(id == null || id.isEmpty()) {
+			throw new CayenneRuntimeException("Null or empty id map");
+		}
+
+		return id;
+	}
+
 	@SafeVarargs
 	private static <E, R> Collection<R> foldArguments(Function<E, R> mapper, E first, E... other) {
 		List<R> result = new ArrayList<>(1 + other.length);
@@ -680,7 +727,8 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 
 		@Override
 		public Expression getQualifier(ObjEntity entity) {
-			return matchAllDbExp(id, Expression.EQUAL_TO);
+			Expression expression = matchAllDbExp(id, Expression.EQUAL_TO);
+			return expression == null ? expFalse() : expression;
 		}
 	}
 
@@ -722,10 +770,13 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 		public Expression getQualifier(ObjEntity entity) {
 			List<Expression> expressions = new ArrayList<>();
 			for(Map<String, ?> id : ids) {
-				expressions.add(matchAllDbExp(id, Expression.EQUAL_TO));
+				Expression expression = matchAllDbExp(id, Expression.EQUAL_TO);
+				if(expression != null) {
+					expressions.add(expression);
+				}
 			}
 
-			return or(expressions);
+			return expressions.isEmpty() ? expFalse() : or(expressions);
 		}
 	}
 

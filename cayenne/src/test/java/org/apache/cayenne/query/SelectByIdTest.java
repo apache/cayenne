@@ -20,6 +20,9 @@ package org.apache.cayenne.query;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.util.Collections;
+
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.Test;
 
@@ -30,7 +33,7 @@ public class SelectByIdTest {
 
 		PrefetchTreeNode root = PrefetchTreeNode.withPath("a.b", PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
-		SelectById<Artist> q = SelectById.query(Artist.class, 6);
+		SelectById<Artist> q = SelectById.queryId(Artist.class, 6);
 		q.prefetch(root);
 
 		PrefetchTreeNode prefetch = q.getPrefetches();
@@ -42,7 +45,7 @@ public class SelectByIdTest {
 	@Test
 	public void testPrefetch_Path() {
 
-		SelectById<Artist> q = SelectById.query(Artist.class, 7);
+		SelectById<Artist> q = SelectById.queryId(Artist.class, 7);
 		q.prefetch("a.b", PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
 		PrefetchTreeNode prefetch = q.getPrefetches();
 
@@ -62,7 +65,7 @@ public class SelectByIdTest {
 
 		PrefetchTreeNode root = PrefetchTreeNode.withPath("a.b", PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
-		SelectById<Artist> q = SelectById.query(Artist.class, 8);
+		SelectById<Artist> q = SelectById.queryId(Artist.class, 8);
 		q.prefetch(root);
 
 		PrefetchTreeNode prefetch = q.getPrefetches();
@@ -76,5 +79,40 @@ public class SelectByIdTest {
 
 		assertNotNull(prefetch.getNode("a.b"));
 		assertNotNull(prefetch.getNode("a.b.c"));
+	}
+
+	@Test
+	public void testQueryId_NullId() {
+		assertNotNull(SelectById.queryId(Artist.class, null));
+	}
+
+	@Test
+	public void testDataRowQueryId_NullId() {
+		assertNotNull(SelectById.dataRowQueryId(Artist.class, null));
+	}
+
+	@Test
+	public void testDataRowQueryIds_EmptyVarargs() {
+		assertNotNull(SelectById.dataRowQueryIds(Artist.class));
+	}
+
+	@Test
+	public void testDataRowQueryIdsCollection_EmptyCollection() {
+		assertNotNull(SelectById.dataRowQueryIdsCollection(Artist.class, Collections.emptyList()));
+	}
+
+	@Test(expected = CayenneRuntimeException.class)
+	public void testDataRowQueryMap_EmptyMap() {
+		SelectById.dataRowQueryMap(Artist.class, Collections.emptyMap());
+	}
+
+	@Test
+	public void testDataRowQueryMaps_EmptyVarargs() {
+		assertNotNull(SelectById.dataRowQueryMaps(Artist.class));
+	}
+
+	@Test
+	public void testDataRowQueryMapsCollection_EmptyCollection() {
+		assertNotNull(SelectById.dataRowQueryMapsCollection(Artist.class, Collections.emptyList()));
 	}
 }
