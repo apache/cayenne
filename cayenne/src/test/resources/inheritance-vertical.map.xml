@@ -57,6 +57,7 @@
 		<db-attribute name="ATTR0" type="DATE"/>
 		<db-attribute name="ATTR1" type="VARCHAR" length="100"/>
 		<db-attribute name="ATTR2" type="VARCHAR" length="100"/>
+		<db-attribute name="BASE_ID" type="INTEGER"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="OTHER1_ID" type="INTEGER"/>
 		<db-attribute name="OTHER2_ID" type="INTEGER"/>
@@ -82,6 +83,7 @@
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="SUB1_NAME" type="VARCHAR" length="100"/>
 		<db-attribute name="SUB1_PRICE" type="DOUBLE"/>
+		<db-attribute name="SUB2_ID" type="INTEGER"/>
 	</db-entity>
 	<db-entity name="GEN_STUDENT">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -236,6 +238,9 @@
 	<db-relationship name="impl" source="IV_BASE" target="IV_IMPL" toDependentPK="true">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
+	<db-relationship name="impls" source="IV_BASE" target="IV_IMPL" toMany="true">
+		<db-attribute-pair source="ID" target="BASE_ID"/>
+	</db-relationship>
 	<db-relationship name="others" source="IV_BASE" target="IV_OTHER" toMany="true">
 		<db-attribute-pair source="ID" target="BASE_ID"/>
 	</db-relationship>
@@ -268,6 +273,9 @@
 	</db-relationship>
 	<db-relationship name="others" source="IV_IMPL" target="IV_OTHER" toMany="true">
 		<db-attribute-pair source="ID" target="IMPL_ID"/>
+	</db-relationship>
+	<db-relationship name="relatedImpl" source="IV_IMPL" target="IV_BASE">
+		<db-attribute-pair source="BASE_ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="base" source="IV_IMPL_WITH_LOCK" target="IV_BASE_WITH_LOCK">
 		<db-attribute-pair source="ID" target="ID"/>
@@ -305,6 +313,9 @@
 	<db-relationship name="master" source="IV_SUB1" target="IV_ROOT">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
+	<db-relationship name="relatedSub2" source="IV_SUB1" target="IV_SUB2">
+		<db-attribute-pair source="SUB2_ID" target="ID"/>
+	</db-relationship>
 	<db-relationship name="sub1Sub1" source="IV_SUB1" target="IV_SUB1_SUB1" toDependentPK="true">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
@@ -313,6 +324,9 @@
 	</db-relationship>
 	<db-relationship name="master" source="IV_SUB2" target="IV_ROOT">
 		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="relatedSub1" source="IV_SUB2" target="IV_SUB1">
+		<db-attribute-pair source="ID" target="SUB2_ID"/>
 	</db-relationship>
 	<db-relationship name="ivRoot1" source="IV_SUB3" target="IV_ROOT">
 		<db-attribute-pair source="IV_ROOT_ID" target="ID"/>
@@ -336,14 +350,18 @@
 	<obj-relationship name="parent" source="IvConcrete" target="IvConcrete" deleteRule="Nullify" db-relationship-path="parent"/>
 	<obj-relationship name="relatedAbstract" source="IvConcrete" target="IvAbstract" deleteRule="Nullify" db-relationship-path="concrete.relatedAbstract"/>
 	<obj-relationship name="implOthers" source="IvImpl" target="IvOther" deleteRule="Deny" db-relationship-path="impl.others"/>
+	<obj-relationship name="impls" source="IvImpl" target="IvImpl" deleteRule="Deny" db-relationship-path="impls.base"/>
 	<obj-relationship name="other1" source="IvImpl" target="IvOther" deleteRule="Nullify" db-relationship-path="impl.other1"/>
 	<obj-relationship name="other2" source="IvImpl" target="IvOther" deleteRule="Nullify" db-relationship-path="impl.other2"/>
 	<obj-relationship name="other3" source="IvImpl" target="IvOther" deleteRule="Nullify" db-relationship-path="impl.other3"/>
+	<obj-relationship name="relatedImpl" source="IvImpl" target="IvImpl" deleteRule="Nullify" db-relationship-path="impl.relatedImpl"/>
 	<obj-relationship name="other1" source="IvImplWithLock" target="IvOther" deleteRule="Nullify" db-relationship-path="impl.other1"/>
 	<obj-relationship name="base" source="IvOther" target="IvBase" deleteRule="Nullify" db-relationship-path="base"/>
 	<obj-relationship name="impl" source="IvOther" target="IvImpl" deleteRule="Nullify" db-relationship-path="impl.base"/>
 	<obj-relationship name="impls" source="IvOther" target="IvImpl" deleteRule="Deny" db-relationship-path="impls.base"/>
 	<obj-relationship name="implsWithInverse" source="IvOther" target="IvImpl" deleteRule="Deny" db-relationship-path="implsWithInverse.base"/>
 	<obj-relationship name="implsWithLock" source="IvOther" target="IvImplWithLock" deleteRule="Deny" db-relationship-path="impls.base"/>
+	<obj-relationship name="relatedSub2" source="IvSub1" target="IvSub2" deleteRule="Nullify" db-relationship-path="sub1.relatedSub2.master"/>
+	<obj-relationship name="relatedSub1" source="IvSub2" target="IvSub1" deleteRule="Nullify" db-relationship-path="sub2.relatedSub1.master"/>
 	<obj-relationship name="ivRoot" source="IvSub3" target="IvRoot" deleteRule="Nullify" db-relationship-path="sub3.ivRoot1"/>
 </data-map>
