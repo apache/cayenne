@@ -19,6 +19,8 @@
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -166,18 +168,24 @@ public class DbImportConfiguration {
 
     public NameFilter createMeaningfulPKFilter() {
 
-        if (meaningfulPkTables == null) {
+        if (meaningfulPkTables == null || meaningfulPkTables.trim().isEmpty()) {
             return NamePatternMatcher.EXCLUDE_ALL;
         }
 
         // TODO: this filter can't handle table names with comma in them
         String[] patternStrings = meaningfulPkTables.split(",");
-        Pattern[] patterns = new Pattern[patternStrings.length];
-        for (int i = 0; i < patterns.length; i++) {
-            patterns[i] = Pattern.compile(patternStrings[i]);
+        List<Pattern> patterns = new ArrayList<>(patternStrings.length);
+        for (String patternString : patternStrings) {
+            if (!patternString.trim().isEmpty()) {
+                patterns.add(Pattern.compile(patternString));
+            }
         }
 
-        return new NamePatternMatcher(patterns, new Pattern[0]);
+        if (patterns.isEmpty()) {
+            return NamePatternMatcher.EXCLUDE_ALL;
+        }
+
+        return new NamePatternMatcher(patterns.toArray(new Pattern[0]), new Pattern[0]);
     }
 
     public ObjectNameGenerator createNameGenerator() {
@@ -201,7 +209,7 @@ public class DbImportConfiguration {
     }
 
     protected DbEntityNameStemmer createStemmer() {
-        return (stripFromTableNames == null || stripFromTableNames.length() == 0)
+        return (stripFromTableNames == null || stripFromTableNames.isEmpty())
                 ? NoStemStemmer.getInstance()
                 : new PatternStemmer(stripFromTableNames, false);
     }

@@ -250,8 +250,7 @@ public class DbImportView extends JPanel {
     }
 
     public String getMeaningfulPk() {
-        return "".equals(configPanel.getMeaningfulPk().getComponent().getText())
-                ? null : configPanel.getMeaningfulPk().getComponent().getText();
+        return configPanel.getMeaningfulPk().getComponent().getText();
     }
 
     public String getNamingStrategy() {
