@@ -21,8 +21,9 @@ package org.apache.cayenne.project.extension.info;
 
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.xml.ProjectVersion;
+import org.apache.cayenne.configuration.xml.Schema;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.extension.BaseNamingDelegate;
 import org.apache.cayenne.project.extension.LoaderDelegate;
 import org.apache.cayenne.project.extension.ProjectExtension;
@@ -37,7 +38,7 @@ import org.apache.cayenne.project.extension.SaverDelegate;
  */
 public class InfoExtension implements ProjectExtension {
 
-    static final String NAMESPACE = "http://cayenne.apache.org/schema/" + Project.VERSION + "/info";
+    static final String NAMESPACE = Schema.buildNamespace(ProjectVersion.getCurrent(), "info");
 
     @Inject
     private DataChannelMetaData metaData;

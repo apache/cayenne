@@ -30,8 +30,8 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class VersionAwareHandlerTest {
 
-    private static String[] VERSION_SET_1 = {"10", "11", "9"}; // sorted as strings
-    private static String[] VERSION_SET_2 = {"10"};
+    private static ProjectVersion[] VERSION_SET_1 = {ProjectVersion.V9, ProjectVersion.V10, ProjectVersion.V11};
+    private static ProjectVersion[] VERSION_SET_2 = {ProjectVersion.V10};
 
     VersionAwareHandler handler;
 
@@ -41,27 +41,27 @@ public class VersionAwareHandlerTest {
         };
     }
 
-    private Attributes createAttributesWithVersion(String version) {
+    private Attributes createAttributesWithVersion(ProjectVersion version) {
         AttributesImpl attributes = new AttributesImpl();
-        attributes.addAttribute("", "project-version", "project-version", "", version);
+        attributes.addAttribute("", "project-version", "project-version", "", version.getAsString());
         return attributes;
     }
 
     @Test
     public void validateCorrectVersion() {
-        handler.validateVersion(createAttributesWithVersion("9"), VERSION_SET_1);
-        handler.validateVersion(createAttributesWithVersion("10"), VERSION_SET_1);
-        handler.validateVersion(createAttributesWithVersion("11"), VERSION_SET_1);
-        handler.validateVersion(createAttributesWithVersion("10"), VERSION_SET_2);
+        handler.validateVersion(createAttributesWithVersion(ProjectVersion.V9), VERSION_SET_1);
+        handler.validateVersion(createAttributesWithVersion(ProjectVersion.V10), VERSION_SET_1);
+        handler.validateVersion(createAttributesWithVersion(ProjectVersion.V11), VERSION_SET_1);
+        handler.validateVersion(createAttributesWithVersion(ProjectVersion.V10), VERSION_SET_2);
     }
 
     @Test(expected = CayenneRuntimeException.class)
     public void validateIncorrectVersion1() {
-        handler.validateVersion(createAttributesWithVersion("8"), VERSION_SET_1);
+        handler.validateVersion(createAttributesWithVersion(ProjectVersion.V8), VERSION_SET_1);
     }
 
     @Test(expected = CayenneRuntimeException.class)
     public void validateIncorrectVersion2() {
-        handler.validateVersion(createAttributesWithVersion("11"), VERSION_SET_2);
+        handler.validateVersion(createAttributesWithVersion(ProjectVersion.V11), VERSION_SET_2);
     }
 }

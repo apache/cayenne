@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.project.upgrade.handlers;
 
+import org.apache.cayenne.configuration.xml.ProjectVersion;
+import org.apache.cayenne.configuration.xml.Schema;
 import org.apache.cayenne.project.upgrade.UpgradeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,8 +66,8 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
             "templates/v4_1/datamap-subclass.vm");
 
     @Override
-    public String getVersion() {
-        return "11";
+    public ProjectVersion getVersion() {
+        return ProjectVersion.V11;
     }
 
     @Override
@@ -102,7 +104,7 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
         for (int j = 0; j < infoNodes.getLength(); j++) {
             Element infoElement = (Element) infoNodes.item(j);
             if (infoElement.hasAttribute("xmlns:info")) {
-                infoElement.setAttribute("xmlns:info", "http://cayenne.apache.org/schema/11/info");
+                infoElement.setAttribute("xmlns:info", Schema.buildNamespace(getVersion(), "info"));
             }
         }
     }

@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -42,6 +41,7 @@ import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
+import org.apache.cayenne.configuration.xml.ProjectVersion;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
@@ -60,8 +60,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-
-import static org.apache.cayenne.util.Util.isBlank;
 
 /**
  *
@@ -89,10 +87,9 @@ public class DefaultUpgradeService implements UpgradeService {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultUpgradeService.class);
 
-    public static final String UNKNOWN_VERSION = "0";
-    public static final String MIN_SUPPORTED_VERSION = "6";
+    public static final ProjectVersion MIN_SUPPORTED_VERSION = ProjectVersion.V6;
 
-    TreeMap<String, UpgradeHandler> handlers = new TreeMap<>(VersionComparator.INSTANCE);
+    TreeMap<ProjectVersion, UpgradeHandler> handlers = new TreeMap<>();
 
     @Inject
     private ProjectSaver projectSaver;
@@ -101,7 +98,7 @@ public class DefaultUpgradeService implements UpgradeService {
     private DataChannelDescriptorLoader loader;
 
     public DefaultUpgradeService(@Inject List<UpgradeHandler> handlerList) {
-        for(UpgradeHandler handler : handlerList) {
+        for (UpgradeHandler handler : handlerList) {
             handlers.put(handler.getVersion(), handler);
         }
     }
@@ -110,21 +107,20 @@ public class DefaultUpgradeService implements UpgradeService {
     public UpgradeMetaData getUpgradeType(Resource resource) {
         UpgradeMetaData metaData = new UpgradeMetaData();
 
-        String version = loadProjectVersion(resource);
-        metaData.setProjectVersion(version);
-        metaData.setSupportedVersion(String.valueOf(Project.VERSION));
+        ProjectVersion version = loadProjectVersion(resource);
+        metaData.setProjectVersion(version.getAsString());
+        metaData.setSupportedVersion(ProjectVersion.getCurrent().getAsString());
 
-        int c1 = VersionComparator.INSTANCE.compare(version, MIN_SUPPORTED_VERSION);
-        if (c1 < 0) {
-            metaData.setIntermediateUpgradeVersion(MIN_SUPPORTED_VERSION);
+        if (version.compareTo(MIN_SUPPORTED_VERSION) < 0) {
+            metaData.setIntermediateUpgradeVersion(MIN_SUPPORTED_VERSION.getAsString());
             metaData.setUpgradeType(UpgradeType.INTERMEDIATE_UPGRADE_NEEDED);
             return metaData;
         }
 
-        int c2 = VersionComparator.INSTANCE.compare(String.valueOf(Project.VERSION), version);
-        if (c2 < 0) {
+        int comparison = ProjectVersion.getCurrent().compareTo(version);
+        if (comparison < 0) {
             metaData.setUpgradeType(UpgradeType.DOWNGRADE_NEEDED);
-        } else if (c2 == 0) {
+        } else if (comparison == 0) {
             metaData.setUpgradeType(UpgradeType.UPGRADE_NOT_NEEDED);
         } else {
             metaData.setUpgradeType(UpgradeType.UPGRADE_NEEDED);
@@ -132,22 +128,13 @@ public class DefaultUpgradeService implements UpgradeService {
         return metaData;
     }
 
-    protected List<UpgradeHandler> getHandlersForVersion(String version) {
-        boolean found = MIN_SUPPORTED_VERSION.equals(version);
+    protected List<UpgradeHandler> getHandlersForVersion(ProjectVersion version) {
         List<UpgradeHandler> handlerList = new ArrayList<>();
-
-        for(Map.Entry<String, UpgradeHandler> entry : handlers.entrySet()) {
-            if(entry.getKey().equals(version)) {
-                found = true;
-                continue;
+        for (Map.Entry<ProjectVersion, UpgradeHandler> entry : handlers.entrySet()) {
+            if(entry.getKey().compareTo(version) > 0) {
+                handlerList.add(entry.getValue());
             }
-            if(!found) {
-                continue;
-            }
-
-            handlerList.add(entry.getValue());
         }
-
         return handlerList;
     }
 
@@ -263,7 +250,7 @@ public class DefaultUpgradeService implements UpgradeService {
      * A default method for quick extraction of the project version from an XML
      * file.
      */
-    protected String loadProjectVersion(Resource resource) {
+    protected ProjectVersion loadProjectVersion(Resource resource) {
 
         RootTagHandler rootHandler = new RootTagHandler();
         URL url = resource.getURL();
@@ -278,44 +265,7 @@ public class DefaultUpgradeService implements UpgradeService {
             throw new ConfigurationException("Error reading configuration from %s", e, url);
         }
 
-        return rootHandler.projectVersion != null ? rootHandler.projectVersion : UNKNOWN_VERSION;
-    }
-
-    protected static double decodeVersion(String version) {
-        if (version == null || isBlank(version)) {
-            return 0;
-        }
-
-        // leave the first dot, and treat remaining as a fraction
-        // remove all non digit chars
-        StringBuilder buffer = new StringBuilder(version.length());
-        boolean dotProcessed = false;
-        for (int i = 0; i < version.length(); i++) {
-            char nextChar = version.charAt(i);
-            if (nextChar == '.' && !dotProcessed) {
-                dotProcessed = true;
-                buffer.append('.');
-            } else if (Character.isDigit(nextChar)) {
-                buffer.append(nextChar);
-            }
-        }
-
-        return Double.parseDouble(buffer.toString());
-    }
-
-    private static class VersionComparator implements Comparator<String> {
-
-        private static final VersionComparator INSTANCE = new VersionComparator();
-
-        @Override
-        public int compare(String o1, String o2) {
-            if (o1.equals(o2)) {
-                return 0;
-            }
-            double v1Double = decodeVersion(o1);
-            double v2Double = decodeVersion(o2);
-            return v1Double < v2Double ? -1 : 1;
-        }
+        return ProjectVersion.fromString(rootHandler.projectVersion);
     }
 
     class RootTagHandler extends DefaultHandler {

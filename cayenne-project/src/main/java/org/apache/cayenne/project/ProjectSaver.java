@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.project;
 
+import org.apache.cayenne.configuration.xml.ProjectVersion;
 import org.apache.cayenne.resource.Resource;
 
 /**
@@ -30,7 +31,7 @@ public interface ProjectSaver {
     /**
      * Returns a version of the project configuration supported by the current runtime.
      */
-    String getSupportedVersion();
+    ProjectVersion getSupportedVersion();
 
     /**
      * Saves project in the location of its current configuration sources. Since resource

@@ -25,6 +25,7 @@ import java.util.HashSet;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.ConfigurationTree;
+import org.apache.cayenne.configuration.xml.ProjectVersion;
 import org.apache.cayenne.resource.Resource;
 
 /**
@@ -41,8 +42,10 @@ public class Project {
 	 * Used by different parsers and savers of project's XML files.
 	 *
 	 * @since 4.1
+	 * @deprecated since 5.0 use {@link ProjectVersion#getCurrent()} instead
 	 */
-	static public final int VERSION = 11;
+	@Deprecated(since = "5.0", forRemoval = true)
+	public static final int VERSION = (int) ProjectVersion.getCurrent().getAsDouble();
 
 	protected boolean modified;
 

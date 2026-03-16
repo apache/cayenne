@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.dialog.db.load;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.DataMapEvent;
+import org.apache.cayenne.configuration.xml.ProjectVersion;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.event.MapEvent;
@@ -42,9 +43,9 @@ public class DbImportProjectSaver implements ProjectSaver {
     }
 
     @Override
-    public String getSupportedVersion() {
+    public ProjectVersion getSupportedVersion() {
         // not important in the context of non-saving saver
-        return "-1";
+        return null;
     }
 
     @Override

@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
+import org.apache.cayenne.configuration.xml.ProjectVersion;
+import org.apache.cayenne.configuration.xml.Schema;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.XMLEncoder;
@@ -43,8 +45,8 @@ public class DataChannelDescriptor implements ConfigurationNode, Serializable, X
 	/**
 	 * The namespace in which the data map XML file will be created.
 	 */
-	public static final String SCHEMA_XSD = "http://cayenne.apache.org/schema/11/domain";
-	public static final String SCHEMA_XSD_LOCATION = "https://cayenne.apache.org/schema/11/domain.xsd";
+	public static final String SCHEMA_XSD = Schema.buildNamespace(ProjectVersion.getCurrent(), "domain");
+	public static final String SCHEMA_XSD_LOCATION = Schema.buildSchemaLocation(ProjectVersion.getCurrent(), "domain");
 
 	protected String name;
 	protected Map<String, String> properties;
