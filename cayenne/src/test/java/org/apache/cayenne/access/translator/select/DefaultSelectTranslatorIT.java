@@ -615,50 +615,50 @@ public class DefaultSelectTranslatorIT extends RuntimeCase {
 			assertTrue(s, artistId > 0 && artistId < iFrom);
 			int dateOfBirth = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "DATE_OF_BIRTH" + charEnd);
 			assertTrue(s, dateOfBirth > 0 && dateOfBirth < iFrom);
-			int estimatedPrice = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "ESTIMATED_PRICE" + charEnd);
+			int estimatedPrice = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "ESTIMATED_PRICE" + charEnd);
 			assertTrue(s, estimatedPrice > 0 && estimatedPrice < iFrom);
-			int paintingDescription = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "PAINTING_DESCRIPTION"
+			int paintingDescription = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "PAINTING_DESCRIPTION"
 					+ charEnd);
 			assertTrue(s, paintingDescription > 0 && paintingDescription < iFrom);
-			int paintingTitle = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "PAINTING_TITLE" + charEnd);
+			int paintingTitle = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "PAINTING_TITLE" + charEnd);
 			assertTrue(s, paintingTitle > 0 && paintingTitle < iFrom);
-			int artistIdT1 = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "ARTIST_ID" + charEnd);
-			assertTrue(s, artistIdT1 > 0 && artistIdT1 < iFrom);
-			int galleryId = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "GALLERY_ID" + charEnd);
+			int artistIdT2 = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "ARTIST_ID" + charEnd);
+			assertTrue(s, artistIdT2 > 0 && artistIdT2 < iFrom);
+			int galleryId = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "GALLERY_ID" + charEnd);
 			assertTrue(s, galleryId > 0 && galleryId < iFrom);
-			int paintingId = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "PAINTING_ID" + charEnd);
+			int paintingId = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "PAINTING_ID" + charEnd);
 			assertTrue(s, paintingId > 0 && paintingId < iFrom);
 			int iArtist = s.indexOf(charStart + "ARTIST" + charEnd + " " + charStart + "t0" + charEnd);
 			assertTrue(s, iArtist > iFrom);
-			int iLeftJoin = s.indexOf("LEFT JOIN");
-			assertTrue(s, iLeftJoin > iFrom);
-			int iPainting = s.indexOf(charStart + "PAINTING" + charEnd + " " + charStart + "t1" + charEnd);
-			assertTrue(s, iPainting > iLeftJoin);
-			int iOn = s.indexOf(" ON ");
-			assertTrue(s, iOn > iLeftJoin);
-			int iArtistId = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iLeftJoin);
-			assertTrue(s, iArtistId > iOn);
-			int iArtistIdT1 = s
-					.indexOf(charStart + "t1" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iLeftJoin);
-			assertTrue(s, iArtistIdT1 > iOn);
-			int i = s.indexOf("=", iLeftJoin);
-			assertTrue(s, iArtistIdT1 > i || iArtistId > i);
 			int iJoin = s.indexOf("JOIN");
-			assertTrue(s, iJoin > iLeftJoin);
-			int iPainting2 = s.indexOf(charStart + "PAINTING" + charEnd + " " + charStart + "t2" + charEnd);
+			assertTrue(s, iJoin > iFrom);
+			int iPainting2 = s.indexOf(charStart + "PAINTING" + charEnd + " " + charStart + "t1" + charEnd);
 			assertTrue(s, iPainting2 > iJoin);
-			int iOn2 = s.indexOf(" ON ");
+			int iOn2 = s.indexOf(" ON ", iJoin);
 			assertTrue(s, iOn2 > iJoin);
 			int iArtistId2 = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iJoin);
 			assertTrue(s, iArtistId2 > iOn2);
-			int iArtistId2T2 = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iJoin);
-			assertTrue(s, iArtistId2T2 > iOn2);
+			int iArtistId2T1 = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iJoin);
+			assertTrue(s, iArtistId2T1 > iOn2);
 			int i2 = s.indexOf("=", iJoin);
-			assertTrue(s, iArtistId2T2 > i2 || iArtistId2 > i2);
+			assertTrue(s, iArtistId2T1 > i2 || iArtistId2 > i2);
+			int iLeftJoin = s.indexOf("LEFT JOIN");
+			assertTrue(s, iLeftJoin > iJoin);
+			int iPainting = s.indexOf(charStart + "PAINTING" + charEnd + " " + charStart + "t2" + charEnd);
+			assertTrue(s, iPainting > iLeftJoin);
+			int iOn = s.indexOf(" ON ", iLeftJoin);
+			assertTrue(s, iOn > iLeftJoin);
+			int iArtistId = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iLeftJoin);
+			assertTrue(s, iArtistId > iOn);
+			int iArtistIdT2 = s
+					.indexOf(charStart + "t2" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iLeftJoin);
+			assertTrue(s, iArtistIdT2 > iOn);
+			int i = s.indexOf("=", iLeftJoin);
+			assertTrue(s, iArtistIdT2 > i || iArtistId > i);
 			int iWhere = s.indexOf(" WHERE ");
-			assertTrue(s, iWhere > iJoin);
+			assertTrue(s, iWhere > iLeftJoin);
 
-			int paintingTitle2 = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "PAINTING_TITLE" + charEnd + " = ?");
+			int paintingTitle2 = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "PAINTING_TITLE" + charEnd + " = ?");
 			assertTrue(s, paintingTitle2 > iWhere);
 
 		} finally {
