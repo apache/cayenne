@@ -38,10 +38,10 @@ import org.apache.cayenne.query.FluentSelect;
 public class DefaultSelectTranslator implements SelectTranslator {
 
     private static final TranslationStage[] TRANSLATION_STAGES = {
+            new QualifierTranslationStage(),
             new ColumnExtractorStage(),
             new PrefetchNodeStage(),
             new OrderingStage(),
-            new QualifierTranslationStage(),
             new HavingTranslationStage(),
             new OrderingGroupByStage(),
             new GroupByStage(),
