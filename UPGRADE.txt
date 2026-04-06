@@ -10,6 +10,9 @@ UPGRADING TO 5.0.M2
 * Per CAY-2859 SelectById query factory methods are redesigned with a bunch of old methods deprecated,
 so you should update your calls accordingly.
 
+* Per CAY-2917 joins are generated in a different order in the Select SQL, this should not affect any logic,
+except if your code relies on the generated SQL in any way.
+
 UPGRADING TO 5.0.M1
 
 * Per CAY-2737 All code deprecated in Cayenne 4.1 and 4.2 was deleted, please review your code before upgrading.
