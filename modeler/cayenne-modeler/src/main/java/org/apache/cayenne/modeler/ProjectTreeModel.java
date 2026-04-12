@@ -35,7 +35,6 @@ import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import java.util.Comparator;
 import java.util.Enumeration;
-import java.util.Map;
 
 /**
  * ProjectTreeModel is a model of Cayenne project tree.
@@ -170,8 +169,8 @@ public class ProjectTreeModel extends DefaultTreeModel {
 		return currentNode;
 	}
 
-	public void setFiltered(Map<String, Boolean> filterMap) {
-		filter.setFilterMap(filterMap);
+	public void setFiltered(boolean dbEntity, boolean objEntity, boolean embeddable, boolean procedure, boolean query) {
+		filter.setFilter(dbEntity, objEntity, embeddable, procedure, query);
 	}
 
 	public int getChildCount(Object parent) {
@@ -229,24 +228,43 @@ public class ProjectTreeModel extends DefaultTreeModel {
 	}
 
 	static class Filter {
-		private Map<String, Boolean> filterMap;
-		boolean pass = true;
+		private boolean dbEntity;
+		private boolean objEntity;
+		private boolean embeddable;
+		private boolean procedure;
+		private boolean query;
+		private boolean pass;
 
-		public void setFilterMap(Map<String, Boolean> filterMap) {
-			this.filterMap = filterMap;
-			pass = false;
+		Filter() {
+			this.dbEntity = true;
+			this.objEntity = true;
+			this.embeddable = true;
+			this.procedure = true;
+			this.query = true;
+			this.pass = true;
+		}
+
+		public void setFilter(boolean dbEntity, boolean objEntity, boolean embeddable, boolean procedure, boolean query) {
+			this.dbEntity = dbEntity;
+			this.objEntity = objEntity;
+			this.embeddable = embeddable;
+			this.procedure = procedure;
+			this.query = query;
+			this.pass = false;
 		}
 
 		public boolean pass(DefaultMutableTreeNode obj) {
 			Object root = obj.getUserObject();
 			Object firstLeaf = obj.getFirstLeaf().getUserObject();
 
-			return ((pass) || (root instanceof DataMap) || (root instanceof DataNodeDescriptor)
-					|| (firstLeaf instanceof DbEntity && filterMap.get("dbEntity"))
-					|| (firstLeaf instanceof ObjEntity && filterMap.get("objEntity"))
-					|| (firstLeaf instanceof Embeddable && filterMap.get("embeddable"))
-					|| (firstLeaf instanceof QueryDescriptor && filterMap.get("query"))
-					|| (firstLeaf instanceof Procedure && filterMap.get("procedure")));
+			return (pass
+					|| (root instanceof DataMap)
+					|| (root instanceof DataNodeDescriptor)
+					|| (firstLeaf instanceof DbEntity && dbEntity)
+					|| (firstLeaf instanceof ObjEntity && objEntity)
+					|| (firstLeaf instanceof Embeddable && embeddable)
+					|| (firstLeaf instanceof QueryDescriptor && query)
+					|| (firstLeaf instanceof Procedure && procedure));
 		}
 	}
 }

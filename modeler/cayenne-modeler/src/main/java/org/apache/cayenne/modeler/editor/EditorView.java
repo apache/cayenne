@@ -176,7 +176,6 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
         // init widgets
         actionManager.getAction(CollapseTreeAction.class).setAlwaysOn(true);
         actionManager.getAction(FilterAction.class).setAlwaysOn(true);
-        actionManager.getAction(FilterAction.class).resetDialog();
 
         JToolBar barPanel = new JToolBar();
         barPanel.setFloatable(false);
@@ -267,7 +266,7 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
 
 
 	private void initController() {
-		this.filterController = new FilterController(eventController,treePanel);
+		this.filterController = new FilterController(treePanel);
 		 
         eventController.addDomainDisplayListener(this);
         eventController.addDataNodeDisplayListener(this);

@@ -19,11 +19,6 @@
 
 package org.apache.cayenne.swing;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * A builder for component bindings that delegates the creation of the binding to the
  * underlying factory, and itself configures a number of binding parameters.
@@ -34,7 +29,6 @@ public class BindingBuilder {
     protected BindingFactory factory;
     protected BindingDelegate delegate;
     protected Object context;
-    protected Map actionsMap;
 
     /**
      * Constructs BindingBuilder with a BindingFactory and a root model object (or
@@ -73,68 +67,10 @@ public class BindingBuilder {
         return factory;
     }
 
-    public ObjectBinding bindToStateChange(AbstractButton button, String property) {
-        ObjectBinding binding = factory.bindToStateChange(button, property);
-        return initBinding(binding, delegate);
-    }
-
-    public ObjectBinding bindToStateChangeAndAction(
-            AbstractButton button,
-            String property,
-            String action) {
-        ObjectBinding binding = factory.bindToStateChange(button, property);
-        return initBinding(binding, getActionDelegate(action));
-    }
-
-    public ObjectBinding bindToComboSelection(JComboBox component, String property) {
-        ObjectBinding binding = factory.bindToComboSelection(component, property, null);
-        return initBinding(binding, delegate);
-    }
-
-    public ObjectBinding bindToComboSelection(
-            JComboBox component,
-            String property,
-            String noSelectionValue) {
-        ObjectBinding binding = factory.bindToComboSelection(
-                component,
-                property,
-                noSelectionValue);
-        return initBinding(binding, delegate);
-    }
-
-    public ObjectBinding bindToComboSelection(
-            JComboBox component,
-            String property,
-            String action,
-            String noSelectionValue) {
-        ObjectBinding binding = factory.bindToComboSelection(
-                component,
-                property,
-                noSelectionValue);
-        return initBinding(binding, getActionDelegate(action));
-    }
 
     protected ObjectBinding initBinding(ObjectBinding binding, BindingDelegate delegate) {
         binding.setDelegate(delegate);
         binding.setContext(context);
         return binding;
-    }
-
-    protected BindingDelegate getActionDelegate(String action) {
-        BindingDelegate delegate = null;
-
-        if (actionsMap == null) {
-            actionsMap = new HashMap();
-        }
-        else {
-            delegate = (BindingDelegate) actionsMap.get(action);
-        }
-
-        if (delegate == null) {
-            delegate = new ActionDelegate(action);
-            actionsMap.put(action, delegate);
-        }
-
-        return delegate;
     }
 }

@@ -30,8 +30,6 @@ import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.pref.DBGeneratorDefaults;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.DbAdapterInfo;
-import org.apache.cayenne.swing.BindingBuilder;
-import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.validation.ValidationResult;
 
 import javax.swing.*;
@@ -51,8 +49,7 @@ import java.util.Iterator;
 public class DBGeneratorOptions extends CayenneController {
 
     protected DBGeneratorOptionsView view;
-    protected ObjectBinding[] optionBindings;
-    protected ObjectBinding adapterBinding;
+    private boolean updatingAdapterCombo;
 
     protected DBConnectionInfo connectionInfo;
     protected Collection<DataMap> dataMaps;
@@ -101,37 +98,18 @@ public class DBGeneratorOptions extends CayenneController {
         view.getAdapters().setModel(adapterModel);
         view.getAdapters().setSelectedIndex(0);
 
-        BindingBuilder builder = new BindingBuilder(
-                getApplication().getBindingFactory(),
-                this);
+        view.getAdapters().addActionListener(e -> {
+            if (updatingAdapterCombo) return;
+            Object sel = view.getAdapters().getSelectedItem();
+            connectionInfo.setDbAdapter("org.apache.cayenne.dba.JdbcAdapter".equals(sel) ? null : (String) sel);
+            refreshSQLAction();
+        });
 
-        adapterBinding = builder.bindToComboSelection(
-                view.getAdapters(),
-                "connectionInfo.dbAdapter",
-                "refreshSQLAction()",
-                "org.apache.cayenne.dba.JdbcAdapter");
-
-        optionBindings = new ObjectBinding[5];
-        optionBindings[0] = builder.bindToStateChangeAndAction(
-                view.getCreateFK(),
-                "generatorDefaults.createFK",
-                "refreshSQLAction()");
-        optionBindings[1] = builder.bindToStateChangeAndAction(
-                view.getCreatePK(),
-                "generatorDefaults.createPK",
-                "refreshSQLAction()");
-        optionBindings[2] = builder.bindToStateChangeAndAction(
-                view.getCreateTables(),
-                "generatorDefaults.createTables",
-                "refreshSQLAction()");
-        optionBindings[3] = builder.bindToStateChangeAndAction(
-                view.getDropPK(),
-                "generatorDefaults.dropPK",
-                "refreshSQLAction()");
-        optionBindings[4] = builder.bindToStateChangeAndAction(
-                view.getDropTables(),
-                "generatorDefaults.dropTables",
-                "refreshSQLAction()");
+        view.getCreateFK().addActionListener(e -> { generatorDefaults.setCreateFK(view.getCreateFK().isSelected()); refreshSQLAction(); });
+        view.getCreatePK().addActionListener(e -> { generatorDefaults.setCreatePK(view.getCreatePK().isSelected()); refreshSQLAction(); });
+        view.getCreateTables().addActionListener(e -> { generatorDefaults.setCreateTables(view.getCreateTables().isSelected()); refreshSQLAction(); });
+        view.getDropPK().addActionListener(e -> { generatorDefaults.setDropPK(view.getDropPK().isSelected()); refreshSQLAction(); });
+        view.getDropTables().addActionListener(e -> { generatorDefaults.setDropTables(view.getDropTables().isSelected()); refreshSQLAction(); });
 
         view.getGenerateButton().addActionListener(e -> generateSchemaAction());
         view.getSaveSqlButton().addActionListener(e -> storeSQLAction());
@@ -195,9 +173,11 @@ public class DBGeneratorOptions extends CayenneController {
     protected void refreshView() {
         getView().setEnabled(connectionInfo != null);
 
-        for (ObjectBinding optionBinding : optionBindings) {
-            optionBinding.updateView();
-        }
+        view.getCreateFK().setSelected(generatorDefaults.createFK);
+        view.getCreatePK().setSelected(generatorDefaults.createPK);
+        view.getCreateTables().setSelected(generatorDefaults.createTables);
+        view.getDropPK().setSelected(generatorDefaults.dropPK);
+        view.getDropTables().setSelected(generatorDefaults.dropTables);
 
         view.getSql().setText(textForSQL);
     }
@@ -227,8 +207,14 @@ public class DBGeneratorOptions extends CayenneController {
      * Updates a text area showing generated SQL.
      */
     public void refreshSQLAction() {
-        // sync generator with defaults, make SQL, then sync the view...
-        adapterBinding.updateView();
+        // sync combo to reflect current connectionInfo (e.g. after generateSchemaAction replaces it)
+        updatingAdapterCombo = true;
+        try {
+            String adapter = connectionInfo.getDbAdapter();
+            view.getAdapters().setSelectedItem(adapter != null ? adapter : "org.apache.cayenne.dba.JdbcAdapter");
+        } finally {
+            updatingAdapterCombo = false;
+        }
         connectionInfo.setDbAdapter((String) view.getAdapters().getSelectedItem());
         prepareGenerator();
         generatorDefaults.configureGenerator(generators);

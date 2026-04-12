@@ -18,76 +18,108 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.datadomain;
 
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.swing.JTree;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
-
-import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.ProjectTreeModel;
 import org.apache.cayenne.modeler.ProjectTreeView;
 
+import javax.swing.*;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import java.util.Enumeration;
+
 public class FilterController {
-	
-	private Map<String,Boolean> filterMap = new HashMap<>();
-	private ProjectTreeView tree;
-	private ProjectController eventController;
-	private ProjectTreeModel treeModel;
-	
-	public ProjectTreeView getTree() {
-		return tree;
-	}
 
-	public ProjectTreeModel getTreeModel() {
-		return treeModel;
-	}
+    private boolean showDbEntity;
+    private boolean showObjEntity;
+    private boolean showEmbeddable;
+    private boolean showProcedure;
+    private boolean showQuery;
 
-	public ProjectController getEventController() {
-		return eventController;
-	}
+    private final ProjectTreeView treeView;
+    private final ProjectTreeModel treeModel;
+    private final FilterDialog view;
 
-	public Map<String, Boolean> getFilterMap() {
-		return filterMap;
-	}
+    public FilterController(ProjectTreeView treeView) {
 
-	public FilterController(ProjectController eventController, ProjectTreeView treePanel) {
-	
-		this.eventController = eventController;
-		this.tree = treePanel;
-		this.treeModel = tree.getProjectModel();
-		
-		filterMap.put("dbEntity",	true);
-		filterMap.put("objEntity",	true);
-		filterMap.put("embeddable",	true);
-		filterMap.put("procedure",	true);
-		filterMap.put("query",		true);
-	}
-	
-	
-	public void treeExpOrCollPath(String action) {
-		TreeNode root = (TreeNode) treeModel.getRoot();
-		expandAll(tree, new TreePath(root),action);
-	}
+        this.view = new FilterDialog();
+        this.treeView = treeView;
+        this.treeModel = treeView.getProjectModel();
 
-	private void expandAll(JTree tree, TreePath parent, String action) {
-		TreeNode node = (TreeNode) parent.getLastPathComponent();
-		
-		if (node.getChildCount() >= 0) {
-			for (Enumeration e = node.children(); e.hasMoreElements();) {
-				TreeNode n = (TreeNode) e.nextElement();
-				TreePath path = parent.pathByAddingChild(n);
-				expandAll(tree, path, action);
-			}
-		}
+        selectAll();
 
-		if("expand".equals(action)) {
-			tree.expandPath(parent);
-		} else if("collapse".equals(action)) {
-			treeModel.reload(treeModel.getRootNode());
-		}
-	}
-	
+        view.getDbEntity().addActionListener(e -> {
+            showDbEntity = view.getDbEntity().isSelected();
+            applyFilter();
+        });
+        view.getObjEntity().addActionListener(e -> {
+            showObjEntity = view.getObjEntity().isSelected();
+            applyFilter();
+        });
+        view.getEmbeddable().addActionListener(e -> {
+            showEmbeddable = view.getEmbeddable().isSelected();
+            applyFilter();
+        });
+        view.getProcedure().addActionListener(e -> {
+            showProcedure = view.getProcedure().isSelected();
+            applyFilter();
+        });
+        view.getQuery().addActionListener(e -> {
+            showQuery = view.getQuery().isSelected();
+            applyFilter();
+        });
+
+        view.getAll().addActionListener(e -> removeFilter());
+    }
+
+    private void selectAll() {
+        showDbEntity = showObjEntity = showEmbeddable = showProcedure = showQuery = true;
+        view.getDbEntity().setSelected(true);
+        view.getObjEntity().setSelected(true);
+        view.getEmbeddable().setSelected(true);
+        view.getProcedure().setSelected(true);
+
+        view.getQuery().setSelected(true);
+        view.getAll().setEnabled(false);
+    }
+
+    private void removeFilter() {
+        selectAll();
+        treeModel.setFiltered(true, true, true, true, true);
+        treeView.updateUI();
+    }
+
+    private void applyFilter() {
+        treeModel.setFiltered(showDbEntity, showObjEntity, showEmbeddable, showProcedure, showQuery);
+        treeView.updateUI();
+
+        boolean all = showDbEntity && showObjEntity && showEmbeddable && showProcedure && showQuery;
+        view.getAll().setSelected(all);
+        view.getAll().setEnabled(!all);
+    }
+
+    public FilterDialog getView() {
+        return view;
+    }
+
+    public void treeExpOrCollPath(String action) {
+        TreeNode root = (TreeNode) treeModel.getRoot();
+        expandAll(treeView, new TreePath(root), action);
+    }
+
+    private void expandAll(JTree tree, TreePath parent, String action) {
+        TreeNode node = (TreeNode) parent.getLastPathComponent();
+
+        if (node.getChildCount() >= 0) {
+            for (Enumeration<? extends TreeNode> e = node.children(); e.hasMoreElements(); ) {
+                TreeNode n = e.nextElement();
+                TreePath path = parent.pathByAddingChild(n);
+                expandAll(tree, path, action);
+            }
+        }
+
+        if ("expand".equals(action)) {
+            tree.expandPath(parent);
+        } else if ("collapse".equals(action)) {
+            treeModel.reload(treeModel.getRootNode());
+        }
+    }
 }

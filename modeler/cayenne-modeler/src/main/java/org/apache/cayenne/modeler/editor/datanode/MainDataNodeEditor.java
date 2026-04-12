@@ -43,9 +43,7 @@ import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextBinder;
-import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.BindingDelegate;
-import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.validation.ValidationException;
 
 /**
@@ -76,8 +74,7 @@ public class MainDataNodeEditor extends CayenneController {
 
 	protected CustomDataSourceEditor defaultSubeditor;
 	protected BindingDelegate nodeChangeProcessor;
-	protected ObjectBinding[] bindings;
-	protected ObjectBinding localDataSourceBinding;
+	private boolean refreshing;
 
 	public MainDataNodeEditor(ProjectController parent, DataNodeEditor tabController) {
 
@@ -188,12 +185,12 @@ public class MainDataNodeEditor extends CayenneController {
 			}
 		});
 
-		BindingBuilder builder = new BindingBuilder(getApplication().getBindingFactory(), this);
-
-		localDataSourceBinding = builder.bindToComboSelection(view.getLocalDataSources(),
-				"parent.dataNodePreferences.localDataSource", NO_LOCAL_DATA_SOURCE);
-
-		// use delegate for the rest of them
+		view.getLocalDataSources().addActionListener(e -> {
+			if (refreshing) return;
+			Object sel = view.getLocalDataSources().getSelectedItem();
+			String key = (sel == null || NO_LOCAL_DATA_SOURCE.equals(sel)) ? null : sel.toString();
+			((ProjectController) getParent()).getDataNodePreferences().setLocalDataSource(key);
+		});
 
 		TextBinder.bind(view.getDataNodeName(), v -> {
 			if (node == null) return;
@@ -214,9 +211,17 @@ public class MainDataNodeEditor extends CayenneController {
 			((ProjectController) getParent()).fireDataNodeEvent(new DataNodeEvent(MainDataNodeEditor.this, node));
 		});
 
-		bindings = new ObjectBinding[2];
-		bindings[0] = builder.bindToComboSelection(view.getFactories(), "factoryName");
-		bindings[1] = builder.bindToComboSelection(view.getSchemaUpdateStrategy(), "schemaUpdateStrategy");
+		view.getFactories().addActionListener(e -> {
+			if (refreshing) return;
+			setFactoryName((String) view.getFactories().getSelectedItem());
+			((ProjectController) getParent()).fireDataNodeEvent(new DataNodeEvent(MainDataNodeEditor.this, node));
+		});
+
+		view.getSchemaUpdateStrategy().addActionListener(e -> {
+			if (refreshing) return;
+			setSchemaUpdateStrategy((String) view.getSchemaUpdateStrategy().getSelectedItem());
+			((ProjectController) getParent()).fireDataNodeEvent(new DataNodeEvent(MainDataNodeEditor.this, node));
+		});
 
 		// one way bindings
 		view.getConfigLocalDataSources().addActionListener(e -> dataSourceConfigAction());
@@ -243,8 +248,14 @@ public class MainDataNodeEditor extends CayenneController {
 		String[] dataSources = sources.keySet().toArray(new String[0]);
         System.arraycopy(dataSources, 0, keys, 1, dataSources.length);
 
-		view.getLocalDataSources().setModel(new DefaultComboBoxModel<>(keys));
-		localDataSourceBinding.updateView();
+		refreshing = true;
+		try {
+			view.getLocalDataSources().setModel(new DefaultComboBoxModel<>(keys));
+			String localDs = ((ProjectController) getParent()).getDataNodePreferences().getLocalDataSource();
+			view.getLocalDataSources().setSelectedItem(localDs != null ? localDs : NO_LOCAL_DATA_SOURCE);
+		} finally {
+			refreshing = false;
+		}
 	}
 
 	/**
@@ -262,8 +273,12 @@ public class MainDataNodeEditor extends CayenneController {
 
 		view.getDataNodeName().setText(getNodeName());
 		view.getCustomAdapter().setText(getAdapterName());
-		for (ObjectBinding binding : bindings) {
-			binding.updateView();
+		refreshing = true;
+		try {
+			view.getFactories().setSelectedItem(getFactoryName());
+			view.getSchemaUpdateStrategy().setSelectedItem(getSchemaUpdateStrategy());
+		} finally {
+			refreshing = false;
 		}
 
 		showDataSourceSubview(getFactoryName());

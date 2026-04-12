@@ -27,11 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
-import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.prefs.Preferences;
-
 public class GeneralPreferences extends CayenneController {
 
 	public static final String AUTO_LOAD_PROJECT_PREFERENCE = "autoLoadProject";

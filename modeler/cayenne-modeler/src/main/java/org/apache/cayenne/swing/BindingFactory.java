@@ -58,26 +58,6 @@ public class BindingFactory {
     }
 
     /**
-     * Binds to AbstractButton item state change events. Most common AbstractButton
-     * subclasses are JButton, JCheckBox, JRadioButton.
-     */
-    public ObjectBinding bindToStateChange(AbstractButton button, String property) {
-        ItemEventBinding binding = new ItemEventBinding(button, property);
-        return prepareBinding(binding);
-    }
-
-    public ObjectBinding bindToComboSelection(
-            JComboBox component,
-            String property,
-            String noSelectionValue) {
-        ComboSelectionBinding binding = new ComboSelectionBinding(
-                component,
-                property,
-                noSelectionValue);
-        return prepareBinding(binding);
-    }
-
-    /**
      * Configures binding with factory default settings.
      */
     protected ObjectBinding prepareBinding(BindingBase binding) {

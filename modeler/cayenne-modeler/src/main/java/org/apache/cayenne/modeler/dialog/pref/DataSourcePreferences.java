@@ -45,7 +45,6 @@ import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.pref.CayennePreferenceEditor;
 import org.apache.cayenne.pref.ChildrenMapPreference;
 import org.apache.cayenne.pref.PreferenceEditor;
-import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -94,13 +93,15 @@ public class DataSourcePreferences extends CayenneController {
 	}
 
 	protected void initBindings() {
-		BindingBuilder builder = new BindingBuilder(getApplication().getBindingFactory(), this);
 		view.getAddDataSource().addActionListener(e -> newDataSourceAction());
 		view.getDuplicateDataSource().addActionListener(e -> duplicateDataSourceAction());
 		view.getRemoveDataSource().addActionListener(e -> removeDataSourceAction());
 		view.getTestDataSource().addActionListener(e -> testDataSourceAction());
 
-		builder.bindToComboSelection(view.getDataSources(), "dataSourceKey");
+		view.getDataSources().addActionListener(e -> {
+			Object sel = view.getDataSources().getSelectedItem();
+			setDataSourceKey(sel != null ? sel.toString() : null);
+		});
 	}
 
 	public Map getDataSources() {

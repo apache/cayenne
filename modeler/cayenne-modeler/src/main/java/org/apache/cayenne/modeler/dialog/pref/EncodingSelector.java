@@ -21,13 +21,10 @@
 package org.apache.cayenne.modeler.dialog.pref;
 
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.swing.BindingBuilder;
-import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.*;
 import java.awt.*;
-import java.beans.PropertyChangeListener;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
@@ -42,35 +39,16 @@ public class EncodingSelector extends CayenneController {
 
     public static final String ENCODING_PROPERTY_BINDING = "encoding";
 
-    protected PropertyChangeListener encodingChangeListener;
-    protected ObjectBinding defaultEncodingBinding;
-    protected ObjectBinding otherEncodingBinding;
-    protected ObjectBinding selectedEncodingBinding;
+    private final EncodingSelectorView view;
+    private final String systemEncoding;
 
-    protected EncodingSelectorView view;
-    protected String systemEncoding;
-    protected String encoding;
-    protected boolean defaultEncoding;
-
-    /**
-     * Creates new EncodingPicker.
-     */
-    public EncodingSelector(CayenneController parent) {
-        this(parent, new EncodingSelectorView());
-    }
+    private String encoding;
+    private boolean defaultEncoding;
 
     public EncodingSelector(CayenneController parent, EncodingSelectorView view) {
         super(parent);
         this.view = view;
 
-        initBindings();
-    }
-
-    public Component getView() {
-        return view;
-    }
-
-    protected void initBindings() {
         // init static models...
         this.systemEncoding = detectPlatformEncoding();
 
@@ -79,19 +57,18 @@ public class EncodingSelector extends CayenneController {
         view.getDefaultEncodingLabel().setText("Default (" + systemEncoding + ")");
         view.getDefaultEncoding().setSelected(true);
 
-        // create bindings...
-        BindingBuilder builder = new BindingBuilder(
-                getApplication().getBindingFactory(),
-                this);
+        view.getDefaultEncoding().addActionListener(e -> setDefaultEncoding(view.getDefaultEncoding().isSelected()));
+        view.getOtherEncoding().addActionListener(e -> setDefaultEncoding(!view.getOtherEncoding().isSelected()));
 
-        this.defaultEncodingBinding = builder
-                .bindToStateChange(view.getDefaultEncoding(), "defaultEncoding");
+        view.getEncodingChoices().addActionListener(e -> {
+            Object sel = view.getEncodingChoices().getSelectedItem();
+            setEncoding(sel != null ? sel.toString() : null);
+        });
+    }
 
-        this.otherEncodingBinding = builder.bindToStateChange(view.getOtherEncoding(),
-                "otherEncoding");
-
-        this.selectedEncodingBinding = builder.bindToComboSelection(view
-                .getEncodingChoices(), "encoding");
+    @Override
+    public Component getView() {
+        return view;
     }
 
     /**
@@ -127,25 +104,21 @@ public class EncodingSelector extends CayenneController {
             this.encoding = (newValue != null) ? newValue.toString() : null;
             this.defaultEncoding = encoding == null || encoding.equals(systemEncoding);
 
-            selectedEncodingBinding.updateView();
+            view.getEncodingChoices().setSelectedItem(encoding);
+            view.getDefaultEncoding().setSelected(defaultEncoding);
+            view.getOtherEncoding().setSelected(!defaultEncoding);
             if (defaultEncoding) {
-                defaultEncodingBinding.updateView();
                 view.getEncodingChoices().setEnabled(false);
                 view.getDefaultEncodingLabel().setEnabled(true);
             }
             else {
-                otherEncodingBinding.updateView();
                 view.getEncodingChoices().setEnabled(true);
                 view.getDefaultEncodingLabel().setEnabled(false);
             }
         }
     }
 
-    // ===============
-    //    Properties
-    // ===============
-
-    public void setEncoding(String encoding) {
+    private void setEncoding(String encoding) {
         if (!Util.nullSafeEquals(this.encoding, encoding)) {
             Object old = this.encoding;
 
@@ -154,15 +127,7 @@ public class EncodingSelector extends CayenneController {
         }
     }
 
-    public String getEncoding() {
-        return encoding;
-    }
-
-    public boolean isDefaultEncoding() {
-        return defaultEncoding;
-    }
-
-    public void setDefaultEncoding(boolean b) {
+    private void setDefaultEncoding(boolean b) {
         if (b != defaultEncoding) {
             this.defaultEncoding = b;
 
@@ -177,13 +142,5 @@ public class EncodingSelector extends CayenneController {
             }
 
         }
-    }
-
-    public boolean isOtherEncoding() {
-        return !isDefaultEncoding();
-    }
-
-    public void setOtherEncoding(boolean b) {
-        setDefaultEncoding(!b);
     }
 }
