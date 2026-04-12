@@ -18,18 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.util;
 
+import org.apache.cayenne.validation.ValidationException;
+
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.JTextComponent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.JTextComponent;
-
-import org.apache.cayenne.validation.ValidationException;
 
 /**
  * Text adapter with live validation, which is fired in VALIDATION_DELAY time.
@@ -50,19 +48,9 @@ public abstract class ValidatorTextAdapter extends TextAdapter {
     }
 
     public ValidatorTextAdapter(JTextField textField, boolean liveCheckEnabled) {
-        super(textField, true, false, true);
+        super(textField, true);
         setLiveCheckEnabled(liveCheckEnabled);
         install(textField);
-    }
-
-    public ValidatorTextAdapter(JTextArea textArea) {
-        this(textArea, true);
-    }
-
-    public ValidatorTextAdapter(JTextArea textArea, boolean liveCheckEnabled) {
-        super(textArea, true, false);
-        setLiveCheckEnabled(liveCheckEnabled);
-        install(textArea);
     }
 
     protected void install(JTextComponent textComponent) {
@@ -124,7 +112,7 @@ public abstract class ValidatorTextAdapter extends TextAdapter {
      */
     protected String wrapTooltip(String tooltip) {
         tooltip = encodeHTMLAttribute(tooltip);
-        tooltip = tooltip.replaceAll(System.getProperty("line.separator"), "<br>");
+        tooltip = tooltip.replaceAll(System.lineSeparator(), "<br>");
 
         return "<html>" + tooltip + "</html>";
     }
@@ -207,6 +195,6 @@ public abstract class ValidatorTextAdapter extends TextAdapter {
             if (validationTimer != null) {
                 validationTimer.cancel();
             }
-        };
+        }
     }
 }

@@ -19,22 +19,16 @@
 
 package org.apache.cayenne.modeler.util;
 
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.InputVerifier;
-import javax.swing.JComponent;
-import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.UndoableEditListener;
-import javax.swing.SwingUtilities;
-import javax.swing.text.JTextComponent;
-
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
 import org.apache.cayenne.modeler.undo.JTextFieldUndoListener;
 import org.apache.cayenne.validation.ValidationException;
+
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.text.JTextComponent;
+import java.awt.*;
 
 /**
  * A validating adapter for JTextComponent. Implement {@link #updateModel(String)} initialize model on text change.
@@ -51,22 +45,13 @@ public abstract class TextAdapter {
     protected JTextComponent textComponent;
 
     public TextAdapter(JTextField textField) {
-        this(textField, true, false, true);
+        this(textField, true);
     }
 
-    public TextAdapter(JTextField textField, boolean checkOnFocusLost,
-                       boolean checkOnTyping, boolean checkOnEnter) {
-
+    public TextAdapter(JTextField textField, boolean checkOnEnter) {
         this(textField, true, false);
-
         if (checkOnEnter) {
-
-            textField.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    updateModel();
-                }
-            });
+            textField.addActionListener(e -> updateModel());
         }
     }
 
@@ -74,8 +59,7 @@ public abstract class TextAdapter {
         this(textField, false, true);
     }
 
-    public TextAdapter(JTextComponent textComponent, boolean checkOnFocusLost,
-                       boolean checkOnTyping) {
+    public TextAdapter(JTextComponent textComponent, boolean checkOnFocusLost, boolean checkOnTyping) {
 
         this.errorColor = ValidatorDialog.WARNING_COLOR;
         this.defaultBGColor = textComponent.getBackground();
@@ -89,12 +73,7 @@ public abstract class TextAdapter {
             textComponent.setInputVerifier(new InputVerifier() {
 
                 public boolean verify(JComponent c) {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            updateModel();
-                        }
-                    });
+                    SwingUtilities.invokeLater(() -> updateModel());
                     // release focus after coloring the field...
                     return true;
                 }
@@ -105,18 +84,18 @@ public abstract class TextAdapter {
             textComponent.getDocument().addDocumentListener(new DocumentListener() {
 
                 public void insertUpdate(DocumentEvent e) {
-                    verifyTextChange(e);
+                    verifyTextChange();
                 }
 
                 public void changedUpdate(DocumentEvent e) {
-                    verifyTextChange(e);
+                    verifyTextChange();
                 }
 
                 public void removeUpdate(DocumentEvent e) {
-                    verifyTextChange(e);
+                    verifyTextChange();
                 }
 
-                void verifyTextChange(DocumentEvent e) {
+                void verifyTextChange() {
                     if (!modelUpdateDisabled) {
                         updateModel();
                     }
