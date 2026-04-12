@@ -336,11 +336,22 @@ public class CgenController extends CayenneController implements ObjEntityListen
         return selectionModel.isSelected(currentClass);
     }
 
+    public boolean isSelected(Object item) {
+        return selectionModel.isSelected(item);
+    }
+
     public void setSelected(boolean selectedFlag) {
         if (currentClass instanceof DataMap) {
             updateArtifactGenerationMode(selectedFlag);
         }
         selectionModel.setSelected(currentClass, selectedFlag);
+    }
+
+    public void setSelected(Object item, boolean selectedFlag) {
+        if (item instanceof DataMap) {
+            updateArtifactGenerationMode(selectedFlag);
+        }
+        selectionModel.setSelected(item, selectedFlag);
     }
 
     public void setCurrentClass(Object currentClass) {

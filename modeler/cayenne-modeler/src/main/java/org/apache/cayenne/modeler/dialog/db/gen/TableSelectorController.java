@@ -25,35 +25,33 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.util.TableSizer;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.validation.ProjectValidator;
-import org.apache.cayenne.swing.BindingBuilder;
-import org.apache.cayenne.swing.ObjectBinding;
-import org.apache.cayenne.swing.TableBindingBuilder;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
-import java.awt.Component;
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- */
-@SuppressWarnings("unused") // setTable(), included, problem are referenced by name in TableBindingBuilder column expressions
 public class TableSelectorController extends CayenneController {
 
-    protected TableSelectorView view;
-    protected ObjectBinding tableBinding;
+    private static final String[] COLUMN_HEADERS = {"", "Table", "Problems"};
+    private static final Class<?>[] COLUMN_CLASSES = {Boolean.class, String.class, String.class};
 
-    protected DbEntity table;
+    protected TableSelectorView view;
+    protected AbstractTableModel tableModel;
+
     protected List<DbEntity> tables;
     protected int permanentlyExcludedCount;
     protected Map<String, DbEntity> excludedTables;
     protected List<DbEntity> selectableTablesList;
-
     protected Map<String, String> validationMessages;
 
     public TableSelectorController(ProjectController parent) {
@@ -69,16 +67,6 @@ public class TableSelectorController extends CayenneController {
         return view;
     }
 
-    /**
-     * Called by table binding script to set current table.
-     */
-    public void setTable(DbEntity table) {
-        this.table = table;
-    }
-
-    /**
-     * Returns DbEntities that are excluded from DB generation.
-     */
     public Collection<DbEntity> getExcludedTables() {
         return excludedTables.values();
     }
@@ -87,88 +75,60 @@ public class TableSelectorController extends CayenneController {
         return tables;
     }
 
-    public boolean isIncluded() {
-        if (table == null) {
-            return false;
-        }
-
-        return !excludedTables.containsKey(table.getName());
+    public boolean isIncluded(DbEntity entity) {
+        return !excludedTables.containsKey(entity.getName());
     }
 
-    public void setIncluded(boolean b) {
-        if (table == null) {
-            return;
-        }
-
+    public void setIncluded(DbEntity entity, boolean b) {
         if (b) {
-            excludedTables.remove(table.getName());
+            excludedTables.remove(entity.getName());
+        } else {
+            excludedTables.put(entity.getName(), entity);
         }
-        else {
-            excludedTables.put(table.getName(), table);
-        }
-
         tableSelectedAction();
     }
 
-    /**
-     * A callback action that updates the state of Select All checkbox.
-     */
+    public String getProblem(DbEntity entity) {
+        return validationMessages.get(entity.getName());
+    }
+
     public void tableSelectedAction() {
         int unselectedCount = excludedTables.size() - permanentlyExcludedCount;
-
         if (unselectedCount == selectableTablesList.size()) {
             view.getCheckAll().setSelected(false);
-        }
-        else if (unselectedCount == 0) {
+        } else if (unselectedCount == 0) {
             view.getCheckAll().setSelected(true);
         }
     }
 
-    public Object getProblem() {
-        return (table != null) ? validationMessages.get(table.getName()) : null;
-    }
-
-    // ------ other stuff ------
-
     protected void initController() {
-
-        BindingBuilder builder = new BindingBuilder(
-                getApplication().getBindingFactory(),
-                this);
-
         view.getCheckAll().addActionListener(e -> checkAllAction());
 
-        TableBindingBuilder tableBuilder = new TableBindingBuilder(builder);
+        tableModel = new AbstractTableModel() {
+            public int getRowCount() { return tables != null ? tables.size() : 0; }
+            public int getColumnCount() { return COLUMN_HEADERS.length; }
+            public String getColumnName(int col) { return COLUMN_HEADERS[col]; }
+            public Class<?> getColumnClass(int col) { return COLUMN_CLASSES[col]; }
+            public boolean isCellEditable(int row, int col) { return col == 0; }
 
-        tableBuilder.addColumn(
-                "",
-                "setTable(#item), included",
-                Boolean.class,
-                true,
-                Boolean.TRUE);
-        tableBuilder.addColumn(
-                "Table",
-                "#item.name",
-                String.class,
-                false,
-                "XXXXXXXXXXXXXXXX");
-        tableBuilder.addColumn(
-                "Problems",
-                "setTable(#item), problem",
-                String.class,
-                false,
-                "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+            public Object getValueAt(int row, int col) {
+                DbEntity entity = tables.get(row);
+                if (col == 0) return isIncluded(entity);
+                if (col == 1) return entity.getName();
+                return getProblem(entity);
+            }
 
-        this.tableBinding = tableBuilder.bindToTable(view.getTables(), "tables");
+            public void setValueAt(Object value, int row, int col) {
+                if (col == 0) setIncluded(tables.get(row), (Boolean) value);
+            }
+        };
+
+        view.getTables().setModel(tableModel);
+        TableSizer.sizeColumns(view.getTables(), Boolean.TRUE, "XXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
     }
 
-    /**
-     * Performs validation of DbEntities in the current DataMap. Returns a collection of
-     * ValidationInfo objects describing the problems.
-     */
     public void updateTables(Collection<DataMap> dataMaps) {
         this.tables = new ArrayList<>();
-
         for (DataMap dataMap : dataMaps) {
             this.tables.addAll(dataMap.getDbEntities());
         }
@@ -176,30 +136,19 @@ public class TableSelectorController extends CayenneController {
         excludedTables.clear();
         validationMessages.clear();
 
-        // if there were errors, filter out those related to non-derived DbEntities...
-
-        // TODO: this is inefficient.. we need targeted validation
-        //       instead of doing it on the whole project
-
         Project project = getApplication().getProject();
-
         ProjectValidator projectValidator = getApplication().getInjector().getInstance(ProjectValidator.class);
         ValidationResult validationResult = projectValidator.validate(project.getRootNode());
 
         if (validationResult.getFailures().size() > 0) {
-
             for (ValidationFailure nextProblem : validationResult.getFailures()) {
                 DbEntity failedEntity = null;
 
                 if (nextProblem.getSource() instanceof DbAttribute) {
-                    DbAttribute failedAttribute = (DbAttribute) nextProblem.getSource();
-                    failedEntity = failedAttribute.getEntity();
-                }
-                else if (nextProblem.getSource() instanceof DbRelationship) {
-                    DbRelationship failedRelationship = (DbRelationship) nextProblem.getSource();
-                    failedEntity = failedRelationship.getSourceEntity();
-                }
-                else if (nextProblem.getSource() instanceof DbEntity) {
+                    failedEntity = ((DbAttribute) nextProblem.getSource()).getEntity();
+                } else if (nextProblem.getSource() instanceof DbRelationship) {
+                    failedEntity = ((DbRelationship) nextProblem.getSource()).getSourceEntity();
+                } else if (nextProblem.getSource() instanceof DbEntity) {
                     failedEntity = (DbEntity) nextProblem.getSource();
                 }
 
@@ -212,7 +161,6 @@ public class TableSelectorController extends CayenneController {
             }
         }
 
-        // Find selectable tables
         permanentlyExcludedCount = excludedTables.size();
         selectableTablesList.clear();
         for (DbEntity table : tables) {
@@ -221,20 +169,18 @@ public class TableSelectorController extends CayenneController {
             }
         }
 
-        tableBinding.updateView();
+        tableModel.fireTableDataChanged();
         tableSelectedAction();
     }
 
     public void checkAllAction() {
-
         boolean isCheckAllSelected = view.getCheckAll().isSelected();
 
         if (isCheckAllSelected) {
             selectableTablesList.clear();
             selectableTablesList.addAll(tables);
             excludedTables.clear();
-        }
-        else {
+        } else {
             excludedTables.clear();
             for (DbEntity table : tables) {
                 excludedTables.put(table.getName(), table);
@@ -242,6 +188,7 @@ public class TableSelectorController extends CayenneController {
             selectableTablesList.clear();
         }
 
-        tableBinding.updateView();
+        tableModel.fireTableDataChanged();
     }
+
 }

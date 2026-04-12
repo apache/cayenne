@@ -261,6 +261,10 @@ public class InferRelationshipsControllerBase extends CayenneController {
         return currentEntity != null && selectedEntities.contains(currentEntity);
     }
 
+    public boolean isSelected(InferredRelationship entity) {
+        return selectedEntities.contains(entity);
+    }
+
     public void setSelected(boolean selectedFlag) {
         if (currentEntity == null) {
             return;
@@ -273,6 +277,18 @@ public class InferRelationshipsControllerBase extends CayenneController {
         }
         else {
             if (selectedEntities.remove(currentEntity)) {
+                firePropertyChange(SELECTED_PROPERTY, null, null);
+            }
+        }
+    }
+
+    public void setSelected(InferredRelationship entity, boolean selectedFlag) {
+        if (selectedFlag) {
+            if (selectedEntities.add(entity)) {
+                firePropertyChange(SELECTED_PROPERTY, null, null);
+            }
+        } else {
+            if (selectedEntities.remove(entity)) {
                 firePropertyChange(SELECTED_PROPERTY, null, null);
             }
         }

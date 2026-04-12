@@ -19,27 +19,19 @@
 
 package org.apache.cayenne.modeler.dialog.db.gen;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.util.CayenneTable;
 
-/**
- */
+import javax.swing.*;
+import java.awt.*;
+
 public class TableSelectorView extends JPanel {
 
-    protected JTable tables;
-    protected JCheckBox checkAll;
-    protected JLabel checkAllLabel;
+    private final JTable tables;
+    private final JCheckBox checkAll;
+    private final JLabel checkAllLabel;
 
     public TableSelectorView() {
 

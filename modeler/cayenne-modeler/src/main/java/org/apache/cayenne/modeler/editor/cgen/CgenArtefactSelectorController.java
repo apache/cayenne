@@ -27,17 +27,15 @@ import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.CheckBoxHeader;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.swing.BindingBuilder;
+import org.apache.cayenne.modeler.util.TableSizer;
 import org.apache.cayenne.swing.ImageRendererColumn;
-import org.apache.cayenne.swing.ObjectBinding;
-import org.apache.cayenne.swing.TableBindingBuilder;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
-import javax.swing.Icon;
-import javax.swing.JLabel;
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
-import java.awt.Component;
+import java.awt.*;
 import java.util.Collection;
 import java.util.List;
 
@@ -47,17 +45,19 @@ import java.util.List;
 public class CgenArtefactSelectorController extends CayenneController {
 
     private static final Icon ERROR_ICON = ModelerUtil.buildIcon("icon-error.png");
+
+    private static final String[] COLUMN_HEADERS = {"", "  Class", ""};
+    private static final Class<?>[] COLUMN_CLASSES = {Boolean.class, JLabel.class, String.class};
+
     protected CgenArtefactSelectorPanel view;
-    protected ObjectBinding tableBinding;
+    protected AbstractTableModel tableModel;
     private ValidationResult lastValidationResult;
-    private final BindingBuilder builder;
     private final CheckBoxHeader checkBoxHeader;
 
     public CgenArtefactSelectorController(CgenController parent) {
         super(parent);
         this.checkBoxHeader = new CheckBoxHeader();
         this.view = new CgenArtefactSelectorPanel();
-        this.builder = new BindingBuilder(getApplication().getBindingFactory(), this);
     }
 
     public void startup() {
@@ -75,43 +75,43 @@ public class CgenArtefactSelectorController extends CayenneController {
 
     protected void initBindings() {
         checkBoxHeader.addActionListener(e -> checkAllAction());
-        TableBindingBuilder tableBuilder = new TableBindingBuilder(builder);
 
-        tableBuilder.addColumn(
-                "",
-                "parent.setCurrentClass(#item), selected",
-                Boolean.class,
-                true,
-                Boolean.TRUE);
+        tableModel = new AbstractTableModel() {
+            public int getRowCount() {
+                return getParentController().getClasses().size();
+            }
+            public int getColumnCount() { return COLUMN_HEADERS.length; }
+            public String getColumnName(int col) { return COLUMN_HEADERS[col]; }
+            public Class<?> getColumnClass(int col) { return COLUMN_CLASSES[col]; }
+            public boolean isCellEditable(int row, int col) { return col == 0; }
 
-        tableBuilder.addColumn(
-                "  Class",
-                "getItemName(#item)",
-                JLabel.class,
-                false,
-                "XXXXXXXXXXXXXXXXXXXXXXXXXX");
+            public Object getValueAt(int row, int col) {
+                Object item = getItem(row);
+                if (col == 0) return getParentController().isSelected(item);
+                if (col == 1) return getItemName(item);
+                return getProblem(item);
+            }
 
-        tableBuilder.addColumn(
-                "",
-                "getProblem(#item)",
-                String.class,
-                false,
-                "XX");
+            public void setValueAt(Object value, int row, int col) {
+                if (col == 0) {
+                    getParentController().setSelected(getItem(row), (Boolean) value);
+                    classSelectedAction();
+                }
+            }
 
-        this.tableBinding = tableBuilder.bindToTable(view.getTable(), "parent.classes");
+            private Object getItem(int row) {
+                return getParentController().getClasses().toArray()[row];
+            }
+        };
+
+        view.getTable().setModel(tableModel);
+
         TableColumnModel columnModel = view.getTable().getColumnModel();
         columnModel.getColumn(0).setHeaderRenderer(checkBoxHeader);
         columnModel.getColumn(1).setCellRenderer(new ImageRendererColumn());
         columnModel.getColumn(2).setCellRenderer(new ImageRendererColumn());
-    }
 
-    public boolean isSelected() {
-        return getParentController().isSelected();
-    }
-
-    public void setSelected(boolean selected) {
-        getParentController().setSelected(selected);
-        classSelectedAction();
+        TableSizer.sizeColumns(view.getTable(), Boolean.TRUE, "XXXXXXXXXXXXXXXXXXXXXXXXXX", "XX");
     }
 
     /**
@@ -129,14 +129,9 @@ public class CgenArtefactSelectorController extends CayenneController {
         view.repaint();
     }
 
-
-    /**
-     * An action that updates entity check boxes in response to the Select All state
-     * change.
-     */
     public void checkAllAction() {
         if (getParentController().updateSelection(checkBoxHeader.isSelected() ? o -> true : o -> false)) {
-            tableBinding.updateView();
+            tableModel.fireTableDataChanged();
             getParentController().updateSelectedEntities();
             getParentController().updateGenerateButton();
             getParentController().getStandardModeController().updateTemplateEditorButtons();
@@ -148,10 +143,6 @@ public class CgenArtefactSelectorController extends CayenneController {
         this.lastValidationResult = validator.getValidationResult(classes);
     }
 
-    /**
-     * Returns the first encountered validation problem for an antity matching the name or
-     * null if the entity is valid or the entity is not present.
-     */
     public JLabel getProblem(Object obj) {
         String name = null;
         if (obj instanceof ObjEntity) {
@@ -177,14 +168,13 @@ public class CgenArtefactSelectorController extends CayenneController {
         return labelIcon;
     }
 
-    @SuppressWarnings("unused")
     public JLabel getItemName(Object obj) {
         String className;
         Icon icon;
         if (obj instanceof Embeddable) {
             className = ((Embeddable) obj).getClassName();
             icon = CellRenderers.iconForObject(new Embeddable());
-        } else if(obj instanceof ObjEntity) {
+        } else if (obj instanceof ObjEntity) {
             className = ((ObjEntity) obj).getName();
             icon = CellRenderers.iconForObject(new ObjEntity());
         } else {

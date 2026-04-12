@@ -25,7 +25,6 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.swing.ObjectBinding;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
@@ -47,7 +46,6 @@ import java.util.Set;
 public class MergerTokenSelectorController extends CayenneController {
 
     protected MergerTokenSelectorView view;
-    protected ObjectBinding tableBinding;
 
     protected MergerToken token;
     protected int permanentlyExcludedCount;
