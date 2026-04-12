@@ -22,24 +22,20 @@ package org.apache.cayenne.modeler.editor.datanode;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.BindingDelegate;
-import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.util.Util;
 
 /**
  */
 public abstract class DataSourceEditor extends CayenneController {
 
-    protected ObjectBinding[] fieldAdapters;
     private DataNodeDescriptor node;
     protected BindingDelegate nodeChangeProcessor;
 
-    public DataSourceEditor(ProjectController controller,
-            BindingDelegate nodeChangeProcessor) {
+    public DataSourceEditor(ProjectController controller, BindingDelegate nodeChangeProcessor) {
         super(controller);
         this.nodeChangeProcessor = nodeChangeProcessor;
-        initBindings();
+        initFieldListeners();
     }
 
     public DataNodeDescriptor getNode() {
@@ -49,26 +45,11 @@ public abstract class DataSourceEditor extends CayenneController {
     public void setNode(DataNodeDescriptor node) {
         if (!Util.nullSafeEquals(this.node, node)) {
             this.node = node;
-
-            for (ObjectBinding fieldAdapter : fieldAdapters) {
-                fieldAdapter.updateView();
-            }
+            refreshView();
         }
     }
 
-    protected void initBindings() {
-        BindingBuilder builder = new BindingBuilder(
-                getApplication().getBindingFactory(),
-                this);
-        builder.setDelegate(nodeChangeProcessor);
-        prepareBindings(builder);
-    }
+    protected abstract void initFieldListeners();
 
-    protected abstract void prepareBindings(BindingBuilder builder);
-
-    protected void refreshView() {
-        for (ObjectBinding fieldAdapter : fieldAdapters) {
-            fieldAdapter.updateView();
-        }
-    }
+    protected abstract void refreshView();
 }

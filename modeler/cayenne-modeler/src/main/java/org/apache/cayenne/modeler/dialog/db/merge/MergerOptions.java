@@ -49,10 +49,9 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ValidationResultBrowser;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.util.TextBinder;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.resource.Resource;
-import org.apache.cayenne.swing.BindingBuilder;
-import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.validation.ValidationResult;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +76,6 @@ import java.util.List;
 public class MergerOptions extends CayenneController {
 
     protected MergerOptionsView view;
-    protected ObjectBinding sqlBinding;
 
     protected DBConnectionInfo connectionInfo;
     protected DataMap dataMap;
@@ -123,11 +121,7 @@ public class MergerOptions extends CayenneController {
 
     protected void initController() {
 
-        BindingBuilder builder = new BindingBuilder(
-                getApplication().getBindingFactory(),
-                this);
-
-        sqlBinding = builder.bindToTextArea(view.getSql(), "textForSQL");
+        TextBinder.bind(view.getSql(), v -> textForSQL = v);
 
         view.getGenerateButton().addActionListener(e -> generateSchemaAction());
         view.getSaveSqlButton().addActionListener(e -> storeSQLAction());
@@ -213,7 +207,7 @@ public class MergerOptions extends CayenneController {
     }
 
     protected void refreshView() {
-        sqlBinding.updateView();
+        view.getSql().setText(textForSQL);
     }
 
     // ===============
@@ -241,7 +235,7 @@ public class MergerOptions extends CayenneController {
      */
     public void refreshSQLAction() {
         createSQL();
-        sqlBinding.updateView();
+        view.getSql().setText(textForSQL);
     }
 
     /**

@@ -19,16 +19,6 @@
 
 package org.apache.cayenne.modeler.pref;
 
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-import java.util.logging.Logger;
-import java.util.prefs.Preferences;
-
-import javax.sql.DataSource;
-
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
@@ -39,6 +29,15 @@ import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.pref.CayennePreference;
 import org.apache.cayenne.util.Util;
 
+import javax.sql.DataSource;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.logging.Logger;
+import java.util.prefs.Preferences;
+
 public class DBConnectionInfo extends CayennePreference {
 
 	private static final String EMPTY_STRING = "";
@@ -48,8 +47,6 @@ public class DBConnectionInfo extends CayennePreference {
 	public static final String URL_PROPERTY = "url";
 	public static final String USER_NAME_PROPERTY = "userName";
 	private static final String DB_CONNECTION_INFO = "dbConnectionInfo";
-
-	public static final String ID_PK_COLUMN = "id";
 
 	private String nodeName;
 

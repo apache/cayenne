@@ -26,9 +26,8 @@ import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.modeler.CayenneModelerController;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
-import org.apache.cayenne.swing.BindingBuilder;
+import org.apache.cayenne.modeler.util.TextBinder;
 import org.apache.cayenne.swing.BindingDelegate;
-import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.util.Util;
 
 public class JDBCDataSourceEditor extends DataSourceEditor {
@@ -42,7 +41,7 @@ public class JDBCDataSourceEditor extends DataSourceEditor {
     public Component getView() {
         return view;
     }
-    
+
     @Override
     public void setNode(DataNodeDescriptor node) {
         if (!Util.nullSafeEquals(getNode(), node)) {
@@ -53,34 +52,58 @@ public class JDBCDataSourceEditor extends DataSourceEditor {
         }
     }
 
-    protected void prepareBindings(BindingBuilder builder) {
+    @Override
+    protected void initFieldListeners() {
         this.view = new JDBCDataSourceView();
-        
-        fieldAdapters = new ObjectBinding[6];
-        fieldAdapters[0] =
-          builder.bindToTextField(view.getUserName(), "node.dataSourceDescriptor.userName");
-        fieldAdapters[1] =
-          builder.bindToTextField(view.getPassword(), "node.dataSourceDescriptor.password");
-        fieldAdapters[2] =
-          builder.bindToTextField(view.getUrl(), "node.dataSourceDescriptor.dataSourceUrl");
-        fieldAdapters[3] =
-          builder.bindToTextField(view.getDriver(), "node.dataSourceDescriptor.jdbcDriver");
-        fieldAdapters[4] =
-          builder.bindToTextField(view.getMaxConnections(), "node.dataSourceDescriptor.maxConnections");
-        fieldAdapters[5] =
-          builder.bindToTextField(view.getMinConnections(), "node.dataSourceDescriptor.minConnections");
-        
+
+        TextBinder.bind(view.getUserName(), v -> {
+            getNode().getDataSourceDescriptor().setUserName(v);
+            nodeChangeProcessor.modelUpdated(null, null, null);
+        });
+        TextBinder.bind(view.getPassword(), v -> {
+            getNode().getDataSourceDescriptor().setPassword(v);
+            nodeChangeProcessor.modelUpdated(null, null, null);
+        });
+        TextBinder.bind(view.getUrl(), v -> {
+            getNode().getDataSourceDescriptor().setDataSourceUrl(v);
+            nodeChangeProcessor.modelUpdated(null, null, null);
+        });
+        TextBinder.bind(view.getDriver(), v -> {
+            getNode().getDataSourceDescriptor().setJdbcDriver(v);
+            nodeChangeProcessor.modelUpdated(null, null, null);
+        });
+        TextBinder.bind(view.getMaxConnections(), v -> {
+            if (v != null) {
+                try {
+                    getNode().getDataSourceDescriptor().setMaxConnections(Integer.parseInt(v));
+                    nodeChangeProcessor.modelUpdated(null, null, null);
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        });
+        TextBinder.bind(view.getMinConnections(), v -> {
+            if (v != null) {
+                try {
+                    getNode().getDataSourceDescriptor().setMinConnections(Integer.parseInt(v));
+                    nodeChangeProcessor.modelUpdated(null, null, null);
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        });
 
         view.getSyncWithLocal().addActionListener(e -> syncDataSourceAction());
     }
 
-
-    /**
-     * This action is called whenever the password location is changed
-     * in the GUI pulldown.  It changes labels and editability of the
-     * password fields depending on the option that was selected.
-     */
-
+    @Override
+    protected void refreshView() {
+        DataSourceDescriptor d = getNode().getDataSourceDescriptor();
+        view.getUserName().setText(d.getUserName());
+        view.getPassword().setText(d.getPassword());
+        view.getUrl().setText(d.getDataSourceUrl());
+        view.getDriver().setText(d.getJdbcDriver());
+        view.getMaxConnections().setText(String.valueOf(d.getMaxConnections()));
+        view.getMinConnections().setText(String.valueOf(d.getMinConnections()));
+    }
 
     public void syncDataSourceAction() {
         CayenneModelerController mainController = getApplication().getFrameController();

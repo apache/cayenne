@@ -19,19 +19,16 @@
 
 package org.apache.cayenne.modeler.dialog.pref;
 
-import java.awt.Component;
-
-import javax.swing.DefaultComboBoxModel;
-
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.DbAdapterInfo;
-import org.apache.cayenne.swing.BindingBuilder;
-import org.apache.cayenne.swing.ObjectBinding;
+import org.apache.cayenne.modeler.util.TextBinder;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * A reusable editor for DBConnectionInfo object.
- * 
  */
 public class DBConnectionInfoEditor extends CayenneController {
 
@@ -40,63 +37,58 @@ public class DBConnectionInfoEditor extends CayenneController {
 
     protected DBConnectionInfoEditorView view;
     protected DBConnectionInfo connectionInfo;
-    protected ObjectBinding[] bindings;
 
     public DBConnectionInfoEditor(CayenneController parent) {
         super(parent);
 
         this.view = new DBConnectionInfoEditorView();
-        initBindings();
+        this.view.setEnabled(false);
+
+        DefaultComboBoxModel adapterModel = new DefaultComboBoxModel(DbAdapterInfo.getStandardAdapters());
+        view.getAdapters().setModel(adapterModel);
+        view.getAdapters().setSelectedIndex(0);
+
+        TextBinder.bind(view.getUserName(), v -> {
+            DBConnectionInfo ci = connectionInfo;
+            if (ci != null) ci.setUserName(v);
+        });
+        TextBinder.bind(view.getPassword(), v -> {
+            DBConnectionInfo ci = connectionInfo;
+            if (ci != null) ci.setPassword(v);
+        });
+        TextBinder.bind(view.getDriver(), v -> {
+            DBConnectionInfo ci = connectionInfo;
+            if (ci != null) ci.setJdbcDriver(v);
+        });
+        TextBinder.bind(view.getUrl(), v -> {
+            DBConnectionInfo ci = connectionInfo;
+            if (ci != null) ci.setUrl(v);
+        });
+
+        view.getAdapters().addActionListener(e -> {
+            DBConnectionInfo ci = connectionInfo;
+            if (ci != null) {
+                Object sel = view.getAdapters().getSelectedItem();
+                ci.setDbAdapter("Automatic".equals(sel) ? null : (String) sel);
+            }
+        });
     }
 
+    @Override
     public Component getView() {
         return view;
     }
 
-    protected void initBindings() {
-        this.view.setEnabled(false);
-
-        DefaultComboBoxModel adapterModel = new DefaultComboBoxModel(DbAdapterInfo
-                .getStandardAdapters());
-        view.getAdapters().setModel(adapterModel);
-        view.getAdapters().setSelectedIndex(0);
-
-        BindingBuilder builder = new BindingBuilder(
-                getApplication().getBindingFactory(),
-                this);
-
-        bindings = new ObjectBinding[5];
-
-        bindings[0] = builder.bindToTextField(
-                view.getUserName(),
-                "connectionInfo.userName");
-        bindings[1] = builder.bindToTextField(
-                view.getPassword(),
-                "connectionInfo.password");
-        bindings[2] = builder.bindToTextField(
-                view.getDriver(),
-                "connectionInfo.jdbcDriver");
-        bindings[3] = builder.bindToTextField(view.getUrl(), "connectionInfo.url");
-
-        bindings[4] = builder.bindToComboSelection(
-                view.getAdapters(),
-                "connectionInfo.dbAdapter", "Automatic");
-    }
-
-    public DBConnectionInfo getConnectionInfo() {
-        return connectionInfo != null ? connectionInfo : emptyInfo;
-    }
-
     public void setConnectionInfo(DBConnectionInfo connectionInfo) {
         this.connectionInfo = connectionInfo;
-        refreshView();
-    }
 
-    protected void refreshView() {
-        getView().setEnabled(connectionInfo != null);
+        view.setEnabled(connectionInfo != null);
 
-        for (ObjectBinding binding : bindings) {
-            binding.updateView();
-        }
+        DBConnectionInfo ci = connectionInfo != null ? connectionInfo : emptyInfo;
+        view.getUserName().setText(ci.getUserName());
+        view.getPassword().setText(ci.getPassword());
+        view.getDriver().setText(ci.getJdbcDriver());
+        view.getUrl().setText(ci.getUrl());
+        view.getAdapters().setSelectedItem(ci.getDbAdapter() != null ? ci.getDbAdapter() : "Automatic");
     }
 }

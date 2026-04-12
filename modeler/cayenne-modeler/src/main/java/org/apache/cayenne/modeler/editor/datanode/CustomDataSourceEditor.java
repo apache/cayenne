@@ -21,16 +21,14 @@ package org.apache.cayenne.modeler.editor.datanode;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.swing.BindingBuilder;
+import org.apache.cayenne.modeler.util.TextBinder;
 import org.apache.cayenne.swing.BindingDelegate;
-import org.apache.cayenne.swing.ObjectBinding;
 
 /**
  */
 public class CustomDataSourceEditor extends DataSourceEditor {
 
     protected CustomDataSourceView view;
-
     protected String factoryName;
 
     public CustomDataSourceEditor(ProjectController controller, BindingDelegate nodeChangeProcessor) {
@@ -44,12 +42,23 @@ public class CustomDataSourceEditor extends DataSourceEditor {
     }
 
     @Override
-    protected void prepareBindings(BindingBuilder builder) {
+    protected void initFieldListeners() {
         this.view = new CustomDataSourceView();
 
-        fieldAdapters = new ObjectBinding[2];
-        fieldAdapters[0] = builder.bindToTextField(view.getFactoryName(), "factoryName");
-        fieldAdapters[1] = builder.bindToTextField(view.getLocationHint(), "node.parameters");
+        TextBinder.bind(view.getFactoryName(), v -> {
+            setFactoryName(v);
+            nodeChangeProcessor.modelUpdated(null, null, null);
+        });
+        TextBinder.bind(view.getLocationHint(), v -> {
+            getNode().setParameters(v);
+            nodeChangeProcessor.modelUpdated(null, null, null);
+        });
+    }
+
+    @Override
+    protected void refreshView() {
+        view.getFactoryName().setText(factoryName);
+        view.getLocationHint().setText(getNode().getParameters());
     }
 
     @Override

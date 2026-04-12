@@ -42,6 +42,7 @@ import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.ProjectUtil;
+import org.apache.cayenne.modeler.util.TextBinder;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.BindingDelegate;
 import org.apache.cayenne.swing.ObjectBinding;
@@ -194,13 +195,28 @@ public class MainDataNodeEditor extends CayenneController {
 
 		// use delegate for the rest of them
 
-		builder.setDelegate(nodeChangeProcessor);
+		TextBinder.bind(view.getDataNodeName(), v -> {
+			if (node == null) return;
+			String oldName = node.getName();
+			try {
+				setNodeName(v);
+			} catch (ValidationException ignored) {
+				return;
+			}
+			DataNodeEvent e = new DataNodeEvent(MainDataNodeEditor.this, node);
+			e.setOldName(oldName);
+			((ProjectController) getParent()).fireDataNodeEvent(e);
+		});
 
-		bindings = new ObjectBinding[4];
-		bindings[0] = builder.bindToTextField(view.getDataNodeName(), "nodeName");
-		bindings[1] = builder.bindToComboSelection(view.getFactories(), "factoryName");
-		bindings[2] = builder.bindToComboSelection(view.getSchemaUpdateStrategy(), "schemaUpdateStrategy");
-		bindings[3] = builder.bindToTextField(view.getCustomAdapter(), "adapterName");
+		TextBinder.bind(view.getCustomAdapter(), v -> {
+			if (node == null) return;
+			setAdapterName(v);
+			((ProjectController) getParent()).fireDataNodeEvent(new DataNodeEvent(MainDataNodeEditor.this, node));
+		});
+
+		bindings = new ObjectBinding[2];
+		bindings[0] = builder.bindToComboSelection(view.getFactories(), "factoryName");
+		bindings[1] = builder.bindToComboSelection(view.getSchemaUpdateStrategy(), "schemaUpdateStrategy");
 
 		// one way bindings
 		view.getConfigLocalDataSources().addActionListener(e -> dataSourceConfigAction());
@@ -244,6 +260,8 @@ public class MainDataNodeEditor extends CayenneController {
 
 		refreshLocalDataSources();
 
+		view.getDataNodeName().setText(getNodeName());
+		view.getCustomAdapter().setText(getAdapterName());
 		for (ObjectBinding binding : bindings) {
 			binding.updateView();
 		}

@@ -34,13 +34,10 @@ import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.validation.ValidationResult;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.Component;
+import java.awt.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -55,7 +52,6 @@ public class DBGeneratorOptions extends CayenneController {
 
     protected DBGeneratorOptionsView view;
     protected ObjectBinding[] optionBindings;
-    protected ObjectBinding sqlBinding;
     protected ObjectBinding adapterBinding;
 
     protected DBConnectionInfo connectionInfo;
@@ -98,10 +94,6 @@ public class DBGeneratorOptions extends CayenneController {
         return generatorDefaults;
     }
 
-    public String getTextForSQL() {
-        return textForSQL;
-    }
-
     protected void initController() {
 
         DefaultComboBoxModel<String> adapterModel = new DefaultComboBoxModel<>(
@@ -113,7 +105,6 @@ public class DBGeneratorOptions extends CayenneController {
                 getApplication().getBindingFactory(),
                 this);
 
-        sqlBinding = builder.bindToTextArea(view.getSql(), "textForSQL");
         adapterBinding = builder.bindToComboSelection(
                 view.getAdapters(),
                 "connectionInfo.dbAdapter",
@@ -208,7 +199,7 @@ public class DBGeneratorOptions extends CayenneController {
             optionBinding.updateView();
         }
 
-        sqlBinding.updateView();
+        view.getSql().setText(textForSQL);
     }
 
     // ===============
@@ -242,7 +233,7 @@ public class DBGeneratorOptions extends CayenneController {
         prepareGenerator();
         generatorDefaults.configureGenerator(generators);
         createSQL();
-        sqlBinding.updateView();
+        view.getSql().setText(textForSQL);
     }
 
     /**
