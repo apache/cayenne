@@ -43,7 +43,6 @@ import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextBinder;
-import org.apache.cayenne.swing.BindingDelegate;
 import org.apache.cayenne.validation.ValidationException;
 
 /**
@@ -73,7 +72,7 @@ public class MainDataNodeEditor extends CayenneController {
 	protected Map<String, DataSourceEditor> datasourceEditors;
 
 	protected CustomDataSourceEditor defaultSubeditor;
-	protected BindingDelegate nodeChangeProcessor;
+	protected Runnable nodeChangeProcessor;
 	private boolean refreshing;
 
 	public MainDataNodeEditor(ProjectController parent, DataNodeEditor tabController) {
@@ -84,15 +83,8 @@ public class MainDataNodeEditor extends CayenneController {
 		this.view = new MainDataNodeView();
 		this.datasourceEditors = new HashMap<>();
 
-		this.nodeChangeProcessor = (binding, oldValue, newValue) -> {
-
-            DataNodeEvent e = new DataNodeEvent(MainDataNodeEditor.this, node);
-            if (binding != null && binding.getView() == view.getDataNodeName()) {
-                e.setOldName(oldValue != null ? oldValue.toString() : null);
-            }
-
-            ((ProjectController) getParent()).fireDataNodeEvent(e);
-        };
+		this.nodeChangeProcessor = () ->
+                ((ProjectController) getParent()).fireDataNodeEvent(new DataNodeEvent(MainDataNodeEditor.this, node));
 
 		this.defaultSubeditor = new CustomDataSourceEditor(parent, nodeChangeProcessor);
 

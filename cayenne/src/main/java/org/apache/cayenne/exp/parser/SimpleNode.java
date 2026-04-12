@@ -34,10 +34,6 @@ import org.apache.cayenne.util.Util;
 
 /**
  * Superclass of AST* expressions that implements Node interface defined by JavaCC framework.
- * <p>
- * Some parts of the parser are based on OGNL parser,
- * copyright (c) 2002, Drew Davidson and Luke Blanshard.
- * </p>
  * 
  * @since 1.1
  */

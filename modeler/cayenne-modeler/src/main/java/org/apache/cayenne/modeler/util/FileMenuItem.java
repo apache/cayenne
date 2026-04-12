@@ -17,18 +17,13 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.swing.control;
+package org.apache.cayenne.modeler.util;
 
+import javax.swing.*;
 import java.io.File;
-
-import javax.swing.Action;
-import javax.swing.Icon;
-
-import org.apache.cayenne.modeler.util.CayenneAction;
 
 /**
  * A menu item that points to a file.
- * 
  */
 public class FileMenuItem extends CayenneAction.CayenneMenuItem {
 

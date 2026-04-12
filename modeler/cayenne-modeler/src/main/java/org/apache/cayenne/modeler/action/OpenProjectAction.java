@@ -28,7 +28,7 @@ import org.apache.cayenne.project.upgrade.UpgradeMetaData;
 import org.apache.cayenne.project.upgrade.UpgradeService;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
-import org.apache.cayenne.swing.control.FileMenuItem;
+import org.apache.cayenne.modeler.util.FileMenuItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

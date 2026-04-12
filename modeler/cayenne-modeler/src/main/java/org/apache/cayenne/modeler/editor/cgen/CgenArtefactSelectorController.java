@@ -28,7 +28,7 @@ import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.CheckBoxHeader;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.TableSizer;
-import org.apache.cayenne.swing.ImageRendererColumn;
+import org.apache.cayenne.modeler.util.ImageRendererColumn;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 

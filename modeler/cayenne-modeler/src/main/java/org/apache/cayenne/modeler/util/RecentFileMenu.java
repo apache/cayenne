@@ -31,7 +31,6 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ModelerPreferences;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.cayenne.modeler.event.RecentFileListListener;
-import org.apache.cayenne.swing.control.FileMenuItem;
 
 /**
  * Menu that contains a list of previously used files. It is built from CayenneModeler

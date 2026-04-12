@@ -330,11 +330,6 @@
 				<scope>test</scope>
 			</dependency>
 			<dependency>
-				<groupId>ognl</groupId>
-				<artifactId>ognl</artifactId>
-				<version>3.3.5</version>
-			</dependency>
-			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-core</artifactId>
 				<version>5.3.39</version>

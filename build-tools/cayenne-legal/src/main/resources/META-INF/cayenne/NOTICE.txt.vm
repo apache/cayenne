@@ -24,13 +24,6 @@ GUI TOOLS
 * CayenneModeler includes JGoodies library developed by Karsten Lentzsch.
 (http://www.jgoodies.com/)
 
-* CayenneModeler includes OGNL library developed by Drew Davidson and Luke Blanshard
-(http://commons.apache.org/ognl/)
-
-* CayenneModeler includes jEdit-syntax library developed by Slava Pestov, Artur Biesiadowski, 
-Clancy Malcolm, Jonathan Revusky, Juha Lindfors and Mike Dillon.
-(http://jedit-syntax.sourceforge.net/)
-
 * CayenneModeler includes Inflector library developed by the Inflector project
 (https://inflector.dev.java.net/)
 

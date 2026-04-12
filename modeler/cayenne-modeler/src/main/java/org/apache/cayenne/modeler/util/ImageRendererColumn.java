@@ -16,29 +16,26 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.modeler.util;
 
-package org.apache.cayenne.swing;
+import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import java.awt.*;
 
-import java.awt.Component;
+public class ImageRendererColumn extends DefaultTableCellRenderer {
 
-/**
- * Defines API of a binding sitting between a Swing widget and domain model, synchronizing
- * the values between the two. Parent part of the binding is called "context"as it is used
- * as a context of binding expressions. Child of the binding is a bound component that is
- * being synchronized with the context.
- * 
- */
-public interface ObjectBinding {
+    public ImageRendererColumn() {
+        super();
+    }
 
-    Component getView();
-
-    Object getContext();
-
-    void setContext(Object object);
-
-    void updateView();
-
-    BindingDelegate getDelegate();
-
-    void setDelegate(BindingDelegate delegate);
+    public Component getTableCellRendererComponent(JTable table, Object value,
+            boolean isSelected, boolean hasFocus, int row, int column) {
+        super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        JLabel label = (JLabel) value;
+        setText(label.getText());
+        setIcon(label.getIcon());
+        setToolTipText(label.getToolTipText());
+        setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
+        return this;
+    }
 }

@@ -19,14 +19,6 @@
 
 package org.apache.cayenne.modeler;
 
-import javax.swing.*;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
-import java.util.stream.Collectors;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.di.Inject;
@@ -40,8 +32,15 @@ import org.apache.cayenne.modeler.util.WidgetFactory;
 import org.apache.cayenne.pref.CayennePreference;
 import org.apache.cayenne.pref.CayenneProjectPreferences;
 import org.apache.cayenne.project.Project;
-import org.apache.cayenne.swing.BindingFactory;
 import org.apache.cayenne.util.IDUtil;
+
+import javax.swing.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 
 /**
  * A main modeler application class that provides a number of services to the Modeler
@@ -63,18 +62,11 @@ public class Application {
     private static Application instance;
 
     protected FileClassLoadingService modelerClassLoader;
-
     protected CayenneModelerController frameController;
-
     protected String name;
-
-    protected BindingFactory bindingFactory;
     protected AdapterMapping adapterMapping;
-
     protected CayenneUndoManager undoManager;
-
     protected CayenneProjectPreferences cayenneProjectPreferences;
-
     protected CayennePreference cayennePreference;
 
     @Inject
@@ -82,7 +74,6 @@ public class Application {
 
     @Inject
     protected DataChannelMetaData metaData;
-
     private String newProjectTemporaryName;
 
     public static Application getInstance() {
@@ -176,7 +167,6 @@ public class Application {
         initPreferences();
         initClassLoader();
 
-        this.bindingFactory = new BindingFactory();
         this.adapterMapping = new AdapterMapping();
 
         this.undoManager = new CayenneUndoManager(this);
@@ -189,10 +179,6 @@ public class Application {
         // After prefs have been loaded, we can now show the console if needed
         LogConsole.getInstance().showConsoleIfNeeded();
         getFrame().setVisible(true);
-    }
-
-    public BindingFactory getBindingFactory() {
-        return bindingFactory;
     }
 
     public CayenneProjectPreferences getCayenneProjectPreferences() {
@@ -239,7 +225,7 @@ public class Application {
         try {
             keys = classLoaderPreference.keys();
             for (String cpKey : keys) {
-            	values.add(classLoaderPreference.get(cpKey, ""));
+                values.add(classLoaderPreference.get(cpKey, ""));
             }
         } catch (BackingStoreException ignored) {
         }

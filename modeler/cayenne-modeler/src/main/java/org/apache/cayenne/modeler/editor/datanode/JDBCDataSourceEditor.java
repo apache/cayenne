@@ -27,14 +27,13 @@ import org.apache.cayenne.modeler.CayenneModelerController;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.TextBinder;
-import org.apache.cayenne.swing.BindingDelegate;
 import org.apache.cayenne.util.Util;
 
 public class JDBCDataSourceEditor extends DataSourceEditor {
 
     protected JDBCDataSourceView view;
 
-    public JDBCDataSourceEditor(ProjectController parent, BindingDelegate nodeChangeProcessor) {
+    public JDBCDataSourceEditor(ProjectController parent, Runnable nodeChangeProcessor) {
         super(parent, nodeChangeProcessor);
     }
 
@@ -58,25 +57,25 @@ public class JDBCDataSourceEditor extends DataSourceEditor {
 
         TextBinder.bind(view.getUserName(), v -> {
             getNode().getDataSourceDescriptor().setUserName(v);
-            nodeChangeProcessor.modelUpdated(null, null, null);
+            nodeChangeProcessor.run();
         });
         TextBinder.bind(view.getPassword(), v -> {
             getNode().getDataSourceDescriptor().setPassword(v);
-            nodeChangeProcessor.modelUpdated(null, null, null);
+            nodeChangeProcessor.run();
         });
         TextBinder.bind(view.getUrl(), v -> {
             getNode().getDataSourceDescriptor().setDataSourceUrl(v);
-            nodeChangeProcessor.modelUpdated(null, null, null);
+            nodeChangeProcessor.run();
         });
         TextBinder.bind(view.getDriver(), v -> {
             getNode().getDataSourceDescriptor().setJdbcDriver(v);
-            nodeChangeProcessor.modelUpdated(null, null, null);
+            nodeChangeProcessor.run();
         });
         TextBinder.bind(view.getMaxConnections(), v -> {
             if (v != null) {
                 try {
                     getNode().getDataSourceDescriptor().setMaxConnections(Integer.parseInt(v));
-                    nodeChangeProcessor.modelUpdated(null, null, null);
+                    nodeChangeProcessor.run();
                 } catch (NumberFormatException ignored) {
                 }
             }
@@ -85,7 +84,7 @@ public class JDBCDataSourceEditor extends DataSourceEditor {
             if (v != null) {
                 try {
                     getNode().getDataSourceDescriptor().setMinConnections(Integer.parseInt(v));
-                    nodeChangeProcessor.modelUpdated(null, null, null);
+                    nodeChangeProcessor.run();
                 } catch (NumberFormatException ignored) {
                 }
             }
@@ -129,7 +128,7 @@ public class JDBCDataSourceEditor extends DataSourceEditor {
         if (dataSource != null) {
             if (dataSource.copyTo(projectDataSourceDescriptor)) {
                 refreshView();
-                super.nodeChangeProcessor.modelUpdated(null, null, null);
+                super.nodeChangeProcessor.run();
                 mainController.updateStatus(null);
             } else {
                 mainController.updateStatus("DataNode is up to date...");
