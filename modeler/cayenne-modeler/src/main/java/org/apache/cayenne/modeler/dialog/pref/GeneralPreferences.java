@@ -22,8 +22,10 @@ package org.apache.cayenne.modeler.dialog.pref;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.pref.CayennePreferenceEditor;
 import org.apache.cayenne.pref.PreferenceEditor;
-import org.apache.cayenne.swing.BindingBuilder;
-import org.apache.cayenne.swing.ObjectBinding;
+import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.prefs.Preferences;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -51,8 +53,6 @@ public class GeneralPreferences extends CayenneController {
 
 	protected Preferences preferences;
 
-	protected ObjectBinding encodingBinding;
-
 	public GeneralPreferences(PreferenceDialog parentController) {
 		super(parentController);
 		this.view = new GeneralPreferencesView();
@@ -62,10 +62,6 @@ public class GeneralPreferences extends CayenneController {
 			this.editor = (CayennePreferenceEditor) editor;
 			this.view.setEnabled(true);
 			initBindings();
-
-			encodingBinding.updateView();
-			view.getAutoLoadProject().setSelected(autoLoadProjectPreference);
-			view.getDeletePrompt().setSelected(deletePromptPreference);
 		} else {
 			this.view.setEnabled(false);
 		}
@@ -86,13 +82,14 @@ public class GeneralPreferences extends CayenneController {
 
 		// build child controllers...
 		EncodingSelector encodingSelector = new EncodingSelector(this, view.getEncodingSelector());
-
-		// create bindings...
-		BindingBuilder builder = new BindingBuilder(getApplication().getBindingFactory(), this);
-		this.encodingBinding = builder.bindToProperty(encodingSelector, "encoding", EncodingSelector.ENCODING_PROPERTY_BINDING);
+		encodingSelector.addPropertyChangeListener(EncodingSelector.ENCODING_PROPERTY_BINDING,
+				evt -> setEncoding((String) evt.getNewValue()));
+		encodingSelector.bindingUpdated(EncodingSelector.ENCODING_PROPERTY_BINDING, encoding);
 
 		view.getAutoLoadProject().addActionListener(e -> setAutoLoadProject(view.getAutoLoadProject().isSelected()));
 		view.getDeletePrompt().addActionListener(e -> setDeletePrompt(view.getDeletePrompt().isSelected()));
+		view.getAutoLoadProject().setSelected(autoLoadProjectPreference);
+		view.getDeletePrompt().setSelected(deletePromptPreference);
 	}
 
 	public String getEncoding() {

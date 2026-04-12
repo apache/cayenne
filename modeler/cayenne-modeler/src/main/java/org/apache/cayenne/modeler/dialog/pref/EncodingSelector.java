@@ -20,20 +20,19 @@
 
 package org.apache.cayenne.modeler.dialog.pref;
 
-import java.awt.Component;
+import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.swing.BindingBuilder;
+import org.apache.cayenne.swing.ObjectBinding;
+import org.apache.cayenne.util.Util;
+
+import javax.swing.*;
+import java.awt.*;
 import java.beans.PropertyChangeListener;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Vector;
-
-import javax.swing.DefaultComboBoxModel;
-
-import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.swing.BindingBuilder;
-import org.apache.cayenne.swing.ObjectBinding;
-import org.apache.cayenne.util.Util;
 
 /**
  * A controller for stream encoding picker component.
@@ -122,6 +121,7 @@ public class EncodingSelector extends CayenneController {
         return charsets;
     }
 
+    @Override
     public void bindingUpdated(String expression, Object newValue) {
         if (ENCODING_PROPERTY_BINDING.equals(expression)) {
             this.encoding = (newValue != null) ? newValue.toString() : null;

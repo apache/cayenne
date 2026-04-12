@@ -73,20 +73,6 @@ public class BindingBuilder {
         return factory;
     }
 
-    /**
-     * Binds to an instance of BoundComponent.
-     * 
-     * @since 1.2
-     */
-    public ObjectBinding bindToProperty(
-            BoundComponent component,
-            String property,
-            String boundProperty) {
-        ObjectBinding binding = factory
-                .bindToProperty(component, property, boundProperty);
-        return initBinding(binding, delegate);
-    }
-
     public ObjectBinding bindToStateChange(AbstractButton button, String property) {
         ObjectBinding binding = factory.bindToStateChange(button, property);
         return initBinding(binding, delegate);

@@ -57,14 +57,6 @@ public class BindingFactory {
         return prepareBinding(binding);
     }
 
-    public ObjectBinding bindToProperty(
-            BoundComponent component,
-            String property,
-            String boundProperty) {
-        PropertyBinding binding = new PropertyBinding(component, property, boundProperty);
-        return prepareBinding(binding);
-    }
-
     /**
      * Binds to AbstractButton item state change events. Most common AbstractButton
      * subclasses are JButton, JCheckBox, JRadioButton.
