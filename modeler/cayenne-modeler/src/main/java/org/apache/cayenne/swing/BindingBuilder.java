@@ -19,12 +19,10 @@
 
 package org.apache.cayenne.swing;
 
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.swing.*;
-import javax.swing.text.JTextComponent;
 
 /**
  * A builder for component bindings that delegates the creation of the binding to the
@@ -89,14 +87,6 @@ public class BindingBuilder {
         return initBinding(binding, delegate);
     }
 
-    public ObjectBinding bindToAction(
-            BoundComponent component,
-            String action,
-            String boundProperty) {
-        ObjectBinding binding = factory.bindToAction(component, action, boundProperty);
-        return initBinding(binding, delegate);
-    }
-
     public ObjectBinding bindToStateChange(AbstractButton button, String property) {
         ObjectBinding binding = factory.bindToStateChange(button, property);
         return initBinding(binding, delegate);
@@ -108,16 +98,6 @@ public class BindingBuilder {
             String action) {
         ObjectBinding binding = factory.bindToStateChange(button, property);
         return initBinding(binding, getActionDelegate(action));
-    }
-
-    public ObjectBinding bindToAction(AbstractButton button, String action) {
-        ObjectBinding binding = factory.bindToAction(button, action);
-        return initBinding(binding, delegate);
-    }
-
-    public ObjectBinding bindToAction(Component component, String action) {
-        ObjectBinding binding = factory.bindToAction(component, action);
-        return initBinding(binding, delegate);
     }
 
     public ObjectBinding bindToComboSelection(JComboBox component, String property) {
