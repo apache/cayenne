@@ -34,12 +34,11 @@ import org.apache.cayenne.modeler.dialog.objentity.EntitySyncController;
 import org.apache.cayenne.modeler.undo.DbEntitySyncUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
-import javax.swing.KeyStroke;
-import java.awt.Toolkit;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * Action that synchronizes all ObjEntities with the current state of the
@@ -47,116 +46,106 @@ import java.util.Iterator;
  */
 public class DbEntitySyncAction extends CayenneAction {
 
-	public static String getActionName() {
-		return "Sync Dependent ObjEntities with DbEntity";
-	}
+    public DbEntitySyncAction(Application application) {
+        super("Sync Dependent ObjEntities with DbEntity", application);
+    }
 
-	public DbEntitySyncAction(final Application application) {
-		super(getActionName(), application);
-	}
+    @Override
+    public KeyStroke getAcceleratorKey() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_U, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());
+    }
 
-	@Override
-	public KeyStroke getAcceleratorKey() {
-		return KeyStroke.getKeyStroke(KeyEvent.VK_U, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());
-	}
+    public String getIconName() {
+        return "icon-sync.png";
+    }
 
-	public String getIconName() {
-		return "icon-sync.png";
-	}
+    /**
+     * @see org.apache.cayenne.modeler.util.CayenneAction#performAction(ActionEvent)
+     */
+    public void performAction(ActionEvent e) {
+        syncDbEntity();
+    }
 
-	/**
-	 * @see org.apache.cayenne.modeler.util.CayenneAction#performAction(ActionEvent)
-	 */
-	public void performAction(final ActionEvent e) {
-		syncDbEntity();
-	}
+    protected void syncDbEntity() {
+        ProjectController mediator = getProjectController();
+        DbEntity dbEntity = mediator.getCurrentDbEntity();
 
-	protected void syncDbEntity() {
-		final ProjectController mediator = getProjectController();
-		final DbEntity dbEntity = mediator.getCurrentDbEntity();
+        if (dbEntity != null) {
 
-		if (dbEntity != null) {
+            Collection<ObjEntity> entities = dbEntity.getDataMap().getMappedEntities(dbEntity);
+            if (entities.isEmpty()) {
+                return;
+            }
 
-			final Collection<ObjEntity> entities = dbEntity.getDataMap().getMappedEntities(dbEntity);
-			if (entities.isEmpty()) {
-				return;
-			}
+            final EntityMergeSupport merger = new EntitySyncController(Application.getInstance().getFrameController(), dbEntity)
+                    .createMerger();
 
-			final EntityMergeSupport merger = new EntitySyncController(Application.getInstance().getFrameController(), dbEntity)
-					.createMerger();
+            if (merger == null) {
+                return;
+            }
 
-			if (merger == null) {
-				return;
-			}
+            merger.setNameGenerator(new PreserveRelationshipNameGenerator());
 
-			merger.setNameGenerator(new PreserveRelationshipNameGenerator());
+            DbEntitySyncUndoableEdit undoableEdit = new DbEntitySyncUndoableEdit((DataChannelDescriptor) mediator
+                    .getProject().getRootNode(), mediator.getCurrentDataMap());
 
-			final DbEntitySyncUndoableEdit undoableEdit = new DbEntitySyncUndoableEdit((DataChannelDescriptor) mediator
-					.getProject().getRootNode(), mediator.getCurrentDataMap());
+            // filter out inherited entities, as we need to add attributes only to the roots
+            filterInheritedEntities(entities);
 
-			// filter out inherited entities, as we need to add attributes only to the roots
-			filterInheritedEntities(entities);
+            boolean hasChanges = false;
+            for (final ObjEntity entity : entities) {
 
-			boolean hasChanges = false;
-			for (final ObjEntity entity : entities) {
+                final DbEntitySyncUndoableEdit.EntitySyncUndoableListener listener = undoableEdit.new EntitySyncUndoableListener(
+                        entity);
 
-				final DbEntitySyncUndoableEdit.EntitySyncUndoableListener listener = undoableEdit.new EntitySyncUndoableListener(
-						entity);
+                merger.addEntityMergeListener(listener);
 
-				merger.addEntityMergeListener(listener);
+                final Collection<DbAttribute> meaningfulFKs = merger.getMeaningfulFKs(entity);
 
-				final Collection<DbAttribute> meaningfulFKs = merger.getMeaningfulFKs(entity);
+                // TODO: addition or removal of model objects should be reflected in listener callbacks...
+                // we should not be trying to introspect the merger
+                if (merger.isRemovingMeaningfulFKs() && !meaningfulFKs.isEmpty()) {
+                    undoableEdit.addEdit(undoableEdit.new MeaningfulFKsUndoableEdit(entity, meaningfulFKs));
+                    hasChanges = true;
+                }
 
-				// TODO: addition or removal of model objects should be reflected in listener callbacks...
-				// we should not be trying to introspect the merger
-				if (merger.isRemovingMeaningfulFKs() && !meaningfulFKs.isEmpty()) {
-					undoableEdit.addEdit(undoableEdit.new MeaningfulFKsUndoableEdit(entity, meaningfulFKs));
-					hasChanges = true;
-				}
+                if (merger.synchronizeWithDbEntity(entity)) {
+                    mediator.fireObjEntityEvent(new EntityEvent(this, entity, MapEvent.CHANGE));
+                    hasChanges = true;
+                }
 
-				if (merger.synchronizeWithDbEntity(entity)) {
-					mediator.fireObjEntityEvent(new EntityEvent(this, entity, MapEvent.CHANGE));
-					hasChanges = true;
-				}
+                merger.removeEntityMergeListener(listener);
+            }
 
-				merger.removeEntityMergeListener(listener);
-			}
+            if (hasChanges) {
+                application.getUndoManager().addEdit(undoableEdit);
+            }
+        }
+    }
 
-			if (hasChanges) {
-				application.getUndoManager().addEdit(undoableEdit);
-			}
-		}
-	}
+    /**
+     * This method works only for case when all inherited entities bound to same DbEntity
+     * if this will ever change some additional checks should be performed.
+     */
+    private void filterInheritedEntities(final Collection<ObjEntity> entities) {
+        entities.removeIf(e -> e.getSuperEntity() != null);
+    }
 
-	/**
-	 * This method works only for case when all inherited entities bound to same DbEntity
-	 * if this will ever change some additional checks should be performed.
-	 */
-	private void filterInheritedEntities(final Collection<ObjEntity> entities) {
-		// entities.removeIf(c -> c.getSuperEntity() != null);
-		final Iterator<ObjEntity> it = entities.iterator();
-		while (it.hasNext()) {
-			if (it.next().getSuperEntity() != null) {
-				it.remove();
-			}
-		}
-	}
+    static class PreserveRelationshipNameGenerator extends DefaultObjectNameGenerator {
 
-	static class PreserveRelationshipNameGenerator extends DefaultObjectNameGenerator {
+        @Override
+        public String relationshipName(final DbRelationship... relationshipChain) {
+            if (relationshipChain.length == 0) {
+                return super.relationshipName(relationshipChain);
+            }
+            final DbRelationship last = relationshipChain[relationshipChain.length - 1];
+            // must be in sync with DefaultBaseNameVisitor.visitDbRelationship
+            if (last.getName().startsWith("untitledRel")) {
+                return super.relationshipName(relationshipChain);
+            }
 
-		@Override
-		public String relationshipName(final DbRelationship... relationshipChain) {
-			if (relationshipChain.length == 0) {
-				return super.relationshipName(relationshipChain);
-			}
-			final DbRelationship last = relationshipChain[relationshipChain.length - 1];
-			// must be in sync with DefaultBaseNameVisitor.visitDbRelationship
-			if (last.getName().startsWith("untitledRel")) {
-				return super.relationshipName(relationshipChain);
-			}
-
-			// keep manually set relationship name
-			return last.getName();
-		}
-	}
+            // keep manually set relationship name
+            return last.getName();
+        }
+    }
 }

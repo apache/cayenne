@@ -23,22 +23,14 @@ import java.util.EventListener;
 
 /**
  * Listener for QueryEvents.
- * 
+ *
  * @since 1.1
  */
 public interface QueryListener extends EventListener {
-    /** 
-     * Query changed. 
-     */
-    public void queryChanged(QueryEvent e);
 
-    /** 
-     * New Query has been created. 
-     */
-    public void queryAdded(QueryEvent e);
+    void queryChanged(QueryEvent e);
 
-    /** 
-     * Query has been removed.
-     */
-    public void queryRemoved(QueryEvent e);
+    void queryAdded(QueryEvent e);
+
+    void queryRemoved(QueryEvent e);
 }

@@ -29,18 +29,14 @@ import java.awt.event.ActionEvent;
 
 public class CutAttributeRelationshipAction extends CutAction implements MultipleObjectsAction {
 
-    private CutAttributeAction cutAttributeAction;
-    private CutRelationshipAction cutRelationshipAction;
+    private final CutAttributeAction cutAttributeAction;
+    private final CutRelationshipAction cutRelationshipAction;
     private JComponent currentSelectedPanel;
 
     public CutAttributeRelationshipAction(Application application) {
         super(application);
         cutAttributeAction = new CutAttributeAction(application);
         cutRelationshipAction = new CutRelationshipAction(application);
-    }
-
-    public JComponent getCurrentSelectedPanel() {
-        return currentSelectedPanel;
     }
 
     public void setCurrentSelectedPanel(JComponent currentSelectedPanel) {

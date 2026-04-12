@@ -22,11 +22,12 @@ import javax.swing.Action;
 
 /**
  * MultipleObjectsAction is an action, which can be applied to multiple objects at once.
- * Therefore the name of the action might change
+ * Therefore, the name of the action might change
  */
 public interface MultipleObjectsAction extends Action {
+
     /**
-     * @return The name for the action, either if one or multiple objects are selected 
+     * @return The name for the action, either if one or multiple objects are selected
      */
-    public String getActionName(boolean multiple);
+    String getActionName(boolean multiple);
 }

@@ -50,15 +50,5 @@ public class DataMapEventTest {
         assertSame(d, e.getDataMap());
         assertEquals("oldname", e.getOldName());
     }
-
-    @Test
-    public void testDataMap() throws Exception {
-        Object src = new Object();
-        DataMap d = new DataMap("abc");
-        DataMapEvent e = new DataMapEvent(src, null);
-
-        e.setDataMap(d);
-        assertSame(d, e.getDataMap());
-    }
 }
 

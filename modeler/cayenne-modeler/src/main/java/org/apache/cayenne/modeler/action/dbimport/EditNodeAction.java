@@ -23,7 +23,6 @@ import org.apache.cayenne.dbsync.reverse.dbimport.FilterContainer;
 import org.apache.cayenne.dbsync.reverse.dbimport.PatternParam;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
 import org.apache.cayenne.modeler.editor.dbimport.DbImportSorter;
 import org.apache.cayenne.util.Util;
 
@@ -63,7 +62,7 @@ public class EditNodeAction extends TreeManipulationAction {
         }
         if (tree.getSelectionPath() != null) {
             selectedElement = tree.getSelectedNode();
-            parentElement = (DbImportTreeNode) selectedElement.getParent();
+            parentElement = selectedElement.getParent();
             if (parentElement != null) {
                 Object selectedObject = selectedElement.getUserObject();
                 ReverseEngineering reverseEngineeringOldCopy = new ReverseEngineering(tree.getReverseEngineering());

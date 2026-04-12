@@ -31,7 +31,6 @@ import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
 
-import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
 
 /**

@@ -18,15 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.action;
 
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-
-import javax.swing.KeyStroke;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.EmptyConfigurationNodeVisitor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -44,9 +36,12 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.editor.ObjCallbackMethod;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneTransferable;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.util.XMLEncoder;
-import org.apache.cayenne.util.XMLSerializable;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 /**
  * Action for copying entities, queries etc. into system buffer
@@ -107,13 +102,6 @@ public class CopyAction extends CayenneAction {
     }
 
     /**
-     * Prints an object in XML format to an output stream
-     */
-    protected void print(XMLEncoder encoder, XMLSerializable object) {
-        object.encodeAsXML(encoder, new EmptyConfigurationNodeVisitor());
-    }
-
-    /**
      * Returns <code>true</code> if last object in the path contains a removable object.
      */
     @Override
@@ -122,7 +110,7 @@ public class CopyAction extends CayenneAction {
             return false;
         }
 
-        if (object instanceof DataMap
+        return object instanceof DataMap
                 || object instanceof QueryDescriptor
                 || object instanceof DbEntity
                 || object instanceof ObjEntity
@@ -134,10 +122,6 @@ public class CopyAction extends CayenneAction {
                 || object instanceof ObjRelationship
                 || object instanceof ObjCallbackMethod
                 || object instanceof Procedure
-                || object instanceof ProcedureParameter) {
-            return true;
-        }
-
-        return false;
+                || object instanceof ProcedureParameter;
     }
 }

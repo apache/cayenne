@@ -19,30 +19,19 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.AboutDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
-/**
- */
+import java.awt.event.ActionEvent;
+
 public class AboutAction extends CayenneAction {
 
-    public static final String getActionName() {
-        return "About CayenneModeler";
-    }
-
-    /**
-     * Constructor for AboutMenuAction.
-     */
     public AboutAction(Application application) {
-        super(getActionName(), application);
+        super("About CayenneModeler", application);
     }
 
-    /**
-     * Displays About dialog.
-     */
+    @Override
     public void performAction(ActionEvent e) {
         showAboutDialog();
     }

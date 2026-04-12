@@ -18,23 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.modeler.Application;
 
+import java.awt.event.ActionEvent;
+
 /**
  * Action for cutting procedure parameter(s)
  */
-public class CutProcedureParameterAction extends CutAction implements
-        MultipleObjectsAction {
+public class CutProcedureParameterAction extends CutAction implements MultipleObjectsAction {
 
     private final static String ACTION_NAME = "Cut Procedure Parameter";
-
-    /**
-     * Name of action if multiple attrs are selected
-     */
     private final static String ACTION_NAME_MULTIPLE = "Cut Procedure Parameters";
 
     public static String getActionName() {

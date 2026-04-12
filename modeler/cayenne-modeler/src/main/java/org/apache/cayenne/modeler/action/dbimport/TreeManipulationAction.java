@@ -30,14 +30,13 @@ import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
-import org.apache.cayenne.modeler.editor.dbimport.DbImportModel;
 import org.apache.cayenne.modeler.editor.dbimport.DbImportTree;
 import org.apache.cayenne.modeler.undo.DbImportTreeUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -184,7 +183,6 @@ public abstract class TreeManipulationAction extends CayenneAction {
 
     protected void updateModel(boolean updateSelected) {
         insertableNodeName = null;
-        DbImportModel model = (DbImportModel) tree.getModel();
         getProjectController().setDirty(true);
         TreePath savedPath = null;
         if (!updateSelected) {

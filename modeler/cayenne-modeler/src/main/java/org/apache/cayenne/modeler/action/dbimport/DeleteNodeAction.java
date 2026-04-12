@@ -132,7 +132,7 @@ public class DeleteNodeAction extends TreeManipulationAction {
             rootParent.lockToolbarButtons();
             for (TreePath path : paths) {
                 selectedElement = (DbImportTreeNode) path.getLastPathComponent();
-                parentElement = (DbImportTreeNode) selectedElement.getParent();
+                parentElement = selectedElement.getParent();
                 if (parentElement != null) {
                     Object parentUserObject = parentElement.getUserObject();
                     if (parentUserObject instanceof ReverseEngineering) {

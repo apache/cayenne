@@ -26,19 +26,10 @@ import java.util.EventListener;
  */
 public interface DataMapListener extends EventListener {
 
-    /**
-     * Called on DataMap property changes. 
-     */
-    public void dataMapChanged(DataMapEvent e);
+    void dataMapChanged(DataMapEvent e);
 
-    /** 
-     * Called when a new DataMap is added.
-     */
-    public void dataMapAdded(DataMapEvent e);
+    void dataMapAdded(DataMapEvent e);
 
-    /** 
-     * Called when a DataMap is removed.
-     */
-    public void dataMapRemoved(DataMapEvent e);
+    void dataMapRemoved(DataMapEvent e);
 
 }

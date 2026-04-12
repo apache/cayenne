@@ -35,14 +35,6 @@ public class ProcedureParameterEvent extends MapEvent {
     public ProcedureParameterEvent(
         Object source,
         ProcedureParameter parameter,
-        String oldName) {
-        this(source, parameter);
-        setOldName(oldName);
-    }
-
-    public ProcedureParameterEvent(
-        Object source,
-        ProcedureParameter parameter,
         int type) {
         this(source, parameter);
         setId(type);

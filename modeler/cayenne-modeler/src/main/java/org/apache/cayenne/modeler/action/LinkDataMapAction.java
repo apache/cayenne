@@ -33,17 +33,8 @@ import java.util.Collection;
 
 public class LinkDataMapAction extends CayenneAction {
 
-    public static String getActionName() {
-        return "Link DataMap";
-    }
-
-    /**
-     * Constructor for LinkDataMapAction.
-     *
-     * @param application
-     */
     public LinkDataMapAction(Application application) {
-        super(getActionName(), application);
+        super("Link DataMap", application);
     }
 
     public void linkDataMap(DataMap map, DataNodeDescriptor node) {

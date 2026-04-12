@@ -18,11 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
+
+import java.awt.event.ActionEvent;
 
 /**
  * Action for cutting attribute(s)
@@ -30,10 +30,6 @@ import org.apache.cayenne.modeler.Application;
 public class CutRelationshipAction extends CutAction implements MultipleObjectsAction {
 
     private final static String ACTION_NAME = "Cut Relationship";
-
-    /**
-     * Name of action if multiple attrs are selected
-     */
     private final static String ACTION_NAME_MULTIPLE = "Cut Relationships";
 
     public static String getActionName() {

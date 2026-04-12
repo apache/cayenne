@@ -19,21 +19,16 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.util.Iterator;
-
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 
+import java.util.Iterator;
+
 public class DbEntityCounterpartAction extends BaseViewEntityAction {
 
-    public static String getActionName() {
-        return "View related ObjEntity";
-    }
-
     public DbEntityCounterpartAction(Application application) {
-        super(getActionName(), application);
+        super("View related ObjEntity", application);
     }
 
     public String getIconName() {

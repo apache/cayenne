@@ -19,28 +19,20 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-import java.util.EventObject;
-
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
-/**
- */
+import java.awt.event.ActionEvent;
+import java.util.EventObject;
+
 public class NavigateForwardAction extends CayenneAction {
 
-    public static final String getActionName() {
-        return "Move Forward";
-    }
-
-    /**
-     * Constructor for Move Forward Action
-     */
     public NavigateForwardAction(Application application) {
-        super(getActionName(), application);
+        super("Move Forward", application);
     }
 
+    @Override
     public String getIconName() {
         return "icon-forward.png";
     }

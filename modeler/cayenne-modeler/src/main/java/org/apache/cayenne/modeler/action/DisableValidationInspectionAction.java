@@ -31,8 +31,7 @@ import java.util.EnumSet;
  */
 public class DisableValidationInspectionAction extends UpdateValidationConfigAction {
 
-    public static final String ACTION_NAME = "Disable inspection";
-
+    private static final String ACTION_NAME = "Disable inspection";
     private static final String INSPECTION_PARAM = "inspection";
 
     private final ValidateAction validationAction;

@@ -27,18 +27,14 @@ import javax.swing.JComponent;
 
 public class CopyAttributeRelationshipAction extends CopyAction implements MultipleObjectsAction {
 
-    private CopyAttributeAction copyAttributeAction;
-    private CopyRelationshipAction copyRelationshipAction;
+    private final CopyAttributeAction copyAttributeAction;
+    private final CopyRelationshipAction copyRelationshipAction;
     private JComponent currentSelectedPanel;
 
     protected CopyAttributeRelationshipAction(Application application) {
         super(application);
         copyAttributeAction = new CopyAttributeAction(application);
         copyRelationshipAction = new CopyRelationshipAction(application);
-    }
-
-    public JComponent getCurrentSelectedPanel() {
-        return currentSelectedPanel;
     }
 
     public void setCurrentSelectedPanel(JComponent currentSelectedPanel) {

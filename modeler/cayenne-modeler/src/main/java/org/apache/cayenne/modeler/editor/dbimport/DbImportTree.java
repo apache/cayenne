@@ -346,7 +346,7 @@ public class DbImportTree extends JTree {
                     //reload tables and columns action.
 
                     LoadDbSchemaAction action = Application.getInstance().getActionManager().getAction(LoadDbSchemaAction.class);
-                    action.performAction(null, path);
+                    action.loadDbSchema(path);
                 }
             }
 

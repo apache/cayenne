@@ -21,11 +21,14 @@ package org.apache.cayenne.configuration.event;
 
 import java.util.EventListener;
 
-/** For managing the changes in the Domain */
-public interface DomainListener extends EventListener
-{
-	/** Domain property (usually - name) changed. */
-	public void domainChanged(DomainEvent e);
-	
+/**
+ * For managing the changes in the Domain
+ */
+public interface DomainListener extends EventListener {
+    /**
+     * Domain property (usually - name) changed.
+     */
+    void domainChanged(DomainEvent e);
+
 }
 

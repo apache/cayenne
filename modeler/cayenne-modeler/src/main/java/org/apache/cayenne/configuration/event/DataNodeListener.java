@@ -21,15 +21,24 @@ package org.apache.cayenne.configuration.event;
 
 import java.util.EventListener;
 
-/** For managing the changes in the DataNode */
-public interface DataNodeListener extends EventListener
-{
-	/** DataNode property (usually - name) changed. */
-	public void dataNodeChanged(DataNodeEvent e);
-	/** New data map has been created/added.*/
-	public void dataNodeAdded(DataNodeEvent e);
-	/** DataNode has been removed.*/
-	public void dataNodeRemoved(DataNodeEvent e);
-	
+/**
+ * For managing the changes in the DataNode
+ */
+public interface DataNodeListener extends EventListener {
+    /**
+     * DataNode property (usually - name) changed.
+     */
+    void dataNodeChanged(DataNodeEvent e);
+
+    /**
+     * New data map has been created/added.
+     */
+    void dataNodeAdded(DataNodeEvent e);
+
+    /**
+     * DataNode has been removed.
+     */
+    void dataNodeRemoved(DataNodeEvent e);
+
 }
 

@@ -21,23 +21,23 @@ package org.apache.cayenne.configuration.event;
 
 import java.util.EventListener;
 
-/** 
+/**
  * Listener for ProcedureParameterEvents.
- * 
+ *
  */
 public interface ProcedureParameterListener extends EventListener {
-    /** 
-      *  Called when procedure parameter has changed. 
-      */
-    public void procedureParameterChanged(ProcedureParameterEvent e);
-
-    /** 
-     *  Called when new procedure parameter has been created. 
+    /**
+     * Called when procedure parameter has changed.
      */
-    public void procedureParameterAdded(ProcedureParameterEvent e);
+    void procedureParameterChanged(ProcedureParameterEvent e);
 
-    /** 
+    /**
+     * Called when new procedure parameter has been created.
+     */
+    void procedureParameterAdded(ProcedureParameterEvent e);
+
+    /**
      * Called when procedure parameter has been removed.
      */
-    public void procedureParameterRemoved(ProcedureParameterEvent e);
+    void procedureParameterRemoved(ProcedureParameterEvent e);
 }

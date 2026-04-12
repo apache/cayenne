@@ -34,22 +34,21 @@ import java.awt.event.KeyEvent;
 
 public class NewProjectAction extends ProjectAction {
 
-    public static String getActionName() {
-        return "New Project";
-    }
-
     public NewProjectAction(Application application) {
-        super(getActionName(), application);
+        super("New Project", application);
     }
 
+    @Override
     public String getIconName() {
         return "icon-new.png";
     }
 
+    @Override
     public KeyStroke getAcceleratorKey() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());
     }
 
+    @Override
     public void performAction(ActionEvent e) {
 
         CayenneModelerController controller = Application

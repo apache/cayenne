@@ -315,7 +315,7 @@ public class ImportEOModelAction extends CayenneAction {
     /**
      * Custom file chooser that will pop up again if a bad directory is selected.
      */
-    class EOModelChooser extends JFileChooser {
+    static class EOModelChooser extends JFileChooser {
 
         protected FileFilter selectFilter;
         protected JDialog cachedDialog;

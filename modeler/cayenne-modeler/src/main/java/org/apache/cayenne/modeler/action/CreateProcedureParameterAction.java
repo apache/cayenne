@@ -36,9 +36,6 @@ import java.awt.event.ActionEvent;
 
 public class CreateProcedureParameterAction extends CayenneAction {
 
-    /**
-     * Constructor for CreateProcedureParameterAction.
-     */
     public CreateProcedureParameterAction(Application application) {
         super(getActionName(), application);
     }

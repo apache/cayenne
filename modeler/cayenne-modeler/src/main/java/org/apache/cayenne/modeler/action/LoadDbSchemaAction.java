@@ -19,11 +19,6 @@
 
 package org.apache.cayenne.modeler.action;
 
-import javax.swing.JOptionPane;
-import javax.swing.tree.TreePath;
-import java.awt.event.ActionEvent;
-import java.sql.SQLException;
-
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
@@ -39,6 +34,11 @@ import org.apache.cayenne.modeler.editor.dbimport.PrintTablesBiFunction;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import javax.swing.tree.TreePath;
+import java.awt.event.ActionEvent;
+import java.sql.SQLException;
 
 /**
  * @since 4.1
@@ -61,10 +61,10 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        performAction(e, null);
+        loadDbSchema(null);
     }
 
-    public void performAction(ActionEvent e, TreePath tablePath) {
+    public void loadDbSchema(TreePath tablePath) {
         final DbImportView rootParent = ((DbImportView) draggableTreePanel.getParent().getParent());
         rootParent.getLoadDbSchemaProgress().setVisible(true);
         rootParent.getLoadDbSchemaButton().setEnabled(false);

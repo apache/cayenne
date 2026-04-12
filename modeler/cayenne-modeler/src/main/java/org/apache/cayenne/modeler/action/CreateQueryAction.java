@@ -19,41 +19,34 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.query.QueryType;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.map.QueryDescriptor;
+
+import java.awt.event.ActionEvent;
 
 /**
  * @since 1.1
  */
 public class CreateQueryAction extends CayenneAction {
 
-    
-
-    public static String getActionName() {
-        return "Create Query";
-    }
-
-    /**
-     * Constructor for CreateQueryAction.
-     */
     public CreateQueryAction(Application application) {
-        super(getActionName(), application);
+        super("Create Query", application);
     }
 
+    @Override
     public String getIconName() {
         return "icon-new_query.png";
     }
 
+    @Override
     public void performAction(ActionEvent e) {
         createQuery();
     }

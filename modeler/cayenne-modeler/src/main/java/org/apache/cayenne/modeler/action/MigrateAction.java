@@ -29,19 +29,19 @@ import org.apache.cayenne.modeler.dialog.db.merge.MergerOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import javax.swing.JOptionPane;
 
 /**
  * Action that alter database schema to match a DataMap.
  */
 public class MigrateAction extends DBConnectionAwareAction {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(MigrateAction.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MigrateAction.class);
 
     private boolean dialogShown;
 

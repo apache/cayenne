@@ -32,18 +32,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class LinkDataMapsAction extends CayenneAction {
-
-    public static String getActionName() {
-        return "Link unlinked DataMaps";
-    }
-
-    /**
-     * Constructor for LinkDataMapsAction.
-     *
-     * @param application
-     */
+    
     public LinkDataMapsAction(Application application) {
-        super(getActionName(), application);
+        super("Link unlinked DataMaps", application);
     }
 
     @Override

@@ -32,7 +32,6 @@ import java.awt.event.ActionEvent;
 public class ReverseEngineeringToolMenuAction extends CayenneAction {
 
     private static final String ACTION_NAME = "Reengineer Database Schema";
-    private static final String DIALOG_TITLE = "Reverse Engineering";
 
     public ReverseEngineeringToolMenuAction(Application application) {
         super(ACTION_NAME, application);

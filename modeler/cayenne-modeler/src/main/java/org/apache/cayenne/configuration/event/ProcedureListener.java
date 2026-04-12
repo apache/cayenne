@@ -21,23 +21,23 @@ package org.apache.cayenne.configuration.event;
 
 import java.util.EventListener;
 
-/** 
+/**
  * Listener for Procedure events.
- * 
+ *
  */
 public interface ProcedureListener extends EventListener {
-    /** 
-     * Procedure changed. 
+    /**
+     * Procedure changed.
      */
-    public void procedureChanged(ProcedureEvent e);
+    void procedureChanged(ProcedureEvent e);
 
-    /** 
-     * New Procedure has been created. 
+    /**
+     * New Procedure has been created.
      */
-    public void procedureAdded(ProcedureEvent e);
+    void procedureAdded(ProcedureEvent e);
 
-    /** 
+    /**
      * Procedure has been removed.
      */
-    public void procedureRemoved(ProcedureEvent e);
+    void procedureRemoved(ProcedureEvent e);
 }

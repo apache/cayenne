@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DbEntity;
@@ -39,17 +37,12 @@ import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 
+import java.awt.event.ActionEvent;
+
 public class CreateRelationshipAction extends CayenneAction {
 
-    /**
-     * Constructor for CreateRelationshipAction.
-     */
     public CreateRelationshipAction(Application application) {
-        super(getActionName(), application);
-    }
-
-    public static String getActionName() {
-        return "Create Relationship";
+        super("Create Relationship", application);
     }
 
     /**

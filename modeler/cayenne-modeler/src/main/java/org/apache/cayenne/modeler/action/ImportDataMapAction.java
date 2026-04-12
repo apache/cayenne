@@ -50,7 +50,7 @@ public class ImportDataMapAction extends CayenneAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImportDataMapAction.class);
 
-    private ConfigurationNameMapper nameMapper;
+    private final ConfigurationNameMapper nameMapper;
 
     public ImportDataMapAction(Application application, ConfigurationNameMapper nameMapper) {
         super(getActionName(), application);

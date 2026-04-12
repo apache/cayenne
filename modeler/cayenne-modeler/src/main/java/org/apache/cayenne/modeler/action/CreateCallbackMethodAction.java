@@ -36,26 +36,8 @@ import java.awt.event.ActionEvent;
  */
 public class CreateCallbackMethodAction extends CayenneAction {
 
-    /**
-     * unique action name
-     */
-    public static final String ACTION_NAME = "Create callback method";
+    private static final String ACTION_NAME = "Create callback method";
 
-    /**
-     * Constructor.
-     *
-     * @param actionName  unique action name
-     * @param application Application instance
-     */
-    public CreateCallbackMethodAction(String actionName, Application application) {
-        super(actionName, application);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param application Application instance
-     */
     public CreateCallbackMethodAction(Application application) {
         super(ACTION_NAME, application);
     }

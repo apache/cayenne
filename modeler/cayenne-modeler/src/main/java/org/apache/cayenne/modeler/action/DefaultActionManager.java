@@ -250,12 +250,12 @@ public class DefaultActionManager implements ActionManager {
 
         EMBEDDABLE_ACTIONS = new HashSet<>(DATA_MAP_ACTIONS);
 
-        EMBEDDABLE_ACTIONS.addAll(Collections.singletonList(CreateAttributeAction.class.getName()));
+        EMBEDDABLE_ACTIONS.add(CreateAttributeAction.class.getName());
 
         PROCEDURE_ACTIONS = new HashSet<>(DATA_MAP_ACTIONS);
 
-        PROCEDURE_ACTIONS.addAll(Collections.singletonList(CreateProcedureParameterAction.class
-                .getName()));
+        PROCEDURE_ACTIONS.add(CreateProcedureParameterAction.class
+                .getName());
 
         MULTIPLE_OBJECTS_ACTIONS = new HashSet<>(PROJECT_ACTIONS);
 
@@ -278,18 +278,6 @@ public class DefaultActionManager implements ActionManager {
         }
 
         return action;
-    }
-
-    public void addProjectAction(String actionName) {
-        if (!PROJECT_ACTIONS.contains(actionName)) {
-            PROJECT_ACTIONS.add(actionName);
-        }
-    }
-
-    public void removeProjectaction(String actionName) {
-        if (PROJECT_ACTIONS.contains(actionName)) {
-            PROJECT_ACTIONS.remove(actionName);
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -393,7 +381,7 @@ public class DefaultActionManager implements ActionManager {
      * Updates Remove, Cut and Copy actions' names
      */
     private void updateActions(String postfix) {
-        if (postfix.length() > 0) {
+        if (!postfix.isEmpty()) {
             postfix = " " + postfix;
         }
 

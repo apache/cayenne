@@ -18,35 +18,24 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.action;
 
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-
-import javax.swing.KeyStroke;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.util.CayenneAction;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 /**
  * Action for cutting entities, queries etc.
  */
 public class CutAction extends CayenneAction {
 
-    public static String getActionName() {
-        return "Cut";
-    }
-
-    /**
-     * Constructor for CutAction
-     */
     public CutAction(Application application) {
-        this(getActionName(), application);
+        this("Cut", application);
     }
 
-    /**
-     * Constructor for descendants
-     */
     protected CutAction(String name, Application application) {
         super(name, application);
     }

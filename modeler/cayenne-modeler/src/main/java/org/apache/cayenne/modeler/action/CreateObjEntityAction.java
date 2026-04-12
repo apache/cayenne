@@ -41,9 +41,6 @@ import java.awt.event.ActionEvent;
 
 public class CreateObjEntityAction extends CayenneAction {
 
-    /**
-     * Constructor for CreateObjEntityAction.
-     */
     public CreateObjEntityAction(Application application) {
         super(getActionName(), application);
     }

@@ -38,11 +38,6 @@ import java.awt.event.ActionEvent;
 
 public class CreateNodeAction extends CayenneAction {
 
-    /**
-     * Constructor for CreateNodeAction.
-     *
-     * @param application
-     */
     public CreateNodeAction(Application application) {
         super(getActionName(), application);
     }
