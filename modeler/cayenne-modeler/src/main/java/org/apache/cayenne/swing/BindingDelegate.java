@@ -23,12 +23,12 @@ package org.apache.cayenne.swing;
  * Defines an API of a delegate notified by bindings whenever values are pushed from the
  * view to the model. The value of delegate is that it allows to track changes to the
  * model properties that themselves do not fire property change events.
- * 
+ *
  */
 public interface BindingDelegate {
 
     /**
      * Called by a binding to notify that a model value was updated.
      */
-    public void modelUpdated(ObjectBinding binding, Object oldValue, Object newValue);
+    void modelUpdated(ObjectBinding binding, Object oldValue, Object newValue);
 }

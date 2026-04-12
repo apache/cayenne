@@ -20,10 +20,9 @@
 
 package org.apache.cayenne.swing;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.JTable;
 
 /**
  * A builder for a JTable binding.
@@ -33,10 +32,6 @@ public class TableBindingBuilder {
 
     protected BindingBuilder helper;
     protected List columns;
-
-    public TableBindingBuilder(BindingFactory factory, Object context) {
-        this(new BindingBuilder(factory, context));
-    }
 
     public TableBindingBuilder(BindingBuilder helper) {
         this.helper = helper;

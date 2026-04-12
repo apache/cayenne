@@ -18,11 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.swing;
 
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JCheckBox;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * A generic adapter that binds a check box to a bean property.
@@ -36,12 +33,9 @@ public class CheckBoxBinding extends BindingBase {
         super(propertyExpression);
         this.checkBox = checkBox;
 
-        this.checkBox.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(final ActionEvent event) {
-                if (!modelUpdateDisabled) {
-                    updateModel();
-                }
+        this.checkBox.addActionListener(event -> {
+            if (!modelUpdateDisabled) {
+                updateModel();
             }
         });
     }

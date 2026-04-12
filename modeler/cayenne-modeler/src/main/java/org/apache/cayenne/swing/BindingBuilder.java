@@ -128,16 +128,6 @@ public class BindingBuilder {
         return initBinding(binding, getActionDelegate(action));
     }
 
-    public ObjectBinding bindToTextArea(JTextArea component, String property) {
-        ObjectBinding binding = factory.bindToTextArea(component, property);
-        return initBinding(binding, delegate);
-    }
-
-    public ObjectBinding bindToTextField(JTextField component, String property) {
-        ObjectBinding binding = factory.bindToTextField(component, property);
-        return initBinding(binding, delegate);
-    }
-
     public ObjectBinding bindToCheckBox(JCheckBox component, String property) {
         ObjectBinding binding = factory.bindToCheckBox(component, property);
         return initBinding(binding, delegate);

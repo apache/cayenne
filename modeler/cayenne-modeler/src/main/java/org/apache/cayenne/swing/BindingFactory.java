@@ -19,9 +19,8 @@
 
 package org.apache.cayenne.swing;
 
-import java.awt.Component;
-
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * A factory for a number of common bindings.
@@ -75,33 +74,6 @@ public class BindingFactory {
         return prepareBinding(binding);
     }
 
-    /**
-     * Binds to AbstractButton action events. Most common AbstractButton subclasses are
-     * JButton, JCheckBox, JRadioButton.
-     */
-    public ObjectBinding bindToAction(AbstractButton button, String action) {
-        ActionBinding binding = new ActionBinding(button, action);
-        return prepareBinding(binding);
-    }
-
-    /**
-     * Binds to a generic component. Action events support is discovered via
-     * introspection. If component class does not define action events, an exception is
-     * thrown.
-     */
-    public ObjectBinding bindToAction(Component component, String action) {
-        BeanActionBinding binding = new BeanActionBinding(component, action);
-        return prepareBinding(binding);
-    }
-
-    public ObjectBinding bindToAction(
-            BoundComponent component,
-            String action,
-            String boundExpression) {
-        ActionBinding binding = new ActionBinding(component, action, boundExpression);
-        return prepareBinding(binding);
-    }
-
     public ObjectBinding bindToComboSelection(
             JComboBox component,
             String property,
@@ -110,19 +82,6 @@ public class BindingFactory {
                 component,
                 property,
                 noSelectionValue);
-        return prepareBinding(binding);
-    }
-
-    public ObjectBinding bindToTextArea(JTextArea component, String property) {
-        TextBinding binding = new TextBinding(component, property);
-        return prepareBinding(binding);
-    }
-
-    /**
-     * Creates a binding that updates a property on text field text changes.
-     */
-    public ObjectBinding bindToTextField(JTextField component, String property) {
-        TextBinding binding = new TextBinding(component, property);
         return prepareBinding(binding);
     }
 

@@ -23,19 +23,11 @@ import org.apache.cayenne.CayenneRuntimeException;
 
 public class BindingException extends CayenneRuntimeException {
 
-    public BindingException() {
-        super();
-    }
-
     public BindingException(String messageFormat, Object... messageArgs) {
         super(messageFormat, messageArgs);
     }
 
     public BindingException(String messageFormat, Throwable cause, Object... messageArgs) {
         super(messageFormat, cause, messageArgs);
-    }
-
-    public BindingException(Throwable cause) {
-        super(cause);
     }
 }

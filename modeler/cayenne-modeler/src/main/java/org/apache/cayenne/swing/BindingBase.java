@@ -30,7 +30,7 @@ import org.apache.cayenne.validation.ValidationException;
  */
 public abstract class BindingBase implements ObjectBinding {
 
-    private Object compiled;
+    private final Object compiled;
 
     protected Object context;
     protected String expression;
