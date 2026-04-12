@@ -26,7 +26,6 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.swing.components.TopBorder;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -36,7 +35,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
@@ -86,8 +84,7 @@ public class MergerOptionsView extends JDialog {
                 "p, 9dlu, p, 3dlu, fill:40dlu:grow"));
         builder.addSeparator("Generated SQL", cc.xywh(1, 3, 1, 1));
         builder.add(sqlTextPanel, cc.xy(1, 5));
-        builder.setBorder(BorderFactory
-                .createCompoundBorder(UIManager.getBorder("ToolBar.border"), Borders.DIALOG_BORDER));
+        builder.setBorder(Borders.DIALOG_BORDER);
 
         tabs.addTab("Operations", new JScrollPane(
                 tables,

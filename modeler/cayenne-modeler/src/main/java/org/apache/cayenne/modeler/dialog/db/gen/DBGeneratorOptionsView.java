@@ -26,7 +26,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -39,7 +38,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.Borders;
@@ -113,8 +111,7 @@ public class DBGeneratorOptionsView extends JDialog {
         builder.add(adapterPanel, cc.xy(1, 7));
         builder.addSeparator("Generated SQL", cc.xywh(1, 9, 1, 1));
         builder.add(sqlTextPanel, cc.xy(1, 11));
-        builder.setBorder(BorderFactory
-                .createCompoundBorder(UIManager.getBorder("ToolBar.border"), Borders.DIALOG_BORDER));
+        builder.setBorder(Borders.DIALOG_BORDER);
 
         tabs.addTab("SQL Options", builder.getPanel());
         tabs.addTab("Tables", new JScrollPane(
