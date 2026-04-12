@@ -85,11 +85,6 @@ public class BindingFactory {
         return prepareBinding(binding);
     }
 
-    public ObjectBinding bindToCheckBox(JCheckBox component, String property) {
-        CheckBoxBinding binding = new CheckBoxBinding(component, property);
-        return prepareBinding(binding);
-    }
-
     /**
      * Configures binding with factory default settings.
      */

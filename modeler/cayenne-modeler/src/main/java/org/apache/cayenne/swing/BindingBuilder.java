@@ -128,11 +128,6 @@ public class BindingBuilder {
         return initBinding(binding, getActionDelegate(action));
     }
 
-    public ObjectBinding bindToCheckBox(JCheckBox component, String property) {
-        ObjectBinding binding = factory.bindToCheckBox(component, property);
-        return initBinding(binding, delegate);
-    }
-
     protected ObjectBinding initBinding(ObjectBinding binding, BindingDelegate delegate) {
         binding.setDelegate(delegate);
         binding.setContext(context);

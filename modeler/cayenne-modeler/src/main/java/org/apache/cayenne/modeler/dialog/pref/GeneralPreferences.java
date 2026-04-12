@@ -19,16 +19,16 @@
 
 package org.apache.cayenne.modeler.dialog.pref;
 
-import java.awt.Component;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.prefs.Preferences;
-
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.pref.CayennePreferenceEditor;
 import org.apache.cayenne.pref.PreferenceEditor;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
+
+import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.prefs.Preferences;
 
 public class GeneralPreferences extends CayenneController {
 
@@ -52,8 +52,6 @@ public class GeneralPreferences extends CayenneController {
 	protected Preferences preferences;
 
 	protected ObjectBinding encodingBinding;
-	protected ObjectBinding autoLoadProjectBinding;
-	protected ObjectBinding deletePromptBinding;
 
 	public GeneralPreferences(PreferenceDialog parentController) {
 		super(parentController);
@@ -66,13 +64,14 @@ public class GeneralPreferences extends CayenneController {
 			initBindings();
 
 			encodingBinding.updateView();
-			autoLoadProjectBinding.updateView();
-			deletePromptBinding.updateView();
+			view.getAutoLoadProject().setSelected(autoLoadProjectPreference);
+			view.getDeletePrompt().setSelected(deletePromptPreference);
 		} else {
 			this.view.setEnabled(false);
 		}
 	}
 
+	@Override
 	public Component getView() {
 		return view;
 	}
@@ -91,8 +90,9 @@ public class GeneralPreferences extends CayenneController {
 		// create bindings...
 		BindingBuilder builder = new BindingBuilder(getApplication().getBindingFactory(), this);
 		this.encodingBinding = builder.bindToProperty(encodingSelector, "encoding", EncodingSelector.ENCODING_PROPERTY_BINDING);
-		this.autoLoadProjectBinding = builder.bindToCheckBox(view.getAutoLoadProject(), "autoLoadProject");
-		this.deletePromptBinding = builder.bindToCheckBox(view.getDeletePrompt(), "deletePrompt");
+
+		view.getAutoLoadProject().addActionListener(e -> setAutoLoadProject(view.getAutoLoadProject().isSelected()));
+		view.getDeletePrompt().addActionListener(e -> setDeletePrompt(view.getDeletePrompt().isSelected()));
 	}
 
 	public String getEncoding() {
@@ -104,22 +104,12 @@ public class GeneralPreferences extends CayenneController {
 		this.encoding = encoding;
 	}
 
-	public boolean getAutoLoadProject() {
-		return autoLoadProjectPreference;
-	}
-
-	public void setAutoLoadProject(boolean autoLoadProject) {
-
+	private void setAutoLoadProject(boolean autoLoadProject) {
 		addChangedBooleanPreferences(AUTO_LOAD_PROJECT_PREFERENCE, autoLoadProject);
 		this.autoLoadProjectPreference = autoLoadProject;
 	}
 
-	public boolean getDeletePrompt() {
-		return deletePromptPreference;
-	}
-
-	public void setDeletePrompt(boolean deletePrompt) {
-
+	private void setDeletePrompt(boolean deletePrompt) {
 		addChangedBooleanPreferences(DELETE_PROMPT_PREFERENCE, deletePrompt);
 		this.deletePromptPreference = deletePrompt;
 	}
