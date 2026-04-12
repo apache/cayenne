@@ -142,9 +142,9 @@ public class DBGeneratorOptions extends CayenneController {
                 "generatorDefaults.dropTables",
                 "refreshSQLAction()");
 
-        builder.bindToAction(view.getGenerateButton(), "generateSchemaAction()");
-        builder.bindToAction(view.getSaveSqlButton(), "storeSQLAction()");
-        builder.bindToAction(view.getCancelButton(), "closeAction()");
+        view.getGenerateButton().addActionListener(e -> generateSchemaAction());
+        view.getSaveSqlButton().addActionListener(e -> storeSQLAction());
+        view.getCancelButton().addActionListener(e -> closeAction());
 
         // refresh SQL if different tables were selected
         view.getTabs().addChangeListener(new ChangeListener() {

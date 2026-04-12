@@ -25,7 +25,6 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 
 import javax.swing.DefaultCellEditor;
@@ -151,12 +150,8 @@ public class MergerTokenSelectorController extends CayenneController {
     // ------ other stuff ------
 
     protected void initController() {
-        final BindingBuilder builder = new BindingBuilder(
-                getApplication().getBindingFactory(),
-                this);
-
-        builder.bindToAction(view.getCheckAll(), "checkAllAction()");
-        builder.bindToAction(view.getReverseAll(), "reverseAllAction()");
+        view.getCheckAll().addActionListener(e -> checkAllAction());
+        view.getReverseAll().addActionListener(e -> reverseAllAction());
 
         final TableModel model = new MergerTokenTableModel(this);
 

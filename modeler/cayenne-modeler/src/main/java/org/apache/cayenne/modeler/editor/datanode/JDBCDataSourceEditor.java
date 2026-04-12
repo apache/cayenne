@@ -71,7 +71,7 @@ public class JDBCDataSourceEditor extends DataSourceEditor {
           builder.bindToTextField(view.getMinConnections(), "node.dataSourceDescriptor.minConnections");
         
 
-        builder.bindToAction(view.getSyncWithLocal(), "syncDataSourceAction()");
+        view.getSyncWithLocal().addActionListener(e -> syncDataSourceAction());
     }
 
 

@@ -38,7 +38,6 @@ import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.InferRelationshipsUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
-import org.apache.cayenne.swing.BindingBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,14 +104,10 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
     }
 
     protected void initBindings() {
-        BindingBuilder builder = new BindingBuilder(
-                getApplication().getBindingFactory(),
-                this);
-
-        builder.bindToAction(view.getCancelButton(), "cancelAction()");
-        builder.bindToAction(view.getGenerateButton(), "generateAction()");
-        builder.bindToAction(this, "entitySelectedAction()", SELECTED_PROPERTY);
-        builder.bindToAction(view.getStrategyCombo(), "strategyComboAction()");
+        view.getCancelButton().addActionListener(e -> cancelAction());
+        view.getGenerateButton().addActionListener(e -> generateAction());
+        addPropertyChangeListener(SELECTED_PROPERTY, evt -> entitySelectedAction());
+        view.getStrategyCombo().addActionListener(e -> strategyComboAction());
     }
 
     public void entitySelectedAction() {

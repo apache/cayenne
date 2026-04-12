@@ -74,7 +74,7 @@ public class CgenArtefactSelectorController extends CayenneController {
     }
 
     protected void initBindings() {
-        builder.bindToAction(checkBoxHeader, "checkAllAction()");
+        checkBoxHeader.addActionListener(e -> checkAllAction());
         TableBindingBuilder tableBuilder = new TableBindingBuilder(builder);
 
         tableBuilder.addColumn(
@@ -134,7 +134,6 @@ public class CgenArtefactSelectorController extends CayenneController {
      * An action that updates entity check boxes in response to the Select All state
      * change.
      */
-    @SuppressWarnings("unused")
     public void checkAllAction() {
         if (getParentController().updateSelection(checkBoxHeader.isSelected() ? o -> true : o -> false)) {
             tableBinding.updateView();

@@ -95,10 +95,10 @@ public class DataSourcePreferences extends CayenneController {
 
 	protected void initBindings() {
 		BindingBuilder builder = new BindingBuilder(getApplication().getBindingFactory(), this);
-		builder.bindToAction(view.getAddDataSource(), "newDataSourceAction()");
-		builder.bindToAction(view.getDuplicateDataSource(), "duplicateDataSourceAction()");
-		builder.bindToAction(view.getRemoveDataSource(), "removeDataSourceAction()");
-		builder.bindToAction(view.getTestDataSource(), "testDataSourceAction()");
+		view.getAddDataSource().addActionListener(e -> newDataSourceAction());
+		view.getDuplicateDataSource().addActionListener(e -> duplicateDataSourceAction());
+		view.getRemoveDataSource().addActionListener(e -> removeDataSourceAction());
+		view.getTestDataSource().addActionListener(e -> testDataSourceAction());
 
 		builder.bindToComboSelection(view.getDataSources(), "dataSourceKey");
 	}

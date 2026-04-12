@@ -96,9 +96,9 @@ public class DataSourceWizard extends CayenneController {
 
 		dataSourceBinding = builder.bindToComboSelection(view.getDataSources(), "dataSourceKey");
 
-		builder.bindToAction(view.getCancelButton(), "cancelAction()");
-		builder.bindToAction(view.getOkButton(), "okAction()");
-		builder.bindToAction(view.getConfigButton(), "dataSourceConfigAction()");
+		view.getCancelButton().addActionListener(e -> cancelAction());
+		view.getOkButton().addActionListener(e -> okAction());
+		view.getConfigButton().addActionListener(e -> dataSourceConfigAction());
 	}
 
 	private void initDataSourceListener() {

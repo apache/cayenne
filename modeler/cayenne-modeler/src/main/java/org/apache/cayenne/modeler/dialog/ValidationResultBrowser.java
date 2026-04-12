@@ -21,7 +21,6 @@
 package org.apache.cayenne.modeler.dialog;
 
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
@@ -44,10 +43,7 @@ public class ValidationResultBrowser extends CayenneController {
     }
 
     protected void initController() {
-        BindingBuilder builder = new BindingBuilder(
-                getApplication().getBindingFactory(),
-                this);
-        builder.bindToAction(view.getCloseButton(), "closeDialogAction()");
+        view.getCloseButton().addActionListener(e -> closeDialogAction());
     }
 
     public Component getView() {

@@ -46,7 +46,6 @@ import org.apache.cayenne.modeler.editor.DbImportController;
 import org.apache.cayenne.modeler.event.ProjectSavedEvent;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.tools.ToolsInjectorBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -148,11 +147,10 @@ public class CgenController extends CayenneController implements ObjEntityListen
     }
 
     protected void initBindings() {
-        BindingBuilder builder = new BindingBuilder(getApplication().getBindingFactory(), this);
-        builder.bindToAction(view.getGenerateButton(), "generateAction()");
-        builder.bindToAction(view.getAddConfigBtn(), "addConfigAction()");
-        builder.bindToAction(view.getEditConfigBtn(), "editConfigAction()");
-        builder.bindToAction(view.getRemoveConfigBtn(), "removeConfigAction()");
+        view.getGenerateButton().addActionListener(e -> generateAction());
+        view.getAddConfigBtn().addActionListener(e -> addConfigAction());
+        view.getEditConfigBtn().addActionListener(e -> editConfigAction());
+        view.getRemoveConfigBtn().addActionListener(e -> removeConfigAction());
         generatorSelectedAction();
     }
 
@@ -162,7 +160,6 @@ public class CgenController extends CayenneController implements ObjEntityListen
         classesSelector.classSelectedAction();
     }
 
-    @SuppressWarnings("unused")
     public void generateAction() {
         ClassGenerationAction generator = new ToolsInjectorBuilder()
                 .addModule(binder
@@ -191,7 +188,6 @@ public class CgenController extends CayenneController implements ObjEntityListen
         }
     }
 
-    @SuppressWarnings("unused")
     public void addConfigAction() {
         String name = JOptionPane.showInputDialog(
                 view,
@@ -213,7 +209,6 @@ public class CgenController extends CayenneController implements ObjEntityListen
         }
     }
 
-    @SuppressWarnings("unused")
     public void editConfigAction() {
         String name = JOptionPane.showInputDialog(
                 view,
@@ -234,7 +229,6 @@ public class CgenController extends CayenneController implements ObjEntityListen
         }
     }
 
-    @SuppressWarnings("unused")
     public void removeConfigAction() {
         int result = JOptionPane.showConfirmDialog(
                 view,

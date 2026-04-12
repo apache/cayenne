@@ -25,7 +25,6 @@ import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.editor.cgen.CgenConfigController;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.velocity.exception.ParseErrorException;
 
 import javax.swing.JOptionPane;
@@ -111,12 +110,11 @@ public class TemplateEditorController extends CayenneController {
     }
 
     protected void initBindings() {
-        BindingBuilder builder = new BindingBuilder(getApplication().getBindingFactory(), this);
-        builder.bindToAction(editorView.getSaveButton(), "saveAction()");
-        builder.bindToAction(editorView.getPreviewButton(), "generatePreviewAction()");
-        builder.bindToAction(editorView.getFindButton(), "findAction()");
-        builder.bindToAction(editorView.getFindAndReplaceButton(), "findAndReplaceAction()");
-        builder.bindToAction(editorView.getResetToDefaultButton(), "resetToDefaultAction()");
+        editorView.getSaveButton().addActionListener(e -> saveAction());
+        editorView.getPreviewButton().addActionListener(e -> generatePreviewAction());
+        editorView.getFindButton().addActionListener(e -> findAction());
+        editorView.getFindAndReplaceButton().addActionListener(e -> findAndReplaceAction());
+        editorView.getResetToDefaultButton().addActionListener(e -> resetToDefaultAction());
     }
 
     protected void addListeners() {
@@ -158,7 +156,6 @@ public class TemplateEditorController extends CayenneController {
 
     }
 
-    @SuppressWarnings("unused")
     public void saveAction() {
         templateSaver.save(templateType, isTemplateDefault, editorView.getTemplateText());
         parentController.getCodeGeneratorController().checkCgenConfigDirty();
@@ -167,21 +164,24 @@ public class TemplateEditorController extends CayenneController {
         editorView.getSaveButton().setEnabled(false);
     }
 
-    @SuppressWarnings("unused")
-    public void generatePreviewAction() throws Exception {
-        ClassGenerationAction action = actionConfigurator.preparePreviewAction(editorView.getTemplateText());
-        Writer writer = actionConfigurator.getWriter();
-
-        int caretPosition = editorView.getEditingTemplatePane().getCaretPosition();
+    public void generatePreviewAction() {
         try {
-            action.execute();
-        } catch (ParseErrorException pe) {
-            caretPosition = getErrorCaretPosition(pe);
-            writer.write(pe.getMessage());
+            ClassGenerationAction action = actionConfigurator.preparePreviewAction(editorView.getTemplateText());
+            Writer writer = actionConfigurator.getWriter();
+
+            int caretPosition = editorView.getEditingTemplatePane().getCaretPosition();
+            try {
+                action.execute();
+            } catch (ParseErrorException pe) {
+                caretPosition = getErrorCaretPosition(pe);
+                writer.write(pe.getMessage());
+            } catch (Exception e) {
+                writer.write(e.getMessage());
+            }
+            displayPreview(writer, caretPosition);
         } catch (Exception e) {
-            writer.write(e.getMessage());
+            JOptionPane.showMessageDialog(editorView, e.getMessage(), "Preview Error", JOptionPane.ERROR_MESSAGE);
         }
-        displayPreview(writer, caretPosition);
     }
 
     private void displayPreview(Writer writer, int caretPosition) {
@@ -196,17 +196,14 @@ public class TemplateEditorController extends CayenneController {
         return editorView.getEditingTemplatePane().getLineStartOffset(errorLineNumber - 1);
     }
 
-    @SuppressWarnings("unused")
     public void findAction() {
         new FindController(this).startupAction();
     }
 
-    @SuppressWarnings("unused")
     public void findAndReplaceAction() {
         new FindAndReplaceController(this).startupAction();
     }
 
-    @SuppressWarnings("unused")
     public void resetToDefaultAction() {
         int result = showResetToDefaultDialog();
         if (result == JOptionPane.OK_OPTION) {

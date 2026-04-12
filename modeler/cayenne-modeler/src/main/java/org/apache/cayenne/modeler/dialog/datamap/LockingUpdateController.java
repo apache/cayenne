@@ -30,7 +30,6 @@ import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.swing.BindingBuilder;
 
 public class LockingUpdateController extends CayenneController {
 
@@ -63,12 +62,8 @@ public class LockingUpdateController extends CayenneController {
     }
 
     protected void initBindings() {
-        BindingBuilder builder = new BindingBuilder(
-                getApplication().getBindingFactory(),
-                this);
-
-        builder.bindToAction(view.getCancelButton(), "cancelAction()");
-        builder.bindToAction(view.getUpdateButton(), "updateAction()");
+        view.getCancelButton().addActionListener(e -> cancelAction());
+        view.getUpdateButton().addActionListener(e -> updateAction());
     }
 
     public void cancelAction() {

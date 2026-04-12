@@ -203,7 +203,7 @@ public class MainDataNodeEditor extends CayenneController {
 		bindings[3] = builder.bindToTextField(view.getCustomAdapter(), "adapterName");
 
 		// one way bindings
-		builder.bindToAction(view.getConfigLocalDataSources(), "dataSourceConfigAction()");
+		view.getConfigLocalDataSources().addActionListener(e -> dataSourceConfigAction());
 	}
 
 	public void dataSourceConfigAction() {

@@ -52,7 +52,7 @@ public class InferRelationshipsTabController extends CayenneController {
         BindingBuilder builder = new BindingBuilder(
                 getApplication().getBindingFactory(),
                 this);
-        builder.bindToAction(view.getCheckAll(), "checkAllAction()");
+        view.getCheckAll().addActionListener(e -> checkAllAction());
 
         TableBindingBuilder tableBuilder = new TableBindingBuilder(builder);
 

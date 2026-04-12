@@ -42,7 +42,7 @@ import java.util.Map;
 
 /**
  */
-@SuppressWarnings("unused") // methods are used in bindings by name
+@SuppressWarnings("unused") // setTable(), included, problem are referenced by name in TableBindingBuilder column expressions
 public class TableSelectorController extends CayenneController {
 
     protected TableSelectorView view;
@@ -136,7 +136,7 @@ public class TableSelectorController extends CayenneController {
                 getApplication().getBindingFactory(),
                 this);
 
-        builder.bindToAction(view.getCheckAll(), "checkAllAction()");
+        view.getCheckAll().addActionListener(e -> checkAllAction());
 
         TableBindingBuilder tableBuilder = new TableBindingBuilder(builder);
 

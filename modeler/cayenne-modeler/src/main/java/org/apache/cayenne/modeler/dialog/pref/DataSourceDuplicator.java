@@ -26,7 +26,6 @@ import javax.swing.JOptionPane;
 
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.swing.BindingBuilder;
 
 /**
  */
@@ -62,11 +61,8 @@ public class DataSourceDuplicator extends CayenneController {
     }
 
     protected void initBindings() {
-        BindingBuilder builder = new BindingBuilder(
-                getApplication().getBindingFactory(),
-                this);
-        builder.bindToAction(view.getCancelButton(), "cancelAction()");
-        builder.bindToAction(view.getOkButton(), "okAction()");
+        view.getCancelButton().addActionListener(e -> cancelAction());
+        view.getOkButton().addActionListener(e -> okAction());
     }
 
     public void okAction() {

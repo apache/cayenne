@@ -27,7 +27,6 @@ import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.TextAdapter;
-import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.JButton;
@@ -53,7 +52,7 @@ public class CgenConfigController extends CayenneController {
         this.view = new CgenConfigPanel(getParentController());
         isEditorOpen = false;
         initListeners();
-        initBindings(new BindingBuilder(getApplication().getBindingFactory(), this));
+        initBindings();
     }
 
 
@@ -110,9 +109,8 @@ public class CgenConfigController extends CayenneController {
                 new TemplateEditorController(this, TemplateType.DATAMAP_SUPERCLASS).startupAction());
     }
 
-    private void initBindings(BindingBuilder bindingBuilder) {
-        JButton outputSelect = getView().getSelectOutputFolder();
-        bindingBuilder.bindToAction(outputSelect, "selectOutputFolderAction()");
+    private void initBindings() {
+        getView().getSelectOutputFolder().addActionListener(e -> selectOutputFolderAction());
     }
 
     protected CgenController getParentController() {
@@ -234,7 +232,6 @@ public class CgenConfigController extends CayenneController {
      * An action method that pops up a file chooser dialog to pick the
      * generation directory.
      */
-    @SuppressWarnings("unused")
     public void selectOutputFolderAction() {
 
         TextAdapter outputFolder = getView().getOutputFolder();

@@ -39,7 +39,6 @@ import org.apache.cayenne.modeler.util.EntityTreeAttributeRelationshipFilter;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
-import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.util.CayenneMapEntry;
 
 import javax.swing.DefaultComboBoxModel;
@@ -179,10 +178,9 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 						attr,
 						ObjectInfo.COMMENT));
 
-		BindingBuilder builder = new BindingBuilder(getApplication().getBindingFactory(), this);
-		builder.bindToAction(view.getCancelButton(), "closeAction()");
-		builder.bindToAction(view.getSelectPathButton(), "setPath(true)");
-		builder.bindToAction(view.getSaveButton(), "saveMapping()");
+		view.getCancelButton().addActionListener(e -> closeAction());
+		view.getSelectPathButton().addActionListener(e -> setPath(true));
+		view.getSaveButton().addActionListener(e -> saveMapping());
 
 		/*
 		 * set filter for ObjAttributePathBrowser
