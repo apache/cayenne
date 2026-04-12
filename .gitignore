@@ -13,3 +13,4 @@ bin/
 .factorypath
 build
 .gradle
+.claude/
