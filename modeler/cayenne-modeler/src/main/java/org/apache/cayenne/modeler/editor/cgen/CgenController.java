@@ -26,8 +26,8 @@ import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.configuration.event.DataMapListener;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
-import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.CgenConfigList;
+import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
 import org.apache.cayenne.gen.internal.Utils;
@@ -40,7 +40,6 @@ import org.apache.cayenne.map.event.EmbeddableListener;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.ObjEntityListener;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
 import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
 import org.apache.cayenne.modeler.editor.DbImportController;
 import org.apache.cayenne.modeler.event.ProjectSavedEvent;
@@ -50,7 +49,7 @@ import org.apache.cayenne.tools.ToolsInjectorBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -67,13 +66,16 @@ import java.util.stream.Collectors;
  * @since 4.1
  */
 public class CgenController extends CayenneController implements ObjEntityListener, EmbeddableListener, DataMapListener {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ErrorDebugDialog.class);
-    protected final ProjectController projectController;
-    protected final Set<ConfigurationNode> classes;
-    protected final SelectionModel selectionModel;
-    protected final CgenPane view;
-    protected CgenArtefactSelectorController classesSelector;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CgenController.class);
+
+    private final ProjectController projectController;
+    private final Set<ConfigurationNode> classes;
+    private final SelectionModel selectionModel;
+    private final CgenPane view;
+    private final CgenArtefactSelectorController classesSelector;
     private final CgenConfigController cgenConfigController;
+
     private CgenConfigList cgenConfigList;
     private Object currentClass;
     private CgenConfiguration cgenConfiguration;
@@ -173,17 +175,17 @@ public class CgenController extends CayenneController implements ObjEntityListen
             generator.prepareArtifacts();
             generator.execute();
             JOptionPane.showMessageDialog(
-                    this.getView(),
+                    view,
                     "Class generation finished");
         } catch (CayenneRuntimeException e) {
             LOGGER.error("Error generating classes", e);
             JOptionPane.showMessageDialog(
-                    this.getView(),
+                    view,
                     "Error generating classes - " + e.getUnlabeledMessage());
         } catch (Exception e) {
             LOGGER.error("Error generating classes", e);
             JOptionPane.showMessageDialog(
-                    this.getView(),
+                    view,
                     "Error generating classes - " + e.getMessage());
         }
     }
@@ -203,7 +205,7 @@ public class CgenController extends CayenneController implements ObjEntityListen
                 view.getConfigurationsComboBox().setSelectedItem(name);
             } else {
                 JOptionPane.showMessageDialog(
-                        this.getView(),
+                        view,
                         "Can't create new configuration, same name is already exist or empty");
             }
         }
@@ -223,7 +225,7 @@ public class CgenController extends CayenneController implements ObjEntityListen
                 view.getConfigurationsComboBox().setSelectedItem(name);
             } else {
                 JOptionPane.showMessageDialog(
-                        this.getView(),
+                        view,
                         "Can't rename configuration, name is already exist or empty");
             }
         }
@@ -244,7 +246,7 @@ public class CgenController extends CayenneController implements ObjEntityListen
                 view.getConfigurationsComboBox().setSelectedIndex(0);
             } else {
                 JOptionPane.showMessageDialog(
-                        this.getView(),
+                        view,
                         "At least one configuration must exist");
             }
         }
@@ -552,7 +554,7 @@ public class CgenController extends CayenneController implements ObjEntityListen
         }
     });
 
-    private static final ConfigurationNodeVisitor<Integer> TYPE_GETTER = new BaseConfigurationNodeVisitor<Integer>() {
+    private static final ConfigurationNodeVisitor<Integer> TYPE_GETTER = new BaseConfigurationNodeVisitor<>() {
         @Override
         public Integer visitDataMap(DataMap dataMap) {
             return 10;
@@ -569,7 +571,7 @@ public class CgenController extends CayenneController implements ObjEntityListen
         }
     };
 
-    private static final ConfigurationNodeVisitor<String> NAME_GETTER = new BaseConfigurationNodeVisitor<String>() {
+    private static final ConfigurationNodeVisitor<String> NAME_GETTER = new BaseConfigurationNodeVisitor<>() {
         @Override
         public String visitDataMap(DataMap dataMap) {
             return dataMap.getName();

@@ -269,10 +269,17 @@ public class DataSourceWizard extends CayenneController {
     }
 
     protected void showNoConnectorDialog(String message) {
-        final String[] options = {"Setup driver", "Cancel"};
+        String[] options = {"Setup driver", "Cancel"};
 
-        final int selection = JOptionPane.showOptionDialog(getView(), message, "Configuration error",
-                JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE, null, options, options[0]);
+        int selection = JOptionPane.showOptionDialog(view,
+                message,
+                "Configuration error",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.ERROR_MESSAGE,
+                null,
+                options,
+                options[0]);
+
         if (selection == 0) {
             classPathConfigAction();
         }

@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * Action for saving graph as image
  */
 public class SaveAsImageAction extends CayenneAction {
-	private static final Logger logObj = LoggerFactory.getLogger(SaveAsImageAction.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SaveAsImageAction.class);
 
 	private final DataDomainGraphTab dataDomainGraphTab;
 
@@ -103,7 +103,7 @@ public class SaveAsImageAction extends CayenneAction {
 				}
 
 			} catch (IOException ex) {
-				logObj.error("Could not save image", ex);
+				LOGGER.error("Could not save image", ex);
 				JOptionPane.showMessageDialog(Application.getFrame(), "Could not save image.", "Error saving image",
 						JOptionPane.ERROR_MESSAGE);
 			}

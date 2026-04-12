@@ -37,7 +37,7 @@ import java.util.Vector;
  */
 public class EncodingSelector extends CayenneController {
 
-    public static final String ENCODING_PROPERTY_BINDING = "encoding";
+    public static final String ENCODING_PROPERTY = "encoding";
 
     private final EncodingSelectorView view;
     private final String systemEncoding;
@@ -98,24 +98,15 @@ public class EncodingSelector extends CayenneController {
         return charsets;
     }
 
-    @Override
-    public void bindingUpdated(String expression, Object newValue) {
-        if (ENCODING_PROPERTY_BINDING.equals(expression)) {
-            this.encoding = (newValue != null) ? newValue.toString() : null;
-            this.defaultEncoding = encoding == null || encoding.equals(systemEncoding);
+    public void setSelectedEncoding(String encoding) {
+        this.encoding = encoding;
+        this.defaultEncoding = encoding == null || encoding.equals(systemEncoding);
 
-            view.getEncodingChoices().setSelectedItem(encoding);
-            view.getDefaultEncoding().setSelected(defaultEncoding);
-            view.getOtherEncoding().setSelected(!defaultEncoding);
-            if (defaultEncoding) {
-                view.getEncodingChoices().setEnabled(false);
-                view.getDefaultEncodingLabel().setEnabled(true);
-            }
-            else {
-                view.getEncodingChoices().setEnabled(true);
-                view.getDefaultEncodingLabel().setEnabled(false);
-            }
-        }
+        view.getEncodingChoices().setSelectedItem(encoding);
+        view.getDefaultEncoding().setSelected(defaultEncoding);
+        view.getOtherEncoding().setSelected(!defaultEncoding);
+        view.getEncodingChoices().setEnabled(!defaultEncoding);
+        view.getDefaultEncodingLabel().setEnabled(defaultEncoding);
     }
 
     private void setEncoding(String encoding) {

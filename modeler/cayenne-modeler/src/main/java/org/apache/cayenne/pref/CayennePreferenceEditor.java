@@ -45,7 +45,7 @@ public abstract class CayennePreferenceEditor implements PreferenceEditor {
     private List<Preferences> removedNode;
     private List<Preferences> addedNode;
 
-    private static Logger logger = LoggerFactory.getLogger(CayennePreferenceEditor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CayennePreferenceEditor.class);
 
     public CayennePreferenceEditor(CayenneProjectPreferences cayenneProjectPreferences) {
         this.cayenneProjectPreferences = cayenneProjectPreferences;
@@ -120,7 +120,7 @@ public abstract class CayennePreferenceEditor implements PreferenceEditor {
             try {
                 pref.removeNode();
             } catch (BackingStoreException e) {
-                logger.warn("Error removing preferences");
+                LOGGER.warn("Error removing preferences");
             }
         }
 

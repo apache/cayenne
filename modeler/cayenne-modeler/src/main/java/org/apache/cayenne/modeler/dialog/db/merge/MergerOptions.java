@@ -111,12 +111,9 @@ public class MergerOptions extends CayenneController {
         refreshView();
     }
 
+    @Override
     public Component getView() {
         return view;
-    }
-
-    public String getTextForSQL() {
-        return textForSQL;
     }
 
     protected void initController() {
@@ -247,7 +244,7 @@ public class MergerOptions extends CayenneController {
         // sanity check...
         List<MergerToken> tokensToMigrate = tokens.getSelectedTokens();
         if (tokensToMigrate.isEmpty()) {
-            JOptionPane.showMessageDialog(getView(), "Nothing to migrate.");
+            JOptionPane.showMessageDialog(view, "Nothing to migrate.");
             return;
         }
 
@@ -324,7 +321,7 @@ public class MergerOptions extends CayenneController {
     private void reportFailures(MergerContext mergerContext) {
         ValidationResult failures = mergerContext.getValidationResult();
         if (failures == null || !failures.hasFailures()) {
-            JOptionPane.showMessageDialog(getView(), "Migration Complete.");
+            JOptionPane.showMessageDialog(view, "Migration Complete.");
         } else {
             new ValidationResultBrowser(this).startupAction(
                     "Migration Complete",
@@ -365,7 +362,7 @@ public class MergerOptions extends CayenneController {
             fc.setCurrentDirectory(new File(projectDir.getURL().getPath()));
         }
 
-        if (fc.showSaveDialog(getView()) == JFileChooser.APPROVE_OPTION) {
+        if (fc.showSaveDialog(view) == JFileChooser.APPROVE_OPTION) {
             refreshGeneratorAction();
 
             try {

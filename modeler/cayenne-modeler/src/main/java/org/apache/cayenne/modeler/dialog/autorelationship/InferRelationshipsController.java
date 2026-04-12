@@ -18,22 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.autorelationship;
 
-import java.awt.Component;
-
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JOptionPane;
-
+import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
-import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
 import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.InferRelationshipsUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneController;
@@ -41,12 +35,15 @@ import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
+import java.awt.*;
+
 public class InferRelationshipsController extends InferRelationshipsControllerBase {
 
     public static final int SELECT = 1;
     public static final int CANCEL = 0;
 
-    private static Logger logObj = LoggerFactory.getLogger(ErrorDebugDialog.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(InferRelationshipsController.class);
 
     protected InferRelationshipsDialog view;
 
@@ -72,7 +69,7 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
             return classLoader.loadClass(ObjectNameGenerator.class, strategyClass).getDeclaredConstructor().newInstance();
         }
         catch (Throwable th) {
-            logObj.error("Error in " + getClass().getName(), th);
+            LOGGER.error("Error in " + getClass().getName(), th);
 
             JOptionPane.showMessageDialog(
                     view,
@@ -145,7 +142,7 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
                     new DefaultComboBoxModel<>(NameGeneratorPreferences.getInstance().getLastUsedStrategies()));
         }
         catch (Throwable th) {
-            logObj.error("Error in " + getClass().getName(), th);
+            LOGGER.error("Error in " + getClass().getName(), th);
             return;
         }
 
@@ -188,8 +185,7 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
             
             undoableEdit.addEdit(new CreateRelationshipUndoableEdit(temp.getSource(), new DbRelationship[] { rel }));
         }
-        JOptionPane.showMessageDialog(this.getView(), getSelectedEntitiesSize()
-                + " relationships generated");
+        JOptionPane.showMessageDialog(view, getSelectedEntitiesSize() + " relationships generated");
         view.dispose();
     }
 

@@ -36,7 +36,7 @@ import java.nio.charset.StandardCharsets;
  */
 public class EditorTemplateLoader {
 
-    private static final Logger logger = LoggerFactory.getLogger(EditorTemplateLoader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EditorTemplateLoader.class);
     private final CgenConfiguration cgenConfiguration;
     private final JFrame view;
 
@@ -65,7 +65,7 @@ public class EditorTemplateLoader {
                     "File reading error \n" + templateType.pathFromSourceRoot(),
                     "Error",
                     JOptionPane.WARNING_MESSAGE);
-            logger.warn("File reading error {}", templateType.pathFromSourceRoot());
+            LOGGER.warn("File reading error {}", templateType.pathFromSourceRoot());
         }
         return null;
     }

@@ -69,7 +69,7 @@ public class JCayenneTextPane extends JPanel {
         this.tooltipTextError = tooltipTextError;
     }
 
-    private static Logger logObj = LoggerFactory.getLogger(Main.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JCayenneTextPane.class);
 
     public void setText(String text) {
         pane.setText(text);
@@ -110,7 +110,7 @@ public class JCayenneTextPane extends JPanel {
             Rectangle2D caretCoords = pane.modelToView2D(pos);
             y = (int) caretCoords.getY();
         } catch (BadLocationException ex) {
-            logObj.warn("Error: ", ex);
+            LOGGER.warn("Error: ", ex);
         }
 
         int lineHeight = pane.getFontMetrics(pane.getFont()).getHeight();
@@ -177,7 +177,7 @@ public class JCayenneTextPane extends JPanel {
                         pane.repaint();
                     }
                 } catch (Exception e) {
-                    logObj.warn("Error: ", e);
+                    LOGGER.warn("Error: ", e);
                 }
             }
 
@@ -216,7 +216,7 @@ public class JCayenneTextPane extends JPanel {
                 setToolTipPosition(line, message);
                 repaintPane();
             } catch (BadLocationException e) {
-                logObj.warn("Error: ", e);
+                LOGGER.warn("Error: ", e);
             }
         } else {
             setToolTipPosition(0, "");
@@ -307,7 +307,7 @@ public class JCayenneTextPane extends JPanel {
                         - fontDesc;
             }
         } catch (Exception e1) {
-            logObj.warn("Error: ", e1);
+            LOGGER.warn("Error: ", e1);
         }
 
         for (int line = startline, y = starting_y; line <= endline; y += fontHeight, line++) {
@@ -339,7 +339,7 @@ public class JCayenneTextPane extends JPanel {
                 document.insertString(0, text, null);
             }
         } catch (BadLocationException ex) {
-            logObj.warn("Error reading document", ex);
+            LOGGER.warn("Error reading document", ex);
         }
     }
 
@@ -348,7 +348,7 @@ public class JCayenneTextPane extends JPanel {
         try {
             return document.getText(0, document.getLength());
         } catch (BadLocationException ex) {
-            logObj.warn("Error reading document", ex);
+            LOGGER.warn("Error reading document", ex);
             return null;
         }
     }

@@ -122,11 +122,11 @@ public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> 
     }
 
     private String getComment(DbRelationship rel) {
-        return ObjectInfo.getFromMetaData(mediator.getApplication().getMetaData(), rel, ObjectInfo.COMMENT);
+        return ObjectInfo.getFromMetaData(controller.getApplication().getMetaData(), rel, ObjectInfo.COMMENT);
     }
 
     private void setComment(String newVal, DbRelationship rel) {
-        ObjectInfo.putToMetaData(mediator.getApplication().getMetaData(), rel, ObjectInfo.COMMENT, newVal);
+        ObjectInfo.putToMetaData(controller.getApplication().getMetaData(), rel, ObjectInfo.COMMENT, newVal);
     }
 
     public void setUpdatedValueAt(Object aValue, int row, int column) {
@@ -136,7 +136,7 @@ public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> 
         if (column == NAME) {
             RelationshipEvent e = new RelationshipEvent(eventSource, rel, entity, rel.getName());
             rel.setName((String) aValue);
-            mediator.fireDbRelationshipEvent(e);
+            controller.fireDbRelationshipEvent(e);
             fireTableCellUpdated(row, column);
         } else if (column == TO_DEPENDENT_KEY) {
             boolean flag = (Boolean) aValue;
@@ -160,15 +160,15 @@ public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> 
             }
 
             rel.setToDependentPK(flag);
-            mediator.fireDbRelationshipEvent(new RelationshipEvent(eventSource, rel, entity));
+            controller.fireDbRelationshipEvent(new RelationshipEvent(eventSource, rel, entity));
         } else if (column == CARDINALITY) {
             rel.setToMany((Boolean) aValue);
-            mediator.fireDbRelationshipEvent(new RelationshipEvent(eventSource, rel, entity));
+            controller.fireDbRelationshipEvent(new RelationshipEvent(eventSource, rel, entity));
 
             updateDependentObjRelationships(rel);
         } else if(column == COMMENTS) {
             setComment((String) aValue, rel);
-            mediator.fireDbRelationshipEvent(new RelationshipEvent(eventSource, rel, entity));
+            controller.fireDbRelationshipEvent(new RelationshipEvent(eventSource, rel, entity));
         }
         fireTableRowsUpdated(row, row);
     }
@@ -185,7 +185,7 @@ public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> 
     void updateDependentObjRelationships(DbRelationship relationship) {
 
         Collection<ObjRelationship> objRelationshipsForDbRelationship = ProjectUtil
-                .findObjRelationshipsForDbRelationship(mediator, relationship);
+                .findObjRelationshipsForDbRelationship(controller, relationship);
         for(ObjRelationship objRelationship : objRelationshipsForDbRelationship) {
             objRelationship.recalculateToManyValue();
         }

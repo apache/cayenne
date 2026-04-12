@@ -19,15 +19,6 @@
 
 package org.apache.cayenne.modeler.editor.datanode;
 
-import java.awt.Component;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.swing.DefaultComboBoxModel;
-
 import org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.ThrowOnPartialOrCreateSchemaStrategy;
@@ -44,6 +35,14 @@ import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextBinder;
 import org.apache.cayenne.validation.ValidationException;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A controller for the main tab of the DataNode editor panel.
@@ -91,8 +90,7 @@ public class MainDataNodeEditor extends CayenneController {
 		initController();
 	}
 
-	// ======= properties
-
+	@Override
 	public Component getView() {
 		return view;
 	}
@@ -170,7 +168,7 @@ public class MainDataNodeEditor extends CayenneController {
 		// init listeners
 		((ProjectController) getParent()).addDataNodeDisplayListener(e -> refreshView(e.getDataNode()));
 
-		getView().addComponentListener(new ComponentAdapter() {
+		view.addComponentListener(new ComponentAdapter() {
 
 			public void componentShown(ComponentEvent e) {
 				refreshView(node != null ? node : ((ProjectController) getParent()).getCurrentDataNode());
@@ -257,7 +255,7 @@ public class MainDataNodeEditor extends CayenneController {
 		this.node = node;
 
 		if (node == null) {
-			getView().setVisible(false);
+			view.setVisible(false);
 			return;
 		}
 

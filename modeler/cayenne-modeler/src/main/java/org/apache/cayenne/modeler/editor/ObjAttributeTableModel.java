@@ -288,7 +288,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
         }
 
         ObjAttribute attributeNew;
-        if (mediator.getEmbeddableNamesInCurrentDataDomain().contains(newType)) {
+        if (controller.getEmbeddableNamesInCurrentDataDomain().contains(newType)) {
             attributeNew = new EmbeddedAttribute();
             attributeNew.setDbAttributePath((String)null);
         } else {
@@ -306,26 +306,26 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
 
         entity.updateAttribute(attributeNew);
 
-        mediator.fireObjEntityEvent(new EntityEvent(this, entity, MapEvent.CHANGE));
+        controller.fireObjEntityEvent(new EntityEvent(this, entity, MapEvent.CHANGE));
 
-        mediator.fireObjEntityDisplayEvent(new EntityDisplayEvent(
+        controller.fireObjEntityDisplayEvent(new EntityDisplayEvent(
                 this,
-                mediator.getCurrentObjEntity(),
-                mediator.getCurrentDataMap(),
-                (DataChannelDescriptor) mediator.getProject().getRootNode()));
+                controller.getCurrentObjEntity(),
+                controller.getCurrentDataMap(),
+                (DataChannelDescriptor) controller.getProject().getRootNode()));
 
-        mediator.fireObjAttributeEvent(new AttributeEvent(
+        controller.fireObjAttributeEvent(new AttributeEvent(
                 this,
                 attributeNew,
                 entity,
                 MapEvent.CHANGE));
 
-        mediator.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(
+        controller.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(
                 this,
                 attributeNew,
-                mediator.getCurrentObjEntity(),
-                mediator.getCurrentDataMap(),
-                (DataChannelDescriptor) mediator.getProject().getRootNode()));
+                controller.getCurrentObjEntity(),
+                controller.getCurrentDataMap(),
+                (DataChannelDescriptor) controller.getProject().getRootNode()));
     }
 
     private void setColumnLocking(ObjAttributeWrapper attribute, Object value) {
@@ -387,7 +387,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
                 fireTableRowsUpdated(row, row);
                 break;
         }
-        mediator.fireObjAttributeEvent(event);
+        controller.fireObjAttributeEvent(event);
     }
 
     public boolean isCellEditable(int row, int col) {
@@ -491,11 +491,11 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
     }
 
     private String getComment(ObjAttribute attr) {
-        return ObjectInfo.getFromMetaData(mediator.getApplication().getMetaData(), attr, ObjectInfo.COMMENT);
+        return ObjectInfo.getFromMetaData(controller.getApplication().getMetaData(), attr, ObjectInfo.COMMENT);
     }
 
     private void setComment(String newVal, ObjAttribute attr) {
-        ObjectInfo.putToMetaData(mediator.getApplication().getMetaData(), attr, ObjectInfo.COMMENT, newVal);
+        ObjectInfo.putToMetaData(controller.getApplication().getMetaData(), attr, ObjectInfo.COMMENT, newVal);
     }
 
     @Override

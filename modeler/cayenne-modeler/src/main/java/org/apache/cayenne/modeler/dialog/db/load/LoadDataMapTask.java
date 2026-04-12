@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 final public class LoadDataMapTask extends LongRunningTask {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(DbLoaderContext.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoadDataMapTask.class);
 
     private DbLoaderContext context;
 

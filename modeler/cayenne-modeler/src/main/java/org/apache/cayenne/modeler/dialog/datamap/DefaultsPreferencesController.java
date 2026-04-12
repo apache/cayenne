@@ -25,13 +25,13 @@ import org.apache.cayenne.modeler.util.CayenneController;
 
 /**
  * An abstract controller for the DataMap defaults updates.
- * 
+ *
  */
 public abstract class DefaultsPreferencesController extends CayenneController {
-    
+
     protected DataMap dataMap;
     protected ProjectController mediator;
-    
+
     protected boolean allEntities;
 
     public DefaultsPreferencesController(ProjectController mediator, DataMap dataMap) {
@@ -42,10 +42,6 @@ public abstract class DefaultsPreferencesController extends CayenneController {
     }
 
     public boolean isAllEntities() {
-        return ((DefaultsPreferencesView)getView()).getUpdateAll().isSelected();
-    }
-
-    public boolean isUninitializedEntities() {
-        return !isAllEntities();
+        return ((DefaultsPreferencesView) getView()).getUpdateAll().isSelected();
     }
 }

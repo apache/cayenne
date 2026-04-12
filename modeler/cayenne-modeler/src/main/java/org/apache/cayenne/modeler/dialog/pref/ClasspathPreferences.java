@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 
 public class ClasspathPreferences extends CayenneController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ClasspathPreferences.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClasspathPreferences.class);
 
     private final ClasspathPreferencesView view;
     private final List<String> classPathEntries;
@@ -80,7 +80,7 @@ public class ClasspathPreferences extends CayenneController {
         try {
             cpKeys = preferences.keys();
         } catch (BackingStoreException e) {
-            logger.info("Error loading preferences", e);
+            LOGGER.info("Error loading preferences", e);
             return 0;
         }
 

@@ -48,7 +48,7 @@ import java.util.Map;
 
 public class OpenProjectAction extends ProjectAction {
 
-    private static Logger logObj = LoggerFactory.getLogger(OpenProjectAction.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OpenProjectAction.class);
 
     private static final Map<String, String> PROJECT_TO_MODELER_VERSION;
     static {
@@ -106,7 +106,7 @@ public class OpenProjectAction extends ProjectAction {
                 // Get the project file name (always cayenne.xml)
                 f = fileChooser.openProjectFile(Application.getFrame());
             } catch (Exception ex) {
-                logObj.warn("Error loading project file.", ex);
+                LOGGER.warn("Error loading project file.", ex);
             }
         }
 
@@ -174,7 +174,7 @@ public class OpenProjectAction extends ProjectAction {
 
             openProjectResourse(rootSource, controller);
         } catch (Exception ex) {
-            logObj.warn("Error loading project file.", ex);
+            LOGGER.warn("Error loading project file.", ex);
             ErrorDebugDialog.guiWarning(ex, "Error loading project");
         }
     }

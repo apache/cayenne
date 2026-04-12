@@ -18,19 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.objentity;
 
-import javax.swing.JOptionPane;
-import javax.swing.WindowConstants;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.TreePath;
-import java.awt.Component;
-import java.awt.event.ItemEvent;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
@@ -59,6 +46,18 @@ import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.Util;
+
+import javax.swing.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreePath;
+import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public class ObjRelationshipInfo extends CayenneController implements TreeSelectionListener {
 
@@ -273,7 +272,8 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
 
     protected void saveMapping() {
         if (!getDbRelationships().equals(getSavedDbRelationships())) {
-            if (getSavedDbRelationships().isEmpty() || JOptionPane.showConfirmDialog(getView(),
+            if (getSavedDbRelationships().isEmpty() || JOptionPane.showConfirmDialog(
+                    view,
                     "You have changed Db Relationship path. Do you want it to be saved?", "Save ObjRelationship",
                     JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 this.savedDbRelationships = new ArrayList<>(dbRelationships);
@@ -671,7 +671,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
         }
 
         if (getStartEntity() == null) {
-            JOptionPane.showMessageDialog(getView(), "Can't map relationship without source DbEntity. Set source DbEntity.");
+            JOptionPane.showMessageDialog(view, "Can't map relationship without source DbEntity. Set source DbEntity.");
             throw new CayenneRuntimeException("Can't map relationship without source DbEntity.");
         }
     }

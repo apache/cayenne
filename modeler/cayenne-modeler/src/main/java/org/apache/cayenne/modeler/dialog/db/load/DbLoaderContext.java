@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DbLoaderContext {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(DbLoaderContext.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DbLoaderContext.class);
 
     private DbImportConfiguration config;
     private Connection connection;

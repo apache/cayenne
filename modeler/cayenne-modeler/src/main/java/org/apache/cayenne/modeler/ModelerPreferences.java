@@ -44,7 +44,7 @@ public class ModelerPreferences implements PreferenceChangeListener {
 
     private static Preferences cayennePrefs;
 
-    private static final Logger logObj = LoggerFactory.getLogger(ModelerPreferences.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelerPreferences.class);
 
     /** Name of the log file. */
     public static final String LOGFILE_NAME = "modeler.log";
@@ -87,7 +87,7 @@ public class ModelerPreferences implements PreferenceChangeListener {
         try {
             keys = filesPrefs.keys();
         } catch (BackingStoreException e) {
-            logObj.warn("Error reading preferences file.", e);
+            LOGGER.warn("Error reading preferences file.", e);
             return new ArrayList<>();
         }
 

@@ -142,6 +142,7 @@ public class CgenConfigController extends CayenneController {
         }
     }
 
+    @Override
     public CgenConfigPanel getView() {
         return view;
     }
@@ -150,13 +151,13 @@ public class CgenConfigController extends CayenneController {
         this.cgenConfiguration = cgenConfiguration;
 
         if (cgenConfiguration.getRootPath() != null) {
-            getView().getOutputFolder().setText(cgenConfiguration.buildOutputPath().toString());
+            view.getOutputFolder().setText(cgenConfiguration.buildOutputPath().toString());
         }
         if(cgenConfiguration.getArtifactsGenerationMode().equalsIgnoreCase("all")) {
             getParentController().setCurrentClass(cgenConfiguration.getDataMap());
             getParentController().setSelected(true);
         }
-        getView().getOutputFolder().updateModel();
+        view.getOutputFolder().updateModel();
         view.getOutputPattern().setText(cgenConfiguration.getOutputPattern());
         view.getPairs().setSelected(cgenConfiguration.isMakePairs());
         view.getUsePackagePath().setSelected(cgenConfiguration.isUsePkgPath());
@@ -169,7 +170,6 @@ public class CgenConfigController extends CayenneController {
 
     /**
      * Adds or removes mark "edited" to template labels.
-     * @param configuration
      */
     public void updateTemplatesLabels(CgenConfiguration configuration) {
         updateTemplateLabel(view.getEntityTemplateLbl(), TemplateType.ENTITY_SUBCLASS, configuration.getTemplate().getData());
@@ -234,7 +234,7 @@ public class CgenConfigController extends CayenneController {
      */
     public void selectOutputFolderAction() {
 
-        TextAdapter outputFolder = getView().getOutputFolder();
+        TextAdapter outputFolder = view.getOutputFolder();
         String currentDir = outputFolder.getComponent().getText();
 
         JFileChooser chooser = new JFileChooser();
@@ -249,14 +249,14 @@ public class CgenConfigController extends CayenneController {
             lastDir.updateChooser(chooser);
         }
 
-        int result = chooser.showOpenDialog(getView());
+        int result = chooser.showOpenDialog(view);
         if (result == JFileChooser.APPROVE_OPTION) {
             File selected = chooser.getSelectedFile();
 
             // update model
             String path = selected.getAbsolutePath();
-            getView().getOutputFolder().setText(path);
-            getView().getOutputFolder().updateModel();
+            view.getOutputFolder().setText(path);
+            view.getOutputFolder().updateModel();
         }
     }
 

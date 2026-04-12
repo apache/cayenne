@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class ValidationDisplayHandler {
 
-    private static Logger logObj = LoggerFactory.getLogger(ValidationDisplayHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ValidationDisplayHandler.class);
 
     public static final int NO_ERROR = 0;
     public static final int WARNING = 1;
@@ -91,7 +91,7 @@ public abstract class ValidationDisplayHandler {
         }
         else {
             // do nothing ... this maybe a project node that is not displayed
-            logObj.info("unknown project node: " + validatedObj);
+            LOGGER.info("unknown project node: " + validatedObj);
             msg = new NullHanlder(result);
         }
 

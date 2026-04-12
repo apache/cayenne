@@ -19,19 +19,6 @@
 
 package org.apache.cayenne.modeler;
 
-import javax.swing.event.EventListenerList;
-import java.awt.Component;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.EventListener;
-import java.util.EventObject;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.prefs.Preferences;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -82,46 +69,7 @@ import org.apache.cayenne.modeler.action.SaveAction;
 import org.apache.cayenne.modeler.action.SaveAsAction;
 import org.apache.cayenne.modeler.editor.CallbackType;
 import org.apache.cayenne.modeler.editor.ObjCallbackMethod;
-import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.CallbackMethodEvent;
-import org.apache.cayenne.modeler.event.CallbackMethodListener;
-import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
-import org.apache.cayenne.modeler.event.DataMapDisplayListener;
-import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
-import org.apache.cayenne.modeler.event.DataNodeDisplayListener;
-import org.apache.cayenne.modeler.event.DataSourceModificationEvent;
-import org.apache.cayenne.modeler.event.DataSourceModificationListener;
-import org.apache.cayenne.modeler.event.DbAttributeDisplayListener;
-import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
-import org.apache.cayenne.modeler.event.DbRelationshipDisplayListener;
-import org.apache.cayenne.modeler.event.DisplayEvent;
-import org.apache.cayenne.modeler.event.DomainDisplayEvent;
-import org.apache.cayenne.modeler.event.DomainDisplayListener;
-import org.apache.cayenne.modeler.event.EmbeddableAttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.EmbeddableAttributeDisplayListener;
-import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
-import org.apache.cayenne.modeler.event.EmbeddableDisplayListener;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
-import org.apache.cayenne.modeler.event.EntityListenerEvent;
-import org.apache.cayenne.modeler.event.EntityListenerListener;
-import org.apache.cayenne.modeler.event.MultipleObjectsDisplayEvent;
-import org.apache.cayenne.modeler.event.MultipleObjectsDisplayListener;
-import org.apache.cayenne.modeler.event.ObjAttributeDisplayListener;
-import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
-import org.apache.cayenne.modeler.event.ObjRelationshipDisplayListener;
-import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
-import org.apache.cayenne.modeler.event.ProcedureDisplayListener;
-import org.apache.cayenne.modeler.event.ProcedureParameterDisplayEvent;
-import org.apache.cayenne.modeler.event.ProcedureParameterDisplayListener;
-import org.apache.cayenne.modeler.event.ProjectOnSaveEvent;
-import org.apache.cayenne.modeler.event.ProjectOnSaveListener;
-import org.apache.cayenne.modeler.event.ProjectSavedEvent;
-import org.apache.cayenne.modeler.event.ProjectSavedListener;
-import org.apache.cayenne.modeler.event.QueryDisplayEvent;
-import org.apache.cayenne.modeler.event.QueryDisplayListener;
-import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
-import org.apache.cayenne.modeler.event.ValidationConfigDisplayEvent;
-import org.apache.cayenne.modeler.event.ValidationConfigDisplayListener;
+import org.apache.cayenne.modeler.event.*;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.modeler.pref.ProjectStatePreferences;
@@ -132,17 +80,32 @@ import org.apache.cayenne.project.ConfigurationNodeParentGetter;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.util.IDUtil;
 
+import javax.swing.event.EventListenerList;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.EventListener;
+import java.util.EventObject;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.prefs.Preferences;
+
 /**
  * A controller that works with the project tree, tracking selection and
  * dispatching project events.
  */
 public class ProjectController extends CayenneController {
 
+    private final static int MAX_HISTORY_SIZE = 20;
+
     /*
      * A snapshot of the current state of the project controller. This was added
      * so that we could support history of recent objects.
      */
-    public static class ControllerState {
+    static class ControllerState {
 
         private boolean isRefiring;
         private DisplayEvent event;
@@ -163,28 +126,9 @@ public class ProjectController extends CayenneController {
         private Procedure procedure;
         private ProcedureParameter[] procedureParameters;
         private QueryDescriptor query;
-
-        /**
-         * Paths of multiple selection
-         */
         private ConfigurationNode[] paths;
-
-        /**
-         * Parent path of multiple selection
-         */
         private ConfigurationNode parentPath;
-
-        /**
-         * currently selecte entity listener class
-         */
-        private String listenerClass;
-        /**
-         * currently selected callback type
-         */
         private CallbackType callbackType;
-        /**
-         * currently selected callback methods
-         */
         private ObjCallbackMethod[] callbackMethods;
 
         public ControllerState() {
@@ -201,51 +145,46 @@ public class ProjectController extends CayenneController {
         }
 
         /*
-         * Used to determine if the val ControllerState is equivalent, which
-         * means if the event is refired again, will it end up in the same place
-         * on the screen. This get's a bit messy at the end, because of
-         * inheritance heirarchy issues.
+         * Used to determine if the val ControllerState is equivalent, which means if the event is refired again, will
+         * it end up in the same place on the screen. This gets a bit messy at the end, because of inheritance heirarchy
+         * issues.
          */
-        public boolean isEquivalent(ControllerState val) {
+        public boolean isNotSame(ControllerState val) {
 
             if (val == null)
-                return false;
+                return true;
 
             if (event instanceof EntityDisplayEvent && val.event instanceof EntityDisplayEvent) {
                 if (((EntityDisplayEvent) val.event).getEntity() instanceof ObjEntity) {
-                    return objEntity == val.objEntity;
+                    return objEntity != val.objEntity;
                 } else {
-                    return dbEntity == val.dbEntity;
+                    return dbEntity != val.dbEntity;
                 }
             } else if (event instanceof ProcedureDisplayEvent && val.event instanceof ProcedureDisplayEvent) {
-                return procedure == val.procedure;
+                return procedure != val.procedure;
             } else if (event instanceof QueryDisplayEvent && val.event instanceof QueryDisplayEvent) {
-                return query == val.query;
+                return query != val.query;
             } else if (event instanceof EmbeddableDisplayEvent && val.event instanceof EmbeddableDisplayEvent) {
-                return embeddable == val.embeddable;
+                return embeddable != val.embeddable;
             } else if (event.getClass() == DataMapDisplayEvent.class && event.getClass() == val.event.getClass()) {
-                return map == val.map;
+                return map != val.map;
             } else if (event.getClass() == DataNodeDisplayEvent.class && event.getClass() == val.event.getClass()) {
-                return node == val.node;
+                return node != val.node;
             } else if (event.getClass() == DomainDisplayEvent.class && event.getClass() == val.event.getClass()) {
-                return domain == val.domain;
+                return domain != val.domain;
             }
 
-            return false;
+            return true;
         }
     }
 
-    protected EventListenerList listenerList;
-    protected boolean dirty;
-    protected int entityTabSelection;
-
-    protected Project project;
-
-    protected Preferences projectControllerPreferences;
-
-    protected ControllerState currentState;
-    protected CircularArray<ControllerState> controllerStateHistory;
-    protected int maxHistorySize = 20;
+    private EventListenerList listenerList;
+    private boolean dirty;
+    private int entityTabSelection;
+    private Project project;
+    private Preferences projectControllerPreferences;
+    private ControllerState currentState;
+    private final CircularArray<ControllerState> controllerStateHistory;
 
     private EntityResolver entityResolver;
 
@@ -257,9 +196,10 @@ public class ProjectController extends CayenneController {
 
     public ProjectController(CayenneModelerController parent) {
         super(parent);
+
         this.listenerList = new EventListenerList();
-        controllerStateHistory = new CircularArray<>(maxHistorySize);
-        currentState = new ControllerState();
+        this.controllerStateHistory = new CircularArray<>(MAX_HISTORY_SIZE);
+        this.currentState = new ControllerState();
     }
 
     @Override
@@ -357,7 +297,7 @@ public class ProjectController extends CayenneController {
         }
 
         Preferences pref;
-        if (nameSuffix == null || nameSuffix.length() == 0) {
+        if (nameSuffix == null || nameSuffix.isEmpty()) {
             pref = getPreferenceForDataDomain().node("DataMap").node(map.getName());
         } else {
             pref = getPreferenceForDataDomain().node("DataMap").node(map.getName()).node(nameSuffix);
@@ -370,17 +310,6 @@ public class ProjectController extends CayenneController {
         Preferences pref;
         pref = getPreferenceForDataDomain().node("DataMap").node(dataMap.getName());
 
-        return (DataMapDefaults) application.getCayenneProjectPreferences().getProjectDetailObject(DataMapDefaults.class, pref);
-    }
-
-    public DataMapDefaults getDataMapPreferences(String nameSuffix, DataMap map) {
-        Preferences pref;
-
-        if (nameSuffix == null || nameSuffix.length() == 0) {
-            pref = getPreferenceForDataDomain().node("DataMap").node(map.getName());
-        } else {
-            pref = getPreferenceForDataDomain().node("DataMap").node(map.getName()).node(nameSuffix);
-        }
         return (DataMapDefaults) application.getCayenneProjectPreferences().getProjectDetailObject(DataMapDefaults.class, pref);
     }
 
@@ -424,20 +353,13 @@ public class ProjectController extends CayenneController {
         controllerStateHistory.clear();
     }
 
-    /*
-     * Allow the user to change the default history size. TODO When a user
-     * changes their preferences it should call this method. I don't know how
-     * the preferences work, so I will leave this to someone else to do. Garry
-     */
-    public void setHistorySize(int newSize) {
-        controllerStateHistory.resize(newSize);
-    }
-
     public boolean isDirty() {
         return dirty;
     }
 
-    /** Resets all current models to null. */
+    /**
+     * Resets all current models to null.
+     */
     private void clearState() {
         // don't clear if we are refiring events for history navigation
         if (currentState.isRefiring) {
@@ -633,14 +555,6 @@ public class ProjectController extends CayenneController {
         listenerList.remove(DbEntityListener.class, listener);
     }
 
-    public void addProjectOnSaveListener(ProjectOnSaveListener listener) {
-    	listenerList.add(ProjectOnSaveListener.class, listener);
-    }
-
-    public void removeProjectOnSaveListener(ProjectOnSaveListener listener) {
-    	listenerList.remove(ProjectOnSaveListener.class, listener);
-    }
-
     public void addProjectSavedListener(ProjectSavedListener listener) {
         listenerList.add(ProjectSavedListener.class, listener);
     }
@@ -804,11 +718,11 @@ public class ProjectController extends CayenneController {
 
         for (DomainListener listener : listenerList.getListeners(DomainListener.class)) {
             switch (e.getId()) {
-            case MapEvent.CHANGE:
-                listener.domainChanged(e);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid DomainEvent type: " + e.getId());
+                case MapEvent.CHANGE:
+                    listener.domainChanged(e);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid DomainEvent type: " + e.getId());
             }
         }
     }
@@ -853,17 +767,17 @@ public class ProjectController extends CayenneController {
 
         for (DataNodeListener listener : listenerList.getListeners(DataNodeListener.class)) {
             switch (e.getId()) {
-            case MapEvent.ADD:
-                listener.dataNodeAdded(e);
-                break;
-            case MapEvent.CHANGE:
-                listener.dataNodeChanged(e);
-                break;
-            case MapEvent.REMOVE:
-                listener.dataNodeRemoved(e);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid DataNodeEvent type: " + e.getId());
+                case MapEvent.ADD:
+                    listener.dataNodeAdded(e);
+                    break;
+                case MapEvent.CHANGE:
+                    listener.dataNodeChanged(e);
+                    break;
+                case MapEvent.REMOVE:
+                    listener.dataNodeRemoved(e);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid DataNodeEvent type: " + e.getId());
             }
         }
     }
@@ -882,7 +796,7 @@ public class ProjectController extends CayenneController {
             if (changed) {
                 clearState();
                 currentState.domain = e.getDomain();
-                currentState.node  = e.getDataNode();
+                currentState.node = e.getDataNode();
                 currentState.map = e.getDataMap();
             }
         }
@@ -915,17 +829,17 @@ public class ProjectController extends CayenneController {
 
         for (DataMapListener eventListener : listenerList.getListeners(DataMapListener.class)) {
             switch (e.getId()) {
-            case MapEvent.ADD:
-                eventListener.dataMapAdded(e);
-                break;
-            case MapEvent.CHANGE:
-                eventListener.dataMapChanged(e);
-                break;
-            case MapEvent.REMOVE:
-                eventListener.dataMapRemoved(e);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid DataMapEvent type: " + e.getId());
+                case MapEvent.ADD:
+                    eventListener.dataMapAdded(e);
+                    break;
+                case MapEvent.CHANGE:
+                    eventListener.dataMapChanged(e);
+                    break;
+                case MapEvent.REMOVE:
+                    eventListener.dataMapRemoved(e);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid DataMapEvent type: " + e.getId());
             }
         }
     }
@@ -947,17 +861,17 @@ public class ProjectController extends CayenneController {
 
         for (ObjEntityListener listener : listenerList.getListeners(ObjEntityListener.class)) {
             switch (e.getId()) {
-            case MapEvent.ADD:
-                listener.objEntityAdded(e);
-                break;
-            case MapEvent.CHANGE:
-                listener.objEntityChanged(e);
-                break;
-            case MapEvent.REMOVE:
-                listener.objEntityRemoved(e);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid EntityEvent type: " + e.getId());
+                case MapEvent.ADD:
+                    listener.objEntityAdded(e);
+                    break;
+                case MapEvent.CHANGE:
+                    listener.objEntityChanged(e);
+                    break;
+                case MapEvent.REMOVE:
+                    listener.objEntityRemoved(e);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid EntityEvent type: " + e.getId());
             }
         }
     }
@@ -979,17 +893,17 @@ public class ProjectController extends CayenneController {
 
         for (DbEntityListener listener : listenerList.getListeners(DbEntityListener.class)) {
             switch (e.getId()) {
-            case MapEvent.ADD:
-                listener.dbEntityAdded(e);
-                break;
-            case MapEvent.CHANGE:
-                listener.dbEntityChanged(e);
-                break;
-            case MapEvent.REMOVE:
-                listener.dbEntityRemoved(e);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid EntityEvent type: " + e.getId());
+                case MapEvent.ADD:
+                    listener.dbEntityAdded(e);
+                    break;
+                case MapEvent.CHANGE:
+                    listener.dbEntityChanged(e);
+                    break;
+                case MapEvent.REMOVE:
+                    listener.dbEntityRemoved(e);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid EntityEvent type: " + e.getId());
             }
         }
     }
@@ -1007,17 +921,17 @@ public class ProjectController extends CayenneController {
 
         for (QueryListener eventListener : listenerList.getListeners(QueryListener.class)) {
             switch (e.getId()) {
-            case MapEvent.ADD:
-                eventListener.queryAdded(e);
-                break;
-            case MapEvent.CHANGE:
-                eventListener.queryChanged(e);
-                break;
-            case MapEvent.REMOVE:
-                eventListener.queryRemoved(e);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid ProcedureEvent type: " + e.getId());
+                case MapEvent.ADD:
+                    eventListener.queryAdded(e);
+                    break;
+                case MapEvent.CHANGE:
+                    eventListener.queryChanged(e);
+                    break;
+                case MapEvent.REMOVE:
+                    eventListener.queryRemoved(e);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid ProcedureEvent type: " + e.getId());
             }
         }
     }
@@ -1035,17 +949,17 @@ public class ProjectController extends CayenneController {
 
         for (ProcedureListener eventListener : listenerList.getListeners(ProcedureListener.class)) {
             switch (e.getId()) {
-            case MapEvent.ADD:
-                eventListener.procedureAdded(e);
-                break;
-            case MapEvent.CHANGE:
-                eventListener.procedureChanged(e);
-                break;
-            case MapEvent.REMOVE:
-                eventListener.procedureRemoved(e);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid ProcedureEvent type: " + e.getId());
+                case MapEvent.ADD:
+                    eventListener.procedureAdded(e);
+                    break;
+                case MapEvent.CHANGE:
+                    eventListener.procedureChanged(e);
+                    break;
+                case MapEvent.REMOVE:
+                    eventListener.procedureRemoved(e);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid ProcedureEvent type: " + e.getId());
             }
         }
     }
@@ -1061,17 +975,17 @@ public class ProjectController extends CayenneController {
         for (EventListener eventListener : list) {
             ProcedureParameterListener listener = (ProcedureParameterListener) eventListener;
             switch (e.getId()) {
-            case MapEvent.ADD:
-                listener.procedureParameterAdded(e);
-                break;
-            case MapEvent.CHANGE:
-                listener.procedureParameterChanged(e);
-                break;
-            case MapEvent.REMOVE:
-                listener.procedureParameterRemoved(e);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid ProcedureParameterEvent type: " + e.getId());
+                case MapEvent.ADD:
+                    listener.procedureParameterAdded(e);
+                    break;
+                case MapEvent.CHANGE:
+                    listener.procedureParameterChanged(e);
+                    break;
+                case MapEvent.REMOVE:
+                    listener.procedureParameterRemoved(e);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid ProcedureParameterEvent type: " + e.getId());
             }
         }
     }
@@ -1104,7 +1018,7 @@ public class ProjectController extends CayenneController {
                     // wrap around
                     cs = controllerStateHistory.get(0);
                 }
-                if (!cs.isEquivalent(currentState)) {
+                if (cs.isNotSame(currentState)) {
                     break;
                 }
 
@@ -1132,7 +1046,7 @@ public class ProjectController extends CayenneController {
                     // wrap around
                     cs = controllerStateHistory.get(size - 1);
                 }
-                if (!cs.isEquivalent(currentState)) {
+                if (cs.isNotSame(currentState)) {
                     break;
                 }
                 // if it doesn't find it within 5 tries it is probably stuck in a loop
@@ -1335,23 +1249,25 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    /** Notifies all listeners of the change(add, remove) and does the change. */
+    /**
+     * Notifies all listeners of the change(add, remove) and does the change.
+     */
     public void fireDbAttributeEvent(AttributeEvent e) {
         setDirty(true);
 
         for (DbAttributeListener listener : listenerList.getListeners(DbAttributeListener.class)) {
             switch (e.getId()) {
-            case MapEvent.ADD:
-                listener.dbAttributeAdded(e);
-                break;
-            case MapEvent.CHANGE:
-                listener.dbAttributeChanged(e);
-                break;
-            case MapEvent.REMOVE:
-                listener.dbAttributeRemoved(e);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid AttributeEvent type: " + e.getId());
+                case MapEvent.ADD:
+                    listener.dbAttributeAdded(e);
+                    break;
+                case MapEvent.CHANGE:
+                    listener.dbAttributeChanged(e);
+                    break;
+                case MapEvent.REMOVE:
+                    listener.dbAttributeRemoved(e);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid AttributeEvent type: " + e.getId());
             }
         }
     }
@@ -1375,23 +1291,25 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    /** Notifies all listeners of the change (add, remove) and does the change. */
+    /**
+     * Notifies all listeners of the change (add, remove) and does the change.
+     */
     public void fireObjAttributeEvent(AttributeEvent e) {
         setDirty(true);
 
         for (ObjAttributeListener listener : listenerList.getListeners(ObjAttributeListener.class)) {
             switch (e.getId()) {
-            case MapEvent.ADD:
-                listener.objAttributeAdded(e);
-                break;
-            case MapEvent.CHANGE:
-                listener.objAttributeChanged(e);
-                break;
-            case MapEvent.REMOVE:
-                listener.objAttributeRemoved(e);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid AttributeEvent type: " + e.getId());
+                case MapEvent.ADD:
+                    listener.objAttributeAdded(e);
+                    break;
+                case MapEvent.CHANGE:
+                    listener.objAttributeChanged(e);
+                    break;
+                case MapEvent.REMOVE:
+                    listener.objAttributeRemoved(e);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid AttributeEvent type: " + e.getId());
             }
         }
     }
@@ -1438,7 +1356,9 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    /** Notifies all listeners of the change(add, remove) and does the change. */
+    /**
+     * Notifies all listeners of the change(add, remove) and does the change.
+     */
     public void fireDbRelationshipEvent(RelationshipEvent e) {
         setDirty(true);
 
@@ -1448,17 +1368,17 @@ public class ProjectController extends CayenneController {
 
         for (DbRelationshipListener listener : listenerList.getListeners(DbRelationshipListener.class)) {
             switch (e.getId()) {
-            case MapEvent.ADD:
-                listener.dbRelationshipAdded(e);
-                break;
-            case MapEvent.CHANGE:
-                listener.dbRelationshipChanged(e);
-                break;
-            case MapEvent.REMOVE:
-                listener.dbRelationshipRemoved(e);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid RelationshipEvent type: " + e.getId());
+                case MapEvent.ADD:
+                    listener.dbRelationshipAdded(e);
+                    break;
+                case MapEvent.CHANGE:
+                    listener.dbRelationshipChanged(e);
+                    break;
+                case MapEvent.REMOVE:
+                    listener.dbRelationshipRemoved(e);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid RelationshipEvent type: " + e.getId());
             }
         }
     }
@@ -1482,23 +1402,25 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    /** Notifies all listeners of the change(add, remove) and does the change. */
+    /**
+     * Notifies all listeners of the change(add, remove) and does the change.
+     */
     public void fireObjRelationshipEvent(RelationshipEvent e) {
         setDirty(true);
 
         for (ObjRelationshipListener listener : listenerList.getListeners(ObjRelationshipListener.class)) {
             switch (e.getId()) {
-            case MapEvent.ADD:
-                listener.objRelationshipAdded(e);
-                break;
-            case MapEvent.CHANGE:
-                listener.objRelationshipChanged(e);
-                break;
-            case MapEvent.REMOVE:
-                listener.objRelationshipRemoved(e);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid RelationshipEvent type: " + e.getId());
+                case MapEvent.ADD:
+                    listener.objRelationshipAdded(e);
+                    break;
+                case MapEvent.CHANGE:
+                    listener.objRelationshipChanged(e);
+                    break;
+                case MapEvent.REMOVE:
+                    listener.objRelationshipRemoved(e);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid RelationshipEvent type: " + e.getId());
             }
         }
     }
@@ -1570,13 +1492,6 @@ public class ProjectController extends CayenneController {
     }
 
     /**
-     * @return currently selected entity listener class
-     */
-    public String getCurrentListenerClass() {
-        return currentState.listenerClass;
-    }
-
-    /**
      * @return currently selected callback type
      */
     public CallbackType getCurrentCallbackType() {
@@ -1588,13 +1503,6 @@ public class ProjectController extends CayenneController {
      */
     public ObjCallbackMethod[] getCurrentCallbackMethods() {
         return currentState.callbackMethods;
-    }
-
-    /**
-     * set current entity listener class
-     */
-    public void setCurrentListenerClass(String listenerClass) {
-        currentState.listenerClass = listenerClass;
     }
 
     /**
@@ -1614,8 +1522,7 @@ public class ProjectController extends CayenneController {
     /**
      * adds callback method manipulation listener
      *
-     * @param listener
-     *            listener
+     * @param listener listener
      */
     public void addCallbackMethodListener(CallbackMethodListener listener) {
         listenerList.add(CallbackMethodListener.class, listener);
@@ -1624,61 +1531,24 @@ public class ProjectController extends CayenneController {
     /**
      * fires callback method manipulation event
      *
-     * @param e
-     *            event
+     * @param e event
      */
     public void fireCallbackMethodEvent(CallbackMethodEvent e) {
         setDirty(true);
 
         for (CallbackMethodListener listener : listenerList.getListeners(CallbackMethodListener.class)) {
             switch (e.getId()) {
-            case MapEvent.ADD:
-                listener.callbackMethodAdded(e);
-                break;
-            case MapEvent.CHANGE:
-                listener.callbackMethodChanged(e);
-                break;
-            case MapEvent.REMOVE:
-                listener.callbackMethodRemoved(e);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid CallbackEvent type: " + e.getId());
-            }
-        }
-    }
-
-    /**
-     * adds listener class manipulation listener
-     *
-     * @param listener
-     *            listener
-     */
-    public void addEntityListenerListener(EntityListenerListener listener) {
-        listenerList.add(EntityListenerListener.class, listener);
-    }
-
-    /**
-     * fires entity listener manipulation event
-     *
-     * @param e
-     *            event
-     */
-    public void fireEntityListenerEvent(EntityListenerEvent e) {
-        setDirty(true);
-
-        for (EntityListenerListener listener : listenerList.getListeners(EntityListenerListener.class)) {
-            switch (e.getId()) {
-            case MapEvent.ADD:
-                listener.entityListenerAdded(e);
-                break;
-            case MapEvent.CHANGE:
-                listener.entityListenerChanged(e);
-                break;
-            case MapEvent.REMOVE:
-                listener.entityListenerRemoved(e);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid CallbackEvent type: " + e.getId());
+                case MapEvent.ADD:
+                    listener.callbackMethodAdded(e);
+                    break;
+                case MapEvent.CHANGE:
+                    listener.callbackMethodChanged(e);
+                    break;
+                case MapEvent.REMOVE:
+                    listener.callbackMethodRemoved(e);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid CallbackEvent type: " + e.getId());
             }
         }
     }
@@ -1746,17 +1616,17 @@ public class ProjectController extends CayenneController {
         for (EmbeddableListener listener : listenerList.getListeners(EmbeddableListener.class)) {
 
             switch (e.getId()) {
-            case MapEvent.ADD:
-                listener.embeddableAdded(e, map);
-                break;
-            case MapEvent.CHANGE:
-                listener.embeddableChanged(e, map);
-                break;
-            case MapEvent.REMOVE:
-                listener.embeddableRemoved(e, map);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid RelationshipEvent type: " + e.getId());
+                case MapEvent.ADD:
+                    listener.embeddableAdded(e, map);
+                    break;
+                case MapEvent.CHANGE:
+                    listener.embeddableChanged(e, map);
+                    break;
+                case MapEvent.REMOVE:
+                    listener.embeddableRemoved(e, map);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid RelationshipEvent type: " + e.getId());
             }
         }
     }
@@ -1766,25 +1636,25 @@ public class ProjectController extends CayenneController {
         for (EmbeddableAttributeListener listener : listenerList.getListeners(EmbeddableAttributeListener.class)) {
 
             switch (e.getId()) {
-            case MapEvent.ADD:
-                listener.embeddableAttributeAdded(e);
-                break;
-            case MapEvent.CHANGE:
-                listener.embeddableAttributeChanged(e);
-                break;
-            case MapEvent.REMOVE:
-                listener.embeddableAttributeRemoved(e);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid RelationshipEvent type: " + e.getId());
+                case MapEvent.ADD:
+                    listener.embeddableAttributeAdded(e);
+                    break;
+                case MapEvent.CHANGE:
+                    listener.embeddableAttributeChanged(e);
+                    break;
+                case MapEvent.REMOVE:
+                    listener.embeddableAttributeRemoved(e);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid RelationshipEvent type: " + e.getId());
             }
         }
     }
-    
-    public void fireProjectOnSaveEvent(ProjectOnSaveEvent e){
-    	for(ProjectOnSaveListener listener : listenerList.getListeners(ProjectOnSaveListener.class)){
+
+    public void fireProjectOnSaveEvent(ProjectOnSaveEvent e) {
+        for (ProjectOnSaveListener listener : listenerList.getListeners(ProjectOnSaveListener.class)) {
             listener.beforeSaveChanges(e);
-    	}
+        }
     }
 
     public void addDataSourceModificationListener(DataSourceModificationListener listener) {
@@ -1841,13 +1711,13 @@ public class ProjectController extends CayenneController {
 
         projectControllerPreferences = Preferences.userNodeForPackage(Project.class);
 
-        if (key.trim().length() > 0) {
+        if (!key.trim().isEmpty()) {
             if (key.contains(".xml")) {
                 projectControllerPreferences = projectControllerPreferences.node(projectControllerPreferences
                         .absolutePath() + key.replace(".xml", ""));
             } else {
                 projectControllerPreferences = projectControllerPreferences.node(
-                        projectControllerPreferences.absolutePath())
+                                projectControllerPreferences.absolutePath())
                         .node(getApplication().getNewProjectTemporaryName());
             }
         }
@@ -1865,10 +1735,11 @@ public class ProjectController extends CayenneController {
      */
     public void setEntityTabSelection(int entityTabSelection) {
         this.entityTabSelection = entityTabSelection;
-    }    
-    
+    }
+
     /**
      * If true, all save buttons become available.
+     *
      * @param enable or not save button
      */
     public void enableSave(boolean enable) {

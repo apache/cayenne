@@ -84,7 +84,7 @@ import org.slf4j.LoggerFactory;
 public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDisplayListener,
         ObjEntityListener, ObjRelationshipListener {
 
-    private static Logger logObj = LoggerFactory.getLogger(ObjEntityRelationshipPanel.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ObjEntityRelationshipPanel.class);
 
     private static final ImageIcon INHERITANCE_ICON = ModelerUtil.buildIcon("icon-inheritance.png");
 
@@ -263,12 +263,12 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
 
         // this actually happens per CAY-221... can't reproduce though
         if (map == null) {
-            logObj.warn("createObjEntityComboModel:: Null DataMap.");
+            LOGGER.warn("createObjEntityComboModel:: Null DataMap.");
             return new Object[0];
         }
 
         if (map.getNamespace() == null) {
-            logObj.warn("createObjEntityComboModel:: Null DataMap namespace - " + map);
+            LOGGER.warn("createObjEntityComboModel:: Null DataMap namespace - " + map);
             return new Object[0];
         }
 

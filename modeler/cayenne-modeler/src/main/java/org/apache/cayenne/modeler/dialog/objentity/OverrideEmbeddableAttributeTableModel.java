@@ -18,45 +18,40 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.objentity;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
-import javax.swing.DefaultCellEditor;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.ListCellRenderer;
-
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.modeler.util.CellEditorForAttributeTable;
 
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 public class OverrideEmbeddableAttributeTableModel extends CayenneTableModel {
 
-    private Map<String, String> overrideAttr;
-    private ObjAttribute attr;
+    // Columns
+    static final int OBJ_ATTRIBUTE = 0;
+    static final int OBJ_ATTRIBUTE_TYPE = 1;
+    static final int DB_ATTRIBUTE = 2;
+    static final int DB_ATTRIBUTE_TYPE = 3;
+
+    private final ObjAttribute attr;
     private boolean isAttributeOverrideChange;
 
     private CellEditorForAttributeTable cellEditor;
-    Collection<String> nameAttr;
     private CayenneTable table;
 
     protected List<EmbeddableAttribute> embeddableList;
@@ -65,45 +60,32 @@ public class OverrideEmbeddableAttributeTableModel extends CayenneTableModel {
         return embeddableList;
     }
 
-    public OverrideEmbeddableAttributeTableModel(ProjectController mediator,
-            Object eventSource, Collection<EmbeddableAttribute> embAttr, ObjAttribute attr) {
+    public OverrideEmbeddableAttributeTableModel(
+            ProjectController controller,
+            Object eventSource,
+            Collection<EmbeddableAttribute> embAttr,
+            ObjAttribute attr) {
 
-        super(mediator, eventSource, new ArrayList<Object>(embAttr));
-        this.embeddableList = new ArrayList<EmbeddableAttribute>(embAttr);
+        super(controller, eventSource, new ArrayList<Object>(embAttr));
+        this.embeddableList = new ArrayList<>(embAttr);
         this.attr = attr;
         this.isAttributeOverrideChange = false;
+        Map<String, String> overrideAttr;
         if (attr instanceof EmbeddedAttribute) {
             EmbeddedAttribute embeddedAttribute = (EmbeddedAttribute) attr;
-            this.overrideAttr = new TreeMap<>(embeddedAttribute.getAttributeOverrides());
+            overrideAttr = new TreeMap<>(embeddedAttribute.getAttributeOverrides());
         }
         else {
-            this.overrideAttr = null;
+            overrideAttr = null;
         }
 
-        Iterator<EmbeddableAttribute> it = embeddableList.iterator();
-
-        while (it.hasNext()) {
-            EmbeddableAttribute emb = it.next();
+        for (EmbeddableAttribute emb : embeddableList) {
             if (overrideAttr != null) {
                 if (overrideAttr.get(emb.getName()) != null) {
                     emb.setDbAttributeName(overrideAttr.get(emb.getName()));
                 }
             }
         }
-    }
-
-    public Map<String, String> getOverrideAttr() {
-        return overrideAttr;
-    }
-
-    // Columns
-    static final int OBJ_ATTRIBUTE = 0;
-    static final int OBJ_ATTRIBUTE_TYPE = 1;
-    static final int DB_ATTRIBUTE = 2;
-    static final int DB_ATTRIBUTE_TYPE = 3;
-
-    protected void orderList() {
-        // NOOP
     }
 
     /**
@@ -128,10 +110,9 @@ public class OverrideEmbeddableAttributeTableModel extends CayenneTableModel {
                     .getView()).getSaveButton().setEnabled(true);
 
             if (value != null) {
-                DbEntity currentEnt = ((ObjEntity) attr.getEntity()).getDbEntity();
+                DbEntity currentEnt = attr.getEntity().getDbEntity();
                 if (currentEnt != null) {
-                    DbAttribute dbAttr = (DbAttribute) currentEnt.getAttribute(value
-                            .toString());
+                    DbAttribute dbAttr = currentEnt.getAttribute(value.toString());
                     if (dbAttr != null) {
                         fireTableCellUpdated(DB_ATTRIBUTE_TYPE, col);
                     }
@@ -198,11 +179,11 @@ public class OverrideEmbeddableAttributeTableModel extends CayenneTableModel {
     }
 
     private String getDBAttrType(String dbAttributeName) {
-        DbEntity currentEnt = ((ObjEntity) attr.getEntity()).getDbEntity();
+        DbEntity currentEnt = attr.getEntity().getDbEntity();
         if (currentEnt != null
                 && currentEnt.getAttributes() != null
                 && dbAttributeName != null) {
-            DbAttribute dbAttr = (DbAttribute) currentEnt.getAttribute(dbAttributeName);
+            DbAttribute dbAttr = currentEnt.getAttribute(dbAttributeName);
             if (dbAttr != null) {
                 return TypesMapping.getSqlNameByType(dbAttr.getType());
             }

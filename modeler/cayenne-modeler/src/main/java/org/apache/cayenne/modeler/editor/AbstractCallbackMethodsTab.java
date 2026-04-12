@@ -81,7 +81,7 @@ import java.util.Map;
  */
 public abstract class AbstractCallbackMethodsTab extends JPanel {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractCallbackMethodsTab.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractCallbackMethodsTab.class);
 
     /**
      * Min sizes for the table columns
@@ -460,7 +460,7 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
                 try {
                     callbackMethod = (String) t.getTransferData(DataFlavor.stringFlavor);
                 } catch (Exception e) {
-                    logger.warn("Error transferring", e);
+                    LOGGER.warn("Error transferring", e);
                     return false;
                 }
 

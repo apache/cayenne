@@ -62,15 +62,10 @@ public class CayenneModelerController extends CayenneController {
 
     private static final ProjectStateUtil PROJECT_STATE_UTIL = new ProjectStateUtil();
 
-    private ProjectController projectController;
-
-    protected CayenneModelerFrame frame;
+    private final ProjectController projectController;
+    private final CayenneModelerFrame frame;
 	private EditorView editorView;
-
-	private DbImportController dbImportController;
-
-    public CayenneModelerController(){
-    }
+	private final DbImportController dbImportController;
 
     public CayenneModelerController(Application application) {
         super(application);
@@ -295,7 +290,7 @@ public class CayenneModelerController extends CayenneController {
         frame.getStatus().setText(message);
 
         // start message cleanup thread that would remove the message after X seconds
-        if (message != null && message.trim().length() > 0) {
+        if (message != null && !message.trim().isEmpty()) {
             new Thread(() -> {
                 try {
                     Thread.sleep(6 * 10000);

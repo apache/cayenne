@@ -33,8 +33,6 @@ import org.apache.cayenne.modeler.util.DbAdapterInfo;
 import org.apache.cayenne.validation.ValidationResult;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.io.File;
 import java.io.FileWriter;
@@ -83,12 +81,9 @@ public class DBGeneratorOptions extends CayenneController {
         refreshView();
     }
 
+    @Override
     public Component getView() {
         return view;
-    }
-
-    public DBGeneratorDefaults getGeneratorDefaults() {
-        return generatorDefaults;
     }
 
     protected void initController() {
@@ -116,14 +111,10 @@ public class DBGeneratorOptions extends CayenneController {
         view.getCancelButton().addActionListener(e -> closeAction());
 
         // refresh SQL if different tables were selected
-        view.getTabs().addChangeListener(new ChangeListener() {
-
-            public void stateChanged(ChangeEvent e) {
-                if (view.getTabs().getSelectedIndex() == 0) {
-                    // this assumes that some tables where checked/unchecked... not very
-                    // efficient
-                    refreshGeneratorAction();
-                }
+        view.getTabs().addChangeListener(e -> {
+            if (view.getTabs().getSelectedIndex() == 0) {
+                // this assumes that some tables where checked/unchecked... not very efficient
+                refreshGeneratorAction();
             }
         });
     }
@@ -171,7 +162,7 @@ public class DBGeneratorOptions extends CayenneController {
     }
 
     protected void refreshView() {
-        getView().setEnabled(connectionInfo != null);
+        view.setEnabled(connectionInfo != null);
 
         view.getCreateFK().setSelected(generatorDefaults.createFK);
         view.getCreatePK().setSelected(generatorDefaults.createPK);
@@ -237,12 +228,12 @@ public class DBGeneratorOptions extends CayenneController {
 
         refreshGeneratorAction();
 
-        Collection<ValidationResult> failures = new ArrayList<ValidationResult>();
+        Collection<ValidationResult> failures = new ArrayList<>();
 
         // sanity check...
         for (DbGenerator generator : generators) {
             if (generator.isEmpty(true)) {
-                JOptionPane.showMessageDialog(getView(), "Nothing to generate.");
+                JOptionPane.showMessageDialog(view, "Nothing to generate.");
                 return;
             }
 
@@ -254,8 +245,8 @@ public class DBGeneratorOptions extends CayenneController {
             }
         }
 
-        if (failures.size() == 0) {
-            JOptionPane.showMessageDialog(getView(), "Schema Generation Complete.");
+        if (failures.isEmpty()) {
+            JOptionPane.showMessageDialog(view, "Schema Generation Complete.");
         } else {
             new ValidationResultBrowser(this)
                     .startupAction(
@@ -279,7 +270,7 @@ public class DBGeneratorOptions extends CayenneController {
                 .getURL()
                 .getPath());
         fc.setCurrentDirectory(projectDir);
-        if (fc.showSaveDialog(getView()) == JFileChooser.APPROVE_OPTION) {
+        if (fc.showSaveDialog(view) == JFileChooser.APPROVE_OPTION) {
             refreshGeneratorAction();
             try {
                 File file = fc.getSelectedFile();
@@ -296,14 +287,5 @@ public class DBGeneratorOptions extends CayenneController {
 
     public void closeAction() {
         view.dispose();
-    }
-
-    public DBConnectionInfo getConnectionInfo() {
-        return this.connectionInfo;
-    }
-
-    public void setConnectionInfo(DBConnectionInfo connectionInfo) {
-        this.connectionInfo = connectionInfo;
-        refreshView();
     }
 }

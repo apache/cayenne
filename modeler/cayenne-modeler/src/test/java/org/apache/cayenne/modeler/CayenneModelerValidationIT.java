@@ -47,13 +47,13 @@ public class CayenneModelerValidationIT {
 
     public static final String CAYENNE_CONFIGURED_VALIDATION_PROJECT = "cayenne-configured-validation.xml";
 
-    private final static Logger logger = LoggerFactory.getLogger(CayenneModelerValidationIT.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CayenneModelerValidationIT.class);
     private static Injector injector;
 
     @BeforeClass
     public static void setUp() {
         injector = DIBootstrap.createInjector(List.of(
-                new ToolsModule(logger),
+                new ToolsModule(LOGGER),
                 new ProjectModule(),
                 new CayenneModelerModule()
         ));

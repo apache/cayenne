@@ -48,7 +48,7 @@ import java.net.URL;
  */
 public class ImportDataMapAction extends CayenneAction {
 
-    private static Logger logObj = LoggerFactory.getLogger(ImportDataMapAction.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ImportDataMapAction.class);
 
     private ConfigurationNameMapper nameMapper;
 
@@ -93,7 +93,7 @@ public class ImportDataMapAction extends CayenneAction {
 
             getProjectController().addDataMap(this, newMap);
         } catch (Exception ex) {
-            logObj.info("Error importing DataMap.", ex);
+            LOGGER.info("Error importing DataMap.", ex);
             JOptionPane.showMessageDialog(Application.getFrame(), "Error reading DataMap: " + ex.getMessage(),
                     "Can't Open DataMap", JOptionPane.OK_OPTION);
         }

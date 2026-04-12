@@ -18,20 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
-import java.awt.BorderLayout;
-import java.util.EventObject;
-import java.util.List;
-
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JToolBar;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.TableColumn;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
@@ -59,18 +45,23 @@ import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.table.TableColumn;
+import java.awt.*;
+import java.util.EventObject;
+import java.util.List;
+
 public class EmbeddableAttributeTab extends JPanel implements
         EmbeddableAttributeListener, EmbeddableDisplayListener, EmbeddableListener,
         ExistingSelectionProcessor {
 
-    protected ProjectController mediator;
-    protected CayenneTable table;
-    protected TableColumnPreferences tablePreferences;
+    private final ProjectController controller;
+    private CayenneTable table;
+    private TableColumnPreferences tablePreferences;
 
-    JButton resolve;
-
-    public EmbeddableAttributeTab(ProjectController mediator) {
-        this.mediator = mediator;
+    public EmbeddableAttributeTab(ProjectController controller) {
+        this.controller = controller;
         init();
         initController();
     }
@@ -115,18 +106,13 @@ public class EmbeddableAttributeTab extends JPanel implements
     }
 
     private void initController() {
-        mediator.addEmbeddableAttributeListener(this);
-        mediator.addEmbeddableDisplayListener(this);
-        mediator.addEmbeddableListener(this);
+        controller.addEmbeddableAttributeListener(this);
+        controller.addEmbeddableDisplayListener(this);
+        controller.addEmbeddableListener(this);
 
-        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+        table.getSelectionModel().addListSelectionListener(this::processExistingSelection);
 
-            public void valueChanged(ListSelectionEvent e) {
-                processExistingSelection(e);
-            }
-        });
-
-        mediator.getApplication().getActionManager().setupCutCopyPaste(
+        controller.getApplication().getActionManager().setupCutCopyPaste(
                 table,
                 CutAttributeAction.class,
                 CopyAttributeAction.class);
@@ -157,29 +143,28 @@ public class EmbeddableAttributeTab extends JPanel implements
 
         EmbeddableAttributeDisplayEvent ev = new EmbeddableAttributeDisplayEvent(
                 this,
-                mediator.getCurrentEmbeddable(),
+                controller.getCurrentEmbeddable(),
                 attrs,
-                mediator.getCurrentDataMap(),
-                (DataChannelDescriptor) mediator.getProject().getRootNode());
+                controller.getCurrentDataMap(),
+                (DataChannelDescriptor) controller.getProject().getRootNode());
 
-        mediator.fireEmbeddableAttributeDisplayEvent(ev);
+        controller.fireEmbeddableAttributeDisplayEvent(ev);
     }
 
     private void rebuildTable(Embeddable emb) {
         EmbeddableAttributeTableModel model = new EmbeddableAttributeTableModel(
                 emb,
-                mediator,
+                controller,
                 this);
         table.setModel(model);
         table.setRowHeight(25);
         table.setRowMargin(3);
-        setUpTableStructure(model);
+        setUpTableStructure();
     }
 
-    private void setUpTableStructure(EmbeddableAttributeTableModel model) {
+    private void setUpTableStructure() {
 
-        TableColumn typeColumn = table.getColumnModel().getColumn(
-                EmbeddableAttributeTableModel.OBJ_ATTRIBUTE_TYPE);
+        TableColumn typeColumn = table.getColumnModel().getColumn(EmbeddableAttributeTableModel.OBJ_ATTRIBUTE_TYPE);
         JComboBox javaTypesCombo = Application.getWidgetFactory().createComboBox(
                 ModelerUtil.getRegisteredTypeNames(),
                 false);
@@ -221,7 +206,7 @@ public class EmbeddableAttributeTab extends JPanel implements
     }
 
     public void embeddableAttributeAdded(EmbeddableAttributeEvent e) {
-        rebuildTable((Embeddable) e.getEmbeddable());
+        rebuildTable(e.getEmbeddable());
         table.select(e.getEmbeddableAttribute());
     }
 
@@ -243,7 +228,7 @@ public class EmbeddableAttributeTab extends JPanel implements
             return;
         }
 
-        Embeddable embeddable = (Embeddable) e.getEmbeddable();
+        Embeddable embeddable = e.getEmbeddable();
         if (embeddable != null) {
             rebuildTable(embeddable);
         }
@@ -257,7 +242,7 @@ public class EmbeddableAttributeTab extends JPanel implements
 
     public void embeddableChanged(EmbeddableEvent e, DataMap map) {
         if (e.getOldName() != null) {
-            ((Embeddable) map.getEmbeddable(e.getOldName())).setClassName(e
+            map.getEmbeddable(e.getOldName()).setClassName(e
                     .getEmbeddable()
                     .getClassName());
             if (map.getEmbeddableMap().containsKey(e.getOldName())) {

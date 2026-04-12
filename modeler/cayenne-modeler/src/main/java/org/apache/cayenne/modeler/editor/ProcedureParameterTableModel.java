@@ -99,7 +99,7 @@ public class ProcedureParameterTableModel extends CayenneTableModel<ProcedurePar
                 setPrecision(value, parameter);
                 break;
         }
-        mediator.fireProcedureParameterEvent(event);
+        controller.fireProcedureParameterEvent(event);
     }
 
     protected void setPrecision(String newVal, ProcedureParameter parameter) {

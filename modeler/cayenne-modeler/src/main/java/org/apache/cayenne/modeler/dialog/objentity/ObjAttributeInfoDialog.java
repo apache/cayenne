@@ -463,7 +463,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 
 	public void saveMapping() {
  		if (setPath(false)) {
-			if (JOptionPane.showConfirmDialog(getView(),
+			if (JOptionPane.showConfirmDialog(view,
 					"You have changed Db Attribute path. Do you want it to be saved?", "Save ObjAttribute",
 					JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 

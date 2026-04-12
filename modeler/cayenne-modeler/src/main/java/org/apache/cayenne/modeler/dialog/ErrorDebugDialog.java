@@ -53,7 +53,7 @@ import java.io.StringWriter;
  * 
  */
 public class ErrorDebugDialog extends CayenneDialog implements ActionListener {
-    private static Logger logObj = LoggerFactory.getLogger(ErrorDebugDialog.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ErrorDebugDialog.class);
     
     /**
      * Sole instance of error/warning dialog to disallow showing of multiple dialogs
@@ -72,7 +72,7 @@ public class ErrorDebugDialog extends CayenneDialog implements ActionListener {
      */
     public static void guiException(Throwable th) {
         if (th != null) {
-            logObj.error("CayenneModeler Error", th);
+            LOGGER.error("CayenneModeler Error", th);
         }
 
         ErrorDebugDialog dialog =
@@ -85,7 +85,7 @@ public class ErrorDebugDialog extends CayenneDialog implements ActionListener {
      */
     public static void guiWarning(Throwable th, String message) {
         if (th != null) {
-            logObj.warn("CayenneModeler Warning", th);
+            LOGGER.warn("CayenneModeler Warning", th);
         }
 
         WarningDialog dialog = new WarningDialog(Application.getFrame(), message, th, false, false);

@@ -210,7 +210,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel<ObjRelationship
                 break;
         }
 
-        mediator.fireObjRelationshipEvent(event);
+        controller.fireObjRelationshipEvent(event);
     }
 
     public void removeRow(int row) {
@@ -220,7 +220,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel<ObjRelationship
         ObjRelationship rel = getRelationship(row);
         RelationshipEvent e;
         e = new RelationshipEvent(eventSource, rel, entity, RelationshipEvent.REMOVE);
-        mediator.fireObjRelationshipEvent(e);
+        controller.fireObjRelationshipEvent(e);
         objectList.remove(row);
         entity.removeRelationship(rel.getName());
         fireTableRowsDeleted(row, row);
@@ -319,10 +319,10 @@ public class ObjRelationshipTableModel extends CayenneTableModel<ObjRelationship
     }
 
     private String getComment(ObjRelationship rel) {
-        return ObjectInfo.getFromMetaData(mediator.getApplication().getMetaData(), rel, ObjectInfo.COMMENT);
+        return ObjectInfo.getFromMetaData(controller.getApplication().getMetaData(), rel, ObjectInfo.COMMENT);
     }
 
     private void setComment(String newVal, ObjRelationship rel) {
-        ObjectInfo.putToMetaData(mediator.getApplication().getMetaData(), rel, ObjectInfo.COMMENT, newVal);
+        ObjectInfo.putToMetaData(controller.getApplication().getMetaData(), rel, ObjectInfo.COMMENT, newVal);
     }
 }

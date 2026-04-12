@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
-import java.util.List;
-
 import org.apache.cayenne.map.CallbackDescriptor;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.CallbackMethodEvent;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
+
+import java.util.List;
 
 /**
  * Table model for displaying methods list for a particular CallbackDescriptor
@@ -133,20 +133,20 @@ public class CallbackDescriptorTableModel extends CayenneTableModel<String> {
         if (method != null) {
             method = method.trim();
         }
-        String prevMethod = getObjectList().get(row);
+        String prevMethod = objectList.get(row);
 
-        if (method != null && method.length() > 0) {
+        if (method != null && !method.isEmpty()) {
             // check that method changed and name is not duplicate
             if (!method.equals(prevMethod) && !getCallbackDescriptor().getCallbackMethods().contains(method)) {
                 // update model
-                getObjectList().set(row, method);
+                objectList.set(row, method);
 
                 // update entity
                 getCallbackDescriptor().setCallbackMethodAt(row, method);
 
                 fireTableRowsUpdated(row, row);
 
-                mediator.fireCallbackMethodEvent(new CallbackMethodEvent(
+                controller.fireCallbackMethodEvent(new CallbackMethodEvent(
                         eventSource,
                         prevMethod,
                         method,

@@ -66,7 +66,7 @@ import java.util.Map;
  */
 public class ImportEOModelAction extends CayenneAction {
 
-    private static Logger logObj = LoggerFactory.getLogger(ImportEOModelAction.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ImportEOModelAction.class);
 
     public static String getActionName() {
         return "Import EOModel";
@@ -124,7 +124,7 @@ public class ImportEOModelAction extends CayenneAction {
 
             }
             catch (Exception ex) {
-                logObj.info("EOModel Loading Exception", ex);
+                LOGGER.info("EOModel Loading Exception", ex);
                 ErrorDebugDialog.guiException(ex);
             }
 

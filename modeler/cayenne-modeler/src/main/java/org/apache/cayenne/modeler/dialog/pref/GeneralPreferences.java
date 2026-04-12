@@ -77,9 +77,8 @@ public class GeneralPreferences extends CayenneController {
 
 		// build child controllers...
 		EncodingSelector encodingSelector = new EncodingSelector(this, view.getEncodingSelector());
-		encodingSelector.addPropertyChangeListener(EncodingSelector.ENCODING_PROPERTY_BINDING,
-				evt -> setEncoding((String) evt.getNewValue()));
-		encodingSelector.bindingUpdated(EncodingSelector.ENCODING_PROPERTY_BINDING, encoding);
+		encodingSelector.addPropertyChangeListener(EncodingSelector.ENCODING_PROPERTY, evt -> setEncoding((String) evt.getNewValue()));
+		encodingSelector.setSelectedEncoding(encoding);
 
 		view.getAutoLoadProject().addActionListener(e -> setAutoLoadProject(view.getAutoLoadProject().isSelected()));
 		view.getDeletePrompt().addActionListener(e -> setDeletePrompt(view.getDeletePrompt().isSelected()));

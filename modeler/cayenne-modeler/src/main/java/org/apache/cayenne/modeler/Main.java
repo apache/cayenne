@@ -44,7 +44,7 @@ import java.util.prefs.Preferences;
  */
 public class Main {
 
-    private static Logger logger = LoggerFactory.getLogger(Main.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     protected String[] args;
 
@@ -54,8 +54,7 @@ public class Main {
     public static void main(String[] args) {
         try {
             new Main(args).launch();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
@@ -68,17 +67,14 @@ public class Main {
     protected void launch() {
 
         // TODO: use module auto-loading...
-        final Injector injector = DIBootstrap.createInjector(appendModules(new ArrayList<Module>()));
+        Injector injector = DIBootstrap.createInjector(appendModules(new ArrayList<>()));
 
         // init look and feel before using any Swing classes...
         injector.getInstance(PlatformInitializer.class).initLookAndFeel();
 
         // logger should go after Look And Feel or Logger Console will be without style
-        logger.info("Starting CayenneModeler.");
-        logger.info("JRE v."
-                + System.getProperty("java.version")
-                + " at "
-                + System.getProperty("java.home"));
+        LOGGER.info("Starting CayenneModeler.");
+        LOGGER.info("JRE v.{} at {}", System.getProperty("java.version"), System.getProperty("java.home"));
 
         SwingUtilities.invokeLater(() -> {
 

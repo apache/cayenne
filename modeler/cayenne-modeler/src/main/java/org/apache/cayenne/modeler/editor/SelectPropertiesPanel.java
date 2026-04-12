@@ -53,7 +53,7 @@ import static org.apache.cayenne.util.Util.isNumeric;
  */
 public abstract class SelectPropertiesPanel extends JPanel {
 
-    private static final Logger logObj = LoggerFactory.getLogger(SelectPropertiesPanel.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SelectPropertiesPanel.class);
 
     private static final Integer ZERO = 0;
 
@@ -231,7 +231,7 @@ public abstract class SelectPropertiesPanel extends JPanel {
                 mediator.fireQueryEvent(new QueryEvent(this, query));
             }
             catch (Exception ex) {
-                logObj.warn("Error setting property: " + property, ex);
+                LOGGER.warn("Error setting property: " + property, ex);
             }
         }
     }

@@ -230,7 +230,7 @@ public class Application {
         } catch (BackingStoreException ignored) {
         }
 
-        if (values.size() > 0) {
+        if (!values.isEmpty()) {
             classLoader.setPathFiles(values.stream().map(File::new).collect(Collectors.toList()));
         }
 

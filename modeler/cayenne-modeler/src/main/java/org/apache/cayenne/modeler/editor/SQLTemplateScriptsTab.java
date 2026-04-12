@@ -62,7 +62,7 @@ import java.util.Map;
 public class SQLTemplateScriptsTab extends JPanel {
 
     private static final String DEFAULT_LABEL = "Default";
-    private static final Logger logger = LoggerFactory.getLogger(SQLTemplateScriptsTab.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SQLTemplateScriptsTab.class);
 
     protected ProjectController mediator;
 
@@ -224,7 +224,7 @@ public class SQLTemplateScriptsTab extends JPanel {
         try {
             text = doc.getText(0, doc.getLength());
         } catch (BadLocationException ex) {
-            logger.warn("Error reading document", ex);
+            LOGGER.warn("Error reading document", ex);
         }
 
         if (text != null) {

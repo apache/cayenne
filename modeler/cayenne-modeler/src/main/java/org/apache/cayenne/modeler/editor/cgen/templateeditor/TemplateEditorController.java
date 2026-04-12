@@ -49,7 +49,7 @@ public class TemplateEditorController extends CayenneController {
     private Boolean isTemplateModified;
     private Boolean isTemplateDefault;
     private ArtefactsConfigurator artefactsConfigurator;
-    private TemplateEditorView editorView;
+    private TemplateEditorView view;
     private PreviewActionConfigurator actionConfigurator;
 
 
@@ -63,18 +63,18 @@ public class TemplateEditorController extends CayenneController {
 
     public void startupAction() {
         this.artefactsConfigurator = setupArtefactConfigurator();
-        this.editorView = new TemplateEditorView(artefactsConfigurator.getArtifactsNames(currentDataMap));
+        this.view = new TemplateEditorView(artefactsConfigurator.getArtifactsNames(currentDataMap));
         this.actionConfigurator = new PreviewActionConfigurator(this);
         this.isTemplateDefault = TemplateType.isDefault(configuration.getTemplateByType(templateType).getData());
         this.isTemplateModified = false;
-        this.templateLoader = new EditorTemplateLoader(configuration, this.editorView);
+        this.templateLoader = new EditorTemplateLoader(configuration, this.view);
         this.templateSaver = new EditorTemplateSaver(configuration);
 
         configureEditorView(templateType);
         addListeners();
         centerView();
         initBindings();
-        this.editorView.setVisible(true);
+        this.view.setVisible(true);
     }
 
     private ArtefactsConfigurator setupArtefactConfigurator() {
@@ -97,28 +97,28 @@ public class TemplateEditorController extends CayenneController {
     }
 
     private void configureEditorView(TemplateType templateType) {
-        this.editorView.getEditingTemplatePane().setText(templateLoader.load(templateType, isTemplateDefault));
-        this.editorView.getEditingTemplatePane().discardAllEdits();
-        this.editorView.editingTemplatePane.setCaretPosition(0);
-        this.editorView.getSaveButton().setEnabled(isTemplateModified);
-        this.editorView.setTitle(templateType.readableName() + " - cayenne template editor");
+        this.view.getEditingTemplatePane().setText(templateLoader.load(templateType, isTemplateDefault));
+        this.view.getEditingTemplatePane().discardAllEdits();
+        this.view.editingTemplatePane.setCaretPosition(0);
+        this.view.getSaveButton().setEnabled(isTemplateModified);
+        this.view.setTitle(templateType.readableName() + " - cayenne template editor");
     }
 
     @Override
     public TemplateEditorView getView() {
-        return editorView;
+        return view;
     }
 
     protected void initBindings() {
-        editorView.getSaveButton().addActionListener(e -> saveAction());
-        editorView.getPreviewButton().addActionListener(e -> generatePreviewAction());
-        editorView.getFindButton().addActionListener(e -> findAction());
-        editorView.getFindAndReplaceButton().addActionListener(e -> findAndReplaceAction());
-        editorView.getResetToDefaultButton().addActionListener(e -> resetToDefaultAction());
+        view.getSaveButton().addActionListener(e -> saveAction());
+        view.getPreviewButton().addActionListener(e -> generatePreviewAction());
+        view.getFindButton().addActionListener(e -> findAction());
+        view.getFindAndReplaceButton().addActionListener(e -> findAndReplaceAction());
+        view.getResetToDefaultButton().addActionListener(e -> resetToDefaultAction());
     }
 
     protected void addListeners() {
-        editorView.getEditingTemplatePane().getDocument().addDocumentListener(new DocumentListener() {
+        view.getEditingTemplatePane().getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {//noop
             }
@@ -131,11 +131,11 @@ public class TemplateEditorController extends CayenneController {
             public void changedUpdate(DocumentEvent e) {
                 isTemplateModified = true;
                 isTemplateDefault = false;
-                editorView.getSaveButton().setEnabled(true);
+                view.getSaveButton().setEnabled(true);
             }
         });
 
-        editorView.addWindowListener(new WindowAdapter() {
+        view.addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent e) {
                 parentController.setEditorOpen(true);
@@ -143,7 +143,7 @@ public class TemplateEditorController extends CayenneController {
             }
         });
 
-        editorView.addWindowListener(new WindowAdapter() {
+        view.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 if (isTemplateModified && showUnsavedChangesCloseDialog() == 0) {
@@ -157,19 +157,19 @@ public class TemplateEditorController extends CayenneController {
     }
 
     public void saveAction() {
-        templateSaver.save(templateType, isTemplateDefault, editorView.getTemplateText());
+        templateSaver.save(templateType, isTemplateDefault, view.getTemplateText());
         parentController.getCodeGeneratorController().checkCgenConfigDirty();
         isTemplateModified = false;
         parentController.updateTemplatesLabels(configuration);
-        editorView.getSaveButton().setEnabled(false);
+        view.getSaveButton().setEnabled(false);
     }
 
     public void generatePreviewAction() {
         try {
-            ClassGenerationAction action = actionConfigurator.preparePreviewAction(editorView.getTemplateText());
+            ClassGenerationAction action = actionConfigurator.preparePreviewAction(view.getTemplateText());
             Writer writer = actionConfigurator.getWriter();
 
-            int caretPosition = editorView.getEditingTemplatePane().getCaretPosition();
+            int caretPosition = view.getEditingTemplatePane().getCaretPosition();
             try {
                 action.execute();
             } catch (ParseErrorException pe) {
@@ -180,20 +180,20 @@ public class TemplateEditorController extends CayenneController {
             }
             displayPreview(writer, caretPosition);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(editorView, e.getMessage(), "Preview Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(view, e.getMessage(), "Preview Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void displayPreview(Writer writer, int caretPosition) {
-        editorView.getEditingTemplatePane().setCaretPosition(caretPosition);
-        editorView.getClassPreviewPane().setText(null);
-        editorView.getClassPreviewPane().setText(writer.toString());
-        editorView.getClassPreviewPane().setCaretPosition(0);
+        view.getEditingTemplatePane().setCaretPosition(caretPosition);
+        view.getClassPreviewPane().setText(null);
+        view.getClassPreviewPane().setText(writer.toString());
+        view.getClassPreviewPane().setCaretPosition(0);
     }
 
     private int getErrorCaretPosition(ParseErrorException e) throws BadLocationException {
         int errorLineNumber = e.getLineNumber();
-        return editorView.getEditingTemplatePane().getLineStartOffset(errorLineNumber - 1);
+        return view.getEditingTemplatePane().getLineStartOffset(errorLineNumber - 1);
     }
 
     public void findAction() {
@@ -207,8 +207,8 @@ public class TemplateEditorController extends CayenneController {
     public void resetToDefaultAction() {
         int result = showResetToDefaultDialog();
         if (result == JOptionPane.OK_OPTION) {
-            editorView.getEditingTemplatePane().setText(templateLoader.load(templateType, true));
-            editorView.getEditingTemplatePane().setCaretPosition(0);
+            view.getEditingTemplatePane().setText(templateLoader.load(templateType, true));
+            view.getEditingTemplatePane().setCaretPosition(0);
             isTemplateModified = true;
             isTemplateDefault = true;
         }
@@ -268,6 +268,6 @@ public class TemplateEditorController extends CayenneController {
     }
 
     public String getSelectedArtifactName() {
-        return getView().getSelectedArtifactName();
+        return view.getSelectedArtifactName();
     }
 }

@@ -120,7 +120,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         ProcedureDisplayListener, MultipleObjectsDisplayListener,
         EmbeddableDisplayListener, EmbeddableListener {
 
-    private static final Logger logObj = LoggerFactory.getLogger(ProjectTreeView.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProjectTreeView.class);
 
     private static final Color SELECTION_COLOR = UIManager.getColor("Tree.selectionBackground");
 
@@ -301,7 +301,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
             return (value != null) ? String.valueOf(PropertyUtils.getProperty(value, "name")) : "";
         } catch (Exception e) {
-            logObj.warn("Exception reading property 'name', class " + value.getClass().getName(), e);
+            LOGGER.warn("Exception reading property 'name', class " + value.getClass().getName(), e);
             return "";
         }
     }

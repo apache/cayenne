@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeListener;
@@ -39,7 +38,7 @@ import java.util.prefs.Preferences;
  */
 public abstract class CayenneController {
 
-    private static Logger logObj = LoggerFactory.getLogger(CayenneController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CayenneController.class);
 
     protected CayenneController parent;
     protected Application application;
@@ -117,7 +116,7 @@ public abstract class CayenneController {
      */
     protected void reportError(String title, Throwable th) {
         th = Util.unwindException(th);
-        logObj.info("Error in " + getClass().getName(), th);
+        LOGGER.info("Error in " + getClass().getName(), th);
         th.printStackTrace();
 
         JOptionPane.showMessageDialog(
@@ -161,22 +160,19 @@ public abstract class CayenneController {
         final JDialog dialog = (JDialog) window;
 
         KeyStroke escReleased = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, true);
-        ActionListener closeAction = new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                if (dialog.isVisible()) {
-                    switch (dialog.getDefaultCloseOperation()) {
-                        case JDialog.HIDE_ON_CLOSE:
-                            dialog.setVisible(false);
-                            break;
-                        case JDialog.DISPOSE_ON_CLOSE:
-                            dialog.setVisible(false);
-                            dialog.dispose();
-                            break;
-                        case JDialog.DO_NOTHING_ON_CLOSE:
-                        default:
-                            break;
-                    }
+        ActionListener closeAction = e -> {
+            if (dialog.isVisible()) {
+                switch (dialog.getDefaultCloseOperation()) {
+                    case JDialog.HIDE_ON_CLOSE:
+                        dialog.setVisible(false);
+                        break;
+                    case JDialog.DISPOSE_ON_CLOSE:
+                        dialog.setVisible(false);
+                        dialog.dispose();
+                        break;
+                    case JDialog.DO_NOTHING_ON_CLOSE:
+                    default:
+                        break;
                 }
             }
         };
@@ -189,27 +185,11 @@ public abstract class CayenneController {
     /**
      * Finds a Window in the view hierarchy.
      */
-    public Window getWindow() {
+    private Window getWindow() {
         Component view = getView();
         while (view != null) {
             if (view instanceof Window) {
                 return (Window) view;
-            }
-
-            view = view.getParent();
-        }
-
-        return null;
-    }
-
-    /**
-     * Finds a JFrame in the view hierarchy.
-     */
-    public JFrame getFrame() {
-        Component view = getView();
-        while (view != null) {
-            if (view instanceof JFrame) {
-                return (JFrame) view;
             }
 
             view = view.getParent();
@@ -242,12 +222,5 @@ public abstract class CayenneController {
         }
 
         propertyChangeSupport.addPropertyChangeListener(expression, listener);
-    }
-
-    /**
-     * Default implementation is a noop. Override to handle parent binding updates.
-     */
-    public void bindingUpdated(String expression, Object newValue) {
-        // do nothing...
     }
 }

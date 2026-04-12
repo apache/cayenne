@@ -357,7 +357,7 @@ public class FindAction extends CayenneAction {
     /**
      * Builds a tree path for a given path and make selection in it
      */
-    private static TreePath buildAndSelectTreePath(DataMap map, Object object, EditorView editor) {
+    private static void buildAndSelectTreePath(DataMap map, Object object, EditorView editor) {
         ProjectTreeView projectTreeView = editor.getProjectTreeView();
         ProjectTreeModel treeModel = (ProjectTreeModel) projectTreeView.getModel();
 
@@ -372,7 +372,6 @@ public class FindAction extends CayenneAction {
             projectTreeView.expandPath(treePath.getParentPath());
         }
         projectTreeView.getSelectionModel().setSelectionPath(treePath);
-        return treePath;
     }
 
     /**

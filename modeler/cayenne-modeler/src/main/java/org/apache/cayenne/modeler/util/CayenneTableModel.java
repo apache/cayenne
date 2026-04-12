@@ -19,6 +19,16 @@
 
 package org.apache.cayenne.modeler.util;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.undo.CayenneTableModelUndoableEdit;
+import org.apache.cayenne.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -28,34 +38,20 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.swing.JOptionPane;
-import javax.swing.table.AbstractTableModel;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.undo.CayenneTableModelUndoableEdit;
-import org.apache.cayenne.util.Util;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Superclass of CayenneModeler table model classes.
  */
 public abstract class CayenneTableModel<T> extends AbstractTableModel {
-    private static final Logger logObj = LoggerFactory.getLogger(CayenneTableModel.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CayenneTableModel.class);
 
-    protected ProjectController mediator;
+    protected ProjectController controller;
     protected Object eventSource;
     protected List<T> objectList;
 
-    /**
-     * Constructor for CayenneTableModel.
-     */
-    public CayenneTableModel(ProjectController mediator, Object eventSource, List<T> objectList) {
+    public CayenneTableModel(ProjectController controller, Object eventSource, List<T> objectList) {
         super();
         this.eventSource = eventSource;
-        this.mediator = mediator;
+        this.controller = controller;
         this.objectList = objectList;
     }
 
@@ -66,11 +62,11 @@ public abstract class CayenneTableModel<T> extends AbstractTableModel {
             if (!Util.nullSafeEquals(newVal, oldValue)) {
                 setUpdatedValueAt(newVal, row, col);
                 
-                this.mediator.getApplication().getUndoManager().addEdit(
+                this.controller.getApplication().getUndoManager().addEdit(
                         new CayenneTableModelUndoableEdit(this, oldValue, newVal, row, col));
             }
         } catch (IllegalArgumentException e) {
-            logObj.error("Error setting table model value", e);
+            LOGGER.error("Error setting table model value", e);
             JOptionPane.showMessageDialog(
                     Application.getFrame(),
                     e.getMessage(),
@@ -93,28 +89,22 @@ public abstract class CayenneTableModel<T> extends AbstractTableModel {
     /**
      * Returns the number of objects on the list.
      */
+    @Override
     public int getRowCount() {
         return objectList.size();
     }
 
     /**
-     * Returns an object used as an event source.
-     */
-    public Object getEventSource() {
-        return eventSource;
-    }
-
-    /**
      * Returns EventController object.
      */
-    public ProjectController getMediator() {
-        return mediator;
+    public ProjectController getController() {
+        return controller;
     }
 
     /**
      * Returns internal object list.
      */
-    public java.util.List<T> getObjectList() {
+    public List<T> getObjectList() {
         return objectList;
     }
 

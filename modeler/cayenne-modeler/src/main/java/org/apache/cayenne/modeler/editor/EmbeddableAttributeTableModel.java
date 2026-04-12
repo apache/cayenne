@@ -91,7 +91,7 @@ public class EmbeddableAttributeTableModel extends CayenneTableModel {
             fireTableCellUpdated(row, col);
         }
 
-        mediator.fireEmbeddableAttributeEvent(event);
+        controller.fireEmbeddableAttributeEvent(event);
     }
 
     public int getColumnCount() {

@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 class ProjectOpener extends JFileChooser {
 
-    private static Logger logObj = LoggerFactory.getLogger(ProjectOpener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProjectOpener.class);
 
     /**
      * Selects a directory to store the project.
@@ -82,12 +82,12 @@ class ProjectOpener extends JFileChooser {
             int status = showDialog(f, "Select");
             selectedDir = getSelectedFile();
             if (status != JFileChooser.APPROVE_OPTION || selectedDir == null) {
-                logObj.info("Save canceled.");
+                LOGGER.info("Save canceled.");
                 return null;
             }
 
             // normalize selection
-            logObj.info("Selected: " + selectedDir);
+            LOGGER.info("Selected: " + selectedDir);
             if (!selectedDir.isDirectory()) {
                 selectedDir = getSelectedFile().getParentFile();
             }

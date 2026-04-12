@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 
 public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(EjbqlQueryScriptsTab.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EjbqlQueryScriptsTab.class);
 
     protected ProjectController mediator;
     protected JCayenneTextPane scriptArea;
@@ -80,7 +80,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
                         validateEJBQL();
                     }
                 } catch (BadLocationException ex) {
-                    logger.warn("Error reading document", ex);
+                    LOGGER.warn("Error reading document", ex);
                 }
             }
 
@@ -163,7 +163,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
         try {
             setEJBQL(doc.getText(0, doc.getLength()));
         } catch (BadLocationException ex) {
-            logger.warn("Error reading document", ex);
+            LOGGER.warn("Error reading document", ex);
         }
     }
 

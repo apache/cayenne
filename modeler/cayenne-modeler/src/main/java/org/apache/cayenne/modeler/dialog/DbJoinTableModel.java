@@ -19,18 +19,19 @@
 
 package org.apache.cayenne.modeler.dialog;
 
-import java.util.ArrayList;
-
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
 
-/** Model for editing DbAttributePair-s. Changes in the join attributes
- *  don't take place until commit() is called. Creation of the new
- *  DbAttributes is not allowed - user should choose from the existing ones.
-*/
+import java.util.ArrayList;
+
+/**
+ * Model for editing DbAttributePair-s. Changes in the join attributes
+ * don't take place until commit() is called. Creation of the new
+ * DbAttributes is not allowed - user should choose from the existing ones.
+ */
 public class DbJoinTableModel extends CayenneTableModel<DbJoin> {
 
     // Columns
@@ -41,13 +42,15 @@ public class DbJoinTableModel extends CayenneTableModel<DbJoin> {
     protected DbEntity source;
     protected DbEntity target;
 
-    /** Is the table editable. */
+    /**
+     * Is the table editable.
+     */
     private boolean editable;
 
     public DbJoinTableModel(
-        DbRelationship relationship,
-        ProjectController mediator,
-        Object src) {
+            DbRelationship relationship,
+            ProjectController mediator,
+            Object src) {
 
         super(mediator, src, new ArrayList<>(relationship.getJoins()));
         this.relationship = relationship;
@@ -56,10 +59,10 @@ public class DbJoinTableModel extends CayenneTableModel<DbJoin> {
     }
 
     public DbJoinTableModel(
-        DbRelationship relationship,
-        ProjectController mediator,
-        Object src,
-        boolean editable) {
+            DbRelationship relationship,
+            ProjectController mediator,
+            Object src,
+            boolean editable) {
 
         this(relationship, mediator, src);
         this.editable = editable;
@@ -69,22 +72,16 @@ public class DbJoinTableModel extends CayenneTableModel<DbJoin> {
         return DbJoin.class;
     }
 
-    /** Mode new attribute pairs from list to the DbRelationship. */
     public void commit() {
-        relationship.setJoins(getObjectList());
+        relationship.setJoins(objectList);
     }
 
-    /**
-     * Returns null to disable ordering.
-     */
-    public String getOrderingKey() {
-        return null;
-    }
-
+    @Override
     public int getColumnCount() {
         return 2;
     }
 
+    @Override
     public String getColumnName(int column) {
         if (column == SOURCE)
             return relationship.getSourceEntity().getName();
@@ -96,8 +93,8 @@ public class DbJoinTableModel extends CayenneTableModel<DbJoin> {
 
     public DbJoin getJoin(int row) {
         return (row >= 0 && row < objectList.size())
-            ? objectList.get(row)
-            : null;
+                ? objectList.get(row)
+                : null;
     }
 
     public Object getValueAt(int row, int column) {
@@ -108,11 +105,9 @@ public class DbJoinTableModel extends CayenneTableModel<DbJoin> {
 
         if (column == SOURCE) {
             return join.getSourceName();
-        }
-        else if (column == TARGET) {
+        } else if (column == TARGET) {
             return join.getTargetName();
-        }
-        else {
+        } else {
             return null;
         }
 
@@ -131,23 +126,21 @@ public class DbJoinTableModel extends CayenneTableModel<DbJoin> {
             }
 
             join.setSourceName(value);
-        }
-        else if (column == TARGET) {
+        } else if (column == TARGET) {
             if (target == null || target.getAttribute(value) == null) {
                 value = null;
             }
 
             join.setTargetName(value);
         }
-        
+
         fireTableRowsUpdated(row, row);
     }
 
     public boolean isCellEditable(int row, int col) {
         if (col == SOURCE) {
             return relationship.getSourceEntity() != null && editable;
-        }
-        else if (col == TARGET) {
+        } else if (col == TARGET) {
             return relationship.getTargetEntity() != null && editable;
         }
 
@@ -161,7 +154,7 @@ public class DbJoinTableModel extends CayenneTableModel<DbJoin> {
 
     @Override
     public void sortByColumn(int sortCol, boolean isAscent) {
-        switch(sortCol){
+        switch (sortCol) {
             case SOURCE:
                 sortByElementProperty("sourceName", isAscent);
                 break;
