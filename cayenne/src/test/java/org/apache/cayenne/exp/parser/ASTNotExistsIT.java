@@ -84,7 +84,7 @@ public class ASTNotExistsIT extends RuntimeCase {
 
     @Test
     public void testEvaluateInMemoryNotExistsExpression() {
-//        doEvaluateNoQuery(Artist.PAINTING_ARRAY.notExists());
+        doEvaluateNoQuery(Artist.PAINTING_ARRAY.notExists());
 
         doEvaluateNoQuery(Artist.ARTIST_ID_PK_PROPERTY.eq(6L).andExp(Artist.PAINTING_ARRAY.notExists()));
 
