@@ -44,8 +44,6 @@ mvn test -Dtest=PoolingDataSourceTest#testConnection
 mvn test -Dtest=SomeTest -DcayenneTestConnection=h2
 ```
 
-CI runs JDK 11 and 17 with all database profiles on each PR.
-
 ## Module Structure
 
 - **cayenne** — Core ORM library (main module to work with)
@@ -82,17 +80,34 @@ CI runs JDK 11 and 17 with all database profiles on each PR.
 
 ### Key Packages (inside `cayenne/src/main/java/org/apache/cayenne/`)
 
-| Package | Purpose |
-|---|---|
-| `access/` | Database access layer, `DataDomain`, `DataContext` |
-| `configuration/` | Runtime bootstrap, XML config loading |
-| `query/` | All query types |
-| `exp/` | Expression/criteria parsing and evaluation |
-| `dba/` | Per-database SQL dialects and adapters |
-| `map/` | ORM mapping metadata (`DataMap`, `ObjEntity`, etc.) |
-| `runtime/` | `CayenneRuntime`, DI module wiring |
-| `tx/` | Transaction management |
+| Package          | Purpose                                             |
+|------------------|-----------------------------------------------------|
+| `access/`        | Database access layer, `DataDomain`, `DataContext`  |
+| `configuration/` | Runtime bootstrap, XML config loading               |
+| `query/`         | All query types                                     |
+| `exp/`           | Expression/criteria parsing and evaluation          |
+| `dba/`           | Per-database SQL dialects and adapters              |
+| `map/`           | ORM mapping metadata (`DataMap`, `ObjEntity`, etc.) |
+| `runtime/`       | `CayenneRuntime`, DI module wiring                  |
+| `tx/`            | Transaction management                              |
+
+### Source Code Conventions
+
+- Package root: `org.apache.cayenne`
+- All source files must have the Apache License 2.0 header (enforced by Apache RAT plugin)
+- Encoding: UTF-8 everywhere
 
 ### Test Infrastructure
 
 Tests in `cayenne/src/test/` use a shared set of test mapping files and database scripts in `src/test/resources/`. The `DBHelper` and `UnitDbAdapter` utilities handle database-specific test setup. TestContainers is used for non-embedded databases.
+Test naming: `*Test.java` = unit tests (Surefire), `*IT.java` = integration tests (Failsafe). Tests use JUnit 4 and Mockito.
+
+## CI Matrix
+
+GitHub Actions runs on push to master/STABLE-* branches:
+- JDK: 11, 17, 21 (22 experimental)
+- Databases: hsql, h2, derby, mysql-tc, postgres-tc, sqlserver-tc
+
+## Issue Tracker
+
+JIRA: https://issues.apache.org/jira/browse/CAY — Ticket format: `CAY-XXXX`
