@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.xml.ProjectVersion;
 
 /**
  * <p>
@@ -44,7 +45,7 @@ import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
  */
 public class XMLEncoder {
 
-    protected String projectVersion;
+    protected ProjectVersion projectVersion;
     protected String indent;
     protected PrintWriter out;
 
@@ -68,7 +69,7 @@ public class XMLEncoder {
     /**
      * @since 3.1
      */
-    public XMLEncoder(PrintWriter out, String indent, String projectVersion) {
+    public XMLEncoder(PrintWriter out, String indent, ProjectVersion projectVersion) {
         this.indent = indent;
         this.out = out;
         this.projectVersion = projectVersion;
@@ -343,6 +344,9 @@ public class XMLEncoder {
      * @since 4.1
      */
     public XMLEncoder projectVersion() {
-        return attribute("project-version", projectVersion, true);
+        if (projectVersion != null) {
+            return attribute("project-version", projectVersion.getAsString(), true);
+        }
+        return this;
     }
 }

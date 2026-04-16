@@ -24,6 +24,8 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.xml.ProjectVersion;
+import org.apache.cayenne.configuration.xml.Schema;
 import org.apache.cayenne.map.event.DbEntityListener;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.ObjEntityListener;
@@ -96,8 +98,8 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	 * The namespace in which the data map XML file will be created. This is
 	 * also the URI to locate a copy of the schema document.
 	 */
-	public static final String SCHEMA_XSD = "http://cayenne.apache.org/schema/11/modelMap";
-    public static final String SCHEMA_XSD_LOCATION = "https://cayenne.apache.org/schema/11/modelMap.xsd";
+	public static final String SCHEMA_XSD = Schema.buildNamespace(ProjectVersion.getCurrent(), "modelMap");
+    public static final String SCHEMA_XSD_LOCATION = Schema.buildSchemaLocation(ProjectVersion.getCurrent(), "modelMap");
 
 	protected String name;
 	protected String location;

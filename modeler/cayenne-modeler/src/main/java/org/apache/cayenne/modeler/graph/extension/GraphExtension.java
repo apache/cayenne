@@ -21,11 +21,12 @@ package org.apache.cayenne.modeler.graph.extension;
 
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.xml.ProjectVersion;
+import org.apache.cayenne.configuration.xml.Schema;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.graph.GraphRegistry;
-import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.extension.BaseNamingDelegate;
 import org.apache.cayenne.project.extension.LoaderDelegate;
 import org.apache.cayenne.project.extension.ProjectExtension;
@@ -36,7 +37,7 @@ import org.apache.cayenne.project.extension.SaverDelegate;
  */
 public class GraphExtension implements ProjectExtension {
 
-    static final String NAMESPACE = "http://cayenne.apache.org/schema/" + Project.VERSION + "/graph";
+    static final String NAMESPACE = Schema.buildNamespace(ProjectVersion.getCurrent(), "graph");
 
     static final String GRAPH_SUFFIX = ".graph.xml";
 

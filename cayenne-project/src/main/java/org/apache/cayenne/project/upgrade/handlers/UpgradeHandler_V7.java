@@ -26,6 +26,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.xml.ProjectVersion;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -39,14 +40,14 @@ import org.w3c.dom.Node;
 public class UpgradeHandler_V7 implements UpgradeHandler {
 
     @Override
-    public String getVersion() {
-        return "7";
+    public ProjectVersion getVersion() {
+        return ProjectVersion.V7;
     }
 
     @Override
     public void processProjectDom(UpgradeUnit upgradeUnit) {
         Element domain = upgradeUnit.getDocument().getDocumentElement();
-        domain.setAttribute("project-version", getVersion());
+        domain.setAttribute("project-version", getVersion().getAsString());
 
         XPath xpath = XPathFactory.newInstance().newXPath();
         Node node;

@@ -19,18 +19,19 @@
 
 package org.apache.cayenne.project.upgrade.handlers;
 
-import java.io.File;
+import org.apache.cayenne.configuration.xml.ProjectVersion;
+import org.apache.cayenne.project.upgrade.UpgradeUnit;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
-
-import org.apache.cayenne.project.upgrade.UpgradeUnit;
 import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+
+import java.io.File;
 
 /**
  * @since 4.1
@@ -40,14 +41,14 @@ public class UpgradeHandler_V9 implements UpgradeHandler {
     private static final Logger logger = LoggerFactory.getLogger(UpgradeHandler_V9.class);
 
     @Override
-    public String getVersion() {
-        return "9";
+    public ProjectVersion getVersion() {
+        return ProjectVersion.V9;
     }
 
     @Override
     public void processProjectDom(UpgradeUnit upgradeUnit) {
         Element domain = upgradeUnit.getDocument().getDocumentElement();
-        domain.setAttribute("project-version", getVersion());
+        domain.setAttribute("project-version", getVersion().getAsString());
     }
 
     @Override
