@@ -178,7 +178,7 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    private EventListenerList listenerList;
+    private EventListenerList listeners;
     private boolean dirty;
     private Project project;
     private Preferences projectControllerPreferences;
@@ -196,7 +196,7 @@ public class ProjectController extends CayenneController {
     public ProjectController(CayenneModelerController parent) {
         super(parent);
 
-        this.listenerList = new EventListenerList();
+        this.listeners = new EventListenerList();
         this.controllerStateHistory = new CircularArray<>(MAX_HISTORY_SIZE);
         this.currentState = new ControllerState();
     }
@@ -347,7 +347,7 @@ public class ProjectController extends CayenneController {
     public void reset() {
         clearState();
         setDirty(false);
-        listenerList = new EventListenerList();
+        listeners = new EventListenerList();
         controllerStateHistory.clear();
     }
 
@@ -506,159 +506,159 @@ public class ProjectController extends CayenneController {
     }
 
     public void addDomainDisplayListener(DomainDisplayListener listener) {
-        listenerList.add(DomainDisplayListener.class, listener);
+        listeners.add(DomainDisplayListener.class, listener);
     }
 
     public void addDomainListener(DomainListener listener) {
-        listenerList.add(DomainListener.class, listener);
+        listeners.add(DomainListener.class, listener);
     }
 
     public void removeDomainListener(DomainListener listener) {
-        listenerList.remove(DomainListener.class, listener);
+        listeners.remove(DomainListener.class, listener);
     }
 
     public void addValidationConfigDisplayListener(ValidationConfigDisplayListener listener) {
-        listenerList.add(ValidationConfigDisplayListener.class, listener);
+        listeners.add(ValidationConfigDisplayListener.class, listener);
     }
 
     public void removeValidationConfigDisplayListener(ValidationConfigDisplayListener listener) {
-        listenerList.remove(ValidationConfigDisplayListener.class, listener);
+        listeners.remove(ValidationConfigDisplayListener.class, listener);
     }
 
     public void addDataNodeDisplayListener(DataNodeDisplayListener listener) {
-        listenerList.add(DataNodeDisplayListener.class, listener);
+        listeners.add(DataNodeDisplayListener.class, listener);
     }
 
     public void addDataNodeListener(DataNodeListener listener) {
-        listenerList.add(DataNodeListener.class, listener);
+        listeners.add(DataNodeListener.class, listener);
     }
 
     public void addDataMapDisplayListener(DataMapDisplayListener listener) {
-        listenerList.add(DataMapDisplayListener.class, listener);
+        listeners.add(DataMapDisplayListener.class, listener);
     }
 
     public void addDataMapListener(DataMapListener listener) {
-        listenerList.add(DataMapListener.class, listener);
+        listeners.add(DataMapListener.class, listener);
     }
 
     public void removeDataMapListener(DataMapListener listener) {
-        listenerList.remove(DataMapListener.class, listener);
+        listeners.remove(DataMapListener.class, listener);
     }
 
     public void addDbEntityListener(DbEntityListener listener) {
-        listenerList.add(DbEntityListener.class, listener);
+        listeners.add(DbEntityListener.class, listener);
     }
 
     public void removeDbEntityListener(DbEntityListener listener) {
-        listenerList.remove(DbEntityListener.class, listener);
+        listeners.remove(DbEntityListener.class, listener);
     }
 
     public void addProjectSavedListener(ProjectSavedListener listener) {
-        listenerList.add(ProjectSavedListener.class, listener);
+        listeners.add(ProjectSavedListener.class, listener);
     }
 
     public void removeProjectSavedListener(ProjectSavedListener listener) {
-        listenerList.remove(ProjectSavedListener.class, listener);
+        listeners.remove(ProjectSavedListener.class, listener);
     }
 
     public void addObjEntityListener(ObjEntityListener listener) {
-        listenerList.add(ObjEntityListener.class, listener);
+        listeners.add(ObjEntityListener.class, listener);
     }
 
     public void removeObjEntityListener(ObjEntityListener listener) {
-        listenerList.remove(ObjEntityListener.class, listener);
+        listeners.remove(ObjEntityListener.class, listener);
     }
 
     public void addDbEntityDisplayListener(DbEntityDisplayListener listener) {
-        listenerList.add(DbEntityDisplayListener.class, listener);
+        listeners.add(DbEntityDisplayListener.class, listener);
     }
 
     public void addObjEntityDisplayListener(ObjEntityDisplayListener listener) {
-        listenerList.add(ObjEntityDisplayListener.class, listener);
+        listeners.add(ObjEntityDisplayListener.class, listener);
     }
 
     public void addEmbeddableDisplayListener(EmbeddableDisplayListener listener) {
-        listenerList.add(EmbeddableDisplayListener.class, listener);
+        listeners.add(EmbeddableDisplayListener.class, listener);
     }
 
     public void addEmbeddableAttributeDisplayListener(EmbeddableAttributeDisplayListener listener) {
-        listenerList.add(EmbeddableAttributeDisplayListener.class, listener);
+        listeners.add(EmbeddableAttributeDisplayListener.class, listener);
     }
 
     public void addDbAttributeListener(DbAttributeListener listener) {
-        listenerList.add(DbAttributeListener.class, listener);
+        listeners.add(DbAttributeListener.class, listener);
     }
 
     public void removeDbAttributeListener(DbAttributeListener listener) {
-        listenerList.remove(DbAttributeListener.class, listener);
+        listeners.remove(DbAttributeListener.class, listener);
     }
 
     public void addDbAttributeDisplayListener(DbAttributeDisplayListener listener) {
-        listenerList.add(DbAttributeDisplayListener.class, listener);
+        listeners.add(DbAttributeDisplayListener.class, listener);
     }
 
     public void addObjAttributeListener(ObjAttributeListener listener) {
-        listenerList.add(ObjAttributeListener.class, listener);
+        listeners.add(ObjAttributeListener.class, listener);
     }
 
     public void removeObjAttributeListener(ObjAttributeListener listener) {
-        listenerList.remove(ObjAttributeListener.class, listener);
+        listeners.remove(ObjAttributeListener.class, listener);
     }
 
     public void addObjAttributeDisplayListener(ObjAttributeDisplayListener listener) {
-        listenerList.add(ObjAttributeDisplayListener.class, listener);
+        listeners.add(ObjAttributeDisplayListener.class, listener);
     }
 
     public void addDbRelationshipListener(DbRelationshipListener listener) {
-        listenerList.add(DbRelationshipListener.class, listener);
+        listeners.add(DbRelationshipListener.class, listener);
     }
 
     public void removeDbRelationshipListener(DbRelationshipListener listener) {
-        listenerList.add(DbRelationshipListener.class, listener);
+        listeners.add(DbRelationshipListener.class, listener);
     }
 
     public void addDbRelationshipDisplayListener(DbRelationshipDisplayListener listener) {
-        listenerList.add(DbRelationshipDisplayListener.class, listener);
+        listeners.add(DbRelationshipDisplayListener.class, listener);
     }
 
     public void addObjRelationshipListener(ObjRelationshipListener listener) {
-        listenerList.add(ObjRelationshipListener.class, listener);
+        listeners.add(ObjRelationshipListener.class, listener);
     }
 
     public void removeObjRelationshipListener(ObjRelationshipListener listener) {
-        listenerList.remove(ObjRelationshipListener.class, listener);
+        listeners.remove(ObjRelationshipListener.class, listener);
     }
 
     public void addObjRelationshipDisplayListener(ObjRelationshipDisplayListener listener) {
-        listenerList.add(ObjRelationshipDisplayListener.class, listener);
+        listeners.add(ObjRelationshipDisplayListener.class, listener);
     }
 
     public void addQueryDisplayListener(QueryDisplayListener listener) {
-        listenerList.add(QueryDisplayListener.class, listener);
+        listeners.add(QueryDisplayListener.class, listener);
     }
 
     public void addQueryListener(QueryListener listener) {
-        listenerList.add(QueryListener.class, listener);
+        listeners.add(QueryListener.class, listener);
     }
 
     public void addProcedureDisplayListener(ProcedureDisplayListener listener) {
-        listenerList.add(ProcedureDisplayListener.class, listener);
+        listeners.add(ProcedureDisplayListener.class, listener);
     }
 
     public void addProcedureListener(ProcedureListener listener) {
-        listenerList.add(ProcedureListener.class, listener);
+        listeners.add(ProcedureListener.class, listener);
     }
 
     public void addProcedureParameterListener(ProcedureParameterListener listener) {
-        listenerList.add(ProcedureParameterListener.class, listener);
+        listeners.add(ProcedureParameterListener.class, listener);
     }
 
     public void addProcedureParameterDisplayListener(ProcedureParameterDisplayListener listener) {
-        listenerList.add(ProcedureParameterDisplayListener.class, listener);
+        listeners.add(ProcedureParameterDisplayListener.class, listener);
     }
 
     public void addMultipleObjectsDisplayListener(MultipleObjectsDisplayListener listener) {
-        listenerList.add(MultipleObjectsDisplayListener.class, listener);
+        listeners.add(MultipleObjectsDisplayListener.class, listener);
     }
 
     public void fireDomainDisplayEvent(DomainDisplayEvent e) {
@@ -681,7 +681,7 @@ public class ProjectController extends CayenneController {
             saveState(e);
         }
 
-        for (DomainDisplayListener listener : listenerList.getListeners(DomainDisplayListener.class)) {
+        for (DomainDisplayListener listener : listeners.getListeners(DomainDisplayListener.class)) {
             listener.currentDomainChanged(e);
         }
 
@@ -698,7 +698,7 @@ public class ProjectController extends CayenneController {
      * @since 5.0
      */
     public void fireValidationConfigDisplayEvent(ValidationConfigDisplayEvent event) {
-        for (ValidationConfigDisplayListener listener : listenerList.getListeners(ValidationConfigDisplayListener.class)) {
+        for (ValidationConfigDisplayListener listener : listeners.getListeners(ValidationConfigDisplayListener.class)) {
             listener.validationOptionChanged(event);
         }
     }
@@ -714,7 +714,7 @@ public class ProjectController extends CayenneController {
             removeFromHistory(e);
         }
 
-        for (DomainListener listener : listenerList.getListeners(DomainListener.class)) {
+        for (DomainListener listener : listeners.getListeners(DomainListener.class)) {
             switch (e.getId()) {
                 case MapEvent.CHANGE:
                     listener.domainChanged(e);
@@ -747,7 +747,7 @@ public class ProjectController extends CayenneController {
             saveState(e);
         }
 
-        for (DataNodeDisplayListener listener : listenerList.getListeners(DataNodeDisplayListener.class)) {
+        for (DataNodeDisplayListener listener : listeners.getListeners(DataNodeDisplayListener.class)) {
             listener.currentDataNodeChanged(e);
         }
     }
@@ -763,7 +763,7 @@ public class ProjectController extends CayenneController {
             removeFromHistory(e);
         }
 
-        for (DataNodeListener listener : listenerList.getListeners(DataNodeListener.class)) {
+        for (DataNodeListener listener : listeners.getListeners(DataNodeListener.class)) {
             switch (e.getId()) {
                 case MapEvent.ADD:
                     listener.dataNodeAdded(e);
@@ -803,13 +803,13 @@ public class ProjectController extends CayenneController {
             saveState(e);
         }
 
-        for (DataMapDisplayListener listener : listenerList.getListeners(DataMapDisplayListener.class)) {
+        for (DataMapDisplayListener listener : listeners.getListeners(DataMapDisplayListener.class)) {
             listener.currentDataMapChanged(e);
         }
     }
 
     public void fireProjectSavedEvent(ProjectSavedEvent e) {
-        for (ProjectSavedListener eventListener : listenerList.getListeners(ProjectSavedListener.class)) {
+        for (ProjectSavedListener eventListener : listeners.getListeners(ProjectSavedListener.class)) {
             eventListener.onProjectSaved(e);
         }
     }
@@ -825,7 +825,7 @@ public class ProjectController extends CayenneController {
             removeFromHistory(e);
         }
 
-        for (DataMapListener eventListener : listenerList.getListeners(DataMapListener.class)) {
+        for (DataMapListener eventListener : listeners.getListeners(DataMapListener.class)) {
             switch (e.getId()) {
                 case MapEvent.ADD:
                     eventListener.dataMapAdded(e);
@@ -857,7 +857,7 @@ public class ProjectController extends CayenneController {
             removeFromHistory(e);
         }
 
-        for (ObjEntityListener listener : listenerList.getListeners(ObjEntityListener.class)) {
+        for (ObjEntityListener listener : listeners.getListeners(ObjEntityListener.class)) {
             switch (e.getId()) {
                 case MapEvent.ADD:
                     listener.objEntityAdded(e);
@@ -889,7 +889,7 @@ public class ProjectController extends CayenneController {
             removeFromHistory(e);
         }
 
-        for (DbEntityListener listener : listenerList.getListeners(DbEntityListener.class)) {
+        for (DbEntityListener listener : listeners.getListeners(DbEntityListener.class)) {
             switch (e.getId()) {
                 case MapEvent.ADD:
                     listener.dbEntityAdded(e);
@@ -917,7 +917,7 @@ public class ProjectController extends CayenneController {
             removeFromHistory(e);
         }
 
-        for (QueryListener eventListener : listenerList.getListeners(QueryListener.class)) {
+        for (QueryListener eventListener : listeners.getListeners(QueryListener.class)) {
             switch (e.getId()) {
                 case MapEvent.ADD:
                     eventListener.queryAdded(e);
@@ -945,7 +945,7 @@ public class ProjectController extends CayenneController {
             removeFromHistory(e);
         }
 
-        for (ProcedureListener eventListener : listenerList.getListeners(ProcedureListener.class)) {
+        for (ProcedureListener eventListener : listeners.getListeners(ProcedureListener.class)) {
             switch (e.getId()) {
                 case MapEvent.ADD:
                     eventListener.procedureAdded(e);
@@ -969,7 +969,7 @@ public class ProjectController extends CayenneController {
     public void fireProcedureParameterEvent(ProcedureParameterEvent e) {
         setDirty(true);
 
-        EventListener[] list = listenerList.getListeners(ProcedureParameterListener.class);
+        EventListener[] list = listeners.getListeners(ProcedureParameterListener.class);
         for (EventListener eventListener : list) {
             ProcedureParameterListener listener = (ProcedureParameterListener) eventListener;
             switch (e.getId()) {
@@ -1129,7 +1129,7 @@ public class ProjectController extends CayenneController {
             saveState(e);
         }
 
-        for (ObjEntityDisplayListener listener : listenerList.getListeners(ObjEntityDisplayListener.class)) {
+        for (ObjEntityDisplayListener listener : listeners.getListeners(ObjEntityDisplayListener.class)) {
             listener.currentObjEntityChanged(e);
         }
     }
@@ -1153,7 +1153,7 @@ public class ProjectController extends CayenneController {
             saveState(e);
         }
 
-        for (EmbeddableDisplayListener listener : listenerList.getListeners(EmbeddableDisplayListener.class)) {
+        for (EmbeddableDisplayListener listener : listeners.getListeners(EmbeddableDisplayListener.class)) {
             listener.currentEmbeddableChanged(e);
         }
     }
@@ -1176,7 +1176,7 @@ public class ProjectController extends CayenneController {
             saveState(e);
         }
 
-        for (QueryDisplayListener eventListener : listenerList.getListeners(QueryDisplayListener.class)) {
+        for (QueryDisplayListener eventListener : listeners.getListeners(QueryDisplayListener.class)) {
             eventListener.currentQueryChanged(e);
         }
     }
@@ -1199,7 +1199,7 @@ public class ProjectController extends CayenneController {
             saveState(e);
         }
 
-        for (ProcedureDisplayListener eventListener : listenerList.getListeners(ProcedureDisplayListener.class)) {
+        for (ProcedureDisplayListener eventListener : listeners.getListeners(ProcedureDisplayListener.class)) {
             eventListener.currentProcedureChanged(e);
         }
     }
@@ -1217,7 +1217,7 @@ public class ProjectController extends CayenneController {
             currentState.procedureParameters = e.getProcedureParameters();
         }
 
-        EventListener[] list = listenerList.getListeners(ProcedureParameterDisplayListener.class);
+        EventListener[] list = listeners.getListeners(ProcedureParameterDisplayListener.class);
         for (EventListener eventListener : list) {
             ProcedureParameterDisplayListener listener = (ProcedureParameterDisplayListener) eventListener;
             listener.currentProcedureParameterChanged(e);
@@ -1242,7 +1242,7 @@ public class ProjectController extends CayenneController {
             saveState(e);
         }
 
-        for (DbEntityDisplayListener listener : listenerList.getListeners(DbEntityDisplayListener.class)) {
+        for (DbEntityDisplayListener listener : listeners.getListeners(DbEntityDisplayListener.class)) {
             listener.currentDbEntityChanged(e);
         }
     }
@@ -1253,7 +1253,7 @@ public class ProjectController extends CayenneController {
     public void fireDbAttributeEvent(AttributeEvent e) {
         setDirty(true);
 
-        for (DbAttributeListener listener : listenerList.getListeners(DbAttributeListener.class)) {
+        for (DbAttributeListener listener : listeners.getListeners(DbAttributeListener.class)) {
             switch (e.getId()) {
                 case MapEvent.ADD:
                     listener.dbAttributeAdded(e);
@@ -1284,7 +1284,7 @@ public class ProjectController extends CayenneController {
             System.arraycopy(e.getAttributes(), 0, currentState.dbAttrs, 0, currentState.dbAttrs.length);
         }
 
-        for (DbAttributeDisplayListener listener : listenerList.getListeners(DbAttributeDisplayListener.class)) {
+        for (DbAttributeDisplayListener listener : listeners.getListeners(DbAttributeDisplayListener.class)) {
             listener.currentDbAttributeChanged(e);
         }
     }
@@ -1295,7 +1295,7 @@ public class ProjectController extends CayenneController {
     public void fireObjAttributeEvent(AttributeEvent e) {
         setDirty(true);
 
-        for (ObjAttributeListener listener : listenerList.getListeners(ObjAttributeListener.class)) {
+        for (ObjAttributeListener listener : listeners.getListeners(ObjAttributeListener.class)) {
             switch (e.getId()) {
                 case MapEvent.ADD:
                     listener.objAttributeAdded(e);
@@ -1326,7 +1326,7 @@ public class ProjectController extends CayenneController {
             System.arraycopy(e.getAttributes(), 0, currentState.objAttrs, 0, currentState.objAttrs.length);
         }
 
-        EventListener[] list = listenerList.getListeners(ObjAttributeDisplayListener.class);
+        EventListener[] list = listeners.getListeners(ObjAttributeDisplayListener.class);
         for (EventListener listener : list) {
             ObjAttributeDisplayListener temp = (ObjAttributeDisplayListener) listener;
             temp.currentObjAttributeChanged(e);
@@ -1347,7 +1347,7 @@ public class ProjectController extends CayenneController {
             System.arraycopy(ev.getEmbeddableAttributes(), 0, currentState.embAttrs, 0, currentState.embAttrs.length);
         }
 
-        EventListener[] list = listenerList.getListeners(EmbeddableAttributeDisplayListener.class);
+        EventListener[] list = listeners.getListeners(EmbeddableAttributeDisplayListener.class);
         for (EventListener listener : list) {
             EmbeddableAttributeDisplayListener temp = (EmbeddableAttributeDisplayListener) listener;
             temp.currentEmbeddableAttributeChanged(ev);
@@ -1364,7 +1364,7 @@ public class ProjectController extends CayenneController {
             ((DbEntity) e.getEntity()).dbRelationshipChanged(e);
         }
 
-        for (DbRelationshipListener listener : listenerList.getListeners(DbRelationshipListener.class)) {
+        for (DbRelationshipListener listener : listeners.getListeners(DbRelationshipListener.class)) {
             switch (e.getId()) {
                 case MapEvent.ADD:
                     listener.dbRelationshipAdded(e);
@@ -1395,7 +1395,7 @@ public class ProjectController extends CayenneController {
             System.arraycopy(e.getRelationships(), 0, currentState.dbRels, 0, currentState.dbRels.length);
         }
 
-        for (DbRelationshipDisplayListener listener : listenerList.getListeners(DbRelationshipDisplayListener.class)) {
+        for (DbRelationshipDisplayListener listener : listeners.getListeners(DbRelationshipDisplayListener.class)) {
             listener.currentDbRelationshipChanged(e);
         }
     }
@@ -1406,7 +1406,7 @@ public class ProjectController extends CayenneController {
     public void fireObjRelationshipEvent(RelationshipEvent e) {
         setDirty(true);
 
-        for (ObjRelationshipListener listener : listenerList.getListeners(ObjRelationshipListener.class)) {
+        for (ObjRelationshipListener listener : listeners.getListeners(ObjRelationshipListener.class)) {
             switch (e.getId()) {
                 case MapEvent.ADD:
                     listener.objRelationshipAdded(e);
@@ -1428,7 +1428,7 @@ public class ProjectController extends CayenneController {
         currentState.paths = e.getNodes();
         currentState.parentPath = e.getParentNode();
 
-        EventListener[] list = listenerList.getListeners(MultipleObjectsDisplayListener.class);
+        EventListener[] list = listeners.getListeners(MultipleObjectsDisplayListener.class);
         for (EventListener listener : list) {
             MultipleObjectsDisplayListener temp = (MultipleObjectsDisplayListener) listener;
             temp.currentObjectsChanged(e, getApplication());
@@ -1450,7 +1450,7 @@ public class ProjectController extends CayenneController {
             System.arraycopy(e.getRelationships(), 0, currentState.objRels, 0, currentState.objRels.length);
         }
 
-        for (ObjRelationshipDisplayListener listener : listenerList.getListeners(ObjRelationshipDisplayListener.class)) {
+        for (ObjRelationshipDisplayListener listener : listeners.getListeners(ObjRelationshipDisplayListener.class)) {
             listener.currentObjRelationshipChanged(e);
         }
     }
@@ -1525,7 +1525,7 @@ public class ProjectController extends CayenneController {
      * @param listener listener
      */
     public void addCallbackMethodListener(CallbackMethodListener listener) {
-        listenerList.add(CallbackMethodListener.class, listener);
+        listeners.add(CallbackMethodListener.class, listener);
     }
 
     /**
@@ -1536,7 +1536,7 @@ public class ProjectController extends CayenneController {
     public void fireCallbackMethodEvent(CallbackMethodEvent e) {
         setDirty(true);
 
-        for (CallbackMethodListener listener : listenerList.getListeners(CallbackMethodListener.class)) {
+        for (CallbackMethodListener listener : listeners.getListeners(CallbackMethodListener.class)) {
             switch (e.getId()) {
                 case MapEvent.ADD:
                     listener.callbackMethodAdded(e);
@@ -1604,16 +1604,16 @@ public class ProjectController extends CayenneController {
     }
 
     public void addEmbeddableAttributeListener(EmbeddableAttributeListener listener) {
-        listenerList.add(EmbeddableAttributeListener.class, listener);
+        listeners.add(EmbeddableAttributeListener.class, listener);
     }
 
     public void addEmbeddableListener(EmbeddableListener listener) {
-        listenerList.add(EmbeddableListener.class, listener);
+        listeners.add(EmbeddableListener.class, listener);
     }
 
     public void fireEmbeddableEvent(EmbeddableEvent e, DataMap map) {
         setDirty(true);
-        for (EmbeddableListener listener : listenerList.getListeners(EmbeddableListener.class)) {
+        for (EmbeddableListener listener : listeners.getListeners(EmbeddableListener.class)) {
 
             switch (e.getId()) {
                 case MapEvent.ADD:
@@ -1633,7 +1633,7 @@ public class ProjectController extends CayenneController {
 
     public void fireEmbeddableAttributeEvent(EmbeddableAttributeEvent e) {
         setDirty(true);
-        for (EmbeddableAttributeListener listener : listenerList.getListeners(EmbeddableAttributeListener.class)) {
+        for (EmbeddableAttributeListener listener : listeners.getListeners(EmbeddableAttributeListener.class)) {
 
             switch (e.getId()) {
                 case MapEvent.ADD:
@@ -1652,21 +1652,21 @@ public class ProjectController extends CayenneController {
     }
 
     public void fireProjectOnSaveEvent(ProjectOnSaveEvent e) {
-        for (ProjectOnSaveListener listener : listenerList.getListeners(ProjectOnSaveListener.class)) {
+        for (ProjectOnSaveListener listener : listeners.getListeners(ProjectOnSaveListener.class)) {
             listener.beforeSaveChanges(e);
         }
     }
 
     public void addDataSourceModificationListener(DataSourceModificationListener listener) {
-        listenerList.add(DataSourceModificationListener.class, listener);
+        listeners.add(DataSourceModificationListener.class, listener);
     }
 
     public void removeDataSourceModificationListener(DataSourceModificationListener listener) {
-        listenerList.remove(DataSourceModificationListener.class, listener);
+        listeners.remove(DataSourceModificationListener.class, listener);
     }
 
     public void fireDataSourceModificationEvent(DataSourceModificationEvent e) {
-        for (DataSourceModificationListener listener : listenerList.getListeners(DataSourceModificationListener.class)) {
+        for (DataSourceModificationListener listener : listeners.getListeners(DataSourceModificationListener.class)) {
             switch (e.getId()) {
                 case MapEvent.ADD:
                     listener.callbackDataSourceAdded(e);

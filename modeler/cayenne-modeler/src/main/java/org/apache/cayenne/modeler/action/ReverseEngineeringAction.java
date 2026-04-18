@@ -70,7 +70,7 @@ public class ReverseEngineeringAction extends DBConnectionAwareAction {
     }
 
     private void startImport() {
-        final DbLoaderContext context = new DbLoaderContext(application.getMetaData());
+        DbLoaderContext context = new DbLoaderContext(application.getMetaData());
 
         DBConnectionInfo connectionInfo = getConnectionInfo(DIALOG_TITLE);
         if (connectionInfo == null) {
