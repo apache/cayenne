@@ -40,12 +40,11 @@ import java.awt.*;
 
 public class DbEntityTabbedView extends JTabbedPane {
 
-    private final ProjectController controller;
     private final Component entityPanel;
     private final DbEntityAttributeRelationshipTab attributeRelationshipTab;
+    private int lastTabIndex;
 
     public DbEntityTabbedView(ProjectController controller) {
-        super();
 
         setTabPlacement(JTabbedPane.TOP);
 
@@ -55,7 +54,6 @@ public class DbEntityTabbedView extends JTabbedPane {
         this.attributeRelationshipTab = new DbEntityAttributeRelationshipTab(controller);
         addTab("Properties", attributeRelationshipTab);
 
-        this.controller = controller;
         controller.addDbEntityDisplayListener(this::currentDbEntityChanged);
         controller.addDbAttributeDisplayListener(this::currentDbAttributeChanged);
         controller.addDbRelationshipDisplayListener(this::currentDbRelationshipChanged);
@@ -72,7 +70,7 @@ public class DbEntityTabbedView extends JTabbedPane {
 
     private void stateChanged(ChangeEvent e) {
         resetRemoveButtons();
-        controller.setEntityTabSelection(getSelectedIndex());
+        lastTabIndex = getSelectedIndex();
     }
 
     private void currentDbEntityChanged(EntityDisplayEvent e) {
@@ -87,10 +85,7 @@ public class DbEntityTabbedView extends JTabbedPane {
 
         resetRemoveButtons();
         setVisible(e.getEntity() != null);
-
-        if (controller.getEntityTabSelection() < getTabCount()) {
-            setSelectedIndex(controller.getEntityTabSelection());
-        }
+        setSelectedIndex(lastTabIndex);
     }
 
     private void currentDbRelationshipChanged(RelationshipDisplayEvent e) {

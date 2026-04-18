@@ -180,7 +180,6 @@ public class ProjectController extends CayenneController {
 
     private EventListenerList listenerList;
     private boolean dirty;
-    private int entityTabSelection;
     private Project project;
     private Preferences projectControllerPreferences;
     private ControllerState currentState;
@@ -348,7 +347,6 @@ public class ProjectController extends CayenneController {
     public void reset() {
         clearState();
         setDirty(false);
-        setEntityTabSelection(0);
         listenerList = new EventListenerList();
         controllerStateHistory.clear();
     }
@@ -1721,20 +1719,6 @@ public class ProjectController extends CayenneController {
                         .node(getApplication().getNewProjectTemporaryName());
             }
         }
-    }
-
-    /**
-     * @since 4.0
-     */
-    public int getEntityTabSelection() {
-        return entityTabSelection;
-    }
-
-    /**
-     * @since 4.0
-     */
-    public void setEntityTabSelection(int entityTabSelection) {
-        this.entityTabSelection = entityTabSelection;
     }
 
     /**

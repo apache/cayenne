@@ -41,13 +41,12 @@ import java.awt.*;
 
 public class ObjEntityTabbedView extends JTabbedPane {
 
-    private final ProjectController controller;
     private final Component entityPanel;
     private final ObjEntityAttributeRelationshipTab attributeRelationshipTab;
     private final AbstractCallbackMethodsTab callbacksPanel;
+    private int lastTabIndex;
 
     public ObjEntityTabbedView(ProjectController controller) {
-        this.controller = controller;
 
         setTabPlacement(JTabbedPane.TOP);
 
@@ -74,7 +73,7 @@ public class ObjEntityTabbedView extends JTabbedPane {
     private void stateChanged(ChangeEvent e) {
         resetRemoveButtons();
 
-        controller.setEntityTabSelection(getSelectedIndex());
+        lastTabIndex = getSelectedIndex();
 
         Component selected = getSelectedComponent();
         while (selected instanceof JScrollPane) {
@@ -108,9 +107,7 @@ public class ObjEntityTabbedView extends JTabbedPane {
         setVisible(e.getEntity() != null);
 
         if (getRootPane() != null) {
-            if (controller.getEntityTabSelection() < getTabCount()) {
-                setSelectedIndex(controller.getEntityTabSelection());
-            }
+            setSelectedIndex(lastTabIndex);
         }
     }
 

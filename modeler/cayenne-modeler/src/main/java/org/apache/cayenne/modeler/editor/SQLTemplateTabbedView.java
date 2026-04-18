@@ -19,36 +19,35 @@
 
 package org.apache.cayenne.modeler.editor;
 
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.event.ChangeEvent;
-
-import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.modeler.ProjectController;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
 
 public class SQLTemplateTabbedView extends JTabbedPane {
 
-    private final ProjectController mediator;
+    private final ProjectController controller;
     private final SQLTemplateMainTab mainTab;
     private final SQLTemplateScriptsTab scriptsTab;
     private final SQLTemplatePrefetchTab prefetchTab;
     private int lastSelectionIndex;
 
-    public SQLTemplateTabbedView(ProjectController mediator) {
-        this.mediator = mediator;
+    public SQLTemplateTabbedView(ProjectController controller) {
+        this.controller = controller;
 
         setTabPlacement(JTabbedPane.TOP);
 
-        this.mainTab = new SQLTemplateMainTab(mediator);
+        this.mainTab = new SQLTemplateMainTab(controller);
         addTab("General", new JScrollPane(mainTab));
 
-        this.scriptsTab = new SQLTemplateScriptsTab(mediator);
+        this.scriptsTab = new SQLTemplateScriptsTab(controller);
         addTab("SQL Scripts", scriptsTab);
 
-        this.prefetchTab = new SQLTemplatePrefetchTab(mediator);
+        this.prefetchTab = new SQLTemplatePrefetchTab(controller);
         addTab("Prefetches", prefetchTab);
 
-        mediator.addQueryDisplayListener(e -> initFromModel());
+        controller.addQueryDisplayListener(e -> initFromModel());
         addChangeListener(this::stateChanged);
     }
 
@@ -58,13 +57,13 @@ public class SQLTemplateTabbedView extends JTabbedPane {
     }
 
     private void initFromModel() {
-        if (!QueryDescriptor.SQL_TEMPLATE.equals(mediator.getCurrentQuery().getType())) {
+        if (!QueryDescriptor.SQL_TEMPLATE.equals(controller.getCurrentQuery().getType())) {
             setVisible(false);
             return;
         }
 
         // if no root, reset tabs to show the first panel..
-        if (mediator.getCurrentQuery().getRoot() == null) {
+        if (controller.getCurrentQuery().getRoot() == null) {
             lastSelectionIndex = 0;
         }
 

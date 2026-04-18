@@ -35,6 +35,7 @@ public class DataMapTabbedView extends JTabbedPane {
     private final JScrollPane dbImportScrollPane;
     private final CgenController cgenController;
     private final JScrollPane cgenView;
+    private int lastTabIndex;
 
     public DataMapTabbedView(ProjectController controller) {
 
@@ -61,25 +62,18 @@ public class DataMapTabbedView extends JTabbedPane {
             setSelectedComponent(cgenView);
         } else if (e.getSource() instanceof DbImportTab) {
             setSelectedComponent(dbImportScrollPane);
-        } else if (isCgenTabActive() || isDbImportTabActive()) {
+        } else if (lastTabIndex != 0) {
             fireStateChanged();
         }
     }
 
     private void stateChanged(ChangeEvent e) {
-        if (isCgenTabActive()) {
+        lastTabIndex = getSelectedIndex();
+        if (getSelectedComponent() == cgenView) {
             cgenController.initFromModel();
-        } else if (isDbImportTabActive()) {
+        } else if (getSelectedComponent() == dbImportScrollPane) {
             dbImportView.initFromModel();
         }
-    }
-
-    private boolean isCgenTabActive() {
-        return getSelectedComponent() == cgenView;
-    }
-
-    private boolean isDbImportTabActive() {
-        return getSelectedComponent() == dbImportScrollPane;
     }
 }
 

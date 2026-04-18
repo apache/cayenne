@@ -18,60 +18,59 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.event.ChangeEvent;
-
-import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.modeler.ProjectController;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
 
 public class EjbqlTabbedView extends JTabbedPane {
 
-    private final ProjectController mediator;
+    private final ProjectController controller;
     private final EjbqlQueryMainTab mainTab;
     private final EjbqlQueryScriptsTab scriptsTab;
-    private int lastSelectionIndex;
+    private int lastTabIndex;
 
-    public EjbqlTabbedView(ProjectController mediator) {
-        this.mediator = mediator;
+    public EjbqlTabbedView(ProjectController controller) {
+        this.controller = controller;
 
         setTabPlacement(JTabbedPane.TOP);
 
-        this.mainTab = new EjbqlQueryMainTab(mediator);
+        this.mainTab = new EjbqlQueryMainTab(controller);
         addTab("General", new JScrollPane(mainTab));
 
-        this.scriptsTab = new EjbqlQueryScriptsTab(mediator);
+        this.scriptsTab = new EjbqlQueryScriptsTab(controller);
         addTab("EJBQL", scriptsTab);
 
-        mediator.addQueryDisplayListener(e -> initFromModel());
+        controller.addQueryDisplayListener(e -> initFromModel());
         addChangeListener(this::stateChanged);
     }
 
     private void stateChanged(ChangeEvent e) {
-        lastSelectionIndex = getSelectedIndex();
+        lastTabIndex = getSelectedIndex();
         updateTabs();
     }
 
     private void initFromModel() {
-        if (!QueryDescriptor.EJBQL_QUERY.equals(mediator.getCurrentQuery().getType())) {
+        if (!QueryDescriptor.EJBQL_QUERY.equals(controller.getCurrentQuery().getType())) {
             setVisible(false);
             return;
         }
 
         // tab did not change - force update
-        if (getSelectedIndex() == lastSelectionIndex) {
+        if (getSelectedIndex() == lastTabIndex) {
             updateTabs();
         }
         // change tab, this will update newly displayed tab...
         else {
-            setSelectedIndex(lastSelectionIndex);
+            setSelectedIndex(lastTabIndex);
         }
 
         setVisible(true);
     }
 
     private void updateTabs() {
-        switch (lastSelectionIndex) {
+        switch (lastTabIndex) {
             case 0:
                 mainTab.initFromModel();
                 break;
