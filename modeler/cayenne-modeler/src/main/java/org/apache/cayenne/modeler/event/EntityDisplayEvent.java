@@ -32,11 +32,6 @@ public class EntityDisplayEvent extends DataMapDisplayEvent {
     protected Entity<?,?,?> entity;
 
     /**
-     * If true, the event causes entity editor to switch to the main entity tab.
-     */
-    protected boolean mainTabFocus;
-
-    /**
      * True if different from current entity.
      */
     protected boolean entityChanged = true;
@@ -87,11 +82,4 @@ public class EntityDisplayEvent extends DataMapDisplayEvent {
         this.entity = entity;
     }
 
-    public void setMainTabFocus(boolean searched) {
-        this.mainTabFocus = searched;
-    }
-
-    public boolean isMainTabFocus() {
-        return mainTabFocus;
-    }
 }

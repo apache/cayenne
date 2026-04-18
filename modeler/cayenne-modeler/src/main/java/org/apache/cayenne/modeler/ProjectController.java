@@ -1472,7 +1472,9 @@ public class ProjectController extends CayenneController {
 
         fireDataMapEvent(new DataMapEvent(src, map, MapEvent.ADD));
         if (makeCurrent) {
-            fireDataMapDisplayEvent(new DataMapDisplayEvent(src, map, currentState.domain, currentState.node));
+            DataMapDisplayEvent displayEvent = new DataMapDisplayEvent(src, map, currentState.domain, currentState.node);
+            displayEvent.setMainTabFocus(true);
+            fireDataMapDisplayEvent(displayEvent);
         }
     }
 

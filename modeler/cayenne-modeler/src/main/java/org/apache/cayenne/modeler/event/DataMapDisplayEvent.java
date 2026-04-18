@@ -33,6 +33,9 @@ public class DataMapDisplayEvent extends DataNodeDisplayEvent {
 	/** True if different from current data map. */
 	protected boolean dataMapChanged = true;
 
+	/** True if the event should cause the editor to switch to the main DataMap tab. */
+	protected boolean mainTabFocus;
+
 	public DataMapDisplayEvent(Object src, DataMap map, DataChannelDescriptor dataChannelDescriptor) {
 		this(src, map, dataChannelDescriptor, null);
 	}
@@ -69,5 +72,13 @@ public class DataMapDisplayEvent extends DataNodeDisplayEvent {
 	
 	public void setDataMapChanged(boolean temp) {
 		dataMapChanged = temp;
+	}
+
+	public boolean isMainTabFocus() {
+		return mainTabFocus;
+	}
+
+	public void setMainTabFocus(boolean mainTabFocus) {
+		this.mainTabFocus = mainTabFocus;
 	}
 }

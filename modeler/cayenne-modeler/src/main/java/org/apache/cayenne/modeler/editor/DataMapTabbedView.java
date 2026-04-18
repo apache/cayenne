@@ -62,8 +62,11 @@ public class DataMapTabbedView extends JTabbedPane {
             setSelectedComponent(cgenView);
         } else if (e.getSource() instanceof DbImportTab) {
             setSelectedComponent(dbImportScrollPane);
-        } else if (lastTabIndex != 0) {
-            fireStateChanged();
+        } else {
+            if (e.isMainTabFocus()) {
+                lastTabIndex = 0;
+            }
+            setSelectedIndex(lastTabIndex);
         }
     }
 

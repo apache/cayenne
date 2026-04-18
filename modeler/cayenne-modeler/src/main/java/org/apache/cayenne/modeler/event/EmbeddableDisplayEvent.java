@@ -27,8 +27,6 @@ public class EmbeddableDisplayEvent extends DataMapDisplayEvent {
     protected Embeddable embeddable;
     protected boolean embeddableChanged = true;
 
-    protected boolean mainTabFocus;
-
     public EmbeddableDisplayEvent(Object src, Embeddable embeddable, DataMap dataMap,
             DataChannelDescriptor dataChannelDescriptor) {
         super(src, dataMap, dataChannelDescriptor);
@@ -38,14 +36,6 @@ public class EmbeddableDisplayEvent extends DataMapDisplayEvent {
 
     public Embeddable getEmbeddable() {
         return embeddable;
-    }
-
-    public boolean isMainTabFocus() {
-        return mainTabFocus;
-    }
-
-    public void setMainTabFocus(boolean mainTabFocus) {
-        this.mainTabFocus = mainTabFocus;
     }
 
     public boolean isEmbeddableChanged() {
