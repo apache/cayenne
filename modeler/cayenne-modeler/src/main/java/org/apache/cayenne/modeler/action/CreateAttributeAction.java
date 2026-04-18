@@ -48,17 +48,6 @@ import java.awt.event.ActionEvent;
 
 public class CreateAttributeAction extends CayenneAction {
 
-    /**
-     * Constructor for CreateAttributeAction.
-     */
-    public CreateAttributeAction(Application application) {
-        super(getActionName(), application);
-    }
-
-    public static String getActionName() {
-        return "Create Attribute";
-    }
-
     static void fireEmbeddableAttributeEvent(Object src, ProjectController mediator, Embeddable embeddable,
                                              EmbeddableAttribute attr) {
 
@@ -96,6 +85,10 @@ public class CreateAttributeAction extends CayenneAction {
                 (DataChannelDescriptor) mediator.getProject().getRootNode());
 
         mediator.fireDbAttributeDisplayEvent(ade);
+    }
+
+    public CreateAttributeAction(Application application) {
+        super("Create Attribute", application);
     }
 
     @Override

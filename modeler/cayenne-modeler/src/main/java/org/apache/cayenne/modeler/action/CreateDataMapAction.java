@@ -36,22 +36,17 @@ import java.awt.event.ActionEvent;
  */
 public class CreateDataMapAction extends CayenneAction {
 
-    public static String getActionName() {
-        return "Create DataMap";
-    }
-
     public CreateDataMapAction(Application application) {
-        super(getActionName(), application);
+        super("Create DataMap", application);
     }
 
+    @Override
     public String getIconName() {
         return "icon-datamap.png";
     }
 
-    /** Calls addDataMap() or creates new data map if no data node selected. */
     public void createDataMap(DataMap map) {
-        ProjectController mediator = getProjectController();
-        mediator.addDataMap(this, map);
+        getProjectController().addDataMap(this, map);
     }
 
     public void performAction(ActionEvent e) {
@@ -71,6 +66,7 @@ public class CreateDataMapAction extends CayenneAction {
     /**
      * Returns <code>true</code> if path contains a DataDomain object.
      */
+    @Override
     public boolean enableForPath(ConfigurationNode object) {
         if (object == null) {
             return false;

@@ -24,58 +24,39 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.RemoveProcedureParameterAction;
 import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
-import org.apache.cayenne.modeler.event.ProcedureDisplayListener;
 import org.apache.cayenne.modeler.event.ProcedureParameterDisplayEvent;
-import org.apache.cayenne.modeler.event.ProcedureParameterDisplayListener;
 
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import java.awt.Component;
+import java.awt.*;
 
-/**
- * Tabbed panel for stored procedure editing.
- * 
- */
-public class ProcedureTabbedView extends JTabbedPane implements ProcedureDisplayListener,
-        ProcedureParameterDisplayListener {
+public class ProcedureTabbedView extends JTabbedPane {
 
-    protected ProjectController eventController;
-    protected ProcedureTab procedurePanel;
-    protected ProcedureParameterTab procedureParameterPanel;
+    private final ProcedureTab procedurePanel;
+    private final ProcedureParameterTab procedureParameterPanel;
 
-    public ProcedureTabbedView(ProjectController eventController) {
-        this.eventController = eventController;
-
-        // init view
+    public ProcedureTabbedView(ProjectController controller) {
         setTabPlacement(JTabbedPane.TOP);
-        procedurePanel = new ProcedureTab(eventController);
+        procedurePanel = new ProcedureTab(controller);
         addTab("Procedure", new JScrollPane(procedurePanel));
-        procedureParameterPanel = new ProcedureParameterTab(eventController);
+        procedureParameterPanel = new ProcedureParameterTab(controller);
         addTab("Parameters", procedureParameterPanel);
 
-        // init listeners
-        eventController.addProcedureDisplayListener(this);
-        eventController.addProcedureParameterDisplayListener(this);
-        this.addChangeListener(new ChangeListener() {
-
-            public void stateChanged(ChangeEvent e) {
-                // find source view
-                Component selected = ProcedureTabbedView.this.getSelectedComponent();
-                while (selected instanceof JScrollPane) {
-                    selected = ((JScrollPane) selected).getViewport().getView();
-                }
-
-                ((ExistingSelectionProcessor) selected).processExistingSelection(e);
-            }
-        });
+        controller.addProcedureDisplayListener(this::currentProcedureChanged);
+        controller.addProcedureParameterDisplayListener(this::currentProcedureParameterChanged);
+        addChangeListener(this::stateChanged);
     }
 
-    /**
-     * Invoked when currently selected Procedure object is changed.
-     */
-    public void currentProcedureChanged(ProcedureDisplayEvent e) {
+    private void stateChanged(ChangeEvent e) {
+        Component selected = getSelectedComponent();
+        while (selected instanceof JScrollPane) {
+            selected = ((JScrollPane) selected).getViewport().getView();
+        }
+
+        ((ExistingSelectionProcessor) selected).processExistingSelection(e);
+    }
+
+    private void currentProcedureChanged(ProcedureDisplayEvent e) {
         Application.getInstance().getActionManager().getAction(
                 RemoveProcedureParameterAction.class).setEnabled(false);
 
@@ -89,7 +70,7 @@ public class ProcedureTabbedView extends JTabbedPane implements ProcedureDisplay
         }
     }
 
-    public void currentProcedureParameterChanged(ProcedureParameterDisplayEvent e) {
+    private void currentProcedureParameterChanged(ProcedureParameterDisplayEvent e) {
         ProcedureParameter[] parameters = e.getProcedureParameters();
 
         if (parameters.length > 0) {

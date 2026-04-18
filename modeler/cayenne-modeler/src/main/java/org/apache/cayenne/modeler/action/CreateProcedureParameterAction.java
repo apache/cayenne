@@ -37,22 +37,21 @@ import java.awt.event.ActionEvent;
 public class CreateProcedureParameterAction extends CayenneAction {
 
     public CreateProcedureParameterAction(Application application) {
-        super(getActionName(), application);
-    }
-
-    public static String getActionName() {
-        return "Create Parameter";
+        super("Create Parameter", application);
     }
 
     /**
      * Fires events when an proc parameter was added
      */
-    static void fireProcedureParameterEvent(Object src, ProjectController mediator, Procedure procedure,
-                                            ProcedureParameter parameter) {
-        mediator.fireProcedureParameterEvent(new ProcedureParameterEvent(src, parameter, MapEvent.ADD));
+    static void fireProcedureParameterEvent(
+            Object src,
+            ProjectController controller,
+            Procedure procedure,
+            ProcedureParameter parameter) {
+        controller.fireProcedureParameterEvent(new ProcedureParameterEvent(src, parameter, MapEvent.ADD));
 
-        mediator.fireProcedureParameterDisplayEvent(new ProcedureParameterDisplayEvent(src, parameter, procedure,
-                mediator.getCurrentDataMap(), (DataChannelDescriptor) mediator.getProject().getRootNode()));
+        controller.fireProcedureParameterDisplayEvent(new ProcedureParameterDisplayEvent(src, parameter, procedure,
+                controller.getCurrentDataMap(), (DataChannelDescriptor) controller.getProject().getRootNode()));
     }
 
     @Override
@@ -92,6 +91,7 @@ public class CreateProcedureParameterAction extends CayenneAction {
     /**
      * Returns <code>true</code> if path contains a Procedure object.
      */
+    @Override
     public boolean enableForPath(ConfigurationNode object) {
         if (object == null) {
             return false;

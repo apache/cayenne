@@ -86,7 +86,7 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
     private static final String PROCEDURE_QUERY_VIEW = "ProcedureQueryView";
     private static final String EJBQL_QUERY_VIEW = "EjbqlQueryView";
 
-    protected ProjectController eventController;
+    protected ProjectController projectController;
     protected JSplitPane splitPane;
     protected JPanel leftPanel;
     protected Container detailPanel;
@@ -160,15 +160,15 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
 	}
 
     public EditorView(ProjectController eventController) {
-        this.eventController = eventController;
+        this.projectController = eventController;
         this.actionManager = eventController.getApplication().getActionManager();
         initView();
         initController();
        
     }
 
-    public ProjectController getEventController() {
-		return eventController;
+    public ProjectController getProjectController() {
+		return projectController;
 	}
 
 	private void initView() {
@@ -190,7 +190,7 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
         barPanel.add(filterButton);
         barPanel.add(collapseButton);
 
-        treePanel = new ProjectTreeView(eventController);
+        treePanel = new ProjectTreeView(projectController);
         treePanel.setMinimumSize(new Dimension(75, 180));
         JPanel treeNavigatePanel = new JPanel();
         treeNavigatePanel.setMinimumSize(new Dimension(75, 220));
@@ -213,39 +213,39 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
 
         detailPanel.add(new JPanel(), EMPTY_VIEW);
 
-        dataDomainView = new DataDomainTabbedView(eventController);
+        dataDomainView = new DataDomainTabbedView(projectController);
         detailPanel.add(dataDomainView, DOMAIN_VIEW);
 
-        DataNodeEditor nodeController = new DataNodeEditor(eventController);
+        DataNodeEditor nodeController = new DataNodeEditor(projectController);
         detailPanel.add(nodeController.getView(), NODE_VIEW);
 
         dataNodeView = nodeController.getTabComponent();
 
-        dataMapView = new DataMapTabbedView(eventController);
+        dataMapView = new DataMapTabbedView(projectController);
         detailPanel.add(dataMapView, DATA_MAP_VIEW);
 
-        procedureView = new ProcedureTabbedView(eventController);
+        procedureView = new ProcedureTabbedView(projectController);
         detailPanel.add(procedureView, PROCEDURE_VIEW);
 
-        selectQueryView = new SelectQueryTabbedView(eventController);
+        selectQueryView = new SelectQueryTabbedView(projectController);
         detailPanel.add(selectQueryView, SELECT_QUERY_VIEW);
 
-        sqlTemplateView = new SQLTemplateTabbedView(eventController);
+        sqlTemplateView = new SQLTemplateTabbedView(projectController);
         detailPanel.add(sqlTemplateView, SQL_TEMPLATE_VIEW);
 
-        Component procedureQueryView = new ProcedureQueryView(eventController);
+        Component procedureQueryView = new ProcedureQueryView(projectController);
         detailPanel.add(new JScrollPane(procedureQueryView), PROCEDURE_QUERY_VIEW);
 
-        ejbqlQueryView = new EjbqlTabbedView(eventController);
+        ejbqlQueryView = new EjbqlTabbedView(projectController);
         detailPanel.add(ejbqlQueryView, EJBQL_QUERY_VIEW);
 
-        embeddableView = new EmbeddableTabbedView(eventController);
+        embeddableView = new EmbeddableTabbedView(projectController);
         detailPanel.add(embeddableView, EMBEDDABLE_VIEW);
 
-        objDetailView = new ObjEntityTabbedView(eventController);
+        objDetailView = new ObjEntityTabbedView(projectController);
         detailPanel.add(objDetailView, OBJ_VIEW);
 
-        dbDetailView = new DbEntityTabbedView(eventController);
+        dbDetailView = new DbEntityTabbedView(projectController);
         detailPanel.add(dbDetailView, DB_VIEW);
 
         leftPanel.add(barPanel, BorderLayout.NORTH);
@@ -268,15 +268,15 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
 	private void initController() {
 		this.filterController = new FilterController(treePanel);
 		 
-        eventController.addDomainDisplayListener(this);
-        eventController.addDataNodeDisplayListener(this);
-        eventController.addDataMapDisplayListener(this);
-        eventController.addObjEntityDisplayListener(this);
-        eventController.addDbEntityDisplayListener(this);
-        eventController.addProcedureDisplayListener(this);
-        eventController.addQueryDisplayListener(this);
-        eventController.addMultipleObjectsDisplayListener(this);
-        eventController.addEmbeddableDisplayListener(this);
+        projectController.addDomainDisplayListener(this);
+        projectController.addDataNodeDisplayListener(this);
+        projectController.addDataMapDisplayListener(this);
+        projectController.addObjEntityDisplayListener(this);
+        projectController.addDbEntityDisplayListener(this);
+        projectController.addProcedureDisplayListener(this);
+        projectController.addQueryDisplayListener(this);
+        projectController.addMultipleObjectsDisplayListener(this);
+        projectController.addEmbeddableDisplayListener(this);
 
         // Moving this to try-catch block per CAY-940. Exception will be stack-traced
         try {

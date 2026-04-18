@@ -39,14 +39,6 @@ import java.awt.event.ActionEvent;
  */
 public class CreateProcedureAction extends CayenneAction {
 
-    public CreateProcedureAction(Application application) {
-        super(getActionName(), application);
-    }
-
-    public static String getActionName() {
-        return "Create Stored Procedure";
-    }
-
     /**
      * Fires events when a procedure was added
      */
@@ -56,6 +48,11 @@ public class CreateProcedureAction extends CayenneAction {
                 (DataChannelDescriptor) mediator.getProject().getRootNode()));
     }
 
+    public CreateProcedureAction(Application application) {
+        super("Create Stored Procedure", application);
+    }
+
+    @Override
     public void performAction(ActionEvent e) {
         ProjectController mediator = getProjectController();
         DataMap map = mediator.getCurrentDataMap();
@@ -78,6 +75,7 @@ public class CreateProcedureAction extends CayenneAction {
     /**
      * Returns <code>true</code> if path contains a DataMap object.
      */
+    @Override
     public boolean enableForPath(ConfigurationNode object) {
         if (object == null) {
             return false;
@@ -86,6 +84,7 @@ public class CreateProcedureAction extends CayenneAction {
         return ((Procedure) object).getDataMap() != null;
     }
 
+    @Override
     public String getIconName() {
         return "icon-stored-procedure.png";
     }

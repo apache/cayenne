@@ -1,4 +1,3 @@
-package org.apache.cayenne.modeler.event;
 /*****************************************************************
  *   Licensed to the Apache Software Foundation (ASF) under one
  *  or more contributor license agreements.  See the NOTICE file
@@ -17,12 +16,10 @@ package org.apache.cayenne.modeler.event;
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
-
+package org.apache.cayenne.modeler.event;
 
 import java.util.EventListener;
 
-public interface DataMapDisplayListener extends EventListener
-{
-	public void currentDataMapChanged(DataMapDisplayEvent e);
+public interface DataMapDisplayListener extends EventListener {
+    void currentDataMapChanged(DataMapDisplayEvent e);
 }

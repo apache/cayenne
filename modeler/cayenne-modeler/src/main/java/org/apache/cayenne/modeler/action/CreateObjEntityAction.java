@@ -42,11 +42,7 @@ import java.awt.event.ActionEvent;
 public class CreateObjEntityAction extends CayenneAction {
 
     public CreateObjEntityAction(Application application) {
-        super(getActionName(), application);
-    }
-
-    public static String getActionName() {
-        return "Create ObjEntity";
+        super("Create ObjEntity", application);
     }
 
     static void fireObjEntityEvent(

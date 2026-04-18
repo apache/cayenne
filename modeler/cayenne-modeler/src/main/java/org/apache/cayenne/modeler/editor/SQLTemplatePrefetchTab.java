@@ -163,7 +163,7 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
         prefetchBox.addItem(SelectQueryPrefetchTab.JOINT_PREFETCH_SEMANTICS);
         prefetchBox.addItem(SelectQueryPrefetchTab.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
 
-        prefetchBox.addActionListener(e -> Application.getInstance().getFrameController().getEditorView().getEventController().setDirty(true));
+        prefetchBox.addActionListener(e -> Application.getInstance().getFrameController().getEditorView().getProjectController().setDirty(true));
 
         column.setCellEditor(new DefaultCellEditor(prefetchBox));
 

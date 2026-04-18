@@ -26,26 +26,21 @@ import org.apache.cayenne.modeler.editor.cgen.domain.CgenTabController;
 import org.apache.cayenne.modeler.editor.dbimport.domain.DbImportTabController;
 import org.apache.cayenne.modeler.editor.validation.ValidationTabController;
 import org.apache.cayenne.modeler.event.DomainDisplayEvent;
-import org.apache.cayenne.modeler.event.DomainDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.graph.DataDomainGraphTab;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
-/**
- * DataDomain editing tabs container
- */
-public class DataDomainTabbedView extends JTabbedPane implements ChangeListener, DomainDisplayListener {
+public class DataDomainTabbedView extends JTabbedPane {
 
     private final DataDomainGraphTab graphTab;
-    private JComponent cgenView;
-    private CgenTabController cgenTabController;
-    private JComponent dbImportView;
-    private DbImportTabController dbImportTabController;
-    private JComponent validationTabView;
-    private ValidationTabController validationTabController;
+    private final JComponent cgenView;
+    private final CgenTabController cgenTabController;
+    private final JComponent dbImportView;
+    private final DbImportTabController dbImportTabController;
+    private final JComponent validationTabView;
+    private final ValidationTabController validationTabController;
 
     public DataDomainTabbedView(ProjectController controller) {
 
@@ -56,9 +51,6 @@ public class DataDomainTabbedView extends JTabbedPane implements ChangeListener,
         // must be wrapped in a scroll pane
         JScrollPane domainView = new JScrollPane(new DataDomainView(controller));
         addTab("Main", domainView);
-
-        addChangeListener(this);
-        controller.addDomainDisplayListener(this);
 
         dbImportTabController = new DbImportTabController(controller);
         dbImportView = new JScrollPane(dbImportTabController.getView());
@@ -74,9 +66,12 @@ public class DataDomainTabbedView extends JTabbedPane implements ChangeListener,
         validationTabController = new ValidationTabController(controller);
         validationTabView = validationTabController.getView();
         addTab("Validation", validationTabView);
+
+        addChangeListener(this::stateChanged);
+        controller.addDomainDisplayListener(this::currentDomainChanged);
     }
 
-    public void stateChanged(ChangeEvent e) {
+    private void stateChanged(ChangeEvent e) {
         if (getSelectedComponent() == graphTab) {
             graphTab.refresh();
         } else if (getSelectedComponent() == cgenView) {
@@ -88,7 +83,7 @@ public class DataDomainTabbedView extends JTabbedPane implements ChangeListener,
         }
     }
 
-    public void currentDomainChanged(DomainDisplayEvent e) {
+    private void currentDomainChanged(DomainDisplayEvent e) {
         if (e instanceof EntityDisplayEvent) {
             //need select an entity
             setSelectedComponent(graphTab);

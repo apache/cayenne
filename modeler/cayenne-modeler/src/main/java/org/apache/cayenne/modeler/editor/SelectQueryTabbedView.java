@@ -22,33 +22,21 @@ package org.apache.cayenne.modeler.editor;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.QueryDisplayEvent;
-import org.apache.cayenne.modeler.event.QueryDisplayListener;
 import org.apache.cayenne.map.QueryDescriptor;
 
-/**
- * A tabbed view for configuring a select query.
- * 
- */
 public class SelectQueryTabbedView extends JTabbedPane {
 
-    protected ProjectController mediator;
-    protected SelectQueryMainTab mainTab;
-    protected SelectQueryPrefetchTab prefetchTab;
-    protected SelectQueryOrderingTab orderingTab;
-    protected int lastSelectionIndex;
+    private final ProjectController mediator;
+    private final SelectQueryMainTab mainTab;
+    private final SelectQueryPrefetchTab prefetchTab;
+    private final SelectQueryOrderingTab orderingTab;
+    private int lastSelectionIndex;
 
     public SelectQueryTabbedView(ProjectController mediator) {
         this.mediator = mediator;
 
-        initView();
-        initController();
-    }
-
-    private void initView() {
         setTabPlacement(JTabbedPane.TOP);
 
         this.mainTab = new SelectQueryMainTab(mediator);
@@ -59,26 +47,17 @@ public class SelectQueryTabbedView extends JTabbedPane {
 
         this.prefetchTab = new SelectQueryPrefetchTab(mediator);
         addTab("Prefetches", prefetchTab);
+
+        mediator.addQueryDisplayListener(e -> initFromModel());
+        addChangeListener(this::stateChanged);
     }
 
-    private void initController() {
-        mediator.addQueryDisplayListener(new QueryDisplayListener() {
-
-            public void currentQueryChanged(QueryDisplayEvent e) {
-                initFromModel();
-            }
-        });
-
-        this.addChangeListener(new ChangeListener() {
-
-            public void stateChanged(ChangeEvent e) {
-                lastSelectionIndex = getSelectedIndex();
-                updateTabs();
-            }
-        });
+    private void stateChanged(ChangeEvent e) {
+        lastSelectionIndex = getSelectedIndex();
+        updateTabs();
     }
 
-    void initFromModel() {
+    private void initFromModel() {
         if (!QueryDescriptor.SELECT_QUERY.equals(mediator.getCurrentQuery().getType())) {
             setVisible(false);
             return;
@@ -101,7 +80,7 @@ public class SelectQueryTabbedView extends JTabbedPane {
         setVisible(true);
     }
 
-    void updateTabs() {
+    private void updateTabs() {
         switch (lastSelectionIndex) {
             case 0:
                 mainTab.initFromModel();

@@ -41,10 +41,6 @@ import java.awt.event.ActionEvent;
 
 public class CreateRelationshipAction extends CayenneAction {
 
-    public CreateRelationshipAction(Application application) {
-        super("Create Relationship", application);
-    }
-
     /**
      * Fires events when a obj rel was added
      */
@@ -70,6 +66,10 @@ public class CreateRelationshipAction extends CayenneAction {
                 (DataChannelDescriptor) mediator.getProject().getRootNode());
 
         mediator.fireDbRelationshipDisplayEvent(rde);
+    }
+
+    public CreateRelationshipAction(Application application) {
+        super("Create Relationship", application);
     }
 
     @Override

@@ -39,11 +39,7 @@ import java.awt.event.ActionEvent;
 public class CreateNodeAction extends CayenneAction {
 
     public CreateNodeAction(Application application) {
-        super(getActionName(), application);
-    }
-
-    public static String getActionName() {
-        return "Create DataNode";
+        super("Create DataNode", application);
     }
 
     @Override

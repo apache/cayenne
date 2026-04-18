@@ -36,12 +36,27 @@ import java.awt.event.ActionEvent;
 
 public class CreateEmbeddableAction extends CayenneAction {
 
-    public static String getActionName() {
-        return "Create Embeddable";
+    static void fireEmbeddableEvent(
+            Object src,
+            ProjectController mediator,
+            DataMap dataMap,
+            Embeddable embeddable) {
+
+        mediator.fireEmbeddableEvent(
+                new EmbeddableEvent(src, embeddable, MapEvent.ADD),
+                dataMap);
+        EmbeddableDisplayEvent displayEvent = new EmbeddableDisplayEvent(
+                src,
+                embeddable,
+                dataMap,
+                (DataChannelDescriptor) mediator.getProject().getRootNode());
+        displayEvent.setMainTabFocus(true);
+        mediator.fireEmbeddableDisplayEvent(displayEvent);
+
     }
 
     public CreateEmbeddableAction(Application application) {
-        super(getActionName(), application);
+        super("Create Embeddable", application);
     }
 
     @Override
@@ -69,25 +84,6 @@ public class CreateEmbeddableAction extends CayenneAction {
         fireEmbeddableEvent(this, getProjectController(), dataMap, embeddable);
     }
 
-    static void fireEmbeddableEvent(
-            Object src,
-            ProjectController mediator,
-            DataMap dataMap,
-            Embeddable embeddable) {
-
-        mediator.fireEmbeddableEvent(
-                new EmbeddableEvent(src, embeddable, MapEvent.ADD),
-                dataMap);
-        EmbeddableDisplayEvent displayEvent = new EmbeddableDisplayEvent(
-                src,
-                embeddable,
-                dataMap,
-                (DataChannelDescriptor)mediator.getProject().getRootNode());
-        displayEvent.setMainTabFocus(true);
-        mediator.fireEmbeddableDisplayEvent(displayEvent);
-
-    }
-
     /**
      * Returns <code>true</code> if path contains a DataMap object.
      */
@@ -97,10 +93,10 @@ public class CreateEmbeddableAction extends CayenneAction {
             return false;
         }
 
-        if(object instanceof ObjEntity){
-            return ((ObjEntity)object).getParent() != null && ((ObjEntity)object).getParent() instanceof DataMap;
+        if (object instanceof ObjEntity) {
+            return ((ObjEntity) object).getParent() != null && ((ObjEntity) object).getParent() instanceof DataMap;
         }
-        
+
         return false;
     }
 }

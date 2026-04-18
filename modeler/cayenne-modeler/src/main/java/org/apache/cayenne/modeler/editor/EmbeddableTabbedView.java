@@ -18,14 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
-import java.awt.Component;
-
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.modeler.Application;
@@ -34,59 +26,44 @@ import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.RemoveAttributeAction;
 import org.apache.cayenne.modeler.action.RemoveCallbackMethodAction;
 import org.apache.cayenne.modeler.event.EmbeddableAttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.EmbeddableAttributeDisplayListener;
 import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
-import org.apache.cayenne.modeler.event.EmbeddableDisplayListener;
 
-public class EmbeddableTabbedView extends JTabbedPane implements
-        EmbeddableAttributeDisplayListener, EmbeddableDisplayListener {
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import java.awt.*;
 
-    protected ProjectController mediator;
+public class EmbeddableTabbedView extends JTabbedPane {
 
-    protected JScrollPane embeddablePanel;
-    protected EmbeddableAttributeTab attributesPanel;
+    private final JScrollPane embeddablePanel;
+    private final EmbeddableAttributeTab attributesPanel;
 
-    protected JPanel listenersPanel;
+    public EmbeddableTabbedView(ProjectController controller) {
 
-    public EmbeddableTabbedView(ProjectController mediator) {
-        this.mediator = mediator;
-
-        initView();
-        initController();
-    }
-
-    private void initView() {
         setTabPlacement(JTabbedPane.TOP);
 
-        embeddablePanel = new JScrollPane(new EmbeddableTab(mediator));
+        embeddablePanel = new JScrollPane(new EmbeddableTab(controller));
         addTab("Embeddable", embeddablePanel);
 
-        attributesPanel = new EmbeddableAttributeTab(mediator);
+        attributesPanel = new EmbeddableAttributeTab(controller);
         addTab("Attributes", attributesPanel);
+
+        controller.addEmbeddableAttributeDisplayListener(this::currentEmbeddableAttributeChanged);
+        controller.addEmbeddableDisplayListener(this::currentEmbeddableChanged);
+        addChangeListener(this::stateChanged);
     }
 
-    private void initController() {
+    private void stateChanged(ChangeEvent e) {
+        resetRemoveButtons();
+        Component selected = getSelectedComponent();
+        while (selected instanceof JScrollPane) {
+            selected = ((JScrollPane) selected).getViewport().getView();
+        }
 
-        mediator.addEmbeddableAttributeDisplayListener(this);
-        mediator.addEmbeddableDisplayListener(this);
-
-        addChangeListener(new ChangeListener() {
-
-            public void stateChanged(ChangeEvent e) {
-                resetRemoveButtons();
-                Component selected = getSelectedComponent();
-                while (selected instanceof JScrollPane) {
-                    selected = ((JScrollPane) selected).getViewport().getView();
-                }
-
-                if (selected instanceof ExistingSelectionProcessor) {
-                    ((ExistingSelectionProcessor) selected).processExistingSelection(e);
-                }
-            }
-        });
+        if (selected instanceof ExistingSelectionProcessor) {
+            ((ExistingSelectionProcessor) selected).processExistingSelection(e);
+        }
     }
 
-    /** Reset the remove buttons */
     private void resetRemoveButtons() {
         ActionManager actionManager = Application.getInstance().getActionManager();
 
@@ -94,10 +71,10 @@ public class EmbeddableTabbedView extends JTabbedPane implements
         actionManager.getAction(RemoveCallbackMethodAction.class).setEnabled(false);
     }
 
-    public void currentEmbeddableChanged(EmbeddableDisplayEvent e) {
+    private void currentEmbeddableChanged(EmbeddableDisplayEvent e) {
         Embeddable emb = e.getEmbeddable();
-        if (e.isMainTabFocus() && emb instanceof Embeddable) {
-            
+        if (e.isMainTabFocus() && emb != null) {
+
             if (getSelectedComponent() != embeddablePanel) {
                 setSelectedComponent(embeddablePanel);
                 embeddablePanel.setVisible(true);
@@ -108,7 +85,7 @@ public class EmbeddableTabbedView extends JTabbedPane implements
         setVisible(e.getEmbeddable() != null);
     }
 
-    public void currentEmbeddableAttributeChanged(EmbeddableAttributeDisplayEvent e) {
+    private void currentEmbeddableAttributeChanged(EmbeddableAttributeDisplayEvent e) {
         if (e.getEmbeddable() == null)
             return;
 

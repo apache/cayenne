@@ -21,27 +21,20 @@ package org.apache.cayenne.modeler.editor;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.QueryDisplayEvent;
-import org.apache.cayenne.modeler.event.QueryDisplayListener;
 import org.apache.cayenne.map.QueryDescriptor;
 
 public class EjbqlTabbedView extends JTabbedPane {
 
-    protected ProjectController mediator;
-    protected EjbqlQueryMainTab mainTab;
-    protected EjbqlQueryScriptsTab scriptsTab;
-    protected int lastSelectionIndex;
+    private final ProjectController mediator;
+    private final EjbqlQueryMainTab mainTab;
+    private final EjbqlQueryScriptsTab scriptsTab;
+    private int lastSelectionIndex;
 
     public EjbqlTabbedView(ProjectController mediator) {
         this.mediator = mediator;
-        initView();
-        initController();
-    }
 
-    private void initView() {
         setTabPlacement(JTabbedPane.TOP);
 
         this.mainTab = new EjbqlQueryMainTab(mediator);
@@ -49,26 +42,17 @@ public class EjbqlTabbedView extends JTabbedPane {
 
         this.scriptsTab = new EjbqlQueryScriptsTab(mediator);
         addTab("EJBQL", scriptsTab);
+
+        mediator.addQueryDisplayListener(e -> initFromModel());
+        addChangeListener(this::stateChanged);
     }
 
-    private void initController() {
-        mediator.addQueryDisplayListener(new QueryDisplayListener() {
-
-            public void currentQueryChanged(QueryDisplayEvent e) {
-                initFromModel();
-            }
-        });
-
-        this.addChangeListener(new ChangeListener() {
-
-            public void stateChanged(ChangeEvent e) {
-                lastSelectionIndex = getSelectedIndex();
-                updateTabs();
-            }
-        });
+    private void stateChanged(ChangeEvent e) {
+        lastSelectionIndex = getSelectedIndex();
+        updateTabs();
     }
 
-    void initFromModel() {
+    private void initFromModel() {
         if (!QueryDescriptor.EJBQL_QUERY.equals(mediator.getCurrentQuery().getType())) {
             setVisible(false);
             return;
@@ -86,7 +70,7 @@ public class EjbqlTabbedView extends JTabbedPane {
         setVisible(true);
     }
 
-    void updateTabs() {
+    private void updateTabs() {
         switch (lastSelectionIndex) {
             case 0:
                 mainTab.initFromModel();

@@ -17,36 +17,26 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.modeler.editor;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.QueryDisplayEvent;
-import org.apache.cayenne.modeler.event.QueryDisplayListener;
 import org.apache.cayenne.map.QueryDescriptor;
-
 
 public class SQLTemplateTabbedView extends JTabbedPane {
 
-    protected ProjectController mediator;
-    protected SQLTemplateMainTab mainTab;
-    protected SQLTemplateScriptsTab scriptsTab;
-    protected SQLTemplatePrefetchTab prefetchTab;
-    protected int lastSelectionIndex;
+    private final ProjectController mediator;
+    private final SQLTemplateMainTab mainTab;
+    private final SQLTemplateScriptsTab scriptsTab;
+    private final SQLTemplatePrefetchTab prefetchTab;
+    private int lastSelectionIndex;
 
     public SQLTemplateTabbedView(ProjectController mediator) {
         this.mediator = mediator;
 
-        initView();
-        initController();
-    }
-
-    private void initView() {
         setTabPlacement(JTabbedPane.TOP);
 
         this.mainTab = new SQLTemplateMainTab(mediator);
@@ -57,26 +47,17 @@ public class SQLTemplateTabbedView extends JTabbedPane {
 
         this.prefetchTab = new SQLTemplatePrefetchTab(mediator);
         addTab("Prefetches", prefetchTab);
+
+        mediator.addQueryDisplayListener(e -> initFromModel());
+        addChangeListener(this::stateChanged);
     }
 
-    private void initController() {
-        mediator.addQueryDisplayListener(new QueryDisplayListener() {
-
-            public void currentQueryChanged(QueryDisplayEvent e) {
-                initFromModel();
-            }
-        });
-
-        this.addChangeListener(new ChangeListener() {
-
-            public void stateChanged(ChangeEvent e) {
-                lastSelectionIndex = getSelectedIndex();
-                updateTabs();
-            }
-        });
+    private void stateChanged(ChangeEvent e) {
+        lastSelectionIndex = getSelectedIndex();
+        updateTabs();
     }
 
-    void initFromModel() {
+    private void initFromModel() {
         if (!QueryDescriptor.SQL_TEMPLATE.equals(mediator.getCurrentQuery().getType())) {
             setVisible(false);
             return;
@@ -99,7 +80,7 @@ public class SQLTemplateTabbedView extends JTabbedPane {
         setVisible(true);
     }
 
-    void updateTabs() {
+    private void updateTabs() {
         switch (lastSelectionIndex) {
             case 0:
                 mainTab.initFromModel();

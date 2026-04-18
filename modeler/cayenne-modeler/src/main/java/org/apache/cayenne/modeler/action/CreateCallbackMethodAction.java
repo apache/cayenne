@@ -36,14 +36,8 @@ import java.awt.event.ActionEvent;
  */
 public class CreateCallbackMethodAction extends CayenneAction {
 
-    private static final String ACTION_NAME = "Create callback method";
-
     public CreateCallbackMethodAction(Application application) {
-        super(ACTION_NAME, application);
-    }
-
-    public static String getActionName() {
-        return ACTION_NAME;
+        super("Create callback method", application);
     }
 
     /**
@@ -53,18 +47,12 @@ public class CreateCallbackMethodAction extends CayenneAction {
         return getProjectController().getCurrentObjEntity().getCallbackMap();
     }
 
-    /**
-     * @return icon file name for button
-     */
+    @Override
     public String getIconName() {
         return "icon-create-method.png";
     }
 
-    /**
-     * performs adding new callback method
-     *
-     * @param e event
-     */
+    @Override
     public final void performAction(ActionEvent e) {
         CallbackType callbackType = getProjectController().getCurrentCallbackType();
 

@@ -41,6 +41,7 @@ import org.apache.cayenne.map.SQLTemplateDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerFrame;
+import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.ProjectTreeModel;
 import org.apache.cayenne.modeler.ProjectTreeView;
 import org.apache.cayenne.modeler.dialog.FindDialog;
@@ -75,24 +76,25 @@ public class FindAction extends CayenneAction {
      * Result sort priority based on result type
      */
     private static final Map<Class<?>, Integer> PRIORITY_BY_TYPE = new HashMap<>();
+
     static {
-        PRIORITY_BY_TYPE.put(ObjEntity.class,                1);
-        PRIORITY_BY_TYPE.put(DbEntity.class,                 2);
-        PRIORITY_BY_TYPE.put(DetectedDbEntity.class,         2); // this one comes from db reverse engineering
-        PRIORITY_BY_TYPE.put(ObjAttribute.class,             5);
-        PRIORITY_BY_TYPE.put(DbAttribute.class,              6);
-        PRIORITY_BY_TYPE.put(ObjRelationship.class,          7);
-        PRIORITY_BY_TYPE.put(DbRelationship.class,           8);
-        PRIORITY_BY_TYPE.put(DbRelationshipDetected.class,   8); // this one comes from db reverse engineering
-        PRIORITY_BY_TYPE.put(QueryDescriptor.class,          9);
-        PRIORITY_BY_TYPE.put(SelectQueryDescriptor.class,   10);
-        PRIORITY_BY_TYPE.put(EJBQLQueryDescriptor.class,    11);
-        PRIORITY_BY_TYPE.put(SQLTemplateDescriptor.class,   12);
-        PRIORITY_BY_TYPE.put(ProcedureQueryDescriptor.class,13);
-        PRIORITY_BY_TYPE.put(Embeddable.class,              14);
-        PRIORITY_BY_TYPE.put(EmbeddableAttribute.class,     15);
-        PRIORITY_BY_TYPE.put(Procedure.class,               16);
-        PRIORITY_BY_TYPE.put(ProcedureParameter.class,      17);
+        PRIORITY_BY_TYPE.put(ObjEntity.class, 1);
+        PRIORITY_BY_TYPE.put(DbEntity.class, 2);
+        PRIORITY_BY_TYPE.put(DetectedDbEntity.class, 2); // this one comes from db reverse engineering
+        PRIORITY_BY_TYPE.put(ObjAttribute.class, 5);
+        PRIORITY_BY_TYPE.put(DbAttribute.class, 6);
+        PRIORITY_BY_TYPE.put(ObjRelationship.class, 7);
+        PRIORITY_BY_TYPE.put(DbRelationship.class, 8);
+        PRIORITY_BY_TYPE.put(DbRelationshipDetected.class, 8); // this one comes from db reverse engineering
+        PRIORITY_BY_TYPE.put(QueryDescriptor.class, 9);
+        PRIORITY_BY_TYPE.put(SelectQueryDescriptor.class, 10);
+        PRIORITY_BY_TYPE.put(EJBQLQueryDescriptor.class, 11);
+        PRIORITY_BY_TYPE.put(SQLTemplateDescriptor.class, 12);
+        PRIORITY_BY_TYPE.put(ProcedureQueryDescriptor.class, 13);
+        PRIORITY_BY_TYPE.put(Embeddable.class, 14);
+        PRIORITY_BY_TYPE.put(EmbeddableAttribute.class, 15);
+        PRIORITY_BY_TYPE.put(Procedure.class, 16);
+        PRIORITY_BY_TYPE.put(ProcedureParameter.class, 17);
     }
 
     public static String getActionName() {
@@ -113,15 +115,15 @@ public class FindAction extends CayenneAction {
             searchStr = searchStr.substring(1);
         }
 
-        if(searchStr.isEmpty()) {
+        if (searchStr.isEmpty()) {
             markEmptySearch(source);
             return;
         }
 
         List<SearchResultEntry> searchResults = search(searchStr);
-        if(searchResults.isEmpty()){
+        if (searchResults.isEmpty()) {
             markEmptySearch(source);
-        } else if(searchResults.size() == 1){
+        } else if (searchResults.size() == 1) {
             jumpToResult(searchResults.iterator().next());
         } else {
             new FindDialog(getApplication().getFrameController(), searchResults).startupAction();
@@ -139,21 +141,22 @@ public class FindAction extends CayenneAction {
     public static void jumpToResult(FindAction.SearchResultEntry searchResultEntry) {
         EditorView editor = ((CayenneModelerFrame) Application.getInstance().getFrameController().getView()).getView();
         DataChannelDescriptor domain = (DataChannelDescriptor) Application.getInstance().getProject().getRootNode();
+        ProjectController controller = Application.getInstance().getFrameController().getProjectController();
 
         if (searchResultEntry.getObject() instanceof Entity) {
-            jumpToEntityResult((Entity<?,?,?>) searchResultEntry.getObject(), editor, domain);
+            jumpToEntityResult((Entity<?, ?, ?>) searchResultEntry.getObject(), editor, domain, controller);
         } else if (searchResultEntry.getObject() instanceof QueryDescriptor) {
-            jumpToQueryResult((QueryDescriptor)searchResultEntry.getObject(), editor, domain);
+            jumpToQueryResult((QueryDescriptor) searchResultEntry.getObject(), editor, domain);
         } else if (searchResultEntry.getObject() instanceof Embeddable) {
-            jumpToEmbeddableResult((Embeddable)searchResultEntry.getObject(), editor, domain);
+            jumpToEmbeddableResult((Embeddable) searchResultEntry.getObject(), editor, domain);
         } else if (searchResultEntry.getObject() instanceof EmbeddableAttribute) {
-            jumpToEmbeddableAttributeResult((EmbeddableAttribute)searchResultEntry.getObject(), editor, domain);
+            jumpToEmbeddableAttributeResult((EmbeddableAttribute) searchResultEntry.getObject(), editor, domain, controller);
         } else if (searchResultEntry.getObject() instanceof Attribute || searchResultEntry.getObject() instanceof Relationship) {
-            jumpToAttributeResult(searchResultEntry, editor, domain);
+            jumpToAttributeResult(searchResultEntry, editor, domain, controller);
         } else if (searchResultEntry.getObject() instanceof Procedure) {
-            jumpToProcedureResult((Procedure)searchResultEntry.getObject(), editor, domain);
+            jumpToProcedureResult((Procedure) searchResultEntry.getObject(), editor, domain, controller);
         } else if (searchResultEntry.getObject() instanceof ProcedureParameter) {
-            jumpToProcedureResult((ProcedureParameter)searchResultEntry.getObject(), editor, domain);
+            jumpToProcedureResult((ProcedureParameter) searchResultEntry.getObject(), editor, domain, controller);
         }
     }
 
@@ -237,8 +240,8 @@ public class FindAction extends CayenneAction {
                 result.add(new SearchResultEntry(proc, proc.getName()));
             }
 
-            for(ProcedureParameter param : proc.getCallParameters()) {
-                if(match(param.getName(), pattern)) {
+            for (ProcedureParameter param : proc.getCallParameters()) {
+                if (match(param.getName(), pattern)) {
                     result.add(new SearchResultEntry(param, proc.getName() + '.' + param.getName()));
                 }
             }
@@ -249,7 +252,7 @@ public class FindAction extends CayenneAction {
         if (catalogOrSchema != null && !catalogOrSchema.isEmpty()) {
             if (match(catalogOrSchema, pattern)) {
                 SearchResultEntry entry = new SearchResultEntry(ent, ent.getName());
-                if(!paths.contains(entry)) {
+                if (!paths.contains(entry)) {
                     paths.add(entry);
                 }
             }
@@ -260,51 +263,56 @@ public class FindAction extends CayenneAction {
         return pattern.matcher(entityName).find();
     }
 
-    private static void jumpToAttributeResult(SearchResultEntry searchResultEntry, EditorView editor, DataChannelDescriptor domain) {
+    private static void jumpToAttributeResult(SearchResultEntry searchResultEntry, EditorView editor, DataChannelDescriptor domain,
+                                              ProjectController controller) {
         DataMap map;
-        Entity<?,?,?> entity;
+        Entity<?, ?, ?> entity;
         if (searchResultEntry.getObject() instanceof Attribute) {
-            map = ((Attribute<?,?,?>) searchResultEntry.getObject()).getEntity().getDataMap();
-            entity = ((Attribute<?,?,?>) searchResultEntry.getObject()).getEntity();
+            map = ((Attribute<?, ?, ?>) searchResultEntry.getObject()).getEntity().getDataMap();
+            entity = ((Attribute<?, ?, ?>) searchResultEntry.getObject()).getEntity();
         } else {
-            map = ((Relationship<?,?,?>) searchResultEntry.getObject()).getSourceEntity().getDataMap();
-            entity = ((Relationship<?,?,?>) searchResultEntry.getObject()).getSourceEntity();
+            map = ((Relationship<?, ?, ?>) searchResultEntry.getObject()).getSourceEntity().getDataMap();
+            entity = ((Relationship<?, ?, ?>) searchResultEntry.getObject()).getSourceEntity();
         }
         buildAndSelectTreePath(map, entity, editor);
 
         if (searchResultEntry.getObject() instanceof Attribute) {
             AttributeDisplayEvent event = new AttributeDisplayEvent(editor.getProjectTreeView(),
-                    (Attribute<?,?,?>) searchResultEntry.getObject(), entity, map, domain);
+                    (Attribute<?, ?, ?>) searchResultEntry.getObject(), entity, map, domain);
             event.setMainTabFocus(true);
-            if(searchResultEntry.getObject() instanceof DbAttribute) {
-                editor.getDbDetailView().currentDbAttributeChanged(event);
+            if (searchResultEntry.getObject() instanceof DbAttribute) {
+                controller.fireDbAttributeDisplayEvent(event);
                 editor.getDbDetailView().repaint();
             } else {
-                editor.getObjDetailView().currentObjAttributeChanged(event);
+                controller.fireObjAttributeDisplayEvent(event);
                 editor.getObjDetailView().repaint();
             }
         } else if (searchResultEntry.getObject() instanceof Relationship) {
             RelationshipDisplayEvent event = new RelationshipDisplayEvent(editor.getProjectTreeView(),
-                    (Relationship<?,?,?>) searchResultEntry.getObject(), entity, map, domain);
+                    (Relationship<?, ?, ?>) searchResultEntry.getObject(), entity, map, domain);
             event.setMainTabFocus(true);
-            if(searchResultEntry.getObject() instanceof DbRelationship) {
-                editor.getDbDetailView().currentDbRelationshipChanged(event);
+            if (searchResultEntry.getObject() instanceof DbRelationship) {
+                controller.fireDbRelationshipDisplayEvent(event);
                 editor.getDbDetailView().repaint();
             } else {
-                editor.getObjDetailView().currentObjRelationshipChanged(event);
+                controller.fireObjRelationshipDisplayEvent(event);
                 editor.getObjDetailView().repaint();
             }
         }
     }
 
-    private static void jumpToEmbeddableAttributeResult(EmbeddableAttribute attribute, EditorView editor, DataChannelDescriptor domain) {
+    private static void jumpToEmbeddableAttributeResult(
+            EmbeddableAttribute attribute,
+            EditorView editor,
+            DataChannelDescriptor domain,
+            ProjectController controller) {
+
         Embeddable embeddable = attribute.getEmbeddable();
         DataMap map = embeddable.getDataMap();
         buildAndSelectTreePath(map, embeddable, editor);
-        EmbeddableAttributeDisplayEvent event = new EmbeddableAttributeDisplayEvent(editor.getProjectTreeView(),
-                embeddable, attribute, map, domain);
+        EmbeddableAttributeDisplayEvent event = new EmbeddableAttributeDisplayEvent(editor.getProjectTreeView(), embeddable, attribute, map, domain);
         event.setMainTabFocus(true);
-        editor.getEmbeddableView().currentEmbeddableAttributeChanged(event);
+        controller.fireEmbeddableAttributeDisplayEvent(event);
         editor.getEmbeddableView().repaint();
     }
 
@@ -323,34 +331,37 @@ public class FindAction extends CayenneAction {
         editor.currentQueryChanged(event);
     }
 
-    private static void jumpToEntityResult(Entity<?,?,?> entity, EditorView editor, DataChannelDescriptor domain) {
+    private static void jumpToEntityResult(Entity<?, ?, ?> entity, EditorView editor, DataChannelDescriptor domain,
+                                           ProjectController controller) {
         DataMap map = entity.getDataMap();
         buildAndSelectTreePath(map, entity, editor);
         EntityDisplayEvent event = new EntityDisplayEvent(editor.getProjectTreeView(), entity, map, domain);
         event.setMainTabFocus(true);
 
         if (entity instanceof ObjEntity) {
-            editor.getObjDetailView().currentObjEntityChanged(event);
+            controller.fireObjEntityDisplayEvent(event);
         } else if (entity instanceof DbEntity) {
-            editor.getDbDetailView().currentDbEntityChanged(event);
+            controller.fireDbEntityDisplayEvent(event);
         }
     }
 
-    private static void jumpToProcedureResult(Procedure procedure, EditorView editor, DataChannelDescriptor domain) {
+    private static void jumpToProcedureResult(Procedure procedure, EditorView editor, DataChannelDescriptor domain,
+                                              ProjectController controller) {
         DataMap map = procedure.getDataMap();
         buildAndSelectTreePath(map, procedure, editor);
         ProcedureDisplayEvent event = new ProcedureDisplayEvent(editor.getProjectTreeView(), procedure, map, domain);
-        editor.getProcedureView().currentProcedureChanged(event);
+        controller.fireProcedureDisplayEvent(event);
         editor.getProcedureView().repaint();
     }
 
-    private static void jumpToProcedureResult(ProcedureParameter parameter, EditorView editor, DataChannelDescriptor domain) {
+    private static void jumpToProcedureResult(ProcedureParameter parameter, EditorView editor, DataChannelDescriptor domain,
+                                              ProjectController controller) {
         Procedure procedure = parameter.getProcedure();
         DataMap map = procedure.getDataMap();
         buildAndSelectTreePath(map, procedure, editor);
         ProcedureParameterDisplayEvent event =
                 new ProcedureParameterDisplayEvent(editor.getProjectTreeView(), parameter, procedure, map, domain);
-        editor.getProcedureView().currentProcedureParameterChanged(event);
+        controller.fireProcedureParameterDisplayEvent(event);
         editor.getProcedureView().repaint();
     }
 
@@ -361,10 +372,10 @@ public class FindAction extends CayenneAction {
         ProjectTreeView projectTreeView = editor.getProjectTreeView();
         ProjectTreeModel treeModel = (ProjectTreeModel) projectTreeView.getModel();
 
-        DefaultMutableTreeNode[] mutableTreeNodes = new DefaultMutableTreeNode[] {
-            treeModel.getRootNode(),
-            treeModel.getNodeForObjectPath(new Object[]{map}),
-            treeModel.getNodeForObjectPath(new Object[]{map, object})
+        DefaultMutableTreeNode[] mutableTreeNodes = new DefaultMutableTreeNode[]{
+                treeModel.getRootNode(),
+                treeModel.getNodeForObjectPath(new Object[]{map}),
+                treeModel.getNodeForObjectPath(new Object[]{map, object})
         };
 
         TreePath treePath = new TreePath(mutableTreeNodes);
@@ -377,7 +388,7 @@ public class FindAction extends CayenneAction {
     /**
      * Search result holder
      */
-    public static class SearchResultEntry implements Comparable<SearchResultEntry>{
+    public static class SearchResultEntry implements Comparable<SearchResultEntry> {
         private final Object object;
         private final String name;
 
@@ -411,7 +422,7 @@ public class FindAction extends CayenneAction {
 
         private int getPriority() {
             Integer priority = PRIORITY_BY_TYPE.get(object.getClass());
-            if(priority == null) {
+            if (priority == null) {
                 throw new NullPointerException("Unknown type: " + object.getClass().getCanonicalName());
             }
             return priority;
@@ -420,7 +431,7 @@ public class FindAction extends CayenneAction {
         @Override
         public int compareTo(SearchResultEntry o) {
             int res = getPriority() - o.getPriority();
-            if(res != 0) {
+            if (res != 0) {
                 return res;
             }
             return getName().compareTo(o.getName());

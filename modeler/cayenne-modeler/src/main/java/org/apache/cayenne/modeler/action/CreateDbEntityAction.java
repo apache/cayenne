@@ -38,17 +38,6 @@ import java.awt.event.ActionEvent;
 public class CreateDbEntityAction extends CayenneAction {
 
     /**
-     * Constructor for CreateDbEntityAction.
-     */
-    public CreateDbEntityAction(Application application) {
-        super(getActionName(), application);
-    }
-
-    public static String getActionName() {
-        return "Create DbEntity";
-    }
-
-    /**
      * Fires events when a db entity was added
      */
     static void fireDbEntityEvent(Object src, ProjectController mediator, DbEntity entity) {
@@ -59,6 +48,11 @@ public class CreateDbEntityAction extends CayenneAction {
         mediator.fireDbEntityDisplayEvent(displayEvent);
     }
 
+    public CreateDbEntityAction(Application application) {
+        super("Create DbEntity", application);
+    }
+
+    @Override
     public String getIconName() {
         return "icon-dbentity.png";
     }
@@ -92,11 +86,12 @@ public class CreateDbEntityAction extends CayenneAction {
     /**
      * Returns <code>true</code> if path contains a DataMap object.
      */
+    @Override
     public boolean enableForPath(ConfigurationNode object) {
         if (object == null) {
             return false;
         }
 
-        return ((Entity<?,?,?>) object).getDataMap() != null;
+        return ((Entity<?, ?, ?>) object).getDataMap() != null;
     }
 }
