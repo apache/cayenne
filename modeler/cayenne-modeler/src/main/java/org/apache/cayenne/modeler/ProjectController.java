@@ -1437,8 +1437,6 @@ public class ProjectController extends CayenneController {
 
     public void fireObjRelationshipDisplayEvent(RelationshipDisplayEvent e) {
         boolean changed = !Arrays.equals(e.getRelationships(), currentState.objRels);
-        e.setRelationshipChanged(changed);
-
         if (changed) {
             if (e.getEntity() != currentState.objEntity) {
                 clearState();
@@ -1731,20 +1729,6 @@ public class ProjectController extends CayenneController {
     public void enableSave(boolean enable) {
         application.getActionManager().getAction(SaveAction.class).setEnabled(enable);
         application.getActionManager().getAction(SaveAsAction.class).setEnabled(enable);
-    }
-
-    /**
-     * Set currently selected ObjAttributes
-     */
-    public void setCurrentObjAttributes(ObjAttribute[] attrs) {
-        currentState.objAttrs = attrs;
-    }
-
-    /**
-     * Set currently selected ObjRelationships
-     */
-    public void setCurrentObjRelationships(ObjRelationship[] rels) {
-        currentState.objRels = rels;
     }
 
     /**

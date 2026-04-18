@@ -22,11 +22,10 @@ package org.apache.cayenne.modeler.event;
 import java.util.EventListener;
 
 /**
-* Used to display ObjRelationship. 
-*/
-public interface ObjRelationshipDisplayListener extends EventListener
-{
-	/** Current obj entity used as a model has changed.*/
-	public void currentObjRelationshipChanged(RelationshipDisplayEvent e);
+ * Used to display ObjRelationship.
+ */
+public interface ObjRelationshipDisplayListener extends EventListener {
+
+    void currentObjRelationshipChanged(RelationshipDisplayEvent e);
 }
 

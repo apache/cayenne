@@ -36,6 +36,7 @@ import org.apache.cayenne.modeler.action.RemoveAttributeRelationshipAction;
 import org.apache.cayenne.modeler.dialog.objentity.ObjRelationshipInfo;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
+import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
@@ -404,9 +405,14 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
     }
 
     private void valueChanged(ListSelectionEvent e) {
+
+        if (e.getValueIsAdjusting()) {
+            return;
+        }
+
         ObjRelationship[] rels = new ObjRelationship[0];
 
-        if (!e.getValueIsAdjusting() && !((ListSelectionModel) e.getSource()).isSelectionEmpty()) {
+        if (!((ListSelectionModel) e.getSource()).isSelectionEmpty()) {
 
             parentPanel.getAttributePanel().getTable().getSelectionModel().clearSelection();
             if (parentPanel.getAttributePanel().getTable().getCellEditor() != null) {
@@ -438,7 +444,13 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
             editMenu.setEnabled(table.getSelectedRow() >= 0);
         }
 
-        controller.setCurrentObjRelationships(rels);
+        controller.fireObjRelationshipDisplayEvent(new RelationshipDisplayEvent(
+                this,
+                rels,
+                controller.getCurrentObjEntity(),
+                controller.getCurrentDataMap(),
+                controller.getCurrentDataChanel()));
+
         parentPanel.updateActions(rels);
     }
 }

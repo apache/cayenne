@@ -37,6 +37,7 @@ import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeRelationshipAction;
 import org.apache.cayenne.modeler.dialog.objentity.ObjAttributeInfoDialog;
 import org.apache.cayenne.modeler.editor.wrapper.ObjAttributeWrapper;
+import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.ProjectOnSaveEvent;
@@ -457,9 +458,14 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
     }
 
     private void valueChanged(ListSelectionEvent e) {
+
+        if (e.getValueIsAdjusting()) {
+            return;
+        }
+
         ObjAttribute[] attrs = new ObjAttribute[0];
 
-        if (!e.getValueIsAdjusting() && !((ListSelectionModel) e.getSource()).isSelectionEmpty()) {
+        if (!((ListSelectionModel) e.getSource()).isSelectionEmpty()) {
 
             parentPanel.getRelationshipPanel().getTable().getSelectionModel().clearSelection();
             if (parentPanel.getRelationshipPanel().getTable().getCellEditor() != null) {
@@ -491,7 +497,13 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
             editMenu.setEnabled(table.getSelectedRow() >= 0);
         }
 
-        controller.setCurrentObjAttributes(attrs);
+        controller.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(
+                this,
+                attrs,
+                controller.getCurrentObjEntity(),
+                controller.getCurrentDataMap(),
+                controller.getCurrentDataChanel()));
+
         parentPanel.updateActions(attrs);
     }
 }
