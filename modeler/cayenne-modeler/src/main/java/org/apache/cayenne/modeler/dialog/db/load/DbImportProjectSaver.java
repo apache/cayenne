@@ -52,7 +52,7 @@ public class DbImportProjectSaver implements ProjectSaver {
 
         DataMap dataMap = (DataMap) project.getRootNode();
 
-        if (projectController.getCurrentDataMap() != null) {
+        if (projectController.getSelectedDataMap() != null) {
             projectController.fireDataMapEvent(new DataMapEvent(Application.getFrame(), dataMap, MapEvent.REMOVE));
             projectController.fireDataMapEvent(new DataMapEvent(Application.getFrame(), dataMap, MapEvent.ADD));
         } else {

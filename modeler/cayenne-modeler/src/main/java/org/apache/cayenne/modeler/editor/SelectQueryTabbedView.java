@@ -58,13 +58,13 @@ public class SelectQueryTabbedView extends JTabbedPane {
     }
 
     private void initFromModel() {
-        if (!QueryDescriptor.SELECT_QUERY.equals(mediator.getCurrentQuery().getType())) {
+        if (!QueryDescriptor.SELECT_QUERY.equals(mediator.getSelectedQuery().getType())) {
             setVisible(false);
             return;
         }
 
         // if no root, reset tabs to show the first panel..
-        if (mediator.getCurrentQuery().getRoot() == null) {
+        if (mediator.getSelectedQuery().getRoot() == null) {
             lastSelectionIndex = 0;
         }
 

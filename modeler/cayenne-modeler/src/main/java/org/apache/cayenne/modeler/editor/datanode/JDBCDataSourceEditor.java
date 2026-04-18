@@ -114,7 +114,7 @@ public class JDBCDataSourceEditor extends DataSourceEditor {
         DataSourceDescriptor projectDataSourceDescriptor = getNode().getDataSourceDescriptor();
 
         ProjectController parent = (ProjectController) getParent();
-        String key = parent.getDataNodePreferences().getLocalDataSource();
+        String key = parent.getSelectedDataNodePreferences().getLocalDataSource();
         if (key == null) {
             mainController.updateStatus("No Local DataSource selected for node...");
             return;

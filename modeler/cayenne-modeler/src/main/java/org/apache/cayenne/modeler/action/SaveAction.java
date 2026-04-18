@@ -72,7 +72,7 @@ public class SaveAction extends SaveAsAction {
 
         if (!path[path.length - 1].equals(newPath[newPath.length - 1])) {
             String newName = newPath[newPath.length - 1].replace(".xml", "");
-            RenamedPreferences.copyPreferences(newName, getProjectController().getPreferenceForProject());
+            RenamedPreferences.copyPreferences(newName, getProjectController().getProjectPreferences());
             RenamedPreferences.removeOldPreferences();
         }
 

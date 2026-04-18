@@ -42,8 +42,8 @@ public class CreateDbEntityAction extends CayenneAction {
      */
     static void fireDbEntityEvent(Object src, ProjectController controller, DbEntity entity) {
         controller.fireDbEntityEvent(new EntityEvent(src, entity, MapEvent.ADD));
-        EntityDisplayEvent displayEvent = new EntityDisplayEvent(src, entity, controller.getCurrentDataMap(),
-                controller.getCurrentDataNode(), (DataChannelDescriptor) controller.getProject().getRootNode());
+        EntityDisplayEvent displayEvent = new EntityDisplayEvent(src, entity, controller.getSelectedDataMap(),
+                controller.getSelectedDataNode(), (DataChannelDescriptor) controller.getProject().getRootNode());
         displayEvent.setMainTabFocus(true);
         controller.fireDbEntityDisplayEvent(displayEvent);
     }
@@ -61,7 +61,7 @@ public class CreateDbEntityAction extends CayenneAction {
      * Creates new DbEntity, adds it to the current DataMap, fires DbEntityEvent and DbEntityDisplayEvent.
      */
     public void performAction(ActionEvent e) {
-        DataMap map = getProjectController().getCurrentDataMap();
+        DataMap map = getProjectController().getSelectedDataMap();
         DbEntity entity = new DbEntity();
         entity.setName(NameBuilder.builder(entity, map).name());
         createEntity(map, entity);

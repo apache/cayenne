@@ -64,7 +64,7 @@ public class ReverseEngineeringAction extends DBConnectionAwareAction {
         dataMapCount.set(dataMaps.size());
         ProjectController projectController = Application.getInstance().getFrameController().getProjectController();
         for (DataMap dataMap : dataMapSet) {
-            projectController.setCurrentDataMap(dataMap);
+            projectController.setSelectedDataMap(dataMap);
             startImport();
         }
     }
@@ -120,7 +120,7 @@ public class ReverseEngineeringAction extends DBConnectionAwareAction {
     @Override
     public void performAction(ActionEvent event) {
         resetParams();
-        dataMaps.add(Application.getInstance().getFrameController().getProjectController().getCurrentDataMap());
+        dataMaps.add(Application.getInstance().getFrameController().getProjectController().getSelectedDataMap());
         dataMapCount.set(dataMaps.size());
         startImport();
     }

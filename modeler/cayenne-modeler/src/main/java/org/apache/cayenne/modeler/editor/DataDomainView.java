@@ -210,7 +210,7 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
             throw new ValidationException("Enter name for DataDomain");
         }
 
-        Preferences prefs = controller.getPreferenceForDataDomain();
+        Preferences prefs = controller.getDataDomainPreferences();
 
         DomainEvent e = new DomainEvent(
                 this,

@@ -48,7 +48,7 @@ public class LinkDataMapsAction extends CayenneAction {
         DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) mediator.getProject().getRootNode();
 
         Collection<String> linkedDataMaps = new ArrayList<>();
-        DataNodeDescriptor dataNodeDescriptor = mediator.getCurrentDataNode();
+        DataNodeDescriptor dataNodeDescriptor = mediator.getSelectedDataNode();
         for (DataNodeDescriptor dataNodeDesc : dataChannelDescriptor.getNodeDescriptors()) {
             linkedDataMaps.addAll(dataNodeDesc.getDataMapNames());
         }

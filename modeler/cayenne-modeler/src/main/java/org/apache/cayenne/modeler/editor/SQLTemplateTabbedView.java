@@ -57,13 +57,13 @@ public class SQLTemplateTabbedView extends JTabbedPane {
     }
 
     private void initFromModel() {
-        if (!QueryDescriptor.SQL_TEMPLATE.equals(controller.getCurrentQuery().getType())) {
+        if (!QueryDescriptor.SQL_TEMPLATE.equals(controller.getSelectedQuery().getType())) {
             setVisible(false);
             return;
         }
 
         // if no root, reset tabs to show the first panel..
-        if (controller.getCurrentQuery().getRoot() == null) {
+        if (controller.getSelectedQuery().getRoot() == null) {
             lastSelectionIndex = 0;
         }
 

@@ -105,7 +105,7 @@ public class CgenController extends CayenneController implements ObjEntityListen
 
     public void initFromModel() {
         initFromModel = true;
-        dataMap = projectController.getCurrentDataMap();
+        dataMap = projectController.getSelectedDataMap();
         prepareClasses(dataMap);
         initCgenConfigurations();
         initConfigurationsComboBox();
@@ -370,7 +370,7 @@ public class CgenController extends CayenneController implements ObjEntityListen
             return;
         }
 
-        DataMap map = projectController.getCurrentDataMap();
+        DataMap map = projectController.getSelectedDataMap();
         CgenConfigList existingConfigurations = projectController.getApplication().getMetaData().get(map, CgenConfigList.class);
         if (existingConfigurations == null) {
             cgenConfigList.add(cgenConfiguration);

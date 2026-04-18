@@ -140,7 +140,7 @@ public class SQLTemplateScriptsTab extends JPanel {
     }
 
     void initFromModel() {
-        QueryDescriptor query = mediator.getCurrentQuery();
+        QueryDescriptor query = mediator.getSelectedQuery();
 
         if (query == null || !QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) {
             setVisible(false);
@@ -174,7 +174,7 @@ public class SQLTemplateScriptsTab extends JPanel {
     }
 
     SQLTemplateDescriptor getQuery() {
-        QueryDescriptor query = mediator.getCurrentQuery();
+        QueryDescriptor query = mediator.getSelectedQuery();
         return (query != null && QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) ?
                 (SQLTemplateDescriptor) query : null;
     }

@@ -37,7 +37,7 @@ public class ObjEntityToSuperEntityAction extends BaseViewEntityAction {
 
     @Override
     protected ObjEntity getEntity() {
-        ObjEntity objEntity = getProjectController().getCurrentObjEntity();
+        ObjEntity objEntity = getProjectController().getSelectedObjEntity();
         if (objEntity == null) {
             return null;
         }

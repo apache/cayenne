@@ -122,7 +122,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
      * query is changed.
      */
     void initFromModel() {
-        QueryDescriptor query = mediator.getCurrentQuery();
+        QueryDescriptor query = mediator.getSelectedQuery();
 
         if (query == null || !QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) {
             setVisible(false);
@@ -133,7 +133,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
         properties.initFromModel(query);
         comment.setText(getQueryComment(query));
 
-        DataMap map = mediator.getCurrentDataMap();
+        DataMap map = mediator.getSelectedDataMap();
         ObjEntity[] roots = map.getObjEntities().toArray(new ObjEntity[0]);
 
         if (roots.length > 1) {
@@ -149,7 +149,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
 
     @Override
     protected QueryDescriptor getQuery() {
-        QueryDescriptor query = mediator.getCurrentQuery();
+        QueryDescriptor query = mediator.getSelectedQuery();
         return (query != null && QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) ? query : null;
     }
 
@@ -165,7 +165,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
         QueryDescriptor template = getQuery();
         if (template != null) {
             // in case of null entity, set root to DataMap
-            Object root = entity != null ? entity : mediator.getCurrentDataMap();
+            Object root = entity != null ? entity : mediator.getSelectedDataMap();
             template.setRoot(root);
 
             mediator.fireQueryEvent(new QueryEvent(this, template));

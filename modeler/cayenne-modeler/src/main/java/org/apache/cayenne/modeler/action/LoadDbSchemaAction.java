@@ -122,7 +122,7 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
         draggableTreePanel.getSourceTree()
                 .translateReverseEngineeringToTree(databaseReverseEngineering, true);
         draggableTreePanel
-                .bindReverseEngineeringToDatamap(getProjectController().getCurrentDataMap(), databaseReverseEngineering);
+                .bindReverseEngineeringToDatamap(getProjectController().getSelectedDataMap(), databaseReverseEngineering);
         ((DbImportModel) draggableTreePanel.getSourceTree().getModel()).reload();
     }
 

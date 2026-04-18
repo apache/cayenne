@@ -137,7 +137,7 @@ public class MainDataNodeEditor extends CayenneController {
 		}
 
 		ProjectController parent = (ProjectController) getParent();
-		DataNodeDefaults oldPref = parent.getDataNodePreferences();
+		DataNodeDefaults oldPref = parent.getSelectedDataNodePreferences();
 		DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) getApplication().getProject()
 				.getRootNode();
 
@@ -171,7 +171,7 @@ public class MainDataNodeEditor extends CayenneController {
 		view.addComponentListener(new ComponentAdapter() {
 
 			public void componentShown(ComponentEvent e) {
-				refreshView(node != null ? node : ((ProjectController) getParent()).getCurrentDataNode());
+				refreshView(node != null ? node : ((ProjectController) getParent()).getSelectedDataNode());
 			}
 		});
 
@@ -179,7 +179,7 @@ public class MainDataNodeEditor extends CayenneController {
 			if (refreshing) return;
 			Object sel = view.getLocalDataSources().getSelectedItem();
 			String key = (sel == null || NO_LOCAL_DATA_SOURCE.equals(sel)) ? null : sel.toString();
-			((ProjectController) getParent()).getDataNodePreferences().setLocalDataSource(key);
+			((ProjectController) getParent()).getSelectedDataNodePreferences().setLocalDataSource(key);
 		});
 
 		TextBinder.bind(view.getDataNodeName(), v -> {
@@ -241,7 +241,7 @@ public class MainDataNodeEditor extends CayenneController {
 		refreshing = true;
 		try {
 			view.getLocalDataSources().setModel(new DefaultComboBoxModel<>(keys));
-			String localDs = ((ProjectController) getParent()).getDataNodePreferences().getLocalDataSource();
+			String localDs = ((ProjectController) getParent()).getSelectedDataNodePreferences().getLocalDataSource();
 			view.getLocalDataSources().setSelectedItem(localDs != null ? localDs : NO_LOCAL_DATA_SOURCE);
 		} finally {
 			refreshing = false;

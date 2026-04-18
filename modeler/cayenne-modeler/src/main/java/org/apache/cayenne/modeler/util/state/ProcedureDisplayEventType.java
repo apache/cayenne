@@ -55,9 +55,9 @@ class ProcedureDisplayEventType extends DisplayEventType {
     @Override
     public void saveLastDisplayEvent() {
         preferences.setEvent(ProcedureDisplayEvent.class.getSimpleName());
-        preferences.setDomain(controller.getCurrentDataChanel().getName());
-        preferences.setDataMap(controller.getCurrentDataMap().getName());
-        preferences.setProcedure(controller.getCurrentProcedure().getName());
+        preferences.setDomain(controller.getSelectedDataDomain().getName());
+        preferences.setDataMap(controller.getSelectedDataMap().getName());
+        preferences.setProcedure(controller.getSelectedProcedure().getName());
     }
 
 }

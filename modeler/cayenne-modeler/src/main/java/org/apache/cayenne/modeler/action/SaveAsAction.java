@@ -107,10 +107,10 @@ public class SaveAsAction extends CayenneAction {
             String newName = p.getConfigurationResource().getURL().getPath().replace(".xml", "");
             String oldName = oldPath.replace(".xml", "");
 
-            Preferences oldPref = getProjectController().getPreferenceForProject();
+            Preferences oldPref = getProjectController().getProjectPreferences();
             String projPath = oldPref.absolutePath().replace(oldName, "");
-            Preferences newPref = getProjectController().getPreferenceForProject().node(projPath + newName);
-            RenamedPreferences.copyPreferences(newPref, getProjectController().getPreferenceForProject(), false);
+            Preferences newPref = getProjectController().getProjectPreferences().node(projPath + newName);
+            RenamedPreferences.copyPreferences(newPref, getProjectController().getProjectPreferences(), false);
         } else if (isNewProject) {
             if (tempOldPref != null) {
 

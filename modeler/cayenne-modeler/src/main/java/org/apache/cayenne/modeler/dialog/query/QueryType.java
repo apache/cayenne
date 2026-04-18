@@ -51,7 +51,7 @@ public class QueryType extends CayenneController{
         // by default use object query...
         this.type = QueryDescriptor.SELECT_QUERY;
         this.mediator = mediator;
-        this.dataMap = mediator.getCurrentDataMap();
+        this.dataMap = mediator.getSelectedDataMap();
         this.domain = (DataChannelDescriptor)mediator.getProject().getRootNode();
     }
 

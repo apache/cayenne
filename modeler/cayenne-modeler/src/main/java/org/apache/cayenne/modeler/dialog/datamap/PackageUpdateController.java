@@ -90,7 +90,7 @@ public class PackageUpdateController extends DefaultsPreferencesController {
                 String newClassName = getNameWithDefaultPackage(className);
                 oldNameEmbeddableToNewName.put(oldName, newClassName);
                 embeddable.setClassName(newClassName);
-                mediator.fireEmbeddableEvent(e, mediator.getCurrentDataMap());
+                mediator.fireEmbeddableEvent(e, mediator.getSelectedDataMap());
             }
         }
 

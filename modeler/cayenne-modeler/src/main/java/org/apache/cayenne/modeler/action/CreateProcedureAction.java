@@ -44,7 +44,7 @@ public class CreateProcedureAction extends CayenneAction {
      */
     static void fireProcedureEvent(Object src, ProjectController controller, DataMap dataMap, Procedure procedure) {
         controller.fireProcedureEvent(new ProcedureEvent(src, procedure, MapEvent.ADD));
-        controller.fireProcedureDisplayEvent(new ProcedureDisplayEvent(src, procedure, controller.getCurrentDataMap(),
+        controller.fireProcedureDisplayEvent(new ProcedureDisplayEvent(src, procedure, controller.getSelectedDataMap(),
                 (DataChannelDescriptor) controller.getProject().getRootNode()));
     }
 
@@ -54,7 +54,7 @@ public class CreateProcedureAction extends CayenneAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        DataMap map = getProjectController().getCurrentDataMap();
+        DataMap map = getProjectController().getSelectedDataMap();
 
         Procedure procedure = new Procedure();
         procedure.setName(NameBuilder.builder(procedure, map).name());

@@ -23,7 +23,6 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
-import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
@@ -32,8 +31,6 @@ import org.apache.cayenne.map.ProcedureQueryDescriptor;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.QueryDisplayEvent;
-import org.apache.cayenne.modeler.event.QueryDisplayListener;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.ProjectUtil;
@@ -130,7 +127,7 @@ public class ProcedureQueryView extends JPanel {
         queryRoot.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent event) {
-                QueryDescriptor query = mediator.getCurrentQuery();
+                QueryDescriptor query = mediator.getSelectedQuery();
                 if (query != null) {
                     query.setRoot(queryRoot.getModel().getSelectedItem());
                     mediator.fireQueryEvent(new QueryEvent(this, query));
@@ -146,7 +143,7 @@ public class ProcedureQueryView extends JPanel {
      * query is changed.
      */
     void initFromModel() {
-        QueryDescriptor query = mediator.getCurrentQuery();
+        QueryDescriptor query = mediator.getSelectedQuery();
 
         if (query == null || !QueryDescriptor.PROCEDURE_QUERY.equals(query.getType())) {
             setVisible(false);
@@ -165,7 +162,7 @@ public class ProcedureQueryView extends JPanel {
         // since query root is fully resolved during map loading,
         // making it impossible to reference other DataMaps.
 
-        DataMap map = mediator.getCurrentDataMap();
+        DataMap map = mediator.getSelectedDataMap();
         Procedure[] roots = map.getProcedures().toArray(new Procedure[0]);
 
         if (roots.length > 1) {
@@ -188,7 +185,7 @@ public class ProcedureQueryView extends JPanel {
             newName = null;
         }
 
-        QueryDescriptor query = mediator.getCurrentQuery();
+        QueryDescriptor query = mediator.getSelectedQuery();
         if (query == null) {
             return;
         }
@@ -201,7 +198,7 @@ public class ProcedureQueryView extends JPanel {
             throw new ValidationException("Query name is required.");
         }
 
-        DataMap map = mediator.getCurrentDataMap();
+        DataMap map = mediator.getSelectedDataMap();
 
         if (map.getQueryDescriptor(newName) == null) {
             // completely new name, set new name for entity
@@ -223,7 +220,7 @@ public class ProcedureQueryView extends JPanel {
             return null;
         }
 
-        DataMap map = mediator.getCurrentDataMap();
+        DataMap map = mediator.getSelectedDataMap();
         if (map == null) {
             return null;
         }
@@ -232,7 +229,7 @@ public class ProcedureQueryView extends JPanel {
     }
 
     void setEntity(ObjEntity entity) {
-        QueryDescriptor query = mediator.getCurrentQuery();
+        QueryDescriptor query = mediator.getSelectedQuery();
         if (query != null && QueryDescriptor.PROCEDURE_QUERY.equals(query.getType())) {
             ((ProcedureQueryDescriptor) query).setResultEntityName(entity != null ? entity.getName() : null);
             mediator.fireQueryEvent(new QueryEvent(this, query));
@@ -240,7 +237,7 @@ public class ProcedureQueryView extends JPanel {
     }
 
     private void setQueryComment(String text) {
-        QueryDescriptor query = mediator.getCurrentQuery();
+        QueryDescriptor query = mediator.getSelectedQuery();
         if (query == null) {
             return;
         }

@@ -131,7 +131,7 @@ public class DbLoaderContext {
             return false;
         }
         // Build reverse engineering from metadata and dialog values
-        ReverseEngineering metaReverseEngineering = metaData.get(getProjectController().getCurrentDataMap(), ReverseEngineering.class);
+        ReverseEngineering metaReverseEngineering = metaData.get(getProjectController().getSelectedDataMap(), ReverseEngineering.class);
         if(metaReverseEngineering == null) {
             return false;
         }
@@ -192,7 +192,7 @@ public class DbLoaderContext {
     }
 
     private void prepareDataMap() {
-        dataMap = getProjectController().getCurrentDataMap();
+        dataMap = getProjectController().getSelectedDataMap();
         existingMap = dataMap != null;
 
         if (!existingMap) {

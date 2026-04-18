@@ -70,26 +70,26 @@ public class RemoveRelationshipAction extends RemoveAction implements MultipleOb
 		ProjectController mediator = getProjectController();
 
 		ObjRelationship[] rels = getProjectController()
-				.getCurrentObjRelationships();
+				.getSelectedObjRelationships();
 		if (rels != null && rels.length > 0) {
 			if ((rels.length == 1 && dialog.shouldDelete("ObjRelationship",
 					rels[0].getName()))
 					|| (rels.length > 1 && dialog
 							.shouldDelete("selected ObjRelationships"))) {
-				ObjEntity entity = mediator.getCurrentObjEntity();
+				ObjEntity entity = mediator.getSelectedObjEntity();
 				removeObjRelationships(entity, rels);
 				Application.getInstance().getUndoManager().addEdit(
 						new RemoveRelationshipUndoableEdit(entity, rels));
 			}
 		} else {
 			DbRelationship[] dbRels = getProjectController()
-					.getCurrentDbRelationships();
+					.getSelectedDbRelationships();
 			if (dbRels != null && dbRels.length > 0) {
 				if ((dbRels.length == 1 && dialog.shouldDelete(
 						"DbRelationship", dbRels[0].getName()))
 						|| (dbRels.length > 1 && dialog
 								.shouldDelete("selected DbRelationships"))) {
-					DbEntity entity = mediator.getCurrentDbEntity();
+					DbEntity entity = mediator.getSelectedDbEntity();
 					removeDbRelationships(entity, dbRels);
 					Application.getInstance().getUndoManager().addEdit(
 							new RemoveRelationshipUndoableEdit(entity, dbRels));
@@ -121,6 +121,6 @@ public class RemoveRelationshipAction extends RemoveAction implements MultipleOb
 			mediator.fireDbRelationshipEvent(e);
 		}
 
-		ProjectUtil.cleanObjMappings(mediator.getCurrentDataMap());
+		ProjectUtil.cleanObjMappings(mediator.getSelectedDataMap());
 	}
 }

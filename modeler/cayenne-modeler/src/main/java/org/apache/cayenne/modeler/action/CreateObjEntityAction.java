@@ -55,7 +55,7 @@ public class CreateObjEntityAction extends CayenneAction {
                 src,
                 entity,
                 dataMap,
-                controller.getCurrentDataNode(),
+                controller.getSelectedDataNode(),
                 (DataChannelDescriptor) controller.getProject().getRootNode());
         displayEvent.setMainTabFocus(true);
         controller.fireObjEntityDisplayEvent(displayEvent);
@@ -74,7 +74,7 @@ public class CreateObjEntityAction extends CayenneAction {
     protected void createObjEntity() {
         ProjectController controller = getProjectController();
 
-        DataMap dataMap = controller.getCurrentDataMap();
+        DataMap dataMap = controller.getSelectedDataMap();
         ObjEntity entity = new ObjEntity();
         entity.setName(NameBuilder.builder(entity, dataMap).name());
 
@@ -82,7 +82,7 @@ public class CreateObjEntityAction extends CayenneAction {
         entity.setSuperClassName(dataMap.getDefaultSuperclass());
         entity.setDeclaredLockType(dataMap.getDefaultLockType());
 
-        DbEntity dbEntity = controller.getCurrentDbEntity();
+        DbEntity dbEntity = controller.getSelectedDbEntity();
         if (dbEntity != null) {
             entity.setDbEntity(dbEntity);
 

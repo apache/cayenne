@@ -120,7 +120,7 @@ public class DataSourceWizard extends CayenneController {
 
     private DBConnectionInfo getConnectionInfoFromPreferences() {
         DBConnectionInfo connectionInfo = new DBConnectionInfo();
-        DataMapDefaults dataMapDefaults = projectController.getDataMapPreferences(projectController.getCurrentDataMap());
+        DataMapDefaults dataMapDefaults = projectController.getSelectedDataMapPreferences(projectController.getSelectedDataMap());
         connectionInfo.setDbAdapter(dataMapDefaults.getCurrentPreference().get(DB_ADAPTER_PROPERTY, null));
         connectionInfo.setUrl(dataMapDefaults.getCurrentPreference().get(URL_PROPERTY, null));
         connectionInfo.setUserName(dataMapDefaults.getCurrentPreference().get(USER_NAME_PROPERTY, null));
@@ -152,7 +152,7 @@ public class DataSourceWizard extends CayenneController {
         initFavouriteDataSource();
 
         final DataMapDefaults dataMapDefaults = projectController.
-                getDataMapPreferences(projectController.getCurrentDataMap());
+                getSelectedDataMapPreferences(projectController.getSelectedDataMap());
         if (dataMapDefaults.getCurrentPreference().get(DB_ADAPTER_PROPERTY, null) != null) {
             getConnectionInfoFromPreferences().copyTo(connectionInfo);
         }

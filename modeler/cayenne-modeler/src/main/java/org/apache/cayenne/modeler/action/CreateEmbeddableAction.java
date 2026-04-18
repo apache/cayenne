@@ -66,7 +66,7 @@ public class CreateEmbeddableAction extends CayenneAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        DataMap dataMap = getProjectController().getCurrentDataMap();
+        DataMap dataMap = getProjectController().getSelectedDataMap();
 
         Embeddable embeddable = new Embeddable();
         String baseName = NameBuilder.builder(embeddable, dataMap).name();

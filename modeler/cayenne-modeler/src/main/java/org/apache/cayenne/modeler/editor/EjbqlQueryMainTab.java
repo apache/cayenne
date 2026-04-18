@@ -89,7 +89,7 @@ public class EjbqlQueryMainTab extends JPanel{
      * query is changed.
      */
     void initFromModel() {
-        QueryDescriptor query = mediator.getCurrentQuery();
+        QueryDescriptor query = mediator.getSelectedQuery();
 
         if (query == null || !QueryDescriptor.EJBQL_QUERY.equals(query.getType())) {
             setVisible(false);
@@ -103,7 +103,7 @@ public class EjbqlQueryMainTab extends JPanel{
     }
 
     protected QueryDescriptor getQuery() {
-        QueryDescriptor query = mediator.getCurrentQuery();
+        QueryDescriptor query = mediator.getSelectedQuery();
         return (query != null && QueryDescriptor.EJBQL_QUERY.equals(query.getType())) ? query : null;
     }
 
@@ -129,7 +129,7 @@ public class EjbqlQueryMainTab extends JPanel{
             throw new ValidationException("Query name is required.");
         }
 
-        DataMap map = mediator.getCurrentDataMap();
+        DataMap map = mediator.getSelectedDataMap();
 
         if (map.getQueryDescriptor(newName) == null) {
             // completely new name, set new name for entity

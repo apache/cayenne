@@ -71,9 +71,9 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
         ConfirmRemoveDialog dialog = getConfirmDeleteDialog(allowAsking);
         ProjectController mediator = getProjectController();
 
-        EmbeddableAttribute[] embAttrs = getProjectController().getCurrentEmbAttributes();
-        ObjAttribute[] objAttrs = getProjectController().getCurrentObjAttributes();
-        DbAttribute[] dbAttrs = getProjectController().getCurrentDbAttributes();
+        EmbeddableAttribute[] embAttrs = getProjectController().getSelectedEmbeddableAttributes();
+        ObjAttribute[] objAttrs = getProjectController().getSelectedObjAttributes();
+        DbAttribute[] dbAttrs = getProjectController().getSelectedDbAttributes();
 
         
         if (embAttrs != null && embAttrs.length > 0) {
@@ -83,7 +83,7 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
                     || (embAttrs.length > 1 && dialog
                             .shouldDelete("selected EmbAttributes"))) {
 
-                Embeddable embeddable = mediator.getCurrentEmbeddable();
+                Embeddable embeddable = mediator.getSelectedEmbeddable();
 
                 application.getUndoManager().addEdit(
                         new RemoveAttributeUndoableEdit(embeddable, embAttrs));
@@ -96,7 +96,7 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
                     .getName()))
                     || (objAttrs.length > 1 && dialog.shouldDelete("selected ObjAttributes"))) {
 
-                ObjEntity entity = mediator.getCurrentObjEntity();
+                ObjEntity entity = mediator.getSelectedObjEntity();
 
                 application.getUndoManager().addEdit(new RemoveAttributeUndoableEdit(entity, objAttrs));
 
@@ -107,11 +107,11 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
         			.getName()))
                     || (dbAttrs.length > 1 && dialog.shouldDelete("selected DbAttributes"))) {
 
-        		DbEntity entity = mediator.getCurrentDbEntity();
+        		DbEntity entity = mediator.getSelectedDbEntity();
 
                 application.getUndoManager().addEdit(new RemoveAttributeUndoableEdit(entity, dbAttrs));
 
-                removeDbAttributes(mediator.getCurrentDataMap(), entity, dbAttrs);
+                removeDbAttributes(mediator.getSelectedDataMap(), entity, dbAttrs);
         	}
         }
     }

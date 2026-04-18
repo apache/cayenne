@@ -74,7 +74,7 @@ public abstract class DBConnectionAwareAction extends CayenneAction {
 
     protected boolean datamapPrefNotExist() {
         Preferences dataMapPreference = getProjectController().
-                getDataMapPreferences(getProjectController().getCurrentDataMap())
+                getSelectedDataMapPreferences(getProjectController().getSelectedDataMap())
                 .getCurrentPreference();
         return dataMapPreference == null || dataMapPreference.get(URL_PROPERTY, null) == null;
     }
@@ -82,7 +82,7 @@ public abstract class DBConnectionAwareAction extends CayenneAction {
     protected DBConnectionInfo getConnectionInfoFromPreferences() {
         DBConnectionInfo connectionInfo = new DBConnectionInfo();
         DataMapDefaults dataMapDefaults = getProjectController()
-                .getDataMapPreferences(getProjectController().getCurrentDataMap());
+                .getSelectedDataMapPreferences(getProjectController().getSelectedDataMap());
         connectionInfo.setDbAdapter(dataMapDefaults.getCurrentPreference().get(DB_ADAPTER_PROPERTY, null));
         connectionInfo.setUrl(dataMapDefaults.getCurrentPreference().get(URL_PROPERTY, null));
         connectionInfo.setUserName(dataMapDefaults.getCurrentPreference().get(USER_NAME_PROPERTY, null));
@@ -93,7 +93,7 @@ public abstract class DBConnectionAwareAction extends CayenneAction {
 
     protected void saveConnectionInfo(DataSourceWizard connectWizard) {
         DataMapDefaults dataMapDefaults = getProjectController().
-                getDataMapPreferences(getProjectController().getCurrentDataMap());
+                getSelectedDataMapPreferences(getProjectController().getSelectedDataMap());
 
         String dbAdapter = connectWizard.getConnectionInfo().getDbAdapter();
         if(dbAdapter != null) {

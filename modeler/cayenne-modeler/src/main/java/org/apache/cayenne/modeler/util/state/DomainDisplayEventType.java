@@ -43,7 +43,7 @@ class DomainDisplayEventType extends DisplayEventType {
     @Override
     public void saveLastDisplayEvent() {
         preferences.setEvent(DomainDisplayEvent.class.getSimpleName());
-        preferences.setDomain(controller.getCurrentDataChanel().getName());
+        preferences.setDomain(controller.getSelectedDataDomain().getName());
     }
 
 }

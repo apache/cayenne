@@ -165,7 +165,7 @@ class ReverseEngineeringTreePanel extends JScrollPane {
     }
 
     private ReverseEngineering getReverseEngineeringBySelectedMap() {
-        DataMap dataMap = projectController.getCurrentDataMap();
+        DataMap dataMap = projectController.getSelectedDataMap();
         return projectController.getApplication().getMetaData().get(dataMap, ReverseEngineering.class);
     }
 

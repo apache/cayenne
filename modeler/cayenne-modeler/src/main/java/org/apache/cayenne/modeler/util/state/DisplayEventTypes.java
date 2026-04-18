@@ -74,9 +74,9 @@ public enum DisplayEventTypes {
     EntityDisplayEvent {
         @Override
         DisplayEventType createDisplayEventType(ProjectController controller) {
-            if (controller.getCurrentObjAttributes().length != 0 || controller.getCurrentDbAttributes().length != 0) {
+            if (controller.getSelectedObjAttributes().length != 0 || controller.getSelectedDbAttributes().length != 0) {
                 return new AttributeDisplayEventType(controller);
-            } else if (controller.getCurrentObjRelationships().length != 0 || controller.getCurrentDbRelationships().length != 0) {
+            } else if (controller.getSelectedObjRelationships().length != 0 || controller.getSelectedDbRelationships().length != 0) {
                 return new RelationshipDisplayEventType(controller);
             } else {
                 return new EntityDisplayEventType(controller);
@@ -116,7 +116,7 @@ public enum DisplayEventTypes {
     EmbeddableDisplayEvent {
         @Override
         DisplayEventType createDisplayEventType(ProjectController controller) {
-            if (controller.getCurrentEmbAttributes().length != 0) {
+            if (controller.getSelectedEmbeddableAttributes().length != 0) {
                 return new EmbeddableAttributeDisplayEventType(controller);
             } else {
                 return new EmbeddableDisplayEventType(controller);
@@ -144,7 +144,7 @@ public enum DisplayEventTypes {
     ProcedureDisplayEvent {
         @Override
         DisplayEventType createDisplayEventType(ProjectController controller) {
-            if (controller.getCurrentProcedureParameters().length != 0) {
+            if (controller.getSelectedProcedureParameters().length != 0) {
                 return new ProcedureParameterDisplayEventType(controller);
             } else {
                 return new ProcedureDisplayEventType(controller);

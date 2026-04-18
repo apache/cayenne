@@ -56,7 +56,7 @@ class RootSelectionHandler implements FocusListener, ActionListener {
                     String newPrefix = root.getName() + "Query";
                     newName = newPrefix;
 
-                    DataMap map = queryTab.getMediator().getCurrentDataMap();
+                    DataMap map = queryTab.getMediator().getSelectedDataMap();
                     long postfix = 1;
 
                     while (map.getQueryDescriptor(newName) != null) {

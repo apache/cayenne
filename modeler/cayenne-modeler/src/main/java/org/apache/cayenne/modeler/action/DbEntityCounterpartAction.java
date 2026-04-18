@@ -37,7 +37,7 @@ public class DbEntityCounterpartAction extends BaseViewEntityAction {
 
     @Override
     protected ObjEntity getEntity() {
-        DbEntity dbEntity = getProjectController().getCurrentDbEntity();
+        DbEntity dbEntity = getProjectController().getSelectedDbEntity();
         if (dbEntity == null) {
             return null;
         }

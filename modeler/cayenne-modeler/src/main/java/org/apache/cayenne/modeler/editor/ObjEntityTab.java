@@ -205,7 +205,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
 
         dbEntityCombo.addActionListener(e -> {
             // Change DbEntity for current ObjEntity
-            ObjEntity entity = mediator.getCurrentObjEntity();
+            ObjEntity entity = mediator.getSelectedObjEntity();
             DbEntity dbEntity = (DbEntity) dbEntityCombo.getSelectedItem();
 
 
@@ -222,7 +222,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
                     ? null
                     : superEntity.getName();
 
-            ObjEntity entity = mediator.getCurrentObjEntity();
+            ObjEntity entity = mediator.getSelectedObjEntity();
 
             if (!Util.nullSafeEquals(name, entity.getSuperEntityName())) {
                 List<ObjAttribute> duplicateAttributes = null;
@@ -267,7 +267,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
                 // the later is to update attribute and relationship display
 
                 DataChannelDescriptor domain = (DataChannelDescriptor) mediator.getProject().getRootNode();
-                DataMap map = mediator.getCurrentDataMap();
+                DataMap map = mediator.getSelectedDataMap();
 
                 mediator.fireObjEntityEvent(new EntityEvent(this, entity));
                 mediator.fireObjEntityDisplayEvent(new EntityDisplayEvent(this, entity, map, domain));
@@ -276,7 +276,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
 
         tableLabel.addActionListener(e -> {
             // Jump to DbEntity of the current ObjEntity
-            DbEntity entity = mediator.getCurrentObjEntity().getDbEntity();
+            DbEntity entity = mediator.getSelectedObjEntity().getDbEntity();
             if (entity != null) {
                 DataChannelDescriptor dom = (DataChannelDescriptor) mediator.getProject().getRootNode();
                 mediator.fireDbEntityDisplayEvent(new EntityDisplayEvent(this, entity, entity.getDataMap(), dom));
@@ -284,7 +284,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
         });
 
         readOnly.addItemListener(e -> {
-            ObjEntity entity = mediator.getCurrentObjEntity();
+            ObjEntity entity = mediator.getSelectedObjEntity();
             if (entity != null) {
                 entity.setReadOnly(readOnly.isSelected());
                 mediator.fireObjEntityEvent(new EntityEvent(this, entity));
@@ -292,7 +292,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
         });
 
         optimisticLocking.addItemListener(e -> {
-            ObjEntity entity = mediator.getCurrentObjEntity();
+            ObjEntity entity = mediator.getSelectedObjEntity();
             if (entity != null) {
                 entity.setDeclaredLockType(optimisticLocking.isSelected()
                         ? ObjEntity.LOCK_TYPE_OPTIMISTIC
@@ -302,7 +302,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
         });
 
         isAbstract.addItemListener(e -> {
-            ObjEntity entity = mediator.getCurrentObjEntity();
+            ObjEntity entity = mediator.getSelectedObjEntity();
             if (entity != null) {
                 entity.setAbstract(isAbstract.isSelected());
                 mediator.fireObjEntityEvent(new EntityEvent(this, entity));
@@ -337,7 +337,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
 
         // init DbEntities
         EntityResolver resolver = mediator.getEntityResolver();
-        DataMap map = mediator.getCurrentDataMap();
+        DataMap map = mediator.getSelectedDataMap();
         DbEntity[] dbEntities = resolver.getDbEntities().toArray(new DbEntity[0]);
         Arrays.sort(dbEntities, Comparators.getDataMapChildrenComparator());
 
@@ -370,7 +370,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
             className = null;
         }
 
-        ObjEntity entity = mediator.getCurrentObjEntity();
+        ObjEntity entity = mediator.getSelectedObjEntity();
 
         // "ent" may be null if we quit editing by changing tree selection
         if (entity != null && !Util.nullSafeEquals(entity.getClassName(), className)) {
@@ -385,7 +385,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
             text = null;
         }
 
-        ObjEntity ent = mediator.getCurrentObjEntity();
+        ObjEntity ent = mediator.getSelectedObjEntity();
 
         if (ent != null && !Util.nullSafeEquals(ent.getSuperClassName(), text)) {
             ent.setSuperClassName(text);
@@ -398,7 +398,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
             text = null;
         }
 
-        ObjEntity entity = mediator.getCurrentObjEntity();
+        ObjEntity entity = mediator.getSelectedObjEntity();
         if (entity != null) {
             ExpressionConvertor convertor = new ExpressionConvertor();
             try {
@@ -420,7 +420,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
             newName = null;
         }
 
-        ObjEntity entity = mediator.getCurrentObjEntity();
+        ObjEntity entity = mediator.getSelectedObjEntity();
         if (entity == null) {
             return;
         }
@@ -459,8 +459,8 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
 
         EntityDisplayEvent ede = new EntityDisplayEvent(
                 this,
-                mediator.getCurrentObjEntity(),
-                mediator.getCurrentDataMap(),
+                mediator.getSelectedObjEntity(),
+                mediator.getSelectedDataMap(),
                 (DataChannelDescriptor) mediator.getProject().getRootNode());
         mediator.fireObjEntityDisplayEvent(ede);
     }
@@ -477,7 +477,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
     private List<ObjAttribute> getDuplicatedAttributes(ObjEntity superEntity) {
         List<ObjAttribute> result = new LinkedList<>();
 
-        ObjEntity entity = mediator.getCurrentObjEntity();
+        ObjEntity entity = mediator.getSelectedObjEntity();
 
         for (ObjAttribute attribute : entity.getAttributes()) {
             if (superEntity.getAttribute(attribute.getName()) != null) {
@@ -489,7 +489,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
     }
 
     private void setComment(String value) {
-        ObjEntity entity = mediator.getCurrentObjEntity();
+        ObjEntity entity = mediator.getSelectedObjEntity();
         if (entity == null) {
             return;
         }

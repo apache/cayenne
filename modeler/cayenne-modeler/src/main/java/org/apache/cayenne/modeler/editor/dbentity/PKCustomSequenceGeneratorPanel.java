@@ -109,8 +109,8 @@ public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
 
     protected void setPKSize(String text) {
 
-        if (mediator.getCurrentDbEntity() == null
-                || mediator.getCurrentDbEntity().getPrimaryKeyGenerator() == null) {
+        if (mediator.getSelectedDbEntity() == null
+                || mediator.getSelectedDbEntity().getPrimaryKeyGenerator() == null) {
             return;
         }
 
@@ -125,7 +125,7 @@ public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
             }
         }
 
-        DbKeyGenerator generator = mediator.getCurrentDbEntity().getPrimaryKeyGenerator();
+        DbKeyGenerator generator = mediator.getSelectedDbEntity().getPrimaryKeyGenerator();
         if (!Util.nullSafeEquals(generator.getKeyCacheSize(), cacheSize)) {
             generator.setKeyCacheSize(cacheSize);
             mediator.fireDbEntityEvent(new EntityEvent(this, generator.getDbEntity()));
@@ -134,8 +134,8 @@ public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
 
     protected void setPKName(String text) {
 
-        if (mediator.getCurrentDbEntity() == null
-                || mediator.getCurrentDbEntity().getPrimaryKeyGenerator() == null) {
+        if (mediator.getSelectedDbEntity() == null
+                || mediator.getSelectedDbEntity().getPrimaryKeyGenerator() == null) {
             return;
         }
 
@@ -143,7 +143,7 @@ public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
             text = null;
         }
 
-        DbKeyGenerator generator = mediator.getCurrentDbEntity().getPrimaryKeyGenerator();
+        DbKeyGenerator generator = mediator.getSelectedDbEntity().getPrimaryKeyGenerator();
         if (!Util.nullSafeEquals(text, generator.getName())) {
             generator.setGeneratorName(text);
             mediator.fireDbEntityEvent(new EntityEvent(this, generator.getDbEntity()));

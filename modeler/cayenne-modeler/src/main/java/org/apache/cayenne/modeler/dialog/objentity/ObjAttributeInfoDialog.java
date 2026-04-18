@@ -525,15 +525,15 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 
 		mediator.fireObjEntityEvent(new EntityEvent(this, model.getEntity(), MapEvent.CHANGE));
 
-		EntityDisplayEvent event = new EntityDisplayEvent(this, mediator.getCurrentObjEntity(),
-				mediator.getCurrentDataMap(), (DataChannelDescriptor) mediator.getProject().getRootNode());
+		EntityDisplayEvent event = new EntityDisplayEvent(this, mediator.getSelectedObjEntity(),
+				mediator.getSelectedDataMap(), (DataChannelDescriptor) mediator.getProject().getRootNode());
 
 		mediator.fireObjEntityDisplayEvent(event);
 
 		mediator.fireObjAttributeEvent(new AttributeEvent(this, attributeSaved, model.getEntity(), MapEvent.CHANGE));
 
 		AttributeDisplayEvent eventAttr = new AttributeDisplayEvent(this, attributeSaved,
-				mediator.getCurrentObjEntity(), mediator.getCurrentDataMap(), (DataChannelDescriptor) mediator
+				mediator.getSelectedObjEntity(), mediator.getSelectedDataMap(), (DataChannelDescriptor) mediator
 						.getProject().getRootNode());
 
 		mediator.fireObjAttributeDisplayEvent(eventAttr);

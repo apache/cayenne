@@ -121,69 +121,69 @@ public class RemoveAction extends CayenneAction {
         ProjectController controller = getProjectController();
         ConfirmRemoveDialog dialog = getConfirmDeleteDialog(allowAsking);
         
-        if (controller.getCurrentObjEntity() != null) {
-            if (dialog.shouldDelete("ObjEntity", controller.getCurrentObjEntity().getName())) {
+        if (controller.getSelectedObjEntity() != null) {
+            if (dialog.shouldDelete("ObjEntity", controller.getSelectedObjEntity().getName())) {
 
                 application.getUndoManager()
-                        .addEdit(new RemoveUndoableEdit(controller.getCurrentDataMap(), controller.getCurrentObjEntity()));
-                removeObjEntity(controller.getCurrentDataMap(), controller.getCurrentObjEntity());
+                        .addEdit(new RemoveUndoableEdit(controller.getSelectedDataMap(), controller.getSelectedObjEntity()));
+                removeObjEntity(controller.getSelectedDataMap(), controller.getSelectedObjEntity());
             }
-        } else if (controller.getCurrentDbEntity() != null) {
-            if (dialog.shouldDelete("DbEntity", controller.getCurrentDbEntity().getName())) {
+        } else if (controller.getSelectedDbEntity() != null) {
+            if (dialog.shouldDelete("DbEntity", controller.getSelectedDbEntity().getName())) {
 
                 application.getUndoManager()
-                        .addEdit(new RemoveUndoableEdit(controller.getCurrentDataMap(), controller.getCurrentDbEntity()));
-                removeDbEntity(controller.getCurrentDataMap(), controller.getCurrentDbEntity());
+                        .addEdit(new RemoveUndoableEdit(controller.getSelectedDataMap(), controller.getSelectedDbEntity()));
+                removeDbEntity(controller.getSelectedDataMap(), controller.getSelectedDbEntity());
             }
-        } else if (controller.getCurrentQuery() != null) {
-            if (dialog.shouldDelete("query", controller.getCurrentQuery().getName())) {
+        } else if (controller.getSelectedQuery() != null) {
+            if (dialog.shouldDelete("query", controller.getSelectedQuery().getName())) {
 
                 application.getUndoManager()
-                        .addEdit(new RemoveUndoableEdit(controller.getCurrentDataMap(), controller.getCurrentQuery()));
-                removeQuery(controller.getCurrentDataMap(), controller.getCurrentQuery());
+                        .addEdit(new RemoveUndoableEdit(controller.getSelectedDataMap(), controller.getSelectedQuery()));
+                removeQuery(controller.getSelectedDataMap(), controller.getSelectedQuery());
             }
-        } else if (controller.getCurrentProcedure() != null) {
-            if (dialog.shouldDelete("procedure", controller.getCurrentProcedure().getName())) {
+        } else if (controller.getSelectedProcedure() != null) {
+            if (dialog.shouldDelete("procedure", controller.getSelectedProcedure().getName())) {
 
                 application.getUndoManager()
-                        .addEdit(new RemoveUndoableEdit(controller.getCurrentDataMap(), controller.getCurrentProcedure()));
-                removeProcedure(controller.getCurrentDataMap(), controller.getCurrentProcedure());
+                        .addEdit(new RemoveUndoableEdit(controller.getSelectedDataMap(), controller.getSelectedProcedure()));
+                removeProcedure(controller.getSelectedDataMap(), controller.getSelectedProcedure());
             }
-        } else if (controller.getCurrentEmbeddable() != null) {
-            if (dialog.shouldDelete("embeddable", controller.getCurrentEmbeddable().getClassName())) {
+        } else if (controller.getSelectedEmbeddable() != null) {
+            if (dialog.shouldDelete("embeddable", controller.getSelectedEmbeddable().getClassName())) {
 
                 application.getUndoManager()
-                        .addEdit(new RemoveUndoableEdit(controller.getCurrentDataMap(), controller.getCurrentEmbeddable()));
-                removeEmbeddable(controller.getCurrentDataMap(), controller.getCurrentEmbeddable());
+                        .addEdit(new RemoveUndoableEdit(controller.getSelectedDataMap(), controller.getSelectedEmbeddable()));
+                removeEmbeddable(controller.getSelectedDataMap(), controller.getSelectedEmbeddable());
             }
-        } else if (controller.getCurrentDataMap() != null) {
-            if (dialog.shouldDelete("data map", controller.getCurrentDataMap().getName())) {
+        } else if (controller.getSelectedDataMap() != null) {
+            if (dialog.shouldDelete("data map", controller.getSelectedDataMap().getName())) {
 
                 // In context of Data node just remove from Data Node
-                if (controller.getCurrentDataNode() != null) {
+                if (controller.getSelectedDataNode() != null) {
                     application.getUndoManager()
-                            .addEdit(new RemoveUndoableEdit(application, controller.getCurrentDataNode(),
-                                    controller.getCurrentDataMap()));
-                    removeDataMapFromDataNode(controller.getCurrentDataNode(), controller.getCurrentDataMap());
+                            .addEdit(new RemoveUndoableEdit(application, controller.getSelectedDataNode(),
+                                    controller.getSelectedDataMap()));
+                    removeDataMapFromDataNode(controller.getSelectedDataNode(), controller.getSelectedDataMap());
                 } else {
                     // Not under Data Node, remove completely
                     application.getUndoManager()
-                            .addEdit(new RemoveUndoableEdit(application, controller.getCurrentDataMap()));
-                    removeDataMap(controller.getCurrentDataMap());
+                            .addEdit(new RemoveUndoableEdit(application, controller.getSelectedDataMap()));
+                    removeDataMap(controller.getSelectedDataMap());
                 }
             }
-        } else if (controller.getCurrentDataNode() != null) {
-            if (dialog.shouldDelete("data node", controller.getCurrentDataNode().getName())) {
+        } else if (controller.getSelectedDataNode() != null) {
+            if (dialog.shouldDelete("data node", controller.getSelectedDataNode().getName())) {
 
                 application.getUndoManager()
-                        .addEdit(new RemoveUndoableEdit(application, controller.getCurrentDataNode()));
-                removeDataNode(controller.getCurrentDataNode());
+                        .addEdit(new RemoveUndoableEdit(application, controller.getSelectedDataNode()));
+                removeDataNode(controller.getSelectedDataNode());
             }
-        } else if (controller.getCurrentPaths() != null) { // multiple deletion
+        } else if (controller.getSelectedPaths() != null) { // multiple deletion
             if (dialog.shouldDelete("selected objects")) {
 
-                ConfigurationNode[] paths = controller.getCurrentPaths();
-                ConfigurationNode parentPath = controller.getCurrentParentPath();
+                ConfigurationNode[] paths = controller.getSelectedPaths();
+                ConfigurationNode parentPath = controller.getSelectedParentPath();
 
                 CompoundEdit compoundEdit = new RemoveCompoundUndoableEdit();
                 for (ConfigurationNode path : paths) {
@@ -193,20 +193,20 @@ public class RemoveAction extends CayenneAction {
 
                 application.getUndoManager().addEdit(compoundEdit);
             }
-        } else if(controller.getCurrentCallbackMethods().length > 0) {
-            removeMethods(controller, dialog, getProjectController().getCurrentCallbackMethods());
-        } else if(controller.getCurrentObjRelationships().length > 0) {
-      		removeObjRelationships(controller, dialog, getProjectController().getCurrentObjRelationships());
-        } else if(controller.getCurrentDbRelationships().length > 0) {
-      		removeDBRelationships(controller, dialog, getProjectController().getCurrentDbRelationships());
-        } else if(controller.getCurrentObjAttributes().length > 0) {
-      		removeObjAttributes(controller, dialog, getProjectController().getCurrentObjAttributes());
-        } else if(controller.getCurrentEmbAttributes().length > 0) {
-      		removeEmbAttributes(controller, dialog, getProjectController().getCurrentEmbAttributes());
-        } else if(controller.getCurrentDbAttributes().length > 0) {
-        	removeDbAttributes(controller, dialog, getProjectController().getCurrentDbAttributes());
-        } else if(controller.getCurrentProcedureParameters().length > 0) {
-        	removeProcedureParameters(controller.getCurrentProcedure(), controller.getCurrentProcedureParameters());
+        } else if(controller.getSelectedCallbackMethods().length > 0) {
+            removeMethods(controller, dialog, getProjectController().getSelectedCallbackMethods());
+        } else if(controller.getSelectedObjRelationships().length > 0) {
+      		removeObjRelationships(controller, dialog, getProjectController().getSelectedObjRelationships());
+        } else if(controller.getSelectedDbRelationships().length > 0) {
+      		removeDBRelationships(controller, dialog, getProjectController().getSelectedDbRelationships());
+        } else if(controller.getSelectedObjAttributes().length > 0) {
+      		removeObjAttributes(controller, dialog, getProjectController().getSelectedObjAttributes());
+        } else if(controller.getSelectedEmbeddableAttributes().length > 0) {
+      		removeEmbAttributes(controller, dialog, getProjectController().getSelectedEmbeddableAttributes());
+        } else if(controller.getSelectedDbAttributes().length > 0) {
+        	removeDbAttributes(controller, dialog, getProjectController().getSelectedDbAttributes());
+        } else if(controller.getSelectedProcedureParameters().length > 0) {
+        	removeProcedureParameters(controller.getSelectedProcedure(), controller.getSelectedProcedureParameters());
         }
 
     }
@@ -226,7 +226,7 @@ public class RemoveAction extends CayenneAction {
         	if ((embAttrs.length == 1 && dialog.shouldDelete("DbAttribute", embAttrs[0].getName()))
                     || (embAttrs.length > 1 && dialog.shouldDelete("selected DbAttributes"))) {
 
-        		Embeddable embeddable = mediator.getCurrentEmbeddable();
+        		Embeddable embeddable = mediator.getSelectedEmbeddable();
 
                 application.getUndoManager()
                         .addEdit(new RemoveAttributeUndoableEdit(embeddable, embAttrs));
@@ -238,7 +238,7 @@ public class RemoveAction extends CayenneAction {
                     mediator.fireEmbeddableAttributeEvent(e);
                 }
 
-                ProjectUtil.cleanObjMappings(mediator.getCurrentDataMap());
+                ProjectUtil.cleanObjMappings(mediator.getSelectedDataMap());
         	}
     	}
 	}
@@ -249,7 +249,7 @@ public class RemoveAction extends CayenneAction {
         	if ((objAttrs.length == 1 && dialog.shouldDelete("DbAttribute", objAttrs[0].getName()))
                     || (objAttrs.length > 1 && dialog.shouldDelete("selected DbAttributes"))) {
 
-        		ObjEntity entity = mediator.getCurrentObjEntity();
+        		ObjEntity entity = mediator.getSelectedObjEntity();
 
                 application.getUndoManager()
                         .addEdit(new RemoveAttributeUndoableEdit(entity, objAttrs));
@@ -260,7 +260,7 @@ public class RemoveAction extends CayenneAction {
                     mediator.fireObjAttributeEvent(e);
                 }
 
-                ProjectUtil.cleanObjMappings(mediator.getCurrentDataMap());
+                ProjectUtil.cleanObjMappings(mediator.getSelectedDataMap());
         	}
     	}
 	}
@@ -270,7 +270,7 @@ public class RemoveAction extends CayenneAction {
         	if ((dbAttrs.length == 1 && dialog.shouldDelete("DbAttribute", dbAttrs[0].getName()))
                     || (dbAttrs.length > 1 && dialog.shouldDelete("selected DbAttributes"))) {
 
-        		DbEntity entity = controller.getCurrentDbEntity();
+        		DbEntity entity = controller.getSelectedDbEntity();
 
                 application.getUndoManager()
                         .addEdit(new RemoveAttributeUndoableEdit(entity, dbAttrs));
@@ -281,7 +281,7 @@ public class RemoveAction extends CayenneAction {
                     controller.fireDbAttributeEvent(e);
                 }
 
-                ProjectUtil.cleanObjMappings(controller.getCurrentDataMap());
+                ProjectUtil.cleanObjMappings(controller.getSelectedDataMap());
         	}
     	}
     }
@@ -290,7 +290,7 @@ public class RemoveAction extends CayenneAction {
 		if (dbRels != null && dbRels.length > 0) {
 			if ((dbRels.length == 1 && dialog.shouldDelete("DbRelationship", dbRels[0].getName()))
 					|| (dbRels.length > 1 && dialog.shouldDelete("selected DbRelationships"))) {
-				DbEntity entity = controller.getCurrentDbEntity();
+				DbEntity entity = controller.getSelectedDbEntity();
 				
 				for (DbRelationship rel : dbRels) {
 					entity.removeRelationship(rel.getName());
@@ -298,7 +298,7 @@ public class RemoveAction extends CayenneAction {
 					controller.fireDbRelationshipEvent(e);
 				}
 
-				ProjectUtil.cleanObjMappings(controller.getCurrentDataMap());
+				ProjectUtil.cleanObjMappings(controller.getSelectedDataMap());
 				Application.getInstance().getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(entity, dbRels));
 			}
 		}
@@ -307,7 +307,7 @@ public class RemoveAction extends CayenneAction {
 	private void removeObjRelationships(ProjectController controller, ConfirmRemoveDialog dialog, ObjRelationship[] rels) {
 		if ((rels.length == 1 && dialog.shouldDelete("ObjRelationship", rels[0].getName()))
 				|| (rels.length > 1 && dialog.shouldDelete("selected ObjRelationships"))) {
-			ObjEntity entity = controller.getCurrentObjEntity();
+			ObjEntity entity = controller.getSelectedObjEntity();
 			for (ObjRelationship rel : rels) {
 				entity.removeRelationship(rel.getName());
 				RelationshipEvent e = new RelationshipEvent(Application.getFrame(), rel, entity, MapEvent.REMOVE);
@@ -318,8 +318,8 @@ public class RemoveAction extends CayenneAction {
 	}
 
 	private void removeMethods(ProjectController mediator, ConfirmRemoveDialog dialog, ObjCallbackMethod[] methods) {
-    	CallbackMap callbackMap = mediator.getCurrentObjEntity().getCallbackMap();
-    	CallbackType callbackType = mediator.getCurrentCallbackType();
+    	CallbackMap callbackMap = mediator.getSelectedObjEntity().getCallbackMap();
+    	CallbackType callbackType = mediator.getSelectedCallbackType();
 
         if ((methods.length == 1 && dialog.shouldDelete("callback method", methods[0].getName()))
         	|| (methods.length > 1 && dialog.shouldDelete("selected callback methods"))) {

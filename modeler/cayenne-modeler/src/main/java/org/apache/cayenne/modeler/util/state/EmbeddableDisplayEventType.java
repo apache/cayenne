@@ -55,8 +55,8 @@ class EmbeddableDisplayEventType extends DisplayEventType {
     @Override
     public void saveLastDisplayEvent() {
         preferences.setEvent(EmbeddableDisplayEvent.class.getSimpleName());
-        preferences.setDomain(controller.getCurrentDataChanel().getName());
-        preferences.setDataMap(controller.getCurrentDataMap().getName());
-        preferences.setEmbeddable(controller.getCurrentEmbeddable().getClassName());
+        preferences.setDomain(controller.getSelectedDataDomain().getName());
+        preferences.setDataMap(controller.getSelectedDataMap().getName());
+        preferences.setEmbeddable(controller.getSelectedEmbeddable().getClassName());
     }
 }

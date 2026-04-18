@@ -119,7 +119,7 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
         // since query root is fully resolved during map loading,
         // making it impossible to reference other DataMaps.
 
-        DataMap map = mediator.getCurrentDataMap();
+        DataMap map = mediator.getSelectedDataMap();
         List<ObjEntity> objEntities = new ArrayList<>(map.getObjEntities());
 
         if (objEntities.size() > 1) {

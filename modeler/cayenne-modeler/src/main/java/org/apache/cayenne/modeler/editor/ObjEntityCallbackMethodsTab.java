@@ -23,8 +23,6 @@ import java.awt.event.ComponentEvent;
 
 import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
-import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 
 
@@ -69,8 +67,8 @@ public class ObjEntityCallbackMethodsTab extends AbstractCallbackMethodsTab  {
      * @return CallbackMap with callback methods
      */
     protected CallbackMap getCallbackMap() {
-        if (mediator.getCurrentObjEntity() != null) {
-            return mediator.getCurrentObjEntity().getCallbackMap();
+        if (mediator.getSelectedObjEntity() != null) {
+            return mediator.getSelectedObjEntity().getCallbackMap();
         }
         return null;
     }

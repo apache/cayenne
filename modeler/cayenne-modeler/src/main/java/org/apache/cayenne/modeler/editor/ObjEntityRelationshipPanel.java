@@ -230,7 +230,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
         }
 
         // If current model added/removed, do nothing.
-        ObjEntity entity = controller.getCurrentObjEntity();
+        ObjEntity entity = controller.getSelectedObjEntity();
         if (entity == e.getEntity() || entity == null) {
             return;
         }
@@ -447,9 +447,9 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
         controller.fireObjRelationshipDisplayEvent(new RelationshipDisplayEvent(
                 this,
                 rels,
-                controller.getCurrentObjEntity(),
-                controller.getCurrentDataMap(),
-                controller.getCurrentDataChanel()));
+                controller.getSelectedObjEntity(),
+                controller.getSelectedDataMap(),
+                controller.getSelectedDataDomain()));
 
         parentPanel.updateActions(rels);
     }

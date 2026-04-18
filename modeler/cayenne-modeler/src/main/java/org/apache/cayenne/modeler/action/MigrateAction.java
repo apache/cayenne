@@ -60,7 +60,7 @@ public class MigrateAction extends DBConnectionAwareAction {
             return;
         }
 
-        DataMap map = getProjectController().getCurrentDataMap();
+        DataMap map = getProjectController().getSelectedDataMap();
         if (map == null) {
             throw new IllegalStateException("No current DataMap selected.");
         }

@@ -269,7 +269,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
     private void fireObjRelationshipEvent(Object src) {
         controller.fireObjRelationshipEvent(new RelationshipEvent(src, relationship, relationship.getSourceEntity(), MapEvent.ADD));
 
-        RelationshipDisplayEvent rde = new RelationshipDisplayEvent(src, relationship, relationship.getSourceEntity(), controller.getCurrentDataMap(),
+        RelationshipDisplayEvent rde = new RelationshipDisplayEvent(src, relationship, relationship.getSourceEntity(), controller.getSelectedDataMap(),
                 (DataChannelDescriptor) controller.getProject().getRootNode());
 
         controller.fireObjRelationshipDisplayEvent(rde);

@@ -49,7 +49,7 @@ public class CreateRelationshipAction extends CayenneAction {
 
         mediator.fireObjRelationshipEvent(new RelationshipEvent(src, rel, objEntity, MapEvent.ADD));
 
-        RelationshipDisplayEvent rde = new RelationshipDisplayEvent(src, rel, objEntity, mediator.getCurrentDataMap(),
+        RelationshipDisplayEvent rde = new RelationshipDisplayEvent(src, rel, objEntity, mediator.getSelectedDataMap(),
                 (DataChannelDescriptor) mediator.getProject().getRootNode());
 
         mediator.fireObjRelationshipDisplayEvent(rde);
@@ -62,7 +62,7 @@ public class CreateRelationshipAction extends CayenneAction {
 
         mediator.fireDbRelationshipEvent(new RelationshipEvent(src, rel, dbEntity, MapEvent.ADD));
 
-        RelationshipDisplayEvent rde = new RelationshipDisplayEvent(src, rel, dbEntity, mediator.getCurrentDataMap(),
+        RelationshipDisplayEvent rde = new RelationshipDisplayEvent(src, rel, dbEntity, mediator.getSelectedDataMap(),
                 (DataChannelDescriptor) mediator.getProject().getRootNode());
 
         mediator.fireDbRelationshipDisplayEvent(rde);
@@ -82,7 +82,7 @@ public class CreateRelationshipAction extends CayenneAction {
      */
     @Override
     public void performAction(ActionEvent e) {
-        ObjEntity objEnt = getProjectController().getCurrentObjEntity();
+        ObjEntity objEnt = getProjectController().getSelectedObjEntity();
         if (objEnt != null) {
 
             new ObjRelationshipInfo(getProjectController())
@@ -90,7 +90,7 @@ public class CreateRelationshipAction extends CayenneAction {
                     .startupAction();
 
         } else {
-            DbEntity dbEnt = getProjectController().getCurrentDbEntity();
+            DbEntity dbEnt = getProjectController().getSelectedDbEntity();
             if (dbEnt != null) {
 
                 new DbRelationshipDialog(getProjectController())

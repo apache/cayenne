@@ -189,7 +189,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
             for (int i = 0; i < pkGeneratorDetail.getComponentCount(); i++) {
                 if (pkGeneratorDetail.getComponent(i).isVisible()) {
 
-                    DbEntity entity = mediator.getCurrentDbEntity();
+                    DbEntity entity = mediator.getSelectedDbEntity();
                     PKGeneratorPanel panel = (PKGeneratorPanel) pkGeneratorDetail.getComponent(i);
                     panel.onInit(entity);
                     break;
@@ -199,8 +199,8 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
     }
 
     public void processExistingSelection(EventObject e) {
-        EntityDisplayEvent ede = new EntityDisplayEvent(this, mediator.getCurrentDbEntity(),
-                mediator.getCurrentDataMap(), (DataChannelDescriptor) mediator.getProject().getRootNode());
+        EntityDisplayEvent ede = new EntityDisplayEvent(this, mediator.getSelectedDbEntity(),
+                mediator.getSelectedDataMap(), (DataChannelDescriptor) mediator.getProject().getRootNode());
         mediator.fireDbEntityDisplayEvent(ede);
     }
 
@@ -260,7 +260,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
             newName = null;
         }
 
-        DbEntity entity = mediator.getCurrentDbEntity();
+        DbEntity entity = mediator.getSelectedDbEntity();
 
         if (entity == null || Util.nullSafeEquals(newName, entity.getName())) {
             return;
@@ -286,7 +286,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
             text = null;
         }
 
-        DbEntity ent = mediator.getCurrentDbEntity();
+        DbEntity ent = mediator.getSelectedDbEntity();
 
         if (ent != null && !Util.nullSafeEquals(ent.getCatalog(), text)) {
             ent.setCatalog(text);
@@ -300,7 +300,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
             text = null;
         }
 
-        DbEntity ent = mediator.getCurrentDbEntity();
+        DbEntity ent = mediator.getSelectedDbEntity();
 
         if (ent != null && !Util.nullSafeEquals(ent.getSchema(), text)) {
             ent.setSchema(text);
@@ -314,7 +314,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
             qualifier = null;
         }
 
-        DbEntity ent = mediator.getCurrentDbEntity();
+        DbEntity ent = mediator.getSelectedDbEntity();
 
         if (ent != null && !Util.nullSafeEquals(ent.getQualifier(), qualifier)) {
             ExpressionConvertor convertor = new ExpressionConvertor();
@@ -338,7 +338,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
     }
 
     private void setComment(String value) {
-        DbEntity entity = mediator.getCurrentDbEntity();
+        DbEntity entity = mediator.getSelectedDbEntity();
 
         if(entity == null) {
             return;

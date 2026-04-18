@@ -144,7 +144,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
      * query is changed.
      */
     void initFromModel() {
-        QueryDescriptor descriptor = mediator.getCurrentQuery();
+        QueryDescriptor descriptor = mediator.getSelectedQuery();
 
         if (descriptor == null || !QueryDescriptor.SELECT_QUERY.equals(descriptor.getType())) {
             setVisible(false);
@@ -168,7 +168,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
         // since query root is fully resolved during map loading,
         // making it impossible to reference other DataMaps.
 
-        DataMap map = mediator.getCurrentDataMap();
+        DataMap map = mediator.getSelectedDataMap();
         ObjEntity[] roots = map.getObjEntities().toArray(new ObjEntity[0]);
 
         if (roots.length > 1) {
@@ -186,11 +186,11 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
 
     @Override
     protected SelectQueryDescriptor getQuery() {
-        if(mediator.getCurrentQuery() == null) {
+        if(mediator.getSelectedQuery() == null) {
             return null;
         }
-        return QueryDescriptor.SELECT_QUERY.equals(mediator.getCurrentQuery().getType())
-                ? (SelectQueryDescriptor) mediator.getCurrentQuery()
+        return QueryDescriptor.SELECT_QUERY.equals(mediator.getSelectedQuery().getType())
+                ? (SelectQueryDescriptor) mediator.getSelectedQuery()
                 : null;
     }
 

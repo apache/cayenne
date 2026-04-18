@@ -143,9 +143,9 @@ public class EmbeddableAttributeTab extends JPanel implements
 
         EmbeddableAttributeDisplayEvent ev = new EmbeddableAttributeDisplayEvent(
                 this,
-                controller.getCurrentEmbeddable(),
+                controller.getSelectedEmbeddable(),
                 attrs,
-                controller.getCurrentDataMap(),
+                controller.getSelectedDataMap(),
                 (DataChannelDescriptor) controller.getProject().getRootNode());
 
         controller.fireEmbeddableAttributeDisplayEvent(ev);

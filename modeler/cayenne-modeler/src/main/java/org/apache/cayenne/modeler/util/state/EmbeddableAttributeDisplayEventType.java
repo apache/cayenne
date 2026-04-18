@@ -64,11 +64,11 @@ class EmbeddableAttributeDisplayEventType extends EmbeddableDisplayEventType {
     @Override
     public void saveLastDisplayEvent() {
         preferences.setEvent(EmbeddableAttributeDisplayEvent.class.getSimpleName());
-        preferences.setDomain(controller.getCurrentDataChanel().getName());
-        preferences.setDataMap(controller.getCurrentDataMap().getName());
-        preferences.setEmbeddable(controller.getCurrentEmbeddable().getClassName());
+        preferences.setDomain(controller.getSelectedDataDomain().getName());
+        preferences.setDataMap(controller.getSelectedDataMap().getName());
+        preferences.setEmbeddable(controller.getSelectedEmbeddable().getClassName());
 
-        EmbeddableAttribute[] currentEmbAttributes = controller.getCurrentEmbAttributes();
+        EmbeddableAttribute[] currentEmbAttributes = controller.getSelectedEmbeddableAttributes();
         if (currentEmbAttributes == null) {
             preferences.setEmbAttrs("");
         } else {

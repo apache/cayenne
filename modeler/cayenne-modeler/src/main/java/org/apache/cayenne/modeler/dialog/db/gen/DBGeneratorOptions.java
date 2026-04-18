@@ -66,7 +66,7 @@ public class DBGeneratorOptions extends CayenneController {
         // DataSource may not be initialized, so warn connection wizard
         this.connectionInfo.setAllowDataSourceFailure(true);
         this.generatorDefaults = new DBGeneratorDefaults(parent
-                .getPreferenceForProject()
+                .getProjectPreferences()
                 .node("DbGenerator"));
 
         this.view.setTitle(title);

@@ -68,7 +68,7 @@ public class DbEntitySyncAction extends CayenneAction {
 
     protected void syncDbEntity() {
         ProjectController mediator = getProjectController();
-        DbEntity dbEntity = mediator.getCurrentDbEntity();
+        DbEntity dbEntity = mediator.getSelectedDbEntity();
 
         if (dbEntity != null) {
 
@@ -87,7 +87,7 @@ public class DbEntitySyncAction extends CayenneAction {
             merger.setNameGenerator(new PreserveRelationshipNameGenerator());
 
             DbEntitySyncUndoableEdit undoableEdit = new DbEntitySyncUndoableEdit((DataChannelDescriptor) mediator
-                    .getProject().getRootNode(), mediator.getCurrentDataMap());
+                    .getProject().getRootNode(), mediator.getSelectedDataMap());
 
             // filter out inherited entities, as we need to add attributes only to the roots
             filterInheritedEntities(entities);

@@ -278,8 +278,8 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
      */
     private void reloadEntityList(EntityEvent e) {
         if (e.getSource() == this
-            || mediator.getCurrentDbEntity() == e.getEntity()  // If current model added/removed, do nothing.
-            || mediator.getCurrentDbEntity() == null) { // If this is just loading new currentDbEntity, do nothing
+            || mediator.getSelectedDbEntity() == e.getEntity()  // If current model added/removed, do nothing.
+            || mediator.getSelectedDbEntity() == null) { // If this is just loading new currentDbEntity, do nothing
             return;
         }
 
@@ -339,7 +339,7 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
                 resolveMenu.setEnabled(enabledResolve);
             }
 
-            mediator.setCurrentDbRelationships(rels);
+            mediator.setSelectedDbRelationships(rels);
             parentPanel.updateActions(rels);
         }
     }

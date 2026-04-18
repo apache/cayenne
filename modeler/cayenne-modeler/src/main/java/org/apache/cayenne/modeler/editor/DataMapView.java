@@ -242,7 +242,7 @@ public class DataMapView extends JPanel {
     }
 
     void setDefaultLockType(int lockType) {
-        DataMap dataMap = eventController.getCurrentDataMap();
+        DataMap dataMap = eventController.getSelectedDataMap();
 
         if (dataMap == null) {
             return;
@@ -258,7 +258,7 @@ public class DataMapView extends JPanel {
     }
 
     void setQuoteSQLIdentifiers(boolean flag) {
-        DataMap dataMap = eventController.getCurrentDataMap();
+        DataMap dataMap = eventController.getSelectedDataMap();
 
         if (dataMap == null) {
             return;
@@ -272,7 +272,7 @@ public class DataMapView extends JPanel {
     }
 
     void setDefaultPackage(String newDefaultPackage) {
-        DataMap dataMap = eventController.getCurrentDataMap();
+        DataMap dataMap = eventController.getSelectedDataMap();
 
         if (dataMap == null) {
             return;
@@ -290,7 +290,7 @@ public class DataMapView extends JPanel {
         dataMap.setDefaultPackage(newDefaultPackage);
 
         // update class generation preferences
-        eventController.getDataMapPreferences("").setSuperclassPackage(
+        eventController.getSelectedDataMapPreferences("").setSuperclassPackage(
                 newDefaultPackage,
                 DataMapDefaults.DEFAULT_SUPERCLASS_PACKAGE_SUFFIX);
 
@@ -298,7 +298,7 @@ public class DataMapView extends JPanel {
     }
 
     void setDefaultCatalog(String newCatalog) {
-        DataMap dataMap = eventController.getCurrentDataMap();
+        DataMap dataMap = eventController.getSelectedDataMap();
 
         if (dataMap == null) {
             return;
@@ -318,7 +318,7 @@ public class DataMapView extends JPanel {
     }
 
     void setDefaultSchema(String newSchema) {
-        DataMap dataMap = eventController.getCurrentDataMap();
+        DataMap dataMap = eventController.getSelectedDataMap();
 
         if (dataMap == null) {
             return;
@@ -338,7 +338,7 @@ public class DataMapView extends JPanel {
     }
 
     void setDefaultSuperclass(String newSuperclass) {
-        DataMap dataMap = eventController.getCurrentDataMap();
+        DataMap dataMap = eventController.getSelectedDataMap();
 
         if (dataMap == null) {
             return;
@@ -362,7 +362,7 @@ public class DataMapView extends JPanel {
             throw new ValidationException("Enter name for DataMap");
         }
 
-        DataMap map = eventController.getCurrentDataMap();
+        DataMap map = eventController.getSelectedDataMap();
 
         // search for matching map name across domains, as currently they have to be
         // unique globally
@@ -385,7 +385,7 @@ public class DataMapView extends JPanel {
             return;
         }
         // completely new name, set new name for domain
-        DataMapDefaults pref = eventController.getDataMapPreferences("");
+        DataMapDefaults pref = eventController.getSelectedDataMapPreferences("");
         DataMapEvent e = new DataMapEvent(this, map, map.getName());
         ProjectUtil.setDataMapName((DataChannelDescriptor) eventController
                 .getProject()
@@ -396,13 +396,13 @@ public class DataMapView extends JPanel {
 
     void setDataNode() {
         DataNodeDescriptor node = (DataNodeDescriptor) nodeSelector.getSelectedItem();
-        DataMap map = eventController.getCurrentDataMap();
+        DataMap map = eventController.getSelectedDataMap();
         LinkDataMapAction action = eventController.getApplication().getActionManager().getAction(LinkDataMapAction.class);
         action.linkDataMap(map, node);
     }
 
     void updateDefaultCatalog() {
-        DataMap dataMap = eventController.getCurrentDataMap();
+        DataMap dataMap = eventController.getSelectedDataMap();
 
         if (dataMap == null) {
             return;
@@ -414,7 +414,7 @@ public class DataMapView extends JPanel {
     }
 
     void updateDefaultSchema() {
-        DataMap dataMap = eventController.getCurrentDataMap();
+        DataMap dataMap = eventController.getSelectedDataMap();
 
         if (dataMap == null) {
             return;
@@ -426,7 +426,7 @@ public class DataMapView extends JPanel {
     }
 
     void updateDefaultSuperclass() {
-        DataMap dataMap = eventController.getCurrentDataMap();
+        DataMap dataMap = eventController.getSelectedDataMap();
 
         if (dataMap == null) {
             return;
@@ -438,7 +438,7 @@ public class DataMapView extends JPanel {
     }
 
     void updateDefaultPackage() {
-        DataMap dataMap = eventController.getCurrentDataMap();
+        DataMap dataMap = eventController.getSelectedDataMap();
 
         if (dataMap == null) {
             return;
@@ -450,7 +450,7 @@ public class DataMapView extends JPanel {
     }
 
     void updateDefaultLockType() {
-        DataMap dataMap = eventController.getCurrentDataMap();
+        DataMap dataMap = eventController.getSelectedDataMap();
 
         if (dataMap == null) {
             return;
@@ -462,7 +462,7 @@ public class DataMapView extends JPanel {
     }
 
     void updateComment(String comment) {
-        DataMap dataMap = eventController.getCurrentDataMap();
+        DataMap dataMap = eventController.getSelectedDataMap();
         if (dataMap == null) {
             return;
         }
@@ -481,7 +481,7 @@ public class DataMapView extends JPanel {
     }
 
     public void updateNamesAfterSaving(ProjectSavedEvent e) {
-        DataMap currentDataMap = eventController.getCurrentDataMap();
+        DataMap currentDataMap = eventController.getSelectedDataMap();
         if(currentDataMap != null && !currentDataMap.getLocation().equals(location.getText())) {
             location.setText(currentDataMap.getLocation());
         }

@@ -37,7 +37,7 @@ public class InferRelationshipsAction extends CayenneAction {
     
     @Override
     public void performAction(ActionEvent e) {
-        DataMap dataMap = getProjectController().getCurrentDataMap();
+        DataMap dataMap = getProjectController().getSelectedDataMap();
         if (dataMap != null) {
             new InferRelationshipsController(getApplication().getFrameController(), dataMap)
                     .startup();

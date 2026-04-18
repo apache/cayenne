@@ -51,7 +51,7 @@ public class RemoveCallbackMethodAction extends RemoveAction implements Multiple
     public void performAction(ActionEvent e, boolean allowAsking) {
         ConfirmRemoveDialog dialog = getConfirmDeleteDialog(allowAsking);
 
-        ObjCallbackMethod[] methods = getProjectController().getCurrentCallbackMethods();
+        ObjCallbackMethod[] methods = getProjectController().getSelectedCallbackMethods();
 
         if ((methods.length == 1 && dialog.shouldDelete("callback method", methods[0].getName()))
                 || (methods.length > 1 && dialog.shouldDelete("selected callback methods"))) {
@@ -61,9 +61,9 @@ public class RemoveCallbackMethodAction extends RemoveAction implements Multiple
 
     private void removeCallbackMethods() {
         ProjectController mediator = getProjectController();
-        CallbackType callbackType = mediator.getCurrentCallbackType();
+        CallbackType callbackType = mediator.getSelectedCallbackType();
 
-        ObjCallbackMethod[] callbackMethods = mediator.getCurrentCallbackMethods();
+        ObjCallbackMethod[] callbackMethods = mediator.getSelectedCallbackMethods();
 
         for (ObjCallbackMethod callbackMethod : callbackMethods) {
             removeCallbackMethod(callbackType, callbackMethod.getName());
@@ -76,7 +76,7 @@ public class RemoveCallbackMethodAction extends RemoveAction implements Multiple
     public void removeCallbackMethod(CallbackType callbackType, String method) {
         ProjectController controller = getProjectController();
 
-        getProjectController().getCurrentObjEntity()
+        getProjectController().getSelectedObjEntity()
                 .getCallbackMap()
                 .getCallbackDescriptor(callbackType.getType())
                 .removeCallbackMethod(method);

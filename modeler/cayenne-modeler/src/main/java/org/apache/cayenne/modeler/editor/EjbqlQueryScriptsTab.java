@@ -140,7 +140,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
     }
 
     public void initFromModel() {
-        QueryDescriptor query = mediator.getCurrentQuery();
+        QueryDescriptor query = mediator.getSelectedQuery();
 
         if (query == null || !QueryDescriptor.EJBQL_QUERY.equals(query.getType())) {
             setVisible(false);
@@ -153,7 +153,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
     }
 
     EJBQLQueryDescriptor getQuery() {
-        QueryDescriptor query = mediator.getCurrentQuery();
+        QueryDescriptor query = mediator.getSelectedQuery();
         return (query != null && QueryDescriptor.EJBQL_QUERY.equals(query.getType())) ?
                 (EJBQLQueryDescriptor) query : null;
     }

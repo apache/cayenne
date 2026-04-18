@@ -53,7 +53,7 @@ public class CreateAttributeAction extends CayenneAction {
         controller.fireEmbeddableAttributeEvent(new EmbeddableAttributeEvent(src, attr, embeddable, MapEvent.ADD));
 
         EmbeddableAttributeDisplayEvent e = new EmbeddableAttributeDisplayEvent(src, embeddable, attr,
-                controller.getCurrentDataMap(), (DataChannelDescriptor) controller.getProject().getRootNode());
+                controller.getSelectedDataMap(), (DataChannelDescriptor) controller.getProject().getRootNode());
 
         controller.fireEmbeddableAttributeDisplayEvent(e);
     }
@@ -102,8 +102,8 @@ public class CreateAttributeAction extends CayenneAction {
     public void performAction(ActionEvent e) {
         ProjectController controller = getProjectController();
 
-        if (getProjectController().getCurrentEmbeddable() != null) {
-            Embeddable embeddable = controller.getCurrentEmbeddable();
+        if (getProjectController().getSelectedEmbeddable() != null) {
+            Embeddable embeddable = controller.getSelectedEmbeddable();
 
             EmbeddableAttribute attr = new EmbeddableAttribute();
             attr.setName(NameBuilder
@@ -116,31 +116,31 @@ public class CreateAttributeAction extends CayenneAction {
                     new CreateEmbAttributeUndoableEdit(embeddable, new EmbeddableAttribute[]{attr}));
         }
 
-        if (getProjectController().getCurrentObjEntity() != null) {
+        if (getProjectController().getSelectedObjEntity() != null) {
 
-            ObjEntity objEntity = controller.getCurrentObjEntity();
+            ObjEntity objEntity = controller.getSelectedObjEntity();
 
             ObjAttribute attr = new ObjAttribute();
             attr.setName(NameBuilder.builder(attr, objEntity).name());
 
-            createObjAttribute(controller.getCurrentDataMap(), objEntity, attr);
+            createObjAttribute(controller.getSelectedDataMap(), objEntity, attr);
 
             application.getUndoManager().addEdit(
                     new CreateAttributeUndoableEdit((DataChannelDescriptor) controller.getProject().getRootNode(),
-                            controller.getCurrentDataMap(), objEntity, attr));
-        } else if (getProjectController().getCurrentDbEntity() != null) {
-            DbEntity dbEntity = getProjectController().getCurrentDbEntity();
+                            controller.getSelectedDataMap(), objEntity, attr));
+        } else if (getProjectController().getSelectedDbEntity() != null) {
+            DbEntity dbEntity = getProjectController().getSelectedDbEntity();
 
             DbAttribute attr = new DbAttribute();
             attr.setName(NameBuilder.builder(attr, dbEntity).name());
             attr.setType(TypesMapping.NOT_DEFINED);
             attr.setEntity(dbEntity);
 
-            createDbAttribute(controller.getCurrentDataMap(), dbEntity, attr);
+            createDbAttribute(controller.getSelectedDataMap(), dbEntity, attr);
 
             application.getUndoManager().addEdit(
                     new CreateAttributeUndoableEdit((DataChannelDescriptor) controller.getProject().getRootNode(),
-                            controller.getCurrentDataMap(), dbEntity, attr));
+                            controller.getSelectedDataMap(), dbEntity, attr));
         }
     }
 

@@ -67,7 +67,7 @@ public class ObjEntitySyncAction extends CayenneAction {
 
     protected void syncObjEntity() {
         ProjectController mediator = getProjectController();
-        ObjEntity entity = mediator.getCurrentObjEntity();
+        ObjEntity entity = mediator.getSelectedObjEntity();
 
         if (entity != null && entity.getDbEntity() != null) {
             EntityMergeSupport merger = new EntitySyncController(Application

@@ -193,7 +193,7 @@ public class DbImportView extends JPanel {
     }
 
     public void initFromModel() {
-        DataMap map = projectController.getCurrentDataMap();
+        DataMap map = projectController.getSelectedDataMap();
         treePanel.getReverseEngineeringTree().stopEditing();
         if (map != null) {
             initFromModel = true;
@@ -218,7 +218,7 @@ public class DbImportView extends JPanel {
             treePanel.updateTree();
             DbImportTreeNode root = draggableTreePanel.getSourceTree().getRootNode();
             root.removeAllChildren();
-            draggableTreePanel.updateTree(projectController.getCurrentDataMap());
+            draggableTreePanel.updateTree(projectController.getSelectedDataMap());
             draggableTreePanel.getMoveButton().setEnabled(false);
             draggableTreePanel.getMoveInvertButton().setEnabled(false);
         }

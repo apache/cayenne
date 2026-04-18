@@ -70,7 +70,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -395,12 +394,12 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
     	}
     	
         public void actionPerformed(ActionEvent e) {
-        	mediator.setCurrentCallbackType(callbackType);
+        	mediator.setSelectedCallbackType(callbackType);
         }
     } 
 
     protected final CallbackType getSelectedCallbackType() {
-    	return mediator.getCurrentCallbackType();
+    	return mediator.getSelectedCallbackType();
     }
     
     private void selectAdded() {
@@ -508,12 +507,12 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
                         }
                     }
 
-	                mediator.setCurrentCallbackType(((CallbackDescriptorTableModel)table.getCayenneModel()).getCallbackType());
+	                mediator.setSelectedCallbackType(((CallbackDescriptorTableModel)table.getCayenneModel()).getCallbackType());
                 }
 
                 if (table.getSelectedRow() != -1) {
                     int[] sel = table.getSelectedRows();
-                    CallbackType callbackType = mediator.getCurrentCallbackType();
+                    CallbackType callbackType = mediator.getSelectedCallbackType();
                     
                     methods = new ObjCallbackMethod[sel.length];
                                         
@@ -525,7 +524,7 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
                     }
                 }
 
-                mediator.setCurrentCallbackMethods(methods);
+                mediator.setSelectedCallbackMethods(methods);
                 boolean enabled = methods.length > 0;
                 boolean multiple = methods.length > 1;
 
@@ -596,7 +595,7 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
 
     			unselectAll();
             	
-    			mediator.setCurrentCallbackType(((CallbackDescriptorTableModel)table.getCayenneModel()).getCallbackType());
+    			mediator.setSelectedCallbackType(((CallbackDescriptorTableModel)table.getCayenneModel()).getCallbackType());
             	popupMenu.show(e.getComponent(), e.getX(), e.getY());
             }
 	    }

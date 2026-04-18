@@ -233,7 +233,7 @@ public class DbEntityAttributePanel extends JPanel implements DbEntityDisplayLis
                 }
             }
 
-            mediator.setCurrentDbAttributes(attrs);
+            mediator.setSelectedDbAttributes(attrs);
             parentPanel.updateActions(attrs);
         }
     }

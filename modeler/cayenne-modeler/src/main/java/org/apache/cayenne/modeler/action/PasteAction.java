@@ -102,7 +102,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             Object content = Toolkit.getDefaultToolkit().getSystemClipboard().getData(
                     CayenneTransferable.CAYENNE_FLAVOR);
 
-            Object currentObject = getProjectController().getCurrentObject();
+            Object currentObject = getProjectController().getSelectedObject();
 
             if(content instanceof DataMap) {
                 currentObject = getProjectController().getProject().getRootNode();
@@ -112,7 +112,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                 DataChannelDescriptor domain = (DataChannelDescriptor) getProjectController()
                         .getProject()
                         .getRootNode();
-                DataMap map = getProjectController().getCurrentDataMap();
+                DataMap map = getProjectController().getSelectedDataMap();
 
                 UndoableEdit undoableEdit;
                 if (content instanceof List) {
@@ -143,7 +143,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
     private void paste(Object where, Object content) {
         paste(where, content, (DataChannelDescriptor) getProjectController()
                 .getProject()
-                .getRootNode(), getProjectController().getCurrentDataMap());
+                .getRootNode(), getProjectController().getSelectedDataMap());
     }
 
     /**
@@ -161,7 +161,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
          * parent datamap
          */
         if (isTreeLeaf(where) && isTreeLeaf(content)) {
-            where = mediator.getCurrentDataMap();
+            where = mediator.getSelectedDataMap();
         }
 
         if ((where instanceof DataChannelDescriptor || where instanceof DataNodeDescriptor)
@@ -356,7 +356,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
 
                 dbEntity.addAttribute(attr);
                 CreateAttributeAction.fireDbAttributeEvent(this, mediator, mediator
-                        .getCurrentDataMap(), dbEntity, attr);
+                        .getSelectedDataMap(), dbEntity, attr);
             } else if (content instanceof DbRelationship) {
                 DbRelationship rel = (DbRelationship) content;
                 rel.setName(NameBuilder
@@ -385,7 +385,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
 
                 objEntity.addAttribute(attr);
                 CreateAttributeAction.fireObjAttributeEvent(this, mediator, mediator
-                        .getCurrentDataMap(), objEntity, attr);
+                        .getSelectedDataMap(), objEntity, attr);
             } else if (content instanceof ObjRelationship) {
                 ObjRelationship rel = (ObjRelationship) content;
                 rel.setName(NameBuilder
@@ -410,7 +410,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                         .name());
 
                 objEntity.getCallbackMap()
-                        .getCallbackDescriptor(mediator.getCurrentCallbackType().getType())
+                        .getCallbackDescriptor(mediator.getSelectedCallbackType().getType())
                         .addCallbackMethod(method.getName());
 
                 CallbackMethodEvent ce = new CallbackMethodEvent(
@@ -502,7 +502,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                 content = ((List) content).get(0);
             }
 
-            Object currentObject = getProjectController().getCurrentObject();
+            Object currentObject = getProjectController().getSelectedObject();
 
             if (currentObject == null) {
                 return false;

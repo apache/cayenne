@@ -52,7 +52,7 @@ public class EjbqlTabbedView extends JTabbedPane {
     }
 
     private void initFromModel() {
-        if (!QueryDescriptor.EJBQL_QUERY.equals(controller.getCurrentQuery().getType())) {
+        if (!QueryDescriptor.EJBQL_QUERY.equals(controller.getSelectedQuery().getType())) {
             setVisible(false);
             return;
         }

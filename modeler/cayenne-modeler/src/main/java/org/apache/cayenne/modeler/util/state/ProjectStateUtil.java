@@ -33,7 +33,7 @@ public final class ProjectStateUtil {
 
     public void saveLastState(ProjectController controller) {
         EventObject displayEvent = controller.getLastDisplayEvent();
-        ConfigurationNode[] multiplyObjects = controller.getCurrentPaths();
+        ConfigurationNode[] multiplyObjects = controller.getSelectedPaths();
 
         if (displayEvent == null && multiplyObjects == null) {
             return;

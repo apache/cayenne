@@ -500,9 +500,9 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
         controller.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(
                 this,
                 attrs,
-                controller.getCurrentObjEntity(),
-                controller.getCurrentDataMap(),
-                controller.getCurrentDataChanel()));
+                controller.getSelectedObjEntity(),
+                controller.getSelectedDataMap(),
+                controller.getSelectedDataDomain()));
 
         parentPanel.updateActions(attrs);
     }

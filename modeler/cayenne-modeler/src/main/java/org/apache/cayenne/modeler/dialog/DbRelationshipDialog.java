@@ -382,7 +382,7 @@ public class DbRelationshipDialog extends CayenneController {
 
             projectController.fireDbRelationshipEvent(new RelationshipEvent(this, relationship, dbEntity, MapEvent.ADD));
 
-            RelationshipDisplayEvent rde = new RelationshipDisplayEvent(this, relationship, dbEntity, projectController.getCurrentDataMap(),
+            RelationshipDisplayEvent rde = new RelationshipDisplayEvent(this, relationship, dbEntity, projectController.getSelectedDataMap(),
                     (DataChannelDescriptor) projectController.getProject().getRootNode());
 
             projectController.fireDbRelationshipDisplayEvent(rde);

@@ -310,8 +310,8 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
 
         controller.fireObjEntityDisplayEvent(new EntityDisplayEvent(
                 this,
-                controller.getCurrentObjEntity(),
-                controller.getCurrentDataMap(),
+                controller.getSelectedObjEntity(),
+                controller.getSelectedDataMap(),
                 (DataChannelDescriptor) controller.getProject().getRootNode()));
 
         controller.fireObjAttributeEvent(new AttributeEvent(
@@ -323,8 +323,8 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
         controller.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(
                 this,
                 attributeNew,
-                controller.getCurrentObjEntity(),
-                controller.getCurrentDataMap(),
+                controller.getSelectedObjEntity(),
+                controller.getSelectedDataMap(),
                 (DataChannelDescriptor) controller.getProject().getRootNode()));
     }
 

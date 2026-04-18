@@ -46,7 +46,7 @@ public class GenerateDBAction extends CayenneAction {
     public void performAction(ActionEvent e) {
 
         Collection<DataMap> dataMaps;
-        DataMap dataMap = getProjectController().getCurrentDataMap();
+        DataMap dataMap = getProjectController().getSelectedDataMap();
 
         if (dataMap != null) {
             dataMaps = new ArrayList<>();

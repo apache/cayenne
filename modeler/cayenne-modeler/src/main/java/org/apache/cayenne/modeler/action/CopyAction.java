@@ -98,7 +98,7 @@ public class CopyAction extends CayenneAction {
      * Detects selected objects and returns them
      */
     public Object copy(ProjectController controller) {
-        return controller.getCurrentObject();
+        return controller.getSelectedObject();
     }
 
     /**

@@ -74,17 +74,17 @@ class RelationshipDisplayEventType extends EntityDisplayEventType {
     @Override
     public void saveLastDisplayEvent() {
         preferences.setEvent(RelationshipDisplayEvent.class.getSimpleName());
-        preferences.setDomain(controller.getCurrentDataChanel().getName());
-        preferences.setNode(controller.getCurrentDataNode() != null ? controller.getCurrentDataNode().getName() : "");
-        preferences.setDataMap(controller.getCurrentDataMap().getName());
+        preferences.setDomain(controller.getSelectedDataDomain().getName());
+        preferences.setNode(controller.getSelectedDataNode() != null ? controller.getSelectedDataNode().getName() : "");
+        preferences.setDataMap(controller.getSelectedDataMap().getName());
 
-        if (controller.getCurrentObjEntity() != null) {
-            preferences.setObjEntity(controller.getCurrentObjEntity().getName());
-            preferences.setObjRels(parseToString(controller.getCurrentObjRelationships()));
+        if (controller.getSelectedObjEntity() != null) {
+            preferences.setObjEntity(controller.getSelectedObjEntity().getName());
+            preferences.setObjRels(parseToString(controller.getSelectedObjRelationships()));
             preferences.setDbEntity(null);
-        } else if (controller.getCurrentDbEntity() != null) {
-            preferences.setDbEntity(controller.getCurrentDbEntity().getName());
-            preferences.setDbRels(parseToString(controller.getCurrentDbRelationships()));
+        } else if (controller.getSelectedDbEntity() != null) {
+            preferences.setDbEntity(controller.getSelectedDbEntity().getName());
+            preferences.setDbRels(parseToString(controller.getSelectedDbRelationships()));
             preferences.setObjEntity(null);
         }
     }

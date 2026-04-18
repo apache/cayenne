@@ -76,7 +76,7 @@ public class ValidationTabController implements DomainListener, ValidationConfig
     void onViewLoaded() {
         projectController.addDomainListener(this);
         projectController.addValidationConfigDisplayListener(this);
-        configUpdated(ValidationConfig.fromMetadata(metaData, projectController.getCurrentDataChanel()));
+        configUpdated(ValidationConfig.fromMetadata(metaData, projectController.getSelectedDataDomain()));
         initListeners();
     }
 

@@ -125,7 +125,7 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
     }
 
     protected void initFromModel() {
-        QueryDescriptor query = mediator.getCurrentQuery();
+        QueryDescriptor query = mediator.getSelectedQuery();
 
         if (query == null || !QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) {
             processInvalidModel("Unknown query.");

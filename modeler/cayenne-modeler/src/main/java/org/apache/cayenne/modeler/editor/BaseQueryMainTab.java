@@ -89,7 +89,7 @@ abstract class BaseQueryMainTab extends JPanel {
             throw new ValidationException("SelectQuery name is required.");
         }
 
-        DataMap map = mediator.getCurrentDataMap();
+        DataMap map = mediator.getSelectedDataMap();
         QueryDescriptor matchingQuery = map.getQueryDescriptor(newName);
 
         if (matchingQuery == null) {

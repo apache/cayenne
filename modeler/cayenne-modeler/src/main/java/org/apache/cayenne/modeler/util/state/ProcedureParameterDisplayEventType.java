@@ -65,10 +65,10 @@ class ProcedureParameterDisplayEventType extends ProcedureDisplayEventType {
     @Override
     public void saveLastDisplayEvent() {
         preferences.setEvent(ProcedureParameterDisplayEvent.class.getSimpleName());
-        preferences.setDomain(controller.getCurrentDataChanel().getName());
-        preferences.setDataMap(controller.getCurrentDataMap().getName());
-        preferences.setProcedure(controller.getCurrentProcedure().getName());
-        preferences.setProcedureParams(parseToString(controller.getCurrentProcedureParameters()));
+        preferences.setDomain(controller.getSelectedDataDomain().getName());
+        preferences.setDataMap(controller.getSelectedDataMap().getName());
+        preferences.setProcedure(controller.getSelectedProcedure().getName());
+        preferences.setProcedureParams(parseToString(controller.getSelectedProcedureParameters()));
     }
 
     protected ProcedureParameter[] getLastProcedureParameters(Procedure procedure) {

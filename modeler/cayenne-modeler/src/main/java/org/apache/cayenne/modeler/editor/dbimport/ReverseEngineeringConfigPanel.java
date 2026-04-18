@@ -100,7 +100,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
     }
 
     ReverseEngineering getReverseEngineeringBySelectedMap() {
-        DataMap dataMap = projectController.getCurrentDataMap();
+        DataMap dataMap = projectController.getSelectedDataMap();
         return projectController.getApplication().getMetaData().get(dataMap, ReverseEngineering.class);
     }
 

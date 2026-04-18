@@ -55,8 +55,8 @@ class QueryDisplayEventType extends DisplayEventType {
     @Override
     public void saveLastDisplayEvent() {
         preferences.setEvent(QueryDisplayEvent.class.getSimpleName());
-        preferences.setDomain(controller.getCurrentDataChanel().getName());
-        preferences.setDataMap(controller.getCurrentDataMap().getName());
-        preferences.setQuery(controller.getCurrentQuery().getName());
+        preferences.setDomain(controller.getSelectedDataDomain().getName());
+        preferences.setDataMap(controller.getSelectedDataMap().getName());
+        preferences.setQuery(controller.getSelectedQuery().getName());
     }
 }
