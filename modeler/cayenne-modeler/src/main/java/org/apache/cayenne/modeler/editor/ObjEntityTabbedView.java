@@ -95,8 +95,11 @@ public class ObjEntityTabbedView extends JTabbedPane {
 
     private void currentObjEntityChanged(EntityDisplayEvent e) {
         Entity<?, ?, ?> entity = e.getEntity();
+        if (!(entity instanceof ObjEntity)) {
+            return;
+        }
 
-        if (e.isMainTabFocus() && entity instanceof ObjEntity) {
+        if (e.isMainTabFocus()) {
             if (getSelectedComponent() != entityPanel) {
                 setSelectedComponent(entityPanel);
                 entityPanel.setVisible(true);

@@ -74,9 +74,12 @@ public class DbEntityTabbedView extends JTabbedPane {
     }
 
     private void currentDbEntityChanged(EntityDisplayEvent e) {
-        Entity entity = e.getEntity();
+        Entity<?, ?, ?> entity = e.getEntity();
+        if (!(entity instanceof DbEntity)) {
+            return;
+        }
 
-        if (e.isMainTabFocus() && entity instanceof DbEntity) {
+        if (e.isMainTabFocus()) {
             if (getSelectedComponent() != entityPanel) {
                 setSelectedComponent(entityPanel);
                 entityPanel.setVisible(true);
