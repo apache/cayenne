@@ -47,18 +47,18 @@ public class CreateObjEntityAction extends CayenneAction {
 
     static void fireObjEntityEvent(
             Object src,
-            ProjectController mediator,
+            ProjectController controller,
             DataMap dataMap,
             ObjEntity entity) {
-        mediator.fireObjEntityEvent(new EntityEvent(src, entity, MapEvent.ADD));
+        controller.fireObjEntityEvent(new EntityEvent(src, entity, MapEvent.ADD));
         EntityDisplayEvent displayEvent = new EntityDisplayEvent(
                 src,
                 entity,
                 dataMap,
-                mediator.getCurrentDataNode(),
-                (DataChannelDescriptor) mediator.getProject().getRootNode());
+                controller.getCurrentDataNode(),
+                (DataChannelDescriptor) controller.getProject().getRootNode());
         displayEvent.setMainTabFocus(true);
-        mediator.fireObjEntityDisplayEvent(displayEvent);
+        controller.fireObjEntityDisplayEvent(displayEvent);
     }
 
     @Override
@@ -72,9 +72,9 @@ public class CreateObjEntityAction extends CayenneAction {
     }
 
     protected void createObjEntity() {
-        ProjectController mediator = getProjectController();
+        ProjectController controller = getProjectController();
 
-        DataMap dataMap = mediator.getCurrentDataMap();
+        DataMap dataMap = controller.getCurrentDataMap();
         ObjEntity entity = new ObjEntity();
         entity.setName(NameBuilder.builder(entity, dataMap).name());
 
@@ -82,7 +82,7 @@ public class CreateObjEntityAction extends CayenneAction {
         entity.setSuperClassName(dataMap.getDefaultSuperclass());
         entity.setDeclaredLockType(dataMap.getDefaultLockType());
 
-        DbEntity dbEntity = mediator.getCurrentDbEntity();
+        DbEntity dbEntity = controller.getCurrentDbEntity();
         if (dbEntity != null) {
             entity.setDbEntity(dbEntity);
 
@@ -105,15 +105,14 @@ public class CreateObjEntityAction extends CayenneAction {
         merger.addEntityMergeListener(DeleteRuleUpdater.getEntityMergeListener());
         merger.synchronizeWithDbEntity(entity);
 
-        fireObjEntityEvent(this, mediator, dataMap, entity);
+        fireObjEntityEvent(this, controller, dataMap, entity);
 
         application.getUndoManager().addEdit(new CreateObjEntityUndoableEdit(dataMap, entity));
     }
 
     public void createObjEntity(DataMap dataMap, ObjEntity entity) {
-        ProjectController mediator = getProjectController();
         dataMap.addObjEntity(entity);
-        fireObjEntityEvent(this, mediator, dataMap, entity);
+        fireObjEntityEvent(this, getProjectController(), dataMap, entity);
     }
 
     /**

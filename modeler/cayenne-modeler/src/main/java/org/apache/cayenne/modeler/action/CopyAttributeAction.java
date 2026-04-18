@@ -68,7 +68,7 @@ public class CopyAttributeAction extends CopyAction implements MultipleObjectsAc
     }
 
     @Override
-    public Object copy(ProjectController mediator) {
+    public Object copy(ProjectController controller) {
         Object[] attrs = getProjectController().getCurrentObjAttributes();
         if (attrs == null || attrs.length == 0) {
             attrs = getProjectController().getCurrentDbAttributes();

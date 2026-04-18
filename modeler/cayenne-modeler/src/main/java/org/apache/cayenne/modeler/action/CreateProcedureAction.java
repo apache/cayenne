@@ -42,10 +42,10 @@ public class CreateProcedureAction extends CayenneAction {
     /**
      * Fires events when a procedure was added
      */
-    static void fireProcedureEvent(Object src, ProjectController mediator, DataMap dataMap, Procedure procedure) {
-        mediator.fireProcedureEvent(new ProcedureEvent(src, procedure, MapEvent.ADD));
-        mediator.fireProcedureDisplayEvent(new ProcedureDisplayEvent(src, procedure, mediator.getCurrentDataMap(),
-                (DataChannelDescriptor) mediator.getProject().getRootNode()));
+    static void fireProcedureEvent(Object src, ProjectController controller, DataMap dataMap, Procedure procedure) {
+        controller.fireProcedureEvent(new ProcedureEvent(src, procedure, MapEvent.ADD));
+        controller.fireProcedureDisplayEvent(new ProcedureDisplayEvent(src, procedure, controller.getCurrentDataMap(),
+                (DataChannelDescriptor) controller.getProject().getRootNode()));
     }
 
     public CreateProcedureAction(Application application) {
@@ -54,8 +54,7 @@ public class CreateProcedureAction extends CayenneAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        ProjectController mediator = getProjectController();
-        DataMap map = mediator.getCurrentDataMap();
+        DataMap map = getProjectController().getCurrentDataMap();
 
         Procedure procedure = new Procedure();
         procedure.setName(NameBuilder.builder(procedure, map).name());
@@ -65,11 +64,10 @@ public class CreateProcedureAction extends CayenneAction {
     }
 
     public void createProcedure(DataMap map, Procedure procedure) {
-        ProjectController mediator = getProjectController();
         procedure.setSchema(map.getDefaultSchema());
         procedure.setCatalog(map.getDefaultCatalog());
         map.addProcedure(procedure);
-        fireProcedureEvent(this, mediator, map, procedure);
+        fireProcedureEvent(this, getProjectController(), map, procedure);
     }
 
     /**

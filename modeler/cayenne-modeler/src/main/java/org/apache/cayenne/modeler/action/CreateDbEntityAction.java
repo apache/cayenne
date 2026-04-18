@@ -40,12 +40,12 @@ public class CreateDbEntityAction extends CayenneAction {
     /**
      * Fires events when a db entity was added
      */
-    static void fireDbEntityEvent(Object src, ProjectController mediator, DbEntity entity) {
-        mediator.fireDbEntityEvent(new EntityEvent(src, entity, MapEvent.ADD));
-        EntityDisplayEvent displayEvent = new EntityDisplayEvent(src, entity, mediator.getCurrentDataMap(),
-                mediator.getCurrentDataNode(), (DataChannelDescriptor) mediator.getProject().getRootNode());
+    static void fireDbEntityEvent(Object src, ProjectController controller, DbEntity entity) {
+        controller.fireDbEntityEvent(new EntityEvent(src, entity, MapEvent.ADD));
+        EntityDisplayEvent displayEvent = new EntityDisplayEvent(src, entity, controller.getCurrentDataMap(),
+                controller.getCurrentDataNode(), (DataChannelDescriptor) controller.getProject().getRootNode());
         displayEvent.setMainTabFocus(true);
-        mediator.fireDbEntityDisplayEvent(displayEvent);
+        controller.fireDbEntityDisplayEvent(displayEvent);
     }
 
     public CreateDbEntityAction(Application application) {
@@ -61,9 +61,7 @@ public class CreateDbEntityAction extends CayenneAction {
      * Creates new DbEntity, adds it to the current DataMap, fires DbEntityEvent and DbEntityDisplayEvent.
      */
     public void performAction(ActionEvent e) {
-        ProjectController mediator = getProjectController();
-
-        DataMap map = mediator.getCurrentDataMap();
+        DataMap map = getProjectController().getCurrentDataMap();
         DbEntity entity = new DbEntity();
         entity.setName(NameBuilder.builder(entity, map).name());
         createEntity(map, entity);
@@ -76,11 +74,10 @@ public class CreateDbEntityAction extends CayenneAction {
      * DataMap.
      */
     public void createEntity(DataMap map, DbEntity entity) {
-        ProjectController mediator = getProjectController();
         entity.setCatalog(map.getDefaultCatalog());
         entity.setSchema(map.getDefaultSchema());
         map.addDbEntity(entity);
-        fireDbEntityEvent(this, mediator, entity);
+        fireDbEntityEvent(this, getProjectController(), entity);
     }
 
     /**

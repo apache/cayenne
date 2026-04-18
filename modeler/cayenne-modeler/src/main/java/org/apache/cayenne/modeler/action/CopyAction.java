@@ -81,9 +81,9 @@ public class CopyAction extends CayenneAction {
      */
     @Override
     public void performAction(ActionEvent e) {
-        ProjectController mediator = getProjectController();
+        ProjectController controller = getProjectController();
 
-        Object content = copy(mediator);
+        Object content = copy(controller);
 
         if (content != null) {
             Clipboard sysClip = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -97,8 +97,8 @@ public class CopyAction extends CayenneAction {
     /**
      * Detects selected objects and returns them
      */
-    public Object copy(ProjectController mediator) {
-        return mediator.getCurrentObject();
+    public Object copy(ProjectController controller) {
+        return controller.getCurrentObject();
     }
 
     /**

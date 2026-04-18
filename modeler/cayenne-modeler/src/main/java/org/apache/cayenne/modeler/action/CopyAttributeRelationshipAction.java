@@ -57,11 +57,11 @@ public class CopyAttributeRelationshipAction extends CopyAction implements Multi
         }
     }
 
-    public Object copy(ProjectController mediator) {
+    public Object copy(ProjectController controller) {
         if (currentSelectedPanel instanceof ObjEntityAttributePanel || currentSelectedPanel instanceof DbEntityAttributePanel) {
-            return copyAttributeAction.copy(mediator);
+            return copyAttributeAction.copy(controller);
         } else {
-            return copyRelationshipAction.copy(mediator);
+            return copyRelationshipAction.copy(controller);
         }
     }
 

@@ -38,20 +38,20 @@ public class CreateEmbeddableAction extends CayenneAction {
 
     static void fireEmbeddableEvent(
             Object src,
-            ProjectController mediator,
+            ProjectController controller,
             DataMap dataMap,
             Embeddable embeddable) {
 
-        mediator.fireEmbeddableEvent(
+        controller.fireEmbeddableEvent(
                 new EmbeddableEvent(src, embeddable, MapEvent.ADD),
                 dataMap);
         EmbeddableDisplayEvent displayEvent = new EmbeddableDisplayEvent(
                 src,
                 embeddable,
                 dataMap,
-                (DataChannelDescriptor) mediator.getProject().getRootNode());
+                (DataChannelDescriptor) controller.getProject().getRootNode());
         displayEvent.setMainTabFocus(true);
-        mediator.fireEmbeddableDisplayEvent(displayEvent);
+        controller.fireEmbeddableDisplayEvent(displayEvent);
 
     }
 
@@ -66,9 +66,7 @@ public class CreateEmbeddableAction extends CayenneAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        ProjectController mediator = getProjectController();
-
-        DataMap dataMap = mediator.getCurrentDataMap();
+        DataMap dataMap = getProjectController().getCurrentDataMap();
 
         Embeddable embeddable = new Embeddable();
         String baseName = NameBuilder.builder(embeddable, dataMap).name();

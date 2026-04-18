@@ -29,7 +29,6 @@ import org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateNodeUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
@@ -74,8 +73,7 @@ public class CreateNodeAction extends CayenneAction {
      * any events.
      */
     public DataNodeDescriptor buildDataNode() {
-        ProjectController mediator = getProjectController();
-        DataChannelDescriptor domain = (DataChannelDescriptor) mediator.getProject().getRootNode();
+        DataChannelDescriptor domain = (DataChannelDescriptor) getProjectController().getProject().getRootNode();
 
         DataNodeDescriptor node = buildDataNode(domain);
         node.setDataSourceDescriptor(new DataSourceDescriptor());

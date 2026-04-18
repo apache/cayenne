@@ -117,7 +117,6 @@ public abstract class CayenneController {
     protected void reportError(String title, Throwable th) {
         th = Util.unwindException(th);
         LOGGER.info("Error in " + getClass().getName(), th);
-        th.printStackTrace();
 
         JOptionPane.showMessageDialog(
                 getView(),

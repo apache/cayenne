@@ -62,7 +62,7 @@ public class CopyProcedureParameterAction extends CopyAction implements Multiple
     }
     
     @Override
-    public Object copy(ProjectController mediator) {
+    public Object copy(ProjectController controller) {
         Object[] params = getProjectController().getCurrentProcedureParameters();
         
         if (params != null && params.length > 0) {

@@ -18,16 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler;
 
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
@@ -37,6 +27,14 @@ import org.apache.cayenne.modeler.dialog.FileDeletedDialog;
 import org.apache.cayenne.project.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * ProjectWatchdog class is responsible for tracking changes in cayenne.xml and
@@ -56,15 +54,15 @@ public class ProjectFileChangeTracker extends Thread {
      * The names of the files to observe for changes.
      */
     protected final Map<URI, FileInfo> files;
-    protected final ProjectController mediator;
+    protected final ProjectController projectController;
 
     protected boolean paused;
     protected boolean isShownChangeDialog;
     protected boolean isShownRemoveDialog;
 
-    public ProjectFileChangeTracker(ProjectController mediator) {
+    public ProjectFileChangeTracker(ProjectController projectController) {
         this.files = new ConcurrentHashMap<>();
-        this.mediator = mediator;
+        this.projectController = projectController;
         setName("cayenne-modeler-file-change-tracker");
     }
 
@@ -77,7 +75,7 @@ public class ProjectFileChangeTracker extends Thread {
 
         removeAllFiles();
 
-        Project project = mediator.getProject();
+        Project project = projectController.getProject();
 
         // check if project exists and has been saved at least once.
         if (project != null && project.getConfigurationResource() != null) {
@@ -106,27 +104,27 @@ public class ProjectFileChangeTracker extends Thread {
                     + "Do you want to load the changes?")) {
 
                 // Currently we are reloading all project
-                if (mediator.getProject() != null) {
+                if (projectController.getProject() != null) {
                     File fileDirectory;
                     try {
-                        fileDirectory = new File(mediator.getProject().getConfigurationResource().getURL().toURI());
+                        fileDirectory = new File(projectController.getProject().getConfigurationResource().getURL().toURI());
                     } catch (URISyntaxException e) {
                         throw new CayenneRuntimeException("Unable to open project %s",
-                                e, mediator.getProject().getConfigurationResource().getURL());
+                                e, projectController.getProject().getConfigurationResource().getURL());
                     }
                     Application.getInstance().getActionManager()
                             .getAction(OpenProjectAction.class)
                             .openProject(fileDirectory);
                 }
             } else {
-                mediator.setDirty(true);
+                projectController.setDirty(true);
             }
             isShownChangeDialog = false;
         });
     }
 
     protected void doOnRemove() {
-        if (mediator.getProject() != null) {
+        if (projectController.getProject() != null) {
 
             SwingUtilities.invokeLater(() -> {
                 isShownRemoveDialog = true;
@@ -138,7 +136,7 @@ public class ProjectFileChangeTracker extends Thread {
                 } else if (dialog.shouldClose()) {
                     Application.getInstance().getFrameController().projectClosedAction();
                 } else {
-                    mediator.setDirty(true);
+                    projectController.setDirty(true);
                 }
                 isShownRemoveDialog = false;
             });

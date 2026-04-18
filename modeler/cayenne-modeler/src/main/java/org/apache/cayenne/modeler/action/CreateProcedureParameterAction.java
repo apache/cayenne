@@ -64,7 +64,7 @@ public class CreateProcedureParameterAction extends CayenneAction {
      */
     @Override
     public void performAction(ActionEvent e) {
-        ProjectController mediator = getProjectController();
+        ProjectController controller = getProjectController();
 
         if (getProjectController().getCurrentProcedure() != null) {
             Procedure procedure = getProjectController().getCurrentProcedure();
@@ -75,7 +75,7 @@ public class CreateProcedureParameterAction extends CayenneAction {
 
             application.getUndoManager().addEdit(
                     new CreateProcedureParameterUndoableEdit(
-                            (DataChannelDescriptor) mediator.getProject().getRootNode(), mediator.getCurrentDataMap(),
+                            (DataChannelDescriptor) controller.getProject().getRootNode(), controller.getCurrentDataMap(),
                             procedure, parameter
                     )
             );
@@ -84,8 +84,7 @@ public class CreateProcedureParameterAction extends CayenneAction {
 
     public void createProcedureParameter(Procedure procedure, ProcedureParameter parameter) {
         procedure.addCallParameter(parameter);
-        ProjectController mediator = getProjectController();
-        fireProcedureParameterEvent(this, mediator, procedure, parameter);
+        fireProcedureParameterEvent(this, getProjectController(), procedure, parameter);
     }
 
     /**
