@@ -19,12 +19,7 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-
-import java.util.Collection;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -42,33 +37,29 @@ import org.apache.cayenne.modeler.dialog.ConfirmRemoveDialog;
 import org.apache.cayenne.modeler.undo.RemoveAttributeUndoableEdit;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 
+import java.awt.event.ActionEvent;
+import java.util.Collection;
+
 /**
  * Removes currently selected attribute from either the DbEntity or ObjEntity.
  */
 public class RemoveAttributeAction extends RemoveAction implements MultipleObjectsAction {
 
     private final static String ACTION_NAME = "Remove Attribute";
-
-    /**
-     * Name of action if multiple rels are selected
-     */
     private final static String ACTION_NAME_MULTIPLE = "Remove Attributes";
 
-    public static String getActionName() {
-        return ACTION_NAME;
-    }
-
-    public String getActionName(boolean multiple) {
-        return multiple ? ACTION_NAME_MULTIPLE : ACTION_NAME;
-    }
 
     public RemoveAttributeAction(Application application) {
         super(ACTION_NAME, application);
     }
 
+    @Override
+    public String getActionName(boolean multiple) {
+        return multiple ? ACTION_NAME_MULTIPLE : ACTION_NAME;
+    }
+
     /**
-     * Returns <code>true</code> if last object in the path contains a removable
-     * attribute.
+     * Returns <code>true</code> if last object in the path contains a removable attribute.
      */
     @Override
     public boolean enableForPath(ConfigurationNode object) {

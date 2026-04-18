@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.graph.action;
 
-import java.awt.event.ActionEvent;
-
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
@@ -29,11 +27,14 @@ import org.apache.cayenne.modeler.dialog.ConfirmRemoveDialog;
 import org.apache.cayenne.modeler.graph.GraphBuilder;
 import org.apache.cayenne.modeler.undo.RemoveUndoableEdit;
 
+import java.awt.event.ActionEvent;
+
 /**
  * Action for removing entities from the graph
  */
 public class RemoveEntityAction extends RemoveAction {
-    GraphBuilder<?,?,?> builder;
+
+    private final GraphBuilder<?,?,?> builder;
     
     public RemoveEntityAction(GraphBuilder<?,?,?> builder) {
         super(Application.getInstance());
@@ -52,15 +53,13 @@ public class RemoveEntityAction extends RemoveAction {
         
         if (entity instanceof ObjEntity) {
             if (dialog.shouldDelete("ObjEntity", entity.getName())) {
-                application.getUndoManager().addEdit(
-                        new RemoveUndoableEdit(entity.getDataMap(), (ObjEntity) entity));
+                application.getUndoManager().addEdit(new RemoveUndoableEdit(entity.getDataMap(), (ObjEntity) entity));
                 removeObjEntity(entity.getDataMap(), (ObjEntity) entity);
             }
         }
         else {
             if (dialog.shouldDelete("DbEntity", entity.getName())) {
-                application.getUndoManager().addEdit(
-                        new RemoveUndoableEdit(entity.getDataMap(), (DbEntity) entity));
+                application.getUndoManager().addEdit(new RemoveUndoableEdit(entity.getDataMap(), (DbEntity) entity));
                 removeDbEntity(entity.getDataMap(), (DbEntity) entity);
             }
         }

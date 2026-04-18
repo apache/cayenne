@@ -31,10 +31,8 @@ import java.awt.event.ActionEvent;
  */
 public class ShowValidationConfigAction extends CayenneAction {
 
-    public static final String ACTION_NAME = "Show validation config";
-
     public ShowValidationConfigAction(Application application) {
-        super(ACTION_NAME, application);
+        super("Show validation config", application);
     }
 
     @Override

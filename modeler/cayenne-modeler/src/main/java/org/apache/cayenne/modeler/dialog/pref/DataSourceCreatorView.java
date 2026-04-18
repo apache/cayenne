@@ -30,8 +30,7 @@ import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
-/**
- */
+
 public class DataSourceCreatorView extends JDialog {
 
     protected JTextField dataSourceName;

@@ -33,12 +33,11 @@ import java.awt.FlowLayout;
 
 public class LockingUpdateView extends JDialog {
 
-    protected JCheckBox entities;
-    protected JCheckBox attributes;
-    protected JCheckBox relationships;
-
-    protected JButton cancelButton;
-    protected JButton updateButton;
+    private final JCheckBox entities;
+    private final JCheckBox attributes;
+    private final JCheckBox relationships;
+    private final JButton cancelButton;
+    private final JButton updateButton;
 
     public LockingUpdateView() {
 

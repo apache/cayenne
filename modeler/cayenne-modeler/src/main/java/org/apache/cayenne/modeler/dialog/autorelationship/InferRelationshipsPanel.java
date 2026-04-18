@@ -18,22 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.autorelationship;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ScrollPaneConstants;
+import javax.swing.*;
+import java.awt.*;
 
 public class InferRelationshipsPanel extends JPanel {
 
-    protected JTable table;
-    protected JCheckBox checkAll;
-    protected JLabel checkAllLabel;
+    private final JTable table;
+    private final JCheckBox checkAll;
+    private final JLabel checkAllLabel;
 
     public InferRelationshipsPanel() {
         this.table = new JTable();
@@ -79,5 +71,4 @@ public class InferRelationshipsPanel extends JPanel {
     public JCheckBox getCheckAll() {
         return checkAll;
     }
-
 }

@@ -19,16 +19,6 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.io.File;
-import java.util.prefs.Preferences;
-
-import javax.swing.JOptionPane;
-import javax.swing.KeyStroke;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
@@ -43,20 +33,24 @@ import org.apache.cayenne.project.validation.ProjectValidator;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.validation.ValidationResult;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.util.prefs.Preferences;
+
 /**
  * A "Save As" action that allows user to pick save location.
  * 
  */
 public class SaveAsAction extends CayenneAction {
 
-    private ProjectOpener fileChooser;
-
-    public static String getActionName() {
-        return "Save As...";
-    }
+    private final ProjectOpener fileChooser;
 
     public SaveAsAction(Application application) {
-        this(getActionName(), application);
+        this("Save As...", application);
     }
 
     protected SaveAsAction(String name, Application application) {
@@ -107,7 +101,7 @@ public class SaveAsAction extends CayenneAction {
 
         saver.saveAs(p, res);
 
-        if (oldPath != null && oldPath.length() != 0
+        if (oldPath != null && !oldPath.isEmpty()
                 && !oldPath.equals(p.getConfigurationResource().getURL().getPath())) {
 
             String newName = p.getConfigurationResource().getURL().getPath().replace(".xml", "");
@@ -176,7 +170,7 @@ public class SaveAsAction extends CayenneAction {
         getApplication().getFrameController().projectSavedAction();
 
         // If there were errors or warnings at validation, display them
-        if (validationResult.getFailures().size() > 0) {
+        if (!validationResult.getFailures().isEmpty()) {
             ValidatorDialog.showDialog(Application.getFrame(), validationResult.getFailures());
         }
     }

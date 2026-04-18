@@ -27,8 +27,7 @@ import javax.swing.JTabbedPane;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneController;
 
-/**
- */
+
 public class DataNodeEditor extends CayenneController {
 
     protected JTabbedPane view;

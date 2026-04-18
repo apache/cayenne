@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-
-import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
@@ -30,59 +27,38 @@ import org.apache.cayenne.modeler.editor.ObjCallbackMethod;
 import org.apache.cayenne.modeler.event.CallbackMethodEvent;
 import org.apache.cayenne.modeler.undo.RemoveCallbackMethodUndoableEdit;
 
+import java.awt.event.ActionEvent;
+
 
 /**
  * Action class for removing callback methods from ObjEntity
- *
- * @version 1.0 Oct 30, 2007
  */
-public class RemoveCallbackMethodAction extends RemoveAction {
-    
-    /**
-     * unique action name
-     */
-    public final static String ACTION_NAME = "Remove Callback Method";
-    
-    /**
-     * action name for multiple selection
-     */
+public class RemoveCallbackMethodAction extends RemoveAction implements MultipleObjectsAction {
+
+    private final static String ACTION_NAME = "Remove Callback Method";
     private final static String ACTION_NAME_MULTIPLE = "Remove Callback Methods";
 
-    /**
-     * Constructor.
-     *
-     * @param application Application instance
-     */
     public RemoveCallbackMethodAction(Application application) {
-        super(getActionName(), application);
+        super(ACTION_NAME, application);
     }
 
-    /**
-     * @return icon file name for button
-     */
     @Override
-    public String getIconName() {
-        return "icon-trash.png";
+    public String getActionName(boolean multiple) {
+        return multiple ? ACTION_NAME_MULTIPLE : ACTION_NAME;
     }
-    
-    /**
-     * performs callback method removing
-     * @param e event
-     */
+
+    @Override
     public void performAction(ActionEvent e, boolean allowAsking) {
         ConfirmRemoveDialog dialog = getConfirmDeleteDialog(allowAsking);
-        
+
         ObjCallbackMethod[] methods = getProjectController().getCurrentCallbackMethods();
 
         if ((methods.length == 1 && dialog.shouldDelete("callback method", methods[0].getName()))
-        		|| (methods.length > 1 && dialog.shouldDelete("selected callback methods"))) {
-        	removeCallbackMethods();
+                || (methods.length > 1 && dialog.shouldDelete("selected callback methods"))) {
+            removeCallbackMethods();
         }
     }
 
-    /**
-     * base logic for callback method removing
-     */
     private void removeCallbackMethods() {
         ProjectController mediator = getProjectController();
         CallbackType callbackType = mediator.getCurrentCallbackType();
@@ -92,40 +68,26 @@ public class RemoveCallbackMethodAction extends RemoveAction {
         for (ObjCallbackMethod callbackMethod : callbackMethods) {
             removeCallbackMethod(callbackType, callbackMethod.getName());
         }
-        
-        Application.getInstance().getUndoManager().addEdit( 
-        		new RemoveCallbackMethodUndoableEdit(callbackType, callbackMethods));
+
+        Application.getInstance().getUndoManager().addEdit(
+                new RemoveCallbackMethodUndoableEdit(callbackType, callbackMethods));
     }
-    
+
     public void removeCallbackMethod(CallbackType callbackType, String method) {
-        ProjectController mediator = getProjectController();
-        getCallbackMap().getCallbackDescriptor(callbackType.getType()).removeCallbackMethod(method);
-        
+        ProjectController controller = getProjectController();
+
+        getProjectController().getCurrentObjEntity()
+                .getCallbackMap()
+                .getCallbackDescriptor(callbackType.getType())
+                .removeCallbackMethod(method);
+
         CallbackMethodEvent e = new CallbackMethodEvent(
                 this,
                 null,
                 method,
                 MapEvent.REMOVE);
-        
-        mediator.fireCallbackMethodEvent(e);
-    }
 
-    /**
-     * @return unique action name
-     */
-    public static String getActionName() {
-        return ACTION_NAME;
-    }
-
-    /**
-     * @return CallbackMap fom which remove callback method
-     */
-    public CallbackMap getCallbackMap() {
-        return getProjectController().getCurrentObjEntity().getCallbackMap();
-    }
-
-    public String getActionName(boolean multiple) {
-        return multiple ? ACTION_NAME_MULTIPLE : ACTION_NAME;
+        controller.fireCallbackMethodEvent(e);
     }
 }
 

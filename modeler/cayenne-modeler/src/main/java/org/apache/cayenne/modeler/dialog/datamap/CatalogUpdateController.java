@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.datamap;
 
-import java.awt.Component;
-import javax.swing.WindowConstants;
-
 import org.apache.cayenne.configuration.event.ProcedureEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -29,24 +26,25 @@ import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.util.Util;
 
+import javax.swing.*;
+import java.awt.*;
+
 public class CatalogUpdateController extends DefaultsPreferencesController {
 
     public static final String ALL_CONTROL = "Set/update catalog for all DbEntities";
     public static final String UNINIT_CONTROL = "Do not override existing non-empty catalog";
 
-    protected DefaultsPreferencesView view;
+    private DefaultsPreferencesView view;
 
     public CatalogUpdateController(ProjectController mediator, DataMap dataMap) {
         super(mediator, dataMap);
     }
 
-    /**
-     * Creates and runs the catalog update dialog.
-     */
     public void startupAction() {
         view = new DefaultsPreferencesView(ALL_CONTROL, UNINIT_CONTROL);
         view.setTitle("Update DbEntities Catalog");
-        initController();
+        view.getUpdateButton().addActionListener(e -> updateCatalog());
+        view.getCancelButton().addActionListener(e -> view.dispose());
 
         view.pack();
         view.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -60,12 +58,7 @@ public class CatalogUpdateController extends DefaultsPreferencesController {
         return this.view;
     }
 
-    private void initController() {
-        view.getUpdateButton().addActionListener(e -> updateCatalog());
-        view.getCancelButton().addActionListener(e -> view.dispose());
-    }
-
-    protected void updateCatalog() {
+    private void updateCatalog() {
         boolean doAll = isAllEntities();
         String defaultCatalog = dataMap.getDefaultCatalog();
 

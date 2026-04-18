@@ -19,14 +19,6 @@
 
 package org.apache.cayenne.modeler.action;
 
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-import java.awt.event.ActionEvent;
-import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
@@ -36,6 +28,13 @@ import org.apache.cayenne.modeler.dialog.db.load.LoadDataMapTask;
 import org.apache.cayenne.modeler.editor.DbImportController;
 import org.apache.cayenne.modeler.editor.dbimport.DbImportView;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Action that imports database structure into a DataMap.
@@ -50,16 +49,13 @@ public class ReverseEngineeringAction extends DBConnectionAwareAction {
     private AtomicInteger dataMapCount;
     protected Set<DataMap> dataMaps;
 
+    public ReverseEngineeringAction(Application application) {
+        super(ACTION_NAME, application);
+    }
+
+    @Override
     public String getIconName() {
         return ICON_NAME;
-    }
-
-    ReverseEngineeringAction(Application application) {
-        super(getActionName(), application);
-    }
-
-    public static String getActionName() {
-        return ACTION_NAME;
     }
 
     public void performAction(Set<DataMap> dataMapSet) {
@@ -67,17 +63,17 @@ public class ReverseEngineeringAction extends DBConnectionAwareAction {
         dataMaps.addAll(dataMapSet);
         dataMapCount.set(dataMaps.size());
         ProjectController projectController = Application.getInstance().getFrameController().getProjectController();
-        for(DataMap dataMap : dataMapSet) {
+        for (DataMap dataMap : dataMapSet) {
             projectController.setCurrentDataMap(dataMap);
             startImport();
         }
     }
 
-    private void startImport(){
+    private void startImport() {
         final DbLoaderContext context = new DbLoaderContext(application.getMetaData());
 
         DBConnectionInfo connectionInfo = getConnectionInfo(DIALOG_TITLE);
-        if(connectionInfo == null) {
+        if (connectionInfo == null) {
             return;
         }
 
@@ -93,10 +89,11 @@ public class ReverseEngineeringAction extends DBConnectionAwareAction {
             return;
         }
 
-        if(!context.buildConfig(connectionInfo, view, true)) {
+        if (!context.buildConfig(connectionInfo, view, true)) {
             try {
                 context.getConnection().close();
-            } catch (SQLException ignored) {}
+            } catch (SQLException ignored) {
+            }
             return;
         }
 
@@ -107,12 +104,13 @@ public class ReverseEngineeringAction extends DBConnectionAwareAction {
             application.getUndoManager().discardAllEdits();
             try {
                 context.getConnection().close();
-                if(dataMapCount.decrementAndGet() <= 0 && !context.isInterrupted()) {
+                if (dataMapCount.decrementAndGet() <= 0 && !context.isInterrupted()) {
                     if (!dbLoadResultDialog.isVisible() && !dbLoadResultDialog.getTableForMap().isEmpty()) {
                         dbImportController.showDialog();
                     }
                 }
-            } catch (SQLException ignored) {}
+            } catch (SQLException ignored) {
+            }
         });
     }
 

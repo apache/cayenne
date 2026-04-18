@@ -24,8 +24,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.util.Util;
 
-/**
- */
+
 public abstract class DataSourceEditor extends CayenneController {
 
     private DataNodeDescriptor node;

@@ -19,27 +19,21 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-import java.io.File;
-
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerController;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.Project;
 
-/**
- */
+import java.awt.event.ActionEvent;
+import java.io.File;
+
 public class RevertAction extends CayenneAction {
 
-    public static String getActionName() {
-        return "Revert";
-    }
-
     public RevertAction(Application application) {
-        super(getActionName(), application);
+        super("Revert", application);
     }
 
+    @Override
     public void performAction(ActionEvent e) {
 
         Project project = getCurrentProject();
@@ -51,14 +45,14 @@ public class RevertAction extends CayenneAction {
 
         CayenneModelerController controller = getApplication().getFrameController();
 
-        // close ... don't use OpenProjectAction close method as it will ask for save, we
-        // don't want that here
+        // close ... don't use OpenProjectAction close method as it will ask for save, we don't want that here
         controller.projectClosedAction();
 
         File fileDirectory = new File(project
                 .getConfigurationResource()
                 .getURL()
                 .getPath());
+
         // reopen existing
         if (!isNew && fileDirectory.isFile()) {
             OpenProjectAction openAction = controller
@@ -67,13 +61,10 @@ public class RevertAction extends CayenneAction {
                     .getAction(OpenProjectAction.class);
             openAction.openProject(fileDirectory);
         }
+
         // create new
-        else if (!(project instanceof Project)) {
-            throw new CayenneRuntimeException("Only ApplicationProjects are supported.");
-        }
         else {
-            controller.getApplication().getActionManager().getAction(
-                    NewProjectAction.class).performAction(e);
+            controller.getApplication().getActionManager().getAction(NewProjectAction.class).performAction(e);
         }
 
         application.getUndoManager().discardAllEdits();

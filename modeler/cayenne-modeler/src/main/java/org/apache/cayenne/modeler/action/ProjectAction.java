@@ -27,8 +27,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.UnsavedChangesDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
-/**
- */
+
 public class ProjectAction extends CayenneAction {
 
     public static String getActionName() {

@@ -27,8 +27,7 @@ import javax.swing.JOptionPane;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.CayenneController;
 
-/**
- */
+
 public class DataSourceDuplicator extends CayenneController {
 
     protected DataSourceDuplicatorView view;

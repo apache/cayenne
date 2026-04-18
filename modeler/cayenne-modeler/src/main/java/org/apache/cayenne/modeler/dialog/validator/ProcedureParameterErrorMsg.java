@@ -30,8 +30,7 @@ import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.validation.ValidationFailure;
 
-/**
- */
+
 public class ProcedureParameterErrorMsg extends ValidationDisplayHandler {
 
     public ProcedureParameterErrorMsg(ValidationFailure result) {

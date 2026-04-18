@@ -19,11 +19,24 @@
 
 package org.apache.cayenne.modeler.util;
 
-import javax.swing.Action;
-import javax.swing.ImageIcon;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.Window;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.gen.internal.Utils;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ModelerConstants;
+import org.apache.cayenne.modeler.action.ActionManager;
+import org.apache.cayenne.modeler.action.MultipleObjectsAction;
+import org.apache.cayenne.modeler.pref.FSPath;
+import org.apache.cayenne.reflect.PropertyUtils;
+import org.apache.cayenne.util.CayenneMapEntry;
+import org.apache.cayenne.value.GeoJson;
+import org.apache.cayenne.value.Json;
+import org.apache.cayenne.value.Wkt;
+
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -41,22 +54,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.UUID;
-
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.gen.internal.Utils;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ModelerConstants;
-import org.apache.cayenne.modeler.action.ActionManager;
-import org.apache.cayenne.modeler.action.MultipleObjectsAction;
-import org.apache.cayenne.modeler.pref.FSPath;
-import org.apache.cayenne.reflect.PropertyUtils;
-import org.apache.cayenne.util.CayenneMapEntry;
-import org.apache.cayenne.value.GeoJson;
-import org.apache.cayenne.value.Json;
-import org.apache.cayenne.value.Wkt;
 
 /**
  * Various unorganized utility methods used by CayenneModeler.
@@ -180,8 +177,7 @@ public final class ModelerUtil {
     }
 
     /**
-     * Updates MultipleObjectActions' state, depending on number of selected objects
-     * (attributes, rel etc.)
+     * Updates MultipleObjectActions' state, depending on number of selected objects (attributes, rel etc.)
      */
     public static void updateActions(int numSelected, Class<? extends Action>... actions) {
         ActionManager actionManager = Application.getInstance().getActionManager();

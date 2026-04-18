@@ -25,8 +25,7 @@ import java.io.File;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
-/**
- */
+
 public class OverwriteDialog {
 
     private static final String SELECT_ANOTHER = "Select Another";

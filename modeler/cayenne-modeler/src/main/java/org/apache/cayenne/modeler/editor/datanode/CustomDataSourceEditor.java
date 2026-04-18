@@ -23,8 +23,7 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.TextBinder;
 
-/**
- */
+
 public class CustomDataSourceEditor extends DataSourceEditor {
 
     protected CustomDataSourceView view;

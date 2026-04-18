@@ -18,23 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.objentity;
 
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-
-import javax.swing.JButton;
-import javax.swing.SwingUtilities;
-import javax.swing.tree.TreePath;
-
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbRelationship;
 
+import javax.swing.*;
+import javax.swing.tree.TreePath;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
 public class ObjAttributePathBrowser extends ObjRelationshipPathBrowser {
 
-    JButton selectPathButton;
-    JButton doneButton;
+    private final JButton selectPathButton;
+    private final JButton doneButton;
 
     public ObjAttributePathBrowser(JButton selectPathButton, JButton doneButton) {
-        super();
         this.selectPathButton = selectPathButton;
         this.doneButton = doneButton;
     }
@@ -74,9 +71,7 @@ public class ObjAttributePathBrowser extends ObjRelationshipPathBrowser {
      */
     protected class PanelAttributeOpener extends MouseAdapter {
 
-        /**
-         * Invoked when the mouse has been clicked on a component.
-         */
+        @Override
         public void mouseReleased(MouseEvent e) {
             if (SwingUtilities.isLeftMouseButton(e)) {
                 process(e);
@@ -88,7 +83,7 @@ public class ObjAttributePathBrowser extends ObjRelationshipPathBrowser {
             Object selectedNode = panel.getSelectedValue();
 
             // ignore unselected
-            if (selectedNode != null && selectedNode instanceof DbRelationship) {
+            if (selectedNode instanceof DbRelationship) {
                 updateFromModel(selectedNode, columns.indexOf(panel));
                 selectPathButton.setEnabled(false);
                 doneButton.setEnabled(false);

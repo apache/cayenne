@@ -25,15 +25,13 @@ import java.io.File;
 /**
  * A menu item that points to a file.
  */
-public class FileMenuItem extends CayenneAction.CayenneMenuItem {
+public class FileMenuItem extends JMenuItem {
 
-    /**
-     * Creates a new instance with the specified fileName.
-     */
     public FileMenuItem(String fileName) {
         super(fileName);
     }
 
+    @Override
     protected void configurePropertiesFromAction(Action a) {
         // excludes most generic action keys that are not applicable here...
         setIcon(a != null ? (Icon) a.getValue(Action.SMALL_ICON) : null);

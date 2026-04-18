@@ -29,8 +29,8 @@ import java.awt.event.ActionEvent;
 
 public class RemoveAttributeRelationshipAction extends RemoveAction implements MultipleObjectsAction {
 
-    private RemoveAttributeAction removeAttributeAction;
-    private RemoveRelationshipAction removeRelationshipAction;
+    private final RemoveAttributeAction removeAttributeAction;
+    private final RemoveRelationshipAction removeRelationshipAction;
     private JComponent currentSelectedPanel;
 
     public RemoveAttributeRelationshipAction(Application application) {
@@ -39,14 +39,11 @@ public class RemoveAttributeRelationshipAction extends RemoveAction implements M
         removeRelationshipAction = new RemoveRelationshipAction(application);
     }
 
-    public JComponent getCurrentSelectedPanel() {
-        return currentSelectedPanel;
-    }
-
     public void setCurrentSelectedPanel(JComponent currentSelectedPanel) {
         this.currentSelectedPanel = currentSelectedPanel;
     }
 
+    @Override
     public String getActionName(boolean multiple) {
         if (currentSelectedPanel instanceof ObjEntityAttributePanel || currentSelectedPanel instanceof DbEntityAttributePanel) {
             return removeAttributeAction.getActionName(multiple);
@@ -55,6 +52,7 @@ public class RemoveAttributeRelationshipAction extends RemoveAction implements M
         }
     }
 
+    @Override
     public boolean enableForPath(ConfigurationNode object) {
         if (currentSelectedPanel instanceof ObjEntityAttributePanel || currentSelectedPanel instanceof DbEntityAttributePanel) {
             return removeAttributeAction.enableForPath(object);
@@ -63,6 +61,7 @@ public class RemoveAttributeRelationshipAction extends RemoveAction implements M
         }
     }
 
+    @Override
     public void performAction(ActionEvent e, boolean allowAsking) {
         if (currentSelectedPanel instanceof ObjEntityAttributePanel || currentSelectedPanel instanceof DbEntityAttributePanel) {
             removeAttributeAction.performAction(e, allowAsking);

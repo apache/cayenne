@@ -52,8 +52,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
+
 public class ProcedureQueryView extends JPanel {
 
     private static final String DEFAULT_CAPS_LABEL = "Database Default";

@@ -19,17 +19,6 @@
 
 package org.apache.cayenne.modeler.dialog.datamap;
 
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Pattern;
-
-import javax.swing.WindowConstants;
-
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddedAttribute;
@@ -41,8 +30,14 @@ import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.util.Util;
 
-/**
- */
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+
 public class PackageUpdateController extends DefaultsPreferencesController {
 
     public static final String ALL_CONTROL = 
@@ -61,7 +56,8 @@ public class PackageUpdateController extends DefaultsPreferencesController {
     public void startupAction() {
         view = new DefaultsPreferencesView(ALL_CONTROL, UNINIT_CONTROL);
         view.setTitle("Update ObjEntities and Embeddables Java Package");
-        initController();
+        view.getCancelButton().addActionListener(e -> view.dispose());
+        view.getUpdateButton().addActionListener(e -> updatePackage());
         
         view.pack();
         view.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -70,17 +66,13 @@ public class PackageUpdateController extends DefaultsPreferencesController {
         centerView();
         view.setVisible(true);
     }
-    
+
+    @Override
     public Component getView() {
         return this.view;
     }
-    
-    private void initController() {
-        view.getCancelButton().addActionListener(e -> view.dispose());
-        view.getUpdateButton().addActionListener(e -> updatePackage());
-    }
 
-    protected void updatePackage() {
+    private void updatePackage() {
         boolean doAll = isAllEntities();
 
         Map<String, String> oldNameEmbeddableToNewName = new HashMap<>();
@@ -112,7 +104,7 @@ public class PackageUpdateController extends DefaultsPreferencesController {
 
             for(ObjAttribute attribute: entity.getAttributes()){
                 if(attribute instanceof EmbeddedAttribute){
-                    if(oldNameEmbeddableToNewName.size()>0 && oldNameEmbeddableToNewName.containsKey(attribute.getType())){
+                    if(!oldNameEmbeddableToNewName.isEmpty() && oldNameEmbeddableToNewName.containsKey(attribute.getType())){
                         attribute.setType(oldNameEmbeddableToNewName.get(attribute.getType()));
                         AttributeEvent ev = new AttributeEvent(this, attribute, entity);
                         mediator.fireObjAttributeEvent(ev);

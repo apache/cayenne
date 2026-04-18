@@ -19,9 +19,6 @@
 
 package org.apache.cayenne.modeler.dialog.datamap;
 
-import java.awt.Component;
-import javax.swing.WindowConstants;
-
 import org.apache.cayenne.configuration.event.ProcedureEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -30,16 +27,19 @@ import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.util.Util;
 
+import javax.swing.*;
+import java.awt.*;
+
 /**
  * A controller for batch DbEntities schema update.
  * 
  */
 public class SchemaUpdateController extends DefaultsPreferencesController {
 
-    public static final String ALL_CONTROL = "Set/update schema for all DbEntities";
-    public static final String UNINIT_CONTROL = "Do not override existing non-empty schema";
+    private static final String ALL_CONTROL = "Set/update schema for all DbEntities";
+    private static final String UNINIT_CONTROL = "Do not override existing non-empty schema";
     
-    protected DefaultsPreferencesView view;
+    private DefaultsPreferencesView view;
 
     public SchemaUpdateController(ProjectController mediator, DataMap dataMap) {
         super(mediator, dataMap);
@@ -51,8 +51,9 @@ public class SchemaUpdateController extends DefaultsPreferencesController {
     public void startupAction() {
         view = new DefaultsPreferencesView(ALL_CONTROL, UNINIT_CONTROL);
         view.setTitle("Update DbEntities Schema");
-        initController();
-        
+        view.getCancelButton().addActionListener(e -> view.dispose());
+        view.getUpdateButton().addActionListener(e -> updateSchema());
+
         view.pack();
         view.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         view.setModal(true);
@@ -60,17 +61,13 @@ public class SchemaUpdateController extends DefaultsPreferencesController {
         centerView();
         view.setVisible(true);
     }
-    
+
+    @Override
     public Component getView() {
         return this.view;
     }
-    
-    private void initController() {
-        view.getUpdateButton().addActionListener(e -> updateSchema());
-        view.getCancelButton().addActionListener(e -> view.dispose());
-    }
 
-    protected void updateSchema() {
+    private void updateSchema() {
         boolean doAll = isAllEntities();
         String defaultSchema = dataMap.getDefaultSchema();
 

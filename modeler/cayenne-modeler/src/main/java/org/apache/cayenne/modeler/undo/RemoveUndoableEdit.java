@@ -72,11 +72,6 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
 
     private final REMOVE_MODE mode;
 
-    public RemoveUndoableEdit(Application application) {
-        this.domain = (DataChannelDescriptor) application.getProject().getRootNode();
-        this.mode = REMOVE_MODE.DOMAIN;
-    }
-
     public RemoveUndoableEdit(Application application, DataNodeDescriptor node, DataMap map) {
         this.map = map;
         this.dataNode = node;
@@ -159,7 +154,6 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
             case PROCEDURE:
                 return "Remove Procedure";
             case MAP_FROM_NODE:
-                return "Remove DataMap";
             case MAP_FROM_DOMAIN:
                 return "Remove DataMap";
             case NODE:

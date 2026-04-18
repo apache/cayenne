@@ -45,8 +45,7 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 
 import java.awt.event.ActionEvent;
 
-/**
- */
+
 public class CreateAttributeAction extends CayenneAction {
 
     /**

@@ -39,15 +39,11 @@ public class InferRelationshipsControllerBase extends CayenneController {
     public static final String SELECTED_PROPERTY = "selected";
 
     protected DataMap dataMap;
-
     protected List<InferredRelationship> inferredRelationships;
-
     protected List<DbEntity> entities;
     protected Set<InferredRelationship> selectedEntities;
-    protected int index = 0;
+    protected int index;
     protected ObjectNameGenerator strategy;
-
-    protected transient InferredRelationship currentEntity;
 
     public InferRelationshipsControllerBase(CayenneController parent, DataMap dataMap) {
         super(parent);
@@ -77,7 +73,7 @@ public class InferRelationshipsControllerBase extends CayenneController {
                 continue;
             }
 
-            if (!name.substring(name.length() - 3, name.length()).equalsIgnoreCase("_ID")) {
+            if (!name.substring(name.length() - 3).equalsIgnoreCase("_ID")) {
                 continue;
             }
 
@@ -108,8 +104,7 @@ public class InferRelationshipsControllerBase extends CayenneController {
         InferredRelationship myir = new InferredRelationship();
         for (DbRelationship relationship : eSourse.getRelationships()) {
             for (DbJoin join : relationship.getJoins()) {
-                if (((DbEntity) join.getSource().getEntity()).equals(eSourse)
-                        && ((DbEntity) join.getTarget().getEntity()).equals(eTarget)) {
+                if (join.getSource().getEntity().equals(eSourse) && join.getTarget().getEntity().equals(eTarget)) {
                     return;
                 }
             }
@@ -221,18 +216,6 @@ public class InferRelationshipsControllerBase extends CayenneController {
         }
     }
 
-    public List<InferredRelationship> getSelectedEntities() {
-        List<InferredRelationship> selected = new ArrayList<>(selectedEntities.size());
-
-        for (InferredRelationship entity : inferredRelationships) {
-            if (selectedEntities.contains(entity)) {
-                selected.add(entity);
-            }
-        }
-
-        return selected;
-    }
-
     public boolean updateSelection(Predicate<InferredRelationship> predicate) {
         boolean modified = false;
 
@@ -257,29 +240,8 @@ public class InferRelationshipsControllerBase extends CayenneController {
         return modified;
     }
 
-    public boolean isSelected() {
-        return currentEntity != null && selectedEntities.contains(currentEntity);
-    }
-
     public boolean isSelected(InferredRelationship entity) {
         return selectedEntities.contains(entity);
-    }
-
-    public void setSelected(boolean selectedFlag) {
-        if (currentEntity == null) {
-            return;
-        }
-
-        if (selectedFlag) {
-            if (selectedEntities.add(currentEntity)) {
-                firePropertyChange(SELECTED_PROPERTY, null, null);
-            }
-        }
-        else {
-            if (selectedEntities.remove(currentEntity)) {
-                firePropertyChange(SELECTED_PROPERTY, null, null);
-            }
-        }
     }
 
     public void setSelected(InferredRelationship entity, boolean selectedFlag) {
@@ -300,14 +262,6 @@ public class InferRelationshipsControllerBase extends CayenneController {
 
     public List getEntities() {
         return inferredRelationships;
-    }
-
-    public InferredRelationship getCurrentEntity() {
-        return currentEntity;
-    }
-
-    public void setCurrentEntity(InferredRelationship currentEntity) {
-        this.currentEntity = currentEntity;
     }
 
     public DataMap getDataMap() {

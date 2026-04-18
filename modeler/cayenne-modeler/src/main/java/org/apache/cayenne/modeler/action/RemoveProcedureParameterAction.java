@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.event.ProcedureParameterEvent;
 import org.apache.cayenne.map.Procedure;
@@ -30,34 +28,28 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ConfirmRemoveDialog;
 
+import java.awt.event.ActionEvent;
+
 /**
- * Removes currently selected parameter from the current procedure.
- * 
+ * Removes selected parameters from the current procedure.
  */
-public class RemoveProcedureParameterAction extends RemoveAction {
+public class RemoveProcedureParameterAction extends RemoveAction implements MultipleObjectsAction {
 
     private final static String ACTION_NAME = "Remove Parameter";
-
-    /**
-     * Name of action if multiple rels are selected
-     */
     private final static String ACTION_NAME_MULTIPLE = "Remove Parameters";
 
-    public static String getActionName(boolean multiple) {
-        return multiple ? ACTION_NAME_MULTIPLE : ACTION_NAME;
-    }
-
-    public static String getActionName() {
-        return ACTION_NAME;
-    }
 
     public RemoveProcedureParameterAction(Application application) {
         super(ACTION_NAME, application);
     }
 
+    @Override
+    public String getActionName(boolean multiple) {
+        return multiple ? ACTION_NAME_MULTIPLE : ACTION_NAME;
+    }
+
     /**
-     * Returns <code>true</code> if last object in the path contains a removable
-     * parameter.
+     * Returns <code>true</code> if last object in the path contains a removable parameter.
      */
     @Override
     public boolean enableForPath(ConfigurationNode object) {
@@ -79,7 +71,7 @@ public class RemoveProcedureParameterAction extends RemoveAction {
                     "procedure parameter",
                     params[0].getName()))
                     || (params.length > 1 && dialog
-                            .shouldDelete("selected procedure parameters"))) {
+                    .shouldDelete("selected procedure parameters"))) {
                 removeProcedureParameters();
             }
         }

@@ -20,19 +20,17 @@
 
 package org.apache.cayenne.modeler.dialog.objentity;
 
-import java.awt.Component;
-
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.util.CayenneController;
 
-/**
- */
+import java.awt.*;
+
 public class ClassNameUpdater extends CayenneController {
 
-    protected ClassNameUpdaterView view;
-    protected ObjEntity entity;
-    protected boolean updatePerformed;
+    private final ObjEntity entity;
+    private ClassNameUpdaterView view;
+    private boolean updatePerformed;
 
     public ClassNameUpdater(CayenneController parent, ObjEntity entity) {
         super(parent);
@@ -54,7 +52,7 @@ public class ClassNameUpdater extends CayenneController {
         String oldName = entity.getClassName();
         String suggestedName = suggestedClassName();
 
-        if (oldName == null || oldName.length() == 0) {
+        if (oldName == null || oldName.isEmpty()) {
             // generic entity...
             askForUpdate = false;
         } else if (suggestedName == null || suggestedName.equals(oldName)) {
@@ -69,8 +67,7 @@ public class ClassNameUpdater extends CayenneController {
         if (askForUpdate) {
             // start dialog
             view = new ClassNameUpdaterView();
-            view.getClassName()
-                    .setText("Update class name to " + suggestedName + " to match current entity name?");
+            view.getClassName().setText("Update class name to " + suggestedName + " to match current entity name?");
 
             initBindings(suggestedName);
 

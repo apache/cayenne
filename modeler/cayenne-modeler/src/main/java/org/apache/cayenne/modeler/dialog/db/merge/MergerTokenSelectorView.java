@@ -34,8 +34,7 @@ import com.jgoodies.forms.factories.ButtonBarFactory;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-/**
- */
+
 public class MergerTokenSelectorView extends JPanel {
 
     protected JTable tokens;

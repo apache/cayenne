@@ -21,8 +21,7 @@ package org.apache.cayenne.modeler.event;
 
 import java.util.EventObject;
 
-/**
- */
+
 public class DisplayEvent extends EventObject {
     protected boolean refired;
     protected boolean changed;

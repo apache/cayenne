@@ -32,9 +32,9 @@ import java.awt.FlowLayout;
 
 public class ClassNameUpdaterView extends JDialog {
 
-    protected JLabel className;
-    protected JButton updateButton;
-    protected JButton cancelButton;
+    private final JLabel className;
+    private final JButton updateButton;
+    private final JButton cancelButton;
 
     public ClassNameUpdaterView() {
         className = new JLabel("Update class name to _______________________ to match current entity name?");

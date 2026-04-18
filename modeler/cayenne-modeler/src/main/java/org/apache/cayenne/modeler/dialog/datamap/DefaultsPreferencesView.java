@@ -31,25 +31,16 @@ import javax.swing.JRadioButton;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
-/**
- */
 public class DefaultsPreferencesView extends JDialog {
-    
-    protected JRadioButton updateAll;
-    protected JRadioButton updateEmpty;
-    protected JButton updateButton;
-    protected JButton cancelButton;
-    protected JPanel buttonPanel;
+
+    private final JRadioButton updateAll;
+    private final JRadioButton updateEmpty;
+    private final JButton updateButton;
+    private final JButton cancelButton;
 
     public DefaultsPreferencesView(String allControl, String uninitializedControl) {
-        initView(allControl, uninitializedControl);
-    }
-
-    protected void initView(String allControl, String uninitializedControl) {
-        updateAll = new JRadioButton(allControl);
-        updateAll.setSelected(true);
-
-        updateEmpty = new JRadioButton(uninitializedControl);
+        this.updateAll = new JRadioButton(allControl, true);
+        this.updateEmpty = new JRadioButton(uninitializedControl);
 
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(updateAll);
@@ -79,10 +70,6 @@ public class DefaultsPreferencesView extends JDialog {
 
     public JRadioButton getUpdateAll() {
         return updateAll;
-    }
-
-    public JRadioButton getUpdateEmpty() {
-        return updateEmpty;
     }
 
     public JButton getUpdateButton() {

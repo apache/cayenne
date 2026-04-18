@@ -18,29 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor.dbentity;
 
-import javax.swing.ComboBoxModel;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.Icon;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.event.ActionListener;
-import java.util.List;
-
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
@@ -49,25 +26,35 @@ import org.apache.cayenne.map.event.DbRelationshipListener;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dialog.DbRelationshipDialog;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CopyAttributeRelationshipAction;
 import org.apache.cayenne.modeler.action.CutAttributeRelationshipAction;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeRelationshipAction;
+import org.apache.cayenne.modeler.dialog.DbRelationshipDialog;
 import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.BoardTableCellRenderer;
-import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.util.List;
 
 /**
  * Displays DbRelationships for the current DbEntity.
@@ -116,7 +103,7 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
 
         // Create and install a popup
         Icon ico = ModelerUtil.buildIcon("icon-edit.png");
-        resolveMenu = new CayenneAction.CayenneMenuItem("Database Mapping", ico);
+        resolveMenu = new JMenuItem("Database Mapping", ico);
 
         JPopupMenu popup = new JPopupMenu();
         popup.add(resolveMenu);

@@ -40,6 +40,7 @@ public class SortNodesAction extends TreeManipulationAction {
         super(ACTION_NAME, application);
     }
 
+    @Override
     public String getIconName() {
         return ICON_NAME;
     }

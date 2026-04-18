@@ -19,9 +19,6 @@
 
 package org.apache.cayenne.modeler.dialog.datamap;
 
-import java.awt.Component;
-import javax.swing.WindowConstants;
-
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EntityEvent;
@@ -29,14 +26,15 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.util.Util;
 
-/**
- */
+import javax.swing.*;
+import java.awt.*;
+
 public class SuperclassUpdateController extends DefaultsPreferencesController {
 
-    public static final String ALL_CONTROL = "Set/update superclass for all ObjEntities";
-    public static final String UNINIT_CONTROL = "Do not override existing non-empty superclasses";
-    
-    protected DefaultsPreferencesView view;
+    private static final String ALL_CONTROL = "Set/update superclass for all ObjEntities";
+    private static final String UNINIT_CONTROL = "Do not override existing non-empty superclasses";
+
+    private DefaultsPreferencesView view;
 
     public SuperclassUpdateController(ProjectController mediator, DataMap dataMap) {
         super(mediator, dataMap);
@@ -48,8 +46,9 @@ public class SuperclassUpdateController extends DefaultsPreferencesController {
     public void startupAction() {
         view = new DefaultsPreferencesView(ALL_CONTROL, UNINIT_CONTROL);
         view.setTitle("Update Persistent objects Superclass");
-        initController();
-        
+        view.getCancelButton().addActionListener(e -> view.dispose());
+        view.getUpdateButton().addActionListener(e -> updateSuperclass());
+
         view.pack();
         view.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         view.setModal(true);
@@ -57,19 +56,15 @@ public class SuperclassUpdateController extends DefaultsPreferencesController {
         centerView();
         view.setVisible(true);
     }
-    
+
+    @Override
     public Component getView() {
         return this.view;
-    }
-    
-    private void initController() {
-        view.getUpdateButton().addActionListener(e -> updateSuperclass());
-        view.getCancelButton().addActionListener(e -> view.dispose());
     }
 
     protected void updateSuperclass() {
         boolean doAll = isAllEntities();
-        String defaultSuperclass = getSuperclass();
+        String defaultSuperclass = dataMap.getDefaultSuperclass();
 
         dataMap.getObjEntities().stream()
                 .sorted(Comparators.getDataMapChildrenComparator()).forEach(entity -> {
@@ -87,15 +82,11 @@ public class SuperclassUpdateController extends DefaultsPreferencesController {
         view.dispose();
     }
 
-    protected String getSuperclass() {
-        return dataMap.getDefaultSuperclass();
-    }
-
-    protected String getSuperClassName(ObjEntity entity) {
+    private String getSuperClassName(ObjEntity entity) {
         return entity.getSuperClassName();
     }
 
-    protected void setSuperClassName(ObjEntity entity, String superClassName) {
+    private void setSuperClassName(ObjEntity entity, String superClassName) {
         entity.setSuperClassName(superClassName);
     }
 }

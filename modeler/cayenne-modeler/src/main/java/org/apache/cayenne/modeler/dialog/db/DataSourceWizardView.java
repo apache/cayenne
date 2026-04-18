@@ -29,8 +29,7 @@ import org.apache.cayenne.modeler.util.CayenneController;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- */
+
 public class DataSourceWizardView extends JDialog {
 
     private static final byte OK_BUTTON_INDEX = 0;

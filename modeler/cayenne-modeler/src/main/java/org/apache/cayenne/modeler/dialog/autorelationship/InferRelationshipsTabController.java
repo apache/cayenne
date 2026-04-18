@@ -28,15 +28,13 @@ import java.util.List;
 
 public class InferRelationshipsTabController extends CayenneController {
 
-    public static final String GENERATE_PROPERTY = "generate";
-
     private static final String[] COLUMN_HEADERS = {"", "Source", "Target", "Join", "Name", "To Many"};
     private static final Class<?>[] COLUMN_CLASSES = {
             Boolean.class, String.class, String.class, String.class, String.class, String.class
     };
 
-    protected InferRelationshipsPanel view;
-    protected AbstractTableModel tableModel;
+    private final InferRelationshipsPanel view;
+    private AbstractTableModel tableModel;
 
     public InferRelationshipsTabController(InferRelationshipsControllerBase parent) {
         super(parent);

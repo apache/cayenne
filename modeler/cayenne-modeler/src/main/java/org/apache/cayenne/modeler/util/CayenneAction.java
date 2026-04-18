@@ -20,17 +20,6 @@
 
 package org.apache.cayenne.modeler.util;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;
-import javax.swing.tree.TreePath;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.Entity;
@@ -44,6 +33,10 @@ import org.apache.cayenne.project.Project;
 import org.apache.cayenne.swing.components.image.FilteredIconFactory;
 import org.apache.cayenne.util.Util;
 
+import javax.swing.*;
+import javax.swing.tree.TreePath;
+import java.awt.event.ActionEvent;
+
 /**
  * Superclass of CayenneModeler actions that implements support for some common
  * functionality, exception handling, etc.
@@ -53,16 +46,10 @@ public abstract class CayenneAction extends AbstractAction {
     protected boolean alwaysOn;
     protected Application application;
 
-    /**
-     * Creates a named CayenneAction.
-     */
     public CayenneAction(String name, Application application) {
         this(name, application, name);
     }
 
-    /**
-     * Creates a named CayenneAction.
-     */
     public CayenneAction(String name, Application application, String shortDescription) {
         super(name);
         super.putValue(Action.DEFAULT, name);
@@ -79,7 +66,7 @@ public abstract class CayenneAction extends AbstractAction {
             super.putValue(Action.ACCELERATOR_KEY, accelerator);
         }
         
-        if (shortDescription != null && shortDescription.length() > 0) {
+        if (shortDescription != null && !shortDescription.isEmpty()) {
             super.putValue(Action.SHORT_DESCRIPTION, shortDescription);
         }
 
@@ -177,7 +164,7 @@ public abstract class CayenneAction extends AbstractAction {
      * Factory method that creates a menu item hooked up to this action.
      */
     public JMenuItem buildMenu() {
-        return new CayenneMenuItem(this);
+        return new JMenuItem(this);
     }
     
     /**
@@ -230,21 +217,6 @@ public abstract class CayenneAction extends AbstractAction {
         }
     }
 
-    public static class CayenneMenuItem extends JMenuItem {
-
-        public CayenneMenuItem(String title) {
-            super(title);
-        }
-
-        public CayenneMenuItem(String title, Icon icon) {
-            super(title, icon);
-        }
-
-        public CayenneMenuItem(AbstractAction action) {
-            super(action);
-        }
-    }
-
     /**
      * On changes in action text, will update toolbar tip instead.
      */
@@ -254,11 +226,7 @@ public abstract class CayenneAction extends AbstractAction {
 
         private boolean showingText;
 
-        /**
-         * Constructor for CayenneMenuItem.
-         */
         public CayenneToolbarButton(Action a, int position) {
-            super();
             setAction(a);
             initView(position);
         }
@@ -271,31 +239,15 @@ public abstract class CayenneAction extends AbstractAction {
             putClientProperty("JButton.segmentPosition", POSITIONS[position]);
         }
 
-        /**
-         * Returns the showingText.
-         */
-        public boolean isShowingText() {
-            return showingText;
-        }
-
-        /**
-         * Sets the showingText.
-         */
         public void setShowingText(boolean showingText) {
             this.showingText = showingText;
         }
 
-        /**
-         * @see javax.swing.AbstractButton#getText()
-         */
         @Override
         public String getText() {
             return (showingText) ? super.getText() : null;
         }
 
-        /**
-         * @see javax.swing.AbstractButton#setText(String)
-         */
         @Override
         public void setText(String text) {
             if (showingText) {

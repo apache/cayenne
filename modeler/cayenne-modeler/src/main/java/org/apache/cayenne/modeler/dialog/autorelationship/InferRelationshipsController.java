@@ -40,16 +40,11 @@ import java.awt.*;
 
 public class InferRelationshipsController extends InferRelationshipsControllerBase {
 
-    public static final int SELECT = 1;
-    public static final int CANCEL = 0;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(InferRelationshipsController.class);
 
-    protected InferRelationshipsDialog view;
-
-    protected InferRelationshipsTabController entitySelector;
-
-    protected ObjectNameGenerator strategy;
+    private final InferRelationshipsTabController entitySelector;
+    private InferRelationshipsDialog view;
+    private ObjectNameGenerator strategy;
 
     public InferRelationshipsController(CayenneController parent, DataMap dataMap) {
         super(parent, dataMap);
@@ -131,9 +126,7 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
 
             this.strategy = createNamingStrategy(strategyClass);
 
-            /*
-             * Be user-friendly and update preferences with specified strategy
-             */
+            // Be user-friendly and update preferences with specified strategy
             if (strategy == null) {
                 return;
             }
@@ -149,12 +142,7 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
         setNamingStrategy(strategy);
         createNames();
         entitySelector.initBindings();
-        view.setChoice(SELECT);
-
-    }
-
-    public ObjectNameGenerator getNamingStrategy() {
-        return strategy;
+        view.setChoice(InferRelationshipsDialog.SELECT);
     }
 
     public void cancelAction() {

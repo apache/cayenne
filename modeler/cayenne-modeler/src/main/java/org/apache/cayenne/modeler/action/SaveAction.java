@@ -19,29 +19,24 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.Toolkit;
-import java.awt.event.KeyEvent;
-import java.io.File;
-
-import javax.swing.KeyStroke;
-
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.ProjectSavedEvent;
 import org.apache.cayenne.pref.RenamedPreferences;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.io.File;
+
 /**
  * An action that saves a project using to its default location.
  */
 public class SaveAction extends SaveAsAction {
 
-    public static String getActionName() {
-        return "Save";
-    }
-
     public SaveAction(Application application) {
-        super(getActionName(), application);
+        super("Save", application);
     }
 
     @Override

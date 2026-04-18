@@ -19,31 +19,25 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-
-import javax.swing.KeyStroke;
-
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.validation.ProjectValidator;
 import org.apache.cayenne.validation.ValidationResult;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+
 /**
  * UI action that performs full project validation.
- * 
  */
 public class ValidateAction extends CayenneAction {
 
-    public static String getActionName() {
-        return "Validate Project";
-    }
-
     public ValidateAction(Application application) {
-        super(getActionName(), application);
+        super("Validate Project", application);
     }
 
     public KeyStroke getAcceleratorKey() {
@@ -54,6 +48,7 @@ public class ValidateAction extends CayenneAction {
     /**
      * Validates project for possible conflicts and incomplete mappings.
      */
+    @Override
     public void performAction(ActionEvent e) {
 
         ProjectValidator projectValidator = getApplication().getInjector().getInstance(
@@ -61,10 +56,8 @@ public class ValidateAction extends CayenneAction {
         ValidationResult validationResult = projectValidator.validate(getCurrentProject()
                 .getRootNode());
 
-        // If there were errors or warnings at validation, display them
-        if (validationResult.getFailures().size() > 0) {
-            ValidatorDialog.showDialog(Application.getFrame(), validationResult
-                    .getFailures());
+        if (!validationResult.getFailures().isEmpty()) {
+            ValidatorDialog.showDialog(Application.getFrame(), validationResult.getFailures());
         }
         else {
             ValidatorDialog.showValidationSuccess(Application.getFrame());

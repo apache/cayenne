@@ -36,8 +36,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.Application;
 
-/**
- */
+
 public class ValidationResultBrowserView extends JDialog {
 
     protected JTextArea messageLabel;

@@ -25,26 +25,16 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 import java.awt.event.ActionEvent;
 
 /**
- * Action for opening log console window (See CAY-366)
+ * Action for opening log console window.
  */
 public class ShowLogConsoleAction extends CayenneAction {
-    /**
-     * Readable name for this action
-     */
-    public static final String getActionName() {
-        return "Show log console";
-    }
-    
-    /**
-     * Constructor for ShowLogConsoleAction.
-     */
+
     public ShowLogConsoleAction(Application application) {
-        super(getActionName(), application);
+        super("Show log console", application);
     }
-    
+
     @Override
     public void performAction(ActionEvent e) {
         LogConsole.getInstance().toggle();
     }
-
 }

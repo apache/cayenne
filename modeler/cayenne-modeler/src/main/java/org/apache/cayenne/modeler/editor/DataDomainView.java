@@ -47,14 +47,14 @@ import java.util.prefs.Preferences;
  */
 public class DataDomainView extends JPanel implements DomainDisplayListener {
 
-    protected ProjectController projectController;
+    private final ProjectController controller;
 
     protected TextAdapter name;
     protected JCheckBox objectValidation;
     protected JCheckBox sharedCache;
 
-    public DataDomainView(ProjectController projectController) {
-        this.projectController = projectController;
+    public DataDomainView(ProjectController controller) {
+        this.controller = controller;
 
         // Create and layout components
         initView();
@@ -100,7 +100,7 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
     }
 
     protected void initController() {
-        projectController.addDomainDisplayListener(this);
+        controller.addDomainDisplayListener(this);
 
         // add item listener to checkboxes
         objectValidation.addItemListener(e -> {
@@ -127,7 +127,7 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
      */
     protected void setDomainProperty(String property, String value, String defaultValue) {
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) projectController
+        DataChannelDescriptor domain = (DataChannelDescriptor) controller
                 .getProject()
                 .getRootNode();
 
@@ -151,13 +151,13 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
             properties.put(property, value);
 
             DomainEvent e = new DomainEvent(this, domain);
-            projectController.fireDomainEvent(e);
+            controller.fireDomainEvent(e);
         }
     }
 
     public String getDomainProperty(String property, String defaultValue) {
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) projectController
+        DataChannelDescriptor domain = (DataChannelDescriptor) controller
                 .getProject()
                 .getRootNode();
 
@@ -206,11 +206,11 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
             return;
         }
 
-        if (newName == null || newName.trim().length() == 0) {
+        if (newName == null || newName.trim().isEmpty()) {
             throw new ValidationException("Enter name for DataDomain");
         }
 
-        Preferences prefs = projectController.getPreferenceForDataDomain();
+        Preferences prefs = controller.getPreferenceForDataDomain();
 
         DomainEvent e = new DomainEvent(
                 this,
@@ -219,6 +219,6 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
         dataChannelDescriptor.setName(newName);
 
         RenamedPreferences.copyPreferences(newName, prefs);
-        projectController.fireDomainEvent(e);
+        controller.fireDomainEvent(e);
     }
 }

@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -35,38 +33,27 @@ import org.apache.cayenne.modeler.dialog.ConfirmRemoveDialog;
 import org.apache.cayenne.modeler.undo.RemoveRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 
-/**
- * Removes currently selected relationship from either the DbEntity or
- * ObjEntity.
- * 
- */
-public class RemoveRelationshipAction extends RemoveAction implements
-		MultipleObjectsAction {
+import java.awt.event.ActionEvent;
 
-	
+/**
+ * Removes currently selected relationship from either the DbEntity or ObjEntity.
+ */
+public class RemoveRelationshipAction extends RemoveAction implements MultipleObjectsAction {
 
 	private final static String ACTION_NAME = "Remove Relationship";
-
-	/**
-	 * Name of action if multiple rels are selected
-	 */
 	private final static String ACTION_NAME_MULTIPLE = "Remove Relationships";
-
-	public static String getActionName() {
-		return ACTION_NAME;
-	}
-
-	public String getActionName(boolean multiple) {
-		return multiple ? ACTION_NAME_MULTIPLE : ACTION_NAME;
-	}
 
 	public RemoveRelationshipAction(Application application) {
 		super(ACTION_NAME, application);
 	}
 
+	@Override
+	public String getActionName(boolean multiple) {
+		return multiple ? ACTION_NAME_MULTIPLE : ACTION_NAME;
+	}
+
 	/**
-	 * Returns <code>true</code> if last object in the path contains a removable
-	 * relationship.
+	 * Returns <code>true</code> if last object in the path contains a removable relationship.
 	 */
 	@Override
 	public boolean enableForPath(ConfigurationNode object) {

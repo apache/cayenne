@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.modeler.dialog.datamap;
 
-import java.awt.Component;
-
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -31,10 +29,12 @@ import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneController;
 
+import java.awt.*;
+
 public class LockingUpdateController extends CayenneController {
 
-    protected LockingUpdateView view;
-    protected DataMap dataMap;
+    private LockingUpdateView view;
+    private final DataMap dataMap;
 
     public LockingUpdateController(ProjectController parent, DataMap dataMap) {
         super(parent);
@@ -48,7 +48,8 @@ public class LockingUpdateController extends CayenneController {
         boolean on = dataMap.getDefaultLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC;
         view.setTitle(on ? "Enable Optimistic Locking" : "Disable Optimistic Locking");
 
-        initBindings();
+        view.getCancelButton().addActionListener(e -> view.dispose());
+        view.getUpdateButton().addActionListener(e -> updateAction());
 
         view.pack();
         view.setModal(true);
@@ -57,22 +58,12 @@ public class LockingUpdateController extends CayenneController {
         view.setVisible(true);
     }
 
+    @Override
     public Component getView() {
         return view;
     }
 
-    protected void initBindings() {
-        view.getCancelButton().addActionListener(e -> cancelAction());
-        view.getUpdateButton().addActionListener(e -> updateAction());
-    }
-
-    public void cancelAction() {
-        if (view != null) {
-            view.dispose();
-        }
-    }
-
-    public void updateAction() {
+    private void updateAction() {
         int defaultLockType = dataMap.getDefaultLockType();
         boolean on = defaultLockType == ObjEntity.LOCK_TYPE_OPTIMISTIC;
 

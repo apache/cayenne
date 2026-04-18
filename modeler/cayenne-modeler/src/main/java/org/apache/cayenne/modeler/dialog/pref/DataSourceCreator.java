@@ -32,8 +32,7 @@ import org.apache.cayenne.modeler.util.AdapterMapping;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.DbAdapterInfo;
 
-/**
- */
+
 public class DataSourceCreator extends CayenneController {
 
     private static final String NO_ADAPTER = "Custom / Undefined";

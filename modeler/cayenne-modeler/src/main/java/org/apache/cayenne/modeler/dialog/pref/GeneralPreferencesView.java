@@ -26,8 +26,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- */
+
 public class GeneralPreferencesView extends JPanel {
 
     protected EncodingSelectorView encodingSelector;

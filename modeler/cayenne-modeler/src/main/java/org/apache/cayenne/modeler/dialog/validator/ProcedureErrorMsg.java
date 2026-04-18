@@ -28,8 +28,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
 import org.apache.cayenne.validation.ValidationFailure;
 
-/**
- */
+
 public class ProcedureErrorMsg extends ValidationDisplayHandler {
 
     public ProcedureErrorMsg(ValidationFailure result) {

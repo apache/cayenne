@@ -18,30 +18,25 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.action;
 
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-
-import javax.swing.KeyStroke;
-
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
 public class UndoAction extends CayenneAction {
+
+    public UndoAction(Application application) {
+        super("Undo", application);
+    }
 
     @Override
     public boolean isAlwaysOn() {
         return false;
     }
 
-    public static String getActionName() {
-        return "Undo";
-    }
-    
-    public UndoAction(Application application) {
-        super(getActionName(), application);
-    }
-    
     @Override
     public KeyStroke getAcceleratorKey() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());

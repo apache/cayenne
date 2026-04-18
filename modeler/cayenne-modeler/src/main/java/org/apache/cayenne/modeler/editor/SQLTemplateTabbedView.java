@@ -30,8 +30,7 @@ import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayListener;
 import org.apache.cayenne.map.QueryDescriptor;
 
-/**
- */
+
 public class SQLTemplateTabbedView extends JTabbedPane {
 
     protected ProjectController mediator;

@@ -28,8 +28,7 @@ import javax.swing.WindowConstants;
 import java.awt.Component;
 import java.util.Collection;
 
-/**
- */
+
 public class ValidationResultBrowser extends CayenneController {
 
     protected ValidationResultBrowserView view;

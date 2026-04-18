@@ -40,8 +40,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
 
-/**
- */
+
 public class PreferenceDialogView extends JDialog {
 
     protected JSplitPane split;

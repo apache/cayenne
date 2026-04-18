@@ -34,18 +34,16 @@ import java.awt.event.ActionEvent;
  * Requires config provided with {@link UpdateValidationConfigAction#putConfig(ValidationConfig)}.
  *
  * @since 5.0
- * */
+ */
 public class UpdateValidationConfigAction extends CayenneAction {
-
-    public static final String ACTION_NAME = "Update ValidationConfig";
 
     private static final String CONFIG_PARAM = "config";
 
     private boolean undoable;
 
     public UpdateValidationConfigAction(Application application) {
-        super(ACTION_NAME, application);
-        undoable = true;
+        super("Update ValidationConfig", application);
+        this.undoable = true;
     }
 
     protected UpdateValidationConfigAction(String name, Application application) {

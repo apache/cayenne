@@ -34,8 +34,10 @@ import java.awt.Container;
 import java.awt.FlowLayout;
 
 public class InferRelationshipsDialog extends JDialog {
+
     public static final int SELECT = 1;
     public static final int CANCEL = 0;
+
     protected int choice;
 
     protected JButton generateButton;
@@ -84,10 +86,6 @@ public class InferRelationshipsDialog extends JDialog {
                 NameGeneratorPreferences.getInstance().getLastUsedStrategies()));
 
         setTitle("Infer Relationships");
-    }
-
-    public int getChoice() {
-        return choice;
     }
 
     public void setChoice(int choice) {

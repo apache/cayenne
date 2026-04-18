@@ -41,6 +41,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.EmbeddableAttributeEvent;
@@ -61,19 +62,16 @@ import org.apache.cayenne.modeler.undo.RemoveRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.RemoveUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.ProjectUtil;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.map.QueryDescriptor;
 
-import javax.swing.KeyStroke;
+import javax.swing.*;
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * Removes currently selected object from the project. This can be Domain, DataNode,
@@ -81,12 +79,8 @@ import java.util.Iterator;
  */
 public class RemoveAction extends CayenneAction {
 
-    public static String getActionName() {
-        return "Remove";
-    }
-
     public RemoveAction(Application application) {
-        super(getActionName(), application);
+        super("Remove", application);
     }
 
     protected RemoveAction(String actionName, Application application) {
@@ -492,7 +486,7 @@ public class RemoveAction extends CayenneAction {
         UndoableEdit undo = null;
 
         if (object instanceof DataMap) {
-            if (parentObject != null && parentObject instanceof DataNodeDescriptor) {
+            if (parentObject instanceof DataNodeDescriptor) {
                 undo = new RemoveUndoableEdit(application, (DataNodeDescriptor) parentObject, (DataMap) object);
                 removeDataMapFromDataNode((DataNodeDescriptor) parentObject, (DataMap) object);
             } else {

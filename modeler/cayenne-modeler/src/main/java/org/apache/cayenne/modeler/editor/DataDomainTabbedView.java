@@ -39,9 +39,7 @@ import javax.swing.event.ChangeListener;
  */
 public class DataDomainTabbedView extends JTabbedPane implements ChangeListener, DomainDisplayListener {
 
-    ProjectController mediator;
-
-    DataDomainGraphTab graphTab;
+    private final DataDomainGraphTab graphTab;
     private JComponent cgenView;
     private CgenTabController cgenTabController;
     private JComponent dbImportView;
@@ -49,45 +47,31 @@ public class DataDomainTabbedView extends JTabbedPane implements ChangeListener,
     private JComponent validationTabView;
     private ValidationTabController validationTabController;
 
-    /**
-     * constructor
-     *
-     * @param mediator mediator instance
-     */
-    public DataDomainTabbedView(ProjectController mediator) {
-        this.mediator = mediator;
-
-        initView();
-    }
-
-    /**
-     * create tabs
-     */
-    private void initView() {
+    public DataDomainTabbedView(ProjectController controller) {
 
         setTabPlacement(JTabbedPane.TOP);
 
         // add panels to tabs
         // note that those panels that have no internal scrollable tables
         // must be wrapped in a scroll pane
-        JScrollPane domainView = new JScrollPane(new DataDomainView(mediator));
+        JScrollPane domainView = new JScrollPane(new DataDomainView(controller));
         addTab("Main", domainView);
 
         addChangeListener(this);
-        mediator.addDomainDisplayListener(this);
+        controller.addDomainDisplayListener(this);
 
-        dbImportTabController = new DbImportTabController(mediator);
+        dbImportTabController = new DbImportTabController(controller);
         dbImportView = new JScrollPane(dbImportTabController.getView());
         addTab("Db Import", dbImportView);
 
-        cgenTabController = new CgenTabController(mediator);
+        cgenTabController = new CgenTabController(controller);
         cgenView = new JScrollPane(cgenTabController.getView());
         addTab("Class Generation", cgenView);
 
-        graphTab = new DataDomainGraphTab(mediator);
+        graphTab = new DataDomainGraphTab(controller);
         addTab("Graph", graphTab);
 
-        validationTabController = new ValidationTabController(mediator);
+        validationTabController = new ValidationTabController(controller);
         validationTabView = validationTabController.getView();
         addTab("Validation", validationTabView);
     }

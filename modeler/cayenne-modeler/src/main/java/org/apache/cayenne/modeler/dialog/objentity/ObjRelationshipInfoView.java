@@ -18,19 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.objentity;
 
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -40,6 +27,9 @@ import org.apache.cayenne.modeler.util.DefaultWidgetFactory;
 import org.apache.cayenne.modeler.util.MultiColumnBrowser;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.WidgetFactory;
+
+import javax.swing.*;
+import java.awt.*;
 
 public class ObjRelationshipInfoView extends JDialog{
     
@@ -52,25 +42,25 @@ public class ObjRelationshipInfoView extends JDialog{
             DeleteRule.deleteRuleName(DeleteRule.DENY),
     };
     
-    private MultiColumnBrowser pathBrowser;
+    private final MultiColumnBrowser pathBrowser;
 
-    private Component collectionTypeLabel;
-    private JComboBox<String> collectionTypeCombo;
-    private Component mapKeysLabel;
-    private JComboBox<String> mapKeysCombo;
+    private final Component collectionTypeLabel;
+    private final JComboBox<String> collectionTypeCombo;
+    private final Component mapKeysLabel;
+    private final JComboBox<String> mapKeysCombo;
 
-    private JButton saveButton;
-    private JButton cancelButton;
-    private JButton newRelButton;
+    private final JButton saveButton;
+    private final JButton cancelButton;
+    private final JButton newRelButton;
     
-    private JTextField relationshipName;
-    private JLabel semanticsLabel;
-    private JLabel sourceEntityLabel;
-    private JComboBox<String> targetCombo;
+    private final JTextField relationshipName;
+    private final JLabel semanticsLabel;
+    private final JLabel sourceEntityLabel;
+    private final JComboBox<String> targetCombo;
 
-    private JComboBox<String> deleteRule;
-    private JCheckBox usedForLocking;
-    private JTextField comment;
+    private final JComboBox<String> deleteRule;
+    private final JCheckBox usedForLocking;
+    private final JTextField comment;
 
     public ObjRelationshipInfoView() {
         super(Application.getFrame());

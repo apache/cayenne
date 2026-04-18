@@ -47,33 +47,31 @@ import java.awt.event.ComponentListener;
 
 public class ObjAttributeInfoDialogView extends JDialog {
 
+    private static final Dimension BROWSER_CELL_DIM = new Dimension(130, 200);
+
     static final String EMBEDDABLE_PANEL = "EMBEDDABLE_PANEL";
     static final String FLATTENED_PANEL = "FLATTENED_PANEL";
 
-    /**
-     * // * Browser to select path for attribute //
-     */
-    private MultiColumnBrowser pathBrowser;
+    private final MultiColumnBrowser pathBrowser;
 
-    private JButton cancelButton;
-    private JButton saveButton;
-    private JButton selectPathButton;
+    private final JButton cancelButton;
+    private final JButton saveButton;
+    private final JButton selectPathButton;
 
-    private JTextField attributeName;
-    private JLabel currentPathLabel;
-    private JLabel sourceEntityLabel;
+    private final JTextField attributeName;
+    private final JLabel currentPathLabel;
+    private final JLabel sourceEntityLabel;
 
-    private JComboBox<String> typeComboBox;
-    private JPanel typeManagerPane;
+    private final JComboBox<String> typeComboBox;
+    private final JPanel typeManagerPane;
 
-    private CayenneTable overrideAttributeTable;
-    private TableColumnPreferences tablePreferences;
+    private final CayenneTable overrideAttributeTable;
+    private final TableColumnPreferences tablePreferences;
 
-    private JCheckBox usedForLockingCheckBox;
-    private JCheckBox lazyCheckBox;
-    private JTextField commentField;
+    private final JCheckBox usedForLockingCheckBox;
+    private final JCheckBox lazyCheckBox;
+    private final JTextField commentField;
 
-    private static final Dimension BROWSER_CELL_DIM = new Dimension(130, 200);
 
     public ObjAttributeInfoDialogView() {
         // create widgets
