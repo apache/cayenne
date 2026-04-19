@@ -32,6 +32,7 @@ import org.apache.cayenne.modeler.action.CreateCallbackMethodAction;
 import org.apache.cayenne.modeler.action.CutCallbackMethodAction;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveCallbackMethodAction;
+import org.apache.cayenne.modeler.event.CallbackMethodDisplayEvent;
 import org.apache.cayenne.modeler.event.CallbackMethodEvent;
 import org.apache.cayenne.modeler.event.CallbackMethodListener;
 import org.apache.cayenne.modeler.event.CallbackTypeDisplayEvent;
@@ -440,7 +441,7 @@ public class ObjEntityCallbackMethodsTab extends JPanel {
                     }
                 }
 
-                controller.setSelectedCallbackMethods(methods);
+                controller.fireCallbackMethodDisplayEvent(new CallbackMethodDisplayEvent(this, methods));
                 boolean enabled = methods.length > 0;
                 boolean multiple = methods.length > 1;
 

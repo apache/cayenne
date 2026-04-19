@@ -19,25 +19,18 @@
 package org.apache.cayenne.modeler.event;
 
 import org.apache.cayenne.event.CayenneEvent;
+import org.apache.cayenne.modeler.editor.ObjCallbackMethod;
 
 public class CallbackMethodDisplayEvent extends CayenneEvent {
-    private String callbackMethod;
 
-    /**
-     * constructor
-     * @param src event source
-     * @param callbackMethod callback method name
-     */
-    public CallbackMethodDisplayEvent(Object src, String callbackMethod) {
+    private final ObjCallbackMethod[] callbackMethods;
+
+    public CallbackMethodDisplayEvent(Object src, ObjCallbackMethod[] callbackMethods) {
         super(src);
-        this.callbackMethod = callbackMethod;
+        this.callbackMethods = callbackMethods;
     }
 
-    /**
-     * @return callback method name
-     */
-    public String getCallbackMethod() {
-        return callbackMethod;
+    public ObjCallbackMethod[] getCallbackMethods() {
+        return callbackMethods;
     }
 }
-

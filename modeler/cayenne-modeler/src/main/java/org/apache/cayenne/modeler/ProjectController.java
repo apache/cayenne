@@ -1511,8 +1511,15 @@ public class ProjectController extends CayenneController {
         return state.callbackMethods;
     }
 
-    public void setSelectedCallbackMethods(ObjCallbackMethod[] callbackMethods) {
-        state.callbackMethods = callbackMethods;
+    public void addCallbackMethodDisplayListener(CallbackMethodDisplayListener listener) {
+        listeners.add(CallbackMethodDisplayListener.class, listener);
+    }
+
+    public void fireCallbackMethodDisplayEvent(CallbackMethodDisplayEvent e) {
+        state.callbackMethods = e.getCallbackMethods();
+        for (CallbackMethodDisplayListener l : listeners.getListeners(CallbackMethodDisplayListener.class)) {
+            l.currentCallbackMethodChanged(e);
+        }
     }
 
     public void addCallbackMethodListener(CallbackMethodListener listener) {
