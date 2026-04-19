@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.event;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.event.DomainEvent;
+import org.apache.cayenne.modeler.event.model.DomainEvent;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

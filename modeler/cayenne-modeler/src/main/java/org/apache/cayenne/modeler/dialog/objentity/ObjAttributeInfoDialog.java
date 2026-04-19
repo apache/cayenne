@@ -32,8 +32,8 @@ import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.editor.ObjAttributeTableModel;
-import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.EntityTreeAttributeRelationshipFilter;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
@@ -528,7 +528,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 		EntityDisplayEvent event = new EntityDisplayEvent(this, mediator.getSelectedObjEntity(),
 				mediator.getSelectedDataMap(), (DataChannelDescriptor) mediator.getProject().getRootNode());
 
-		mediator.fireObjEntityDisplayEvent(event);
+		mediator.fireObjEntitySelected(event);
 
 		mediator.fireObjAttributeEvent(new AttributeEvent(this, attributeSaved, model.getEntity(), MapEvent.CHANGE));
 
@@ -536,7 +536,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 				mediator.getSelectedObjEntity(), mediator.getSelectedDataMap(), (DataChannelDescriptor) mediator
 						.getProject().getRootNode());
 
-		mediator.fireObjAttributeDisplayEvent(eventAttr);
+		mediator.fireObjAttributeSelected(eventAttr);
 
 	}
 

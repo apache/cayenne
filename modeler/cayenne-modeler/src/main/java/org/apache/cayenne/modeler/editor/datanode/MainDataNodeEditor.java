@@ -25,7 +25,7 @@ import org.apache.cayenne.access.dbsync.ThrowOnPartialOrCreateSchemaStrategy;
 import org.apache.cayenne.access.dbsync.ThrowOnPartialSchemaStrategy;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.event.DataNodeEvent;
+import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;

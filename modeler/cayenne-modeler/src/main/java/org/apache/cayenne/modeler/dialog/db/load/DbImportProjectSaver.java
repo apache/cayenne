@@ -19,7 +19,7 @@
 package org.apache.cayenne.modeler.dialog.db.load;
 
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
-import org.apache.cayenne.configuration.event.DataMapEvent;
+import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.event.MapEvent;

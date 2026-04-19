@@ -29,7 +29,7 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
 import org.apache.cayenne.validation.ValidationFailure;
 
 /**
@@ -61,11 +61,11 @@ public class AttributeErrorMsg extends ValidationDisplayHandler {
         // must first display entity, and then switch to relationship display ..
         // so fire twice
         if (entity instanceof ObjEntity) {
-            mediator.fireObjEntityDisplayEvent(event);
-            mediator.fireObjAttributeDisplayEvent(event);
+            mediator.fireObjEntitySelected(event);
+            mediator.fireObjAttributeSelected(event);
         } else if (entity instanceof DbEntity) {
-            mediator.fireDbEntityDisplayEvent(event);
-            mediator.fireDbAttributeDisplayEvent(event);
+            mediator.fireDbEntitySelected(event);
+            mediator.fireDbAttributeSelected(event);
         }
     }
 }

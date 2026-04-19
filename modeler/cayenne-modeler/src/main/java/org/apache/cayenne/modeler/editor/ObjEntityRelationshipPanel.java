@@ -34,10 +34,10 @@ import org.apache.cayenne.modeler.action.ObjEntityToSuperEntityAction;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeRelationshipAction;
 import org.apache.cayenne.modeler.dialog.objentity.ObjRelationshipInfo;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
-import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
-import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
-import org.apache.cayenne.modeler.event.TablePopupHandler;
+import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
+import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CellRenderers;
@@ -439,7 +439,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
             editMenu.setEnabled(editEnabled);
         }
 
-        controller.fireObjRelationshipDisplayEvent(new RelationshipDisplayEvent(
+        controller.fireObjRelationshipSelected(new RelationshipDisplayEvent(
                 this,
                 rels,
                 controller.getSelectedObjEntity(),

@@ -38,8 +38,8 @@ import org.apache.cayenne.modeler.action.ObjEntityCounterpartAction;
 import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
 import org.apache.cayenne.modeler.dialog.objentity.ClassNameUpdater;
 import org.apache.cayenne.modeler.dialog.validator.DuplicatedAttributesDialog;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
-import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
+import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.graph.action.ShowGraphEntityAction;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
@@ -244,7 +244,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
                 DataMap map = controller.getSelectedDataMap();
 
                 controller.fireObjEntityEvent(new EntityEvent(this, entity));
-                controller.fireObjEntityDisplayEvent(new EntityDisplayEvent(this, entity, map, domain));
+                controller.fireObjEntitySelected(new EntityDisplayEvent(this, entity, map, domain));
             }
         });
 
@@ -253,7 +253,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
             DbEntity entity = controller.getSelectedObjEntity().getDbEntity();
             if (entity != null) {
                 DataChannelDescriptor dom = (DataChannelDescriptor) controller.getProject().getRootNode();
-                controller.fireDbEntityDisplayEvent(new EntityDisplayEvent(this, entity, entity.getDataMap(), dom));
+                controller.fireDbEntitySelected(new EntityDisplayEvent(this, entity, entity.getDataMap(), dom));
             }
         });
 
@@ -436,7 +436,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
                 controller.getSelectedObjEntity(),
                 controller.getSelectedDataMap(),
                 (DataChannelDescriptor) controller.getProject().getRootNode());
-        controller.fireObjEntityDisplayEvent(ede);
+        controller.fireObjEntitySelected(ede);
     }
 
     public void currentObjEntityChanged(EntityDisplayEvent e) {

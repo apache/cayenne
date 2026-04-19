@@ -23,13 +23,13 @@ import java.awt.Component;
 import javax.swing.WindowConstants;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.event.QueryEvent;
+import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.QueryDisplayEvent;
+import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateQueryUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneController;
 
@@ -106,7 +106,7 @@ public class QueryType extends CayenneController{
             DataMap dataMap, QueryDescriptor query) {
         mediator.fireQueryEvent(new QueryEvent(src, query, MapEvent.ADD,
                 dataMap));
-        mediator.fireQueryDisplayEvent(new QueryDisplayEvent(src, query,
+        mediator.fireQuerySelected(new QueryDisplayEvent(src, query,
                 dataMap, (DataChannelDescriptor)mediator.getProject().getRootNode()));
     }
     

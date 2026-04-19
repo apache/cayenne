@@ -29,7 +29,7 @@ import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateDbEntityUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
@@ -45,7 +45,7 @@ public class CreateDbEntityAction extends CayenneAction {
         EntityDisplayEvent displayEvent = new EntityDisplayEvent(src, entity, controller.getSelectedDataMap(),
                 controller.getSelectedDataNode(), (DataChannelDescriptor) controller.getProject().getRootNode());
         displayEvent.setMainTabFocus(true);
-        controller.fireDbEntityDisplayEvent(displayEvent);
+        controller.fireDbEntitySelected(displayEvent);
     }
 
     public CreateDbEntityAction(Application application) {

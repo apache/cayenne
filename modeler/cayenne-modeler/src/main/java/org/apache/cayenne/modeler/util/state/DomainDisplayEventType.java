@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.util.state;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.DomainDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 
 class DomainDisplayEventType extends DisplayEventType {
 
@@ -37,7 +37,7 @@ class DomainDisplayEventType extends DisplayEventType {
         }
 
         DomainDisplayEvent domainDisplayEvent = new DomainDisplayEvent(this, dataChannel);
-        controller.fireDomainDisplayEvent(domainDisplayEvent);
+        controller.fireDomainSelected(domainDisplayEvent);
     }
 
     @Override

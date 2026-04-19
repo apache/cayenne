@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.editor;
 
-import org.apache.cayenne.configuration.event.ProcedureParameterEvent;
+import org.apache.cayenne.modeler.event.model.ProcedureParameterEvent;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;

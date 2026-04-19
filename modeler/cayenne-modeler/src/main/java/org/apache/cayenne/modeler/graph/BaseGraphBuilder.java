@@ -39,8 +39,8 @@ import javax.swing.event.UndoableEditEvent;
 
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.event.DataMapEvent;
-import org.apache.cayenne.configuration.event.DataMapListener;
+import org.apache.cayenne.modeler.event.model.DataMapEvent;
+import org.apache.cayenne.modeler.event.model.DataMapListener;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;

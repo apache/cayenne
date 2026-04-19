@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.event.DataNodeEvent;
+import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;

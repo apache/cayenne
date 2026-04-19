@@ -25,7 +25,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.action.CreateDataMapAction;
 import org.apache.cayenne.modeler.action.RemoveAction;
-import org.apache.cayenne.modeler.event.DomainDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 
 public class CreateDataMapUndoableEdit extends CayenneUndoableEdit {
 
@@ -52,7 +52,7 @@ public class CreateDataMapUndoableEdit extends CayenneUndoableEdit {
     public void undo() throws CannotUndoException {
         RemoveAction action = actionManager.getAction(RemoveAction.class);
 
-        controller.fireDomainDisplayEvent(new DomainDisplayEvent(this, domain));
+        controller.fireDomainSelected(new DomainDisplayEvent(this, domain));
 
         action.removeDataMap(map);
     }

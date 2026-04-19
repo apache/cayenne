@@ -23,7 +23,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
 
 class ProcedureDisplayEventType extends DisplayEventType {
 
@@ -49,7 +49,7 @@ class ProcedureDisplayEventType extends DisplayEventType {
         }
 
         ProcedureDisplayEvent procedureDisplayEvent = new ProcedureDisplayEvent(this, procedure, dataMap, dataChannel);
-        controller.fireProcedureDisplayEvent(procedureDisplayEvent);
+        controller.fireProcedureSelected(procedureDisplayEvent);
     }
 
     @Override

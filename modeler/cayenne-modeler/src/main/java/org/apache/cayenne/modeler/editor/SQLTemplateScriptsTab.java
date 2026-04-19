@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.editor;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.configuration.event.QueryEvent;
+import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SQLTemplateDescriptor;
 import org.apache.cayenne.modeler.ProjectController;

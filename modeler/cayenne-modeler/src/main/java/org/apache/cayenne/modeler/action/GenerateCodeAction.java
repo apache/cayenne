@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.event.DomainDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
 import java.awt.event.ActionEvent;
@@ -43,6 +43,6 @@ public class GenerateCodeAction extends CayenneAction {
     }
 
     public void performAction(ActionEvent e) {
-        getProjectController().fireDomainDisplayEvent(new DomainDisplayEvent(this, (DataChannelDescriptor) getProjectController().getProject().getRootNode()));
+        getProjectController().fireDomainSelected(new DomainDisplayEvent(this, (DataChannelDescriptor) getProjectController().getProject().getRootNode()));
     }
 }

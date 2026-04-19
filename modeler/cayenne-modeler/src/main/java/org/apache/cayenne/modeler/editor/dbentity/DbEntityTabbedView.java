@@ -30,9 +30,9 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.RemoveAttributeAction;
 import org.apache.cayenne.modeler.action.RemoveRelationshipAction;
-import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
-import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

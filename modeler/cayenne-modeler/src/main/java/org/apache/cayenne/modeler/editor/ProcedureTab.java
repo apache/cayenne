@@ -27,12 +27,12 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.event.ProcedureEvent;
+import org.apache.cayenne.modeler.event.model.ProcedureEvent;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.swing.components.JCayenneCheckBox;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
-import org.apache.cayenne.modeler.event.ProcedureDisplayListener;
+import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ProcedureDisplayListener;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
@@ -126,7 +126,7 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
     public void processExistingSelection(EventObject e) {
         ProcedureDisplayEvent pde = new ProcedureDisplayEvent(this, eventController.getSelectedProcedure(),
                 eventController.getSelectedDataMap(), (DataChannelDescriptor) eventController.getProject().getRootNode());
-        eventController.fireProcedureDisplayEvent(pde);
+        eventController.fireProcedureSelected(pde);
     }
 
     /**

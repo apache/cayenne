@@ -26,7 +26,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 
 class EntityDisplayEventType extends DisplayEventType {
 
@@ -54,9 +54,9 @@ class EntityDisplayEventType extends DisplayEventType {
 
         EntityDisplayEvent entityDisplayEvent = new EntityDisplayEvent(this, entity, dataMap, dataNode, dataChannel);
         if (entity instanceof ObjEntity) {
-            controller.fireObjEntityDisplayEvent(entityDisplayEvent);
+            controller.fireObjEntitySelected(entityDisplayEvent);
         } else if (entity instanceof DbEntity) {
-            controller.fireDbEntityDisplayEvent(entityDisplayEvent);
+            controller.fireDbEntitySelected(entityDisplayEvent);
         }
     }
 

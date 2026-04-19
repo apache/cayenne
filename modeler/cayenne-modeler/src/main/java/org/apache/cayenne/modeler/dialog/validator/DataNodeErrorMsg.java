@@ -25,7 +25,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
 import org.apache.cayenne.validation.ValidationFailure;
 
 /**
@@ -54,7 +54,7 @@ public class DataNodeErrorMsg extends ValidationDisplayHandler {
     public void displayField(ProjectController mediator, JFrame frame) {
         DataNodeDisplayEvent event;
         event = new DataNodeDisplayEvent(frame, domain, node);
-        mediator.fireDataNodeDisplayEvent(event);
+        mediator.fireDataNodeSelected(event);
     }
 
 }

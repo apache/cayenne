@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.event.ProjectSavedEvent;
+import org.apache.cayenne.modeler.event.model.ProjectSavedEvent;
 import org.apache.cayenne.pref.RenamedPreferences;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;

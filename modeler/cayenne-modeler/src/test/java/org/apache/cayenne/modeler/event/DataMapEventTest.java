@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.event;
 
-import org.apache.cayenne.configuration.event.DataMapEvent;
+import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.map.DataMap;
 import org.junit.Test;
 

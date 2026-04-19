@@ -28,7 +28,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.action.RemoveRelationshipAction;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 
 public class CreateRelationshipUndoableEdit extends CayenneUndoableEdit {
 
@@ -78,7 +78,7 @@ public class CreateRelationshipUndoableEdit extends CayenneUndoableEdit {
 
         if (objEnt != null) {
             action.removeObjRelationships(objEnt, objectRel);
-            controller.fireObjEntityDisplayEvent(new EntityDisplayEvent(
+            controller.fireObjEntitySelected(new EntityDisplayEvent(
                     this,
                     objEnt,
                     objEnt.getDataMap(),
@@ -87,7 +87,7 @@ public class CreateRelationshipUndoableEdit extends CayenneUndoableEdit {
 
         if (dbEnt != null) {
             action.removeDbRelationships(dbEnt, dbRel);
-            controller.fireDbEntityDisplayEvent(new EntityDisplayEvent(this, dbEnt, dbEnt
+            controller.fireDbEntitySelected(new EntityDisplayEvent(this, dbEnt, dbEnt
                     .getDataMap(), (DataChannelDescriptor) controller
                     .getProject()
                     .getRootNode()));

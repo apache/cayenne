@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.util.state;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
 
 class DataNodeDisplayEventType extends DisplayEventType {
 
@@ -43,7 +43,7 @@ class DataNodeDisplayEventType extends DisplayEventType {
         }
 
         DataNodeDisplayEvent dataNodeDisplayEvent = new DataNodeDisplayEvent(this, dataChannel, dataNode);
-        controller.fireDataNodeDisplayEvent(dataNodeDisplayEvent);
+        controller.fireDataNodeSelected(dataNodeDisplayEvent);
     }
 
     @Override

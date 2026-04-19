@@ -24,8 +24,8 @@ import org.apache.cayenne.modeler.action.ShowValidationConfigAction;
 import org.apache.cayenne.modeler.editor.cgen.domain.CgenTabController;
 import org.apache.cayenne.modeler.editor.dbimport.domain.DbImportTabController;
 import org.apache.cayenne.modeler.editor.validation.ValidationTabController;
-import org.apache.cayenne.modeler.event.DomainDisplayEvent;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.graph.DataDomainGraphTab;
 
 import javax.swing.*;

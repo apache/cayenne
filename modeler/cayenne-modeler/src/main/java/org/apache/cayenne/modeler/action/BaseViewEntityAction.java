@@ -24,7 +24,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
 import javax.swing.tree.TreePath;
@@ -66,9 +66,9 @@ public abstract class BaseViewEntityAction extends CayenneAction {
                 entity.getDataMap(),
                 (DataChannelDescriptor) getProjectController().getProject().getRootNode());
         if (entity instanceof DbEntity) {
-            getProjectController().fireDbEntityDisplayEvent(event);
+            getProjectController().fireDbEntitySelected(event);
         } else if (entity instanceof ObjEntity){
-            getProjectController().fireObjEntityDisplayEvent(event);
+            getProjectController().fireObjEntitySelected(event);
         }
     }
 }

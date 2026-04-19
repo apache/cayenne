@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.action;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.ValidationConfigDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ValidationConfigDisplayEvent;
 import org.apache.cayenne.project.validation.Inspection;
 
 import java.awt.event.ActionEvent;
@@ -43,7 +43,7 @@ public class ShowValidationOptionAction extends ShowValidationConfigAction {
         Inspection inspection = (Inspection) getValue(INSPECTION_PARAM);
         ProjectController controller = getProjectController();
         DataChannelDescriptor dataChannel = (DataChannelDescriptor) controller.getProject().getRootNode();
-        controller.fireValidationConfigDisplayEvent(new ValidationConfigDisplayEvent(this, dataChannel, inspection));
+        controller.fireValidationConfigSelected(new ValidationConfigDisplayEvent(this, dataChannel, inspection));
     }
 
     public ShowValidationConfigAction putInspection(Inspection inspection) {

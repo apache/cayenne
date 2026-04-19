@@ -26,7 +26,7 @@ import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.EmbeddableAttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EmbeddableAttributeDisplayEvent;
 import org.apache.cayenne.validation.ValidationFailure;
 
 public class EmbeddableAttributeErrorMsg extends ValidationDisplayHandler {
@@ -57,8 +57,8 @@ public class EmbeddableAttributeErrorMsg extends ValidationDisplayHandler {
                 map,
                 domain);
 
-        mediator.fireEmbeddableDisplayEvent(event);
-        mediator.fireEmbeddableAttributeDisplayEvent(event);
+        mediator.fireEmbeddableSelected(event);
+        mediator.fireEmbeddableAttributeSelected(event);
     }
 
 }

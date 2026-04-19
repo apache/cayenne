@@ -26,7 +26,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.ReverseEngineeringAction;
 import org.apache.cayenne.modeler.editor.GeneratorsTabController;
-import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 
 /**
  * @since 4.1
@@ -53,7 +53,7 @@ public class DbImportTabController extends GeneratorsTabController<ReverseEngine
     public void showConfig(DataMap dataMap) {
         if (dataMap != null) {
             DataMapDisplayEvent event = new DataMapDisplayEvent(getView(), dataMap, dataMap.getDataChannelDescriptor());
-            getProjectController().fireDataMapDisplayEvent(event);
+            getProjectController().fireDataMapSelected(event);
         }
     }
 }

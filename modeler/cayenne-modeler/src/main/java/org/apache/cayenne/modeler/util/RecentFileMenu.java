@@ -19,18 +19,15 @@
 
 package org.apache.cayenne.modeler.util;
 
-import java.awt.Component;
-import java.io.File;
-import java.util.List;
-
-import javax.swing.Action;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ModelerPreferences;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
-import org.apache.cayenne.modeler.event.RecentFileListListener;
+import org.apache.cayenne.modeler.event.model.RecentFileListListener;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
+import java.util.List;
 
 /**
  * Menu that contains a list of previously used files. It is built from CayenneModeler

@@ -34,7 +34,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
 import org.apache.cayenne.modeler.editor.GeneratorsTabController;
-import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.tools.ToolsInjectorBuilder;
 
@@ -106,7 +106,7 @@ public class CgenTabController extends GeneratorsTabController<CgenConfiguration
     public void showConfig(DataMap dataMap) {
         if (dataMap != null) {
             DataMapDisplayEvent event = new DataMapDisplayEvent(getView(), dataMap, dataMap.getDataChannelDescriptor());
-            getProjectController().fireDataMapDisplayEvent(event);
+            getProjectController().fireDataMapSelected(event);
         }
     }
 }

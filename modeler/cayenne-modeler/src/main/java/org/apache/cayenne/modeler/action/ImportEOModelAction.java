@@ -23,8 +23,8 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
-import org.apache.cayenne.configuration.event.DataNodeEvent;
-import org.apache.cayenne.configuration.event.QueryEvent;
+import org.apache.cayenne.modeler.event.model.DataNodeEvent;
+import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.configuration.runtime.JNDIDataSourceFactory;
 import org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.dba.DbAdapter;
@@ -38,8 +38,8 @@ import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
-import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
-import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.AdapterMapping;
 import org.apache.cayenne.modeler.util.CayenneAction;
@@ -184,7 +184,7 @@ public class ImportEOModelAction extends CayenneAction {
             // send events after the node creation is complete
             getProjectController().fireDataNodeEvent(
                     new DataNodeEvent(this, node, MapEvent.ADD));
-            getProjectController().fireDataNodeDisplayEvent(
+            getProjectController().fireDataNodeSelected(
                     new DataNodeDisplayEvent(
                             this,
                             (DataChannelDescriptor) getProjectController()
@@ -278,7 +278,7 @@ public class ImportEOModelAction extends CayenneAction {
                 mediator.fireQueryEvent(queryEvent);
             }
 
-            mediator.fireDataMapDisplayEvent(new DataMapDisplayEvent(Application
+            mediator.fireDataMapSelected(new DataMapDisplayEvent(Application
                     .getFrame(), map, (DataChannelDescriptor) mediator
                     .getProject()
                     .getRootNode(), mediator.getSelectedDataNode()));

@@ -25,8 +25,8 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.RemoveAttributeAction;
 import org.apache.cayenne.modeler.action.RemoveCallbackMethodAction;
-import org.apache.cayenne.modeler.event.EmbeddableAttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EmbeddableAttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

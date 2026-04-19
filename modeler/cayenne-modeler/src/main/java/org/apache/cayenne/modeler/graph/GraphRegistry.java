@@ -19,8 +19,8 @@
 package org.apache.cayenne.modeler.graph;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.event.DomainEvent;
-import org.apache.cayenne.configuration.event.DomainListener;
+import org.apache.cayenne.modeler.event.model.DomainEvent;
+import org.apache.cayenne.modeler.event.model.DomainListener;
 import org.apache.cayenne.modeler.ProjectController;
 import org.jgraph.JGraph;
 

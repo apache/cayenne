@@ -24,7 +24,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.action.ObjEntityCounterpartAction;
-import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 
 /**
  * @since 4.1
@@ -44,7 +44,7 @@ public abstract class BaseRemovePropertyUndoableEdit extends CayenneUndoableEdit
     }
 
     protected void focusEmbeddable() {
-        controller.fireEmbeddableDisplayEvent(new EmbeddableDisplayEvent(
+        controller.fireEmbeddableSelected(new EmbeddableDisplayEvent(
                 this,
                 embeddable,
                 embeddable.getDataMap(),

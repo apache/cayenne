@@ -24,8 +24,8 @@ import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
-import org.apache.cayenne.modeler.event.DataSourceModificationEvent;
-import org.apache.cayenne.modeler.event.DataSourceModificationListener;
+import org.apache.cayenne.modeler.event.model.DataSourceEvent;
+import org.apache.cayenne.modeler.event.model.DataSourceListener;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.util.CayenneController;
@@ -58,7 +58,7 @@ public class DataSourceWizard extends CayenneController {
     private DbAdapter adapter;
     private DataSource dataSource;
     private boolean canceled;
-    private DataSourceModificationListener dataSourceListener;
+    private DataSourceListener dataSourceListener;
 
     public DataSourceWizard(ProjectController parent, String title) {
         this(parent, title, new String[]{"Continue", "Cancel"});
@@ -89,19 +89,19 @@ public class DataSourceWizard extends CayenneController {
     }
 
     private void initDataSourceListener() {
-        dataSourceListener = new DataSourceModificationListener() {
+        dataSourceListener = new DataSourceListener() {
             @Override
-            public void callbackDataSourceRemoved(DataSourceModificationEvent e) {
+            public void callbackDataSourceRemoved(DataSourceEvent e) {
             }
 
             @Override
-            public void callbackDataSourceAdded(DataSourceModificationEvent e) {
+            public void callbackDataSourceAdded(DataSourceEvent e) {
                 setDataSourceKey(e.getDataSourceName());
                 refreshDataSources();
             }
         };
         getApplication().getFrameController().getProjectController()
-                .addDataSourceModificationListener(dataSourceListener);
+                .addDataSourceListener(dataSourceListener);
     }
 
     private void initFavouriteDataSource() {
@@ -115,7 +115,7 @@ public class DataSourceWizard extends CayenneController {
 
     private void removeDataSourceListener() {
         getApplication().getFrameController().getProjectController()
-                .removeDataSourceModificationListener(dataSourceListener);
+                .removeDataSourceListener(dataSourceListener);
     }
 
     private DBConnectionInfo getConnectionInfoFromPreferences() {

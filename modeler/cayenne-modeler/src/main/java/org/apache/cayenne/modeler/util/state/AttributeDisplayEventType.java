@@ -27,8 +27,8 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,11 +63,11 @@ class AttributeDisplayEventType extends EntityDisplayEventType {
         AttributeDisplayEvent attributeDisplayEvent = new AttributeDisplayEvent(this, attributes, entity, dataMap, dataChannel);
 
         if (entity instanceof ObjEntity) {
-            controller.fireObjEntityDisplayEvent(entityDisplayEvent);
-            controller.fireObjAttributeDisplayEvent(attributeDisplayEvent);
+            controller.fireObjEntitySelected(entityDisplayEvent);
+            controller.fireObjAttributeSelected(attributeDisplayEvent);
         } else if (entity instanceof DbEntity) {
-            controller.fireDbEntityDisplayEvent(entityDisplayEvent);
-            controller.fireDbAttributeDisplayEvent(attributeDisplayEvent);
+            controller.fireDbEntitySelected(entityDisplayEvent);
+            controller.fireDbAttributeSelected(attributeDisplayEvent);
         }
     }
 

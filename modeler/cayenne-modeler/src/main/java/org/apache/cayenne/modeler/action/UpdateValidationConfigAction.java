@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.event.DomainEvent;
+import org.apache.cayenne.modeler.event.model.DomainEvent;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;

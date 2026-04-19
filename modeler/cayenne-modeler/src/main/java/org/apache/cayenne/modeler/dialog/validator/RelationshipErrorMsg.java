@@ -29,7 +29,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 import org.apache.cayenne.validation.ValidationFailure;
 
 /**
@@ -68,12 +68,12 @@ public class RelationshipErrorMsg extends ValidationDisplayHandler {
         // must first display entity, and then switch to relationship display .. so fire
         // twice
         if (entity instanceof ObjEntity) {
-            mediator.fireObjEntityDisplayEvent(event);
-            mediator.fireObjRelationshipDisplayEvent(event);
+            mediator.fireObjEntitySelected(event);
+            mediator.fireObjRelationshipSelected(event);
         }
         else if (entity instanceof DbEntity) {
-            mediator.fireDbEntityDisplayEvent(event);
-            mediator.fireDbRelationshipDisplayEvent(event);
+            mediator.fireDbEntitySelected(event);
+            mediator.fireDbRelationshipSelected(event);
         }
     }
 }

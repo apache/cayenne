@@ -32,7 +32,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.apache.cayenne.configuration.event.QueryEvent;
+import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.TextAdapter;

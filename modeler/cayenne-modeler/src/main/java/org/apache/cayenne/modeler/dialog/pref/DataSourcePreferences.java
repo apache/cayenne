@@ -39,7 +39,7 @@ import javax.swing.JOptionPane;
 import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.FileClassLoadingService;
-import org.apache.cayenne.modeler.event.DataSourceModificationEvent;
+import org.apache.cayenne.modeler.event.model.DataSourceEvent;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.pref.CayennePreferenceEditor;
@@ -182,8 +182,8 @@ public class DataSourcePreferences extends CayenneController {
 	}
 
 	private void fireEvent(String dataSourceKey, int eventId) {
-		DataSourceModificationEvent event = new DataSourceModificationEvent(this, dataSourceKey, eventId);
-		getApplication().getFrameController().getProjectController().fireDataSourceModificationEvent(event);
+		DataSourceEvent event = new DataSourceEvent(this, dataSourceKey, eventId);
+		getApplication().getFrameController().getProjectController().fireDataSourceEvent(event);
 	}
 
 	/**

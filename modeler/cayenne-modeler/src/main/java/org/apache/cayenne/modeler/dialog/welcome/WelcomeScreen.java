@@ -42,7 +42,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ModelerPreferences;
 import org.apache.cayenne.modeler.action.NewProjectAction;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
-import org.apache.cayenne.modeler.event.RecentFileListListener;
+import org.apache.cayenne.modeler.event.model.RecentFileListListener;
 import org.apache.cayenne.modeler.util.BackgroundPanel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 

@@ -34,10 +34,10 @@ import org.apache.cayenne.modeler.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.action.CutAttributeAction;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeAction;
-import org.apache.cayenne.modeler.event.EmbeddableAttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
-import org.apache.cayenne.modeler.event.EmbeddableDisplayListener;
-import org.apache.cayenne.modeler.event.TablePopupHandler;
+import org.apache.cayenne.modeler.event.display.EmbeddableAttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EmbeddableDisplayListener;
+import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.ModelerUtil;
@@ -148,7 +148,7 @@ public class EmbeddableAttributeTab extends JPanel implements
                 controller.getSelectedDataMap(),
                 (DataChannelDescriptor) controller.getProject().getRootNode());
 
-        controller.fireEmbeddableAttributeDisplayEvent(ev);
+        controller.fireEmbeddableAttributeSelected(ev);
     }
 
     private void rebuildTable(Embeddable emb) {

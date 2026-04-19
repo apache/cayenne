@@ -32,7 +32,7 @@ import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.DbRelationshipDialog;
-import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.RelationshipUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneController;
@@ -272,7 +272,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
         RelationshipDisplayEvent rde = new RelationshipDisplayEvent(src, relationship, relationship.getSourceEntity(), controller.getSelectedDataMap(),
                 (DataChannelDescriptor) controller.getProject().getRootNode());
 
-        controller.fireObjRelationshipDisplayEvent(rde);
+        controller.fireObjRelationshipSelected(rde);
     }
 
     /**

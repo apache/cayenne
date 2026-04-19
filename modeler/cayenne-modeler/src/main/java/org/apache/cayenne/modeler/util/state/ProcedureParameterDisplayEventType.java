@@ -24,8 +24,8 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
-import org.apache.cayenne.modeler.event.ProcedureParameterDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ProcedureParameterDisplayEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,12 +54,12 @@ class ProcedureParameterDisplayEventType extends ProcedureDisplayEventType {
         }
 
         ProcedureDisplayEvent procedureDisplayEvent = new ProcedureDisplayEvent(this, procedure, dataMap, dataChannel);
-        controller.fireProcedureDisplayEvent(procedureDisplayEvent);
+        controller.fireProcedureSelected(procedureDisplayEvent);
 
         ProcedureParameter[] procedureParameters = getLastProcedureParameters(procedure);
         ProcedureParameterDisplayEvent procedureParameterDisplayEvent =
                 new ProcedureParameterDisplayEvent(this, procedureParameters, procedure, dataMap, dataChannel);
-        controller.fireProcedureParameterDisplayEvent(procedureParameterDisplayEvent);
+        controller.fireProcedureParameterSelected(procedureParameterDisplayEvent);
     }
 
     @Override

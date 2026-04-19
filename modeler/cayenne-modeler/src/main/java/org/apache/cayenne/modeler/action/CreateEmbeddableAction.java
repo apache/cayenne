@@ -28,7 +28,7 @@ import org.apache.cayenne.map.event.EmbeddableEvent;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateEmbeddableUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
@@ -51,7 +51,7 @@ public class CreateEmbeddableAction extends CayenneAction {
                 dataMap,
                 (DataChannelDescriptor) controller.getProject().getRootNode());
         displayEvent.setMainTabFocus(true);
-        controller.fireEmbeddableDisplayEvent(displayEvent);
+        controller.fireEmbeddableSelected(displayEvent);
 
     }
 

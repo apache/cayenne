@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.event.ProcedureParameterEvent;
+import org.apache.cayenne.modeler.event.model.ProcedureParameterEvent;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.event.MapEvent;

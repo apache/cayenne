@@ -34,8 +34,8 @@ import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.editor.wrapper.ObjAttributeWrapper;
-import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.modeler.util.CellEditorForAttributeTable;
@@ -308,7 +308,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
 
         controller.fireObjEntityEvent(new EntityEvent(this, entity, MapEvent.CHANGE));
 
-        controller.fireObjEntityDisplayEvent(new EntityDisplayEvent(
+        controller.fireObjEntitySelected(new EntityDisplayEvent(
                 this,
                 controller.getSelectedObjEntity(),
                 controller.getSelectedDataMap(),
@@ -320,7 +320,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
                 entity,
                 MapEvent.CHANGE));
 
-        controller.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(
+        controller.fireObjAttributeSelected(new AttributeDisplayEvent(
                 this,
                 attributeNew,
                 controller.getSelectedObjEntity(),

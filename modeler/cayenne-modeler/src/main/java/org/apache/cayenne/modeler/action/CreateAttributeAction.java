@@ -37,8 +37,8 @@ import org.apache.cayenne.map.event.EmbeddableAttributeEvent;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.EmbeddableAttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EmbeddableAttributeDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateAttributeUndoableEdit;
 import org.apache.cayenne.modeler.undo.CreateEmbAttributeUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
@@ -55,7 +55,7 @@ public class CreateAttributeAction extends CayenneAction {
         EmbeddableAttributeDisplayEvent e = new EmbeddableAttributeDisplayEvent(src, embeddable, attr,
                 controller.getSelectedDataMap(), (DataChannelDescriptor) controller.getProject().getRootNode());
 
-        controller.fireEmbeddableAttributeDisplayEvent(e);
+        controller.fireEmbeddableAttributeSelected(e);
     }
 
     /**
@@ -70,7 +70,7 @@ public class CreateAttributeAction extends CayenneAction {
 
         AttributeDisplayEvent ade = new AttributeDisplayEvent(src, attr, objEntity, map, domain);
 
-        controller.fireObjAttributeDisplayEvent(ade);
+        controller.fireObjAttributeSelected(ade);
     }
 
     /**
@@ -83,7 +83,7 @@ public class CreateAttributeAction extends CayenneAction {
         AttributeDisplayEvent ade = new AttributeDisplayEvent(src, attr, dbEntity, map,
                 (DataChannelDescriptor) controller.getProject().getRootNode());
 
-        controller.fireDbAttributeDisplayEvent(ade);
+        controller.fireDbAttributeSelected(ade);
     }
 
     public CreateAttributeAction(Application application) {

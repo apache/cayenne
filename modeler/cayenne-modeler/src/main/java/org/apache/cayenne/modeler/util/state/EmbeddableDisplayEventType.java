@@ -23,7 +23,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 
 class EmbeddableDisplayEventType extends DisplayEventType {
 
@@ -49,7 +49,7 @@ class EmbeddableDisplayEventType extends DisplayEventType {
         }
 
         EmbeddableDisplayEvent embeddableDisplayEvent = new EmbeddableDisplayEvent(this, embeddable, dataMap, dataChannel);
-        controller.fireEmbeddableDisplayEvent(embeddableDisplayEvent);
+        controller.fireEmbeddableSelected(embeddableDisplayEvent);
     }
 
     @Override

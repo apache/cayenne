@@ -28,7 +28,7 @@ import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.DisableValidationInspectionAction;
 import org.apache.cayenne.modeler.action.ShowValidationOptionAction;
 import org.apache.cayenne.modeler.action.ValidateAction;
-import org.apache.cayenne.modeler.event.TablePopupHandler;
+import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.util.CayenneDialog;
 import org.apache.cayenne.project.validation.Inspection;
 import org.apache.cayenne.project.validation.ProjectValidationFailure;

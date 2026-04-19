@@ -27,8 +27,8 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
-import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,11 +63,11 @@ class RelationshipDisplayEventType extends EntityDisplayEventType {
         RelationshipDisplayEvent displayEvent = new RelationshipDisplayEvent(this, relationships, entity, dataMap, dataChannel);
 
         if (entity instanceof ObjEntity) {
-            controller.fireObjEntityDisplayEvent(entityDisplayEvent);
-            controller.fireObjRelationshipDisplayEvent(displayEvent);
+            controller.fireObjEntitySelected(entityDisplayEvent);
+            controller.fireObjRelationshipSelected(displayEvent);
         } else if (entity instanceof DbEntity) {
-            controller.fireDbEntityDisplayEvent(entityDisplayEvent);
-            controller.fireDbRelationshipDisplayEvent(displayEvent);
+            controller.fireDbEntitySelected(entityDisplayEvent);
+            controller.fireDbRelationshipSelected(displayEvent);
         }
     }
 

@@ -30,7 +30,7 @@ import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.DbRelationshipDialogView;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.RelationshipUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneController;
@@ -385,7 +385,7 @@ public class DbRelationshipDialog extends CayenneController {
             RelationshipDisplayEvent rde = new RelationshipDisplayEvent(this, relationship, dbEntity, projectController.getSelectedDataMap(),
                     (DataChannelDescriptor) projectController.getProject().getRootNode());
 
-            projectController.fireDbRelationshipDisplayEvent(rde);
+            projectController.fireDbRelationshipSelected(rde);
 
             Application.getInstance().getUndoManager().addEdit(
                     new CreateRelationshipUndoableEdit(relationship.getSourceEntity(), new DbRelationship[]{relationship}));

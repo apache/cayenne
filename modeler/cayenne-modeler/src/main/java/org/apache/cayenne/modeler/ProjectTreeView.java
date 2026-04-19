@@ -22,16 +22,16 @@ package org.apache.cayenne.modeler;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.event.DataMapEvent;
-import org.apache.cayenne.configuration.event.DataMapListener;
-import org.apache.cayenne.configuration.event.DataNodeEvent;
-import org.apache.cayenne.configuration.event.DataNodeListener;
-import org.apache.cayenne.configuration.event.DomainEvent;
-import org.apache.cayenne.configuration.event.DomainListener;
-import org.apache.cayenne.configuration.event.ProcedureEvent;
-import org.apache.cayenne.configuration.event.ProcedureListener;
-import org.apache.cayenne.configuration.event.QueryEvent;
-import org.apache.cayenne.configuration.event.QueryListener;
+import org.apache.cayenne.modeler.event.model.DataMapEvent;
+import org.apache.cayenne.modeler.event.model.DataMapListener;
+import org.apache.cayenne.modeler.event.model.DataNodeEvent;
+import org.apache.cayenne.modeler.event.model.DataNodeListener;
+import org.apache.cayenne.modeler.event.model.DomainEvent;
+import org.apache.cayenne.modeler.event.model.DomainListener;
+import org.apache.cayenne.modeler.event.model.ProcedureEvent;
+import org.apache.cayenne.modeler.event.model.ProcedureListener;
+import org.apache.cayenne.modeler.event.model.QueryEvent;
+import org.apache.cayenne.modeler.event.model.QueryListener;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Embeddable;
@@ -57,23 +57,23 @@ import org.apache.cayenne.modeler.action.LinkDataMapsAction;
 import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveAction;
-import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
-import org.apache.cayenne.modeler.event.DataMapDisplayListener;
-import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
-import org.apache.cayenne.modeler.event.DataNodeDisplayListener;
-import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
-import org.apache.cayenne.modeler.event.DomainDisplayEvent;
-import org.apache.cayenne.modeler.event.DomainDisplayListener;
-import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
-import org.apache.cayenne.modeler.event.EmbeddableDisplayListener;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
-import org.apache.cayenne.modeler.event.MultipleObjectsDisplayEvent;
-import org.apache.cayenne.modeler.event.MultipleObjectsDisplayListener;
-import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
-import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
-import org.apache.cayenne.modeler.event.ProcedureDisplayListener;
-import org.apache.cayenne.modeler.event.QueryDisplayEvent;
-import org.apache.cayenne.modeler.event.QueryDisplayListener;
+import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DataMapDisplayListener;
+import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DataNodeDisplayListener;
+import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
+import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DomainDisplayListener;
+import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EmbeddableDisplayListener;
+import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.MultipleObjectsDisplayEvent;
+import org.apache.cayenne.modeler.event.display.MultipleObjectsDisplayListener;
+import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
+import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ProcedureDisplayListener;
+import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
+import org.apache.cayenne.modeler.event.display.QueryDisplayListener;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
@@ -179,7 +179,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                             projectParentPath = createProjectPath(parentPath);
                         }
 
-                        projectController.fireMultipleObjectsDisplayEvent(new MultipleObjectsDisplayEvent(
+                        projectController.fireMultipleObjectsSelected(new MultipleObjectsDisplayEvent(
                                         this,
                                         projectPaths, projectParentPath));
                     } else if (paths.length == 1) {
@@ -891,31 +891,31 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
             domEvent.setDomain((DataChannelDescriptor) projectController
                     .getProject()
                     .getRootNode());
-            projectController.fireDomainDisplayEvent(domEvent);
+            projectController.fireDomainSelected(domEvent);
             return;
         }
 
         Object obj = data[data.length - 1];
         if (obj instanceof DataChannelDescriptor) {
-            projectController.fireDomainDisplayEvent(new DomainDisplayEvent(
+            projectController.fireDomainSelected(new DomainDisplayEvent(
                     this,
                     (DataChannelDescriptor) obj));
         } else if (obj instanceof DataMap) {
             if (data.length == 2) {
-                projectController.fireDataMapDisplayEvent(new DataMapDisplayEvent(
+                projectController.fireDataMapSelected(new DataMapDisplayEvent(
                         this,
                         (DataMap) obj,
                         (DataChannelDescriptor) projectController.getProject().getRootNode(),
                         (DataNodeDescriptor) data[data.length - 2]));
             } else if (data.length == 1) {
-                projectController.fireDataMapDisplayEvent(new DataMapDisplayEvent(
+                projectController.fireDataMapSelected(new DataMapDisplayEvent(
                         this,
                         (DataMap) obj,
                         (DataChannelDescriptor) projectController.getProject().getRootNode()));
             }
         } else if (obj instanceof DataNodeDescriptor) {
             if (data.length == 1) {
-                projectController.fireDataNodeDisplayEvent(new DataNodeDisplayEvent(
+                projectController.fireDataNodeSelected(new DataNodeDisplayEvent(
                         this,
                         (DataChannelDescriptor) projectController.getProject().getRootNode(),
                         (DataNodeDescriptor) obj));
@@ -933,9 +933,9 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
             }
 
             if (obj instanceof ObjEntity) {
-                projectController.fireObjEntityDisplayEvent(e);
+                projectController.fireObjEntitySelected(e);
             } else if (obj instanceof DbEntity) {
-                projectController.fireDbEntityDisplayEvent(e);
+                projectController.fireDbEntitySelected(e);
             }
         } else if (obj instanceof Embeddable) {
             EmbeddableDisplayEvent e = new EmbeddableDisplayEvent(
@@ -943,21 +943,21 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                     (Embeddable) obj,
                     (DataMap) data[data.length - 2],
                     (DataChannelDescriptor) projectController.getProject().getRootNode());
-            projectController.fireEmbeddableDisplayEvent(e);
+            projectController.fireEmbeddableSelected(e);
         } else if (obj instanceof Procedure) {
             ProcedureDisplayEvent e = new ProcedureDisplayEvent(
                     this,
                     (Procedure) obj,
                     (DataMap) data[data.length - 2],
                     (DataChannelDescriptor) projectController.getProject().getRootNode());
-            projectController.fireProcedureDisplayEvent(e);
+            projectController.fireProcedureSelected(e);
         } else if (obj instanceof QueryDescriptor) {
             QueryDisplayEvent e = new QueryDisplayEvent(
                     this,
                     (QueryDescriptor) obj,
                     (DataMap) data[data.length - 2],
                     (DataChannelDescriptor) projectController.getProject().getRootNode());
-            projectController.fireQueryDisplayEvent(e);
+            projectController.fireQuerySelected(e);
         }
 
         this.scrollPathToVisible(path);

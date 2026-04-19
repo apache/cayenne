@@ -24,7 +24,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerController;
-import org.apache.cayenne.modeler.event.DomainDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 import org.apache.cayenne.project.Project;
 
 import javax.swing.*;
@@ -71,6 +71,6 @@ public class NewProjectAction extends ProjectAction {
         controller.onProjectOpened(project);
 
         // select default domain
-        getProjectController().fireDomainDisplayEvent(new DomainDisplayEvent(this, dataChannelDescriptor));
+        getProjectController().fireDomainSelected(new DomainDisplayEvent(this, dataChannelDescriptor));
     }
 }

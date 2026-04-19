@@ -20,9 +20,9 @@
 package org.apache.cayenne.modeler.editor;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.event.ProcedureEvent;
-import org.apache.cayenne.configuration.event.ProcedureParameterEvent;
-import org.apache.cayenne.configuration.event.ProcedureParameterListener;
+import org.apache.cayenne.modeler.event.model.ProcedureEvent;
+import org.apache.cayenne.modeler.event.model.ProcedureParameterEvent;
+import org.apache.cayenne.modeler.event.model.ProcedureParameterListener;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
@@ -35,10 +35,10 @@ import org.apache.cayenne.modeler.action.CreateProcedureParameterAction;
 import org.apache.cayenne.modeler.action.CutProcedureParameterAction;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveProcedureParameterAction;
-import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
-import org.apache.cayenne.modeler.event.ProcedureDisplayListener;
-import org.apache.cayenne.modeler.event.ProcedureParameterDisplayEvent;
-import org.apache.cayenne.modeler.event.TablePopupHandler;
+import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ProcedureDisplayListener;
+import org.apache.cayenne.modeler.event.display.ProcedureParameterDisplayEvent;
+import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneCellEditor;
@@ -234,7 +234,7 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
                 eventController.getSelectedProcedure(),
                 eventController.getSelectedDataMap(),
                 (DataChannelDescriptor) eventController.getProject().getRootNode());
-        eventController.fireProcedureParameterDisplayEvent(ppde);
+        eventController.fireProcedureParameterSelected(ppde);
     }
 
     /**

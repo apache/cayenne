@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.editor;
 
-import org.apache.cayenne.configuration.event.QueryEvent;
+import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;

@@ -24,7 +24,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.MultipleObjectsDisplayEvent;
+import org.apache.cayenne.modeler.event.display.MultipleObjectsDisplayEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +57,7 @@ class MultipleObjectsDisplayEventType extends DisplayEventType {
         }
 
         MultipleObjectsDisplayEvent multipleDisplayEvent = new MultipleObjectsDisplayEvent(this, multipleObjects, parentObject);
-        controller.fireMultipleObjectsDisplayEvent(multipleDisplayEvent);
+        controller.fireMultipleObjectsSelected(multipleDisplayEvent);
     }
 
     @Override

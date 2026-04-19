@@ -23,7 +23,7 @@ import org.apache.cayenne.modeler.editor.cgen.CgenController;
 import org.apache.cayenne.modeler.editor.cgen.domain.CgenTab;
 import org.apache.cayenne.modeler.editor.dbimport.DbImportView;
 import org.apache.cayenne.modeler.editor.dbimport.domain.DbImportTab;
-import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;

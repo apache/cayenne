@@ -35,8 +35,8 @@ import org.apache.cayenne.modeler.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.action.DbEntityCounterpartAction;
 import org.apache.cayenne.modeler.action.DbEntitySyncAction;
 import org.apache.cayenne.modeler.editor.ExistingSelectionProcessor;
-import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
+import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.graph.action.ShowGraphEntityAction;
 import org.apache.cayenne.modeler.util.ExpressionConvertor;
 import org.apache.cayenne.modeler.util.TextAdapter;
@@ -182,7 +182,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
     public void processExistingSelection(EventObject e) {
         EntityDisplayEvent ede = new EntityDisplayEvent(this, controller.getSelectedDbEntity(),
                 controller.getSelectedDataMap(), (DataChannelDescriptor) controller.getProject().getRootNode());
-        controller.fireDbEntityDisplayEvent(ede);
+        controller.fireDbEntitySelected(ede);
     }
 
     public void currentDbEntityChanged(EntityDisplayEvent e) {

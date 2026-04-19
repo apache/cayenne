@@ -23,8 +23,8 @@ import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.RemoveProcedureParameterAction;
-import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
-import org.apache.cayenne.modeler.event.ProcedureParameterDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ProcedureParameterDisplayEvent;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

@@ -23,18 +23,8 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.event.DataMapEvent;
-import org.apache.cayenne.configuration.event.DataMapListener;
-import org.apache.cayenne.configuration.event.DataNodeEvent;
-import org.apache.cayenne.configuration.event.DataNodeListener;
-import org.apache.cayenne.configuration.event.DomainEvent;
-import org.apache.cayenne.configuration.event.DomainListener;
-import org.apache.cayenne.configuration.event.ProcedureEvent;
-import org.apache.cayenne.configuration.event.ProcedureListener;
-import org.apache.cayenne.configuration.event.ProcedureParameterEvent;
-import org.apache.cayenne.configuration.event.ProcedureParameterListener;
-import org.apache.cayenne.configuration.event.QueryEvent;
-import org.apache.cayenne.configuration.event.QueryListener;
+import org.apache.cayenne.modeler.event.display.*;
+import org.apache.cayenne.modeler.event.model.*;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -62,14 +52,11 @@ import org.apache.cayenne.map.event.ObjAttributeListener;
 import org.apache.cayenne.map.event.ObjEntityListener;
 import org.apache.cayenne.map.event.ObjRelationshipListener;
 import org.apache.cayenne.map.event.RelationshipEvent;
-import org.apache.cayenne.modeler.action.NavigateBackwardAction;
-import org.apache.cayenne.modeler.action.NavigateForwardAction;
 import org.apache.cayenne.modeler.action.RevertAction;
 import org.apache.cayenne.modeler.action.SaveAction;
 import org.apache.cayenne.modeler.action.SaveAsAction;
 import org.apache.cayenne.modeler.editor.CallbackType;
 import org.apache.cayenne.modeler.editor.ObjCallbackMethod;
-import org.apache.cayenne.modeler.event.*;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.modeler.pref.ProjectStatePreferences;
@@ -465,7 +452,6 @@ public class ProjectController extends CayenneController {
     }
 
 
-
     public ObjEntity getSelectedObjEntity() {
         return state.objEntity;
     }
@@ -678,7 +664,7 @@ public class ProjectController extends CayenneController {
         listeners.add(MultipleObjectsDisplayListener.class, listener);
     }
 
-    public void fireDomainDisplayEvent(DomainDisplayEvent e) {
+    public void fireDomainSelected(DomainDisplayEvent e) {
         boolean changed = e.getDomain() != state.dataDomain;
         if (!changed) {
             changed = state.dataNode != null || state.dataMap != null || state.dbEntity != null
@@ -714,7 +700,7 @@ public class ProjectController extends CayenneController {
     /**
      * @since 5.0
      */
-    public void fireValidationConfigDisplayEvent(ValidationConfigDisplayEvent event) {
+    public void fireValidationConfigSelected(ValidationConfigDisplayEvent event) {
         for (ValidationConfigDisplayListener listener : listeners.getListeners(ValidationConfigDisplayListener.class)) {
             listener.validationOptionChanged(event);
         }
@@ -742,7 +728,7 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    public void fireDataNodeDisplayEvent(DataNodeDisplayEvent e) {
+    public void fireDataNodeSelected(DataNodeDisplayEvent e) {
         boolean changed = e.getDataNode() != state.dataNode;
 
         if (!changed) {
@@ -797,7 +783,7 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    public void fireDataMapDisplayEvent(DataMapDisplayEvent e) {
+    public void fireDataMapSelected(DataMapDisplayEvent e) {
         boolean changed = e.getDataMap() != state.dataMap;
         if (!changed) {
             changed = state.dbEntity != null || state.objEntity != null || state.procedure != null
@@ -989,76 +975,86 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    public void fireNavigationEvent(EventObject e) {
-        Object source = e.getSource();
-        if (source == null) {
+    public void rewindForward() {
+        int size = controllerStateHistory.size();
+        if (size < 2) {
             return;
         }
-
-        int size = controllerStateHistory.size();
-        if (size == 0)
-            return;
 
         int i = controllerStateHistory.indexOf(state);
         ControllerState cs;
-        if (size == 1) {
-            cs = controllerStateHistory.get(0);
-        } else if (source instanceof NavigateForwardAction) {
-            int counter = 0;
-            while (true) {
-                if (i < 0) {
-                    // a new state got created without it being saved.
-                    // just move to the beginning of the list
-                    cs = controllerStateHistory.get(0);
-                } else if (i + 1 < size) {
-                    // move forward
-                    cs = controllerStateHistory.get(i + 1);
-                } else {
-                    // wrap around
-                    cs = controllerStateHistory.get(0);
-                }
-                if (cs.isNotSame(state)) {
-                    break;
-                }
 
-                // if it doesn't find it within 5 tries it is probably stuck in
-                // a loop
-                if (++counter > 5) {
-                    break;
-                }
-                i++;
+        int counter = 0;
+        while (true) {
+            if (i < 0) {
+                // A new state was created without it being saved. Move to the beginning of the list
+                cs = controllerStateHistory.get(0);
+            } else if (i + 1 < size) {
+                // move forward
+                cs = controllerStateHistory.get(i + 1);
+            } else {
+                // wrap around
+                cs = controllerStateHistory.get(0);
             }
-        } else if (source instanceof NavigateBackwardAction) {
-            int counter = 0;
-            while (true) {
-                if (i < 0) {
-                    // a new state got created without it being saved.
-                    try {
-                        cs = controllerStateHistory.get(size - 2);
-                    } catch (ArrayIndexOutOfBoundsException ex) {
-                        cs = controllerStateHistory.get(size - 1);
-                    }
-                } else if (i - 1 >= 0) {
-                    // move to the previous one
-                    cs = controllerStateHistory.get(i - 1);
-                } else {
-                    // wrap around
-                    cs = controllerStateHistory.get(size - 1);
-                }
-                if (cs.isNotSame(state)) {
-                    break;
-                }
-                // if it doesn't find it within 5 tries it is probably stuck in a loop
-                if (++counter > 5) {
-                    break;
-                }
-                i--;
+
+            if (cs.isNotSame(state)) {
+                break;
             }
-        } else {
-            throw new IllegalStateException("Unknown source for navigation event: " + e.getSource());
+
+            // if it doesn't find it within 5 tries it is probably stuck in a loop
+            if (++counter > 5) {
+                break;
+            }
+
+            i++;
         }
 
-        // reset the current state to the one we just navigated to
+        replayNavigationState(cs);
+    }
+
+    public void rewindBackwards() {
+        int size = controllerStateHistory.size();
+        if (size < 2) {
+            return;
+        }
+
+        int i = controllerStateHistory.indexOf(state);
+        ControllerState cs;
+
+        int counter = 0;
+        while (true) {
+            if (i < 0) {
+                // a new state got created without it being saved.
+                try {
+                    cs = controllerStateHistory.get(size - 2);
+                } catch (ArrayIndexOutOfBoundsException ex) {
+                    cs = controllerStateHistory.get(size - 1);
+                }
+            } else if (i - 1 >= 0) {
+                // move to the previous one
+                cs = controllerStateHistory.get(i - 1);
+            } else {
+                // wrap around
+                cs = controllerStateHistory.get(size - 1);
+            }
+
+            if (cs.isNotSame(state)) {
+                break;
+            }
+
+            // if it doesn't find it within 5 tries it is probably stuck in a loop
+            if (++counter > 5) {
+                break;
+            }
+
+            i--;
+
+        }
+
+        replayNavigationState(cs);
+    }
+
+    private void replayNavigationState(ControllerState cs) {
         state = cs;
         DisplayEvent de = cs.event;
         if (de == null) {
@@ -1077,41 +1073,40 @@ public class ProjectController extends CayenneController {
             EntityDisplayEvent ede = (EntityDisplayEvent) de;
             ede.setEntityChanged(true);
             if (ede.getEntity() instanceof ObjEntity) {
-                fireObjEntityDisplayEvent(ede);
+                fireObjEntitySelected(ede);
             } else if (ede.getEntity() instanceof DbEntity) {
-                fireDbEntityDisplayEvent(ede);
+                fireDbEntitySelected(ede);
             }
         } else if (de instanceof EmbeddableDisplayEvent) {
             EmbeddableDisplayEvent ede = (EmbeddableDisplayEvent) de;
             ede.setEmbeddableChanged(true);
-            fireEmbeddableDisplayEvent(ede);
+            fireEmbeddableSelected(ede);
         } else if (de instanceof ProcedureDisplayEvent) {
             ProcedureDisplayEvent pde = (ProcedureDisplayEvent) de;
             pde.setProcedureChanged(true);
-            fireProcedureDisplayEvent(pde);
+            fireProcedureSelected(pde);
         } else if (de instanceof QueryDisplayEvent) {
             QueryDisplayEvent qde = (QueryDisplayEvent) de;
             qde.setQueryChanged(true);
-            fireQueryDisplayEvent(qde);
+            fireQuerySelected(qde);
         } else if (de instanceof DataMapDisplayEvent) {
             DataMapDisplayEvent dmde = (DataMapDisplayEvent) de;
             dmde.setDataMapChanged(true);
-            fireDataMapDisplayEvent(dmde);
+            fireDataMapSelected(dmde);
         } else if (de instanceof DataNodeDisplayEvent) {
             DataNodeDisplayEvent dnde = (DataNodeDisplayEvent) de;
             dnde.setDataNodeChanged(true);
-            fireDataNodeDisplayEvent(dnde);
+            fireDataNodeSelected(dnde);
         } else if (de instanceof DomainDisplayEvent) {
             DomainDisplayEvent dde = (DomainDisplayEvent) de;
             dde.setDomainChanged(true);
-            fireDomainDisplayEvent(dde);
+            fireDomainSelected(dde);
         }
 
-        // turn off refiring
         state.isRefiring = false;
     }
 
-    public void fireObjEntityDisplayEvent(EntityDisplayEvent e) {
+    public void fireObjEntitySelected(EntityDisplayEvent e) {
         boolean changed = e.getEntity() != state.objEntity;
 
         if (!e.isRefired()) {
@@ -1135,7 +1130,7 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    public void fireEmbeddableDisplayEvent(EmbeddableDisplayEvent e) {
+    public void fireEmbeddableSelected(EmbeddableDisplayEvent e) {
         boolean changed = e.getEmbeddable() != state.embeddable;
 
         if (!e.isRefired()) {
@@ -1159,7 +1154,7 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    public void fireQueryDisplayEvent(QueryDisplayEvent e) {
+    public void fireQuerySelected(QueryDisplayEvent e) {
         boolean changed = e.getQuery() != state.query;
 
         if (!e.isRefired()) {
@@ -1182,7 +1177,7 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    public void fireProcedureDisplayEvent(ProcedureDisplayEvent e) {
+    public void fireProcedureSelected(ProcedureDisplayEvent e) {
         boolean changed = e.getProcedure() != state.procedure;
 
         if (!e.isRefired()) {
@@ -1205,7 +1200,7 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    public void fireProcedureParameterDisplayEvent(ProcedureParameterDisplayEvent e) {
+    public void fireProcedureParameterSelected(ProcedureParameterDisplayEvent e) {
         boolean changed = !Arrays.equals(e.getProcedureParameters(), state.procedureParameters);
 
         if (changed) {
@@ -1225,7 +1220,7 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    public void fireDbEntityDisplayEvent(EntityDisplayEvent e) {
+    public void fireDbEntitySelected(EntityDisplayEvent e) {
         boolean changed = e.getEntity() != state.dbEntity;
         if (!e.isRefired()) {
             e.setEntityChanged(changed);
@@ -1271,7 +1266,7 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    public void fireDbAttributeDisplayEvent(AttributeDisplayEvent e) {
+    public void fireDbAttributeSelected(AttributeDisplayEvent e) {
         boolean changed = !Arrays.equals(e.getAttributes(), state.dbAttributes);
 
         if (changed) {
@@ -1313,7 +1308,7 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    public void fireObjAttributeDisplayEvent(AttributeDisplayEvent e) {
+    public void fireObjAttributeSelected(AttributeDisplayEvent e) {
         boolean changed = !Arrays.equals(e.getAttributes(), state.objAttributes);
 
         if (changed) {
@@ -1334,7 +1329,7 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    public void fireEmbeddableAttributeDisplayEvent(EmbeddableAttributeDisplayEvent ev) {
+    public void fireEmbeddableAttributeSelected(EmbeddableAttributeDisplayEvent ev) {
         boolean changed = !Arrays.equals(ev.getEmbeddableAttributes(), state.embeddableAttributes);
 
         if (changed) {
@@ -1382,7 +1377,7 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    public void fireDbRelationshipDisplayEvent(RelationshipDisplayEvent e) {
+    public void fireDbRelationshipSelected(RelationshipDisplayEvent e) {
         boolean changed = !Arrays.equals(e.getRelationships(), state.dbRelationships);
 
         if (changed) {
@@ -1424,7 +1419,7 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    public void fireMultipleObjectsDisplayEvent(MultipleObjectsDisplayEvent e) {
+    public void fireMultipleObjectsSelected(MultipleObjectsDisplayEvent e) {
         clearState();
         state.paths = e.getNodes();
         state.parentPath = e.getParentNode();
@@ -1436,7 +1431,7 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    public void fireObjRelationshipDisplayEvent(RelationshipDisplayEvent e) {
+    public void fireObjRelationshipSelected(RelationshipDisplayEvent e) {
         boolean changed = !Arrays.equals(e.getRelationships(), state.objRelationships);
         if (changed) {
             if (e.getEntity() != state.objEntity) {
@@ -1473,7 +1468,7 @@ public class ProjectController extends CayenneController {
         if (makeCurrent) {
             DataMapDisplayEvent displayEvent = new DataMapDisplayEvent(src, map, state.dataDomain, state.dataNode);
             displayEvent.setMainTabFocus(true);
-            fireDataMapDisplayEvent(displayEvent);
+            fireDataMapSelected(displayEvent);
         }
     }
 
@@ -1498,7 +1493,7 @@ public class ProjectController extends CayenneController {
         listeners.add(CallbackTypeSelectionListener.class, listener);
     }
 
-    public void fireCallbackTypeSelectionEvent(CallbackTypeDisplayEvent e) {
+    public void fireCallbackTypeSelected(CallbackTypeDisplayEvent e) {
         state.callbackType = e.getCallbackType();
         for (CallbackTypeSelectionListener l : listeners.getListeners(CallbackTypeSelectionListener.class)) {
             l.callbackTypeSelected(e);
@@ -1513,7 +1508,7 @@ public class ProjectController extends CayenneController {
         listeners.add(CallbackMethodDisplayListener.class, listener);
     }
 
-    public void fireCallbackMethodDisplayEvent(CallbackMethodDisplayEvent e) {
+    public void fireCallbackMethodSelected(CallbackMethodDisplayEvent e) {
         state.callbackMethods = e.getCallbackMethods();
         for (CallbackMethodDisplayListener l : listeners.getListeners(CallbackMethodDisplayListener.class)) {
             l.currentCallbackMethodChanged(e);
@@ -1602,16 +1597,16 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    public void addDataSourceModificationListener(DataSourceModificationListener listener) {
-        listeners.add(DataSourceModificationListener.class, listener);
+    public void addDataSourceListener(DataSourceListener listener) {
+        listeners.add(DataSourceListener.class, listener);
     }
 
-    public void removeDataSourceModificationListener(DataSourceModificationListener listener) {
-        listeners.remove(DataSourceModificationListener.class, listener);
+    public void removeDataSourceListener(DataSourceListener listener) {
+        listeners.remove(DataSourceListener.class, listener);
     }
 
-    public void fireDataSourceModificationEvent(DataSourceModificationEvent e) {
-        for (DataSourceModificationListener listener : listeners.getListeners(DataSourceModificationListener.class)) {
+    public void fireDataSourceEvent(DataSourceEvent e) {
+        for (DataSourceListener listener : listeners.getListeners(DataSourceListener.class)) {
             switch (e.getId()) {
                 case MapEvent.ADD:
                     listener.callbackDataSourceAdded(e);

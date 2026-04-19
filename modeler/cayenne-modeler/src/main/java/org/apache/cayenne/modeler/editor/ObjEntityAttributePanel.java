@@ -37,12 +37,12 @@ import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeRelationshipAction;
 import org.apache.cayenne.modeler.dialog.objentity.ObjAttributeInfoDialog;
 import org.apache.cayenne.modeler.editor.wrapper.ObjAttributeWrapper;
-import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
-import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
-import org.apache.cayenne.modeler.event.ProjectOnSaveEvent;
-import org.apache.cayenne.modeler.event.ProjectOnSaveListener;
-import org.apache.cayenne.modeler.event.TablePopupHandler;
+import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
+import org.apache.cayenne.modeler.event.model.ProjectOnSaveEvent;
+import org.apache.cayenne.modeler.event.model.ProjectOnSaveListener;
+import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
@@ -495,7 +495,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
             editMenu.setEnabled(editEnabled);
         }
 
-        controller.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(
+        controller.fireObjAttributeSelected(new AttributeDisplayEvent(
                 this,
                 attrs,
                 controller.getSelectedObjEntity(),

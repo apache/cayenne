@@ -20,18 +20,18 @@
 package org.apache.cayenne.modeler.util.state;
 
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
-import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
-import org.apache.cayenne.modeler.event.DomainDisplayEvent;
-import org.apache.cayenne.modeler.event.EmbeddableAttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
-import org.apache.cayenne.modeler.event.MultipleObjectsDisplayEvent;
-import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
-import org.apache.cayenne.modeler.event.ProcedureParameterDisplayEvent;
-import org.apache.cayenne.modeler.event.QueryDisplayEvent;
-import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EmbeddableAttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.MultipleObjectsDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ProcedureParameterDisplayEvent;
+import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
+import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 
 public enum DisplayEventTypes {
 

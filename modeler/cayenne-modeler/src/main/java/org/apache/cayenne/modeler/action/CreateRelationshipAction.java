@@ -33,7 +33,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.DbRelationshipDialog;
 import org.apache.cayenne.modeler.dialog.objentity.ObjRelationshipInfo;
-import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 
@@ -52,7 +52,7 @@ public class CreateRelationshipAction extends CayenneAction {
         RelationshipDisplayEvent rde = new RelationshipDisplayEvent(src, rel, objEntity, mediator.getSelectedDataMap(),
                 (DataChannelDescriptor) mediator.getProject().getRootNode());
 
-        mediator.fireObjRelationshipDisplayEvent(rde);
+        mediator.fireObjRelationshipSelected(rde);
     }
 
     /**
@@ -65,7 +65,7 @@ public class CreateRelationshipAction extends CayenneAction {
         RelationshipDisplayEvent rde = new RelationshipDisplayEvent(src, rel, dbEntity, mediator.getSelectedDataMap(),
                 (DataChannelDescriptor) mediator.getProject().getRootNode());
 
-        mediator.fireDbRelationshipDisplayEvent(rde);
+        mediator.fireDbRelationshipSelected(rde);
     }
 
     public CreateRelationshipAction(Application application) {

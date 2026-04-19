@@ -21,27 +21,20 @@ package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.util.CayenneAction;
 
-import java.awt.event.ActionEvent;
-import java.util.EventObject;
-
-public class NavigateBackwardAction extends CayenneAction {
+public class NavigateBackwardAction extends NavigateAction {
 
     public NavigateBackwardAction(Application application) {
         super("Move Backward", application);
     }
 
+    @Override
     public String getIconName() {
         return "icon-backward.png";
     }
 
-    /**
-     * Moves to the next element in the navigation history
-     */
-    public void performAction(ActionEvent e) {
-        ProjectController mediator = getProjectController();
-        EventObject newEvent = new EventObject(this);
-        mediator.fireNavigationEvent(newEvent);
+    @Override
+    protected void navigate(ProjectController controller) {
+        controller.rewindBackwards();
     }
 }

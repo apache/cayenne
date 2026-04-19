@@ -25,7 +25,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
 import org.apache.cayenne.validation.ValidationFailure;
 
 
@@ -51,6 +51,6 @@ public class ProcedureErrorMsg extends ValidationDisplayHandler {
                 map,
                 domain);
         event.setTabReset(true);
-        mediator.fireProcedureDisplayEvent(event);
+        mediator.fireProcedureSelected(event);
     }
 }

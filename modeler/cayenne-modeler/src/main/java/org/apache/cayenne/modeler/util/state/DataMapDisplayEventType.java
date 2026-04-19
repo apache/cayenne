@@ -23,7 +23,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 
 class DataMapDisplayEventType extends DisplayEventType {
 
@@ -45,7 +45,7 @@ class DataMapDisplayEventType extends DisplayEventType {
         }
 
         DataMapDisplayEvent dataMapDisplayEvent = new DataMapDisplayEvent(this, dataMap, dataChannel, dataNode);
-        controller.fireDataMapDisplayEvent(dataMapDisplayEvent);
+        controller.fireDataMapSelected(dataMapDisplayEvent);
     }
 
     @Override

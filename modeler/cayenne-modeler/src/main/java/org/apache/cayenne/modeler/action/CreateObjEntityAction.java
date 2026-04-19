@@ -32,7 +32,7 @@ import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateObjEntityUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.util.DeleteRuleUpdater;
@@ -58,7 +58,7 @@ public class CreateObjEntityAction extends CayenneAction {
                 controller.getSelectedDataNode(),
                 (DataChannelDescriptor) controller.getProject().getRootNode());
         displayEvent.setMainTabFocus(true);
-        controller.fireObjEntityDisplayEvent(displayEvent);
+        controller.fireObjEntitySelected(displayEvent);
     }
 
     @Override

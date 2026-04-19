@@ -22,7 +22,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import java.util.concurrent.ConcurrentMap;
 
-import org.apache.cayenne.configuration.event.DataMapEvent;
+import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.load.DbLoadResultDialog;

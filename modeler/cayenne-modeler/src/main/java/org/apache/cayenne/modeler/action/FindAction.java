@@ -46,14 +46,14 @@ import org.apache.cayenne.modeler.ProjectTreeModel;
 import org.apache.cayenne.modeler.ProjectTreeView;
 import org.apache.cayenne.modeler.dialog.FindDialog;
 import org.apache.cayenne.modeler.editor.EditorView;
-import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.EmbeddableAttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
-import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
-import org.apache.cayenne.modeler.event.ProcedureParameterDisplayEvent;
-import org.apache.cayenne.modeler.event.QueryDisplayEvent;
-import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EmbeddableAttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ProcedureParameterDisplayEvent;
+import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
+import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.map.QueryDescriptor;
 
@@ -281,10 +281,10 @@ public class FindAction extends CayenneAction {
                     (Attribute<?, ?, ?>) searchResultEntry.getObject(), entity, map, domain);
             event.setMainTabFocus(true);
             if (searchResultEntry.getObject() instanceof DbAttribute) {
-                controller.fireDbAttributeDisplayEvent(event);
+                controller.fireDbAttributeSelected(event);
                 editor.getDbDetailView().repaint();
             } else {
-                controller.fireObjAttributeDisplayEvent(event);
+                controller.fireObjAttributeSelected(event);
                 editor.getObjDetailView().repaint();
             }
         } else if (searchResultEntry.getObject() instanceof Relationship) {
@@ -292,10 +292,10 @@ public class FindAction extends CayenneAction {
                     (Relationship<?, ?, ?>) searchResultEntry.getObject(), entity, map, domain);
             event.setMainTabFocus(true);
             if (searchResultEntry.getObject() instanceof DbRelationship) {
-                controller.fireDbRelationshipDisplayEvent(event);
+                controller.fireDbRelationshipSelected(event);
                 editor.getDbDetailView().repaint();
             } else {
-                controller.fireObjRelationshipDisplayEvent(event);
+                controller.fireObjRelationshipSelected(event);
                 editor.getObjDetailView().repaint();
             }
         }
@@ -312,7 +312,7 @@ public class FindAction extends CayenneAction {
         buildAndSelectTreePath(map, embeddable, editor);
         EmbeddableAttributeDisplayEvent event = new EmbeddableAttributeDisplayEvent(editor.getProjectTreeView(), embeddable, attribute, map, domain);
         event.setMainTabFocus(true);
-        controller.fireEmbeddableAttributeDisplayEvent(event);
+        controller.fireEmbeddableAttributeSelected(event);
         editor.getEmbeddableView().repaint();
     }
 
@@ -339,9 +339,9 @@ public class FindAction extends CayenneAction {
         event.setMainTabFocus(true);
 
         if (entity instanceof ObjEntity) {
-            controller.fireObjEntityDisplayEvent(event);
+            controller.fireObjEntitySelected(event);
         } else if (entity instanceof DbEntity) {
-            controller.fireDbEntityDisplayEvent(event);
+            controller.fireDbEntitySelected(event);
         }
     }
 
@@ -350,7 +350,7 @@ public class FindAction extends CayenneAction {
         DataMap map = procedure.getDataMap();
         buildAndSelectTreePath(map, procedure, editor);
         ProcedureDisplayEvent event = new ProcedureDisplayEvent(editor.getProjectTreeView(), procedure, map, domain);
-        controller.fireProcedureDisplayEvent(event);
+        controller.fireProcedureSelected(event);
         editor.getProcedureView().repaint();
     }
 
@@ -361,7 +361,7 @@ public class FindAction extends CayenneAction {
         buildAndSelectTreePath(map, procedure, editor);
         ProcedureParameterDisplayEvent event =
                 new ProcedureParameterDisplayEvent(editor.getProjectTreeView(), parameter, procedure, map, domain);
-        controller.fireProcedureParameterDisplayEvent(event);
+        controller.fireProcedureParameterSelected(event);
         editor.getProcedureView().repaint();
     }
 

@@ -21,6 +21,7 @@ package org.apache.cayenne.configuration.event;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

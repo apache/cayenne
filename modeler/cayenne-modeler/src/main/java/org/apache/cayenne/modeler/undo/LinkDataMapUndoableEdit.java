@@ -19,7 +19,7 @@
 package org.apache.cayenne.modeler.undo;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.event.DataNodeEvent;
+import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.LinkDataMapAction;

@@ -33,10 +33,10 @@ import org.apache.cayenne.modeler.action.CutAttributeRelationshipAction;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeRelationshipAction;
 import org.apache.cayenne.modeler.dialog.DbRelationshipDialog;
-import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
-import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
-import org.apache.cayenne.modeler.event.TablePopupHandler;
+import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
+import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.BoardTableCellRenderer;
 import org.apache.cayenne.modeler.util.CayenneTable;
@@ -315,7 +315,7 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
             editMenu.setEnabled(editEnabled);
         }
 
-        controller.fireDbRelationshipDisplayEvent(new RelationshipDisplayEvent(
+        controller.fireDbRelationshipSelected(new RelationshipDisplayEvent(
                 this,
                 rels,
                 controller.getSelectedDbEntity(),

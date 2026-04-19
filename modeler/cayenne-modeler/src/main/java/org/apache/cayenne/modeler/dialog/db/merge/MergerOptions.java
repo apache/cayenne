@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.dialog.db.merge;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.event.DataMapEvent;
+import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.merge.DataMapMerger;
 import org.apache.cayenne.dbsync.merge.context.MergeDirection;

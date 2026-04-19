@@ -25,7 +25,7 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.modeler.action.CreateProcedureParameterAction;
 import org.apache.cayenne.modeler.action.RemoveProcedureParameterAction;
-import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
 
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
@@ -55,7 +55,7 @@ public class CreateProcedureParameterUndoableEdit extends CayenneUndoableEdit {
                     parameter
             });
 
-            controller.fireProcedureDisplayEvent(new ProcedureDisplayEvent(this, procedure, dataMap, domain));
+            controller.fireProcedureSelected(new ProcedureDisplayEvent(this, procedure, dataMap, domain));
         }
     }
 

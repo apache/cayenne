@@ -24,8 +24,8 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.EmbeddableAttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EmbeddableAttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,11 +54,11 @@ class EmbeddableAttributeDisplayEventType extends EmbeddableDisplayEventType {
         }
 
         EmbeddableDisplayEvent embeddableDisplayEvent = new EmbeddableDisplayEvent(this, embeddable, dataMap, dataChannel);
-        controller.fireEmbeddableDisplayEvent(embeddableDisplayEvent);
+        controller.fireEmbeddableSelected(embeddableDisplayEvent);
 
         EmbeddableAttribute[] embeddableAttributes = getLastEmbeddableAttributes(embeddable);
         EmbeddableAttributeDisplayEvent attributeDisplayEvent = new EmbeddableAttributeDisplayEvent(this, embeddable, embeddableAttributes, dataMap, dataChannel);
-        controller.fireEmbeddableAttributeDisplayEvent(attributeDisplayEvent);
+        controller.fireEmbeddableAttributeSelected(attributeDisplayEvent);
     }
 
     @Override

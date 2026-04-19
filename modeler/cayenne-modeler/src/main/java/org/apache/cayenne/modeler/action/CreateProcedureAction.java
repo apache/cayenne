@@ -21,14 +21,14 @@ package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.event.ProcedureEvent;
+import org.apache.cayenne.modeler.event.model.ProcedureEvent;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateProcedureUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
@@ -44,7 +44,7 @@ public class CreateProcedureAction extends CayenneAction {
      */
     static void fireProcedureEvent(Object src, ProjectController controller, DataMap dataMap, Procedure procedure) {
         controller.fireProcedureEvent(new ProcedureEvent(src, procedure, MapEvent.ADD));
-        controller.fireProcedureDisplayEvent(new ProcedureDisplayEvent(src, procedure, controller.getSelectedDataMap(),
+        controller.fireProcedureSelected(new ProcedureDisplayEvent(src, procedure, controller.getSelectedDataMap(),
                 (DataChannelDescriptor) controller.getProject().getRootNode()));
     }
 

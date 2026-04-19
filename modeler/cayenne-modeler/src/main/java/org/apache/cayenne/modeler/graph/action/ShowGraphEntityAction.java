@@ -27,8 +27,8 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerFrame;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.editor.EditorView;
-import org.apache.cayenne.modeler.event.DomainDisplayEvent;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
 /**
@@ -89,6 +89,6 @@ public class ShowGraphEntityAction extends CayenneAction {
                 entity,
                 entity.getDataMap(),
                 (DataChannelDescriptor) getProjectController().getProject().getRootNode());
-        getProjectController().fireDomainDisplayEvent(event);
+        getProjectController().fireDomainSelected(event);
     }
 }

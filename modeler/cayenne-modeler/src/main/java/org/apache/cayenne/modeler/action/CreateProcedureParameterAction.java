@@ -21,14 +21,14 @@ package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.event.ProcedureParameterEvent;
+import org.apache.cayenne.modeler.event.model.ProcedureParameterEvent;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.ProcedureParameterDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.undo.CreateProcedureParameterUndoableEdit;
 
@@ -50,7 +50,7 @@ public class CreateProcedureParameterAction extends CayenneAction {
             ProcedureParameter parameter) {
         controller.fireProcedureParameterEvent(new ProcedureParameterEvent(src, parameter, MapEvent.ADD));
 
-        controller.fireProcedureParameterDisplayEvent(new ProcedureParameterDisplayEvent(src, parameter, procedure,
+        controller.fireProcedureParameterSelected(new ProcedureParameterDisplayEvent(src, parameter, procedure,
                 controller.getSelectedDataMap(), (DataChannelDescriptor) controller.getProject().getRootNode()));
     }
 

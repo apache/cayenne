@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.util.state;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.QueryDisplayEvent;
+import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
 import org.apache.cayenne.map.QueryDescriptor;
 
 class QueryDisplayEventType extends DisplayEventType {
@@ -49,7 +49,7 @@ class QueryDisplayEventType extends DisplayEventType {
         }
 
         QueryDisplayEvent queryDisplayEvent = new QueryDisplayEvent(this, query, dataMap, dataChannel);
-        controller.fireQueryDisplayEvent(queryDisplayEvent);
+        controller.fireQuerySelected(queryDisplayEvent);
     }
 
     @Override

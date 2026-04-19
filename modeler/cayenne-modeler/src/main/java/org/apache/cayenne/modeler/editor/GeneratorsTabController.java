@@ -27,8 +27,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.event.DataMapEvent;
-import org.apache.cayenne.configuration.event.DataMapListener;
+import org.apache.cayenne.modeler.event.model.DataMapEvent;
+import org.apache.cayenne.modeler.event.model.DataMapListener;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.project.Project;
