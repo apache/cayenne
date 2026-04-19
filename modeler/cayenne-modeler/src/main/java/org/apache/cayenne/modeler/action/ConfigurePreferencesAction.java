@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.action;
 import java.awt.event.ActionEvent;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
+import org.apache.cayenne.modeler.dialog.pref.PreferenceDialogController;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
 
@@ -41,7 +41,7 @@ public class ConfigurePreferencesAction extends CayenneAction {
     }
 
     public void showPreferencesDialog() {
-        new PreferenceDialog(getApplication().getFrameController()).startupAction(null);
+        new PreferenceDialogController(getApplication().getFrameController()).startupAction(null);
         
     }
     

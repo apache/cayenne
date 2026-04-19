@@ -24,10 +24,10 @@ import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.editor.cgen.CgenConfigController;
-import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.velocity.exception.ParseErrorException;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
@@ -38,11 +38,10 @@ import java.io.Writer;
 /**
  * @since 5.0
  */
-public class TemplateEditorController extends CayenneController {
+public class TemplateEditorController extends ChildController<CgenConfigController> {
 
     private final DataMap currentDataMap;
     private final CgenConfiguration configuration;
-    private final CgenConfigController parentController;
     private final TemplateType templateType;
     private EditorTemplateLoader templateLoader;
     private EditorTemplateSaver templateSaver;
@@ -51,14 +50,12 @@ public class TemplateEditorController extends CayenneController {
     private ArtefactsConfigurator artefactsConfigurator;
     private TemplateEditorView view;
     private PreviewActionConfigurator actionConfigurator;
-
-
-    public TemplateEditorController(CgenConfigController parentController, TemplateType templateType) {
-        super(parentController.getCodeGeneratorController());
+    
+    public TemplateEditorController(CgenConfigController parent, TemplateType templateType) {
+        super(parent);
         this.templateType = templateType;
-        this.configuration = parentController.getCodeGeneratorController().getCgenConfiguration();
+        this.configuration = parent.getCodeGeneratorController().getCgenConfiguration();
         this.currentDataMap = configuration.getDataMap();
-        this.parentController = parentController;
     }
 
     public void startupAction() {
@@ -138,8 +135,8 @@ public class TemplateEditorController extends CayenneController {
         view.addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent e) {
-                parentController.setEditorOpen(true);
-                parentController.updateTemplateEditorButtons();
+                parent.setEditorOpen(true);
+                parent.updateTemplateEditorButtons();
             }
         });
 
@@ -149,8 +146,8 @@ public class TemplateEditorController extends CayenneController {
                 if (isTemplateModified && showUnsavedChangesCloseDialog() == 0) {
                     saveAction();
                 }
-                parentController.setEditorOpen(false);
-                parentController.updateTemplateEditorButtons();
+                parent.setEditorOpen(false);
+                parent.updateTemplateEditorButtons();
             }
         });
 
@@ -158,9 +155,9 @@ public class TemplateEditorController extends CayenneController {
 
     public void saveAction() {
         templateSaver.save(templateType, isTemplateDefault, view.getTemplateText());
-        parentController.getCodeGeneratorController().checkCgenConfigDirty();
+        parent.getCodeGeneratorController().checkCgenConfigDirty();
         isTemplateModified = false;
-        parentController.updateTemplatesLabels(configuration);
+        parent.updateTemplatesLabels(configuration);
         view.getSaveButton().setEnabled(false);
     }
 

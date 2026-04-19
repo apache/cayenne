@@ -19,9 +19,6 @@
 
 package org.apache.cayenne.modeler.util;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.cayenne.dba.db2.DB2Adapter;
 import org.apache.cayenne.dba.derby.DerbyAdapter;
 import org.apache.cayenne.dba.firebird.FirebirdAdapter;
@@ -36,10 +33,11 @@ import org.apache.cayenne.dba.sqlite.SQLiteAdapter;
 import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * Contains mappings for guessing defaults for various adapter and JDBC
- * settings.
- * 
+ * Contains mappings for guessing defaults for various adapter and JDBC settings.
  */
 public class AdapterMapping {
 

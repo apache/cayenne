@@ -24,11 +24,11 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.dialog.ValidationResultBrowser;
-import org.apache.cayenne.modeler.dialog.db.DataSourceWizard;
+import org.apache.cayenne.modeler.dialog.ValidationResultBrowserController;
+import org.apache.cayenne.modeler.dialog.db.DataSourceWizardController;
+import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.pref.DBGeneratorDefaults;
-import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.DbAdapterInfo;
 import org.apache.cayenne.validation.ValidationResult;
 
@@ -43,7 +43,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 
-public class DBGeneratorOptions extends CayenneController {
+public class DBGeneratorOptionsController extends ChildController<ProjectController> {
 
     protected DBGeneratorOptionsView view;
     private boolean updatingAdapterCombo;
@@ -56,7 +56,7 @@ public class DBGeneratorOptions extends CayenneController {
 
     protected TableSelectorController tables;
 
-    public DBGeneratorOptions(ProjectController parent, String title, Collection<DataMap> dataMaps) {
+    public DBGeneratorOptionsController(ProjectController parent, String title, Collection<DataMap> dataMaps) {
         super(parent);
 
         this.dataMaps = dataMaps;
@@ -217,8 +217,7 @@ public class DBGeneratorOptions extends CayenneController {
      */
     public void generateSchemaAction() {
 
-        DataSourceWizard connectWizard = new DataSourceWizard((ProjectController) this.getParent(),
-                "Generate DB Schema: Connect to Database");
+        DataSourceWizardController connectWizard = new DataSourceWizardController(parent, "Generate DB Schema: Connect to Database");
         if (!connectWizard.startupAction()) {
             return;
         }
@@ -247,7 +246,7 @@ public class DBGeneratorOptions extends CayenneController {
         if (failures.isEmpty()) {
             JOptionPane.showMessageDialog(view, "Schema Generation Complete.");
         } else {
-            new ValidationResultBrowser(this)
+            new ValidationResultBrowserController(this)
                     .startupAction(
                             "Schema Generation Complete",
                             "Schema generation finished. The following problem(s) were ignored.",

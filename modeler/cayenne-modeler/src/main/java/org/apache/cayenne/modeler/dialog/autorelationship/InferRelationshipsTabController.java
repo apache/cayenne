@@ -18,15 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.autorelationship;
 
-import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.util.TableSizer;
 
-import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.util.List;
 
-public class InferRelationshipsTabController extends CayenneController {
+public class InferRelationshipsTabController extends ChildController<InferRelationshipsController> {
 
     private static final String[] COLUMN_HEADERS = {"", "Source", "Target", "Join", "Name", "To Many"};
     private static final Class<?>[] COLUMN_CLASSES = {
@@ -36,16 +35,13 @@ public class InferRelationshipsTabController extends CayenneController {
     private final InferRelationshipsPanel view;
     private AbstractTableModel tableModel;
 
-    public InferRelationshipsTabController(InferRelationshipsControllerBase parent) {
+    public InferRelationshipsTabController(InferRelationshipsController parent) {
         super(parent);
         this.view = new InferRelationshipsPanel();
         initBindings();
     }
 
-    protected InferRelationshipsControllerBase getParentController() {
-        return (InferRelationshipsControllerBase) getParent();
-    }
-
+    @Override
     public Component getView() {
         return view;
     }
@@ -55,7 +51,7 @@ public class InferRelationshipsTabController extends CayenneController {
 
         tableModel = new AbstractTableModel() {
             public int getRowCount() {
-                List<?> entities = getParentController().getEntities();
+                List<?> entities = parent.getEntities();
                 return entities != null ? entities.size() : 0;
             }
             public int getColumnCount() { return COLUMN_HEADERS.length; }
@@ -65,23 +61,23 @@ public class InferRelationshipsTabController extends CayenneController {
 
             public Object getValueAt(int row, int col) {
                 InferredRelationship item = getItem(row);
-                if (col == 0) return getParentController().isSelected(item);
+                if (col == 0) return parent.isSelected(item);
                 if (col == 1) return item.getSource().getName();
                 if (col == 2) return item.getTarget().getName();
-                if (col == 3) return getParentController().getJoin(item);
+                if (col == 3) return parent.getJoin(item);
                 if (col == 4) return item.getName();
-                return getParentController().getToMany(item);
+                return parent.getToMany(item);
             }
 
             public void setValueAt(Object value, int row, int col) {
                 if (col == 0) {
-                    getParentController().setSelected(getItem(row), (Boolean) value);
+                    parent.setSelected(getItem(row), (Boolean) value);
                     entitySelectedAction();
                 }
             }
 
             private InferredRelationship getItem(int row) {
-                return (InferredRelationship) getParentController().getEntities().get(row);
+                return parent.getEntities().get(row);
             }
         };
 
@@ -99,16 +95,16 @@ public class InferRelationshipsTabController extends CayenneController {
      * A callback action that updates the state of Select All checkbox.
      */
     public void entitySelectedAction() {
-        int selectedCount = getParentController().getSelectedEntitiesSize();
+        int selectedCount = parent.getSelectedEntitiesSize();
         if (selectedCount == 0) {
             view.getCheckAll().setSelected(false);
-        } else if (selectedCount == getParentController().getEntities().size()) {
+        } else if (selectedCount == parent.getEntities().size()) {
             view.getCheckAll().setSelected(true);
         }
     }
 
     public void checkAllAction() {
-        if (getParentController().updateSelection(view.getCheckAll().isSelected() ? o -> true : o -> false)) {
+        if (parent.updateSelection(view.getCheckAll().isSelected() ? o -> true : o -> false)) {
             tableModel.fireTableDataChanged();
         }
     }

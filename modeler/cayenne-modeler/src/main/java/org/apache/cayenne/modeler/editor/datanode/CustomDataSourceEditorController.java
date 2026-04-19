@@ -24,12 +24,12 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.TextBinder;
 
 
-public class CustomDataSourceEditor extends DataSourceEditor {
+public class CustomDataSourceEditorController extends DataSourceEditorController {
 
     protected CustomDataSourceView view;
     protected String factoryName;
 
-    public CustomDataSourceEditor(ProjectController controller, Runnable nodeChangeProcessor) {
+    public CustomDataSourceEditorController(ProjectController controller, Runnable nodeChangeProcessor) {
         super(controller, nodeChangeProcessor);
     }
 

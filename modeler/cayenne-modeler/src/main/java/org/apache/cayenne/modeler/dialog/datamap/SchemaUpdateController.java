@@ -41,8 +41,8 @@ public class SchemaUpdateController extends DefaultsPreferencesController {
     
     private DefaultsPreferencesView view;
 
-    public SchemaUpdateController(ProjectController mediator, DataMap dataMap) {
-        super(mediator, dataMap);
+    public SchemaUpdateController(ProjectController controller, DataMap dataMap) {
+        super(controller, dataMap);
     }
 
     /**
@@ -63,7 +63,7 @@ public class SchemaUpdateController extends DefaultsPreferencesController {
     }
 
     @Override
-    public Component getView() {
+    public DefaultsPreferencesView getView() {
         return this.view;
     }
 
@@ -77,9 +77,8 @@ public class SchemaUpdateController extends DefaultsPreferencesController {
                 if (!Util.nullSafeEquals(defaultSchema, entity.getSchema())) {
                     entity.setSchema(defaultSchema);
 
-                    // any way to batch events, a big change will flood the app with
-                    // entity events..?
-                    mediator.fireDbEntityEvent(new EntityEvent(this, entity));
+                    // any way to batch events, a big change will flood the app with entity events?
+                    parent.fireDbEntityEvent(new EntityEvent(this, entity));
                 }
             }
         }
@@ -90,9 +89,8 @@ public class SchemaUpdateController extends DefaultsPreferencesController {
                 if (!Util.nullSafeEquals(defaultSchema, procedure.getSchema())) {
                     procedure.setSchema(defaultSchema);
 
-                    // any way to batch events, a big change will flood the app with
-                    // procedure events..?
-                    mediator.fireProcedureEvent(new ProcedureEvent(this, procedure));
+                    // any way to batch events, a big change will flood the app with procedure events?
+                    parent.fireProcedureEvent(new ProcedureEvent(this, procedure));
                 }
             }
         }

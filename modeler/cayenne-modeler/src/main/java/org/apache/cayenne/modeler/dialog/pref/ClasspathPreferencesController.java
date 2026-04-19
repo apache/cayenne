@@ -19,7 +19,17 @@
 
 package org.apache.cayenne.modeler.dialog.pref;
 
-import java.awt.Component;
+import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.util.FileFilters;
+import org.apache.cayenne.pref.CayennePreferenceEditor;
+import org.apache.cayenne.pref.PreferenceEditor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.table.AbstractTableModel;
+import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,20 +38,9 @@ import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.table.AbstractTableModel;
+public class ClasspathPreferencesController extends ChildController<PreferenceDialogController> {
 
-import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.modeler.util.FileFilters;
-import org.apache.cayenne.pref.CayennePreferenceEditor;
-import org.apache.cayenne.pref.PreferenceEditor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-public class ClasspathPreferences extends CayenneController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClasspathPreferences.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClasspathPreferencesController.class);
 
     private final ClasspathPreferencesView view;
     private final List<String> classPathEntries;
@@ -52,7 +51,7 @@ public class ClasspathPreferences extends CayenneController {
 
     private int counter;
 
-    public ClasspathPreferences(PreferenceDialog parentController) {
+    public ClasspathPreferencesController(PreferenceDialogController parentController) {
         super(parentController);
 
         this.view = new ClasspathPreferencesView();
@@ -132,7 +131,7 @@ public class ClasspathPreferences extends CayenneController {
     }
 
     protected void addMvnDependencyAction() {
-        MavenDependencyDialog dialog = new MavenDependencyDialog(this);
+        MavenDependencyDialogController dialog = new MavenDependencyDialogController(this);
         dialog.getView().setVisible(true);
     }
 

@@ -36,8 +36,8 @@ public class CatalogUpdateController extends DefaultsPreferencesController {
 
     private DefaultsPreferencesView view;
 
-    public CatalogUpdateController(ProjectController mediator, DataMap dataMap) {
-        super(mediator, dataMap);
+    public CatalogUpdateController(ProjectController controller, DataMap dataMap) {
+        super(controller, dataMap);
     }
 
     public void startupAction() {
@@ -54,7 +54,8 @@ public class CatalogUpdateController extends DefaultsPreferencesController {
         view.setVisible(true);
     }
 
-    public Component getView() {
+    @Override
+    public DefaultsPreferencesView getView() {
         return this.view;
     }
 
@@ -70,7 +71,7 @@ public class CatalogUpdateController extends DefaultsPreferencesController {
 
                     // any way to batch events, a big change will flood the app
                     // with entity events..?
-                    mediator.fireDbEntityEvent(new EntityEvent(this, entity));
+                    parent.fireDbEntityEvent(new EntityEvent(this, entity));
                 }
             }
         }
@@ -83,7 +84,7 @@ public class CatalogUpdateController extends DefaultsPreferencesController {
 
                     // any way to batch events, a big change will flood the app
                     // with procedure events..?
-                    mediator.fireProcedureEvent(new ProcedureEvent(this, procedure));
+                    parent.fireProcedureEvent(new ProcedureEvent(this, procedure));
                 }
             }
         }

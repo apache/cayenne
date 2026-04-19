@@ -44,7 +44,7 @@ import org.apache.cayenne.modeler.CayenneModelerFrame;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.ProjectTreeModel;
 import org.apache.cayenne.modeler.ProjectTreeView;
-import org.apache.cayenne.modeler.dialog.FindDialog;
+import org.apache.cayenne.modeler.dialog.FindDialogController;
 import org.apache.cayenne.modeler.editor.EditorPanel;
 import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableAttributeDisplayEvent;
@@ -126,7 +126,7 @@ public class FindAction extends CayenneAction {
         } else if (searchResults.size() == 1) {
             jumpToResult(searchResults.iterator().next());
         } else {
-            new FindDialog(getApplication().getFrameController(), searchResults).startupAction();
+            new FindDialogController(getApplication().getFrameController(), searchResults).startupAction();
         }
     }
 

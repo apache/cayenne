@@ -27,11 +27,11 @@ import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.mvc.ChildController;
 
 import java.awt.*;
 
-public class LockingUpdateController extends CayenneController {
+public class LockingUpdateController extends ChildController<ProjectController> {
 
     private LockingUpdateView view;
     private final DataMap dataMap;
@@ -70,7 +70,6 @@ public class LockingUpdateController extends CayenneController {
         boolean updateEntities = view.getEntities().isSelected();
         boolean updateAttributes = view.getAttributes().isSelected();
         boolean updateRelationships = view.getRelationships().isSelected();
-        ProjectController parent = (ProjectController) getParent();
 
         for (ObjEntity entity : dataMap.getObjEntities()) {
             if (updateEntities && defaultLockType != entity.getDeclaredLockType()) {

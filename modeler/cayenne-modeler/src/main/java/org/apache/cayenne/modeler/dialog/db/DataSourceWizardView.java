@@ -23,8 +23,8 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dialog.pref.DBConnectionInfoEditor;
-import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.dialog.pref.DBConnectionInfoEditorController;
+import org.apache.cayenne.modeler.mvc.RootController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,9 +39,9 @@ public class DataSourceWizardView extends JDialog {
     protected JButton configButton;
     protected JButton okButton;
     protected JButton cancelButton;
-    protected DBConnectionInfoEditor connectionInfo;
+    protected DBConnectionInfoEditorController connectionInfo;
 
-    public DataSourceWizardView(CayenneController controller, String[] labels) {
+    public DataSourceWizardView(RootController controller, String[] labels) {
         super(Application.getFrame());
         
         this.dataSources = new JComboBox<>();
@@ -50,7 +50,7 @@ public class DataSourceWizardView extends JDialog {
         this.configButton.setToolTipText("configure local DataSource");
         this.okButton = new JButton(labels[OK_BUTTON_INDEX]);
         this.cancelButton = new JButton(labels[CANCEL_BUTTON_INDEX]);
-        this.connectionInfo = new DBConnectionInfoEditor(controller);
+        this.connectionInfo = new DBConnectionInfoEditorController(controller);
 
         getRootPane().setDefaultButton(okButton);
 
@@ -92,7 +92,7 @@ public class DataSourceWizardView extends JDialog {
         return okButton;
     }
 
-    public DBConnectionInfoEditor getConnectionInfo() {
+    public DBConnectionInfoEditorController getConnectionInfo() {
         return connectionInfo;
     }
 }

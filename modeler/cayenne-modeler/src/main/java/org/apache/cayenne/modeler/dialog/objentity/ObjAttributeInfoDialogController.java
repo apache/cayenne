@@ -34,25 +34,20 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.editor.ObjAttributeTableModel;
 import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
-import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.util.EntityTreeAttributeRelationshipFilter;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.CayenneMapEntry;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JOptionPane;
-import javax.swing.JTable;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.tree.TreePath;
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Component;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
@@ -66,7 +61,7 @@ import java.util.Objects;
 import static org.apache.cayenne.modeler.dialog.objentity.ObjAttributeInfoDialogView.EMBEDDABLE_PANEL;
 import static org.apache.cayenne.modeler.dialog.objentity.ObjAttributeInfoDialogView.FLATTENED_PANEL;
 
-public class ObjAttributeInfoDialog extends CayenneController implements TreeSelectionListener {
+public class ObjAttributeInfoDialogController extends ChildController<ProjectController> implements TreeSelectionListener {
 
 	private final ObjAttributeTableModel model;
 	private OverrideEmbeddableAttributeTableModel embeddableModel;
@@ -83,7 +78,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 	protected ProjectController mediator;
 	private Object lastObjectType;
 
-	public ObjAttributeInfoDialog(ProjectController mediator, int row, ObjAttributeTableModel model) {
+	public ObjAttributeInfoDialogController(ProjectController mediator, int row, ObjAttributeTableModel model) {
 		super(mediator);
 		this.view = new ObjAttributeInfoDialogView();
 		this.mediator = mediator;

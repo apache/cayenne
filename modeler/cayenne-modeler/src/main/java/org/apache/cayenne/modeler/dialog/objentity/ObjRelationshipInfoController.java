@@ -31,11 +31,11 @@ import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.dialog.DbRelationshipDialog;
+import org.apache.cayenne.modeler.dialog.DbRelationshipDialogController;
 import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.RelationshipUndoableEdit;
-import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.EntityTreeRelationshipFilter;
@@ -57,7 +57,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public class ObjRelationshipInfo extends CayenneController implements TreeSelectionListener {
+public class ObjRelationshipInfoController extends ChildController<ProjectController> implements TreeSelectionListener {
 
     private static final String COLLECTION_TYPE_MAP = "java.util.Map";
     private static final String COLLECTION_TYPE_SET = "java.util.Set";
@@ -74,7 +74,6 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
     private String targetCollection;
     private String mapKey;
     private final ObjRelationshipInfoView view;
-    private final ProjectController controller;
 
     private RelationshipUndoableEdit undo;
     private boolean isCreate;
@@ -88,10 +87,9 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
         view.setVisible(true);
     }
 
-    public ObjRelationshipInfo(ProjectController controller) {
+    public ObjRelationshipInfoController(ProjectController controller) {
         super(controller);
         this.view = new ObjRelationshipInfoView();
-        this.controller = controller;
         getPathBrowser().addTreeSelectionListener(this);
 
         view.getCollectionTypeCombo().addItem(COLLECTION_TYPE_COLLECTION);
@@ -102,7 +100,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
         this.mapKeys = new ArrayList<>();
     }
 
-    public ObjRelationshipInfo createRelationship(ObjEntity objEntity) {
+    public ObjRelationshipInfoController createRelationship(ObjEntity objEntity) {
         ObjRelationship rel = new ObjRelationship();
         rel.setName(NameBuilder.builder(rel, objEntity).name());
         rel.setSourceEntity(objEntity);
@@ -111,7 +109,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
         return modifyRelationship(rel);
     }
 
-    public ObjRelationshipInfo modifyRelationship(ObjRelationship rel) {
+    public ObjRelationshipInfoController modifyRelationship(ObjRelationship rel) {
         this.relationship = rel;
         this.undo = new RelationshipUndoableEdit(rel);
         // validate -
@@ -162,7 +160,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
         view.getUsedForLocking().setSelected(relationship.isUsedForLocking());
         view.getDeleteRule().setSelectedItem(DeleteRule.deleteRuleName(relationship.getDeleteRule()));
         view.getComment().setText(
-                ObjectInfo.getFromMetaData(controller.getApplication().getMetaData(),
+                ObjectInfo.getFromMetaData(getApplication().getMetaData(),
                         relationship,
                         ObjectInfo.COMMENT));
 
@@ -233,7 +231,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
         }
 
         boolean mapKeysEnabled = collectionTypeEnabled
-                && ObjRelationshipInfo.COLLECTION_TYPE_MAP.equals(view.getCollectionTypeCombo().getSelectedItem());
+                && ObjRelationshipInfoController.COLLECTION_TYPE_MAP.equals(view.getCollectionTypeCombo().getSelectedItem());
         view.getMapKeysCombo().setEnabled(mapKeysEnabled);
         view.getMapKeysLabel().setEnabled(mapKeysEnabled);
         if (mapKeysEnabled) {
@@ -257,7 +255,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
             Application.getInstance().getUndoManager().addEdit(
                     new CreateRelationshipUndoableEdit(relationship.getSourceEntity(), new ObjRelationship[]{relationship}));
         } else {
-            controller.fireObjRelationshipEvent(new RelationshipEvent(this, relationship,
+            parent.fireObjRelationshipEvent(new RelationshipEvent(this, relationship,
                     relationship.getSourceEntity(), MapEvent.CHANGE));
             Application.getInstance().getUndoManager().addEdit(undo);
         }
@@ -267,17 +265,18 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
     }
 
     private void fireObjRelationshipEvent(Object src) {
-        controller.fireObjRelationshipEvent(new RelationshipEvent(src, relationship, relationship.getSourceEntity(), MapEvent.ADD));
+        parent.fireObjRelationshipEvent(new RelationshipEvent(src, relationship, relationship.getSourceEntity(), MapEvent.ADD));
 
-        RelationshipDisplayEvent rde = new RelationshipDisplayEvent(src, relationship, relationship.getSourceEntity(), controller.getSelectedDataMap(),
-                (DataChannelDescriptor) controller.getProject().getRootNode());
+        RelationshipDisplayEvent rde = new RelationshipDisplayEvent(
+                src,
+                relationship,
+                relationship.getSourceEntity(),
+                parent.getSelectedDataMap(), (DataChannelDescriptor)
+                parent.getProject().getRootNode());
 
-        controller.displayObjRelationship(rde);
+        parent.displayObjRelationship(rde);
     }
 
-    /**
-     * @return relationship path browser
-     */
     public MultiColumnBrowser getPathBrowser() {
         return view.getPathBrowser();
     }
@@ -291,12 +290,12 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
 
         DbEntity dbEntity = relationship.getSourceEntity().getDbEntity();
 
-        DbRelationshipDialog dbRelationshipDialog = new DbRelationshipDialog(controller)
-                .createNewRelationship(dbEntity);
+        DbRelationshipDialogController dbRelationshipDialogController =
+                new DbRelationshipDialogController(parent).createNewRelationship(dbEntity);
 
-        dbRelationshipDialog.startUp();
+        dbRelationshipDialogController.startUp();
 
-        Optional<DbRelationship> dbRelationship = dbRelationshipDialog.getRelationship();
+        Optional<DbRelationship> dbRelationship = dbRelationshipDialogController.getRelationship();
         if (dbRelationship.isPresent()) {
             MultiColumnBrowser pathBrowser = getPathBrowser();
             Object[] oldPath = new Object[]{getStartEntity()};
@@ -326,7 +325,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
     }
 
     private void setComment() {
-        ObjectInfo.putToMetaData(controller.getApplication().getMetaData(),
+        ObjectInfo.putToMetaData(getApplication().getMetaData(),
                 relationship,
                 ObjectInfo.COMMENT,
                 view.getComment().getText());

@@ -26,7 +26,7 @@ import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CollapseTreeAction;
 import org.apache.cayenne.modeler.action.FilterAction;
 import org.apache.cayenne.modeler.dialog.datadomain.FilterController;
-import org.apache.cayenne.modeler.editor.datanode.DataNodeEditor;
+import org.apache.cayenne.modeler.editor.datanode.DataNodeEditorController;
 import org.apache.cayenne.modeler.editor.dbentity.DbEntityTabbedView;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
@@ -165,7 +165,7 @@ public class EditorPanel extends JPanel {
         dataDomainView = new DataDomainTabbedView(projectController);
         detailPanel.add(dataDomainView, DOMAIN_VIEW);
 
-        DataNodeEditor nodeController = new DataNodeEditor(projectController);
+        DataNodeEditorController nodeController = new DataNodeEditorController(projectController);
         detailPanel.add(nodeController.getView(), NODE_VIEW);
 
         dataNodeView = nodeController.getTabComponent();

@@ -24,16 +24,15 @@ import org.apache.cayenne.dbsync.merge.context.EntityMergeSupport;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.mvc.RootController;
 import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Collection;
 import java.util.Collections;
 
-public class EntitySyncController extends CayenneController {
+public class EntitySyncController extends ChildController<RootController> {
 
     private final DbEntity dbEntity;
     private ObjEntity objEntity;
@@ -42,7 +41,7 @@ public class EntitySyncController extends CayenneController {
     /**
      * Creates a controller for synchronizing all ObjEntities mapped to a given DbEntity.
      */
-    public EntitySyncController(CayenneController parent, DbEntity dbEntity) {
+    public EntitySyncController(RootController parent, DbEntity dbEntity) {
         super(parent);
         this.dbEntity = dbEntity;
     }
@@ -50,7 +49,7 @@ public class EntitySyncController extends CayenneController {
     /**
      * Creates a controller for synchronizing a single ObjEntity with its parent DbEntity.
      */
-    public EntitySyncController(CayenneController parent, ObjEntity objEntity) {
+    public EntitySyncController(RootController parent, ObjEntity objEntity) {
         this(parent, objEntity.getDbEntity());
         this.objEntity = objEntity;
     }

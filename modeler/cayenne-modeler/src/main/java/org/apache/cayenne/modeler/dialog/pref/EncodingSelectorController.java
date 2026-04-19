@@ -20,7 +20,8 @@
 
 package org.apache.cayenne.modeler.dialog.pref;
 
-import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.mvc.RootController;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.*;
@@ -31,11 +32,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Vector;
 
-/**
- * A controller for stream encoding picker component.
- * 
- */
-public class EncodingSelector extends CayenneController {
+public class EncodingSelectorController extends ChildController<RootController> {
 
     public static final String ENCODING_PROPERTY = "encoding";
 
@@ -45,7 +42,7 @@ public class EncodingSelector extends CayenneController {
     private String encoding;
     private boolean defaultEncoding;
 
-    public EncodingSelector(CayenneController parent, EncodingSelectorView view) {
+    public EncodingSelectorController(RootController parent, EncodingSelectorView view) {
         super(parent);
         this.view = view;
 

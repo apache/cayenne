@@ -20,7 +20,6 @@
 package org.apache.cayenne.modeler.dialog.db.merge;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.merge.DataMapMerger;
 import org.apache.cayenne.dbsync.merge.context.MergeDirection;
@@ -46,9 +45,10 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.dialog.ValidationResultBrowser;
+import org.apache.cayenne.modeler.dialog.ValidationResultBrowserController;
+import org.apache.cayenne.modeler.event.model.DataMapEvent;
+import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
-import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.TextBinder;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.resource.Resource;
@@ -56,12 +56,10 @@ import org.apache.cayenne.validation.ValidationResult;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.Component;
+import java.awt.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -73,7 +71,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MergerOptions extends CayenneController {
+public class MergerOptionsController extends ChildController<ProjectController> {
 
     protected MergerOptionsView view;
 
@@ -87,13 +85,14 @@ public class MergerOptions extends CayenneController {
     protected String defaultSchema;
     private MergerTokenFactoryProvider mergerTokenFactoryProvider;
 
-    public MergerOptions(ProjectController parent,
-                         String title,
-                         DBConnectionInfo connectionInfo,
-                         DataMap dataMap,
-                         String defaultCatalog,
-                         String defaultSchema,
-                         MergerTokenFactoryProvider mergerTokenFactoryProvider) {
+    public MergerOptionsController(
+            ProjectController parent,
+            String title,
+            DBConnectionInfo connectionInfo,
+            DataMap dataMap,
+            String defaultCatalog,
+            String defaultSchema,
+            MergerTokenFactoryProvider mergerTokenFactoryProvider) {
         super(parent);
 
         this.mergerTokenFactoryProvider = mergerTokenFactoryProvider;
@@ -275,7 +274,7 @@ public class MergerOptions extends CayenneController {
 
         reportFailures(mergerContext);
 
-        if(tokens.isReverse()) {
+        if (tokens.isReverse()) {
             getApplication().getUndoManager().discardAllEdits();
         }
     }
@@ -323,7 +322,7 @@ public class MergerOptions extends CayenneController {
         if (failures == null || !failures.hasFailures()) {
             JOptionPane.showMessageDialog(view, "Migration Complete.");
         } else {
-            new ValidationResultBrowser(this).startupAction(
+            new ValidationResultBrowserController(this).startupAction(
                     "Migration Complete",
                     "Migration finished. The following problem(s) were ignored.",
                     failures);
@@ -331,7 +330,7 @@ public class MergerOptions extends CayenneController {
     }
 
     private void notifyProjectModified(boolean modelChanged) {
-        if(!modelChanged) {
+        if (!modelChanged) {
             return;
         }
 

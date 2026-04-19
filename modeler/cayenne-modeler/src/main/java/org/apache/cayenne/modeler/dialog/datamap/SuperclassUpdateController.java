@@ -36,8 +36,8 @@ public class SuperclassUpdateController extends DefaultsPreferencesController {
 
     private DefaultsPreferencesView view;
 
-    public SuperclassUpdateController(ProjectController mediator, DataMap dataMap) {
-        super(mediator, dataMap);
+    public SuperclassUpdateController(ProjectController parent, DataMap dataMap) {
+        super(parent, dataMap);
     }
 
     /**
@@ -58,7 +58,7 @@ public class SuperclassUpdateController extends DefaultsPreferencesController {
     }
 
     @Override
-    public Component getView() {
+    public DefaultsPreferencesView getView() {
         return this.view;
     }
 
@@ -74,7 +74,7 @@ public class SuperclassUpdateController extends DefaultsPreferencesController {
 
                             // any way to batch events, a big change will flood the app with
                             // entity events..?
-                            mediator.fireDbEntityEvent(new EntityEvent(this, entity));
+                            parent.fireDbEntityEvent(new EntityEvent(this, entity));
                         }
                     }
                 });

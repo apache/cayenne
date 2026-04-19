@@ -32,7 +32,7 @@ import org.apache.cayenne.modeler.action.CopyAttributeRelationshipAction;
 import org.apache.cayenne.modeler.action.CutAttributeRelationshipAction;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeRelationshipAction;
-import org.apache.cayenne.modeler.dialog.DbRelationshipDialog;
+import org.apache.cayenne.modeler.dialog.DbRelationshipDialogController;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
@@ -269,7 +269,7 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
 
         DbRelationshipTableModel model = (DbRelationshipTableModel) table.getModel();
         DbRelationship rel = model.getRelationship(row);
-        new DbRelationshipDialog(controller)
+        new DbRelationshipDialogController(controller)
                 .modifyRaltionship(rel)
                 .startUp();
     }

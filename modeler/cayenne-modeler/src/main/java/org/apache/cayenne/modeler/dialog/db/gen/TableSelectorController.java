@@ -24,14 +24,13 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.util.TableSizer;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.validation.ProjectValidator;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
-import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.util.ArrayList;
@@ -40,7 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TableSelectorController extends CayenneController {
+public class TableSelectorController extends ChildController<ProjectController> {
 
     private static final String[] COLUMN_HEADERS = {"", "Table", "Problems"};
     private static final Class<?>[] COLUMN_CLASSES = {Boolean.class, String.class, String.class};

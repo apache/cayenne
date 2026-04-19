@@ -31,8 +31,8 @@ import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.dialog.DbRelationshipDialog;
-import org.apache.cayenne.modeler.dialog.objentity.ObjRelationshipInfo;
+import org.apache.cayenne.modeler.dialog.DbRelationshipDialogController;
+import org.apache.cayenne.modeler.dialog.objentity.ObjRelationshipInfoController;
 import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.util.DeleteRuleUpdater;
@@ -85,7 +85,7 @@ public class CreateRelationshipAction extends CayenneAction {
         ObjEntity objEnt = getProjectController().getSelectedObjEntity();
         if (objEnt != null) {
 
-            new ObjRelationshipInfo(getProjectController())
+            new ObjRelationshipInfoController(getProjectController())
                     .createRelationship(objEnt)
                     .startupAction();
 
@@ -93,7 +93,7 @@ public class CreateRelationshipAction extends CayenneAction {
             DbEntity dbEnt = getProjectController().getSelectedDbEntity();
             if (dbEnt != null) {
 
-                new DbRelationshipDialog(getProjectController())
+                new DbRelationshipDialogController(getProjectController())
                         .createNewRelationship(dbEnt)
                         .startUp();
             }

@@ -35,7 +35,7 @@ import org.apache.cayenne.modeler.action.CutAttributeRelationshipAction;
 import org.apache.cayenne.modeler.action.ObjEntityToSuperEntityAction;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeRelationshipAction;
-import org.apache.cayenne.modeler.dialog.objentity.ObjAttributeInfoDialog;
+import org.apache.cayenne.modeler.dialog.objentity.ObjAttributeInfoDialogController;
 import org.apache.cayenne.modeler.editor.wrapper.ObjAttributeWrapper;
 import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
@@ -444,7 +444,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
         ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
 
         // ... show dialog...
-        new ObjAttributeInfoDialog(controller, row, model).startupAction();
+        new ObjAttributeInfoDialogController(controller, row, model).startupAction();
 
         // This is required for a table to be updated properly
         table.cancelEditing();

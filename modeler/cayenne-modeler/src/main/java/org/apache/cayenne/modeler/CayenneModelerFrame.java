@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler;
 
 import org.apache.cayenne.modeler.action.*;
-import org.apache.cayenne.modeler.dialog.LogConsole;
+import org.apache.cayenne.modeler.dialog.LogConsoleController;
 import org.apache.cayenne.modeler.dialog.welcome.WelcomeScreen;
 import org.apache.cayenne.modeler.editor.EditorPanel;
 import org.apache.cayenne.modeler.event.model.RecentFileListListener;
@@ -45,6 +45,7 @@ import java.util.List;
  */
 public class CayenneModelerFrame extends JFrame {
 
+    private final LogConsoleController logConsoleController;
     private final ActionManager actionManager;
     private final List<RecentFileListListener> recentFileListeners;
 
@@ -56,8 +57,9 @@ public class CayenneModelerFrame extends JFrame {
     private JCheckBoxMenuItem logMenu;
     private Component dockComponent;
 
-    public CayenneModelerFrame(ActionManager actionManager) {
+    public CayenneModelerFrame(ActionManager actionManager, LogConsoleController logConsoleController) {
         this.actionManager = actionManager;
+        this.logConsoleController = logConsoleController;
         this.recentFileListeners = new ArrayList<>();
 
         setIconImage(ModelerUtil.buildIcon("CayenneModeler.png").getImage());
@@ -169,9 +171,9 @@ public class CayenneModelerFrame extends JFrame {
         toolMenu.addSeparator();
         logMenu = actionManager.getAction(ShowLogConsoleAction.class).buildCheckBoxMenu();
 
-        if (!LogConsole.getInstance().getConsoleProperty(LogConsole.DOCKED_PROPERTY)
-                && LogConsole.getInstance().getConsoleProperty(LogConsole.SHOW_CONSOLE_PROPERTY)) {
-            LogConsole.getInstance().setConsoleProperty(LogConsole.SHOW_CONSOLE_PROPERTY, false);
+        if (!logConsoleController.getConsoleProperty(LogConsoleController.DOCKED_PROPERTY)
+                && logConsoleController.getConsoleProperty(LogConsoleController.SHOW_CONSOLE_PROPERTY)) {
+            logConsoleController.setConsoleProperty(LogConsoleController.SHOW_CONSOLE_PROPERTY, false);
         }
 
         updateLogConsoleMenu();
@@ -198,7 +200,7 @@ public class CayenneModelerFrame extends JFrame {
      * Selects/deselects menu item, depending on status of log console
      */
     public void updateLogConsoleMenu() {
-        logMenu.setSelected(LogConsole.getInstance().getConsoleProperty(LogConsole.SHOW_CONSOLE_PROPERTY));
+        logMenu.setSelected(logConsoleController.getConsoleProperty(LogConsoleController.SHOW_CONSOLE_PROPERTY));
     }
 
     /**

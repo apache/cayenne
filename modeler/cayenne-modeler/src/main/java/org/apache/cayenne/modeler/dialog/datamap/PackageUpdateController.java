@@ -46,8 +46,8 @@ public class PackageUpdateController extends DefaultsPreferencesController {
     
     protected DefaultsPreferencesView view;
 
-    public PackageUpdateController(ProjectController mediator, DataMap dataMap) {
-        super(mediator, dataMap);
+    public PackageUpdateController(ProjectController controller, DataMap dataMap) {
+        super(controller, dataMap);
     }
 
     /**
@@ -68,7 +68,7 @@ public class PackageUpdateController extends DefaultsPreferencesController {
     }
 
     @Override
-    public Component getView() {
+    public DefaultsPreferencesView getView() {
         return this.view;
     }
 
@@ -90,7 +90,7 @@ public class PackageUpdateController extends DefaultsPreferencesController {
                 String newClassName = getNameWithDefaultPackage(className);
                 oldNameEmbeddableToNewName.put(oldName, newClassName);
                 embeddable.setClassName(newClassName);
-                mediator.fireEmbeddableEvent(e, mediator.getSelectedDataMap());
+                parent.fireEmbeddableEvent(e, parent.getSelectedDataMap());
             }
         }
 
@@ -107,7 +107,7 @@ public class PackageUpdateController extends DefaultsPreferencesController {
                     if(!oldNameEmbeddableToNewName.isEmpty() && oldNameEmbeddableToNewName.containsKey(attribute.getType())){
                         attribute.setType(oldNameEmbeddableToNewName.get(attribute.getType()));
                         AttributeEvent ev = new AttributeEvent(this, attribute, entity);
-                        mediator.fireObjAttributeEvent(ev);
+                        parent.fireObjAttributeEvent(ev);
                     }
                 }
             }
@@ -138,7 +138,7 @@ public class PackageUpdateController extends DefaultsPreferencesController {
     protected void setClassName(ObjEntity entity, String newName) {
         if (!Util.nullSafeEquals(newName, getClassName(entity))) {
             entity.setClassName(newName);
-            mediator.fireObjEntityEvent(new EntityEvent(this, entity));
+            parent.fireObjEntityEvent(new EntityEvent(this, entity));
         }
     }
 }

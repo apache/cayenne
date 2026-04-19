@@ -19,7 +19,8 @@
 
 package org.apache.cayenne.modeler.dialog.pref;
 
-import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.mvc.RootController;
 import org.apache.cayenne.pref.PreferenceEditor;
 
 import javax.swing.JDialog;
@@ -32,11 +33,7 @@ import java.awt.Window;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * A controller for editing Modeler preferences.
- * 
- */
-public class PreferenceDialog extends CayenneController {
+public class PreferenceDialogController extends ChildController<RootController> {
 
     public static final String GENERAL_KEY = "General";
     public static final String DATA_SOURCES_KEY = "Local DataSources";
@@ -47,10 +44,10 @@ public class PreferenceDialog extends CayenneController {
     };
 
     protected PreferenceDialogView view;
-    protected Map<String, CayenneController> detailControllers;
+    protected Map<String, RootController> detailControllers;
     protected PreferenceEditor editor;
 
-    public PreferenceDialog(final CayenneController parent) {
+    public PreferenceDialogController(final RootController parent) {
         super(parent);
 
         final Window parentView = parent.getView() instanceof Window
@@ -103,7 +100,7 @@ public class PreferenceDialog extends CayenneController {
         // this will install needed controller
         view.getDetailLayout().show(view.getDetailPanel(), DATA_SOURCES_KEY);
 
-        final DataSourcePreferences controller = (DataSourcePreferences) detailControllers
+        final DataSourcePreferencesController controller = (DataSourcePreferencesController) detailControllers
                 .get(DATA_SOURCES_KEY);
         controller.editDataSourceAction(dataSourceKey);
         view.setVisible(true);
@@ -119,7 +116,7 @@ public class PreferenceDialog extends CayenneController {
         // this will install needed controller
         view.getDetailLayout().show(view.getDetailPanel(), CLASS_PATH_KEY);
 
-        ClasspathPreferences controller = (ClasspathPreferences) detailControllers
+        ClasspathPreferencesController controller = (ClasspathPreferencesController) detailControllers
                 .get(CLASS_PATH_KEY);
         controller.getView().setEnabled(true);
         view.setVisible(true);
@@ -134,8 +131,8 @@ public class PreferenceDialog extends CayenneController {
     protected void configure() {
         // init known panels
         registerPanel(GENERAL_KEY, new GeneralPreferences(this));
-        registerPanel(DATA_SOURCES_KEY, new DataSourcePreferences(this));
-        registerPanel(CLASS_PATH_KEY, new ClasspathPreferences(this));
+        registerPanel(DATA_SOURCES_KEY, new DataSourcePreferencesController(this));
+        registerPanel(CLASS_PATH_KEY, new ClasspathPreferencesController(this));
         view.getDetailLayout().show(view.getDetailPanel(), GENERAL_KEY);
         view.pack();
 
@@ -147,11 +144,12 @@ public class PreferenceDialog extends CayenneController {
         view.setModalityType(Dialog.ModalityType.MODELESS);
     }
 
-    protected void registerPanel(final String name, final CayenneController panelController) {
+    protected void registerPanel(final String name, final RootController panelController) {
         detailControllers.put(name, panelController);
         view.getDetailPanel().add(panelController.getView(), name);
     }
 
+    @Override
     public Component getView() {
         return view;
     }

@@ -22,16 +22,14 @@ package org.apache.cayenne.modeler.editor.cgen.templateeditor;
 import org.fife.ui.rtextarea.SearchContext;
 import org.fife.ui.rtextarea.SearchEngine;
 
-import javax.swing.JButton;
-import javax.swing.JOptionPane;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * @since 5.0
  */
-public class FindAndReplaceController extends FindController implements ActionListener {
+public class FindAndReplaceController extends FindController {
 
     private  FindAndReplaceView view;
     private  JButton nextButton;
@@ -57,15 +55,15 @@ public class FindAndReplaceController extends FindController implements ActionLi
     @Override
     protected void initListeners() {
         nextButton.setActionCommand(FIND_NEXT);
-        nextButton.addActionListener(this);
+        nextButton.addActionListener(this::actionPerformed);
         replaceButton.setActionCommand(REPLACE);
-        replaceButton.addActionListener(this);
+        replaceButton.addActionListener(this::actionPerformed);
         replaceAllButton.setActionCommand(REPLACE_ALL);
-        replaceAllButton.addActionListener(this);
+        replaceAllButton.addActionListener(this::actionPerformed);
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
+    protected void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
         SearchContext context = getSearchContext(true,view);
         if (context == null) return;

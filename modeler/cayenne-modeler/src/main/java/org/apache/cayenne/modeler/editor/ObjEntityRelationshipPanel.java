@@ -33,7 +33,7 @@ import org.apache.cayenne.modeler.action.CutAttributeRelationshipAction;
 import org.apache.cayenne.modeler.action.ObjEntityToSuperEntityAction;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeRelationshipAction;
-import org.apache.cayenne.modeler.dialog.objentity.ObjRelationshipInfo;
+import org.apache.cayenne.modeler.dialog.objentity.ObjRelationshipInfoController;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
@@ -386,7 +386,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
         }
 
         ObjRelationshipTableModel model = (ObjRelationshipTableModel) table.getModel();
-        new ObjRelationshipInfo(controller)
+        new ObjRelationshipInfoController(controller)
                 .modifyRelationship(model.getRelationship(row))
                 .startupAction();
 

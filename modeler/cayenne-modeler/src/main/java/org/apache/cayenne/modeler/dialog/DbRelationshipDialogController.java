@@ -31,9 +31,9 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.DbRelationshipDialogView;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.RelationshipUndoableEdit;
-import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
@@ -52,10 +52,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-/**
- * @since 4.2
- */
-public class DbRelationshipDialog extends CayenneController {
+
+public class DbRelationshipDialogController extends ChildController<ProjectController> {
 
     private static final Comparator<DbEntity> DB_ENTITY_COMPARATOR = Comparator
             .comparing((Function<DbEntity, String>) ent -> ent.getDataMap().getName())
@@ -69,7 +67,8 @@ public class DbRelationshipDialog extends CayenneController {
     private boolean create;
     private RelationshipUndoableEdit undo;
 
-    public DbRelationshipDialog(ProjectController projectController) {
+    public DbRelationshipDialogController(ProjectController projectController) {
+        super(projectController);
         this.view = new DbRelationshipDialogView();
         this.projectController = projectController;
     }
@@ -79,7 +78,7 @@ public class DbRelationshipDialog extends CayenneController {
         return view;
     }
 
-    public DbRelationshipDialog createNewRelationship(DbEntity dbEntity) {
+    public DbRelationshipDialogController createNewRelationship(DbEntity dbEntity) {
         this.create = true;
 
         DbRelationship rel = new DbRelationship();
@@ -89,7 +88,7 @@ public class DbRelationshipDialog extends CayenneController {
         return modifyRaltionship(rel);
     }
 
-    public DbRelationshipDialog modifyRaltionship(DbRelationship dbRelationship) {
+    public DbRelationshipDialogController modifyRaltionship(DbRelationship dbRelationship) {
         this.undo = new RelationshipUndoableEdit(dbRelationship);
 
         this.relationship = dbRelationship;

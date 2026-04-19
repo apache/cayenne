@@ -19,7 +19,19 @@
 
 package org.apache.cayenne.modeler.dialog.pref;
 
-import java.awt.Component;
+import org.apache.cayenne.datasource.DriverDataSource;
+import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.modeler.FileClassLoadingService;
+import org.apache.cayenne.modeler.event.model.DataSourceEvent;
+import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+import org.apache.cayenne.pref.CayennePreferenceEditor;
+import org.apache.cayenne.pref.ChildrenMapPreference;
+import org.apache.cayenne.pref.PreferenceEditor;
+import org.apache.cayenne.util.Util;
+
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.Driver;
@@ -33,25 +45,11 @@ import java.util.StringTokenizer;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JOptionPane;
-
-import org.apache.cayenne.datasource.DriverDataSource;
-import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.modeler.FileClassLoadingService;
-import org.apache.cayenne.modeler.event.model.DataSourceEvent;
-import org.apache.cayenne.modeler.pref.DBConnectionInfo;
-import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.pref.CayennePreferenceEditor;
-import org.apache.cayenne.pref.ChildrenMapPreference;
-import org.apache.cayenne.pref.PreferenceEditor;
-import org.apache.cayenne.util.Util;
-
 /**
  * Editor for the local DataSources configured in preferences.
  * 
  */
-public class DataSourcePreferences extends CayenneController {
+public class DataSourcePreferencesController extends ChildController<PreferenceDialogController> {
 
 	protected DataSourcePreferencesView view;
 	protected String dataSourceKey;
@@ -59,7 +57,7 @@ public class DataSourcePreferences extends CayenneController {
 	protected ChildrenMapPreference dataSourcePreferences;
 	protected CayennePreferenceEditor editor;
 
-	public DataSourcePreferences(PreferenceDialog parentController) {
+	public DataSourcePreferencesController(PreferenceDialogController parentController) {
 		super(parentController);
 
 		this.view = new DataSourcePreferencesView(this);
@@ -125,7 +123,7 @@ public class DataSourcePreferences extends CayenneController {
 	 * Shows a dialog to create new local DataSource configuration.
 	 */
 	public void newDataSourceAction() {
-		DataSourceCreator creatorWizard = new DataSourceCreator(this);
+		DataSourceCreatorController creatorWizard = new DataSourceCreatorController(this);
 		DBConnectionInfo dataSource = creatorWizard.startupAction();
 
 		if (dataSource != null) {
@@ -147,7 +145,7 @@ public class DataSourcePreferences extends CayenneController {
 	public void duplicateDataSourceAction() {
 		Object selected = view.getDataSources().getSelectedItem();
 		if (selected != null) {
-			DataSourceDuplicator wizard = new DataSourceDuplicator(this, selected.toString());
+			DataSourceDuplicatorController wizard = new DataSourceDuplicatorController(this, selected.toString());
 			DBConnectionInfo dataSource = wizard.startupAction();
 
 			if (dataSource != null) {
@@ -233,7 +231,7 @@ public class DataSourcePreferences extends CayenneController {
 				details.add(oldPathFile.getAbsolutePath());
 			}
 
-			Preferences classPathPreferences = getApplication().getPreferencesNode(ClasspathPreferences.class, "");
+			Preferences classPathPreferences = getApplication().getPreferencesNode(ClasspathPreferencesController.class, "");
 			if (editor.getChangedPreferences().containsKey(classPathPreferences)) {
 				Map<String, String> map = editor.getChangedPreferences().get(classPathPreferences);
 

@@ -23,9 +23,9 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoader;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dialog.db.DataSourceWizard;
+import org.apache.cayenne.modeler.dialog.db.DataSourceWizardController;
 import org.apache.cayenne.modeler.dialog.db.DbActionOptionsDialog;
-import org.apache.cayenne.modeler.dialog.db.merge.MergerOptions;
+import org.apache.cayenne.modeler.dialog.db.merge.MergerOptionsController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +55,7 @@ public class MigrateAction extends DBConnectionAwareAction {
 
     public void performAction(ActionEvent e) {
 
-        DataSourceWizard connectWizard = getDataSourceWizard("Migrate DB Schema: Connect to Database");
+        DataSourceWizardController connectWizard = getDataSourceWizard("Migrate DB Schema: Connect to Database");
         if(connectWizard == null) {
             return;
         }
@@ -78,7 +78,7 @@ public class MigrateAction extends DBConnectionAwareAction {
                 getApplication().getInjector().getInstance(MergerTokenFactoryProvider.class);
 
         // ... show dialog...
-        new MergerOptions(
+        new MergerOptionsController(
                 getProjectController(),
                 "Migrate DB Schema: Options",
                 connectWizard.getConnectionInfo(),
@@ -95,7 +95,7 @@ public class MigrateAction extends DBConnectionAwareAction {
         return null;
     }
 
-    protected DbActionOptionsDialog loaderOptionDialog(DataSourceWizard connectWizard) {
+    protected DbActionOptionsDialog loaderOptionDialog(DataSourceWizardController connectWizard) {
 
         // use this catalog as the default...
         List<String> catalogs;
@@ -142,7 +142,7 @@ public class MigrateAction extends DBConnectionAwareAction {
     }
 
     @SuppressWarnings("unchecked")
-    private List<String> getCatalogs(DataSourceWizard connectWizard, Connection connection) throws Exception {
+    private List<String> getCatalogs(DataSourceWizardController connectWizard, Connection connection) throws Exception {
         if(!connectWizard.getAdapter().supportsCatalogsOnReverseEngineering()) {
             return (List<String>) Collections.EMPTY_LIST;
         }

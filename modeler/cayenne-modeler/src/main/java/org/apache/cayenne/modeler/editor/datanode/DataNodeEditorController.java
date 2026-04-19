@@ -16,41 +16,32 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.util;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
+package org.apache.cayenne.modeler.editor.datanode;
 
-import javax.swing.Icon;
+import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.mvc.ChildController;
 
-public class BlankIcon implements Icon {
+import javax.swing.*;
+import java.awt.*;
 
-    private static final int DEFAULT_BUTTON_SIZE = 18;
-    private Color fillColor;
-    private int size;
 
-    public BlankIcon(Color color, int size) {
-        fillColor = color;
-        this.size = size;
+public class DataNodeEditorController extends ChildController<ProjectController> {
+
+    protected JTabbedPane view;
+
+    public DataNodeEditorController(ProjectController parent) {
+        super(parent);
+        
+        this.view = new JTabbedPane();
+        view.addTab("Main", new JScrollPane(new MainDataNodeEditorController(parent,this).getView()));
     }
 
-    public BlankIcon() {
-        this(null, DEFAULT_BUTTON_SIZE);
+    public Component getView() {
+        return view;
     }
-
-    public void paintIcon(Component c, Graphics g, int x, int y) {
-        if (fillColor != null) {
-            g.setColor(fillColor);
-            g.drawRect(x, y, size - 1, size - 1);
-        }
-    }
-
-    public int getIconWidth() {
-        return size;
-    }
-
-    public int getIconHeight() {
-        return size;
+    
+    public JTabbedPane getTabComponent() {
+        return view;
     }
 }

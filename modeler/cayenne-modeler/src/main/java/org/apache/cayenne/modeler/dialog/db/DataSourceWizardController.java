@@ -23,12 +23,12 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
-import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
+import org.apache.cayenne.modeler.dialog.pref.PreferenceDialogController;
 import org.apache.cayenne.modeler.event.model.DataSourceEvent;
 import org.apache.cayenne.modeler.event.model.DataSourceListener;
+import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
-import org.apache.cayenne.modeler.util.CayenneController;
 
 import javax.sql.DataSource;
 import javax.swing.*;
@@ -46,7 +46,7 @@ import static org.apache.cayenne.modeler.pref.DBConnectionInfo.*;
  * keep an open connection.
  *
  */
-public class DataSourceWizard extends CayenneController {
+public class DataSourceWizardController extends ChildController<ProjectController> {
 
     private final ProjectController projectController;
     private final DataSourceWizardView view;
@@ -60,11 +60,11 @@ public class DataSourceWizard extends CayenneController {
     private boolean canceled;
     private DataSourceListener dataSourceListener;
 
-    public DataSourceWizard(ProjectController parent, String title) {
+    public DataSourceWizardController(ProjectController parent, String title) {
         this(parent, title, new String[]{"Continue", "Cancel"});
     }
 
-    public DataSourceWizard(ProjectController parent, String title, String[] buttons) {
+    public DataSourceWizardController(ProjectController parent, String title, String[] buttons) {
         super(parent);
 
         this.connectionInfo = new DBConnectionInfo();
@@ -221,7 +221,7 @@ public class DataSourceWizard extends CayenneController {
      * Opens preferences panel to allow configuration of DataSource presets.
      */
     public void dataSourceConfigAction() {
-        final PreferenceDialog prefs = new PreferenceDialog(this);
+        final PreferenceDialogController prefs = new PreferenceDialogController(this);
         prefs.showDataSourceEditorAction(dataSourceKey);
         refreshDataSources();
     }
@@ -230,7 +230,7 @@ public class DataSourceWizard extends CayenneController {
      * Opens preferences panel to allow configuration of classpath.
      */
     public void classPathConfigAction() {
-        final PreferenceDialog prefs = new PreferenceDialog(this);
+        final PreferenceDialogController prefs = new PreferenceDialogController(this);
         prefs.showClassPathEditorAction();
         refreshDataSources();
     }

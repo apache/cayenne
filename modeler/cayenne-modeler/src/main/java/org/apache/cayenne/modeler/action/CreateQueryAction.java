@@ -26,7 +26,7 @@ import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.dialog.query.QueryType;
+import org.apache.cayenne.modeler.dialog.query.QueryTypeController;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
@@ -52,7 +52,7 @@ public class CreateQueryAction extends CayenneAction {
     }
 
     protected void createQuery() {
-        new QueryType(getProjectController()).startupAction();
+        new QueryTypeController(getProjectController()).startupAction();
     }
     
     public void createQuery(DataChannelDescriptor domain, DataMap dataMap, QueryDescriptor query) {

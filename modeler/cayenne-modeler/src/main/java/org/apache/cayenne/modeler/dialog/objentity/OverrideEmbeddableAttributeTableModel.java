@@ -106,7 +106,7 @@ public class OverrideEmbeddableAttributeTableModel extends CayenneTableModel {
             attribute.setDbAttributeName(value != null ? value.toString() : null);
             fireTableCellUpdated(row, col);
             this.isAttributeOverrideChange = true;
-            ((ObjAttributeInfoDialogView) ((ObjAttributeInfoDialog) eventSource)
+            ((ObjAttributeInfoDialogView) ((ObjAttributeInfoDialogController) eventSource)
                     .getView()).getSaveButton().setEnabled(true);
 
             if (value != null) {

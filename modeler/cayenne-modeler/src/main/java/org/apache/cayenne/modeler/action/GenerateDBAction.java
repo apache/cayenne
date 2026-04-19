@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.action;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dialog.db.gen.DBGeneratorOptions;
+import org.apache.cayenne.modeler.dialog.db.gen.DBGeneratorOptionsController;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.Project;
 
@@ -55,7 +55,7 @@ public class GenerateDBAction extends CayenneAction {
             Project project = getProjectController().getProject();
             dataMaps = ((DataChannelDescriptor) project.getRootNode()).getDataMaps();
         }
-        new DBGeneratorOptions(getProjectController(), "Generate DB Schema: Options", dataMaps)
+        new DBGeneratorOptionsController(getProjectController(), "Generate DB Schema: Options", dataMaps)
                 .startupAction();
     }
 }

@@ -26,7 +26,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.mvc.RootController;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -40,15 +40,15 @@ public class DataSourcePreferencesView extends JPanel {
     protected JButton removeDataSource;
     protected JButton testDataSource;
     protected JComboBox<Object> dataSources;
-    protected DBConnectionInfoEditor dataSourceEditor;
+    protected DBConnectionInfoEditorController dataSourceEditor;
 
-    public DataSourcePreferencesView(CayenneController controller) {
+    public DataSourcePreferencesView(RootController controller) {
         this.addDataSource = new JButton("New...");
         this.duplicateDataSource = new JButton("Duplicate...");
         this.removeDataSource = new JButton("Delete");
         this.testDataSource = new JButton("Test...");
         this.dataSources = new JComboBox<>();
-        this.dataSourceEditor = new DBConnectionInfoEditor(controller);
+        this.dataSourceEditor = new DBConnectionInfoEditorController(controller);
 
         // assemble
         CellConstraints cc = new CellConstraints();
@@ -69,7 +69,7 @@ public class DataSourcePreferencesView extends JPanel {
         add(builder.getPanel(), BorderLayout.EAST);
     }
 
-    public DBConnectionInfoEditor getDataSourceEditor() {
+    public DBConnectionInfoEditorController getDataSourceEditor() {
         return dataSourceEditor;
     }
 

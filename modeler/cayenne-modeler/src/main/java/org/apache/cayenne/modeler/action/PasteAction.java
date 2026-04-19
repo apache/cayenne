@@ -40,7 +40,7 @@ import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
-import org.apache.cayenne.modeler.dialog.query.QueryType;
+import org.apache.cayenne.modeler.dialog.query.QueryTypeController;
 import org.apache.cayenne.modeler.editor.ObjCallbackMethod;
 import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
 import org.apache.cayenne.modeler.undo.PasteCompoundUndoableEdit;
@@ -327,7 +327,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                 query.setDataMap(dataMap);
 
                 dataMap.addQueryDescriptor(query);
-                QueryType.fireQueryEvent(this, controller, dataMap, query);
+                QueryTypeController.fireQueryEvent(this, controller, dataMap, query);
             } else if (content instanceof Procedure) {
                 // paste Procedure to DataMap
                 Procedure procedure = (Procedure) content;

@@ -23,8 +23,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.modeler.event.model.DataMapEvent;
-import org.apache.cayenne.modeler.event.model.DataMapListener;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.gen.CgenConfigList;
 import org.apache.cayenne.gen.CgenConfiguration;
@@ -42,8 +40,10 @@ import org.apache.cayenne.map.event.ObjEntityListener;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
 import org.apache.cayenne.modeler.editor.DbImportController;
+import org.apache.cayenne.modeler.event.model.DataMapEvent;
+import org.apache.cayenne.modeler.event.model.DataMapListener;
 import org.apache.cayenne.modeler.event.model.ProjectSavedEvent;
-import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.tools.ToolsInjectorBuilder;
 import org.slf4j.Logger;
@@ -65,7 +65,7 @@ import java.util.stream.Collectors;
  *
  * @since 4.1
  */
-public class CgenController extends CayenneController implements ObjEntityListener, EmbeddableListener, DataMapListener {
+public class CgenController extends ChildController<ProjectController> implements ObjEntityListener, EmbeddableListener, DataMapListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CgenController.class);
 

@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util;
+package org.apache.cayenne.modeler.mvc;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.FSPath;
@@ -34,33 +34,21 @@ import java.beans.PropertyChangeSupport;
 import java.util.prefs.Preferences;
 
 /**
- * A superclass of CayenneModeler controllers.
+ * A superclass of most controllers.
  */
-public abstract class CayenneController {
+public abstract class RootController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CayenneController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RootController.class);
 
-    protected CayenneController parent;
-    protected Application application;
+    protected final Application application;
     protected PropertyChangeSupport propertyChangeSupport;
-    
-    public CayenneController(){}
-    
-    public CayenneController(CayenneController parent) {
-        this.application = (parent != null) ? parent.getApplication() : null;
-        this.parent = parent;
-    }
 
-    public CayenneController(Application application) {
+    protected RootController(Application application) {
         this.application = application;
     }
 
     public Application getApplication() {
         return application;
-    }
-
-    public CayenneController getParent() {
-        return parent;
     }
 
     /**
@@ -74,19 +62,13 @@ public abstract class CayenneController {
      * to the parent last directory or to the user HOME directory.
      */
     public FSPath getLastDirectory() {
-        // find start directory in preferences
+
         FSPath path = (FSPath) application
                 .getCayenneProjectPreferences()
-                .getProjectDetailObject(
-                        FSPath.class,
-                        getViewPreferences().node("lastDir"));
+                .getProjectDetailObject(FSPath.class, getViewPreferences().node("lastDir"));
 
         if (path.getPath() == null) {
-
-            String pathString = (getParent() != null) ? getParent()
-                    .getLastDirectory()
-                    .getPath() : System.getProperty("user.home");
-            path.setPath(pathString);
+            path.setPath(System.getProperty("user.home"));
         }
 
         return path;
@@ -123,25 +105,6 @@ public abstract class CayenneController {
                 th.getMessage(),
                 title,
                 JOptionPane.ERROR_MESSAGE);
-    }
-
-    /**
-     * Centers view on parent window.
-     */
-    protected void centerView() {
-        Window parentWindow = parent.getWindow();
-
-        Dimension parentSize = parentWindow.getSize();
-        Dimension windowSize = getView().getSize();
-        Point parentLocation = new Point(0, 0);
-        if (parentWindow.isShowing()) {
-            parentLocation = parentWindow.getLocationOnScreen();
-        }
-
-        int x = parentLocation.x + parentSize.width / 2 - windowSize.width / 2;
-        int y = parentLocation.y + parentSize.height / 2 - windowSize.height / 2;
-
-        getView().setLocation(x, y);
     }
 
     /**
@@ -184,7 +147,7 @@ public abstract class CayenneController {
     /**
      * Finds a Window in the view hierarchy.
      */
-    private Window getWindow() {
+    protected Window getWindow() {
         Component view = getView();
         while (view != null) {
             if (view instanceof Window) {

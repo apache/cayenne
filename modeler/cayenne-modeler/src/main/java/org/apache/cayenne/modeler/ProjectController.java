@@ -24,10 +24,6 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.Attribute;
-import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.modeler.action.ActionManager;
-import org.apache.cayenne.modeler.event.display.*;
-import org.apache.cayenne.modeler.event.model.*;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -41,6 +37,7 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.DbAttributeListener;
 import org.apache.cayenne.map.event.DbEntityListener;
@@ -55,15 +52,18 @@ import org.apache.cayenne.map.event.ObjAttributeListener;
 import org.apache.cayenne.map.event.ObjEntityListener;
 import org.apache.cayenne.map.event.ObjRelationshipListener;
 import org.apache.cayenne.map.event.RelationshipEvent;
+import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.RevertAction;
 import org.apache.cayenne.modeler.action.SaveAction;
 import org.apache.cayenne.modeler.action.SaveAsAction;
 import org.apache.cayenne.modeler.editor.CallbackType;
 import org.apache.cayenne.modeler.editor.ObjCallbackMethod;
+import org.apache.cayenne.modeler.event.display.*;
+import org.apache.cayenne.modeler.event.model.*;
+import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.modeler.pref.ProjectStatePreferences;
-import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.state.DisplayEventTypes;
 import org.apache.cayenne.modeler.util.state.MultipleObjectsDisplayEventType;
@@ -90,7 +90,7 @@ import java.util.prefs.Preferences;
 /**
  * A controller that works with the project tree, tracking selection and dispatching project events.
  */
-public class ProjectController extends CayenneController {
+public class ProjectController extends ChildController<CayenneModelerController> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProjectController.class);
 
@@ -1192,7 +1192,7 @@ public class ProjectController extends CayenneController {
             application.getActionManager().getAction(RevertAction.class).setEnabled(dirty);
 
             if (dirty) {
-                ((CayenneModelerController) getParent()).onProjectModified();
+                parent.onProjectModified();
             }
         }
     }

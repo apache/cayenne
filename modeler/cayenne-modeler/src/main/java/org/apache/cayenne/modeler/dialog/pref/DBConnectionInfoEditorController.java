@@ -19,8 +19,9 @@
 
 package org.apache.cayenne.modeler.dialog.pref;
 
+import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.mvc.RootController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
-import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.DbAdapterInfo;
 import org.apache.cayenne.modeler.util.TextBinder;
 
@@ -30,7 +31,7 @@ import java.awt.*;
 /**
  * A reusable editor for DBConnectionInfo object.
  */
-public class DBConnectionInfoEditor extends CayenneController {
+public class DBConnectionInfoEditorController extends ChildController<RootController> {
 
     // transient placeholder to display disabled form
     private static final DBConnectionInfo emptyInfo = new DBConnectionInfo();
@@ -38,7 +39,7 @@ public class DBConnectionInfoEditor extends CayenneController {
     protected DBConnectionInfoEditorView view;
     protected DBConnectionInfo connectionInfo;
 
-    public DBConnectionInfoEditor(CayenneController parent) {
+    public DBConnectionInfoEditorController(RootController parent) {
         super(parent);
 
         this.view = new DBConnectionInfoEditorView();

@@ -36,7 +36,7 @@ import org.apache.cayenne.modeler.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.action.ObjEntityCounterpartAction;
 import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
-import org.apache.cayenne.modeler.dialog.objentity.ClassNameUpdater;
+import org.apache.cayenne.modeler.dialog.objentity.ClassNameUpdaterController;
 import org.apache.cayenne.modeler.dialog.validator.DuplicatedAttributesDialog;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
@@ -413,7 +413,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
             controller.fireObjEntityEvent(e);
 
             // suggest to update class name
-            ClassNameUpdater nameUpdater = new ClassNameUpdater(Application.getInstance().getFrameController(), entity);
+            ClassNameUpdaterController nameUpdater = new ClassNameUpdaterController(Application.getInstance().getFrameController(), entity);
 
             if (nameUpdater.doNameUpdate()) {
                 className.setText(entity.getClassName());

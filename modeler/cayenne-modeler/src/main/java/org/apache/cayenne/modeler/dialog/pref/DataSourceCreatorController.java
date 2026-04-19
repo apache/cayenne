@@ -19,33 +19,39 @@
 
 package org.apache.cayenne.modeler.dialog.pref;
 
-import java.awt.Component;
+import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+import org.apache.cayenne.modeler.util.AdapterMapping;
+import org.apache.cayenne.modeler.util.DbAdapterInfo;
+
+import javax.swing.*;
+import java.awt.*;
 import java.util.Map;
 
-import javax.swing.JOptionPane;
 
-import org.apache.cayenne.modeler.pref.DBConnectionInfo;
-import org.apache.cayenne.modeler.util.CayenneController;
+public class DataSourceCreatorController extends ChildController<DataSourcePreferencesController> {
 
+    private static final String NO_ADAPTER = "Custom / Undefined";
 
-public class DataSourceDuplicator extends CayenneController {
-
-    protected DataSourceDuplicatorView view;
+    protected DataSourceCreatorView view;
     protected boolean canceled;
     protected Map dataSources;
-    protected String prototypeKey;
 
-    public DataSourceDuplicator(DataSourcePreferences parent, String prototypeKey) {
+    public DataSourceCreatorController(DataSourcePreferencesController parent) {
         super(parent);
-        this.view = new DataSourceDuplicatorView("Create a copy of \""
-                + prototypeKey
-                + "\"");
+        this.view = new DataSourceCreatorView((JDialog) SwingUtilities
+                .getWindowAncestor(parent.getView()));
         this.dataSources = parent.getDataSources();
-        this.prototypeKey = prototypeKey;
 
-        String suggestion = prototypeKey + "0";
+        DefaultComboBoxModel model = new DefaultComboBoxModel(DbAdapterInfo
+                .getStandardAdapters());
+        model.insertElementAt(NO_ADAPTER, 0);
+        this.view.getAdapters().setModel(model);
+        this.view.getAdapters().setSelectedIndex(0);
+
+        String suggestion = "DataSource0";
         for (int i = 1; i <= dataSources.size(); i++) {
-            suggestion = prototypeKey + i;
+            suggestion = "DataSource" + i;
             if (!dataSources.containsKey(suggestion)) {
                 break;
             }
@@ -117,14 +123,26 @@ public class DataSourceDuplicator extends CayenneController {
             return null;
         }
 
-        DBConnectionInfo prototype = (DBConnectionInfo) dataSources.get(prototypeKey);
         DBConnectionInfo dataSource = (DBConnectionInfo) getApplication()
                 .getCayenneProjectPreferences()
                 .getDetailObject(DBConnectionInfo.class)
                 .create(getName());
 
-        prototype.copyTo(dataSource);
+        Object adapter = view.getAdapters().getSelectedItem();
+        if (NO_ADAPTER.equals(adapter)) {
+            adapter = null;
+        }
+
+        if (adapter != null) {
+            String adapterString = adapter.toString();
+            dataSource.setDbAdapter(adapterString);
+
+            // guess adapter defaults...
+            AdapterMapping defaultMap = getApplication().getAdapterMapping();
+            dataSource.setJdbcDriver(defaultMap.jdbcDriverForAdapter(adapterString));
+            dataSource.setUrl(defaultMap.jdbcURLForAdapter(adapterString));
+        }
+
         return dataSource;
     }
-
 }

@@ -23,21 +23,19 @@ import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.editor.cgen.templateeditor.TemplateEditorController;
+import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.pref.FSPath;
-import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.util.Util;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
+import javax.swing.*;
 import java.io.File;
 
 /**
  * @since 4.1
  */
-public class CgenConfigController extends CayenneController {
+public class CgenConfigController extends ChildController<CgenController> {
 
     private CgenConfiguration cgenConfiguration;
     protected CgenConfigPanel view;
@@ -49,7 +47,7 @@ public class CgenConfigController extends CayenneController {
     public CgenConfigController(CgenController parent) {
         super(parent);
         this.cgenController = parent;
-        this.view = new CgenConfigPanel(getParentController());
+        this.view = new CgenConfigPanel(parent);
         isEditorOpen = false;
         initListeners();
         initBindings();
@@ -66,27 +64,27 @@ public class CgenConfigController extends CayenneController {
             }
             updateTemplateEditorButtons();
             initForm(cgenConfiguration);
-            getParentController().checkCgenConfigDirty();
+            parent.checkCgenConfigDirty();
         });
 
         view.getOverwrite().addActionListener(val -> {
             cgenConfiguration.setOverwrite(view.getOverwrite().isSelected());
-            getParentController().checkCgenConfigDirty();
+            parent.checkCgenConfigDirty();
         });
 
         view.getCreatePropertyNames().addActionListener(val -> {
             cgenConfiguration.setCreatePropertyNames(view.getCreatePropertyNames().isSelected());
-            getParentController().checkCgenConfigDirty();
+            parent.checkCgenConfigDirty();
         });
 
         view.getUsePackagePath().addActionListener(val -> {
             cgenConfiguration.setUsePkgPath(view.getUsePackagePath().isSelected());
-            getParentController().checkCgenConfigDirty();
+            parent.checkCgenConfigDirty();
         });
 
         view.getPkProperties().addActionListener(val -> {
             cgenConfiguration.setCreatePKProperties(view.getPkProperties().isSelected());
-            getParentController().checkCgenConfigDirty();
+            parent.checkCgenConfigDirty();
         });
 
 
@@ -112,11 +110,6 @@ public class CgenConfigController extends CayenneController {
     private void initBindings() {
         getView().getSelectOutputFolder().addActionListener(e -> selectOutputFolderAction());
     }
-
-    protected CgenController getParentController() {
-        return (CgenController) getParent();
-    }
-
 
     private void setSubclassForDefaults() {
         if (TemplateType.isDefault(cgenConfiguration.getTemplate().getData())) {
@@ -153,9 +146,9 @@ public class CgenConfigController extends CayenneController {
         if (cgenConfiguration.getRootPath() != null) {
             view.getOutputFolder().setText(cgenConfiguration.buildOutputPath().toString());
         }
-        if(cgenConfiguration.getArtifactsGenerationMode().equalsIgnoreCase("all")) {
-            getParentController().setCurrentClass(cgenConfiguration.getDataMap());
-            getParentController().setSelected(true);
+        if (cgenConfiguration.getArtifactsGenerationMode().equalsIgnoreCase("all")) {
+            parent.setCurrentClass(cgenConfiguration.getDataMap());
+            parent.setSelected(true);
         }
         view.getOutputFolder().updateModel();
         view.getOutputPattern().setText(cgenConfiguration.getOutputPattern());
@@ -198,9 +191,9 @@ public class CgenConfigController extends CayenneController {
      */
     public void updateTemplateEditorButtons() {
         boolean isMakePairs = view.getPairs().isSelected();
-        boolean isEntitiesSelected = getParentController().isEntitiesSelected();
-        boolean isEmbeddableSelected = getParentController().isEmbeddableSelected();
-        boolean isDataMapSelected = getParentController().isDataMapSelected();
+        boolean isEntitiesSelected = parent.isEntitiesSelected();
+        boolean isEmbeddableSelected = parent.isEmbeddableSelected();
+        boolean isDataMapSelected = parent.isDataMapSelected();
 
         view.getEditSubclassTemplateBtn().setEnabled(isEntitiesSelected && !isEditorOpen);
         view.getEditSuperclassTemplateBtn().setEnabled(isMakePairs && isEntitiesSelected && !isEditorOpen);
@@ -208,7 +201,7 @@ public class CgenConfigController extends CayenneController {
         view.getEditEmbeddableTemplateBtn().setEnabled(isEmbeddableSelected && !isEditorOpen);
         view.getEditEmbeddableSuperTemplateBtn().setEnabled(isMakePairs && isEmbeddableSelected && !isEditorOpen);
 
-        view.getEditDataMapTemplateBtn().setEnabled(isDataMapSelected&& !isEditorOpen);
+        view.getEditDataMapTemplateBtn().setEnabled(isDataMapSelected && !isEditorOpen);
         view.getEditDataMapSuperTemplateBtn().setEnabled(isMakePairs && isDataMapSelected && !isEditorOpen);
 
         setToolTipText(view.getEditSubclassTemplateBtn());

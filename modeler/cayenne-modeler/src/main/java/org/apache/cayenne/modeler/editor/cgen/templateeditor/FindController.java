@@ -19,21 +19,19 @@
 
 package org.apache.cayenne.modeler.editor.cgen.templateeditor;
 
-import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.util.Util;
 import org.fife.ui.rtextarea.SearchContext;
 import org.fife.ui.rtextarea.SearchEngine;
 
-import javax.swing.JButton;
-import javax.swing.JOptionPane;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * @since 5.0
  */
-public class FindController extends CayenneController implements ActionListener {
+public class FindController extends ChildController<TemplateEditorController> {
 
     private FindView view;
     protected TemplateEditorView parentView;
@@ -63,13 +61,13 @@ public class FindController extends CayenneController implements ActionListener 
 
     protected void initListeners() {
         nextButton.setActionCommand(FIND_NEXT);
-        nextButton.addActionListener(this);
+        nextButton.addActionListener(this::actionPerformed);
         prevButton.setActionCommand(FIND_PREV);
-        prevButton.addActionListener(this);
+        prevButton.addActionListener(this::actionPerformed);
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
+
+    protected void actionPerformed(ActionEvent e) {
 
         // "FindNext" => search forward, "FindPrev" => search backward
         String command = e.getActionCommand();

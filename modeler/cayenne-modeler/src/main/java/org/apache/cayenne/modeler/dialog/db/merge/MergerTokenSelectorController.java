@@ -23,7 +23,8 @@ import org.apache.cayenne.dbsync.merge.context.MergeDirection;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.mvc.RootController;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 
 import javax.swing.DefaultCellEditor;
@@ -43,7 +44,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class MergerTokenSelectorController extends CayenneController {
+public class MergerTokenSelectorController extends ChildController<RootController> {
 
     protected MergerTokenSelectorView view;
 
@@ -54,7 +55,7 @@ public class MergerTokenSelectorController extends CayenneController {
     protected MergerTokenFactory mergerTokenFactory;
     protected boolean isReverse;
 
-    public MergerTokenSelectorController(final CayenneController parent) {
+    public MergerTokenSelectorController(RootController parent) {
         super(parent);
         this.view = new MergerTokenSelectorView();
         this.excludedTokens = new HashSet<>();
@@ -81,7 +82,7 @@ public class MergerTokenSelectorController extends CayenneController {
     public List<MergerToken> getSelectableTokens() {
         return Collections.unmodifiableList(selectableTokensList);
     }
-    
+
     public void removeToken(final MergerToken token) {
         selectableTokensList.remove(token);
         excludedTokens.remove(token);
@@ -109,7 +110,6 @@ public class MergerTokenSelectorController extends CayenneController {
     /*
      * public Collection getExcludedTokens() { return excludedTokens; }
      */
-
     public boolean isIncluded() {
         if (token == null) {
             return false;
@@ -153,7 +153,7 @@ public class MergerTokenSelectorController extends CayenneController {
 
         final TableModel model = new MergerTokenTableModel(this);
 
-        final MergeDirection[] dirs = new MergeDirection[] {
+        final MergeDirection[] dirs = new MergeDirection[]{
                 MergeDirection.TO_DB, MergeDirection.TO_MODEL
         };
 
@@ -210,7 +210,7 @@ public class MergerTokenSelectorController extends CayenneController {
         if (excludedTokens.remove(token)) {
             excludedTokens.add(reverse);
         }
-        
+
         // Repaint, so that "Operation" column updates properly
         view.getTokens().repaint();
     }

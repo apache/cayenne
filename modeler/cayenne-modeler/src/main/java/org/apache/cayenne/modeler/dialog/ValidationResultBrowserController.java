@@ -20,7 +20,8 @@
 
 package org.apache.cayenne.modeler.dialog;
 
-import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.mvc.RootController;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
@@ -29,22 +30,17 @@ import java.awt.Component;
 import java.util.Collection;
 
 
-public class ValidationResultBrowser extends CayenneController {
+public class ValidationResultBrowserController extends ChildController<RootController> {
 
-    protected ValidationResultBrowserView view;
+    private final ValidationResultBrowserView view;
 
-    public ValidationResultBrowser(CayenneController parent) {
+    public ValidationResultBrowserController(RootController parent) {
         super(parent);
-
         this.view = new ValidationResultBrowserView();
-
-        initController();
-    }
-
-    protected void initController() {
         view.getCloseButton().addActionListener(e -> closeDialogAction());
     }
 
+    @Override
     public Component getView() {
         return view;
     }
@@ -92,12 +88,9 @@ public class ValidationResultBrowser extends CayenneController {
         view.setVisible(true);
     }
 
-    /**
-     * Creates validation text for the validation result.
-     */
-    protected String buildValidationText(ValidationResult validationResult) {
-        StringBuffer buffer = new StringBuffer();
-        String separator = System.getProperty("line.separator");
+    private String buildValidationText(ValidationResult validationResult) {
+        StringBuilder buffer = new StringBuilder();
+        String separator = System.lineSeparator();
 
         for (ValidationFailure failure : validationResult.getFailures()) {
 

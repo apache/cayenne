@@ -22,17 +22,18 @@ package org.apache.cayenne.modeler.dialog.objentity;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.mvc.RootController;
 
 import java.awt.*;
 
-public class ClassNameUpdater extends CayenneController {
+public class ClassNameUpdaterController extends ChildController<RootController> {
 
     private final ObjEntity entity;
     private ClassNameUpdaterView view;
     private boolean updatePerformed;
 
-    public ClassNameUpdater(CayenneController parent, ObjEntity entity) {
+    public ClassNameUpdaterController(RootController parent, ObjEntity entity) {
         super(parent);
 
         this.entity = entity;

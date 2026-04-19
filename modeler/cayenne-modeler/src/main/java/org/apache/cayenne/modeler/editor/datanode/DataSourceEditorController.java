@@ -21,16 +21,16 @@ package org.apache.cayenne.modeler.editor.datanode;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.util.Util;
 
 
-public abstract class DataSourceEditor extends CayenneController {
+public abstract class DataSourceEditorController extends ChildController<ProjectController> {
 
     private DataNodeDescriptor node;
     protected Runnable nodeChangeProcessor;
 
-    public DataSourceEditor(ProjectController controller, Runnable nodeChangeProcessor) {
+    public DataSourceEditorController(ProjectController controller, Runnable nodeChangeProcessor) {
         super(controller);
         this.nodeChangeProcessor = nodeChangeProcessor;
         initFieldListeners();

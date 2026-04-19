@@ -19,13 +19,12 @@
 package org.apache.cayenne.modeler.dialog;
 
 import org.apache.cayenne.modeler.action.FindAction;
-import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.mvc.RootController;
 
 import javax.swing.JDialog;
 import javax.swing.JTable;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -37,12 +36,12 @@ import java.util.List;
  * An instance of this class is responsible for displaying search results and navigating
  * to the selected entity's representation.
  */
-public class FindDialog extends CayenneController {
+public class FindDialogController extends ChildController<RootController> {
 
     private FindDialogView view;
     private List<FindAction.SearchResultEntry> searchResults;
 
-    public FindDialog(CayenneController parent, List<FindAction.SearchResultEntry> searchResults) {
+    public FindDialogController(RootController parent, List<FindAction.SearchResultEntry> searchResults) {
         super(parent);
 
         this.searchResults = searchResults;

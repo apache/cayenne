@@ -16,34 +16,33 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.slf4j.impl;
 
-package org.apache.cayenne.modeler.editor.datanode;
+import org.slf4j.ILoggerFactory;
 
-import java.awt.Component;
+import java.util.HashMap;
+import java.util.Map;
 
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
+/**
+ * Factory for creating ModelerLogger instances.
+ */
+public class ModelerLogFactory implements ILoggerFactory {
 
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.util.CayenneController;
+    private static final String ignoreVelocity = "org.apache.velocity";
 
+    private final Map<String, ModelerLogger> localCache;
 
-public class DataNodeEditor extends CayenneController {
-
-    protected JTabbedPane view;
-
-    public DataNodeEditor(ProjectController parent) {
-        super(parent);
-        
-        this.view = new JTabbedPane();
-        view.addTab("Main", new JScrollPane(new MainDataNodeEditor(parent,this).getView()));
+    public ModelerLogFactory() {
+        localCache = new HashMap<>();
     }
 
-    public Component getView() {
-        return view;
-    }
-    
-    public JTabbedPane getTabComponent() {
-        return view;
+    @Override
+    public ModelerLogger getLogger(String name) {
+        ModelerLogger local = localCache.get(name);
+        if (local == null) {
+            local = name.contains(ignoreVelocity) ? new NoopModelerLogger(name) : new ModelerLogger(name);
+            localCache.put(name, local);
+        }
+        return local;
     }
 }

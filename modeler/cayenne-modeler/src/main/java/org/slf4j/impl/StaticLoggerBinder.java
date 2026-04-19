@@ -19,7 +19,6 @@
 
 package org.slf4j.impl;
 
-import org.apache.cayenne.modeler.util.ModelerLogFactory;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.spi.LoggerFactoryBinder;
 

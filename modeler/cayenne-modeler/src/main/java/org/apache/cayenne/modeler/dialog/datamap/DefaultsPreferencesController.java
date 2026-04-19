@@ -21,27 +21,28 @@ package org.apache.cayenne.modeler.dialog.datamap;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.mvc.ChildController;
 
 /**
  * An abstract controller for the DataMap defaults updates.
  *
  */
-public abstract class DefaultsPreferencesController extends CayenneController {
+public abstract class DefaultsPreferencesController extends ChildController<ProjectController> {
 
     protected DataMap dataMap;
-    protected ProjectController mediator;
 
     protected boolean allEntities;
 
-    public DefaultsPreferencesController(ProjectController mediator, DataMap dataMap) {
-        super(mediator);
+    public DefaultsPreferencesController(ProjectController controller, DataMap dataMap) {
+        super(controller);
         this.allEntities = true;
         this.dataMap = dataMap;
-        this.mediator = mediator;
     }
 
+    @Override
+    public abstract DefaultsPreferencesView getView();
+
     public boolean isAllEntities() {
-        return ((DefaultsPreferencesView) getView()).getUpdateAll().isSelected();
+        return getView().getUpdateAll().isSelected();
     }
 }

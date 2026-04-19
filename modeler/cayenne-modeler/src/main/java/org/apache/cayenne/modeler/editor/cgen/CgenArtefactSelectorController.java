@@ -23,12 +23,12 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.CheckBoxHeader;
+import org.apache.cayenne.modeler.util.ImageRendererColumn;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.TableSizer;
-import org.apache.cayenne.modeler.util.ImageRendererColumn;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
@@ -39,10 +39,7 @@ import java.awt.*;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * @since 4.1
- */
-public class CgenArtefactSelectorController extends CayenneController {
+public class CgenArtefactSelectorController extends ChildController<CgenController> {
 
     private static final Icon ERROR_ICON = ModelerUtil.buildIcon("icon-error.png");
 
@@ -65,10 +62,6 @@ public class CgenArtefactSelectorController extends CayenneController {
         classSelectedAction();
     }
 
-    protected CgenController getParentController() {
-        return (CgenController) getParent();
-    }
-
     public Component getView() {
         return view;
     }
@@ -78,29 +71,41 @@ public class CgenArtefactSelectorController extends CayenneController {
 
         tableModel = new AbstractTableModel() {
             public int getRowCount() {
-                return getParentController().getClasses().size();
+                return parent.getClasses().size();
             }
-            public int getColumnCount() { return COLUMN_HEADERS.length; }
-            public String getColumnName(int col) { return COLUMN_HEADERS[col]; }
-            public Class<?> getColumnClass(int col) { return COLUMN_CLASSES[col]; }
-            public boolean isCellEditable(int row, int col) { return col == 0; }
+
+            public int getColumnCount() {
+                return COLUMN_HEADERS.length;
+            }
+
+            public String getColumnName(int col) {
+                return COLUMN_HEADERS[col];
+            }
+
+            public Class<?> getColumnClass(int col) {
+                return COLUMN_CLASSES[col];
+            }
+
+            public boolean isCellEditable(int row, int col) {
+                return col == 0;
+            }
 
             public Object getValueAt(int row, int col) {
                 Object item = getItem(row);
-                if (col == 0) return getParentController().isSelected(item);
+                if (col == 0) return parent.isSelected(item);
                 if (col == 1) return getItemName(item);
                 return getProblem(item);
             }
 
             public void setValueAt(Object value, int row, int col) {
                 if (col == 0) {
-                    getParentController().setSelected(getItem(row), (Boolean) value);
+                    parent.setSelected(getItem(row), (Boolean) value);
                     classSelectedAction();
                 }
             }
 
             private Object getItem(int row) {
-                return getParentController().getClasses().toArray()[row];
+                return parent.getClasses().toArray()[row];
             }
         };
 
@@ -118,23 +123,23 @@ public class CgenArtefactSelectorController extends CayenneController {
      * A callback action that updates the state of Select All checkbox.
      */
     public void classSelectedAction() {
-        int selectedCount = getParentController().getSelectedEntitiesSize()
-                + getParentController().getSelectedEmbeddablesSize()
-                + (getParentController().isDataMapSelected() ? 1 : 0);
-        int totalClasses = getParentController().getClasses().size();
+        int selectedCount = parent.getSelectedEntitiesSize()
+                + parent.getSelectedEmbeddablesSize()
+                + (parent.isDataMapSelected() ? 1 : 0);
+        int totalClasses = parent.getClasses().size();
         checkBoxHeader.setSelected(selectedCount >= totalClasses);
-        getParentController().updateGenerateButton();
-        getParentController().updateSelectedEntities();
-        getParentController().getStandardModeController().updateTemplateEditorButtons();
+        parent.updateGenerateButton();
+        parent.updateSelectedEntities();
+        parent.getStandardModeController().updateTemplateEditorButtons();
         view.repaint();
     }
 
     public void checkAllAction() {
-        if (getParentController().updateSelection(checkBoxHeader.isSelected() ? o -> true : o -> false)) {
+        if (parent.updateSelection(checkBoxHeader.isSelected() ? o -> true : o -> false)) {
             tableModel.fireTableDataChanged();
-            getParentController().updateSelectedEntities();
-            getParentController().updateGenerateButton();
-            getParentController().getStandardModeController().updateTemplateEditorButtons();
+            parent.updateSelectedEntities();
+            parent.updateGenerateButton();
+            parent.getStandardModeController().updateTemplateEditorButtons();
         }
     }
 

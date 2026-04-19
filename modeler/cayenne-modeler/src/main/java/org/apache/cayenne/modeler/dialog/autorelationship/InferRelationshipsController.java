@@ -20,6 +20,7 @@ package org.apache.cayenne.modeler.dialog.autorelationship;
 
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
@@ -28,27 +29,43 @@ import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.mvc.RootController;
 import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.InferRelationshipsUndoableEdit;
-import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Predicate;
 
-public class InferRelationshipsController extends InferRelationshipsControllerBase {
+public class InferRelationshipsController extends ChildController<RootController> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InferRelationshipsController.class);
+    public static final String SELECTED_PROPERTY = "selected";
 
+    protected DataMap dataMap;
+    protected java.util.List<InferredRelationship> inferredRelationships;
+    protected java.util.List<DbEntity> entities;
+    protected Set<InferredRelationship> selectedEntities;
+    protected int index;
+    protected ObjectNameGenerator strategy;
     private final InferRelationshipsTabController entitySelector;
     private InferRelationshipsDialog view;
-    private ObjectNameGenerator strategy;
 
-    public InferRelationshipsController(CayenneController parent, DataMap dataMap) {
-        super(parent, dataMap);
-        strategy = createNamingStrategy(NameGeneratorPreferences
+    public InferRelationshipsController(RootController parent, DataMap dataMap) {
+        super(parent);
+        this.dataMap = dataMap;
+        this.entities = new ArrayList<>(dataMap.getDbEntities());
+        this.selectedEntities = new HashSet<>();
+        this.strategy = createNamingStrategy(NameGeneratorPreferences
                 .getInstance()
                 .getLastUsedStrategies()
                 .get(0));
@@ -57,13 +74,193 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
         this.entitySelector = new InferRelationshipsTabController(this);
     }
 
+
+    public void setRelationships() {
+        inferredRelationships = new ArrayList<>();
+
+        for (DbEntity entity : entities) {
+            createRelationships(entity);
+        }
+
+        createJoins();
+        createNames();
+    }
+
+    protected void createRelationships(DbEntity entity) {
+
+        for (DbAttribute attribute : entity.getAttributes()) {
+
+            String name = attribute.getName();
+            if (name.length() < 4) {
+                continue;
+            }
+
+            if (!name.substring(name.length() - 3).equalsIgnoreCase("_ID")) {
+                continue;
+            }
+
+            String baseName = name.substring(0, name.length() - 3);
+            for (DbEntity targetEntity : entities) {
+                // TODO: should we handle relationships to self??
+                if (targetEntity == entity) {
+                    continue;
+                }
+
+                if (baseName.equalsIgnoreCase(targetEntity.getName())
+                        && !attribute.isPrimaryKey()
+                        && !targetEntity.getAttributes().isEmpty()) {
+
+                    if (!attribute.isForeignKey()) {
+                        InferredRelationship myir = new InferredRelationship();
+                        myir.setSource(entity);
+                        myir.setTarget(targetEntity);
+                        inferredRelationships.add(myir);
+                    }
+                    createReversRelationship(targetEntity, entity);
+                }
+            }
+        }
+    }
+
+    public void createReversRelationship(DbEntity eSourse, DbEntity eTarget) {
+        InferredRelationship myir = new InferredRelationship();
+        for (DbRelationship relationship : eSourse.getRelationships()) {
+            for (DbJoin join : relationship.getJoins()) {
+                if (join.getSource().getEntity().equals(eSourse) && join.getTarget().getEntity().equals(eTarget)) {
+                    return;
+                }
+            }
+        }
+        myir.setSource(eSourse);
+        myir.setTarget(eTarget);
+        inferredRelationships.add(myir);
+    }
+
+    protected DbAttribute getJoinAttribute(DbEntity sEntity, DbEntity tEntity) {
+        if (sEntity.getAttributes().size() == 1) {
+            return sEntity.getAttributes().iterator().next();
+        } else {
+            for (DbAttribute attr : sEntity.getAttributes()) {
+                if (attr.getName().equalsIgnoreCase(tEntity.getName() + "_ID")) {
+                    return attr;
+                }
+            }
+
+            for (DbAttribute attr : sEntity.getAttributes()) {
+                if ((attr.getName().equalsIgnoreCase(sEntity.getName() + "_ID"))
+                        && (!attr.isPrimaryKey())) {
+                    return attr;
+                }
+            }
+
+            for (DbAttribute attr : sEntity.getAttributes()) {
+                if (attr.isPrimaryKey()) {
+                    return attr;
+                }
+            }
+        }
+        return null;
+    }
+
+    protected void createJoins() {
+        Iterator<InferredRelationship> it = inferredRelationships.iterator();
+        while (it.hasNext()) {
+            InferredRelationship inferred = it.next();
+
+            DbAttribute src = getJoinAttribute(inferred.getSource(), inferred.getTarget());
+            if (src == null) {
+                // TODO: andrus 03/28/2010 this is pretty inefficient I guess... We should
+                // check for this condition earlier. See CAY-1405 for the map that caused
+                // this issue
+                it.remove();
+                continue;
+            }
+
+            DbAttribute target = getJoinAttribute(inferred.getTarget(), inferred
+                    .getSource());
+            if (target == null) {
+                // TODO: andrus 03/28/2010 this is pretty inefficient I guess... We should
+                // check for this condition earlier. See CAY-1405 for the map that caused
+                // this issue
+                it.remove();
+                continue;
+            }
+
+            inferred.setJoinSource(src);
+            if (src.isPrimaryKey()) {
+                inferred.setToMany(true);
+            }
+
+            inferred.setJoinTarget(target);
+        }
+    }
+
+    protected void createNames() {
+
+
+        for (InferredRelationship myir : inferredRelationships) {
+
+            DbRelationship localRelationship = new DbRelationship();
+            localRelationship.setToMany(myir.isToMany());
+
+            if (myir.getJoinSource().isPrimaryKey()) {
+
+                localRelationship.addJoin(
+                        new DbJoin(localRelationship, myir.getJoinSource().getName(), myir.getJoinTarget().getName())
+                );
+                localRelationship.setSourceEntity(myir.getSource());
+                localRelationship.setTargetEntityName(myir.getTarget().getName());
+            } else {
+                localRelationship.addJoin(
+                        new DbJoin(localRelationship, myir.getJoinTarget().getName(), myir.getJoinSource().getName())
+                );
+                localRelationship.setSourceEntity(myir.getTarget());
+                localRelationship.setTargetEntityName(myir.getSource().getName());
+            }
+
+            myir.setName(strategy.relationshipName(localRelationship));
+        }
+    }
+
+    public boolean isSelected(InferredRelationship entity) {
+        return selectedEntities.contains(entity);
+    }
+
+    public void setSelected(InferredRelationship entity, boolean selectedFlag) {
+        if (selectedFlag) {
+            if (selectedEntities.add(entity)) {
+                firePropertyChange(SELECTED_PROPERTY, null, null);
+            }
+        } else {
+            if (selectedEntities.remove(entity)) {
+                firePropertyChange(SELECTED_PROPERTY, null, null);
+            }
+        }
+    }
+
+    public int getSelectedEntitiesSize() {
+        return selectedEntities.size();
+    }
+
+    public List<InferredRelationship> getEntities() {
+        return inferredRelationships;
+    }
+
+    public DataMap getDataMap() {
+        return dataMap;
+    }
+
+    public void setNamingStrategy(ObjectNameGenerator namestr) {
+        strategy = namestr;
+    }
+
+
     public ObjectNameGenerator createNamingStrategy(String strategyClass) {
         try {
             ClassLoadingService classLoader = application.getClassLoadingService();
 
             return classLoader.loadClass(ObjectNameGenerator.class, strategyClass).getDeclaredConstructor().newInstance();
-        }
-        catch (Throwable th) {
+        } catch (Throwable th) {
             LOGGER.error("Error in " + getClass().getName(), th);
 
             JOptionPane.showMessageDialog(
@@ -108,11 +305,9 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
 
         if (size == 0) {
             label = "No DbRelationships selected";
-        }
-        else if (size == 1) {
+        } else if (size == 1) {
             label = "One DbRelationships selected";
-        }
-        else {
+        } else {
             label = size + " DbRelationships selected";
         }
 
@@ -133,8 +328,7 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
             NameGeneratorPreferences.getInstance().addToLastUsedStrategies(strategyClass);
             view.getStrategyCombo().setModel(
                     new DefaultComboBoxModel<>(NameGeneratorPreferences.getInstance().getLastUsedStrategies()));
-        }
-        catch (Throwable th) {
+        } catch (Throwable th) {
             LOGGER.error("Error in " + getClass().getName(), th);
             return;
         }
@@ -150,10 +344,10 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
     }
 
     public void generateAction() {
-        
+
         ProjectController mediator = application.getFrameController().getProjectController();
         InferRelationshipsUndoableEdit undoableEdit = new InferRelationshipsUndoableEdit();
-        
+
         for (InferredRelationship temp : selectedEntities) {
             DbRelationship rel = new DbRelationship(uniqueRelName(temp.getSource(), temp
                     .getName()));
@@ -170,8 +364,8 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
             rel.addJoin(join);
             rel.setToMany(temp.isToMany());
             temp.getSource().addRelationship(rel);
-            
-            undoableEdit.addEdit(new CreateRelationshipUndoableEdit(temp.getSource(), new DbRelationship[] { rel }));
+
+            undoableEdit.addEdit(new CreateRelationshipUndoableEdit(temp.getSource(), new DbRelationship[]{rel}));
         }
         JOptionPane.showMessageDialog(view, getSelectedEntitiesSize() + " relationships generated");
         view.dispose();
@@ -189,4 +383,41 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
         return relName;
     }
 
+    public String getJoin(InferredRelationship irItem) {
+        return irItem.getJoinSource().getName()
+                + " : "
+                + irItem.getJoinTarget().getName();
+    }
+
+    public String getToMany(InferredRelationship irItem) {
+        if (irItem.isToMany()) {
+            return "to many";
+        } else {
+            return "to one";
+        }
+    }
+
+    public boolean updateSelection(Predicate<InferredRelationship> predicate) {
+        boolean modified = false;
+
+        for (InferredRelationship entity : inferredRelationships) {
+            boolean select = predicate.test(entity);
+
+            if (select) {
+                if (selectedEntities.add(entity)) {
+                    modified = true;
+                }
+            } else {
+                if (selectedEntities.remove(entity)) {
+                    modified = true;
+                }
+            }
+        }
+
+        if (modified) {
+            firePropertyChange(SELECTED_PROPERTY, null, null);
+        }
+
+        return modified;
+    }
 }

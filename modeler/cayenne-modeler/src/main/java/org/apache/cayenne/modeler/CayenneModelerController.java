@@ -26,9 +26,9 @@ import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
 import org.apache.cayenne.modeler.editor.DbImportController;
 import org.apache.cayenne.modeler.editor.EditorPanel;
 import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
+import org.apache.cayenne.modeler.mvc.RootController;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.pref.FSPath;
-import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.FileFilters;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.validation.ProjectValidator;
@@ -57,7 +57,7 @@ import java.util.prefs.Preferences;
 /**
  * Controller of the main application frame.
  */
-public class CayenneModelerController extends CayenneController {
+public class CayenneModelerController extends RootController {
 
     private final ProjectController projectController;
     private final CayenneModelerFrame frame;
@@ -67,7 +67,7 @@ public class CayenneModelerController extends CayenneController {
     public CayenneModelerController(Application application) {
         super(application);
 
-        this.frame = new CayenneModelerFrame(application.getActionManager());
+        this.frame = new CayenneModelerFrame(application.getActionManager(), application.getLogConsoleController());
         application.getInjector().getInstance(PlatformInitializer.class).setupMenus(frame);
         this.projectController = new ProjectController(this);
         this.dbImportController = new DbImportController();

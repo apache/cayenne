@@ -19,10 +19,13 @@
 
 package org.apache.cayenne.modeler.dialog.pref;
 
-import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.Frame;
-import java.awt.Window;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.mvc.ChildController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import java.awt.*;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,26 +35,20 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.Objects;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.util.CayenneController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public class MavenDependencyDialogController extends ChildController<ClasspathPreferencesController> {
 
-public class MavenDependencyDialog extends CayenneController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(MavenDependencyDialog.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MavenDependencyDialogController.class);
     private static final int DEFAULT_BUFFER_SIZE = 8192;
 
-    private final ClasspathPreferences preferencesController;
     private final MavenDependencyDialogView view;
 
     private volatile boolean closing;
 
-    public MavenDependencyDialog(ClasspathPreferences preferencesController) {
-        this.preferencesController = preferencesController;
+    public MavenDependencyDialogController(ClasspathPreferencesController preferencesController) {
+
+        super(preferencesController);
+
         Window parentView = preferencesController.getView() instanceof Window
                 ? (Window) preferencesController.getView()
                 : SwingUtilities.getWindowAncestor(preferencesController.getView());
@@ -74,17 +71,17 @@ public class MavenDependencyDialog extends CayenneController {
         String artifactIdText = view.getArtifactId().getText().trim();
         String versionText = view.getVersion().getText().trim();
 
-        if("".equals(groupPath)) {
+        if(groupPath.isEmpty()) {
             JOptionPane.showMessageDialog(view, "Empty group Id", "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        if("".equals(artifactIdText)) {
+        if(artifactIdText.isEmpty()) {
             JOptionPane.showMessageDialog(view, "Empty artifact Id", "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        if("".equals(versionText)) {
+        if(versionText.isEmpty()) {
             JOptionPane.showMessageDialog(view, "Empty version", "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -133,7 +130,7 @@ public class MavenDependencyDialog extends CayenneController {
     private void finalizeDownload(File dstFile, String status, boolean success, boolean shouldClose) {
         SwingUtilities.invokeLater(() -> {
             if(success) {
-                preferencesController.addClasspathEntry(dstFile);
+                parent.addClasspathEntry(dstFile);
             } else {
                 JOptionPane.showMessageDialog(view, status, "Error", JOptionPane.ERROR_MESSAGE);
             }

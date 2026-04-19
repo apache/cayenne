@@ -24,8 +24,8 @@ import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.modeler.action.ActionManager;
-import org.apache.cayenne.modeler.dialog.LogConsole;
-import org.apache.cayenne.modeler.dialog.pref.ClasspathPreferences;
+import org.apache.cayenne.modeler.dialog.LogConsoleController;
+import org.apache.cayenne.modeler.dialog.pref.ClasspathPreferencesController;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 import org.apache.cayenne.modeler.util.AdapterMapping;
 import org.apache.cayenne.modeler.util.WidgetFactory;
@@ -62,6 +62,7 @@ public class Application {
     private static Application instance;
 
     protected FileClassLoadingService modelerClassLoader;
+    protected LogConsoleController logConsoleController;
     protected CayenneModelerController frameController;
     protected String name;
     protected AdapterMapping adapterMapping;
@@ -138,46 +139,39 @@ public class Application {
         return adapterMapping;
     }
 
-    /**
-     * Returns action controller.
-     */
+
     public ActionManager getActionManager() {
         return injector.getInstance(ActionManager.class);
     }
 
-    /**
-     * Returns undo-edits controller.
-     */
     public CayenneUndoManager getUndoManager() {
         return undoManager;
     }
 
-    /**
-     * Returns controller for the main frame.
-     */
     public CayenneModelerController getFrameController() {
         return frameController;
     }
 
-    /**
-     * Starts the application.
-     */
+    public LogConsoleController getLogConsoleController() {
+        return logConsoleController;
+    }
+
     public void startup() {
+        this.logConsoleController = new LogConsoleController(this);
+
         // init subsystems
         initPreferences();
         initClassLoader();
 
         this.adapterMapping = new AdapterMapping();
-
         this.undoManager = new CayenneUndoManager(this);
-
         this.frameController = new CayenneModelerController(this);
 
         // open up
         frameController.onStartup();
 
         // After prefs have been loaded, we can now show the console if needed
-        LogConsole.getInstance().showConsoleIfNeeded();
+        logConsoleController.showConsoleIfNeeded();
         getFrame().setVisible(true);
     }
 
@@ -216,7 +210,7 @@ public class Application {
 
         // init from preferences...
         Preferences classLoaderPreference = Application.getInstance().getPreferencesNode(
-                ClasspathPreferences.class,
+                ClasspathPreferencesController.class,
                 "");
 
         String[] keys;

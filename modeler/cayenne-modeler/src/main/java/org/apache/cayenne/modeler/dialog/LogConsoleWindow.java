@@ -32,14 +32,14 @@ public class LogConsoleWindow extends CayenneDialog {
     /**
      * Constructs a new log console window
      */
-    public LogConsoleWindow(final LogConsole controller) {
+    public LogConsoleWindow(final LogConsoleController controller) {
         super(Application.getFrame());
         
         setTitle("Cayenne Modeler Console");
         
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                controller.setConsoleProperty(LogConsole.SHOW_CONSOLE_PROPERTY, false);
+                controller.setConsoleProperty(LogConsoleController.SHOW_CONSOLE_PROPERTY, false);
                 Application.getFrame().updateLogConsoleMenu();
             }
         });
