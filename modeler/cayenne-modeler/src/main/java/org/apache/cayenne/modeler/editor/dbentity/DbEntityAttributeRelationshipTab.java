@@ -135,10 +135,6 @@ public class DbEntityAttributeRelationshipTab extends JPanel implements DbEntity
         editButton.setEnabled(enabled);
     }
 
-    public JButton getEditButton() {
-        return editButton;
-    }
-
     public JSplitPane getSplitPane() {
         return splitPane;
     }

@@ -18,37 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.event;
 
-import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.event.CayenneEvent;
+import org.apache.cayenne.modeler.editor.CallbackType;
 
-/**
- * Event for creating/removing/modifying entity listeners
- *
- * @version 1.0 Oct 25, 2007
- */
-public class EntityListenerEvent extends MapEvent{
-    /**
-     * new entity listener class name
-     */
-    private String newName;
+public class CallbackTypeDisplayEvent extends CayenneEvent {
 
-    /**
-     * constructor
-     * @param source event source
-     * @param oldName old entity listener class name
-     * @param newName new entity listener class name
-     * @param eventId event type id
-     */
-    public EntityListenerEvent(Object source, String oldName, String newName, int eventId) {
-        super(source, oldName);
-        this.newName = newName;
-        setId(eventId);
+    private CallbackType callbackType;
+
+    public CallbackTypeDisplayEvent(Object source, CallbackType callbackType) {
+        super(source);
+        this.callbackType = callbackType;
     }
 
-    /**
-     * @return new entity listener class name
-     */
-    public String getNewName() {
-        return newName;
+    public CallbackType getCallbackType() {
+        return callbackType;
     }
 }
 

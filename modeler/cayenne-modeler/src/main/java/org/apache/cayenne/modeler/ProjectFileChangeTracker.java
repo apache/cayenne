@@ -134,7 +134,7 @@ public class ProjectFileChangeTracker extends Thread {
                 if (dialog.shouldSave()) {
                     Application.getInstance().getActionManager().getAction(SaveAction.class).performAction(null);
                 } else if (dialog.shouldClose()) {
-                    Application.getInstance().getFrameController().projectClosedAction();
+                    Application.getInstance().getFrameController().onProjectClosed();
                 } else {
                     projectController.setDirty(true);
                 }

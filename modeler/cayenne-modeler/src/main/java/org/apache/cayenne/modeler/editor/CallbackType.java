@@ -23,12 +23,6 @@ import org.apache.cayenne.util.Util;
 
 import java.io.Serializable;
 
-/**
- * Entity for callback type. Contains type and type name
- *
- * @version 1.0 Oct 26, 2007
- */
-
 public class CallbackType implements Serializable {
 
     private LifecycleEvent type;

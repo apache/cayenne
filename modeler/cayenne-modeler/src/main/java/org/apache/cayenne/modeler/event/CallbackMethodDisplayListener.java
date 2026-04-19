@@ -20,18 +20,8 @@ package org.apache.cayenne.modeler.event;
 
 import java.util.EventListener;
 
-
-/**
- * Listener for callback methods selection
- *
- * @version 1.0 Oct 24, 2007
- */
-
 public interface CallbackMethodDisplayListener extends EventListener {
-    /**
-     * current callback method changed
-     * @param e event
-     */
-    public void currentCallbackMethodCahnged(CallbackMethodDisplayEvent e);
+
+    void currentCallbackMethodChanged(CallbackMethodDisplayEvent e);
 }
 

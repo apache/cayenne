@@ -167,7 +167,7 @@ public class SaveAsAction extends CayenneAction {
             throw new CayenneRuntimeException("Error on save", ex);
         }
 
-        getApplication().getFrameController().projectSavedAction();
+        getApplication().getFrameController().onProjectSaved();
 
         // If there were errors or warnings at validation, display them
         if (!validationResult.getFailures().isEmpty()) {

@@ -21,16 +21,8 @@ package org.apache.cayenne.modeler.event;
 import java.util.EventListener;
 
 
-/**
- * Listener for callback type selection
- *
- * @version 1.0 Oct 28, 2007
- */
 public interface CallbackTypeSelectionListener extends EventListener {
-    /**
-     * callback type selection changed
-     * @param e newly selected callback type
-     */
-    public void callbackTypeSelected(CallbackTypeSelectionEvent e);
+
+    void callbackTypeSelected(CallbackTypeDisplayEvent e);
 }
 

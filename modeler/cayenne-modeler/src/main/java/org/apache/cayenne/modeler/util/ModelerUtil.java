@@ -25,7 +25,6 @@ import org.apache.cayenne.gen.internal.Utils;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ModelerConstants;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.MultipleObjectsAction;
 import org.apache.cayenne.modeler.pref.FSPath;
@@ -60,6 +59,8 @@ import java.util.UUID;
  * 
  */
 public final class ModelerUtil {
+
+    private static final String IMAGES_PATH = "org/apache/cayenne/modeler/images/";
 
     static final String[] REGISTERED_TYPE_NAMES;
     static {
@@ -141,7 +142,7 @@ public final class ModelerUtil {
      */
     public static ImageIcon buildIcon(String path) {
         ClassLoader cl = ModelerUtil.class.getClassLoader();
-        URL url = cl.getResource(ModelerConstants.RESOURCE_PATH + path);
+        URL url = cl.getResource(IMAGES_PATH + path);
         return new ImageIcon(url);
     }
 

@@ -46,7 +46,7 @@ public class RevertAction extends CayenneAction {
         CayenneModelerController controller = getApplication().getFrameController();
 
         // close ... don't use OpenProjectAction close method as it will ask for save, we don't want that here
-        controller.projectClosedAction();
+        controller.onProjectClosed();
 
         File fileDirectory = new File(project
                 .getConfigurationResource()

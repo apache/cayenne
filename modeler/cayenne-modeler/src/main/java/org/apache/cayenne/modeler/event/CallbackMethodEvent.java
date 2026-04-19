@@ -20,26 +20,10 @@ package org.apache.cayenne.modeler.event;
 
 import org.apache.cayenne.map.event.MapEvent;
 
-
-/**
- * Event for creating/removing/modifying callback methods
- *
- * @version 1.0 Oct 25, 2007
- */
-
 public class CallbackMethodEvent extends MapEvent {
-    /**
-     * callbacm method name
-     */
+
     private String callbackMethod;
 
-    /**
-     * constructor
-     * @param source event source
-     * @param prevCallbackMethod previous callback method name (for renaming)
-     * @param callbackMethod (new) callback method name
-     * @param id event type id
-     */
     public CallbackMethodEvent(
                 Object source,
                 String prevCallbackMethod,
@@ -50,9 +34,8 @@ public class CallbackMethodEvent extends MapEvent {
         setId(id);
     }
 
-    /**
-     * @return new callback method name
-     */
+
+    @Override
     public String getNewName() {
         return callbackMethod;
     }

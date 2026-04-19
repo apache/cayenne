@@ -20,13 +20,6 @@ package org.apache.cayenne.modeler.event;
 
 import org.apache.cayenne.event.CayenneEvent;
 
-
-/**
- * Display event for callback method
- *
- * @version 1.0 Oct 24, 2007
- */
-
 public class CallbackMethodDisplayEvent extends CayenneEvent {
     private String callbackMethod;
 

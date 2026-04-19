@@ -181,7 +181,7 @@ public class OpenProjectAction extends ProjectAction {
 
     private Project openProjectResourse(Resource resource, CayenneModelerController controller) {
         Project project = getApplication().getInjector().getInstance(ProjectLoader.class).loadProject(resource);
-        controller.projectOpenedAction(project);
+        controller.onProjectOpened(project);
         return project;
     }
 

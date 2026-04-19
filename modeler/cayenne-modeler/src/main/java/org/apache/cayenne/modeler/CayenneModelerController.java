@@ -155,26 +155,23 @@ public class CayenneModelerController extends CayenneController {
         return false;
     }
 
-    public void startupAction() {
+    public void onStartup() {
         initBindings();
         frame.setVisible(true);
     }
 
-    public void projectModifiedAction() {
+    public void onProjectModified() {
         frame.setTitle("* - " + getProjectLocationString());
     }
 
-    public void projectSavedAction() {
+    public void onProjectSaved() {
         projectController.setDirty(false);
         projectController.updateProjectControllerPreferences();
         updateStatus("Project saved...");
         frame.setTitle(getProjectLocationString());
     }
 
-    /**
-     * Action method invoked on project closing.
-     */
-    public void projectClosedAction() {
+    public void onProjectClosed() {
         PROJECT_STATE_UTIL.saveLastState(projectController);
 
         // --- update view
@@ -194,10 +191,9 @@ public class CayenneModelerController extends CayenneController {
     }
 
     /**
-     * Handles project opening control. Updates main frame, then delegates control to
-     * child controllers.
+     * Handles project opening control. Updates main frame, then delegates control to child controllers.
      */
-    public void projectOpenedAction(Project project) {
+    public void onProjectOpened(Project project) {
 
         projectController.setProject(project);
 

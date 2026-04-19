@@ -1487,7 +1487,7 @@ public class ProjectController extends CayenneController {
             application.getActionManager().getAction(RevertAction.class).setEnabled(dirty);
 
             if (dirty) {
-                ((CayenneModelerController) getParent()).projectModifiedAction();
+                ((CayenneModelerController) getParent()).onProjectModified();
             }
         }
     }
@@ -1500,7 +1500,7 @@ public class ProjectController extends CayenneController {
         listeners.add(CallbackTypeSelectionListener.class, listener);
     }
 
-    public void fireCallbackTypeSelectionEvent(CallbackTypeSelectionEvent e) {
+    public void fireCallbackTypeSelectionEvent(CallbackTypeDisplayEvent e) {
         state.callbackType = e.getCallbackType();
         for (CallbackTypeSelectionListener l : listeners.getListeners(CallbackTypeSelectionListener.class)) {
             l.callbackTypeSelected(e);

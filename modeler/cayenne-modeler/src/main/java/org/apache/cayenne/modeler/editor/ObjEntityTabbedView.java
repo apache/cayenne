@@ -43,7 +43,7 @@ public class ObjEntityTabbedView extends JTabbedPane {
 
     private final Component entityPanel;
     private final ObjEntityAttributeRelationshipTab attributeRelationshipTab;
-    private final AbstractCallbackMethodsTab callbacksPanel;
+    private final ObjEntityCallbackMethodsTab callbacksPanel;
     private int lastTabIndex;
 
     public ObjEntityTabbedView(ProjectController controller) {

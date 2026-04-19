@@ -68,7 +68,7 @@ public class NewProjectAction extends ProjectAction {
         Project project = new Project(
                 new ConfigurationTree<DataChannelDescriptor>(dataChannelDescriptor));
 
-        controller.projectOpenedAction(project);
+        controller.onProjectOpened(project);
 
         // select default domain
         getProjectController().fireDomainDisplayEvent(new DomainDisplayEvent(this, dataChannelDescriptor));

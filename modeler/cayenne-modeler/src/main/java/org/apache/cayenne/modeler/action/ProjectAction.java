@@ -71,7 +71,7 @@ public class ProjectAction extends CayenneAction {
 
         application.getUndoManager().discardAllEdits();
 
-        controller.projectClosedAction();
+        controller.onProjectClosed();
 
         return true;
     }

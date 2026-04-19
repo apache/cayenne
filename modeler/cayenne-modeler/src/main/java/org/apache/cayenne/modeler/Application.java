@@ -174,7 +174,7 @@ public class Application {
         this.frameController = new CayenneModelerController(this);
 
         // open up
-        frameController.startupAction();
+        frameController.onStartup();
 
         // After prefs have been loaded, we can now show the console if needed
         LogConsole.getInstance().showConsoleIfNeeded();
