@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.editor;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.GenerateCodeAction;
 import org.apache.cayenne.modeler.action.ShowValidationConfigAction;
-import org.apache.cayenne.modeler.action.dbimport.ReverseEngineeringToolMenuAction;
 import org.apache.cayenne.modeler.editor.cgen.domain.CgenTabController;
 import org.apache.cayenne.modeler.editor.dbimport.domain.DbImportTabController;
 import org.apache.cayenne.modeler.editor.validation.ValidationTabController;
@@ -96,9 +95,6 @@ public class DataDomainTabbedView extends JTabbedPane {
         }
         if (getSelectedComponent() == dbImportView) {
             fireStateChanged();
-        }
-        if (e.getSource() instanceof ReverseEngineeringToolMenuAction) {
-            setSelectedComponent(dbImportView);
         }
         if (e.getSource() instanceof ShowValidationConfigAction) {
             setSelectedComponent(validationTabView);

@@ -24,6 +24,7 @@ CAY-2908 Review and upgrade dependencies
 CAY-2916 SelectById: unify logic for null/empty values
 CAY-2917 Add Qualifier Joins Before Depenent Table Joins
 CAY-2918 Remove OGNL Binding Architecture from CayenneModeler
+CAY-2920 Remove "Reengineer Database Schema" menu
 
 Bug Fixes:
 
