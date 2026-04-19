@@ -48,38 +48,27 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import java.awt.BorderLayout;
+import java.awt.event.ActionListener;
 
 /**
  * Combines DbEntityAttributeTab and DbEntityRelationshipTab in JSplitPane.
  */
-
 public class DbEntityAttributeRelationshipTab extends JPanel implements DbEntityDisplayListener, DbEntityListener {
 
-    public DbEntityAttributePanel attributePanel;
-    public DbEntityRelationshipPanel relationshipPanel;
-    public JButton resolve = new CayenneAction.CayenneToolbarButton(null, 0);
-    private JSplitPane splitPane;
+    private final DbEntityAttributePanel attributePanel;
+    private final DbEntityRelationshipPanel relationshipPanel;
+    private final JButton editButton;
+    private final JSplitPane splitPane;
+    private final JToolBar toolBar;
 
-    private ProjectController mediator;
+    public DbEntityAttributeRelationshipTab(ProjectController controller) {
 
-    private CutAttributeRelationshipAction cut;
-    private RemoveAttributeRelationshipAction remove;
-    private CopyAttributeRelationshipAction copy;
-    private JToolBar toolBar;
-
-    public DbEntityAttributeRelationshipTab(ProjectController mediator) {
-        this.mediator = mediator;
-
-        init();
-        initToolBar();
-        mediator.addDbEntityDisplayListener(this);
-    }
-
-    private void init() {
         this.setLayout(new BorderLayout());
 
-        attributePanel = new DbEntityAttributePanel(mediator, this);
-        relationshipPanel = new DbEntityRelationshipPanel(mediator, this);
+        editButton = new CayenneAction.CayenneToolbarButton(null, 0);
+
+        attributePanel = new DbEntityAttributePanel(controller, this);
+        relationshipPanel = new DbEntityRelationshipPanel(controller, this);
 
         splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, attributePanel, relationshipPanel);
         splitPane.setOneTouchExpandable(true);
@@ -96,9 +85,6 @@ public class DbEntityAttributeRelationshipTab extends JPanel implements DbEntity
         }
 
         add(splitPane);
-    }
-
-    private void initToolBar() {
         toolBar = new JToolBar();
         toolBar.setFloatable(false);
         ActionManager actionManager = Application.getInstance().getActionManager();
@@ -113,23 +99,20 @@ public class DbEntityAttributeRelationshipTab extends JPanel implements DbEntity
         toolBar.addSeparator();
 
         Icon ico = ModelerUtil.buildIcon("icon-edit.png");
-        resolve.setToolTipText("Edit Relationship");
-        resolve.setIcon(ico);
-        resolve.setDisabledIcon(FilteredIconFactory.createDisabledIcon(ico));
-        toolBar.add(resolve).setEnabled(false);
-
-        cut = actionManager.getAction(CutAttributeRelationshipAction.class);
-        remove = actionManager.getAction(RemoveAttributeRelationshipAction.class);
-        copy = actionManager.getAction(CopyAttributeRelationshipAction.class);
+        editButton.setToolTipText("Edit");
+        editButton.setIcon(ico);
+        editButton.setDisabledIcon(FilteredIconFactory.createDisabledIcon(ico));
+        toolBar.add(editButton).setEnabled(false);
 
         toolBar.addSeparator();
-        toolBar.add(remove.buildButton());
+        toolBar.add(actionManager.getAction(RemoveAttributeRelationshipAction.class).buildButton());
         toolBar.addSeparator();
-        toolBar.add(cut.buildButton(1));
-        toolBar.add(copy.buildButton(2));
+        toolBar.add(actionManager.getAction(CutAttributeRelationshipAction.class).buildButton(1));
+        toolBar.add(actionManager.getAction(CopyAttributeRelationshipAction.class).buildButton(2));
         toolBar.add(actionManager.getAction(PasteAction.class).buildButton(3));
 
         add(toolBar, BorderLayout.NORTH);
+        controller.addDbEntityDisplayListener(this);
     }
 
     public void updateActions(Object[] params) {
@@ -139,12 +122,21 @@ public class DbEntityAttributeRelationshipTab extends JPanel implements DbEntity
                 CutAttributeRelationshipAction.class,
                 CopyAttributeRelationshipAction.class);
         if (params instanceof DbRelationship[]) {
-            resolve.setEnabled(params.length > 0);
+            editButton.setEnabled(params.length > 0);
         }
     }
 
-    public JButton getResolve() {
-        return resolve;
+    public void rebindEditButton(boolean enabled, String tooltipText, ActionListener action) {
+        for (ActionListener al : editButton.getActionListeners()) {
+            editButton.removeActionListener(al);
+        }
+        editButton.addActionListener(action);
+        editButton.setToolTipText(tooltipText);
+        editButton.setEnabled(enabled);
+    }
+
+    public JButton getEditButton() {
+        return editButton;
     }
 
     public JSplitPane getSplitPane() {
@@ -173,7 +165,7 @@ public class DbEntityAttributeRelationshipTab extends JPanel implements DbEntity
 
     public void currentDbEntityChanged(EntityDisplayEvent e) {
         DbEntity entity = (DbEntity) e.getEntity();
-        if(entity.getDataMap().getMappedEntities(entity).isEmpty()) {
+        if (entity.getDataMap().getMappedEntities(entity).isEmpty()) {
             toolBar.getComponentAtIndex(4).setEnabled(false);
             toolBar.getComponentAtIndex(5).setEnabled(false);
         } else {

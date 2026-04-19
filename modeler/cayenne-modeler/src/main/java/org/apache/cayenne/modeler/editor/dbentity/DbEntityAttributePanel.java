@@ -18,17 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor.dbentity;
 
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableColumn;
-import java.awt.BorderLayout;
-import java.util.List;
-
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -41,6 +30,7 @@ import org.apache.cayenne.modeler.action.CopyAttributeRelationshipAction;
 import org.apache.cayenne.modeler.action.CutAttributeRelationshipAction;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeRelationshipAction;
+import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
@@ -52,28 +42,27 @@ import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import org.apache.cayenne.swing.components.LimitedTextField;
 
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableColumn;
+import java.awt.*;
+import java.util.List;
+
 /**
  * Detail view of the DbEntity attributes.
  */
 public class DbEntityAttributePanel extends JPanel implements DbEntityDisplayListener, DbAttributeListener {
 
-    protected ProjectController mediator;
-    protected CayenneTable table;
-    private TableColumnPreferences tablePreferences;
-    private DbEntityAttributeRelationshipTab parentPanel;
+    private final ProjectController controller;
+    private final CayenneTable table;
+    private final TableColumnPreferences tablePreferences;
+    private final DbEntityAttributeRelationshipTab parentPanel;
 
-
-    public DbEntityAttributePanel(ProjectController mediator, DbEntityAttributeRelationshipTab parentPanel) {
-        super();
-        this.mediator = mediator;
+    public DbEntityAttributePanel(ProjectController controller, DbEntityAttributeRelationshipTab parentPanel) {
+        this.controller = controller;
         this.parentPanel = parentPanel;
 
-        // Create and layout components
-        initView();
-        initController();
-    }
-
-    private void initView() {
         this.setLayout(new BorderLayout());
 
         ActionManager actionManager = Application.getInstance().getActionManager();
@@ -85,7 +74,8 @@ public class DbEntityAttributePanel extends JPanel implements DbEntityDisplayLis
                 "attributeTable");
         table.setDefaultRenderer(String.class, new BoardTableCellRenderer());
 
-        // Create and install a popup
+        // TODO: There is no edit panel for DbAttributes, so for now no edit contextual menu and the edit button is disabled
+
         JPopupMenu popup = new JPopupMenu();
         popup.add(actionManager.getAction(RemoveAttributeRelationshipAction.class).buildMenu());
 
@@ -97,23 +87,21 @@ public class DbEntityAttributePanel extends JPanel implements DbEntityDisplayLis
         TablePopupHandler.install(table, popup);
         add(PanelFactory.createTablePanel(table, null), BorderLayout.CENTER);
 
-    }
+        controller.addDbEntityDisplayListener(this);
+        controller.addDbAttributeListener(this);
 
-    private void initController() {
-        mediator.addDbEntityDisplayListener(this);
-        mediator.addDbAttributeListener(this);
+        table.getSelectionModel().addListSelectionListener(this::valueChanged);
 
-        table.getSelectionModel().addListSelectionListener(new DbAttributeListSelectionListener());
-
-        mediator.getApplication().getActionManager().setupCutCopyPaste(
+        actionManager.setupCutCopyPaste(
                 table,
                 CutAttributeRelationshipAction.class,
                 CopyAttributeRelationshipAction.class);
     }
 
-    /**
-     * Selects specified attributes.
-     */
+    public CayenneTable getTable() {
+        return table;
+    }
+
     public void selectAttributes(DbAttribute[] attrs) {
         DbAttributeTableModel model = (DbAttributeTableModel) table.getModel();
 
@@ -137,17 +125,22 @@ public class DbEntityAttributePanel extends JPanel implements DbEntityDisplayLis
         }
 
         table.select(newSel);
+
+
     }
 
+    @Override
     public void dbAttributeChanged(AttributeEvent e) {
         table.select(e.getAttribute());
     }
 
+    @Override
     public void dbAttributeAdded(AttributeEvent e) {
         rebuildTable((DbEntity) e.getEntity());
         table.select(e.getAttribute());
     }
 
+    @Override
     public void dbAttributeRemoved(AttributeEvent e) {
         DbAttributeTableModel model = (DbAttributeTableModel) table.getModel();
         int ind = model.getObjectList().indexOf(e.getAttribute());
@@ -155,6 +148,7 @@ public class DbEntityAttributePanel extends JPanel implements DbEntityDisplayLis
         table.select(ind);
     }
 
+    @Override
     public void currentDbEntityChanged(EntityDisplayEvent e) {
 
         DbEntity entity = (DbEntity) e.getEntity();
@@ -174,7 +168,7 @@ public class DbEntityAttributePanel extends JPanel implements DbEntityDisplayLis
             cellEditor.stopCellEditing();
         }
 
-        DbAttributeTableModel model = new DbAttributeTableModel(ent, mediator, this);
+        DbAttributeTableModel model = new DbAttributeTableModel(ent, controller, this);
         table.setModel(model);
         table.setRowHeight(25);
         table.setRowMargin(3);
@@ -202,39 +196,50 @@ public class DbEntityAttributePanel extends JPanel implements DbEntityDisplayLis
         tablePreferences.bind(table, null, null, null, model.nameColumnInd(), true);
     }
 
-    private class DbAttributeListSelectionListener implements ListSelectionListener {
+    private void valueChanged(ListSelectionEvent e) {
 
-        public void valueChanged(ListSelectionEvent e) {
-            DbAttribute[] attrs = new DbAttribute[0];
+        if (e.getValueIsAdjusting()) {
+            return;
+        }
 
-            if (!e.getValueIsAdjusting() && !((ListSelectionModel) e.getSource()).isSelectionEmpty()) {
+        DbAttribute[] attrs = new DbAttribute[0];
 
-                parentPanel.getRelationshipPanel().table.getSelectionModel().clearSelection();
-                if (parentPanel.getRelationshipPanel().table.getCellEditor() != null)
-                    parentPanel.getRelationshipPanel().table.getCellEditor().stopCellEditing();
-                Application.getInstance().getActionManager().getAction(RemoveAttributeRelationshipAction.class).setCurrentSelectedPanel(parentPanel.getAttributePanel());
-                Application.getInstance().getActionManager().getAction(CutAttributeRelationshipAction.class).setCurrentSelectedPanel(parentPanel.getAttributePanel());
-                Application.getInstance().getActionManager().getAction(CopyAttributeRelationshipAction.class).setCurrentSelectedPanel(parentPanel.getAttributePanel());
-                parentPanel.getResolve().setEnabled(false);
+        if (!((ListSelectionModel) e.getSource()).isSelectionEmpty()) {
 
-                if (table.getSelectedRow() >= 0) {
-                    DbAttributeTableModel model = (DbAttributeTableModel) table.getModel();
-
-                    int[] sel = table.getSelectedRows();
-                    attrs = new DbAttribute[sel.length];
-
-                    for (int i = 0; i < sel.length; i++) {
-                        attrs[i] = model.getAttribute(sel[i]);
-                    }
-
-                    if (sel.length == 1) {
-                        UIUtil.scrollToSelectedRow(table);
-                    }
-                }
+            parentPanel.getRelationshipPanel().getTable().getSelectionModel().clearSelection();
+            if (parentPanel.getRelationshipPanel().getTable().getCellEditor() != null) {
+                parentPanel.getRelationshipPanel().getTable().getCellEditor().stopCellEditing();
             }
 
-            mediator.setSelectedDbAttributes(attrs);
-            parentPanel.updateActions(attrs);
+            ActionManager actionManager = Application.getInstance().getActionManager();
+
+            actionManager.getAction(RemoveAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
+            actionManager.getAction(CutAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
+            actionManager.getAction(CopyAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
+
+            if (table.getSelectedRow() >= 0) {
+                DbAttributeTableModel model = (DbAttributeTableModel) table.getModel();
+
+                int[] sel = table.getSelectedRows();
+                attrs = new DbAttribute[sel.length];
+
+                for (int i = 0; i < sel.length; i++) {
+                    attrs[i] = model.getAttribute(sel[i]);
+                }
+
+                if (sel.length == 1) {
+                    UIUtil.scrollToSelectedRow(table);
+                }
+            }
         }
+
+        controller.fireDbAttributeDisplayEvent(new AttributeDisplayEvent(
+                this,
+                attrs,
+                controller.getSelectedDbEntity(),
+                controller.getSelectedDataMap(),
+                controller.getSelectedDataDomain()));
+
+        parentPanel.updateActions(attrs);
     }
 }

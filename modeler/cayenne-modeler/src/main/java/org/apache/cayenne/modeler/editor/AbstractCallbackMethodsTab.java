@@ -34,6 +34,7 @@ import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveCallbackMethodAction;
 import org.apache.cayenne.modeler.event.CallbackMethodEvent;
 import org.apache.cayenne.modeler.event.CallbackMethodListener;
+import org.apache.cayenne.modeler.event.CallbackTypeSelectionEvent;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneAction;
@@ -86,10 +87,6 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
      * Min sizes for the table columns
      */
     private static final Map<Integer, Integer> MIN_SIZES = Collections.singletonMap(0, 150);
-
-    /**
-     * mediator instance
-     */
     ProjectController mediator;
 
     /**
@@ -394,7 +391,7 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
     	}
     	
         public void actionPerformed(ActionEvent e) {
-        	mediator.setSelectedCallbackType(callbackType);
+            mediator.fireCallbackTypeSelectionEvent(new CallbackTypeSelectionEvent(this, callbackType));
         }
     } 
 
@@ -507,7 +504,7 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
                         }
                     }
 
-	                mediator.setSelectedCallbackType(((CallbackDescriptorTableModel)table.getCayenneModel()).getCallbackType());
+	                mediator.fireCallbackTypeSelectionEvent(new CallbackTypeSelectionEvent(this, ((CallbackDescriptorTableModel)table.getCayenneModel()).getCallbackType()));
                 }
 
                 if (table.getSelectedRow() != -1) {
@@ -595,7 +592,7 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
 
     			unselectAll();
             	
-    			mediator.setSelectedCallbackType(((CallbackDescriptorTableModel)table.getCayenneModel()).getCallbackType());
+    			mediator.fireCallbackTypeSelectionEvent(new CallbackTypeSelectionEvent(this, ((CallbackDescriptorTableModel)table.getCayenneModel()).getCallbackType()));
             	popupMenu.show(e.getComponent(), e.getX(), e.getY());
             }
 	    }

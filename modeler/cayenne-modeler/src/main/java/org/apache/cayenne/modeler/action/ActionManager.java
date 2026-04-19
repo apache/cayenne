@@ -19,33 +19,22 @@
 
 package org.apache.cayenne.modeler.action;
 
-import javax.swing.Action;
-import javax.swing.JComponent;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
 
+import javax.swing.*;
+
 /**
- * Stores a map of modeler actions, and deals with activating/deactivating those actions
- * on state changes.
+ * Stores a map of modeler actions, and deals with activating/deactivating those actions on state changes.
  */
 public interface ActionManager {
 
-    /**
-     * Returns an action for key.
-     */
     <T extends Action> T getAction(Class<T> actionClass);
 
-    /**
-     * Updates actions state to reflect an open project.
-     */
     void projectOpened();
 
     void projectClosed();
 
-    /**
-     * Updates actions state to reflect DataDomain selection.
-     */
     void domainSelected();
 
     void dataNodeSelected();
@@ -68,8 +57,7 @@ public interface ActionManager {
     void multipleObjectsSelected(ConfigurationNode[] objects, Application application);
 
     /**
-     * Replaces standard Cut, Copy and Paste action maps, so that accelerators like
-     * Ctrl+X, Ctrl+C, Ctrl+V would work.
+     * Replaces standard Cut, Copy and Paste action maps, so that accelerators like Ctrl+X, Ctrl+C, Ctrl+V would work.
      */
     void setupCutCopyPaste(
             JComponent comp,

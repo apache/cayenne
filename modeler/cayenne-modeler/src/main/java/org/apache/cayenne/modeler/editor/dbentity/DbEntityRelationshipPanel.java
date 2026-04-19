@@ -35,6 +35,7 @@ import org.apache.cayenne.modeler.action.RemoveAttributeRelationshipAction;
 import org.apache.cayenne.modeler.dialog.DbRelationshipDialog;
 import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.BoardTableCellRenderer;
@@ -47,13 +48,12 @@ import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
-import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import java.util.List;
 
 /**
@@ -62,51 +62,30 @@ import java.util.List;
 public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplayListener,
         DbEntityListener, DbRelationshipListener, TableModelListener {
 
-    protected ProjectController mediator;
-    protected CayenneTable table;
-    private TableColumnPreferences tablePreferences;
-    private ActionListener resolver;
-    private boolean enabledResolve;
-    private DbEntityAttributeRelationshipTab parentPanel;
+    private final ProjectController controller;
+    private final CayenneTable table;
+    private final TableColumnPreferences tablePreferences;
+    private final DbEntityAttributeRelationshipTab parentPanel;
+    private final JMenuItem editMenu;
+    private JComboBox<DbEntity> targetCombo;
 
-    /**
-     * By now popup menu item is made similiar to toolbar button. (i.e. all functionality
-     * is here) This should be probably refactored as Action.
-     */
-    protected JMenuItem resolveMenu;
-
-    /**
-     * Combo to edit 'target' field
-     */
-    protected JComboBox<DbEntity> targetCombo;
-
-    public DbEntityRelationshipPanel(ProjectController mediator, DbEntityAttributeRelationshipTab parentPanel) {
-        this.mediator = mediator;
+    public DbEntityRelationshipPanel(ProjectController controller, DbEntityAttributeRelationshipTab parentPanel) {
+        this.controller = controller;
         this.parentPanel = parentPanel;
 
-        init();
-        initController();
-    }
-
-    protected void init() {
         this.setLayout(new BorderLayout());
 
         ActionManager actionManager = Application.getInstance().getActionManager();
 
         table = new CayenneTable();
-        table.setDefaultRenderer(DbEntity.class, CellRenderers
-                .entityTableRendererWithIcons(mediator));
+        table.setDefaultRenderer(DbEntity.class, CellRenderers.entityTableRendererWithIcons(controller));
         table.setDefaultRenderer(String.class, new BoardTableCellRenderer());
-        tablePreferences = new TableColumnPreferences(
-                DbRelationshipTableModel.class,
-                "relationshipTable");
+        tablePreferences = new TableColumnPreferences(DbRelationshipTableModel.class, "relationshipTable");
 
-        // Create and install a popup
-        Icon ico = ModelerUtil.buildIcon("icon-edit.png");
-        resolveMenu = new JMenuItem("Database Mapping", ico);
+        editMenu = new JMenuItem("Edit Relationship", ModelerUtil.buildIcon("icon-edit.png"));
 
         JPopupMenu popup = new JPopupMenu();
-        popup.add(resolveMenu);
+        popup.add(editMenu);
         popup.add(actionManager.getAction(RemoveAttributeRelationshipAction.class).buildMenu());
 
         popup.addSeparator();
@@ -116,42 +95,31 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
 
         TablePopupHandler.install(table, popup);
         add(PanelFactory.createTablePanel(table, null), BorderLayout.CENTER);
-    }
 
-    private void initController() {
-        this.mediator.addDbEntityDisplayListener(this);
-        this.mediator.addDbEntityListener(this);
-        this.mediator.addDbRelationshipListener(this);
+        this.controller.addDbEntityDisplayListener(this);
+        this.controller.addDbEntityListener(this);
+        this.controller.addDbRelationshipListener(this);
 
-        resolver = e -> {
-            int row = table.getSelectedRow();
-            if (row < 0) {
-                return;
-            }
+        editMenu.addActionListener(this::edit);
 
-            // Get DbRelationship
-            DbRelationshipTableModel model = (DbRelationshipTableModel) table.getModel();
-            DbRelationship rel = model.getRelationship(row);
-            new DbRelationshipDialog(mediator)
-                    .modifyRaltionship(rel)
-                    .startUp();
-        };
-        resolveMenu.addActionListener(resolver);
+        table.getSelectionModel().addListSelectionListener(this::valueChanged);
 
-        table.getSelectionModel().addListSelectionListener(new DbRelationshipListSelectionListener());
-
-        mediator.getApplication().getActionManager().setupCutCopyPaste(
+        controller.getApplication().getActionManager().setupCutCopyPaste(
                 table,
                 CutAttributeRelationshipAction.class,
                 CopyAttributeRelationshipAction.class);
     }
 
+    public CayenneTable getTable() {
+        return table;
+    }
+
+    @Override
     public void tableChanged(TableModelEvent e) {
         if (table.getSelectedRow() >= 0) {
             DbRelationshipTableModel model = (DbRelationshipTableModel) table.getModel();
             DbRelationship rel = model.getRelationship(table.getSelectedRow());
-            enabledResolve = (rel.getTargetEntity() != null);
-            resolveMenu.setEnabled(enabledResolve);
+            editMenu.setEnabled(rel.getTargetEntity() != null);
         }
     }
 
@@ -164,15 +132,11 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
         List listRels = model.getObjectList();
         int[] newSel = new int[rels.length];
 
-        Application.getInstance().getActionManager()
-                .getAction(RemoveAttributeRelationshipAction.class)
-                .setCurrentSelectedPanel(parentPanel.getRelationshipPanel());
-        Application.getInstance().getActionManager()
-                .getAction(CutAttributeRelationshipAction.class)
-                .setCurrentSelectedPanel(parentPanel.getRelationshipPanel());
-        Application.getInstance().getActionManager()
-                .getAction(CopyAttributeRelationshipAction.class)
-                .setCurrentSelectedPanel(parentPanel.getRelationshipPanel());
+        ActionManager actionManager = Application.getInstance().getActionManager();
+        actionManager.getAction(RemoveAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
+        actionManager.getAction(CutAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
+        actionManager.getAction(CopyAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
+
         parentPanel.updateActions(rels);
 
         for (int i = 0; i < rels.length; i++) {
@@ -180,8 +144,7 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
         }
 
         table.select(newSel);
-        parentPanel.getResolve().removeActionListener(getResolver());
-        parentPanel.getResolve().addActionListener(getResolver());
+        parentPanel.rebindEditButton(rels.length > 0, "Edit Relationship", this::edit);
     }
 
     /**
@@ -207,7 +170,7 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
     protected void rebuildTable(DbEntity entity) {
         DbRelationshipTableModel model = new DbRelationshipTableModel(
                 entity,
-                mediator,
+                controller,
                 this);
         model.addTableModelListener(this);
         table.setModel(model);
@@ -278,8 +241,8 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
      */
     private void reloadEntityList(EntityEvent e) {
         if (e.getSource() == this
-            || mediator.getSelectedDbEntity() == e.getEntity()  // If current model added/removed, do nothing.
-            || mediator.getSelectedDbEntity() == null) { // If this is just loading new currentDbEntity, do nothing
+                || controller.getSelectedDbEntity() == e.getEntity()  // If current model added/removed, do nothing.
+                || controller.getSelectedDbEntity() == null) { // If this is just loading new currentDbEntity, do nothing
             return;
         }
 
@@ -293,58 +256,76 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
      * Creates a list of DbEntities.
      */
     private ComboBoxModel<DbEntity> createComboModel() {
-        EntityResolver resolver = mediator.getEntityResolver();
+        EntityResolver resolver = controller.getEntityResolver();
         DbEntity[] objects = resolver.getDbEntities().toArray(new DbEntity[0]);
         return new DefaultComboBoxModel<>(objects);
     }
 
-    public ActionListener getResolver() {
-        return resolver;
+    private void edit(ActionEvent e) {
+        int row = table.getSelectedRow();
+        if (row < 0) {
+            return;
+        }
+
+        DbRelationshipTableModel model = (DbRelationshipTableModel) table.getModel();
+        DbRelationship rel = model.getRelationship(row);
+        new DbRelationshipDialog(controller)
+                .modifyRaltionship(rel)
+                .startUp();
     }
 
-    private class DbRelationshipListSelectionListener implements ListSelectionListener {
+    private void valueChanged(ListSelectionEvent e) {
 
-        public void valueChanged(ListSelectionEvent e) {
-            DbRelationship[] rels = new DbRelationship[0];
+        if (e.getValueIsAdjusting()) {
+            return;
+        }
 
-            if (!e.getValueIsAdjusting() && !((ListSelectionModel) e.getSource()).isSelectionEmpty()) {
+        DbRelationship[] rels = new DbRelationship[0];
 
-                parentPanel.getAttributePanel().table.getSelectionModel().clearSelection();
-                if (parentPanel.getAttributePanel().table.getCellEditor() != null)
-                    parentPanel.getAttributePanel().table.getCellEditor().stopCellEditing();
-                Application.getInstance().getActionManager().getAction(RemoveAttributeRelationshipAction.class).setCurrentSelectedPanel(parentPanel.getRelationshipPanel());
-                Application.getInstance().getActionManager().getAction(CutAttributeRelationshipAction.class).setCurrentSelectedPanel(parentPanel.getRelationshipPanel());
-                Application.getInstance().getActionManager().getAction(CopyAttributeRelationshipAction.class).setCurrentSelectedPanel(parentPanel.getRelationshipPanel());
-                parentPanel.getResolve().removeActionListener(getResolver());
-                parentPanel.getResolve().addActionListener(getResolver());
+        if (!((ListSelectionModel) e.getSource()).isSelectionEmpty()) {
 
-                if (table.getSelectedRow() >= 0) {
-                    DbRelationshipTableModel model = (DbRelationshipTableModel) table.getModel();
-
-                    int[] sel = table.getSelectedRows();
-                    rels = new DbRelationship[sel.length];
-
-                    for (int i = 0; i < sel.length; i++) {
-                        rels[i] = model.getRelationship(sel[i]);
-                    }
-
-                    if (sel.length == 1) {
-                        UIUtil.scrollToSelectedRow(table);
-                    }
-
-                    enabledResolve = true;
-                } else {
-                    enabledResolve = false;
-                }
-                resolveMenu.setEnabled(enabledResolve);
+            parentPanel.getAttributePanel().getTable().getSelectionModel().clearSelection();
+            if (parentPanel.getAttributePanel().getTable().getCellEditor() != null) {
+                parentPanel.getAttributePanel().getTable().getCellEditor().stopCellEditing();
             }
 
-            mediator.setSelectedDbRelationships(rels);
-            parentPanel.updateActions(rels);
+            ActionManager actionManager = Application.getInstance().getActionManager();
+            actionManager.getAction(RemoveAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
+            actionManager.getAction(CutAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
+            actionManager.getAction(CopyAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
+
+            boolean editEnabled = table.getSelectedRow() >= 0;
+            parentPanel.rebindEditButton(editEnabled, "Edit Relationship", this::edit);
+
+            if (editEnabled) {
+                DbRelationshipTableModel model = (DbRelationshipTableModel) table.getModel();
+
+                int[] sel = table.getSelectedRows();
+                rels = new DbRelationship[sel.length];
+
+                for (int i = 0; i < sel.length; i++) {
+                    rels[i] = model.getRelationship(sel[i]);
+                }
+
+                if (sel.length == 1) {
+                    UIUtil.scrollToSelectedRow(table);
+                }
+            }
+
+            editMenu.setEnabled(editEnabled);
         }
+
+        controller.fireDbRelationshipDisplayEvent(new RelationshipDisplayEvent(
+                this,
+                rels,
+                controller.getSelectedDbEntity(),
+                controller.getSelectedDataMap(),
+                controller.getSelectedDataDomain()));
+
+        parentPanel.updateActions(rels);
     }
 
-    private class CheckBoxCellRenderer implements TableCellRenderer {
+    private static class CheckBoxCellRenderer implements TableCellRenderer {
 
         private final JCheckBox renderer;
 
@@ -354,12 +335,11 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
         }
 
         @Override
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                                                       boolean isSelected, boolean hasFocus, int row, int column) {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             Color color = isSelected ? table.getSelectionBackground() : table.getBackground();
             renderer.setBackground(color);
             renderer.setEnabled(table.isCellEditable(row, column));
-            renderer.setSelected(value != null && (Boolean)value);
+            renderer.setSelected(value != null && (Boolean) value);
             return renderer;
         }
     }

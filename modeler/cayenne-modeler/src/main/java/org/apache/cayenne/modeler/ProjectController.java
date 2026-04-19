@@ -1496,8 +1496,15 @@ public class ProjectController extends CayenneController {
         return state.callbackType;
     }
 
-    public void setSelectedCallbackType(CallbackType callbackType) {
-        state.callbackType = callbackType;
+    public void addCallbackTypeSelectionListener(CallbackTypeSelectionListener listener) {
+        listeners.add(CallbackTypeSelectionListener.class, listener);
+    }
+
+    public void fireCallbackTypeSelectionEvent(CallbackTypeSelectionEvent e) {
+        state.callbackType = e.getCallbackType();
+        for (CallbackTypeSelectionListener l : listeners.getListeners(CallbackTypeSelectionListener.class)) {
+            l.callbackTypeSelected(e);
+        }
     }
 
     public ObjCallbackMethod[] getSelectedCallbackMethods() {
@@ -1656,28 +1663,8 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    /**
-     * If true, all save buttons become available.
-     *
-     * @param enable or not save button
-     */
     public void enableSave(boolean enable) {
         application.getActionManager().getAction(SaveAction.class).setEnabled(enable);
         application.getActionManager().getAction(SaveAsAction.class).setEnabled(enable);
     }
-
-    /**
-     * Set currently selected DbAttributes
-     */
-    public void setSelectedDbAttributes(DbAttribute[] attrs) {
-        state.dbAttributes = attrs;
-    }
-
-    /**
-     * Set currently selected DbRelationships
-     */
-    public void setSelectedDbRelationships(DbRelationship[] rels) {
-        state.dbRelationships = rels;
-    }
-
 }

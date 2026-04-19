@@ -88,9 +88,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
         table = new CayenneTable();
         table.setDefaultRenderer(String.class, new StringRenderer());
         table.setDefaultRenderer(ObjEntity.class, new EntityRenderer());
-        tablePreferences = new TableColumnPreferences(
-                ObjRelationshipTableModel.class,
-                "objEntity/relationshipTable");
+        tablePreferences = new TableColumnPreferences(ObjRelationshipTableModel.class, "objEntity/relationshipTable");
 
         table.addMouseListener(new MouseAdapter() {
             @Override
@@ -126,10 +124,6 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
         TablePopupHandler.install(table, popup);
         add(PanelFactory.createTablePanel(table, null), BorderLayout.CENTER);
 
-        initController();
-    }
-
-    private void initController() {
         controller.addObjEntityDisplayListener(this);
         controller.addObjEntityListener(this);
         controller.addObjRelationshipListener(this);
@@ -164,7 +158,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
         }
 
         table.select(newSel);
-        parentPanel.rebindEditButton("Edit Relationship", this::edit);
+        parentPanel.rebindEditButton(rels.length > 0, "Edit Relationship", this::edit);
     }
 
     /**
@@ -420,13 +414,14 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
             }
 
             ActionManager actionManager = Application.getInstance().getActionManager();
-            actionManager.getAction(RemoveAttributeRelationshipAction.class).setCurrentSelectedPanel(parentPanel.getRelationshipPanel());
-            actionManager.getAction(CutAttributeRelationshipAction.class).setCurrentSelectedPanel(parentPanel.getRelationshipPanel());
-            actionManager.getAction(CopyAttributeRelationshipAction.class).setCurrentSelectedPanel(parentPanel.getRelationshipPanel());
+            actionManager.getAction(RemoveAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
+            actionManager.getAction(CutAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
+            actionManager.getAction(CopyAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
 
-            parentPanel.rebindEditButton("Edit Relationship", this::edit);
+            boolean editEnabled = table.getSelectedRow() >= 0;
+            parentPanel.rebindEditButton(editEnabled, "Edit Relationship", this::edit);
 
-            if (table.getSelectedRow() >= 0) {
+            if (editEnabled) {
                 ObjRelationshipTableModel model = (ObjRelationshipTableModel) table.getModel();
 
                 int[] sel = table.getSelectedRows();
@@ -441,7 +436,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
                 }
             }
 
-            editMenu.setEnabled(table.getSelectedRow() >= 0);
+            editMenu.setEnabled(editEnabled);
         }
 
         controller.fireObjRelationshipDisplayEvent(new RelationshipDisplayEvent(

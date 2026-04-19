@@ -118,9 +118,8 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
             }
         });
 
-        // Create and install a popup
-        Icon ico = ModelerUtil.buildIcon("icon-edit.png");
-        this.editMenu = new JMenuItem("Edit Attribute", ico);
+        this.editMenu = new JMenuItem("Edit Attribute", ModelerUtil.buildIcon("icon-edit.png"));
+        editMenu.addActionListener(this::edit);
 
         JPopupMenu popup = new JPopupMenu();
         popup.add(editMenu);
@@ -138,12 +137,10 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
         controller.addObjEntityListener(this);
         controller.addObjAttributeListener(this);
 
-        editMenu.addActionListener(this::edit);
-
         table.getSelectionModel().addListSelectionListener(this::valueChanged);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        controller.getApplication().getActionManager().setupCutCopyPaste(
+        actionManager.setupCutCopyPaste(
                 table,
                 CutAttributeRelationshipAction.class,
                 CopyAttributeRelationshipAction.class);
@@ -197,7 +194,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
 
         table.select(newSel);
 
-        parentPanel.rebindEditButton("Edit Attribute", this::edit);
+        parentPanel.rebindEditButton(attrs.length > 0, "Edit Attribute", this::edit);
     }
 
     public void objAttributeChanged(AttributeEvent e) {
@@ -473,13 +470,14 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
             }
 
             ActionManager actionManager = Application.getInstance().getActionManager();
-            actionManager.getAction(RemoveAttributeRelationshipAction.class).setCurrentSelectedPanel(parentPanel.getAttributePanel());
-            actionManager.getAction(CutAttributeRelationshipAction.class).setCurrentSelectedPanel(parentPanel.getAttributePanel());
-            actionManager.getAction(CopyAttributeRelationshipAction.class).setCurrentSelectedPanel(parentPanel.getAttributePanel());
+            actionManager.getAction(RemoveAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
+            actionManager.getAction(CutAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
+            actionManager.getAction(CopyAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
 
-            parentPanel.rebindEditButton("Edit Attribute", this::edit);
+            boolean editEnabled = table.getSelectedRow() >= 0;
+            parentPanel.rebindEditButton(editEnabled, "Edit Attribute", this::edit);
 
-            if (table.getSelectedRow() >= 0) {
+            if (editEnabled) {
                 ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
 
                 int[] sel = table.getSelectedRows();
@@ -494,7 +492,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
                 }
             }
 
-            editMenu.setEnabled(table.getSelectedRow() >= 0);
+            editMenu.setEnabled(editEnabled);
         }
 
         controller.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(

@@ -59,10 +59,9 @@ public class ObjEntityAttributeRelationshipTab extends JPanel implements ObjEnti
     private final JButton editButton;
 
     public ObjEntityAttributeRelationshipTab(ProjectController controller) {
-        this.editButton = new CayenneAction.CayenneToolbarButton(null, 0);
-
         this.setLayout(new BorderLayout());
 
+        this.editButton = new CayenneAction.CayenneToolbarButton(null, 0);
         attributePanel = new ObjEntityAttributePanel(controller, this);
         relationshipPanel = new ObjEntityRelationshipPanel(controller, this);
 
@@ -118,13 +117,13 @@ public class ObjEntityAttributeRelationshipTab extends JPanel implements ObjEnti
         editButton.setEnabled(params.length > 0);
     }
 
-    public void rebindEditButton(String tooltipText, ActionListener action) {
+    public void rebindEditButton(boolean enabled, String tooltipText, ActionListener action) {
         for (ActionListener al : editButton.getActionListeners()) {
             editButton.removeActionListener(al);
         }
         editButton.addActionListener(action);
         editButton.setToolTipText(tooltipText);
-        editButton.setEnabled(true);
+        editButton.setEnabled(enabled);
     }
 
     public JSplitPane getSplitPane() {
@@ -139,21 +138,25 @@ public class ObjEntityAttributeRelationshipTab extends JPanel implements ObjEnti
         return relationshipPanel;
     }
 
+    @Override
     public void objEntityChanged(EntityEvent e) {
         attributePanel.objEntityChanged(e);
         relationshipPanel.objEntityChanged(e);
     }
 
+    @Override
     public void objEntityAdded(EntityEvent e) {
         attributePanel.objEntityAdded(e);
         relationshipPanel.objEntityAdded(e);
     }
 
+    @Override
     public void objEntityRemoved(EntityEvent e) {
         attributePanel.objEntityRemoved(e);
         relationshipPanel.objEntityRemoved(e);
     }
 
+    @Override
     public void currentObjEntityChanged(EntityDisplayEvent e) {
         attributePanel.currentObjEntityChanged(e);
         relationshipPanel.currentObjEntityChanged(e);
