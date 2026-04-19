@@ -22,12 +22,18 @@ import java.util.EventListener;
 
 public interface EmbeddableAttributeListener extends EventListener {
 
-    /** EmbeddableAttribute property changed. */
-    public void embeddableAttributeChanged(EmbeddableAttributeEvent e);
+    /**
+     * EmbeddableAttribute property changed.
+     */
+    void embeddableAttributeChanged(EmbeddableAttributeEvent e);
 
-    /** New EmbeddableAttribute has been created/added. */
-    public void embeddableAttributeAdded(EmbeddableAttributeEvent e);
+    /**
+     * New EmbeddableAttribute has been created/added.
+     */
+    void embeddableAttributeAdded(EmbeddableAttributeEvent e);
 
-    /** EmbeddableAttribute has been removed. */
-    public void embeddableAttributeRemoved(EmbeddableAttributeEvent e);
+    /**
+     * EmbeddableAttribute has been removed.
+     */
+    void embeddableAttributeRemoved(EmbeddableAttributeEvent e);
 }

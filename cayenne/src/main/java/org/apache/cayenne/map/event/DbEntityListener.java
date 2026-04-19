@@ -21,8 +21,8 @@ package org.apache.cayenne.map.event;
 
 import java.util.EventListener;
 
-/** 
- * Defines a listener for DbEntity modification events. 
+/**
+ * Defines a listener for DbEntity modification events.
  */
 public interface DbEntityListener extends EventListener {
 
@@ -31,13 +31,16 @@ public interface DbEntityListener extends EventListener {
      * etc. Attribute and relationship property changes are handled in respective
      * listeners.
      */
-    public void dbEntityChanged(EntityEvent e);
+    void dbEntityChanged(EntityEvent e);
 
-    /** New entity has been created/added. */
-    public void dbEntityAdded(EntityEvent e);
+    /**
+     * New entity has been created/added.
+     */
+    void dbEntityAdded(EntityEvent e);
 
-    /** Entity has been removed. */
-    public void dbEntityRemoved(EntityEvent e);
-
+    /**
+     * Entity has been removed.
+     */
+    void dbEntityRemoved(EntityEvent e);
 }
 

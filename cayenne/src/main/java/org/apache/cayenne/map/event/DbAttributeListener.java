@@ -21,15 +21,24 @@ package org.apache.cayenne.map.event;
 
 import java.util.EventListener;
 
-/** For managing the changes in the DbAttribute. */
-public interface DbAttributeListener extends EventListener
-{
-	/** Attribute property changed. */
-	public void dbAttributeChanged(AttributeEvent e);
-	/** New attribute has been created/added.*/
-	public void dbAttributeAdded(AttributeEvent e);
-	/** Attribute has been removed.*/
-	public void dbAttributeRemoved(AttributeEvent e);
-	
+/**
+ * For managing the changes in the DbAttribute.
+ */
+public interface DbAttributeListener extends EventListener {
+
+    /**
+     * Attribute property changed.
+     */
+    void dbAttributeChanged(AttributeEvent e);
+
+    /**
+     * New attribute has been created/added.
+     */
+    void dbAttributeAdded(AttributeEvent e);
+
+    /**
+     * Attribute has been removed.
+     */
+    void dbAttributeRemoved(AttributeEvent e);
 }
 

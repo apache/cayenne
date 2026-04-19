@@ -21,18 +21,25 @@ package org.apache.cayenne.map.event;
 
 import java.util.EventListener;
 
-/** 
+/**
  * Listener for ObjAttribute events.
- * 
+ *
  */
-public interface ObjAttributeListener extends EventListener
-{ 
-	/** Attribute property changed. */
-	public void objAttributeChanged(AttributeEvent e);
-	/** New attribute has been created/added.*/
-	public void objAttributeAdded(AttributeEvent e);
-	/** Attribute has been removed.*/
-	public void objAttributeRemoved(AttributeEvent e);
-	
+public interface ObjAttributeListener extends EventListener {
+
+    /**
+     * Attribute property changed.
+     */
+    void objAttributeChanged(AttributeEvent e);
+
+    /**
+     * New attribute has been created/added.
+     */
+    void objAttributeAdded(AttributeEvent e);
+
+    /**
+     * Attribute has been removed.
+     */
+    void objAttributeRemoved(AttributeEvent e);
 }
 

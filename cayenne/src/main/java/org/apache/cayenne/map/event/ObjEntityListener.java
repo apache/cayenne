@@ -21,18 +21,26 @@ package org.apache.cayenne.map.event;
 
 import java.util.EventListener;
 
-/** For managing the changes in the ObjEntity */
-public interface ObjEntityListener extends EventListener
-{
-	/** Entity property changed. 
-	  * May be name, attribute or relationship added or removed, etc. 
-	  * Attribute and relationship property changes are handled in
-	  * respective listeners. */
-	public void objEntityChanged(EntityEvent e);
-	/** New entity has been created/added.*/
-	public void objEntityAdded(EntityEvent e);
-	/** Entity has been removed.*/
-	public void objEntityRemoved(EntityEvent e);
-	
+/**
+ * For managing the changes in the ObjEntity
+ */
+public interface ObjEntityListener extends EventListener {
+
+    /**
+     * Entity property changed. May be name, attribute or relationship added or removed, etc.
+     * Attribute and relationship property changes are handled in respective listeners.
+     */
+    void objEntityChanged(EntityEvent e);
+
+    /**
+     * New entity has been created/added.
+     */
+    void objEntityAdded(EntityEvent e);
+
+    /**
+     * Entity has been removed.
+     */
+    void objEntityRemoved(EntityEvent e);
+
 }
 

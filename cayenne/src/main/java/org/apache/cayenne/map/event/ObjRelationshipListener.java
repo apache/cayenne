@@ -21,19 +21,24 @@ package org.apache.cayenne.map.event;
 
 import java.util.EventListener;
 
-/** 
- * Defines a listener for ObjRelationship modification events. 
+/**
+ * Defines a listener for ObjRelationship modification events.
  */
 public interface ObjRelationshipListener extends EventListener {
 
-    /** Relationship property changed. */
-    public void objRelationshipChanged(RelationshipEvent e);
+    /**
+     * Relationship property changed.
+     */
+    void objRelationshipChanged(RelationshipEvent e);
 
-    /** Relationship has been created/added. */
-    public void objRelationshipAdded(RelationshipEvent e);
+    /**
+     * Relationship has been created/added.
+     */
+    void objRelationshipAdded(RelationshipEvent e);
 
-    /** Relationship has been removed. */
-    public void objRelationshipRemoved(RelationshipEvent e);
-
+    /**
+     * Relationship has been removed.
+     */
+    void objRelationshipRemoved(RelationshipEvent e);
 }
 

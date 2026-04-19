@@ -21,15 +21,23 @@ package org.apache.cayenne.map.event;
 
 import java.util.EventListener;
 
-/** For managing the changes in the DbRelationship. */
-public interface DbRelationshipListener extends EventListener
-{
-	/** Relationship property changed. */
-	public void dbRelationshipChanged(RelationshipEvent e);
-	/** Relationship has been created/added.*/
-	public void dbRelationshipAdded(RelationshipEvent e);
-	/** Relationship has been removed.*/
-	public void dbRelationshipRemoved(RelationshipEvent e);
-	
+/**
+ * For managing the changes in the DbRelationship.
+ */
+public interface DbRelationshipListener extends EventListener {
+    /**
+     * Relationship property changed.
+     */
+    void dbRelationshipChanged(RelationshipEvent e);
+
+    /**
+     * Relationship has been created/added.
+     */
+    void dbRelationshipAdded(RelationshipEvent e);
+
+    /**
+     * Relationship has been removed.
+     */
+    void dbRelationshipRemoved(RelationshipEvent e);
 }
 

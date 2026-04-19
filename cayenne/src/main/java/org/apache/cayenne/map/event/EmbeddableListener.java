@@ -18,21 +18,26 @@
  ****************************************************************/
 package org.apache.cayenne.map.event;
 
-import java.util.EventListener;
-
 import org.apache.cayenne.map.DataMap;
+
+import java.util.EventListener;
 
 
 public interface EmbeddableListener extends EventListener {
-    
-    /** EmbeddableAttribute property changed. */
-    public void embeddableChanged(EmbeddableEvent e, DataMap map);
 
-    /** New EmbeddableAttribute has been created/added. */
-    public void embeddableAdded(EmbeddableEvent e, DataMap map);
+    /**
+     * EmbeddableAttribute property changed.
+     */
+    void embeddableChanged(EmbeddableEvent e, DataMap map);
 
-    /** EmbeddableAttribute has been removed. 
-     * @param map */
-    public void embeddableRemoved(EmbeddableEvent e, DataMap map);
+    /**
+     * New EmbeddableAttribute has been created/added.
+     */
+    void embeddableAdded(EmbeddableEvent e, DataMap map);
+
+    /**
+     * EmbeddableAttribute has been removed.
+     */
+    void embeddableRemoved(EmbeddableEvent e, DataMap map);
 
 }
