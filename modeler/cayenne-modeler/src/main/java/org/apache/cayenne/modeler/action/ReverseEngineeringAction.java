@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.db.load.DbLoadResultDialog;
 import org.apache.cayenne.modeler.dialog.db.load.DbLoaderContext;
 import org.apache.cayenne.modeler.dialog.db.load.LoadDataMapTask;
@@ -62,22 +61,20 @@ public class ReverseEngineeringAction extends DBConnectionAwareAction {
         resetParams();
         dataMaps.addAll(dataMapSet);
         dataMapCount.set(dataMaps.size());
-        ProjectController projectController = Application.getInstance().getFrameController().getProjectController();
-        for (DataMap dataMap : dataMapSet) {
-            projectController.setSelectedDataMap(dataMap);
-            startImport();
-        }
+        dataMapSet.forEach(this::startImport);
     }
 
-    private void startImport() {
-        DbLoaderContext context = new DbLoaderContext(application.getMetaData());
+    private void startImport(DataMap dataMap) {
+        DbLoaderContext context = new DbLoaderContext(
+                getProjectController(),
+                application.getMetaData(),
+                dataMap);
 
-        DBConnectionInfo connectionInfo = getConnectionInfo(DIALOG_TITLE);
+        DBConnectionInfo connectionInfo = getConnectionInfo(DIALOG_TITLE, dataMap);
         if (connectionInfo == null) {
             return;
         }
 
-        context.setProjectController(getProjectController());
         try {
             context.setConnection(connectionInfo.makeDataSource(getApplication().getClassLoadingService()).getConnection());
         } catch (SQLException ex) {
@@ -97,7 +94,7 @@ public class ReverseEngineeringAction extends DBConnectionAwareAction {
             return;
         }
 
-        DbImportController dbImportController = Application.getInstance().getFrameController().getDbImportController();
+        DbImportController dbImportController = application.getFrameController().getDbImportController();
         DbLoadResultDialog dbLoadResultDialog = dbImportController.createDialog();
 
         runLoaderInThread(context, () -> {
@@ -120,9 +117,9 @@ public class ReverseEngineeringAction extends DBConnectionAwareAction {
     @Override
     public void performAction(ActionEvent event) {
         resetParams();
-        dataMaps.add(Application.getInstance().getFrameController().getProjectController().getSelectedDataMap());
+        dataMaps.add(application.getFrameController().getProjectController().getSelectedDataMap());
         dataMapCount.set(dataMaps.size());
-        startImport();
+        startImport(application.getFrameController().getProjectController().getSelectedDataMap());
     }
 
     private void resetParams() {

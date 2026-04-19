@@ -19,7 +19,6 @@
 package org.apache.cayenne.modeler.dialog.db.load;
 
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
@@ -51,20 +50,8 @@ public class DbImportProjectSaver implements ProjectSaver {
     public void save(Project project) {
 
         DataMap dataMap = (DataMap) project.getRootNode();
-
-        if (projectController.getSelectedDataMap() != null) {
-            projectController.fireDataMapEvent(new DataMapEvent(Application.getFrame(), dataMap, MapEvent.REMOVE));
-            projectController.fireDataMapEvent(new DataMapEvent(Application.getFrame(), dataMap, MapEvent.ADD));
-        } else {
-            DataChannelDescriptor currentDomain = (DataChannelDescriptor) projectController.getProject().getRootNode();
-            Resource baseResource = currentDomain.getConfigurationSource();
-            // a new DataMap, so need to set configuration source for it
-            if (baseResource != null) {
-                Resource dataMapResource = baseResource.getRelativeResource(nameMapper.configurationLocation(dataMap));
-                dataMap.setConfigurationSource(dataMapResource);
-            }
-            projectController.addDataMap(Application.getFrame(), dataMap);
-        }
+        projectController.fireDataMapEvent(new DataMapEvent(Application.getFrame(), dataMap, MapEvent.REMOVE));
+        projectController.fireDataMapEvent(new DataMapEvent(Application.getFrame(), dataMap, MapEvent.ADD));
     }
 
     @Override

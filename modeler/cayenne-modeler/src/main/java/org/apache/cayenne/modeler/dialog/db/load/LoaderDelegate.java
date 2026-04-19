@@ -29,7 +29,7 @@ import org.apache.cayenne.modeler.Application;
 
 final class LoaderDelegate extends DefaultDbLoaderDelegate {
 
-    private DbLoaderContext context;
+    private final DbLoaderContext context;
 
     LoaderDelegate(DbLoaderContext dbLoaderContext) {
         this.context = dbLoaderContext;
@@ -44,9 +44,7 @@ final class LoaderDelegate extends DefaultDbLoaderDelegate {
     @Override
     public void dbEntityRemoved(DbEntity entity) {
         checkCanceled();
-        if (context.isExistingDataMap()) {
-            context.getProjectController().fireDbEntityEvent(new EntityEvent(Application.getFrame(), entity, MapEvent.REMOVE));
-        }
+        context.getProjectController().fireDbEntityEvent(new EntityEvent(Application.getFrame(), entity, MapEvent.REMOVE));
     }
 
     @Override

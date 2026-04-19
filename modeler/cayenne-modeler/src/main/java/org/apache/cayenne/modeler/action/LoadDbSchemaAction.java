@@ -65,7 +65,7 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
     }
 
     public void loadDbSchema(TreePath tablePath) {
-        final DbImportView rootParent = ((DbImportView) draggableTreePanel.getParent().getParent());
+        DbImportView rootParent = ((DbImportView) draggableTreePanel.getParent().getParent());
         rootParent.getLoadDbSchemaProgress().setVisible(true);
         rootParent.getLoadDbSchemaButton().setEnabled(false);
         Thread thread = new Thread(() -> {
@@ -75,7 +75,10 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
             draggableTreePanel.getMoveInvertButton().setEnabled(false);
             try {
 
-                DBConnectionInfo connectionInfo = getConnectionInfo("Load Db Schema");
+                DBConnectionInfo connectionInfo = getConnectionInfo(
+                        "Load Db Schema",
+                        application.getFrameController().getProjectController().getSelectedDataMap());
+
                 if (connectionInfo == null) {
                     return;
                 }

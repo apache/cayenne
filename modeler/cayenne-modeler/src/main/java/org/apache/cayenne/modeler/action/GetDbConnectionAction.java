@@ -19,34 +19,37 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.DataSourceWizard;
+
+import java.awt.event.ActionEvent;
 
 /**
  * @since 4.1
  */
 public class GetDbConnectionAction extends DBConnectionAwareAction {
 
-    public static final String DIALOG_TITLE = "Configure Connection to Database";
+    private static final String DIALOG_TITLE = "Configure Connection to Database";
     private static final String ACTION_NAME = "Configure Connection";
     private static final String ICON_NAME = "icon-dbi-config.png";
 
-    public GetDbConnectionAction(final Application application) {
+    public GetDbConnectionAction(Application application) {
         super(ACTION_NAME, application);
     }
 
+    @Override
     public String getIconName() {
         return ICON_NAME;
     }
 
     @Override
-    public void performAction(final ActionEvent e) {
+    public void performAction(ActionEvent e) {
         DataSourceWizard connectWizard = getDataSourceWizard(DIALOG_TITLE, new String[]{"Continue", "Cancel"});
         if (connectWizard == null) {
             return;
         }
-        saveConnectionInfo(connectWizard);
+        saveConnectionInfo(
+                application.getFrameController().getProjectController().getSelectedDataMap(),
+                connectWizard);
     }
 }

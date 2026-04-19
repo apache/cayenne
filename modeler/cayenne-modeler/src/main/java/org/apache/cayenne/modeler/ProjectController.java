@@ -464,9 +464,7 @@ public class ProjectController extends CayenneController {
         return state.dataMap;
     }
 
-    public void setSelectedDataMap(DataMap dataMap) {
-        state.dataMap = dataMap;
-    }
+
 
     public ObjEntity getSelectedObjEntity() {
         return state.objEntity;

@@ -19,14 +19,7 @@
 
 package org.apache.cayenne.modeler.dialog.db.load;
 
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-import java.io.File;
-import java.sql.Connection;
-
-import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
-import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoaderDelegate;
@@ -41,6 +34,10 @@ import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
+import java.io.File;
+import java.sql.Connection;
+
 /**
  * @since 4.0
  */
@@ -48,34 +45,27 @@ public class DbLoaderContext {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DbLoaderContext.class);
 
+    private final ProjectController projectController;
+    private final DataMap dataMap;
+    private final DataChannelMetaData dataChannelMetaData;
+
     private DbImportConfiguration config;
     private Connection connection;
-    private ProjectController projectController;
-    private boolean existingMap;
-    private DataMap dataMap;
     private boolean stopping;
     private String loadStatusNote;
     private volatile boolean isInterrupted;
 
-    private DataChannelMetaData metaData;
-
-    public DbLoaderContext(DataChannelMetaData metaData) {
-        this.metaData = metaData;
+    public DbLoaderContext(ProjectController projectController, DataChannelMetaData dataChannelMetaData, DataMap dataMap) {
+        this.projectController = projectController;
+        this.dataChannelMetaData = dataChannelMetaData;
+        this.dataMap = dataMap;
     }
 
-    DataMap getDataMap() {
+    public DataMap getDataMap() {
         return dataMap;
     }
 
-    boolean isExistingDataMap() {
-        return existingMap;
-    }
-
-    public void setProjectController(ProjectController projectController) {
-        this.projectController = projectController;
-    }
-
-    ProjectController getProjectController() {
+    public ProjectController getProjectController() {
         return projectController;
     }
 
@@ -97,10 +87,6 @@ public class DbLoaderContext {
 
     public boolean isStopping() {
         return stopping;
-    }
-
-    public DataChannelMetaData getMetaData() {
-        return metaData;
     }
 
     void setStopping(boolean stopping) {
@@ -131,7 +117,7 @@ public class DbLoaderContext {
             return false;
         }
         // Build reverse engineering from metadata and dialog values
-        ReverseEngineering metaReverseEngineering = metaData.get(getProjectController().getSelectedDataMap(), ReverseEngineering.class);
+        ReverseEngineering metaReverseEngineering = dataChannelMetaData.get(dataMap, ReverseEngineering.class);
         if(metaReverseEngineering == null) {
             return false;
         }
@@ -192,21 +178,9 @@ public class DbLoaderContext {
     }
 
     private void prepareDataMap() {
-        dataMap = getProjectController().getSelectedDataMap();
-        existingMap = dataMap != null;
-
-        if (!existingMap) {
-            ConfigurationNode root = getProjectController().getProject().getRootNode();
-            dataMap = new DataMap();
-            dataMap.setName(NameBuilder.builder(dataMap, root).name());
-        }
-        if (dataMap.getConfigurationSource() != null) {
+        if (this.dataMap.getConfigurationSource() != null) {
             getConfig().setTargetDataMap(new File(dataMap.getConfigurationSource().getURL().getPath()));
         }
-    }
-
-    public void processWarn(final Throwable th, final String message) {
-        LOGGER.warn(message, Util.unwindException(th));
     }
 
     public void processException(final Throwable th, final String message) {
