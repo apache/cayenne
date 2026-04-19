@@ -76,7 +76,7 @@ public class CreateAttributeUndoableEdit extends CayenneUndoableEdit {
                 objAttr
             });
 
-            controller.fireObjEntitySelected(new EntityDisplayEvent(
+            controller.displayObjEntity(new EntityDisplayEvent(
                     this,
                     objEntity,
                     dataMap,
@@ -88,7 +88,7 @@ public class CreateAttributeUndoableEdit extends CayenneUndoableEdit {
                 dbAttr
             });
 
-            controller.fireDbEntitySelected(new EntityDisplayEvent(
+            controller.displayDbEntity(new EntityDisplayEvent(
                     this,
                     dbEntity,
                     dataMap,

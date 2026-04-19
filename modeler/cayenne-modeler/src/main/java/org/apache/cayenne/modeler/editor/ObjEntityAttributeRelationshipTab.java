@@ -157,9 +157,9 @@ public class ObjEntityAttributeRelationshipTab extends JPanel implements ObjEnti
     }
 
     @Override
-    public void currentObjEntityChanged(EntityDisplayEvent e) {
-        attributePanel.currentObjEntityChanged(e);
-        relationshipPanel.currentObjEntityChanged(e);
+    public void objEntitySelected(EntityDisplayEvent e) {
+        attributePanel.objEntitySelected(e);
+        relationshipPanel.objEntitySelected(e);
     }
 
     public JToolBar getToolBar() {

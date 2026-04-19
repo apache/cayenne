@@ -150,7 +150,7 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
     /**
      * Loads obj relationships into table.
      */
-    public void currentDbEntityChanged(EntityDisplayEvent e) {
+    public void dbEntitySelected(EntityDisplayEvent e) {
         DbEntity entity = (DbEntity) e.getEntity();
         if (entity != null) {
             // TODO: this line seems to slow down the Modeler significantly sometimes
@@ -315,7 +315,7 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
             editMenu.setEnabled(editEnabled);
         }
 
-        controller.fireDbRelationshipSelected(new RelationshipDisplayEvent(
+        controller.displayDbRelationship(new RelationshipDisplayEvent(
                 this,
                 rels,
                 controller.getSelectedDbEntity(),

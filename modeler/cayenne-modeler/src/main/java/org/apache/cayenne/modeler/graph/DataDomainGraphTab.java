@@ -120,7 +120,7 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
         add(scrollPane);
     }
 
-    public void currentDomainChanged(DomainDisplayEvent e) {
+    public void domainSelected(DomainDisplayEvent e) {
         if (e instanceof EntityDisplayEvent) {
             // selecting an event
 

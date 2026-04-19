@@ -149,7 +149,7 @@ public class DbEntityAttributePanel extends JPanel implements DbEntityDisplayLis
     }
 
     @Override
-    public void currentDbEntityChanged(EntityDisplayEvent e) {
+    public void dbEntitySelected(EntityDisplayEvent e) {
 
         DbEntity entity = (DbEntity) e.getEntity();
         if (entity != null) {
@@ -233,7 +233,7 @@ public class DbEntityAttributePanel extends JPanel implements DbEntityDisplayLis
             }
         }
 
-        controller.fireDbAttributeSelected(new AttributeDisplayEvent(
+        controller.displayDbAttribute(new AttributeDisplayEvent(
                 this,
                 attrs,
                 controller.getSelectedDbEntity(),

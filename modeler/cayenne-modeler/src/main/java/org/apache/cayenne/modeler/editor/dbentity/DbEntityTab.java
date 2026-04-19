@@ -182,10 +182,10 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
     public void processExistingSelection(EventObject e) {
         EntityDisplayEvent ede = new EntityDisplayEvent(this, controller.getSelectedDbEntity(),
                 controller.getSelectedDataMap(), (DataChannelDescriptor) controller.getProject().getRootNode());
-        controller.fireDbEntitySelected(ede);
+        controller.displayDbEntity(ede);
     }
 
-    public void currentDbEntityChanged(EntityDisplayEvent e) {
+    public void dbEntitySelected(EntityDisplayEvent e) {
         DbEntity entity = (DbEntity) e.getEntity();
 
         if (entity == null) {

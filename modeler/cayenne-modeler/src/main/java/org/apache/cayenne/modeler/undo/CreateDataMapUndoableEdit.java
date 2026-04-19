@@ -51,7 +51,7 @@ public class CreateDataMapUndoableEdit extends CayenneUndoableEdit {
     public void undo() throws CannotUndoException {
         RemoveAction action = actionManager.getAction(RemoveAction.class);
 
-        controller.fireDomainSelected(new DomainDisplayEvent(this, domain));
+        controller.displayDomain(new DomainDisplayEvent(this, domain));
 
         action.removeDataMap(map);
     }

@@ -47,36 +47,50 @@ class EntityDisplayEventType extends DisplayEventType {
             return;
         }
 
-        Entity<?,?,?> entity = getLastEntity(dataMap);
+        Entity<?, ?, ?> entity = getLastEntity(dataMap);
         if (entity == null) {
             return;
         }
 
         EntityDisplayEvent entityDisplayEvent = new EntityDisplayEvent(this, entity, dataMap, dataNode, dataChannel);
         if (entity instanceof ObjEntity) {
-            controller.fireObjEntitySelected(entityDisplayEvent);
+            controller.displayObjEntity(entityDisplayEvent);
         } else if (entity instanceof DbEntity) {
-            controller.fireDbEntitySelected(entityDisplayEvent);
+            controller.displayDbEntity(entityDisplayEvent);
         }
     }
 
     @Override
     public void saveLastDisplayEvent() {
-        preferences.setEvent(EntityDisplayEvent.class.getSimpleName());
-        preferences.setDomain(controller.getSelectedDataDomain().getName());
-        preferences.setNode(controller.getSelectedDataNode() != null ? controller.getSelectedDataNode().getName() : "");
-        preferences.setDataMap(controller.getSelectedDataMap().getName());
 
-        if (controller.getSelectedObjEntity() != null) {
-            preferences.setObjEntity(controller.getSelectedObjEntity().getName());
-            preferences.setDbEntity(null);
-        } else if (controller.getSelectedDbEntity() != null) {
-            preferences.setDbEntity(controller.getSelectedDbEntity().getName());
-            preferences.setObjEntity(null);
+        preferences.setEvent(EntityDisplayEvent.class.getSimpleName());
+
+        DataChannelDescriptor domain = controller.getSelectedDataDomain();
+        DataNodeDescriptor node = controller.getSelectedDataNode();
+        DataMap dataMap = controller.getSelectedDataMap();
+        DbEntity dbEntity = controller.getSelectedDbEntity();
+        ObjEntity objEntity = controller.getSelectedObjEntity();
+
+        if (domain != null) {
+            preferences.setDomain(domain.getName());
+            preferences.setNode(node != null ? node.getName() : "");
+
+            if (dataMap != null) {
+
+                preferences.setDataMap(dataMap.getName());
+
+                if (objEntity != null) {
+                    preferences.setObjEntity(objEntity.getName());
+                    preferences.setDbEntity(null);
+                } else if (dbEntity != null) {
+                    preferences.setDbEntity(dbEntity.getName());
+                    preferences.setObjEntity(null);
+                }
+            }
         }
     }
 
-    Entity<?,?,?> getLastEntity(DataMap dataMap) {
+    Entity<?, ?, ?> getLastEntity(DataMap dataMap) {
         return !preferences.getObjEntity().isEmpty()
                 ? dataMap.getObjEntity(preferences.getObjEntity())
                 : dataMap.getDbEntity(preferences.getDbEntity());

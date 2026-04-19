@@ -50,7 +50,7 @@ public class CreateProcedureParameterAction extends CayenneAction {
             ProcedureParameter parameter) {
         controller.fireProcedureParameterEvent(new ProcedureParameterEvent(src, parameter, MapEvent.ADD));
 
-        controller.fireProcedureParameterSelected(new ProcedureParameterDisplayEvent(src, parameter, procedure,
+        controller.displayProcedureParameter(new ProcedureParameterDisplayEvent(src, parameter, procedure,
                 controller.getSelectedDataMap(), (DataChannelDescriptor) controller.getProject().getRootNode()));
     }
 

@@ -73,7 +73,7 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
         prefetchBox.addItem(DISJOINT_PREFETCH_SEMANTICS);
         prefetchBox.addItem(DISJOINT_BY_ID_PREFETCH_SEMANTICS);
 
-        prefetchBox.addActionListener(e -> Application.getInstance().getFrameController().getEditorView().getProjectController().setDirty(true));
+        prefetchBox.addActionListener(e -> Application.getInstance().getFrameController().getProjectController().setDirty(true));
 
         column.setCellEditor(new DefaultCellEditor(prefetchBox));
 

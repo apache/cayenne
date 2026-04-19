@@ -159,7 +159,7 @@ public class DbEntityAttributeRelationshipTab extends JPanel implements DbEntity
         relationshipPanel.dbEntityRemoved(e);
     }
 
-    public void currentDbEntityChanged(EntityDisplayEvent e) {
+    public void dbEntitySelected(EntityDisplayEvent e) {
         DbEntity entity = (DbEntity) e.getEntity();
         if (entity.getDataMap().getMappedEntities(entity).isEmpty()) {
             toolBar.getComponentAtIndex(4).setEnabled(false);

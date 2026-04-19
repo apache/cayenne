@@ -37,7 +37,7 @@ class DomainDisplayEventType extends DisplayEventType {
         }
 
         DomainDisplayEvent domainDisplayEvent = new DomainDisplayEvent(this, dataChannel);
-        controller.fireDomainSelected(domainDisplayEvent);
+        controller.displayDomain(domainDisplayEvent);
     }
 
     @Override

@@ -55,7 +55,7 @@ public class CreateAttributeAction extends CayenneAction {
         EmbeddableAttributeDisplayEvent e = new EmbeddableAttributeDisplayEvent(src, embeddable, attr,
                 controller.getSelectedDataMap(), (DataChannelDescriptor) controller.getProject().getRootNode());
 
-        controller.fireEmbeddableAttributeSelected(e);
+        controller.displayEmbeddableAttribute(e);
     }
 
     /**
@@ -70,7 +70,7 @@ public class CreateAttributeAction extends CayenneAction {
 
         AttributeDisplayEvent ade = new AttributeDisplayEvent(src, attr, objEntity, map, domain);
 
-        controller.fireObjAttributeSelected(ade);
+        controller.displayObjAttribute(ade);
     }
 
     /**
@@ -83,7 +83,7 @@ public class CreateAttributeAction extends CayenneAction {
         AttributeDisplayEvent ade = new AttributeDisplayEvent(src, attr, dbEntity, map,
                 (DataChannelDescriptor) controller.getProject().getRootNode());
 
-        controller.fireDbAttributeSelected(ade);
+        controller.displayDbAttribute(ade);
     }
 
     public CreateAttributeAction(Application application) {

@@ -177,7 +177,7 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
      * Invoked on domain selection event. Updates view with the values from the currently
      * selected domain.
      */
-    public void currentDomainChanged(DomainDisplayEvent e) {
+    public void domainSelected(DomainDisplayEvent e) {
         DataChannelDescriptor domain = e.getDomain();
         if (null == domain) {
             return;

@@ -17,18 +17,10 @@ package org.apache.cayenne.modeler.event.display;
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
-
 import java.util.EventListener;
 
-/**
- * Used when the current ObjEntity has changed.
- */
 public interface ObjEntityDisplayListener extends EventListener {
 
-    /**
-     * Current obj entity used as a model has changed.
-     */
-    void currentObjEntityChanged(EntityDisplayEvent e);
+    void objEntitySelected(EntityDisplayEvent e);
 }
 

@@ -78,7 +78,7 @@ public class CreateRelationshipUndoableEdit extends CayenneUndoableEdit {
 
         if (objEnt != null) {
             action.removeObjRelationships(objEnt, objectRel);
-            controller.fireObjEntitySelected(new EntityDisplayEvent(
+            controller.displayObjEntity(new EntityDisplayEvent(
                     this,
                     objEnt,
                     objEnt.getDataMap(),
@@ -87,7 +87,7 @@ public class CreateRelationshipUndoableEdit extends CayenneUndoableEdit {
 
         if (dbEnt != null) {
             action.removeDbRelationships(dbEnt, dbRel);
-            controller.fireDbEntitySelected(new EntityDisplayEvent(this, dbEnt, dbEnt
+            controller.displayDbEntity(new EntityDisplayEvent(this, dbEnt, dbEnt
                     .getDataMap(), (DataChannelDescriptor) controller
                     .getProject()
                     .getRootNode()));

@@ -17,14 +17,10 @@ package org.apache.cayenne.modeler.event.display;
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
-
 import java.util.EventListener;
 
-/** Used to display DbRelationship. */
-public interface DbRelationshipDisplayListener extends EventListener
-{
-	/** Display specified DbRelationship. */
-	public void currentDbRelationshipChanged(RelationshipDisplayEvent e);
+public interface DbRelationshipDisplayListener extends EventListener {
+
+    void dbRelationshipSelected(RelationshipDisplayEvent e);
 }
 

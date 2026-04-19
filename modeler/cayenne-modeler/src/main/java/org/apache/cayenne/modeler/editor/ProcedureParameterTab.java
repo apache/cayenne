@@ -234,13 +234,13 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
                 eventController.getSelectedProcedure(),
                 eventController.getSelectedDataMap(),
                 (DataChannelDescriptor) eventController.getProject().getRootNode());
-        eventController.fireProcedureParameterSelected(ppde);
+        eventController.displayProcedureParameter(ppde);
     }
 
     /**
      * Invoked when currently selected Procedure object is changed.
      */
-    public void currentProcedureChanged(ProcedureDisplayEvent e) {
+    public void procedureSelected(ProcedureDisplayEvent e) {
         Procedure procedure = e.getProcedure();
         if (procedure != null) {
             rebuildTable(procedure);

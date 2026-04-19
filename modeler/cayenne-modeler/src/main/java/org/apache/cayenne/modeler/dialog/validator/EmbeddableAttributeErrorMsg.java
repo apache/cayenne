@@ -57,8 +57,8 @@ public class EmbeddableAttributeErrorMsg extends ValidationDisplayHandler {
                 map,
                 domain);
 
-        mediator.fireEmbeddableSelected(event);
-        mediator.fireEmbeddableAttributeSelected(event);
+        mediator.displayEmbeddable(event);
+        mediator.displayEmbeddableAttribute(event);
     }
 
 }

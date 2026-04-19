@@ -347,7 +347,7 @@ public class ObjEntityCallbackMethodsTab extends JPanel {
         }
 
         public void actionPerformed(ActionEvent e) {
-            controller.fireCallbackTypeSelected(new CallbackTypeDisplayEvent(this, callbackType));
+            controller.displayCallbackType(new CallbackTypeDisplayEvent(this, callbackType));
         }
     }
 
@@ -424,7 +424,7 @@ public class ObjEntityCallbackMethodsTab extends JPanel {
                         }
                     }
 
-                    controller.fireCallbackTypeSelected(new CallbackTypeDisplayEvent(this,
+                    controller.displayCallbackType(new CallbackTypeDisplayEvent(this,
                             ((CallbackDescriptorTableModel) table.getCayenneModel()).getCallbackType()));
                 }
 
@@ -441,7 +441,7 @@ public class ObjEntityCallbackMethodsTab extends JPanel {
                     }
                 }
 
-                controller.fireCallbackMethodSelected(new CallbackMethodDisplayEvent(this, methods));
+                controller.displayCallbackMethod(new CallbackMethodDisplayEvent(this, methods));
                 boolean enabled = methods.length > 0;
                 boolean multiple = methods.length > 1;
 
@@ -505,7 +505,7 @@ public class ObjEntityCallbackMethodsTab extends JPanel {
         public void mousePressed(MouseEvent e) {
             if (e.isPopupTrigger() && e.getComponent() instanceof JTableHeader) {
                 unselectAll();
-                controller.fireCallbackTypeSelected(new CallbackTypeDisplayEvent(this,
+                controller.displayCallbackType(new CallbackTypeDisplayEvent(this,
                         ((CallbackDescriptorTableModel) table.getCayenneModel()).getCallbackType()));
                 popupMenu.show(e.getComponent(), e.getX(), e.getY());
             }

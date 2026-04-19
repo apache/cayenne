@@ -49,7 +49,7 @@ class QueryDisplayEventType extends DisplayEventType {
         }
 
         QueryDisplayEvent queryDisplayEvent = new QueryDisplayEvent(this, query, dataMap, dataChannel);
-        controller.fireQuerySelected(queryDisplayEvent);
+        controller.displayQuery(queryDisplayEvent);
     }
 
     @Override

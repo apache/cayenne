@@ -45,7 +45,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.ProjectTreeModel;
 import org.apache.cayenne.modeler.ProjectTreeView;
 import org.apache.cayenne.modeler.dialog.FindDialog;
-import org.apache.cayenne.modeler.editor.EditorView;
+import org.apache.cayenne.modeler.editor.EditorPanel;
 import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableAttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
@@ -139,16 +139,16 @@ public class FindAction extends CayenneAction {
      * Used also in {@link org.apache.cayenne.modeler.graph.action.EntityDisplayAction}
      */
     public static void jumpToResult(FindAction.SearchResultEntry searchResultEntry) {
-        EditorView editor = ((CayenneModelerFrame) Application.getInstance().getFrameController().getView()).getView();
+        EditorPanel editor = ((CayenneModelerFrame) Application.getInstance().getFrameController().getView()).getEditorPanel();
         DataChannelDescriptor domain = (DataChannelDescriptor) Application.getInstance().getProject().getRootNode();
         ProjectController controller = Application.getInstance().getFrameController().getProjectController();
 
         if (searchResultEntry.getObject() instanceof Entity) {
             jumpToEntityResult((Entity<?, ?, ?>) searchResultEntry.getObject(), editor, domain, controller);
         } else if (searchResultEntry.getObject() instanceof QueryDescriptor) {
-            jumpToQueryResult((QueryDescriptor) searchResultEntry.getObject(), editor, domain);
+            jumpToQueryResult((QueryDescriptor) searchResultEntry.getObject(), editor, domain, controller);
         } else if (searchResultEntry.getObject() instanceof Embeddable) {
-            jumpToEmbeddableResult((Embeddable) searchResultEntry.getObject(), editor, domain);
+            jumpToEmbeddableResult((Embeddable) searchResultEntry.getObject(), editor, domain, controller);
         } else if (searchResultEntry.getObject() instanceof EmbeddableAttribute) {
             jumpToEmbeddableAttributeResult((EmbeddableAttribute) searchResultEntry.getObject(), editor, domain, controller);
         } else if (searchResultEntry.getObject() instanceof Attribute || searchResultEntry.getObject() instanceof Relationship) {
@@ -263,7 +263,7 @@ public class FindAction extends CayenneAction {
         return pattern.matcher(entityName).find();
     }
 
-    private static void jumpToAttributeResult(SearchResultEntry searchResultEntry, EditorView editor, DataChannelDescriptor domain,
+    private static void jumpToAttributeResult(SearchResultEntry searchResultEntry, EditorPanel editor, DataChannelDescriptor domain,
                                               ProjectController controller) {
         DataMap map;
         Entity<?, ?, ?> entity;
@@ -281,10 +281,10 @@ public class FindAction extends CayenneAction {
                     (Attribute<?, ?, ?>) searchResultEntry.getObject(), entity, map, domain);
             event.setMainTabFocus(true);
             if (searchResultEntry.getObject() instanceof DbAttribute) {
-                controller.fireDbAttributeSelected(event);
+                controller.displayDbAttribute(event);
                 editor.getDbDetailView().repaint();
             } else {
-                controller.fireObjAttributeSelected(event);
+                controller.displayObjAttribute(event);
                 editor.getObjDetailView().repaint();
             }
         } else if (searchResultEntry.getObject() instanceof Relationship) {
@@ -292,10 +292,10 @@ public class FindAction extends CayenneAction {
                     (Relationship<?, ?, ?>) searchResultEntry.getObject(), entity, map, domain);
             event.setMainTabFocus(true);
             if (searchResultEntry.getObject() instanceof DbRelationship) {
-                controller.fireDbRelationshipSelected(event);
+                controller.displayDbRelationship(event);
                 editor.getDbDetailView().repaint();
             } else {
-                controller.fireObjRelationshipSelected(event);
+                controller.displayObjRelationship(event);
                 editor.getObjDetailView().repaint();
             }
         }
@@ -303,7 +303,7 @@ public class FindAction extends CayenneAction {
 
     private static void jumpToEmbeddableAttributeResult(
             EmbeddableAttribute attribute,
-            EditorView editor,
+            EditorPanel editor,
             DataChannelDescriptor domain,
             ProjectController controller) {
 
@@ -312,63 +312,63 @@ public class FindAction extends CayenneAction {
         buildAndSelectTreePath(map, embeddable, editor);
         EmbeddableAttributeDisplayEvent event = new EmbeddableAttributeDisplayEvent(editor.getProjectTreeView(), embeddable, attribute, map, domain);
         event.setMainTabFocus(true);
-        controller.fireEmbeddableAttributeSelected(event);
+        controller.displayEmbeddableAttribute(event);
         editor.getEmbeddableView().repaint();
     }
 
-    private static void jumpToEmbeddableResult(Embeddable embeddable, EditorView editor, DataChannelDescriptor domain) {
+    private static void jumpToEmbeddableResult(Embeddable embeddable, EditorPanel editor, DataChannelDescriptor domain,
+                                               ProjectController controller) {
         DataMap map = embeddable.getDataMap();
         buildAndSelectTreePath(map, embeddable, editor);
         EmbeddableDisplayEvent event = new EmbeddableDisplayEvent(editor.getProjectTreeView(), embeddable, map, domain);
         event.setMainTabFocus(true);
-        editor.currentEmbeddableChanged(event);
+        controller.displayEmbeddable(event);
     }
 
-    private static void jumpToQueryResult(QueryDescriptor queryDescriptor, EditorView editor, DataChannelDescriptor domain) {
+    private static void jumpToQueryResult(QueryDescriptor queryDescriptor, EditorPanel editor, DataChannelDescriptor domain, ProjectController controller) {
         DataMap map = queryDescriptor.getDataMap();
         buildAndSelectTreePath(map, queryDescriptor, editor);
         QueryDisplayEvent event = new QueryDisplayEvent(editor.getProjectTreeView(), queryDescriptor, map, domain);
-        editor.currentQueryChanged(event);
+        controller.displayQuery(event);
     }
 
-    private static void jumpToEntityResult(Entity<?, ?, ?> entity, EditorView editor, DataChannelDescriptor domain,
-                                           ProjectController controller) {
+    private static void jumpToEntityResult(Entity<?, ?, ?> entity, EditorPanel editor, DataChannelDescriptor domain, ProjectController controller) {
         DataMap map = entity.getDataMap();
         buildAndSelectTreePath(map, entity, editor);
         EntityDisplayEvent event = new EntityDisplayEvent(editor.getProjectTreeView(), entity, map, domain);
         event.setMainTabFocus(true);
 
         if (entity instanceof ObjEntity) {
-            controller.fireObjEntitySelected(event);
+            controller.displayObjEntity(event);
         } else if (entity instanceof DbEntity) {
-            controller.fireDbEntitySelected(event);
+            controller.displayDbEntity(event);
         }
     }
 
-    private static void jumpToProcedureResult(Procedure procedure, EditorView editor, DataChannelDescriptor domain,
+    private static void jumpToProcedureResult(Procedure procedure, EditorPanel editor, DataChannelDescriptor domain,
                                               ProjectController controller) {
         DataMap map = procedure.getDataMap();
         buildAndSelectTreePath(map, procedure, editor);
         ProcedureDisplayEvent event = new ProcedureDisplayEvent(editor.getProjectTreeView(), procedure, map, domain);
-        controller.fireProcedureSelected(event);
+        controller.displayProcedure(event);
         editor.getProcedureView().repaint();
     }
 
-    private static void jumpToProcedureResult(ProcedureParameter parameter, EditorView editor, DataChannelDescriptor domain,
+    private static void jumpToProcedureResult(ProcedureParameter parameter, EditorPanel editor, DataChannelDescriptor domain,
                                               ProjectController controller) {
         Procedure procedure = parameter.getProcedure();
         DataMap map = procedure.getDataMap();
         buildAndSelectTreePath(map, procedure, editor);
         ProcedureParameterDisplayEvent event =
                 new ProcedureParameterDisplayEvent(editor.getProjectTreeView(), parameter, procedure, map, domain);
-        controller.fireProcedureParameterSelected(event);
+        controller.displayProcedureParameter(event);
         editor.getProcedureView().repaint();
     }
 
     /**
      * Builds a tree path for a given path and make selection in it
      */
-    private static void buildAndSelectTreePath(DataMap map, Object object, EditorView editor) {
+    private static void buildAndSelectTreePath(DataMap map, Object object, EditorPanel editor) {
         ProjectTreeView projectTreeView = editor.getProjectTreeView();
         ProjectTreeModel treeModel = (ProjectTreeModel) projectTreeView.getModel();
 

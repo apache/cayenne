@@ -65,8 +65,15 @@ public class DefaultActionManager implements ActionManager {
     private final Set<String> multipleObjectsActions;
 
     private final Map<String, Action> actionMap;
+    private final ConfigurationNodeParentGetter nodeParentGetter;
 
-    public DefaultActionManager(@Inject Application application, @Inject ConfigurationNameMapper nameMapper) {
+    public DefaultActionManager(
+            @Inject Application application,
+            @Inject ConfigurationNameMapper nameMapper,
+            @Inject ConfigurationNodeParentGetter nodeParentGetter) {
+
+        this.nodeParentGetter = nodeParentGetter;
+
         specialActions = new HashSet<>();
 
         specialActions.addAll(Arrays.asList(
@@ -331,9 +338,7 @@ public class DefaultActionManager implements ActionManager {
      * Invoked when several objects were selected in ProjectTree at time
      */
     @Override
-    public void multipleObjectsSelected(
-            ConfigurationNode[] objects,
-            Application application) {
+    public void multipleObjectsSelected(ConfigurationNode[] objects) {
         processActionsState(multipleObjectsActions);
 
         updateActions("Selected Objects");
@@ -344,15 +349,10 @@ public class DefaultActionManager implements ActionManager {
 
         if (!cutAction.enableForPath(objects[0])) {
             canCopy = false;
-        }
-        else {
-            ConfigurationNodeParentGetter parentGetter = application
-                    .getInjector()
-                    .getInstance(ConfigurationNodeParentGetter.class);
-            Object parent = parentGetter.getParent(objects[0]);
-
+        } else {
+            Object parent = nodeParentGetter.getParent(objects[0]);
             for (int i = 1; i < objects.length; i++) {
-                if (parentGetter.getParent(objects[i]) != parent
+                if (nodeParentGetter.getParent(objects[i]) != parent
                         || !cutAction.enableForPath(objects[i])) {
                     canCopy = false;
                     break;

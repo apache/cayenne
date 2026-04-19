@@ -20,7 +20,6 @@
 package org.apache.cayenne.modeler.editor;
 
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.ProjectTreeView;
 import org.apache.cayenne.modeler.action.ActionManager;
@@ -29,49 +28,17 @@ import org.apache.cayenne.modeler.action.FilterAction;
 import org.apache.cayenne.modeler.dialog.datadomain.FilterController;
 import org.apache.cayenne.modeler.editor.datanode.DataNodeEditor;
 import org.apache.cayenne.modeler.editor.dbentity.DbEntityTabbedView;
-import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
-import org.apache.cayenne.modeler.event.display.DataMapDisplayListener;
-import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
-import org.apache.cayenne.modeler.event.display.DataNodeDisplayListener;
-import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
-import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
-import org.apache.cayenne.modeler.event.display.DomainDisplayListener;
-import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
-import org.apache.cayenne.modeler.event.display.EmbeddableDisplayListener;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
-import org.apache.cayenne.modeler.event.display.MultipleObjectsDisplayEvent;
-import org.apache.cayenne.modeler.event.display.MultipleObjectsDisplayListener;
-import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
-import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
-import org.apache.cayenne.modeler.event.display.ProcedureDisplayListener;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
-import org.apache.cayenne.modeler.event.display.QueryDisplayListener;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JToolBar;
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Component;
-import java.awt.ComponentOrientation;
-import java.awt.Container;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 
 /**
- * Main display area split into the project navigation tree on the left and selected
- * object editor on the right.
+ * Main display area split into the project navigation tree on the left and selected object editor on the right.
  */
-public class EditorView extends JPanel implements ObjEntityDisplayListener,
-        DbEntityDisplayListener, DomainDisplayListener, DataMapDisplayListener,
-        DataNodeDisplayListener, ProcedureDisplayListener, QueryDisplayListener,
-        MultipleObjectsDisplayListener, EmbeddableDisplayListener {
+public class EditorPanel extends JPanel {
 
     private static final String EMPTY_VIEW = "Empty";
     private static final String DOMAIN_VIEW = "Domain";
@@ -99,20 +66,15 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
     private DataDomainTabbedView dataDomainView;
     private DataMapTabbedView dataMapView;
     private ProcedureTabbedView procedureView;
-    private SelectQueryTabbedView selectQueryView;
     private SQLTemplateTabbedView sqlTemplateView;
     private EjbqlTabbedView ejbqlQueryView;
     private JTabbedPane dataNodeView;
 
     protected ActionManager actionManager;
-	private FilterController filterController;
-    
-	public FilterController getFilterController() {
-		return filterController;
-	}
+    private FilterController filterController;
 
-	public SelectQueryTabbedView getSelectQueryView() {
-        return selectQueryView;
+    public FilterController getFilterController() {
+        return filterController;
     }
 
     public SQLTemplateTabbedView getSqlTemplateView() {
@@ -154,25 +116,12 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
     public JTabbedPane getDataNodeView() {
         return dataNodeView;
     }
-    
-    public ProjectTreeView getTreePanel() {
-		return treePanel;
-	}
 
-    public EditorView(ProjectController eventController) {
+    public EditorPanel(ProjectController eventController) {
         this.projectController = eventController;
         this.actionManager = eventController.getApplication().getActionManager();
-        initView();
-        initController();
-       
-    }
 
-    public ProjectController getProjectController() {
-		return projectController;
-	}
-
-	private void initView() {
-	    setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 1));
+        setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 1));
         // init widgets
         actionManager.getAction(CollapseTreeAction.class).setAlwaysOn(true);
         actionManager.getAction(FilterAction.class).setAlwaysOn(true);
@@ -183,8 +132,8 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
         barPanel.setBorder(BorderFactory.createEmptyBorder());
         barPanel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 
-        JButton collapseButton = getAction(CollapseTreeAction.class).buildButton(1);
-        JButton filterButton = getAction(FilterAction.class).buildButton(3);
+        JButton collapseButton = actionManager.getAction(CollapseTreeAction.class).buildButton(1);
+        JButton filterButton = actionManager.getAction(FilterAction.class).buildButton(3);
         filterButton.setPreferredSize(new Dimension(30, 30));
         collapseButton.setPreferredSize(new Dimension(30, 30));
         barPanel.add(filterButton);
@@ -227,7 +176,7 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
         procedureView = new ProcedureTabbedView(projectController);
         detailPanel.add(procedureView, PROCEDURE_VIEW);
 
-        selectQueryView = new SelectQueryTabbedView(projectController);
+        SelectQueryTabbedView selectQueryView = new SelectQueryTabbedView(projectController);
         detailPanel.add(selectQueryView, SELECT_QUERY_VIEW);
 
         sqlTemplateView = new SQLTemplateTabbedView(projectController);
@@ -258,25 +207,18 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
 
         setLayout(new BorderLayout());
         add(splitPane, BorderLayout.CENTER);
-    }
-    
-    private <T extends Action> T getAction(Class<T> type) {
-        return actionManager.getAction(type);
-    }
 
+        this.filterController = new FilterController(treePanel);
 
-	private void initController() {
-		this.filterController = new FilterController(treePanel);
-		 
-        projectController.addDomainDisplayListener(this);
-        projectController.addDataNodeDisplayListener(this);
-        projectController.addDataMapDisplayListener(this);
-        projectController.addObjEntityDisplayListener(this);
-        projectController.addDbEntityDisplayListener(this);
-        projectController.addProcedureDisplayListener(this);
-        projectController.addQueryDisplayListener(this);
-        projectController.addMultipleObjectsDisplayListener(this);
-        projectController.addEmbeddableDisplayListener(this);
+        projectController.addDomainDisplayListener(e -> detailLayout.show(detailPanel, e.getDomain() == null ? EMPTY_VIEW : DOMAIN_VIEW));
+        projectController.addDataNodeDisplayListener(e -> detailLayout.show(detailPanel, e.getDataNode() == null ? EMPTY_VIEW : NODE_VIEW));
+        projectController.addDataMapDisplayListener(e -> detailLayout.show(detailPanel, e.getDataMap() == null ? EMPTY_VIEW : DATA_MAP_VIEW));
+        projectController.addObjEntityDisplayListener(e -> detailLayout.show(detailPanel, e.getEntity() == null ? EMPTY_VIEW : OBJ_VIEW));
+        projectController.addDbEntityDisplayListener(e -> detailLayout.show(detailPanel, e.getEntity() == null ? EMPTY_VIEW : DB_VIEW));
+        projectController.addProcedureDisplayListener(e -> detailLayout.show(detailPanel, e.getProcedure() == null ? EMPTY_VIEW : PROCEDURE_VIEW));
+        projectController.addQueryDisplayListener(this::querySelected);
+        projectController.addMultipleObjectsDisplayListener(e -> detailLayout.show(detailPanel, EMPTY_VIEW));
+        projectController.addEmbeddableDisplayListener(e -> detailLayout.show(detailPanel, e.getEmbeddable() == null ? EMPTY_VIEW : EMBEDDABLE_VIEW));
 
         // Moving this to try-catch block per CAY-940. Exception will be stack-traced
         try {
@@ -287,31 +229,7 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
         }
     }
 
-    public void currentProcedureChanged(ProcedureDisplayEvent e) {
-        detailLayout.show(detailPanel, e.getProcedure() == null ? EMPTY_VIEW : PROCEDURE_VIEW);
-    }
-
-    public void currentDomainChanged(DomainDisplayEvent e) {
-        detailLayout.show(detailPanel, e.getDomain() == null ? EMPTY_VIEW : DOMAIN_VIEW);
-    }
-
-    public void currentDataNodeChanged(DataNodeDisplayEvent e) {
-        detailLayout.show(detailPanel, e.getDataNode() == null ? EMPTY_VIEW : NODE_VIEW);
-    }
-
-    public void currentDataMapChanged(DataMapDisplayEvent e) {
-        detailLayout.show(detailPanel, e.getDataMap() == null ? EMPTY_VIEW : DATA_MAP_VIEW);
-    }
-
-    public void currentObjEntityChanged(EntityDisplayEvent e) {
-	    detailLayout.show(detailPanel, e.getEntity() == null ? EMPTY_VIEW : OBJ_VIEW);
-    }
-
-    public void currentDbEntityChanged(EntityDisplayEvent e) {
-        detailLayout.show(detailPanel, e.getEntity() == null ? EMPTY_VIEW : DB_VIEW);
-    }
-
-    public void currentQueryChanged(QueryDisplayEvent e) {
+    private void querySelected(QueryDisplayEvent e) {
         QueryDescriptor query = e.getQuery();
 
         switch (query.getType()) {
@@ -330,13 +248,5 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
             default:
                 detailLayout.show(detailPanel, EMPTY_VIEW);
         }
-    }
-
-    public void currentObjectsChanged(MultipleObjectsDisplayEvent e, Application application) {
-        detailLayout.show(detailPanel, EMPTY_VIEW);
-    }
-
-    public void currentEmbeddableChanged(EmbeddableDisplayEvent e) {
-        detailLayout.show(detailPanel, e.getEmbeddable() == null ? EMPTY_VIEW : EMBEDDABLE_VIEW);
     }
 }

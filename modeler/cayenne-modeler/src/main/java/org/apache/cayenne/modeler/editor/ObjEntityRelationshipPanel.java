@@ -164,7 +164,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
     /**
      * Loads obj relationships into table.
      */
-    public void currentObjEntityChanged(EntityDisplayEvent e) {
+    public void objEntitySelected(EntityDisplayEvent e) {
         if (e.getSource() == this) {
             return;
         }
@@ -439,7 +439,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
             editMenu.setEnabled(editEnabled);
         }
 
-        controller.fireObjRelationshipSelected(new RelationshipDisplayEvent(
+        controller.displayObjRelationship(new RelationshipDisplayEvent(
                 this,
                 rels,
                 controller.getSelectedObjEntity(),

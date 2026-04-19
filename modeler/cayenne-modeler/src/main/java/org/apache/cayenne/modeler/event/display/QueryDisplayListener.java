@@ -22,9 +22,7 @@ package org.apache.cayenne.modeler.event.display;
 
 import java.util.EventListener;
 
-/**
- * @since 1.1
- */
 public interface QueryDisplayListener extends EventListener {
-    public void currentQueryChanged(QueryDisplayEvent e);
+
+    void querySelected(QueryDisplayEvent e);
 }

@@ -42,7 +42,7 @@ public class CreateNodeAction extends CayenneAction {
         DataChannelDescriptor domain = (DataChannelDescriptor) controller.getProject().getRootNode();
         domain.getNodeDescriptors().add(node);
         controller.fireDataNodeEvent(new DataNodeEvent(src, node, MapEvent.ADD));
-        controller.fireDataNodeSelected(new DataNodeDisplayEvent(src, domain, node));
+        controller.displayDataNode(new DataNodeDisplayEvent(src, domain, node));
     }
 
     public CreateNodeAction(Application application) {

@@ -244,7 +244,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
                 DataMap map = controller.getSelectedDataMap();
 
                 controller.fireObjEntityEvent(new EntityEvent(this, entity));
-                controller.fireObjEntitySelected(new EntityDisplayEvent(this, entity, map, domain));
+                controller.displayObjEntity(new EntityDisplayEvent(this, entity, map, domain));
             }
         });
 
@@ -253,7 +253,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
             DbEntity entity = controller.getSelectedObjEntity().getDbEntity();
             if (entity != null) {
                 DataChannelDescriptor dom = (DataChannelDescriptor) controller.getProject().getRootNode();
-                controller.fireDbEntitySelected(new EntityDisplayEvent(this, entity, entity.getDataMap(), dom));
+                controller.displayDbEntity(new EntityDisplayEvent(this, entity, entity.getDataMap(), dom));
             }
         });
 
@@ -436,10 +436,10 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
                 controller.getSelectedObjEntity(),
                 controller.getSelectedDataMap(),
                 (DataChannelDescriptor) controller.getProject().getRootNode());
-        controller.fireObjEntitySelected(ede);
+        controller.displayObjEntity(ede);
     }
 
-    public void currentObjEntityChanged(EntityDisplayEvent e) {
+    public void objEntitySelected(EntityDisplayEvent e) {
         ObjEntity entity = (ObjEntity) e.getEntity();
         if (entity == null) {
             return;

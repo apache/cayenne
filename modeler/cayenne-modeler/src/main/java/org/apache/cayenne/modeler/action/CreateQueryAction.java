@@ -67,6 +67,6 @@ public class CreateQueryAction extends CayenneAction {
     public static void fireQueryEvent(Object src, ProjectController mediator, DataChannelDescriptor domain,
             DataMap dataMap, QueryDescriptor query) {
         mediator.fireQueryEvent(new QueryEvent(src, query, MapEvent.ADD, dataMap));
-        mediator.fireQuerySelected(new QueryDisplayEvent(src, query, dataMap, domain));
+        mediator.displayQuery(new QueryDisplayEvent(src, query, dataMap, domain));
     }
 }

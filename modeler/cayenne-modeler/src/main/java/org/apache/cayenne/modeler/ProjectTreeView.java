@@ -181,7 +181,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                             projectParentPath = createProjectPath(parentPath);
                         }
 
-                        projectController.fireMultipleObjectsSelected(new MultipleObjectsDisplayEvent(
+                        projectController.displayMultipleObjects(new MultipleObjectsDisplayEvent(
                                 this,
                                 projectPaths, projectParentPath));
                     } else if (paths.length == 1) {
@@ -307,41 +307,41 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         }
     }
 
-    public void currentDomainChanged(DomainDisplayEvent e) {
+    public void domainSelected(DomainDisplayEvent e) {
         navigateTo(e.getDomain());
     }
 
-    public void currentDataNodeChanged(DataNodeDisplayEvent e) {
+    public void dataNodeSlected(DataNodeDisplayEvent e) {
         navigateTo(e.getDomain(), e.getDataNode());
     }
 
     @Override
-    public void currentDataMapChanged(DataMapDisplayEvent e) {
+    public void dataMapSelected(DataMapDisplayEvent e) {
         navigateTo(e.getDomain(), e.getDataMap());
     }
 
     @Override
-    public void currentObjEntityChanged(EntityDisplayEvent e) {
+    public void objEntitySelected(EntityDisplayEvent e) {
         navigateTo(e.getDomain(), e.getDataMap(), e.getEntity());
     }
 
     @Override
-    public void currentDbEntityChanged(EntityDisplayEvent e) {
+    public void dbEntitySelected(EntityDisplayEvent e) {
         navigateTo(e.getDomain(), e.getDataMap(), e.getEntity());
     }
 
     @Override
-    public void currentProcedureChanged(ProcedureDisplayEvent e) {
+    public void procedureSelected(ProcedureDisplayEvent e) {
         navigateTo(e.getDomain(), e.getDataMap(), e.getProcedure());
     }
 
     @Override
-    public void currentQueryChanged(QueryDisplayEvent e) {
+    public void querySelected(QueryDisplayEvent e) {
         navigateTo(e.getDomain(), e.getDataMap(), e.getQuery());
     }
 
     @Override
-    public void currentObjectsChanged(MultipleObjectsDisplayEvent e, Application application) {
+    public void multipleObjectsSelected(MultipleObjectsDisplayEvent e) {
         if (e.getSource() == this || e.getParentNode() == null) {
             return;
         }
@@ -873,7 +873,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         Object[] data = getUserObjects(currentNode);
         if (data.length == 0) {
             // this should clear the right-side panel
-            projectController.fireDomainSelected(new DomainDisplayEvent(
+            projectController.displayDomain(new DomainDisplayEvent(
                     this,
                     (DataChannelDescriptor) projectController.getProject().getRootNode()));
 
@@ -882,25 +882,25 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
         Object obj = data[data.length - 1];
         if (obj instanceof DataChannelDescriptor) {
-            projectController.fireDomainSelected(new DomainDisplayEvent(
+            projectController.displayDomain(new DomainDisplayEvent(
                     this,
                     (DataChannelDescriptor) obj));
         } else if (obj instanceof DataMap) {
             if (data.length == 2) {
-                projectController.fireDataMapSelected(new DataMapDisplayEvent(
+                projectController.displayDataMap(new DataMapDisplayEvent(
                         this,
                         (DataMap) obj,
                         (DataChannelDescriptor) projectController.getProject().getRootNode(),
                         (DataNodeDescriptor) data[data.length - 2]));
             } else if (data.length == 1) {
-                projectController.fireDataMapSelected(new DataMapDisplayEvent(
+                projectController.displayDataMap(new DataMapDisplayEvent(
                         this,
                         (DataMap) obj,
                         (DataChannelDescriptor) projectController.getProject().getRootNode()));
             }
         } else if (obj instanceof DataNodeDescriptor) {
             if (data.length == 1) {
-                projectController.fireDataNodeSelected(new DataNodeDisplayEvent(
+                projectController.displayDataNode(new DataNodeDisplayEvent(
                         this,
                         (DataChannelDescriptor) projectController.getProject().getRootNode(),
                         (DataNodeDescriptor) obj));
@@ -924,9 +924,9 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
             e.setUnselectAttributes(true);
 
             if (obj instanceof ObjEntity) {
-                projectController.fireObjEntitySelected(e);
+                projectController.displayObjEntity(e);
             } else if (obj instanceof DbEntity) {
-                projectController.fireDbEntitySelected(e);
+                projectController.displayDbEntity(e);
             }
         } else if (obj instanceof Embeddable) {
             EmbeddableDisplayEvent e = new EmbeddableDisplayEvent(
@@ -934,21 +934,21 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                     (Embeddable) obj,
                     (DataMap) data[data.length - 2],
                     (DataChannelDescriptor) projectController.getProject().getRootNode());
-            projectController.fireEmbeddableSelected(e);
+            projectController.displayEmbeddable(e);
         } else if (obj instanceof Procedure) {
             ProcedureDisplayEvent e = new ProcedureDisplayEvent(
                     this,
                     (Procedure) obj,
                     (DataMap) data[data.length - 2],
                     (DataChannelDescriptor) projectController.getProject().getRootNode());
-            projectController.fireProcedureSelected(e);
+            projectController.displayProcedure(e);
         } else if (obj instanceof QueryDescriptor) {
             QueryDisplayEvent e = new QueryDisplayEvent(
                     this,
                     (QueryDescriptor) obj,
                     (DataMap) data[data.length - 2],
                     (DataChannelDescriptor) projectController.getProject().getRootNode());
-            projectController.fireQuerySelected(e);
+            projectController.displayQuery(e);
         }
 
         this.scrollPathToVisible(path);
@@ -1122,7 +1122,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         });
     }
 
-    public void currentEmbeddableChanged(EmbeddableDisplayEvent e) {
+    public void embeddableSelected(EmbeddableDisplayEvent e) {
         navigateTo(e.getDomain(), e.getDataMap(), e.getEmbeddable());
 
     }

@@ -66,9 +66,9 @@ public abstract class BaseViewEntityAction extends CayenneAction {
                 entity.getDataMap(),
                 (DataChannelDescriptor) getProjectController().getProject().getRootNode());
         if (entity instanceof DbEntity) {
-            getProjectController().fireDbEntitySelected(event);
+            getProjectController().displayDbEntity(event);
         } else if (entity instanceof ObjEntity){
-            getProjectController().fireObjEntitySelected(event);
+            getProjectController().displayObjEntity(event);
         }
     }
 }

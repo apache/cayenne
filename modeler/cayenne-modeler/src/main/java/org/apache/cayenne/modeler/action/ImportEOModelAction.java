@@ -184,7 +184,7 @@ public class ImportEOModelAction extends CayenneAction {
             // send events after the node creation is complete
             getProjectController().fireDataNodeEvent(
                     new DataNodeEvent(this, node, MapEvent.ADD));
-            getProjectController().fireDataNodeSelected(
+            getProjectController().displayDataNode(
                     new DataNodeDisplayEvent(
                             this,
                             (DataChannelDescriptor) getProjectController()
@@ -278,7 +278,7 @@ public class ImportEOModelAction extends CayenneAction {
                 mediator.fireQueryEvent(queryEvent);
             }
 
-            mediator.fireDataMapSelected(new DataMapDisplayEvent(Application
+            mediator.displayDataMap(new DataMapDisplayEvent(Application
                     .getFrame(), map, (DataChannelDescriptor) mediator
                     .getProject()
                     .getRootNode(), mediator.getSelectedDataNode()));

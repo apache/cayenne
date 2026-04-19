@@ -54,12 +54,12 @@ class ProcedureParameterDisplayEventType extends ProcedureDisplayEventType {
         }
 
         ProcedureDisplayEvent procedureDisplayEvent = new ProcedureDisplayEvent(this, procedure, dataMap, dataChannel);
-        controller.fireProcedureSelected(procedureDisplayEvent);
+        controller.displayProcedure(procedureDisplayEvent);
 
         ProcedureParameter[] procedureParameters = getLastProcedureParameters(procedure);
         ProcedureParameterDisplayEvent procedureParameterDisplayEvent =
                 new ProcedureParameterDisplayEvent(this, procedureParameters, procedure, dataMap, dataChannel);
-        controller.fireProcedureParameterSelected(procedureParameterDisplayEvent);
+        controller.displayProcedureParameter(procedureParameterDisplayEvent);
     }
 
     @Override

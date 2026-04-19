@@ -23,22 +23,21 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.modeler.action.ExitAction;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
-import org.apache.cayenne.modeler.editor.EditorView;
 import org.apache.cayenne.modeler.editor.DbImportController;
+import org.apache.cayenne.modeler.editor.EditorPanel;
 import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.FileFilters;
-import org.apache.cayenne.modeler.util.state.ProjectStateUtil;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.validation.ProjectValidator;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
-import java.awt.Component;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTarget;
@@ -60,12 +59,10 @@ import java.util.prefs.Preferences;
  */
 public class CayenneModelerController extends CayenneController {
 
-    private static final ProjectStateUtil PROJECT_STATE_UTIL = new ProjectStateUtil();
-
     private final ProjectController projectController;
     private final CayenneModelerFrame frame;
-	private EditorView editorView;
-	private final DbImportController dbImportController;
+    private EditorPanel editorPanel;
+    private final DbImportController dbImportController;
 
     public CayenneModelerController(Application application) {
         super(application);
@@ -99,13 +96,34 @@ public class CayenneModelerController extends CayenneController {
         return path;
     }
 
-    protected void initBindings() {
+    private boolean processDropAction(Transferable transferable) {
+        List<File> fileList;
+        try {
+            fileList = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
+        } catch (Exception e) {
+            return false;
+        }
+
+        File transferFile = fileList.get(0);
+        if (transferFile.isFile()) {
+            FileFilter filter = FileFilters.getApplicationFilter();
+            if (filter.accept(transferFile)) {
+                ActionEvent e = new ActionEvent(transferFile, ActionEvent.ACTION_PERFORMED, "OpenProject");
+                Application.getInstance().getActionManager().getAction(OpenProjectAction.class).actionPerformed(e);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void onStartup() {
         frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                PROJECT_STATE_UTIL.saveLastState(projectController);
+                projectController.saveSelectionToPrefs();
                 getApplication().getActionManager().getAction(ExitAction.class).exit();
             }
         });
@@ -113,7 +131,7 @@ public class CayenneModelerController extends CayenneController {
         // Register a hook to save the window position when quit via the app menu.
         // This is in Mac OSX only.
         if (System.getProperty("os.name").startsWith("Mac OS")) {
-            Runnable runner = () -> PROJECT_STATE_UTIL.saveLastState(projectController);
+            Runnable runner = () -> projectController.saveSelectionToPrefs();
             Runtime.getRuntime().addShutdownHook(new Thread(runner, "Window Prefs Hook"));
         }
 
@@ -128,35 +146,7 @@ public class CayenneModelerController extends CayenneController {
 
         ComponentGeometry geometry = new ComponentGeometry(frame.getClass(), null);
         geometry.bind(frame, 1200, 720, 0);
-    }
 
-
-    @SuppressWarnings("unchecked")
-    private boolean processDropAction(Transferable transferable) {
-        List<File> fileList;
-        try {
-            fileList = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
-        } catch (Exception e) {
-            return false;
-        }
-
-        if (fileList != null) {
-            File transferFile = fileList.get(0);
-            if (transferFile.isFile()) {
-                FileFilter filter = FileFilters.getApplicationFilter();
-                if (filter.accept(transferFile)) {
-                    ActionEvent e = new ActionEvent(transferFile, ActionEvent.ACTION_PERFORMED, "OpenProject");
-                    Application.getInstance().getActionManager().getAction(OpenProjectAction.class).actionPerformed(e);
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    public void onStartup() {
-        initBindings();
         frame.setVisible(true);
     }
 
@@ -172,19 +162,17 @@ public class CayenneModelerController extends CayenneController {
     }
 
     public void onProjectClosed() {
-        PROJECT_STATE_UTIL.saveLastState(projectController);
+        projectController.saveSelectionToPrefs();
 
         // --- update view
-        frame.setView(null);
+        frame.setEditorPanel(null);
 
         // repaint is needed, since sometimes there is a
         // trace from menu left on the screen
         frame.repaint();
         frame.setTitle("");
 
-        projectController.setProject(null);
-
-        projectController.reset();
+        projectController.projectClosed();
         application.getActionManager().projectClosed();
 
         updateStatus("Project Closed...");
@@ -195,12 +183,13 @@ public class CayenneModelerController extends CayenneController {
      */
     public void onProjectOpened(Project project) {
 
-        projectController.setProject(project);
+        projectController.projectOpened(project);
+        frame.setTitle(getProjectLocationString());
 
-        editorView = new EditorView(projectController);
-        frame.setView(editorView);
+        editorPanel = new EditorPanel(projectController);
+        frame.setEditorPanel(editorPanel);
 
-        projectController.projectOpened();
+        projectController.restoreSelectionFromPrefs();
         application.getActionManager().projectOpened();
 
         // do status update AFTER the project is actually opened...
@@ -216,10 +205,6 @@ public class CayenneModelerController extends CayenneController {
             } catch (URISyntaxException ignore) {
             }
         }
-
-        frame.setTitle(getProjectLocationString());
-
-        PROJECT_STATE_UTIL.fireLastState(projectController);
 
         // for validation purposes combine load failures with post-load validation (not
         // sure if that'll cause duplicate messages?).
@@ -242,11 +227,13 @@ public class CayenneModelerController extends CayenneController {
         }
     }
 
-    public EditorView getEditorView() {
-    	return editorView;
+    public EditorPanel getEditorView() {
+        return editorPanel;
     }
 
-	/** Adds path to the list of last opened projects in preferences. */
+    /**
+     * Adds path to the list of last opened projects in preferences.
+     */
     public void addToLastProjListAction(File file) {
         Preferences prefLastProjFiles = ModelerPreferences.getLastProjFilesPref();
         List<File> arr = ModelerPreferences.getLastProjFiles();
@@ -290,7 +277,7 @@ public class CayenneModelerController extends CayenneController {
             new Thread(() -> {
                 try {
                     Thread.sleep(6 * 10000);
-                } catch (InterruptedException ignore){
+                } catch (InterruptedException ignore) {
                 }
                 if (message.equals(frame.getStatus().getText())) {
                     updateStatus(null);
@@ -304,7 +291,7 @@ public class CayenneModelerController extends CayenneController {
     }
 
     protected String getProjectLocationString() {
-        if(projectController.getProject().getConfigurationResource() == null) {
+        if (projectController.getProject().getConfigurationResource() == null) {
             return "[New Project]";
         }
         try {
@@ -314,5 +301,4 @@ public class CayenneModelerController extends CayenneController {
             throw new CayenneRuntimeException("Invalid project source URL", e);
         }
     }
-
 }

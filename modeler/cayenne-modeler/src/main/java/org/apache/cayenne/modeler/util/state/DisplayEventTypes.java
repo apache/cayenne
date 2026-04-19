@@ -37,7 +37,7 @@ public enum DisplayEventTypes {
 
     DomainDisplayEvent {
         @Override
-        DisplayEventType createDisplayEventType(ProjectController controller) {
+        public DisplayEventType createDisplayEventType(ProjectController controller) {
             return new DomainDisplayEventType(controller);
         }
 
@@ -49,7 +49,7 @@ public enum DisplayEventTypes {
 
     DataNodeDisplayEvent {
         @Override
-        DisplayEventType createDisplayEventType(ProjectController controller) {
+        public DisplayEventType createDisplayEventType(ProjectController controller) {
             return new DataNodeDisplayEventType(controller);
         }
 
@@ -61,7 +61,7 @@ public enum DisplayEventTypes {
 
     DataMapDisplayEvent {
         @Override
-        DisplayEventType createDisplayEventType(ProjectController controller) {
+        public DisplayEventType createDisplayEventType(ProjectController controller) {
             return new DataMapDisplayEventType(controller);
         }
 
@@ -73,7 +73,7 @@ public enum DisplayEventTypes {
 
     EntityDisplayEvent {
         @Override
-        DisplayEventType createDisplayEventType(ProjectController controller) {
+        public DisplayEventType createDisplayEventType(ProjectController controller) {
             if (controller.getSelectedObjAttributes().length != 0 || controller.getSelectedDbAttributes().length != 0) {
                 return new AttributeDisplayEventType(controller);
             } else if (controller.getSelectedObjRelationships().length != 0 || controller.getSelectedDbRelationships().length != 0) {
@@ -91,7 +91,7 @@ public enum DisplayEventTypes {
 
     AttributeDisplayEvent {
         @Override
-        DisplayEventType createDisplayEventType(ProjectController controller) {
+        public DisplayEventType createDisplayEventType(ProjectController controller) {
             return new AttributeDisplayEventType(controller);
         }
 
@@ -103,7 +103,7 @@ public enum DisplayEventTypes {
 
     RelationshipDisplayEvent {
         @Override
-        DisplayEventType createDisplayEventType(ProjectController controller) {
+        public DisplayEventType createDisplayEventType(ProjectController controller) {
             return new RelationshipDisplayEventType(controller);
         }
 
@@ -115,7 +115,7 @@ public enum DisplayEventTypes {
 
     EmbeddableDisplayEvent {
         @Override
-        DisplayEventType createDisplayEventType(ProjectController controller) {
+        public DisplayEventType createDisplayEventType(ProjectController controller) {
             if (controller.getSelectedEmbeddableAttributes().length != 0) {
                 return new EmbeddableAttributeDisplayEventType(controller);
             } else {
@@ -131,7 +131,7 @@ public enum DisplayEventTypes {
 
     EmbeddableAttributeDisplayEvent {
         @Override
-        DisplayEventType createDisplayEventType(ProjectController controller) {
+        public DisplayEventType createDisplayEventType(ProjectController controller) {
             return new EmbeddableAttributeDisplayEventType(controller);
         }
 
@@ -143,7 +143,7 @@ public enum DisplayEventTypes {
 
     ProcedureDisplayEvent {
         @Override
-        DisplayEventType createDisplayEventType(ProjectController controller) {
+        public DisplayEventType createDisplayEventType(ProjectController controller) {
             if (controller.getSelectedProcedureParameters().length != 0) {
                 return new ProcedureParameterDisplayEventType(controller);
             } else {
@@ -159,7 +159,7 @@ public enum DisplayEventTypes {
 
     ProcedureParameterDisplayEvent {
         @Override
-        DisplayEventType createDisplayEventType(ProjectController controller) {
+        public DisplayEventType createDisplayEventType(ProjectController controller) {
             return new ProcedureParameterDisplayEventType(controller);
         }
 
@@ -171,7 +171,7 @@ public enum DisplayEventTypes {
 
     QueryDisplayEvent {
         @Override
-        DisplayEventType createDisplayEventType(ProjectController controller) {
+        public DisplayEventType createDisplayEventType(ProjectController controller) {
             return new QueryDisplayEventType(controller);
         }
 
@@ -183,7 +183,7 @@ public enum DisplayEventTypes {
 
     MultipleObjectsDisplayEvent {
         @Override
-        DisplayEventType createDisplayEventType(ProjectController controller) {
+        public DisplayEventType createDisplayEventType(ProjectController controller) {
             return new MultipleObjectsDisplayEventType(controller);
         }
 
@@ -193,6 +193,6 @@ public enum DisplayEventTypes {
         }
     };
 
-    abstract DisplayEventType createDisplayEventType(ProjectController controller);
+    public abstract DisplayEventType createDisplayEventType(ProjectController controller);
 
 }

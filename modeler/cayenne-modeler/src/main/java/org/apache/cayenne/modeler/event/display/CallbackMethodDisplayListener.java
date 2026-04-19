@@ -22,6 +22,6 @@ import java.util.EventListener;
 
 public interface CallbackMethodDisplayListener extends EventListener {
 
-    void currentCallbackMethodChanged(CallbackMethodDisplayEvent e);
+    void callbackMethodSelected(CallbackMethodDisplayEvent e);
 }
 

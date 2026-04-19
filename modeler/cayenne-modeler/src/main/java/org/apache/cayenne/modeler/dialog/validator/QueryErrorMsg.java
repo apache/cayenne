@@ -46,6 +46,6 @@ public class QueryErrorMsg extends ValidationDisplayHandler {
         DataMap map = query.getDataMap();
 
         QueryDisplayEvent event = new QueryDisplayEvent(frame, query, map, domain);
-        mediator.fireQuerySelected(event);
+        mediator.displayQuery(event);
     }
 }

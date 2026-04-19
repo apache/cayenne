@@ -22,5 +22,5 @@ import java.util.EventListener;
 
 public interface EmbeddableDisplayListener extends EventListener {
 
-    public void currentEmbeddableChanged(EmbeddableDisplayEvent e);
+    void embeddableSelected(EmbeddableDisplayEvent e);
 }

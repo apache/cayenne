@@ -20,7 +20,6 @@
 package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.modeler.Application;
 
 import javax.swing.*;
 
@@ -51,10 +50,7 @@ public interface ActionManager {
 
     void embeddableSelected();
 
-    /**
-     * Invoked when several objects were selected in ProjectTree at time
-     */
-    void multipleObjectsSelected(ConfigurationNode[] objects, Application application);
+    void multipleObjectsSelected(ConfigurationNode[] objects);
 
     /**
      * Replaces standard Cut, Copy and Paste action maps, so that accelerators like Ctrl+X, Ctrl+C, Ctrl+V would work.

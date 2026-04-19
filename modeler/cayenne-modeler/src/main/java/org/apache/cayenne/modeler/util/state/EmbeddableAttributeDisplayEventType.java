@@ -54,11 +54,11 @@ class EmbeddableAttributeDisplayEventType extends EmbeddableDisplayEventType {
         }
 
         EmbeddableDisplayEvent embeddableDisplayEvent = new EmbeddableDisplayEvent(this, embeddable, dataMap, dataChannel);
-        controller.fireEmbeddableSelected(embeddableDisplayEvent);
+        controller.displayEmbeddable(embeddableDisplayEvent);
 
         EmbeddableAttribute[] embeddableAttributes = getLastEmbeddableAttributes(embeddable);
         EmbeddableAttributeDisplayEvent attributeDisplayEvent = new EmbeddableAttributeDisplayEvent(this, embeddable, embeddableAttributes, dataMap, dataChannel);
-        controller.fireEmbeddableAttributeSelected(attributeDisplayEvent);
+        controller.displayEmbeddableAttribute(attributeDisplayEvent);
     }
 
     @Override

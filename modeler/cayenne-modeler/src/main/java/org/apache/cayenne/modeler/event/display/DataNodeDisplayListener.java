@@ -23,5 +23,6 @@ package org.apache.cayenne.modeler.event.display;
 import java.util.EventListener;
 
 public interface DataNodeDisplayListener extends EventListener {
-	public void currentDataNodeChanged(DataNodeDisplayEvent e);
+
+    void dataNodeSlected(DataNodeDisplayEvent e);
 }

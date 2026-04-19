@@ -54,7 +54,7 @@ public class CreateObjEntityAction extends CayenneAction {
                 controller.getSelectedDataNode(),
                 (DataChannelDescriptor) controller.getProject().getRootNode());
         displayEvent.setMainTabFocus(true);
-        controller.fireObjEntitySelected(displayEvent);
+        controller.displayObjEntity(displayEvent);
     }
 
     public CreateObjEntityAction(Application application) {

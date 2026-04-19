@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.event.display;
 import java.util.EventListener;
 
 
-public interface EmbeddableAttributeDisplayListener extends EventListener{
-   
-    public void currentEmbeddableAttributeChanged(EmbeddableAttributeDisplayEvent e);
+public interface EmbeddableAttributeDisplayListener extends EventListener {
+
+    void embeddableAttributeSelected(EmbeddableAttributeDisplayEvent e);
 }

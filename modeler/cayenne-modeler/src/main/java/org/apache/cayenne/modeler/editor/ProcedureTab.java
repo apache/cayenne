@@ -122,13 +122,13 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
     public void processExistingSelection(EventObject e) {
         ProcedureDisplayEvent pde = new ProcedureDisplayEvent(this, eventController.getSelectedProcedure(),
                 eventController.getSelectedDataMap(), (DataChannelDescriptor) eventController.getProject().getRootNode());
-        eventController.fireProcedureSelected(pde);
+        eventController.displayProcedure(pde);
     }
 
     /**
      * Invoked when currently selected Procedure object is changed.
      */
-    public void currentProcedureChanged(ProcedureDisplayEvent e) {
+    public void procedureSelected(ProcedureDisplayEvent e) {
         Procedure procedure = e.getProcedure();
         if (procedure == null) {
             return;

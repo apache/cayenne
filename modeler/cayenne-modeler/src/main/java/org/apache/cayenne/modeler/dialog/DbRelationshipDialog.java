@@ -385,7 +385,7 @@ public class DbRelationshipDialog extends CayenneController {
             RelationshipDisplayEvent rde = new RelationshipDisplayEvent(this, relationship, dbEntity, projectController.getSelectedDataMap(),
                     (DataChannelDescriptor) projectController.getProject().getRootNode());
 
-            projectController.fireDbRelationshipSelected(rde);
+            projectController.displayDbRelationship(rde);
 
             Application.getInstance().getUndoManager().addEdit(
                     new CreateRelationshipUndoableEdit(relationship.getSourceEntity(), new DbRelationship[]{relationship}));

@@ -20,15 +20,7 @@ package org.apache.cayenne.modeler.event.display;
 
 import java.util.EventListener;
 
-import org.apache.cayenne.modeler.Application;
-
-/**
- * Listener for multiple objects selections 
- */
 public interface MultipleObjectsDisplayListener extends EventListener {
-    /**
-     * Invoked when a new set of objects was displayed
-     * @param application 
-     */
-    public void currentObjectsChanged(MultipleObjectsDisplayEvent e, Application application);
+
+    void multipleObjectsSelected(MultipleObjectsDisplayEvent e);
 }

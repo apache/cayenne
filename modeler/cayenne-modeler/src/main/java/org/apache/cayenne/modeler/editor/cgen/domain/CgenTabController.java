@@ -106,7 +106,7 @@ public class CgenTabController extends GeneratorsTabController<CgenConfiguration
     public void showConfig(DataMap dataMap) {
         if (dataMap != null) {
             DataMapDisplayEvent event = new DataMapDisplayEvent(getView(), dataMap, dataMap.getDataChannelDescriptor());
-            getProjectController().fireDataMapSelected(event);
+            getProjectController().displayDataMap(event);
         }
     }
 }

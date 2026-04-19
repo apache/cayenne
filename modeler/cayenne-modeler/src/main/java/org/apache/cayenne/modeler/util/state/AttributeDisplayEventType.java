@@ -63,11 +63,11 @@ class AttributeDisplayEventType extends EntityDisplayEventType {
         AttributeDisplayEvent attributeDisplayEvent = new AttributeDisplayEvent(this, attributes, entity, dataMap, dataChannel);
 
         if (entity instanceof ObjEntity) {
-            controller.fireObjEntitySelected(entityDisplayEvent);
-            controller.fireObjAttributeSelected(attributeDisplayEvent);
+            controller.displayObjEntity(entityDisplayEvent);
+            controller.displayObjAttribute(attributeDisplayEvent);
         } else if (entity instanceof DbEntity) {
-            controller.fireDbEntitySelected(entityDisplayEvent);
-            controller.fireDbAttributeSelected(attributeDisplayEvent);
+            controller.displayDbEntity(entityDisplayEvent);
+            controller.displayDbAttribute(attributeDisplayEvent);
         }
     }
 

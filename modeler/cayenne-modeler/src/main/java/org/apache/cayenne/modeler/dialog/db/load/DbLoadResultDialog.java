@@ -76,7 +76,7 @@ public class DbLoadResultDialog extends JDialog {
         this.setModal(false);
         this.setPreferredSize(new Dimension(400, 400));
         this.pack();
-        this.setLocationRelativeTo(Application.getFrame().getView());
+        this.setLocationRelativeTo(Application.getFrame().getEditorPanel());
     }
 
     private void initElements() {

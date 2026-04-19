@@ -61,11 +61,11 @@ public class AttributeErrorMsg extends ValidationDisplayHandler {
         // must first display entity, and then switch to relationship display ..
         // so fire twice
         if (entity instanceof ObjEntity) {
-            mediator.fireObjEntitySelected(event);
-            mediator.fireObjAttributeSelected(event);
+            mediator.displayObjEntity(event);
+            mediator.displayObjAttribute(event);
         } else if (entity instanceof DbEntity) {
-            mediator.fireDbEntitySelected(event);
-            mediator.fireDbAttributeSelected(event);
+            mediator.displayDbEntity(event);
+            mediator.displayDbAttribute(event);
         }
     }
 }

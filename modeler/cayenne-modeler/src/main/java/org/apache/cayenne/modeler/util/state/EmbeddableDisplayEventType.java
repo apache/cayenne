@@ -49,7 +49,7 @@ class EmbeddableDisplayEventType extends DisplayEventType {
         }
 
         EmbeddableDisplayEvent embeddableDisplayEvent = new EmbeddableDisplayEvent(this, embeddable, dataMap, dataChannel);
-        controller.fireEmbeddableSelected(embeddableDisplayEvent);
+        controller.displayEmbeddable(embeddableDisplayEvent);
     }
 
     @Override

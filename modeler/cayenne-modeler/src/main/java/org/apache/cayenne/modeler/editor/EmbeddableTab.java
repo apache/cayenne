@@ -177,7 +177,7 @@ public class EmbeddableTab extends JPanel implements EmbeddableDisplayListener {
 
     }
 
-    public void currentEmbeddableChanged(EmbeddableDisplayEvent e) {
+    public void embeddableSelected(EmbeddableDisplayEvent e) {
         Embeddable embeddable = e.getEmbeddable();
         if (embeddable == null) {
             return;

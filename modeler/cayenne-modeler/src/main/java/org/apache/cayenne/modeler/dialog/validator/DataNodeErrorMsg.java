@@ -54,7 +54,7 @@ public class DataNodeErrorMsg extends ValidationDisplayHandler {
     public void displayField(ProjectController mediator, JFrame frame) {
         DataNodeDisplayEvent event;
         event = new DataNodeDisplayEvent(frame, domain, node);
-        mediator.fireDataNodeSelected(event);
+        mediator.displayDataNode(event);
     }
 
 }

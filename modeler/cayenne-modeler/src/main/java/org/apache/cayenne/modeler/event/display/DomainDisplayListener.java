@@ -19,10 +19,9 @@ package org.apache.cayenne.modeler.event.display;
  ****************************************************************/
 
 
-
 import java.util.EventListener;
 
-public interface DomainDisplayListener extends EventListener
-{
-	public void currentDomainChanged(DomainDisplayEvent e);
+public interface DomainDisplayListener extends EventListener {
+
+    void domainSelected(DomainDisplayEvent e);
 }

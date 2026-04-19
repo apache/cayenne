@@ -83,7 +83,7 @@ public class ObjEntitySyncAction extends CayenneAction {
             if (merger.synchronizeWithDbEntity(entity)) {
                 mediator
                         .fireObjEntityEvent(new EntityEvent(this, entity, MapEvent.CHANGE));
-                mediator.fireObjEntitySelected(new EntityDisplayEvent(
+                mediator.displayObjEntity(new EntityDisplayEvent(
                         this,
                         entity,
                         entity.getDataMap(),

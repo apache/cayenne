@@ -148,7 +148,7 @@ public class EmbeddableAttributeTab extends JPanel implements
                 controller.getSelectedDataMap(),
                 (DataChannelDescriptor) controller.getProject().getRootNode());
 
-        controller.fireEmbeddableAttributeSelected(ev);
+        controller.displayEmbeddableAttribute(ev);
     }
 
     private void rebuildTable(Embeddable emb) {
@@ -223,7 +223,7 @@ public class EmbeddableAttributeTab extends JPanel implements
         table.select(ind);
     }
 
-    public void currentEmbeddableChanged(EmbeddableDisplayEvent e) {
+    public void embeddableSelected(EmbeddableDisplayEvent e) {
         if (e.getSource() == this) {
             return;
         }

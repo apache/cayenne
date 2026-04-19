@@ -22,11 +22,7 @@ package org.apache.cayenne.modeler.event.display;
 
 import java.util.EventListener;
 
-/**
- * Used to display DbAttribute.
- */
 public interface DbAttributeDisplayListener extends EventListener {
 
-    /** Displays specified db attribute. */
-    public void currentDbAttributeChanged(AttributeDisplayEvent e);
+    void dbAttributeSelected(AttributeDisplayEvent e);
 }

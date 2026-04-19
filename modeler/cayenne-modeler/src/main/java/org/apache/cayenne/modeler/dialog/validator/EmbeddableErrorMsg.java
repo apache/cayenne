@@ -52,7 +52,7 @@ public class EmbeddableErrorMsg extends ValidationDisplayHandler {
                 embeddable,
                 map,
                 domain);
-        mediator.fireEmbeddableSelected(event);
+        mediator.displayEmbeddable(event);
     }
 
 }

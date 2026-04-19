@@ -45,14 +45,24 @@ class DataMapDisplayEventType extends DisplayEventType {
         }
 
         DataMapDisplayEvent dataMapDisplayEvent = new DataMapDisplayEvent(this, dataMap, dataChannel, dataNode);
-        controller.fireDataMapSelected(dataMapDisplayEvent);
+        controller.displayDataMap(dataMapDisplayEvent);
     }
 
     @Override
     public void saveLastDisplayEvent() {
         preferences.setEvent(DataMapDisplayEvent.class.getSimpleName());
-        preferences.setDomain(controller.getSelectedDataDomain().getName());
-        preferences.setNode(controller.getSelectedDataNode() != null ? controller.getSelectedDataNode().getName() : "");
-        preferences.setDataMap(controller.getSelectedDataMap().getName());
+
+        DataChannelDescriptor domain = controller.getSelectedDataDomain();
+        DataNodeDescriptor node = controller.getSelectedDataNode();
+        DataMap dataMap = controller.getSelectedDataMap();
+
+        if (domain != null) {
+            preferences.setDomain(domain.getName());
+            preferences.setNode(node != null ? node.getName() : "");
+
+            if (dataMap != null) {
+                preferences.setDataMap(dataMap.getName());
+            }
+        }
     }
 }

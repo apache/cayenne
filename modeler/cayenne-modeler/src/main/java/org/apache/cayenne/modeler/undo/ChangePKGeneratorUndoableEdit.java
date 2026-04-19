@@ -75,7 +75,7 @@ public class ChangePKGeneratorUndoableEdit extends CayenneUndoableEdit {
 
     private void fireEvents() {
         controller.fireDbEntityEvent(new EntityEvent(this, dbEntity));
-        controller.fireDbEntitySelected(new EntityDisplayEvent(this, dbEntity));
+        controller.displayDbEntity(new EntityDisplayEvent(this, dbEntity));
     }
 
     public boolean hasRealChange() {

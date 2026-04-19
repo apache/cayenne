@@ -51,7 +51,7 @@ public class CreateEmbeddableAction extends CayenneAction {
                 dataMap,
                 (DataChannelDescriptor) controller.getProject().getRootNode());
         displayEvent.setMainTabFocus(true);
-        controller.fireEmbeddableSelected(displayEvent);
+        controller.displayEmbeddable(displayEvent);
 
     }
 

@@ -39,6 +39,6 @@ public class ShowValidationConfigAction extends CayenneAction {
     public void performAction(ActionEvent e) {
         ProjectController controller = getProjectController();
         DataChannelDescriptor dataChannel = (DataChannelDescriptor) controller.getProject().getRootNode();
-        controller.fireDomainSelected(new DomainDisplayEvent(this, dataChannel));
+        controller.displayDomain(new DomainDisplayEvent(this, dataChannel));
     }
 }

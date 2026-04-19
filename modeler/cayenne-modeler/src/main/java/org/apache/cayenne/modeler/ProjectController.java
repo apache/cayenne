@@ -25,6 +25,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.Relationship;
+import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.event.display.*;
 import org.apache.cayenne.modeler.event.model.*;
 import org.apache.cayenne.map.DataMap;
@@ -64,6 +65,8 @@ import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.modeler.pref.ProjectStatePreferences;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.Comparators;
+import org.apache.cayenne.modeler.util.state.DisplayEventTypes;
+import org.apache.cayenne.modeler.util.state.MultipleObjectsDisplayEventType;
 import org.apache.cayenne.project.ConfigurationNodeParentGetter;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.util.IDUtil;
@@ -76,10 +79,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EventListener;
+import java.util.EventObject;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
@@ -89,15 +94,12 @@ public class ProjectController extends CayenneController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProjectController.class);
 
-
     private NavigationHistory history;
     private EventListenerList listeners;
     private boolean dirty;
     private Project project;
     private Preferences projectControllerPreferences;
     private ControllerState state;
-
-
     private EntityResolver entityResolver;
     private ProjectFileChangeTracker fileChangeTracker;
 
@@ -115,35 +117,6 @@ public class ProjectController extends CayenneController {
 
     public Project getProject() {
         return project;
-    }
-
-    public void setProject(Project currentProject) {
-        if (this.project != currentProject) {
-
-            this.project = currentProject;
-            this.projectControllerPreferences = null;
-
-            if (project == null) {
-                this.entityResolver = null;
-
-                if (fileChangeTracker != null) {
-                    fileChangeTracker.interrupt();
-                    fileChangeTracker = null;
-                }
-            } else {
-                if (fileChangeTracker == null) {
-                    fileChangeTracker = new ProjectFileChangeTracker(this);
-                    fileChangeTracker.setDaemon(true);
-                    fileChangeTracker.start();
-                }
-
-                fileChangeTracker.reconfigure();
-
-                entityResolver = new EntityResolver();
-
-                updateEntityResolver();
-            }
-        }
     }
 
     public EntityResolver getEntityResolver() {
@@ -279,29 +252,93 @@ public class ProjectController extends CayenneController {
         return null;
     }
 
-    public void projectOpened() {
-        CayenneModelerFrame frame = (CayenneModelerFrame) getView();
-        addDataNodeDisplayListener(frame);
-        addDataMapDisplayListener(frame);
-        addObjEntityDisplayListener(frame);
-        addDbEntityDisplayListener(frame);
-        addQueryDisplayListener(frame);
-        addProcedureDisplayListener(frame);
-        addMultipleObjectsDisplayListener(frame);
-        addEmbeddableDisplayListener(frame);
+    public void projectOpened(Project project) {
+
+        this.project = project;
+        this.projectControllerPreferences = null;
+
+        if (fileChangeTracker != null) {
+            fileChangeTracker.interrupt();
+        }
+
+        fileChangeTracker = new ProjectFileChangeTracker(this);
+        fileChangeTracker.setDaemon(true);
+        fileChangeTracker.start();
+        fileChangeTracker.reconfigure();
+
+        this.entityResolver = new EntityResolver();
+        updateEntityResolver();
+
+        ActionManager actionManager = application.getActionManager();
+
+        addDataNodeDisplayListener(e -> actionManager.dataNodeSelected());
+        addDataMapDisplayListener(e -> actionManager.dataMapSelected());
+        addObjEntityDisplayListener(e -> actionManager.objEntitySelected());
+        addDbEntityDisplayListener(e -> actionManager.dbEntitySelected());
+        addQueryDisplayListener(e -> actionManager.querySelected());
+        addProcedureDisplayListener(e -> actionManager.procedureSelected());
+        addMultipleObjectsDisplayListener(e -> actionManager.multipleObjectsSelected(e.getNodes()));
+        addEmbeddableDisplayListener(e -> actionManager.embeddableSelected());
     }
 
-    public void reset() {
-        state = new ControllerState();
+    public void projectClosed() {
+
         setDirty(false);
-        listeners = new EventListenerList();
-        history = new NavigationHistory();
+
+        this.project = null;
+        this.projectControllerPreferences = null;
+        this.entityResolver = null;
+
+        if (fileChangeTracker != null) {
+            fileChangeTracker.interrupt();
+            fileChangeTracker = null;
+        }
+
+        this.state = new ControllerState();
+        this.listeners = new EventListenerList();
+        this.history = new NavigationHistory();
+    }
+
+    public void saveSelectionToPrefs() {
+        EventObject displayEvent = getLastDisplayEvent();
+        ConfigurationNode[] multiplyObjects = getSelectedPaths();
+
+        if (displayEvent == null && multiplyObjects == null) {
+            return;
+        }
+
+        ProjectStatePreferences preferences = getProjectStatePreferences();
+        if (preferences.getCurrentPreference() == null) {
+            return;
+        }
+
+        try {
+            preferences.getCurrentPreference().clear();
+        } catch (BackingStoreException e) {
+            // ignore exception
+        }
+
+        if (displayEvent != null) {
+            DisplayEventTypes.valueOf(displayEvent.getClass().getSimpleName())
+                    .createDisplayEventType(this)
+                    .saveLastDisplayEvent();
+        } else if (multiplyObjects.length != 0) {
+            new MultipleObjectsDisplayEventType(this).saveLastDisplayEvent();
+        }
+    }
+
+    public void restoreSelectionFromPrefs() {
+        ProjectStatePreferences preferences = getProjectStatePreferences();
+
+        String displayEventName = preferences.getEvent();
+        if (!displayEventName.isEmpty()) {
+            DisplayEventTypes.valueOf(displayEventName).createDisplayEventType(this).fireLastDisplayEvent();
+        }
     }
 
     public boolean isDirty() {
         return dirty;
     }
-
 
 
     public DataChannelDescriptor getSelectedDataDomain() {
@@ -529,26 +566,26 @@ public class ProjectController extends CayenneController {
         listeners.add(MultipleObjectsDisplayListener.class, listener);
     }
 
-    public void fireDomainSelected(DomainDisplayEvent e) {
-        LOGGER.debug("fireDomainSelected: {}", e.getDomain() != null ? e.getDomain().getName() : null);
-
-        if (e.getDomain() != state.dataDomain || (
+    public void displayDomain(DomainDisplayEvent e) {
+        boolean changed = e.getDomain() != state.dataDomain || (
                 state.dataNode != null || state.dataMap != null || state.dbEntity != null || state.objEntity != null || state.procedure != null || state.query != null || state.embeddable != null
-        )) {
+        );
+        LOGGER.debug("displayDomain: {}{}", e.getDomain() != null ? e.getDomain().getName() : null, changed ? "" : ", ignored unchanged");
+
+        if (changed) {
             state = new ControllerState();
             state.dataDomain = e.getDomain();
             history.recordEvent(e);
-        }
 
-        for (DomainDisplayListener listener : listeners.getListeners(DomainDisplayListener.class)) {
-            listener.currentDomainChanged(e);
-        }
+            for (DomainDisplayListener listener : listeners.getListeners(DomainDisplayListener.class)) {
+                listener.domainSelected(e);
+            }
 
-        // call different methods depending on whether domain was opened or closed
-        if (e.getDomain() == null) {
-            getApplication().getActionManager().projectOpened();
-        } else {
-            getApplication().getActionManager().domainSelected();
+            if (e.getDomain() == null) {
+                getApplication().getActionManager().projectOpened();
+            } else {
+                getApplication().getActionManager().domainSelected();
+            }
         }
     }
 
@@ -576,20 +613,21 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    public void fireDataNodeSelected(DataNodeDisplayEvent e) {
-        LOGGER.debug("fireDataNodeSelected: {}", e.getDataNode().getName());
-
-        if (e.getDataNode() != state.dataNode || (
+    public void displayDataNode(DataNodeDisplayEvent e) {
+        boolean changed = e.getDataNode() != state.dataNode || (
                 state.dataMap != null || state.dbEntity != null || state.objEntity != null || state.procedure != null || state.query != null || state.embeddable != null
-        )) {
+        );
+        LOGGER.debug("displayDataNode: {}{}", e.getDataNode().getName(), changed ? "" : ", ignored unchanged");
+
+        if (changed) {
             state = new ControllerState();
             state.dataDomain = e.getDomain();
             state.dataNode = e.getDataNode();
             history.recordEvent(e);
-        }
 
-        for (DataNodeDisplayListener listener : listeners.getListeners(DataNodeDisplayListener.class)) {
-            listener.currentDataNodeChanged(e);
+            for (DataNodeDisplayListener listener : listeners.getListeners(DataNodeDisplayListener.class)) {
+                listener.dataNodeSlected(e);
+            }
         }
     }
 
@@ -618,21 +656,23 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    public void fireDataMapSelected(DataMapDisplayEvent e) {
-        LOGGER.debug("fireDataMapSelected: {}", e.getDataMap().getName());
-        if (e.getDataMap() != state.dataMap || (
+    public void displayDataMap(DataMapDisplayEvent e) {
+        boolean changed = e.getDataMap() != state.dataMap || (
                 state.dbEntity != null || state.objEntity != null || state.procedure != null || state.query != null || state.embeddable != null
-        )) {
+        );
+
+        LOGGER.debug("displayDataMap: {}{}", e.getDataMap().getName(), changed ? "" : ", ignored unchanged");
+        if (changed) {
             state = new ControllerState();
             state.dataDomain = e.getDomain();
             state.dataNode = e.getDataNode();
             state.dataMap = e.getDataMap();
 
             history.recordEvent(e);
-        }
 
-        for (DataMapDisplayListener listener : listeners.getListeners(DataMapDisplayListener.class)) {
-            listener.currentDataMapChanged(e);
+            for (DataMapDisplayListener listener : listeners.getListeners(DataMapDisplayListener.class)) {
+                listener.dataMapSelected(e);
+            }
         }
     }
 
@@ -809,17 +849,17 @@ public class ProjectController extends CayenneController {
 
 
     public void rewindBackwards() {
-       history.replayLastEvent(this);
+        history.replayLastEvent(this);
     }
 
     public void rewindForward() {
         history.replayNextEvent(this);
     }
 
-    public void fireObjEntitySelected(EntityDisplayEvent e) {
+    public void displayObjEntity(EntityDisplayEvent e) {
         boolean changed = e.getEntity() != state.objEntity;
 
-        LOGGER.debug("fireObjEntitySelected: {}, changed: {}", e.getEntity().getName(), changed);
+        LOGGER.debug("displayObjEntity: {}{}", e.getEntity().getName(), changed ? "" : ", ignored unchanged");
 
         if (changed) {
             state = new ControllerState();
@@ -831,65 +871,68 @@ public class ProjectController extends CayenneController {
             history.recordEvent(e);
 
             for (ObjEntityDisplayListener l : listeners.getListeners(ObjEntityDisplayListener.class)) {
-                l.currentObjEntityChanged(e);
+                l.objEntitySelected(e);
             }
         }
     }
 
-    public void fireEmbeddableSelected(EmbeddableDisplayEvent e) {
-        LOGGER.debug("fireEmbeddableSelected: {}", e.getEmbeddable().getClassName());
+    public void displayEmbeddable(EmbeddableDisplayEvent e) {
+        boolean changed = e.getEmbeddable() != state.embeddable;
+        LOGGER.debug("displayEmbeddable: {}{}", e.getEmbeddable().getClassName(), changed ? "" : ", ignored unchanged");
 
-        if (e.getEmbeddable() != state.embeddable) {
+        if (changed) {
             state = new ControllerState();
             state.dataDomain = e.getDomain();
             state.dataNode = e.getDataNode();
             state.dataMap = e.getDataMap();
             state.embeddable = e.getEmbeddable();
             history.recordEvent(e);
-        }
 
-        for (EmbeddableDisplayListener l : listeners.getListeners(EmbeddableDisplayListener.class)) {
-            l.currentEmbeddableChanged(e);
+            for (EmbeddableDisplayListener l : listeners.getListeners(EmbeddableDisplayListener.class)) {
+                l.embeddableSelected(e);
+            }
         }
     }
 
-    public void fireQuerySelected(QueryDisplayEvent e) {
-        LOGGER.debug("fireQuerySelected: {}", e.getQuery().getName());
+    public void displayQuery(QueryDisplayEvent e) {
+        boolean changed = e.getQuery() != state.query;
+        LOGGER.debug("displayQuery: {}{}", e.getQuery().getName(), changed ? "" : ", ignored unchanged");
 
-        if (e.getQuery() != state.query) {
+        if (changed) {
             state = new ControllerState();
             state.dataDomain = e.getDomain();
             state.dataMap = e.getDataMap();
             state.query = e.getQuery();
-
             history.recordEvent(e);
-        }
 
-        for (QueryDisplayListener l : listeners.getListeners(QueryDisplayListener.class)) {
-            l.currentQueryChanged(e);
+            for (QueryDisplayListener l : listeners.getListeners(QueryDisplayListener.class)) {
+                l.querySelected(e);
+            }
         }
     }
 
-    public void fireProcedureSelected(ProcedureDisplayEvent e) {
-        LOGGER.debug("fireProcedureSelected: {}", e.getProcedure().getName());
+    public void displayProcedure(ProcedureDisplayEvent e) {
+        boolean changed = e.getProcedure() != state.procedure;
+        LOGGER.debug("displayProcedure: {}{}", e.getProcedure().getName(), changed ? "" : ", ignored unchanged");
 
-        if (e.getProcedure() != state.procedure) {
+        if (changed) {
             state = new ControllerState();
             state.dataDomain = e.getDomain();
             state.dataMap = e.getDataMap();
             state.procedure = e.getProcedure();
             history.recordEvent(e);
-        }
 
-        for (ProcedureDisplayListener l : listeners.getListeners(ProcedureDisplayListener.class)) {
-            l.currentProcedureChanged(e);
+            for (ProcedureDisplayListener l : listeners.getListeners(ProcedureDisplayListener.class)) {
+                l.procedureSelected(e);
+            }
         }
     }
 
-    public void fireProcedureParameterSelected(ProcedureParameterDisplayEvent e) {
-        LOGGER.debug("fireProcedureParameterSelected: {}", e.getProcedure().getName());
+    public void displayProcedureParameter(ProcedureParameterDisplayEvent e) {
+        boolean changed = !Arrays.equals(e.getProcedureParameters(), state.procedureParameters);
+        LOGGER.debug("displayProcedureParameter: {}{}", e.getProcedure().getName(), changed ? "" : ", ignored unchanged");
 
-        if (!Arrays.equals(e.getProcedureParameters(), state.procedureParameters)) {
+        if (changed) {
             if (state.procedure != e.getProcedure()) {
                 state = new ControllerState();
                 state.dataDomain = e.getDomain();
@@ -897,27 +940,28 @@ public class ProjectController extends CayenneController {
                 state.procedure = e.getProcedure();
             }
             state.procedureParameters = e.getProcedureParameters();
-        }
 
-        for (ProcedureParameterDisplayListener l : listeners.getListeners(ProcedureParameterDisplayListener.class)) {
-            l.currentProcedureParameterChanged(e);
+            for (ProcedureParameterDisplayListener l : listeners.getListeners(ProcedureParameterDisplayListener.class)) {
+                l.procedureParameterSelected(e);
+            }
         }
     }
 
-    public void fireDbEntitySelected(EntityDisplayEvent e) {
-        LOGGER.debug("fireDbEntitySelected: {}", e.getEntity().getName());
+    public void displayDbEntity(EntityDisplayEvent e) {
+        boolean changed = e.getEntity() != state.dbEntity;
+        LOGGER.debug("displayDbEntity: {}{}", e.getEntity().getName(), changed ? "" : ", ignored unchanged");
 
-        if (e.getEntity() != state.dbEntity) {
+        if (changed) {
             state = new ControllerState();
             state.dataDomain = e.getDomain();
             state.dataNode = e.getDataNode();
             state.dataMap = e.getDataMap();
             state.dbEntity = (DbEntity) e.getEntity();
             history.recordEvent(e);
-        }
 
-        for (DbEntityDisplayListener l : listeners.getListeners(DbEntityDisplayListener.class)) {
-            l.currentDbEntityChanged(e);
+            for (DbEntityDisplayListener l : listeners.getListeners(DbEntityDisplayListener.class)) {
+                l.dbEntitySelected(e);
+            }
         }
     }
 
@@ -945,10 +989,11 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    public void fireDbAttributeSelected(AttributeDisplayEvent e) {
-        LOGGER.debug("fireDbAttributeSelected: {}", Arrays.stream(e.getAttributes()).map(Attribute::getName).toArray());
+    public void displayDbAttribute(AttributeDisplayEvent e) {
+        boolean changed = !Arrays.equals(e.getAttributes(), state.dbAttributes);
+        LOGGER.debug("displayDbAttribute: {}{}", Arrays.stream(e.getAttributes()).map(Attribute::getName).toArray(), changed ? "" : ", ignored unchanged");
 
-        if (!Arrays.equals(e.getAttributes(), state.dbAttributes)) {
+        if (changed) {
             if (e.getEntity() != state.dbEntity) {
                 state = new ControllerState();
                 state.dataDomain = e.getDomain();
@@ -957,10 +1002,10 @@ public class ProjectController extends CayenneController {
             }
             state.dbAttributes = new DbAttribute[e.getAttributes().length];
             System.arraycopy(e.getAttributes(), 0, state.dbAttributes, 0, state.dbAttributes.length);
-        }
 
-        for (DbAttributeDisplayListener l : listeners.getListeners(DbAttributeDisplayListener.class)) {
-            l.currentDbAttributeChanged(e);
+            for (DbAttributeDisplayListener l : listeners.getListeners(DbAttributeDisplayListener.class)) {
+                l.dbAttributeSelected(e);
+            }
         }
     }
 
@@ -988,10 +1033,11 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    public void fireObjAttributeSelected(AttributeDisplayEvent e) {
-        LOGGER.debug("fireObjAttributeSelected: {}", Arrays.stream(e.getAttributes()).map(Attribute::getName).toArray());
+    public void displayObjAttribute(AttributeDisplayEvent e) {
+        boolean changed = !Arrays.equals(e.getAttributes(), state.objAttributes);
+        LOGGER.debug("displayObjAttribute: {}{}", Arrays.stream(e.getAttributes()).map(Attribute::getName).toArray(), changed ? "" : ", ignored unchanged");
 
-        if (!Arrays.equals(e.getAttributes(), state.objAttributes)) {
+        if (changed) {
             if (e.getEntity() != state.objEntity) {
                 state = new ControllerState();
                 state.dataDomain = e.getDomain();
@@ -1000,17 +1046,18 @@ public class ProjectController extends CayenneController {
             }
             state.objAttributes = new ObjAttribute[e.getAttributes().length];
             System.arraycopy(e.getAttributes(), 0, state.objAttributes, 0, state.objAttributes.length);
-        }
 
-        for (ObjAttributeDisplayListener l : listeners.getListeners(ObjAttributeDisplayListener.class)) {
-            l.currentObjAttributeChanged(e);
+            for (ObjAttributeDisplayListener l : listeners.getListeners(ObjAttributeDisplayListener.class)) {
+                l.objAttributeSelected(e);
+            }
         }
     }
 
-    public void fireEmbeddableAttributeSelected(EmbeddableAttributeDisplayEvent ev) {
-        LOGGER.debug("fireEmbeddableAttributeSelected: {}", Arrays.stream(ev.getEmbeddableAttributes()).map(EmbeddableAttribute::getName).toArray());
+    public void displayEmbeddableAttribute(EmbeddableAttributeDisplayEvent ev) {
+        boolean changed = !Arrays.equals(ev.getEmbeddableAttributes(), state.embeddableAttributes);
+        LOGGER.debug("displayEmbeddableAttribute: {}{}", Arrays.stream(ev.getEmbeddableAttributes()).map(EmbeddableAttribute::getName).toArray(), changed ? "" : ", ignored unchanged");
 
-        if (!Arrays.equals(ev.getEmbeddableAttributes(), state.embeddableAttributes)) {
+        if (changed) {
             if (ev.getEmbeddable() != state.embeddable) {
                 state = new ControllerState();
                 state.dataDomain = ev.getDomain();
@@ -1019,10 +1066,10 @@ public class ProjectController extends CayenneController {
             }
             state.embeddableAttributes = new EmbeddableAttribute[ev.getEmbeddableAttributes().length];
             System.arraycopy(ev.getEmbeddableAttributes(), 0, state.embeddableAttributes, 0, state.embeddableAttributes.length);
-        }
 
-        for (EmbeddableAttributeDisplayListener l : listeners.getListeners(EmbeddableAttributeDisplayListener.class)) {
-            l.currentEmbeddableAttributeChanged(ev);
+            for (EmbeddableAttributeDisplayListener l : listeners.getListeners(EmbeddableAttributeDisplayListener.class)) {
+                l.embeddableAttributeSelected(ev);
+            }
         }
     }
 
@@ -1054,9 +1101,11 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    public void fireDbRelationshipSelected(RelationshipDisplayEvent e) {
-        LOGGER.debug("fireDbRelationshipSelected: {}", Arrays.stream(e.getRelationships()).map(Relationship::getName).toArray());
-        if (!Arrays.equals(e.getRelationships(), state.dbRelationships)) {
+    public void displayDbRelationship(RelationshipDisplayEvent e) {
+        boolean changed = !Arrays.equals(e.getRelationships(), state.dbRelationships);
+        LOGGER.debug("displayDbRelationship: {}{}", Arrays.stream(e.getRelationships()).map(Relationship::getName).toArray(), changed ? "" : ", ignored unchanged");
+
+        if (changed) {
             if (e.getEntity() != state.dbEntity) {
                 state = new ControllerState();
                 state.dataDomain = e.getDomain();
@@ -1065,10 +1114,10 @@ public class ProjectController extends CayenneController {
             }
             state.dbRelationships = new DbRelationship[e.getRelationships().length];
             System.arraycopy(e.getRelationships(), 0, state.dbRelationships, 0, state.dbRelationships.length);
-        }
 
-        for (DbRelationshipDisplayListener listener : listeners.getListeners(DbRelationshipDisplayListener.class)) {
-            listener.currentDbRelationshipChanged(e);
+            for (DbRelationshipDisplayListener listener : listeners.getListeners(DbRelationshipDisplayListener.class)) {
+                listener.dbRelationshipSelected(e);
+            }
         }
     }
 
@@ -1096,20 +1145,22 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    public void fireMultipleObjectsSelected(MultipleObjectsDisplayEvent e) {
-        LOGGER.debug("fireMultipleObjectsSelected");
+    public void displayMultipleObjects(MultipleObjectsDisplayEvent e) {
+        LOGGER.debug("displayMultipleObjects");
         state = new ControllerState();
         state.paths = e.getNodes();
         state.parentPath = e.getParentNode();
 
         for (MultipleObjectsDisplayListener l : listeners.getListeners(MultipleObjectsDisplayListener.class)) {
-            l.currentObjectsChanged(e, getApplication());
+            l.multipleObjectsSelected(e);
         }
     }
 
-    public void fireObjRelationshipSelected(RelationshipDisplayEvent e) {
-        LOGGER.debug("fireObjRelationshipSelected: {}", Arrays.stream(e.getRelationships()).map(Relationship::getName).toArray());
-        if (!Arrays.equals(e.getRelationships(), state.objRelationships)) {
+    public void displayObjRelationship(RelationshipDisplayEvent e) {
+        boolean changed = !Arrays.equals(e.getRelationships(), state.objRelationships);
+        LOGGER.debug("displayObjRelationship: {}{}", Arrays.stream(e.getRelationships()).map(Relationship::getName).toArray(), changed ? "" : ", ignored unchanged");
+
+        if (changed) {
             if (e.getEntity() != state.objEntity) {
                 state = new ControllerState();
                 state.dataDomain = e.getDomain();
@@ -1118,15 +1169,15 @@ public class ProjectController extends CayenneController {
             }
             state.objRelationships = new ObjRelationship[e.getRelationships().length];
             System.arraycopy(e.getRelationships(), 0, state.objRelationships, 0, state.objRelationships.length);
-        }
 
-        for (ObjRelationshipDisplayListener l : listeners.getListeners(ObjRelationshipDisplayListener.class)) {
-            l.currentObjRelationshipChanged(e);
+            for (ObjRelationshipDisplayListener l : listeners.getListeners(ObjRelationshipDisplayListener.class)) {
+                l.currentObjRelationshipChanged(e);
+            }
         }
     }
 
-    public void fireValidationConfigSelected(ValidationConfigDisplayEvent event) {
-        LOGGER.debug("fireValidationConfigSelected");
+    public void displayValidationConfig(ValidationConfigDisplayEvent event) {
+        LOGGER.debug("displayValidationConfig");
         for (ValidationConfigDisplayListener l : listeners.getListeners(ValidationConfigDisplayListener.class)) {
             l.validationOptionChanged(event);
         }
@@ -1154,8 +1205,8 @@ public class ProjectController extends CayenneController {
         listeners.add(CallbackTypeSelectionListener.class, listener);
     }
 
-    public void fireCallbackTypeSelected(CallbackTypeDisplayEvent e) {
-        LOGGER.debug("fireCallbackTypeSelected: {}", e.getCallbackType());
+    public void displayCallbackType(CallbackTypeDisplayEvent e) {
+        LOGGER.debug("displayCallbackType: {}", e.getCallbackType());
         state.callbackType = e.getCallbackType();
         for (CallbackTypeSelectionListener l : listeners.getListeners(CallbackTypeSelectionListener.class)) {
             l.callbackTypeSelected(e);
@@ -1170,11 +1221,11 @@ public class ProjectController extends CayenneController {
         listeners.add(CallbackMethodDisplayListener.class, listener);
     }
 
-    public void fireCallbackMethodSelected(CallbackMethodDisplayEvent e) {
-        LOGGER.debug("fireCallbackMethodSelected");
+    public void displayCallbackMethod(CallbackMethodDisplayEvent e) {
+        LOGGER.debug("displayCallbackMethod");
         state.callbackMethods = e.getCallbackMethods();
         for (CallbackMethodDisplayListener l : listeners.getListeners(CallbackMethodDisplayListener.class)) {
-            l.currentCallbackMethodChanged(e);
+            l.callbackMethodSelected(e);
         }
     }
 
@@ -1330,7 +1381,6 @@ public class ProjectController extends CayenneController {
             }
         }
     }
-
 
 
     static class ControllerState {

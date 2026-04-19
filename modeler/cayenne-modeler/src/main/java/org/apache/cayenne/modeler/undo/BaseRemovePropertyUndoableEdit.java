@@ -44,7 +44,7 @@ public abstract class BaseRemovePropertyUndoableEdit extends CayenneUndoableEdit
     }
 
     protected void focusEmbeddable() {
-        controller.fireEmbeddableSelected(new EmbeddableDisplayEvent(
+        controller.displayEmbeddable(new EmbeddableDisplayEvent(
                 this,
                 embeddable,
                 embeddable.getDataMap(),

@@ -52,7 +52,7 @@ public class CreateRelationshipAction extends CayenneAction {
         RelationshipDisplayEvent rde = new RelationshipDisplayEvent(src, rel, objEntity, mediator.getSelectedDataMap(),
                 (DataChannelDescriptor) mediator.getProject().getRootNode());
 
-        mediator.fireObjRelationshipSelected(rde);
+        mediator.displayObjRelationship(rde);
     }
 
     /**
@@ -65,7 +65,7 @@ public class CreateRelationshipAction extends CayenneAction {
         RelationshipDisplayEvent rde = new RelationshipDisplayEvent(src, rel, dbEntity, mediator.getSelectedDataMap(),
                 (DataChannelDescriptor) mediator.getProject().getRootNode());
 
-        mediator.fireDbRelationshipSelected(rde);
+        mediator.displayDbRelationship(rde);
     }
 
     public CreateRelationshipAction(Application application) {

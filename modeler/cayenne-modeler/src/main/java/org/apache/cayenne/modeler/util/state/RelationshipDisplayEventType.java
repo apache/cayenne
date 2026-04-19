@@ -63,11 +63,11 @@ class RelationshipDisplayEventType extends EntityDisplayEventType {
         RelationshipDisplayEvent displayEvent = new RelationshipDisplayEvent(this, relationships, entity, dataMap, dataChannel);
 
         if (entity instanceof ObjEntity) {
-            controller.fireObjEntitySelected(entityDisplayEvent);
-            controller.fireObjRelationshipSelected(displayEvent);
+            controller.displayObjEntity(entityDisplayEvent);
+            controller.displayObjRelationship(displayEvent);
         } else if (entity instanceof DbEntity) {
-            controller.fireDbEntitySelected(entityDisplayEvent);
-            controller.fireDbRelationshipSelected(displayEvent);
+            controller.displayDbEntity(entityDisplayEvent);
+            controller.displayDbRelationship(displayEvent);
         }
     }
 

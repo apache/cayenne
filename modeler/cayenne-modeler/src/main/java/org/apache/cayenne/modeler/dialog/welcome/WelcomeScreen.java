@@ -19,25 +19,6 @@
 
 package org.apache.cayenne.modeler.dialog.welcome;
 
-import java.awt.Color;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridBagLayout;
-import java.awt.Paint;
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.util.List;
-
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ModelerPreferences;
 import org.apache.cayenne.modeler.action.NewProjectAction;
@@ -46,29 +27,22 @@ import org.apache.cayenne.modeler.event.model.RecentFileListListener;
 import org.apache.cayenne.modeler.util.BackgroundPanel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.util.List;
+
 /**
- * Welcome screen (CAY-894) is a panel shown when no project is open. User can quickly
- * create new project or open an existing one.
+ * A panel shown when no project is open. User can quickly create new project or open an existing one.
  */
 public class WelcomeScreen extends JScrollPane implements RecentFileListListener, RecentFileListRenderer.OnFileClickListener {
 
-    /**
-     * Top color of gradient background
-     */
     private static final Color TOP_GRADIENT = new Color(153, 153, 153);
-
-    /**
-     * Bottom color of gradient background
-     */
     private static final Color BOTTOM_GRADIENT = new Color(230, 230, 230);
 
-    /**
-     * List of recent projects
-     */
     private JList<String> recentProjectsList;
-
     private JPanel buttonsPanel;
-
     private JPanel mainPanel;
 
     public WelcomeScreen() {

@@ -56,7 +56,7 @@ public class CreateDataMapAction extends CayenneAction {
 
         DataMapDisplayEvent displayEvent = new DataMapDisplayEvent(src, map, domain, node);
         displayEvent.setMainTabFocus(true);
-        controller.fireDataMapSelected(displayEvent);
+        controller.displayDataMap(displayEvent);
     }
 
     public CreateDataMapAction(Application application) {

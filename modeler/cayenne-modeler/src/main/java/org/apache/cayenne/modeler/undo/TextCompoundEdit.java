@@ -37,7 +37,7 @@ import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerFrame;
-import org.apache.cayenne.modeler.editor.EditorView;
+import org.apache.cayenne.modeler.editor.EditorPanel;
 import org.apache.cayenne.modeler.editor.SQLTemplateTabbedView;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.query.EJBQLQuery;
@@ -71,10 +71,10 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
         this.editor = editor;
         this.listener = listener;
 
-        EditorView editorView = ((CayenneModelerFrame) Application.getInstance().getFrameController().getView())
-                .getView();
+        EditorPanel editorPanel = ((CayenneModelerFrame) Application.getInstance().getFrameController().getView())
+                .getEditorPanel();
 
-        treePath = editorView.getProjectTreeView().getSelectionPath();
+        treePath = editorPanel.getProjectTreeView().getSelectionPath();
 
         if(treePath != null) {
             DefaultMutableTreeNode newPath = (DefaultMutableTreeNode) treePath.getLastPathComponent();
@@ -82,19 +82,19 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
         }
 
         if (targetObject instanceof ObjEntity) {
-            tabbedPane = editorView.getObjDetailView();
+            tabbedPane = editorPanel.getObjDetailView();
         }
 
         if (targetObject instanceof DbEntity) {
-            tabbedPane = editorView.getDbDetailView();
+            tabbedPane = editorPanel.getDbDetailView();
         }
 
         if (targetObject instanceof Embeddable) {
-            tabbedPane = editorView.getEmbeddableView();
+            tabbedPane = editorPanel.getEmbeddableView();
         }
 
         if (targetObject instanceof SQLTemplate) {
-            tabbedPane = editorView.getSqlTemplateView();
+            tabbedPane = editorPanel.getSqlTemplateView();
 
             if (tabbedPane != null) {
                 selectedItem = ((SQLTemplateTabbedView) tabbedPane).getScriptsTab().getSelectedIndex();
@@ -102,19 +102,19 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
         }
 
         if (targetObject instanceof EJBQLQuery) {
-            tabbedPane = editorView.getEjbqlQueryView();
+            tabbedPane = editorPanel.getEjbqlQueryView();
         }
 
         if (targetObject instanceof DataNodeDescriptor) {
-            tabbedPane = editorView.getDataNodeView();
+            tabbedPane = editorPanel.getDataNodeView();
         }
 
         if (targetObject instanceof DataMap) {
-            tabbedPane = editorView.getDataMapView();
+            tabbedPane = editorPanel.getDataMapView();
         }
 
         if (targetObject instanceof DataChannelDescriptor) {
-            tabbedPane = editorView.getDataDomainView();
+            tabbedPane = editorPanel.getDataDomainView();
         }
 
         if (tabbedPane != null) {
@@ -124,10 +124,10 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
 
     private void restoreSelections() {
 
-        EditorView editorView = ((CayenneModelerFrame) Application.getInstance().getFrameController().getView())
-                .getView();
+        EditorPanel editorPanel = ((CayenneModelerFrame) Application.getInstance().getFrameController().getView())
+                .getEditorPanel();
 
-        editorView.getProjectTreeView().getSelectionModel().setSelectionPath(treePath);
+        editorPanel.getProjectTreeView().getSelectionModel().setSelectionPath(treePath);
 
         if (tabbedPane != null) {
             tabbedPane.setSelectedIndex(selectedTabIndex);

@@ -43,7 +43,7 @@ public class ShowValidationOptionAction extends ShowValidationConfigAction {
         Inspection inspection = (Inspection) getValue(INSPECTION_PARAM);
         ProjectController controller = getProjectController();
         DataChannelDescriptor dataChannel = (DataChannelDescriptor) controller.getProject().getRootNode();
-        controller.fireValidationConfigSelected(new ValidationConfigDisplayEvent(this, dataChannel, inspection));
+        controller.displayValidationConfig(new ValidationConfigDisplayEvent(this, dataChannel, inspection));
     }
 
     public ShowValidationConfigAction putInspection(Inspection inspection) {

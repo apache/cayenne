@@ -21,5 +21,6 @@ package org.apache.cayenne.modeler.event.display;
 import java.util.EventListener;
 
 public interface DataMapDisplayListener extends EventListener {
-    void currentDataMapChanged(DataMapDisplayEvent e);
+
+    void dataMapSelected(DataMapDisplayEvent e);
 }

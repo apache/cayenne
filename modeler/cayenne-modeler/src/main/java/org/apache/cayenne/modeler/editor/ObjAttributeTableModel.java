@@ -308,7 +308,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
 
         controller.fireObjEntityEvent(new EntityEvent(this, entity, MapEvent.CHANGE));
 
-        controller.fireObjEntitySelected(new EntityDisplayEvent(
+        controller.displayObjEntity(new EntityDisplayEvent(
                 this,
                 controller.getSelectedObjEntity(),
                 controller.getSelectedDataMap(),
@@ -320,7 +320,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
                 entity,
                 MapEvent.CHANGE));
 
-        controller.fireObjAttributeSelected(new AttributeDisplayEvent(
+        controller.displayObjAttribute(new AttributeDisplayEvent(
                 this,
                 attributeNew,
                 controller.getSelectedObjEntity(),

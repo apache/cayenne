@@ -291,7 +291,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
         }
     }
 
-    public void currentObjEntityChanged(EntityDisplayEvent e) {
+    public void objEntitySelected(EntityDisplayEvent e) {
         if (e.getSource() == this) {
             return;
         }
@@ -495,7 +495,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
             editMenu.setEnabled(editEnabled);
         }
 
-        controller.fireObjAttributeSelected(new AttributeDisplayEvent(
+        controller.displayObjAttribute(new AttributeDisplayEvent(
                 this,
                 attrs,
                 controller.getSelectedObjEntity(),

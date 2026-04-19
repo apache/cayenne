@@ -43,6 +43,6 @@ public class GenerateCodeAction extends CayenneAction {
     }
 
     public void performAction(ActionEvent e) {
-        getProjectController().fireDomainSelected(new DomainDisplayEvent(this, (DataChannelDescriptor) getProjectController().getProject().getRootNode()));
+        getProjectController().displayDomain(new DomainDisplayEvent(this, (DataChannelDescriptor) getProjectController().getProject().getRootNode()));
     }
 }

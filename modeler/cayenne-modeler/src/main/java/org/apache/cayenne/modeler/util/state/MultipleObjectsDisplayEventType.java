@@ -29,7 +29,7 @@ import org.apache.cayenne.modeler.event.display.MultipleObjectsDisplayEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-class MultipleObjectsDisplayEventType extends DisplayEventType {
+public class MultipleObjectsDisplayEventType extends DisplayEventType {
 
     public MultipleObjectsDisplayEventType(ProjectController controller) {
         super(controller);
@@ -57,7 +57,7 @@ class MultipleObjectsDisplayEventType extends DisplayEventType {
         }
 
         MultipleObjectsDisplayEvent multipleDisplayEvent = new MultipleObjectsDisplayEvent(this, multipleObjects, parentObject);
-        controller.fireMultipleObjectsSelected(multipleDisplayEvent);
+        controller.displayMultipleObjects(multipleDisplayEvent);
     }
 
     @Override

@@ -56,7 +56,7 @@ class NavigationHistory {
     }
 
     public DisplayEvent getLastEvent() {
-        return history.isEmpty() ? null : history.get(history.size() - 1);
+        return currentEvent;
     }
 
     public void recordEvent(DisplayEvent e) {
@@ -103,22 +103,22 @@ class NavigationHistory {
         if (e instanceof EntityDisplayEvent) {
             EntityDisplayEvent ede = (EntityDisplayEvent) e;
             if (ede.getEntity() instanceof ObjEntity) {
-                controller.fireObjEntitySelected(ede);
+                controller.displayObjEntity(ede);
             } else if (ede.getEntity() instanceof DbEntity) {
-                controller.fireDbEntitySelected(ede);
+                controller.displayDbEntity(ede);
             }
         } else if (e instanceof EmbeddableDisplayEvent) {
-            controller.fireEmbeddableSelected((EmbeddableDisplayEvent) e);
+            controller.displayEmbeddable((EmbeddableDisplayEvent) e);
         } else if (e instanceof ProcedureDisplayEvent) {
-            controller.fireProcedureSelected((ProcedureDisplayEvent) e);
+            controller.displayProcedure((ProcedureDisplayEvent) e);
         } else if (e instanceof QueryDisplayEvent) {
-            controller.fireQuerySelected((QueryDisplayEvent) e);
+            controller.displayQuery((QueryDisplayEvent) e);
         } else if (e instanceof DataMapDisplayEvent) {
-            controller.fireDataMapSelected((DataMapDisplayEvent) e);
+            controller.displayDataMap((DataMapDisplayEvent) e);
         } else if (e instanceof DataNodeDisplayEvent) {
-            controller.fireDataNodeSelected((DataNodeDisplayEvent) e);
+            controller.displayDataNode((DataNodeDisplayEvent) e);
         } else if (e instanceof DomainDisplayEvent) {
-            controller.fireDomainSelected((DomainDisplayEvent) e);
+            controller.displayDomain((DomainDisplayEvent) e);
         }
     }
 

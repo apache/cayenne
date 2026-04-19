@@ -22,22 +22,7 @@ package org.apache.cayenne.modeler;
 import org.apache.cayenne.modeler.action.*;
 import org.apache.cayenne.modeler.dialog.LogConsole;
 import org.apache.cayenne.modeler.dialog.welcome.WelcomeScreen;
-import org.apache.cayenne.modeler.editor.EditorView;
-import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
-import org.apache.cayenne.modeler.event.display.DataMapDisplayListener;
-import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
-import org.apache.cayenne.modeler.event.display.DataNodeDisplayListener;
-import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
-import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
-import org.apache.cayenne.modeler.event.display.EmbeddableDisplayListener;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
-import org.apache.cayenne.modeler.event.display.MultipleObjectsDisplayEvent;
-import org.apache.cayenne.modeler.event.display.MultipleObjectsDisplayListener;
-import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
-import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
-import org.apache.cayenne.modeler.event.display.ProcedureDisplayListener;
-import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
-import org.apache.cayenne.modeler.event.display.QueryDisplayListener;
+import org.apache.cayenne.modeler.editor.EditorPanel;
 import org.apache.cayenne.modeler.event.model.RecentFileListListener;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.util.ModelerUtil;
@@ -52,173 +37,33 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 /**
- * Main frame of CayenneModeler. Responsibilities include coordination of
- * enabling/disabling of menu and toolbar.
+ * Main frame of CayenneModeler GUI
  */
-public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListener,
-        DataMapDisplayListener, ObjEntityDisplayListener, DbEntityDisplayListener,
-        QueryDisplayListener, ProcedureDisplayListener, MultipleObjectsDisplayListener,
-        EmbeddableDisplayListener {
+public class CayenneModelerFrame extends JFrame {
 
-    protected EditorView view;
-    protected RecentFileMenu recentFileMenu;
-    protected ActionManager actionManager;
-    protected JLabel status;
+    private final ActionManager actionManager;
+    private final List<RecentFileListListener> recentFileListeners;
 
-    /**
-     * Menu which shows/hides log console
-     */
-    protected JCheckBoxMenuItem logMenu;
+    private final JSplitPane splitPane;
+    private final JLabel status;
+    private final WelcomeScreen welcomePanel;
 
-    /**
-     * Split panel, where main project editor and external component, like log console,
-     * are located
-     */
-    protected JSplitPane splitPane;
-
-    /**
-     * Component, plugged into this frame
-     */
-    protected Component dockComponent;
-
-    /**
-     * Listeners for changes in recent file menu
-     */
-    protected List<RecentFileListListener> recentFileListeners;
-
-    /**
-     * Welcome screen, shown when no project is open
-     */
-    protected WelcomeScreen welcomeScreen;
+    private EditorPanel editorPanel;
+    private JCheckBoxMenuItem logMenu;
+    private Component dockComponent;
 
     public CayenneModelerFrame(ActionManager actionManager) {
         this.actionManager = actionManager;
-
-        recentFileListeners = new Vector<>();
+        this.recentFileListeners = new ArrayList<>();
 
         setIconImage(ModelerUtil.buildIcon("CayenneModeler.png").getImage());
         initMenus();
         initToolbar();
-        initStatusBar();
-        initWelcome();
 
-        fireRecentFileListChanged(); // start filling list in welcome screen and in menu
-
-        setView(null);
-    }
-
-    /**
-     * Returns an action object associated with the key.
-     */
-    private <T extends Action> T getAction(Class<T> type) {
-        return actionManager.getAction(type);
-    }
-
-    protected void initMenus() {
-        getContentPane().setLayout(new BorderLayout());
-
-        JMenu fileMenu = new JMenu("File");
-        JMenu editMenu = new JMenu("Edit");
-        JMenu projectMenu = new JMenu("Project");
-        JMenu toolMenu = new JMenu("Tools");
-        JMenu helpMenu = new JMenu("Help");
-
-        fileMenu.setMnemonic(KeyEvent.VK_F);
-        editMenu.setMnemonic(KeyEvent.VK_E);
-        projectMenu.setMnemonic(KeyEvent.VK_P);
-        toolMenu.setMnemonic(KeyEvent.VK_T);
-        helpMenu.setMnemonic(KeyEvent.VK_H);
-
-        fileMenu.add(getAction(NewProjectAction.class).buildMenu());
-        fileMenu.add(getAction(OpenProjectAction.class).buildMenu());
-        fileMenu.add(getAction(ProjectAction.class).buildMenu());
-        fileMenu.add(getAction(ImportDataMapAction.class).buildMenu());
-        fileMenu.addSeparator();
-        fileMenu.add(getAction(SaveAction.class).buildMenu());
-        fileMenu.add(getAction(SaveAsAction.class).buildMenu());
-        fileMenu.add(getAction(RevertAction.class).buildMenu());
-        fileMenu.addSeparator();
-
-        editMenu.add(getAction(UndoAction.class).buildMenu());
-        editMenu.add(getAction(RedoAction.class).buildMenu());
-        editMenu.add(getAction(CutAction.class).buildMenu());
-        editMenu.add(getAction(CopyAction.class).buildMenu());
-        editMenu.add(getAction(PasteAction.class).buildMenu());
-
-        recentFileMenu = new RecentFileMenu("Recent Projects");
-        addRecentFileListListener(recentFileMenu);
-        fileMenu.add(recentFileMenu);
-
-        fileMenu.addSeparator();
-        fileMenu.add(getAction(ExitAction.class).buildMenu());
-
-        projectMenu.add(getAction(ValidateAction.class).buildMenu());
-        projectMenu.add(getAction(ShowValidationConfigAction.class).buildMenu());
-        projectMenu.addSeparator();
-        projectMenu.add(getAction(CreateNodeAction.class).buildMenu());
-        projectMenu.add(getAction(CreateDataMapAction.class).buildMenu());
-
-        projectMenu.add(getAction(CreateObjEntityAction.class).buildMenu());
-        projectMenu.add(getAction(CreateEmbeddableAction.class).buildMenu());
-        projectMenu.add(getAction(CreateDbEntityAction.class).buildMenu());
-
-        projectMenu.add(getAction(CreateProcedureAction.class).buildMenu());
-        projectMenu.add(getAction(CreateQueryAction.class).buildMenu());
-
-        projectMenu.addSeparator();
-        projectMenu.add(getAction(ObjEntitySyncAction.class).buildMenu());
-        projectMenu.add(getAction(DbEntitySyncAction.class).buildMenu());
-        projectMenu.addSeparator();
-        projectMenu.add(getAction(RemoveAction.class).buildMenu());
-
-        toolMenu.add(getAction(InferRelationshipsAction.class).buildMenu());
-        toolMenu.add(getAction(ImportEOModelAction.class).buildMenu());
-        toolMenu.addSeparator();
-        toolMenu.add(getAction(GenerateCodeAction.class).buildMenu());
-        toolMenu.add(getAction(GenerateDBAction.class).buildMenu());
-        toolMenu.add(getAction(MigrateAction.class).buildMenu());
-
-        // Menu for opening Log console
-        toolMenu.addSeparator();
-        logMenu = getAction(ShowLogConsoleAction.class).buildCheckBoxMenu();
-
-        if (!LogConsole.getInstance().getConsoleProperty(LogConsole.DOCKED_PROPERTY)
-                && LogConsole.getInstance().getConsoleProperty(LogConsole.SHOW_CONSOLE_PROPERTY)) {
-            LogConsole.getInstance().setConsoleProperty(LogConsole.SHOW_CONSOLE_PROPERTY, false);
-        }
-
-        updateLogConsoleMenu();
-        toolMenu.add(logMenu);
-
-        toolMenu.addSeparator();
-        toolMenu.add(getAction(ConfigurePreferencesAction.class).buildMenu());
-
-        helpMenu.add(getAction(AboutAction.class).buildMenu());
-        helpMenu.add(getAction(DocumentationAction.class).buildMenu());
-
-        JMenuBar menuBar = new JMenuBar();
-
-        menuBar.add(fileMenu);
-        menuBar.add(editMenu);
-        menuBar.add(projectMenu);
-        menuBar.add(toolMenu);
-        menuBar.add(helpMenu);
-
-        setJMenuBar(menuBar);
-    }
-
-    /**
-     * Selects/deselects menu item, depending on status of log console
-     */
-    public void updateLogConsoleMenu() {
-        logMenu.setSelected(LogConsole.getInstance().getConsoleProperty(LogConsole.SHOW_CONSOLE_PROPERTY));
-    }
-
-    protected void initStatusBar() {
         status = new JLabel();
         status.setFont(status.getFont().deriveFont(Font.PLAIN, 10));
 
@@ -242,19 +87,118 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         statusBar.add(Box.createVerticalStrut(16));
         statusBar.add(status);
 
-        if(getContentPane() instanceof JPanel) {
+        if (getContentPane() instanceof JPanel) {
             ((JPanel) getContentPane()).setBorder(BorderFactory.createEmptyBorder());
         }
         getContentPane().add(splitPane, BorderLayout.CENTER);
         getContentPane().add(statusBar, BorderLayout.SOUTH);
+
+        this.welcomePanel = new WelcomeScreen();
+        recentFileListeners.add(welcomePanel);
+
+        fireRecentFileListChanged(); // start filling list in welcome screen and in menu
+
+        setEditorPanel(null);
+    }
+
+    protected void initMenus() {
+        getContentPane().setLayout(new BorderLayout());
+
+        JMenu fileMenu = new JMenu("File");
+        JMenu editMenu = new JMenu("Edit");
+        JMenu projectMenu = new JMenu("Project");
+        JMenu toolMenu = new JMenu("Tools");
+        JMenu helpMenu = new JMenu("Help");
+
+        fileMenu.setMnemonic(KeyEvent.VK_F);
+        editMenu.setMnemonic(KeyEvent.VK_E);
+        projectMenu.setMnemonic(KeyEvent.VK_P);
+        toolMenu.setMnemonic(KeyEvent.VK_T);
+        helpMenu.setMnemonic(KeyEvent.VK_H);
+
+        fileMenu.add(actionManager.getAction(NewProjectAction.class).buildMenu());
+        fileMenu.add(actionManager.getAction(OpenProjectAction.class).buildMenu());
+        fileMenu.add(actionManager.getAction(ProjectAction.class).buildMenu());
+        fileMenu.add(actionManager.getAction(ImportDataMapAction.class).buildMenu());
+        fileMenu.addSeparator();
+        fileMenu.add(actionManager.getAction(SaveAction.class).buildMenu());
+        fileMenu.add(actionManager.getAction(SaveAsAction.class).buildMenu());
+        fileMenu.add(actionManager.getAction(RevertAction.class).buildMenu());
+        fileMenu.addSeparator();
+
+        editMenu.add(actionManager.getAction(UndoAction.class).buildMenu());
+        editMenu.add(actionManager.getAction(RedoAction.class).buildMenu());
+        editMenu.add(actionManager.getAction(CutAction.class).buildMenu());
+        editMenu.add(actionManager.getAction(CopyAction.class).buildMenu());
+        editMenu.add(actionManager.getAction(PasteAction.class).buildMenu());
+
+        RecentFileMenu recentFileMenu = new RecentFileMenu("Recent Projects");
+        recentFileListeners.add(recentFileMenu);
+        fileMenu.add(recentFileMenu);
+
+        fileMenu.addSeparator();
+        fileMenu.add(actionManager.getAction(ExitAction.class).buildMenu());
+
+        projectMenu.add(actionManager.getAction(ValidateAction.class).buildMenu());
+        projectMenu.add(actionManager.getAction(ShowValidationConfigAction.class).buildMenu());
+        projectMenu.addSeparator();
+        projectMenu.add(actionManager.getAction(CreateNodeAction.class).buildMenu());
+        projectMenu.add(actionManager.getAction(CreateDataMapAction.class).buildMenu());
+
+        projectMenu.add(actionManager.getAction(CreateObjEntityAction.class).buildMenu());
+        projectMenu.add(actionManager.getAction(CreateEmbeddableAction.class).buildMenu());
+        projectMenu.add(actionManager.getAction(CreateDbEntityAction.class).buildMenu());
+
+        projectMenu.add(actionManager.getAction(CreateProcedureAction.class).buildMenu());
+        projectMenu.add(actionManager.getAction(CreateQueryAction.class).buildMenu());
+
+        projectMenu.addSeparator();
+        projectMenu.add(actionManager.getAction(ObjEntitySyncAction.class).buildMenu());
+        projectMenu.add(actionManager.getAction(DbEntitySyncAction.class).buildMenu());
+        projectMenu.addSeparator();
+        projectMenu.add(actionManager.getAction(RemoveAction.class).buildMenu());
+
+        toolMenu.add(actionManager.getAction(InferRelationshipsAction.class).buildMenu());
+        toolMenu.add(actionManager.getAction(ImportEOModelAction.class).buildMenu());
+        toolMenu.addSeparator();
+        toolMenu.add(actionManager.getAction(GenerateCodeAction.class).buildMenu());
+        toolMenu.add(actionManager.getAction(GenerateDBAction.class).buildMenu());
+        toolMenu.add(actionManager.getAction(MigrateAction.class).buildMenu());
+
+        // Menu for opening Log console
+        toolMenu.addSeparator();
+        logMenu = actionManager.getAction(ShowLogConsoleAction.class).buildCheckBoxMenu();
+
+        if (!LogConsole.getInstance().getConsoleProperty(LogConsole.DOCKED_PROPERTY)
+                && LogConsole.getInstance().getConsoleProperty(LogConsole.SHOW_CONSOLE_PROPERTY)) {
+            LogConsole.getInstance().setConsoleProperty(LogConsole.SHOW_CONSOLE_PROPERTY, false);
+        }
+
+        updateLogConsoleMenu();
+        toolMenu.add(logMenu);
+
+        toolMenu.addSeparator();
+        toolMenu.add(actionManager.getAction(ConfigurePreferencesAction.class).buildMenu());
+
+        helpMenu.add(actionManager.getAction(AboutAction.class).buildMenu());
+        helpMenu.add(actionManager.getAction(DocumentationAction.class).buildMenu());
+
+        JMenuBar menuBar = new JMenuBar();
+
+        menuBar.add(fileMenu);
+        menuBar.add(editMenu);
+        menuBar.add(projectMenu);
+        menuBar.add(toolMenu);
+        menuBar.add(helpMenu);
+
+        setJMenuBar(menuBar);
     }
 
     /**
-     * Initializes welcome screen
+     * Selects/deselects menu item, depending on status of log console
      */
-    protected void initWelcome() {
-        welcomeScreen = new WelcomeScreen();
-        addRecentFileListListener(welcomeScreen);
+    public void updateLogConsoleMenu() {
+        logMenu.setSelected(LogConsole.getInstance().getConsoleProperty(LogConsole.SHOW_CONSOLE_PROPERTY));
     }
 
     /**
@@ -278,66 +222,58 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         splitPane.validate();
     }
 
-    /**
-     * @return Dock component
-     */
-    public Component getDockComponent() {
-        return dockComponent;
-    }
-
-    /** Initializes main toolbar. */
     protected void initToolbar() {
 
         final JToolBar toolBar = new MainToolBar();
 
         Dimension smallBtnDim = new Dimension(30, 30);
-        JButton backButton = getAction(NavigateBackwardAction.class).buildButton(1);
+        JButton backButton = actionManager.getAction(NavigateBackwardAction.class).buildButton(1);
         backButton.setMinimumSize(smallBtnDim);
         backButton.setPreferredSize(smallBtnDim);
         toolBar.add(backButton);
 
-        JButton forwardButton = getAction(NavigateForwardAction.class).buildButton(3);
+        JButton forwardButton = actionManager.getAction(NavigateForwardAction.class).buildButton(3);
         forwardButton.setMinimumSize(smallBtnDim);
         forwardButton.setPreferredSize(smallBtnDim);
         toolBar.add(forwardButton);
 
         toolBar.addSeparator(new Dimension(30, 0));
 
-        toolBar.add(getAction(NewProjectAction.class).buildButton(1));
-        toolBar.add(getAction(OpenProjectAction.class).buildButton(2));
-        toolBar.add(getAction(SaveAction.class).buildButton(3));
+        toolBar.add(actionManager.getAction(NewProjectAction.class).buildButton(1));
+        toolBar.add(actionManager.getAction(OpenProjectAction.class).buildButton(2));
+        toolBar.add(actionManager.getAction(SaveAction.class).buildButton(3));
 
         toolBar.addSeparator();
 
-        JButton removeButton = getAction(RemoveAction.class).buildButton();
+        JButton removeButton = actionManager.getAction(RemoveAction.class).buildButton();
         toolBar.add(removeButton);
 
         toolBar.addSeparator();
 
-        toolBar.add(getAction(CutAction.class).buildButton(1));
-        toolBar.add(getAction(CopyAction.class).buildButton(2));
-        toolBar.add(getAction(PasteAction.class).buildButton(3));
+        toolBar.add(actionManager.getAction(CutAction.class).buildButton(1));
+        toolBar.add(actionManager.getAction(CopyAction.class).buildButton(2));
+        toolBar.add(actionManager.getAction(PasteAction.class).buildButton(3));
 
         toolBar.addSeparator();
 
-        toolBar.add(getAction(UndoAction.class).buildButton(1));
-        toolBar.add(getAction(RedoAction.class).buildButton(3));
+        toolBar.add(actionManager.getAction(UndoAction.class).buildButton(1));
+        toolBar.add(actionManager.getAction(RedoAction.class).buildButton(3));
 
         toolBar.addSeparator();
 
-        toolBar.add(getAction(CreateNodeAction.class).buildButton(1));
-        toolBar.add(getAction(CreateDataMapAction.class).buildButton(3));
+        toolBar.add(actionManager.getAction(CreateNodeAction.class).buildButton(1));
+        toolBar.add(actionManager.getAction(CreateDataMapAction.class).buildButton(3));
 
         toolBar.addSeparator();
 
-        toolBar.add(getAction(CreateDbEntityAction.class).buildButton(1));
-        toolBar.add(getAction(CreateProcedureAction.class).buildButton(3));
+        toolBar.add(actionManager.getAction(CreateDbEntityAction.class).buildButton(1));
+        toolBar.add(actionManager.getAction(CreateProcedureAction.class).buildButton(3));
 
         toolBar.addSeparator();
 
-        toolBar.add(getAction(CreateObjEntityAction.class).buildButton(1));
-        toolBar.add(getAction(CreateEmbeddableAction.class).buildButton(2));
-        toolBar.add(getAction(CreateQueryAction.class).buildButton(3));
+        toolBar.add(actionManager.getAction(CreateObjEntityAction.class).buildButton(1));
+        toolBar.add(actionManager.getAction(CreateEmbeddableAction.class).buildButton(2));
+        toolBar.add(actionManager.getAction(CreateQueryAction.class).buildButton(3));
 
         // is used to place search feature components the most right on a toolbar
         toolBar.add(new SearchPanel());
@@ -357,13 +293,13 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
             @Override
             public void componentResized(ComponentEvent e) {
                 int[] hidden, shown;
-                if(getSize().width < (13 * defaultBtnWidth + 300)) {
+                if (getSize().width < (13 * defaultBtnWidth + 300)) {
                     hidden = all;
                     shown = empty;
-                } else if(getSize().width < (16 * defaultBtnWidth + 300)) {
+                } else if (getSize().width < (16 * defaultBtnWidth + 300)) {
                     hidden = removeAndCopy;
                     shown = undo;
-                } else if(getSize().width < (18 * defaultBtnWidth + 300)) {
+                } else if (getSize().width < (18 * defaultBtnWidth + 300)) {
                     hidden = remove;
                     shown = undoAndCopy;
                 } else {
@@ -371,93 +307,37 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
                     shown = all;
                 }
 
-                for(int i : hidden) {
+                for (int i : hidden) {
                     toolBar.getComponentAtIndex(i).setVisible(false);
                 }
-                for(int i : shown) {
+                for (int i : shown) {
                     toolBar.getComponentAtIndex(i).setVisible(true);
                 }
             }
         });
     }
 
-    public void currentDataNodeChanged(DataNodeDisplayEvent e) {
-        actionManager.dataNodeSelected();
-    }
-
-    public void currentDataMapChanged(DataMapDisplayEvent e) {
-        actionManager.dataMapSelected();
-    }
-
-    public void currentObjEntityChanged(EntityDisplayEvent e) {
-        actionManager.objEntitySelected();
-    }
-
-    public void currentDbEntityChanged(EntityDisplayEvent e) {
-        actionManager.dbEntitySelected();
-    }
-
-    public void currentQueryChanged(QueryDisplayEvent e) {
-        actionManager.querySelected();
-    }
-
-    public void currentProcedureChanged(ProcedureDisplayEvent e) {
-        actionManager.procedureSelected();
-    }
-
-    public void currentObjectsChanged(MultipleObjectsDisplayEvent e, Application application) {
-        actionManager.multipleObjectsSelected(e.getNodes(), application);
-    }
-
-    public void currentEmbeddableChanged(EmbeddableDisplayEvent e) {
-        actionManager.embeddableSelected();
-    }
-
-    /**
-     * Returns the right side view panel.
-     * 
-     * @return EditorView
-     */
-    public EditorView getView() {
-        return view;
+    public EditorPanel getEditorPanel() {
+        return editorPanel;
     }
 
     public JLabel getStatus() {
         return status;
     }
 
-    /**
-     * Returns the recentFileMenu.
-     * 
-     * @return RecentFileMenu
-     */
-    public RecentFileMenu getRecentFileMenu() {
-        return recentFileMenu;
-    }
-
-    /**
-     * Adds editor view to the frame.
-     */
-    public void setView(EditorView view) {
+    public void setEditorPanel(EditorPanel editorPanel) {
         int oldLocation = splitPane.getDividerLocation();
 
-        this.view = view;
+        this.editorPanel = editorPanel;
 
-        if (view != null) {
-            splitPane.setTopComponent(view);
+        if (editorPanel != null) {
+            splitPane.setTopComponent(editorPanel);
         } else {
-            splitPane.setTopComponent(welcomeScreen);
+            splitPane.setTopComponent(welcomePanel);
         }
 
         validate();
         splitPane.setDividerLocation(oldLocation);
-    }
-
-    /**
-     * Adds listener for recent menu changes
-     */
-    public void addRecentFileListListener(RecentFileListListener listener) {
-        recentFileListeners.add(listener);
     }
 
     /**
@@ -471,16 +351,15 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
 
     public class SearchPanel extends JPanel {
 
-        private JLabel searchLabel = new JLabel("Search: ");
-        private JPanel box = new JPanel();
-        private JTextField findField;
+        private final JLabel searchLabel;
+        private final JPanel box;
+        private final JTextField findField;
 
         SearchPanel() {
             super(new BorderLayout());
-            initView();
-        }
+            searchLabel = new JLabel("Search: ");
+            box = new JPanel();
 
-        void initView() {
             findField = new JTextField(10);
             findField.putClientProperty("JTextField.variant", "search");
             findField.setMaximumSize(new Dimension(100, 22));
@@ -498,7 +377,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
                 public void keyTyped(KeyEvent e) {
                 }
             });
-            findField.setAction(getAction(FindAction.class));
+            findField.setAction(actionManager.getAction(FindAction.class));
 
             Toolkit.getDefaultToolkit().addAWTEventListener(event -> {
                 if (event instanceof KeyEvent) {

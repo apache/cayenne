@@ -59,7 +59,7 @@ public class ProcedureParameterErrorMsg extends ValidationDisplayHandler {
                 map,
                 domain);
         procedureEvent.setTabReset(true);
-        mediator.fireProcedureSelected(procedureEvent);
+        mediator.displayProcedure(procedureEvent);
 
         // now show the failed parameter
         ProcedureParameterDisplayEvent event = new ProcedureParameterDisplayEvent(
@@ -70,7 +70,7 @@ public class ProcedureParameterErrorMsg extends ValidationDisplayHandler {
                 domain);
 
         event.setTabReset(true);
-        mediator.fireProcedureParameterSelected(event);
+        mediator.displayProcedureParameter(event);
     }
 
 }

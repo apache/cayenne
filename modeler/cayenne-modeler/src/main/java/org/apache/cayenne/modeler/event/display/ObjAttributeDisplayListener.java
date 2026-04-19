@@ -17,13 +17,8 @@ package org.apache.cayenne.modeler.event.display;
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
-
 import java.util.EventListener;
 
-/** Used to display ObjAttribute. */
-public interface ObjAttributeDisplayListener extends EventListener
-{
-	/** Display specified ObjAttribute.*/
-	public void currentObjAttributeChanged(AttributeDisplayEvent e);
+public interface ObjAttributeDisplayListener extends EventListener {
+    void objAttributeSelected(AttributeDisplayEvent e);
 }

@@ -42,7 +42,7 @@ public class CreateDbEntityAction extends CayenneAction {
         EntityDisplayEvent displayEvent = new EntityDisplayEvent(src, entity, controller.getSelectedDataMap(),
                 controller.getSelectedDataNode(), (DataChannelDescriptor) controller.getProject().getRootNode());
         displayEvent.setMainTabFocus(true);
-        controller.fireDbEntitySelected(displayEvent);
+        controller.displayDbEntity(displayEvent);
     }
 
     public CreateDbEntityAction(Application application) {

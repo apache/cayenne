@@ -47,7 +47,7 @@ public class DomainErrorMsg extends ValidationDisplayHandler {
     public void displayField(ProjectController mediator, JFrame frame) {
         DomainDisplayEvent event;
         event = new DomainDisplayEvent(frame, domain);
-        mediator.fireDomainSelected(event);
+        mediator.displayDomain(event);
     }
 
 }

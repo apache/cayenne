@@ -68,12 +68,12 @@ public class RelationshipErrorMsg extends ValidationDisplayHandler {
         // must first display entity, and then switch to relationship display .. so fire
         // twice
         if (entity instanceof ObjEntity) {
-            mediator.fireObjEntitySelected(event);
-            mediator.fireObjRelationshipSelected(event);
+            mediator.displayObjEntity(event);
+            mediator.displayObjRelationship(event);
         }
         else if (entity instanceof DbEntity) {
-            mediator.fireDbEntitySelected(event);
-            mediator.fireDbRelationshipSelected(event);
+            mediator.displayDbEntity(event);
+            mediator.displayDbRelationship(event);
         }
     }
 }
