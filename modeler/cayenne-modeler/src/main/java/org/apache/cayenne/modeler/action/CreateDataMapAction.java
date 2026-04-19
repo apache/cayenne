@@ -24,7 +24,12 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
+import org.apache.cayenne.modeler.event.model.DataMapEvent;
+import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.modeler.undo.CreateDataMapUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
@@ -34,6 +39,25 @@ import java.awt.event.ActionEvent;
  * Action that creates new DataMap in the project.
  */
 public class CreateDataMapAction extends CayenneAction {
+    
+    public static void onMapCreated(Object src, ProjectController controller, DataMap map) {
+
+        DataChannelDescriptor domain = (DataChannelDescriptor) controller.getProject().getRootNode();
+        map.setDataChannelDescriptor(domain);
+        domain.getDataMaps().add(map);
+
+        DataNodeDescriptor node = controller.getSelectedDataNode();
+        if (node != null && !node.getDataMapNames().contains(map.getName())) {
+            node.getDataMapNames().add(map.getName());
+            controller.fireDataNodeEvent(new DataNodeEvent(src, node));
+        }
+
+        controller.fireDataMapEvent(new DataMapEvent(src, map, MapEvent.ADD));
+
+        DataMapDisplayEvent displayEvent = new DataMapDisplayEvent(src, map, domain, node);
+        displayEvent.setMainTabFocus(true);
+        controller.fireDataMapSelected(displayEvent);
+    }
 
     public CreateDataMapAction(Application application) {
         super("Create DataMap", application);
@@ -44,10 +68,6 @@ public class CreateDataMapAction extends CayenneAction {
         return "icon-datamap.png";
     }
 
-    public void createDataMap(DataMap map) {
-        getProjectController().addDataMap(this, map);
-    }
-
     public void performAction(ActionEvent e) {
 
         DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) getProjectController()
@@ -56,7 +76,7 @@ public class CreateDataMapAction extends CayenneAction {
 
         DataMap map = new DataMap();
         map.setName(NameBuilder.builder(map, dataChannelDescriptor).name());
-        createDataMap(map);
+        onMapCreated(this, getProjectController(), map);
 
         application.getUndoManager().addEdit(new CreateDataMapUndoableEdit(dataChannelDescriptor, map));
     }

@@ -23,62 +23,36 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 
-/**
- * Represents a display event of a DataMap.
- * 
- */
 public class DataMapDisplayEvent extends DataNodeDisplayEvent {
-	protected DataMap dataMap;
 
-	/** True if different from current data map. */
-	protected boolean dataMapChanged = true;
+    protected final DataMap dataMap;
 
-	/** True if the event should cause the editor to switch to the main DataMap tab. */
-	protected boolean mainTabFocus;
+    // True if the event should cause the editor to switch to the main DataMap tab
+    protected boolean mainTabFocus;
 
-	public DataMapDisplayEvent(Object src, DataMap map, DataChannelDescriptor dataChannelDescriptor) {
-		this(src, map, dataChannelDescriptor, null);
-	}
+    public DataMapDisplayEvent(Object src, DataMap map, DataChannelDescriptor dataChannelDescriptor) {
+        this(src, map, dataChannelDescriptor, null);
+    }
 
-	public DataMapDisplayEvent(
-		Object src,
-		DataMap map,
-		DataChannelDescriptor dataChannelDescriptor,
-		DataNodeDescriptor node) {
+    public DataMapDisplayEvent(
+            Object src,
+            DataMap map,
+            DataChannelDescriptor dataChannelDescriptor,
+            DataNodeDescriptor node) {
 
-		super(src, dataChannelDescriptor, node);
-		this.dataMap = map;
-		setDataNodeChanged(false);
-	}
+        super(src, dataChannelDescriptor, node);
+        this.dataMap = map;
+    }
 
-	/** Get dataMap wrapper. */
-	public DataMap getDataMap() {
-		return dataMap;
-	}
-	
-	/**
-	 * Sets the dataMap.
-	 * @param dataMap The dataMap to set
-	 */
-	public void setDataMap(DataMap dataMap) {
-		this.dataMap = dataMap;
-	}
+    public DataMap getDataMap() {
+        return dataMap;
+    }
 
+    public boolean isMainTabFocus() {
+        return mainTabFocus;
+    }
 
-	/** Returns true if data map is different from the current data map. */
-	public boolean isDataMapChanged() {
-		return dataMapChanged;
-	}
-	
-	public void setDataMapChanged(boolean temp) {
-		dataMapChanged = temp;
-	}
-
-	public boolean isMainTabFocus() {
-		return mainTabFocus;
-	}
-
-	public void setMainTabFocus(boolean mainTabFocus) {
-		this.mainTabFocus = mainTabFocus;
-	}
+    public void setMainTabFocus(boolean mainTabFocus) {
+        this.mainTabFocus = mainTabFocus;
+    }
 }

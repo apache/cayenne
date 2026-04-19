@@ -152,7 +152,7 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
      */
     public void currentDbEntityChanged(EntityDisplayEvent e) {
         DbEntity entity = (DbEntity) e.getEntity();
-        if (entity != null && e.isEntityChanged()) {
+        if (entity != null) {
             // TODO: this line seems to slow down the Modeler significantly sometimes
             // (esp. noticable if selected entity has no relationships!),
             // even when this tab is not showing...maybe we should simply mark the view as

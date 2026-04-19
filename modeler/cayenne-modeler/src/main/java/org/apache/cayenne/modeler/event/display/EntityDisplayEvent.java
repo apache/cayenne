@@ -24,50 +24,27 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
 
-/**
- * Represents a display event of an Entity.
- */
 public class EntityDisplayEvent extends DataMapDisplayEvent {
 
-    protected Entity<?,?,?> entity;
+    protected final Entity<?, ?, ?> entity;
 
-    /**
-     * True if different from current entity.
-     */
-    protected boolean entityChanged = true;
     protected boolean unselectAttributes;
 
-    public EntityDisplayEvent(Object src, Entity<?,?,?> entity) {
+    public EntityDisplayEvent(Object src, Entity<?, ?, ?> entity) {
         this(src, entity, null, null, null);
     }
 
-    public EntityDisplayEvent(Object src, Entity<?,?,?> entity, DataMap map, DataChannelDescriptor dataChannelDescriptor) {
-
+    public EntityDisplayEvent(Object src, Entity<?, ?, ?> entity, DataMap map, DataChannelDescriptor dataChannelDescriptor) {
         this(src, entity, map, null, dataChannelDescriptor);
     }
 
-    public EntityDisplayEvent(Object src, Entity<?,?,?> entity, DataMap map, DataNodeDescriptor node,
-            DataChannelDescriptor dataChannelDescriptor) {
-
+    public EntityDisplayEvent(Object src, Entity<?, ?, ?> entity, DataMap map, DataNodeDescriptor node, DataChannelDescriptor dataChannelDescriptor) {
         super(src, map, dataChannelDescriptor, node);
         this.entity = entity;
-        setDataMapChanged(false);
     }
 
-    /**
-     * Returns entity associated with this event.
-     */
-    public Entity<?,?,?> getEntity() {
+    public Entity<?, ?, ?> getEntity() {
         return entity;
-    }
-
-    /** True if entity different from current entity. */
-    public boolean isEntityChanged() {
-        return entityChanged;
-    }
-
-    public void setEntityChanged(boolean temp) {
-        entityChanged = temp;
     }
 
     public boolean isUnselectAttributes() {
@@ -77,9 +54,4 @@ public class EntityDisplayEvent extends DataMapDisplayEvent {
     public void setUnselectAttributes(boolean unselectAttributes) {
         this.unselectAttributes = unselectAttributes;
     }
-
-    public void setEntity(Entity<?,?,?> entity) {
-        this.entity = entity;
-    }
-
 }

@@ -152,7 +152,7 @@ public class DbEntityAttributePanel extends JPanel implements DbEntityDisplayLis
     public void currentDbEntityChanged(EntityDisplayEvent e) {
 
         DbEntity entity = (DbEntity) e.getEntity();
-        if (entity != null && e.isEntityChanged()) {
+        if (entity != null) {
             rebuildTable(entity);
         }
 

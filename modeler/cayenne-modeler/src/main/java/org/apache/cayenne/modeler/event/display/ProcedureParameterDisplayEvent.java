@@ -27,7 +27,7 @@ import org.apache.cayenne.map.ProcedureParameter;
 
 public class ProcedureParameterDisplayEvent extends ProcedureDisplayEvent {
 
-    protected ProcedureParameter[] procedureParameters;
+    protected final ProcedureParameter[] procedureParameters;
 
     public ProcedureParameterDisplayEvent(
         Object src,
@@ -53,9 +53,5 @@ public class ProcedureParameterDisplayEvent extends ProcedureDisplayEvent {
 
     public ProcedureParameter[] getProcedureParameters() {
         return procedureParameters;
-    }
-
-    public void setProcedureParameters(ProcedureParameter[] parameters) {
-        procedureParameters = parameters;
     }
 }

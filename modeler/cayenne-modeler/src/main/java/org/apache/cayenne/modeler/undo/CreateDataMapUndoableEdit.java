@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.undo;
 
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.action.CreateDataMapAction;
 import org.apache.cayenne.modeler.action.RemoveAction;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
+
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
 
 public class CreateDataMapUndoableEdit extends CayenneUndoableEdit {
 
@@ -44,8 +44,7 @@ public class CreateDataMapUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void redo() throws CannotRedoException {
-        CreateDataMapAction action = actionManager.getAction(CreateDataMapAction.class);
-        action.createDataMap(map);
+        CreateDataMapAction.onMapCreated(this, controller, map);
     }
 
     @Override

@@ -20,46 +20,16 @@ package org.apache.cayenne.modeler.event.display;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 
-/**
- * Represents a display event of a DataDomain.
- * 
- */
 public class DomainDisplayEvent extends DisplayEvent {
-	protected DataChannelDescriptor domain;
-	protected boolean domainChanged = true;
 
-	public DomainDisplayEvent(Object src, DataChannelDescriptor domain) {
-		super(src);
-		this.domain = domain;
-	}
+    protected final DataChannelDescriptor domain;
 
-	/** Get domain for this data map. */
-	public DataChannelDescriptor getDomain() {
-		return domain;
-	}
-	
-	/**
-	 * Sets the domain.
-	 * @param domain The domain to set
-	 */
-	public void setDomain(DataChannelDescriptor domain) {
-		this.domain = domain;
-	}
-	
-	/**
-	 * Returns the domainChanged.
-	 * @return boolean
-	 */
-	public boolean isDomainChanged() {
-		return domainChanged;
-	}
+    public DomainDisplayEvent(Object src, DataChannelDescriptor domain) {
+        super(src);
+        this.domain = domain;
+    }
 
-
-	/**
-	 * Sets the domainChanged.
-	 * @param domainChanged The domainChanged to set
-	 */
-	public void setDomainChanged(boolean domainChanged) {
-		this.domainChanged = domainChanged;
-	}
+    public DataChannelDescriptor getDomain() {
+        return domain;
+    }
 }

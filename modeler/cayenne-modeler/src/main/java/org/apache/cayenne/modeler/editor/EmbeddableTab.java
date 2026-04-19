@@ -18,15 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
-import java.awt.BorderLayout;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JToolBar;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
@@ -46,8 +39,10 @@ import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.util.Collection;
+import java.util.Iterator;
 
 public class EmbeddableTab extends JPanel implements EmbeddableDisplayListener {
 
@@ -184,7 +179,7 @@ public class EmbeddableTab extends JPanel implements EmbeddableDisplayListener {
 
     public void currentEmbeddableChanged(EmbeddableDisplayEvent e) {
         Embeddable embeddable = e.getEmbeddable();
-        if (embeddable == null || !e.isEmbeddableChanged()) {
+        if (embeddable == null) {
             return;
         }
         initFromModel(embeddable);

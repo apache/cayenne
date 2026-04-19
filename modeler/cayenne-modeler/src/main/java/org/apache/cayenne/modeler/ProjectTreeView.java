@@ -128,6 +128,8 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
     protected TreeSelectionListener treeSelectionListener;
     protected TreeWillExpandListener treeWillExpandListener;
     protected JPopupMenu popup;
+
+    // TODO: should we kep this var? TreeDragSource seems to operate on side effects?
     private final TreeDragSource treeDragSource;
 
     public ProjectTreeView(ProjectController projectController) {
@@ -153,8 +155,8 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         setupMediator();
     }
 
-	private void initTreeSelectionListener() {
-		treeSelectionListener = new TreeSelectionListener() {
+    private void initTreeSelectionListener() {
+        treeSelectionListener = new TreeSelectionListener() {
 
             public void valueChanged(TreeSelectionEvent e) {
                 TreePath[] paths = getSelectionPaths();
@@ -169,19 +171,19 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                             projectPaths[i] = createProjectPath(paths[i]);
 
                             TreePath parentPath = paths[i].getParentPath();
-                            if(i>0 && parentPath != null && !parentPath.equals(paths[i - 1].getParentPath())) {
+                            if (i > 0 && parentPath != null && !parentPath.equals(paths[i - 1].getParentPath())) {
                                 commonParentPath = false;
                             }
                         }
 
-                        if(commonParentPath) {
+                        if (commonParentPath) {
                             TreePath parentPath = paths[0].getParentPath();
                             projectParentPath = createProjectPath(parentPath);
                         }
 
                         projectController.fireMultipleObjectsSelected(new MultipleObjectsDisplayEvent(
-                                        this,
-                                        projectPaths, projectParentPath));
+                                this,
+                                projectPaths, projectParentPath));
                     } else if (paths.length == 1) {
                         processSelection(paths[0]);
                     }
@@ -193,15 +195,15 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
              */
             private ConfigurationNode createProjectPath(TreePath treePath) {
                 Object[] path = treePath.getPath();
-                DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode)path[path.length - 1];
+                DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) path[path.length - 1];
                 return (ConfigurationNode) treeNode.getUserObject();
             }
         };
 
         addTreeSelectionListener(treeSelectionListener);
-	}
+    }
 
-	private void initTreeExpandListener() {
+    private void initTreeExpandListener() {
         treeWillExpandListener = new TreeWillExpandListener() {
             @Override
             public void treeWillExpand(TreeExpansionEvent e) {
@@ -224,8 +226,8 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         addTreeWillExpandListener(treeWillExpandListener);
     }
 
-	private void setupMediator() {
-		projectController.addDomainListener(this);
+    private void setupMediator() {
+        projectController.addDomainListener(this);
         projectController.addDomainDisplayListener(this);
         projectController.addDataNodeListener(this);
         projectController.addDataNodeDisplayListener(this);
@@ -246,7 +248,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                 this,
                 CutAction.class,
                 CopyAction.class);
-	}
+    }
 
     private void initFromModel(Project project) {
 
@@ -254,8 +256,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         ProjectTreeModel model = new ProjectTreeModel(project);
         setRootVisible(true);
         setModel(model);
-        getSelectionModel().setSelectionMode(
-                TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
+        getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
     }
 
     /**
@@ -307,75 +308,39 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
     }
 
     public void currentDomainChanged(DomainDisplayEvent e) {
-        if ((e.getSource() == this || !e.isDomainChanged()) && !e.isRefired()) {
-            return;
-        }
-
-        showNode(new Object[] {
-            e.getDomain()
-        });
+        navigateTo(e.getDomain());
     }
 
     public void currentDataNodeChanged(DataNodeDisplayEvent e) {
-        if ((e.getSource() == this || !e.isDataNodeChanged()) && !e.isRefired()) {
-            return;
-        }
-
-        showNode(new Object[] {
-                e.getDomain(), e.getDataNode()
-        });
+        navigateTo(e.getDomain(), e.getDataNode());
     }
 
+    @Override
     public void currentDataMapChanged(DataMapDisplayEvent e) {
-        if ((e.getSource() == this || !e.isDataMapChanged()) && !e.isRefired()) {
-            return;
-        }
-
-        showNode(new Object[] {
-                e.getDomain(), e.getDataMap()
-        });
+        navigateTo(e.getDomain(), e.getDataMap());
     }
 
+    @Override
     public void currentObjEntityChanged(EntityDisplayEvent e) {
-        e.setEntityChanged(true);
-        currentEntityChanged(e);
+        navigateTo(e.getDomain(), e.getDataMap(), e.getEntity());
     }
 
+    @Override
     public void currentDbEntityChanged(EntityDisplayEvent e) {
-        e.setEntityChanged(true);
-        currentEntityChanged(e);
+        navigateTo(e.getDomain(), e.getDataMap(), e.getEntity());
     }
 
-    protected void currentEntityChanged(EntityDisplayEvent e) {
-        if ((e.getSource() == this || !e.isEntityChanged()) && !e.isRefired()) {
-            return;
-        }
-
-        showNode(new Object[] {
-                e.getDomain(), e.getDataMap(), e.getEntity()
-        });
-    }
-
+    @Override
     public void currentProcedureChanged(ProcedureDisplayEvent e) {
-        if ((e.getSource() == this || !e.isProcedureChanged()) && !e.isRefired()) {
-            return;
-        }
-
-        showNode(new Object[] {
-                e.getDomain(), e.getDataMap(), e.getProcedure()
-        });
+        navigateTo(e.getDomain(), e.getDataMap(), e.getProcedure());
     }
 
+    @Override
     public void currentQueryChanged(QueryDisplayEvent e) {
-        if ((e.getSource() == this || !e.isQueryChanged()) && !e.isRefired()) {
-            return;
-        }
-
-        showNode(new Object[] {
-                e.getDomain(), e.getDataMap(), e.getQuery()
-        });
+        navigateTo(e.getDomain(), e.getDataMap(), e.getQuery());
     }
 
+    @Override
     public void currentObjectsChanged(MultipleObjectsDisplayEvent e, Application application) {
         if (e.getSource() == this || e.getParentNode() == null) {
             return;
@@ -385,11 +350,11 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         TreePath[] treePaths = new TreePath[nodes.length];
 
         for (int i = 0; i < nodes.length; i++) {
-            DefaultMutableTreeNode treeNode = getProjectModel().getNodeForObjectPath(new Object[] {e.getParentNode(), nodes[i]});
+            DefaultMutableTreeNode treeNode = getProjectModel().getNodeForObjectPath(new Object[]{e.getParentNode(), nodes[i]});
             if (treeNode != null) {
                 treePaths[i] = new TreePath(treeNode.getPath());
             } else if (e.getParentNode() == nodes[i]) {
-                treeNode = getProjectModel().getNodeForObjectPath(new Object[] {e.getParentNode()});
+                treeNode = getProjectModel().getNodeForObjectPath(new Object[]{e.getParentNode()});
                 treePaths[i] = new TreePath(treeNode.getPath());
             }
         }
@@ -407,10 +372,11 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         setSelectionPaths(treePaths);
     }
 
+    @Override
     public void procedureAdded(ProcedureEvent e) {
 
         DefaultMutableTreeNode node = getProjectModel().getNodeForObjectPath(
-                new Object[] {
+                new Object[]{
                         projectController.getProject().getRootNode(),
                         e.getProcedure().getDataMap()
                 });
@@ -422,39 +388,42 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         Procedure procedure = e.getProcedure();
         DefaultMutableTreeNode currentNode = new DefaultMutableTreeNode(procedure, false);
         positionNode(node, currentNode, Comparators.getDataMapChildrenComparator());
-        showNode(currentNode);
+        navigateTo(currentNode);
     }
 
+    @Override
     public void procedureChanged(ProcedureEvent e) {
         if (e.isNameChange()) {
-            Object[] path = new Object[] {
+            Object[] path = new Object[]{
                     projectController.getProject().getRootNode(),
                     e.getProcedure().getDataMap(), e.getProcedure()
             };
 
             updateNode(path);
             positionNode(path, Comparators.getDataMapChildrenComparator());
-            showNode(path);
+            navigateTo(path);
         }
     }
 
+    @Override
     public void procedureRemoved(ProcedureEvent e) {
 
-        removeNode(new Object[] {
+        removeNode(new Object[]{
                 projectController.getProject().getRootNode(),
                 e.getProcedure().getDataMap(), e.getProcedure()
         });
     }
 
+    @Override
     public void queryAdded(QueryEvent e) {
 
         DefaultMutableTreeNode node = getProjectModel().getNodeForObjectPath(
-                new Object[] {
+                new Object[]{
                         e.getDomain() != null
                                 ? e.getDomain()
                                 : (DataChannelDescriptor) projectController
-                                        .getProject()
-                                        .getRootNode(), e.getDataMap()
+                                .getProject()
+                                .getRootNode(), e.getDataMap()
                 });
 
         if (node == null) {
@@ -464,13 +433,14 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         QueryDescriptor query = e.getQuery();
         DefaultMutableTreeNode currentNode = new DefaultMutableTreeNode(query, false);
         positionNode(node, currentNode, Comparators.getDataMapChildrenComparator());
-        showNode(currentNode);
+        navigateTo(currentNode);
     }
 
+    @Override
     public void queryChanged(QueryEvent e) {
 
         if (e.isNameChange()) {
-            Object[] path = new Object[] {
+            Object[] path = new Object[]{
                     e.getDomain() != null
                             ? e.getDomain()
                             : (DataChannelDescriptor) projectController.getProject().getRootNode(),
@@ -479,22 +449,24 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
             updateNode(path);
             positionNode(path, Comparators.getDataMapChildrenComparator());
-            showNode(path);
+            navigateTo(path);
         }
     }
 
+    @Override
     public void queryRemoved(QueryEvent e) {
-        removeNode(new Object[] {
+        removeNode(new Object[]{
                 e.getDomain() != null ? e.getDomain() : (DataChannelDescriptor) projectController
                         .getProject()
                         .getRootNode(), e.getDataMap(), e.getQuery()
         });
     }
 
+    @Override
     public void domainChanged(DomainEvent e) {
 
-        Object[] path = new Object[] {
-            e.getDomain()
+        Object[] path = new Object[]{
+                e.getDomain()
         };
 
         updateNode(path);
@@ -502,19 +474,20 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         if (e.isNameChange()) {
 
             positionNode(path, Comparators.getNamedObjectComparator());
-            showNode(path);
+            navigateTo(path);
         }
     }
 
+    @Override
     public void dataNodeChanged(DataNodeEvent e) {
 
         DefaultMutableTreeNode node = getProjectModel().getNodeForObjectPath(
-                new Object[] {
+                new Object[]{
                         e.getDomain() != null
                                 ? e.getDomain()
                                 : (DataChannelDescriptor) projectController
-                                        .getProject()
-                                        .getRootNode(), e.getDataNode()
+                                .getProject()
+                                .getRootNode(), e.getDataNode()
                 });
 
         if (node != null) {
@@ -522,7 +495,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
             if (e.isNameChange()) {
                 positionNode((DefaultMutableTreeNode) node.getParent(), node,
                         Comparators.getDataDomainChildrenComparator());
-                showNode(node);
+                navigateTo(node);
             } else {
 
                 getProjectModel().nodeChanged(node);
@@ -576,16 +549,17 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         }
     }
 
+    @Override
     public void dataNodeAdded(DataNodeEvent e) {
         if (e.getSource() == this) {
             return;
         }
 
         DefaultMutableTreeNode node = getProjectModel().getNodeForObjectPath(
-                new Object[] {
-                    e.getDomain() != null
-                            ? e.getDomain()
-                            : (DataChannelDescriptor) projectController.getProject().getRootNode()
+                new Object[]{
+                        e.getDomain() != null
+                                ? e.getDomain()
+                                : (DataChannelDescriptor) projectController.getProject().getRootNode()
                 });
 
         if (node == null) {
@@ -595,24 +569,26 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         DataNodeDescriptor dataNode = e.getDataNode();
         DefaultMutableTreeNode currentNode = ProjectTreeFactory.wrapProjectNode(dataNode);
         positionNode(node, currentNode, Comparators.getDataDomainChildrenComparator());
-        showNode(currentNode);
+        navigateTo(currentNode);
     }
 
+    @Override
     public void dataNodeRemoved(DataNodeEvent e) {
         if (e.getSource() == this) {
             return;
         }
 
-        removeNode(new Object[] {
+        removeNode(new Object[]{
                 e.getDomain() != null ? e.getDomain() : (DataChannelDescriptor) projectController
                         .getProject()
                         .getRootNode(), e.getDataNode()
         });
     }
 
+    @Override
     public void dataMapChanged(DataMapEvent e) {
 
-        Object[] path = new Object[] {
+        Object[] path = new Object[]{
                 e.getDomain() != null ? e.getDomain() : (DataChannelDescriptor) projectController
                         .getProject()
                         .getRootNode(), e.getDataMap()
@@ -623,16 +599,17 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         if (e.isNameChange()) {
             projectController.updateEntityResolver();
             positionNode(path, Comparators.getDataDomainChildrenComparator());
-            showNode(path);
+            navigateTo(path);
         }
     }
 
+    @Override
     public void dataMapAdded(DataMapEvent e) {
         DataChannelDescriptor dataChannelDescriptor = e.getDomain() != null ? e.getDomain() :
                 (DataChannelDescriptor) projectController.getProject().getRootNode();
         DefaultMutableTreeNode domainNode = getProjectModel().getNodeForObjectPath(
-                new Object[] {
-                   dataChannelDescriptor
+                new Object[]{
+                        dataChannelDescriptor
                 });
 
         DefaultMutableTreeNode newMapNode = ProjectTreeFactory.wrapProjectNode(e
@@ -640,30 +617,30 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
         projectController.getEntityResolver().addDataMap(e.getDataMap());
 
-        positionNode(domainNode, newMapNode, Comparators
-                .getDataDomainChildrenComparator());
-        if(!Application.getInstance().getFrameController().getDbImportController().isGlobalImport()) {
-            showNode(newMapNode);
-        } else {
+        positionNode(domainNode, newMapNode, Comparators.getDataDomainChildrenComparator());
+        if (Application.getInstance().getFrameController().getDbImportController().isGlobalImport()) {
             setSelected(newMapNode);
+        } else {
+            navigateTo(newMapNode);
         }
 
         for (DataNodeDescriptor dataNode : new ArrayList<>(dataChannelDescriptor.getNodeDescriptors())) {
-            for(String dataMapName : dataNode.getDataMapNames()) {
-                if(e.getDataMap().getName().equals(dataMapName)) {
+            for (String dataMapName : dataNode.getDataMapNames()) {
+                if (e.getDataMap().getName().equals(dataMapName)) {
                     projectController.fireDataNodeEvent(new DataNodeEvent(this, dataNode));
                 }
             }
         }
     }
 
+    @Override
     public void dataMapRemoved(DataMapEvent e) {
         DataMap map = e.getDataMap();
         DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) Application
                 .getInstance()
                 .getProject()
                 .getRootNode();
-        removeNode(new Object[] {
+        removeNode(new Object[]{
                 dataChannelDescriptor, map
         });
 
@@ -671,32 +648,38 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
         // Clean up map from the nodes
         for (DataNodeDescriptor dataNode : new ArrayList<>(dataChannelDescriptor.getNodeDescriptors())) {
-            removeNode(new Object[] {
+            removeNode(new Object[]{
                     dataChannelDescriptor, dataNode, map
             });
         }
     }
 
+    @Override
     public void objEntityChanged(EntityEvent e) {
         entityChanged(e);
     }
 
+    @Override
     public void objEntityAdded(EntityEvent e) {
         entityAdded(e);
     }
 
+    @Override
     public void objEntityRemoved(EntityEvent e) {
         entityRemoved(e);
     }
 
+    @Override
     public void dbEntityChanged(EntityEvent e) {
         entityChanged(e);
     }
 
+    @Override
     public void dbEntityAdded(EntityEvent e) {
         entityAdded(e);
     }
 
+    @Override
     public void dbEntityRemoved(EntityEvent e) {
         entityRemoved(e);
     }
@@ -709,9 +692,9 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
      * <li>If entity is in a different node, makes that node visible and selected.</li>
      * </ul>
      */
-    protected void entityChanged(EntityEvent e) {
+    private void entityChanged(EntityEvent e) {
         if (e.isNameChange()) {
-            Object[] path = new Object[] {
+            Object[] path = new Object[]{
                     e.getDomain() != null
                             ? e.getDomain()
                             : (DataChannelDescriptor) projectController.getProject().getRootNode(),
@@ -720,7 +703,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
             updateNode(path);
             positionNode(path, Comparators.getDataMapChildrenComparator());
-            showNode(path);
+            navigateTo(path);
         }
     }
 
@@ -728,17 +711,17 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
      * Event handler for ObjEntity and DbEntity additions. Adds a tree node for the entity
      * and make it selected.
      */
-    protected void entityAdded(EntityEvent e) {
+    private void entityAdded(EntityEvent e) {
 
-        Entity<?,?,?> entity = e.getEntity();
+        Entity<?, ?, ?> entity = e.getEntity();
 
         DefaultMutableTreeNode mapNode = getProjectModel().getNodeForObjectPath(
-                new Object[] {
+                new Object[]{
                         e.getDomain() != null
                                 ? e.getDomain()
                                 : (DataChannelDescriptor) projectController
-                                        .getProject()
-                                        .getRootNode(), e.getEntity().getDataMap()
+                                .getProject()
+                                .getRootNode(), e.getEntity().getDataMap()
                 });
 
         if (mapNode == null) {
@@ -747,20 +730,20 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
         DefaultMutableTreeNode currentNode = new DefaultMutableTreeNode(entity, false);
         positionNode(mapNode, currentNode, Comparators.getDataMapChildrenComparator());
-        showNode(currentNode);
+        navigateTo(currentNode);
     }
 
     /**
      * Event handler for ObjEntity and DbEntity removals. Removes a tree node for the
      * entity and selects its sibling.
      */
-    protected void entityRemoved(EntityEvent e) {
+    private void entityRemoved(EntityEvent e) {
         if (e.getSource() == this) {
             return;
         }
 
         // remove from DataMap tree
-        removeNode(new Object[] {
+        removeNode(new Object[]{
                 e.getDomain() != null ? e.getDomain() : (DataChannelDescriptor) projectController
                         .getProject()
                         .getRootNode(), e.getEntity().getDataMap(), e.getEntity()
@@ -771,7 +754,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
      * Removes current node from the tree. Selects a new node adjacent to the currently
      * selected node instead.
      */
-    protected void removeNode(DefaultMutableTreeNode toBeRemoved) {
+    private void removeNode(DefaultMutableTreeNode toBeRemoved) {
 
         // lookup for the new selected node
         Object selectedNode = null;
@@ -804,15 +787,16 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                 }
             }
 
-            showNode(newSelection);
+            navigateTo(newSelection);
         }
 
-        // remove this node
         getProjectModel().removeNodeFromParent(toBeRemoved);
     }
 
-    /** Makes node current, visible and selected. */
-    protected void showNode(DefaultMutableTreeNode node) {
+    /**
+     * Makes node current, visible and selected.
+     */
+    private void navigateTo(DefaultMutableTreeNode node) {
         TreePath path = new TreePath(node.getPath());
 
         if (!isVisible(path)) {
@@ -828,15 +812,17 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         setSelectionPath(path);
     }
 
-    /** Makes node current, visible but not selected. */
+    /**
+     * Makes node current, visible but not selected.
+     */
     private void setSelected(DefaultMutableTreeNode node) {
         TreePath path = new TreePath(node.getPath());
-        if(!isVisible(path)) {
+        if (!isVisible(path)) {
             makeVisible(path);
         }
     }
 
-    protected void showNode(Object[] path) {
+    private void navigateTo(Object... path) {
         if (path == null) {
             return;
         }
@@ -847,10 +833,10 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
             return;
         }
 
-        this.showNode(node);
+        navigateTo(node);
     }
 
-    protected void updateNode(Object[] path) {
+    private void updateNode(Object[] path) {
         if (path == null) {
             return;
         }
@@ -861,7 +847,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         }
     }
 
-    protected void removeNode(Object[] path) {
+    private void removeNode(Object[] path) {
         if (path == null) {
             return;
         }
@@ -877,7 +863,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
      * already selected node was clicked again. Normally called from event listener
      * methods.
      */
-    public void processSelection(TreePath path) {
+    private void processSelection(TreePath path) {
         if (path == null) {
             return;
         }
@@ -887,11 +873,10 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         Object[] data = getUserObjects(currentNode);
         if (data.length == 0) {
             // this should clear the right-side panel
-            DomainDisplayEvent domEvent = new DomainDisplayEvent(this, null);
-            domEvent.setDomain((DataChannelDescriptor) projectController
-                    .getProject()
-                    .getRootNode());
-            projectController.fireDomainSelected(domEvent);
+            projectController.fireDomainSelected(new DomainDisplayEvent(
+                    this,
+                    (DataChannelDescriptor) projectController.getProject().getRootNode()));
+
             return;
         }
 
@@ -921,16 +906,22 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                         (DataNodeDescriptor) obj));
             }
         } else if (obj instanceof Entity) {
-            EntityDisplayEvent e = new EntityDisplayEvent(this, (Entity<?,?,?>) obj);
+
+            EntityDisplayEvent e = (data.length == 3)
+
+                    ? new EntityDisplayEvent(
+                    this,
+                    (Entity) obj, (DataMap) data[data.length - 2],
+                    (DataNodeDescriptor) data[data.length - 3],
+                    (DataChannelDescriptor) projectController.getProject().getRootNode())
+
+                    : new EntityDisplayEvent(
+                    this,
+                    (Entity) obj, (DataMap) data[data.length - 2],
+                    (DataChannelDescriptor) projectController.getProject().getRootNode());
+
+
             e.setUnselectAttributes(true);
-            if (data.length == 3) {
-                e.setDataMap((DataMap) data[data.length - 2]);
-                e.setDomain((DataChannelDescriptor) projectController.getProject().getRootNode());
-                e.setDataNode((DataNodeDescriptor) data[data.length - 3]);
-            } else if (data.length == 2) {
-                e.setDataMap((DataMap) data[data.length - 2]);
-                e.setDomain((DataChannelDescriptor) projectController.getProject().getRootNode());
-            }
 
             if (obj instanceof ObjEntity) {
                 projectController.fireObjEntitySelected(e);
@@ -1002,10 +993,6 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         }
     }
 
-    public TreeSelectionListener getTreeSelectionListener() {
-        return treeSelectionListener;
-    }
-
     /**
      * Creates JPopupMenu containing main functions
      */
@@ -1035,7 +1022,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
     /**
      * Creates and returns an menu item associated with the key.
-     * 
+     *
      * @param actionType action type
      */
     private JMenuItem buildMenu(Class<? extends Action> actionType) {
@@ -1048,15 +1035,15 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
     /**
      * Class to handle:
-     *  - right-click and show popup for selected tree row
-     *  - left click row selection based on full row length (instead of default selection based on label size)
+     * - right-click and show popup for selected tree row
+     * - left click row selection based on full row length (instead of default selection based on label size)
      */
     class MouseClickHandler extends MouseAdapter {
 
         void selectRowForEvent(MouseEvent e) {
             int closestRow = getClosestRowForLocation(e.getX(), e.getY());
             Rectangle closestRowBounds = getRowBounds(closestRow);
-            if(e.getY() >= closestRowBounds.getY()
+            if (e.getY() >= closestRowBounds.getY()
                     && e.getY() < closestRowBounds.getY() + closestRowBounds.getHeight()
                     && !isRowSelected(closestRow)) {
                 setSelectionRow(closestRow);
@@ -1090,12 +1077,12 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         Embeddable embeddable = e.getEmbeddable();
 
         DefaultMutableTreeNode mapNode = getProjectModel().getNodeForObjectPath(
-                new Object[] {
+                new Object[]{
                         e.getDomain() != null
                                 ? e.getDomain()
                                 : (DataChannelDescriptor) projectController
-                                        .getProject()
-                                        .getRootNode(), map
+                                .getProject()
+                                .getRootNode(), map
                 });
 
         if (mapNode == null) {
@@ -1104,12 +1091,12 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
         DefaultMutableTreeNode currentNode = new DefaultMutableTreeNode(embeddable, false);
         positionNode(mapNode, currentNode, Comparators.getDataMapChildrenComparator());
-        showNode(currentNode);
+        navigateTo(currentNode);
     }
 
     public void embeddableChanged(EmbeddableEvent e, DataMap map) {
         if (e.isNameChange()) {
-            Object[] path = new Object[] {
+            Object[] path = new Object[]{
                     e.getDomain() != null
                             ? e.getDomain()
                             : (DataChannelDescriptor) projectController.getProject().getRootNode(),
@@ -1118,7 +1105,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
             updateNode(path);
             positionNode(path, Comparators.getDataMapChildrenComparator());
-            showNode(path);
+            navigateTo(path);
         }
     }
 
@@ -1128,7 +1115,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         }
 
         // remove from DataMap tree
-        removeNode(new Object[] {
+        removeNode(new Object[]{
                 e.getDomain() != null ? e.getDomain() : (DataChannelDescriptor) projectController
                         .getProject()
                         .getRootNode(), map, e.getEmbeddable()
@@ -1136,15 +1123,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
     }
 
     public void currentEmbeddableChanged(EmbeddableDisplayEvent e) {
-        e.setEmbeddableChanged(true);
-
-        if ((e.getSource() == this || !e.isEmbeddableChanged()) && !e.isRefired()) {
-            return;
-        }
-
-        showNode(new Object[] {
-                e.getDomain(), e.getDataMap(), e.getEmbeddable()
-        });
+        navigateTo(e.getDomain(), e.getDataMap(), e.getEmbeddable());
 
     }
 
@@ -1161,10 +1140,6 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         }
     }
 
-    public TreeDragSource getTreeDragSource() {
-        return treeDragSource;
-    }
-
     @Override
     public void paintComponent(Graphics g) {
         g.setColor(Color.white);
@@ -1172,7 +1147,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         if (getSelectionCount() > 0) {
             g.setColor(SELECTION_COLOR);
             int[] rows = getSelectionRows();
-            if(rows != null) {
+            if (rows != null) {
                 for (int i : rows) {
                     Rectangle r = getRowBounds(i);
                     g.fillRect(0, r.y, getWidth(), r.height);

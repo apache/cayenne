@@ -242,7 +242,7 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
      */
     public void currentProcedureChanged(ProcedureDisplayEvent e) {
         Procedure procedure = e.getProcedure();
-        if (procedure != null && e.isProcedureChanged()) {
+        if (procedure != null) {
             rebuildTable(procedure);
         }
     }

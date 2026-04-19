@@ -25,26 +25,15 @@ import org.apache.cayenne.map.EmbeddableAttribute;
 
 public class EmbeddableAttributeDisplayEvent extends EmbeddableDisplayEvent {
 
-    protected EmbeddableAttribute[] embeddableAttributes;
+    protected final EmbeddableAttribute[] embeddableAttributes;
 
-    public EmbeddableAttributeDisplayEvent(Object src, Embeddable embeddable,
-            EmbeddableAttribute attrs, DataMap dataMap, DataChannelDescriptor dataChannelDescriptor) {
-
+    public EmbeddableAttributeDisplayEvent(Object src, Embeddable embeddable, EmbeddableAttribute attr, DataMap dataMap, DataChannelDescriptor dataChannelDescriptor) {
         super(src, embeddable, dataMap, dataChannelDescriptor);
-        embeddableAttributes = new EmbeddableAttribute[] {
-            attrs
-        };
+        embeddableAttributes = new EmbeddableAttribute[]{attr};
     }
 
-    public EmbeddableAttributeDisplayEvent(Object src, Embeddable embeddable,
-            EmbeddableAttribute[] attr, DataMap dataMap, DataChannelDescriptor domain) {
+    public EmbeddableAttributeDisplayEvent(Object src, Embeddable embeddable, EmbeddableAttribute[] attr, DataMap dataMap, DataChannelDescriptor domain) {
         super(src, embeddable, dataMap, domain);
-        this.embeddableAttributes = attr;
-    }
-
-    public EmbeddableAttributeDisplayEvent(Object src, Embeddable embeddable,
-            EmbeddableAttribute[] attr) {
-        super(src, embeddable, null, null);
         this.embeddableAttributes = attr;
     }
 

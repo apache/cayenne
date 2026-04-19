@@ -24,12 +24,8 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.QueryDescriptor;
 
-/**
- * @since 1.1
- */
 public class QueryDisplayEvent extends DataMapDisplayEvent {
-    protected QueryDescriptor query;
-    protected boolean queryChanged = true;
+    protected final QueryDescriptor query;
 
     public QueryDisplayEvent(Object src, QueryDescriptor query, DataMap map, DataChannelDescriptor domain) {
         super(src, map, domain);
@@ -38,17 +34,5 @@ public class QueryDisplayEvent extends DataMapDisplayEvent {
 
     public QueryDescriptor getQuery() {
         return query;
-    }
-
-    public void setQuery(QueryDescriptor query) {
-        this.query = query;
-    }
-
-    public boolean isQueryChanged() {
-        return queryChanged;
-    }
-
-    public void setQueryChanged(boolean queryChanged) {
-        this.queryChanged = queryChanged;
     }
 }

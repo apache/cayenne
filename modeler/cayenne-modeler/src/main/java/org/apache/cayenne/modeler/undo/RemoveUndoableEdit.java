@@ -253,13 +253,11 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
                 break;
             }
             case MAP_FROM_DOMAIN: {
-                CreateDataMapAction action = actionManager.getAction(CreateDataMapAction.class);
-                action.createDataMap(map);
+                CreateDataMapAction.onMapCreated(this, controller, map);
                 break;
             }
             case NODE: {
-                CreateNodeAction action = actionManager.getAction(CreateNodeAction.class);
-                action.createDataNode(dataNode);
+                CreateNodeAction.createDataNode(this, controller, dataNode);
                 break;
             }
             case EMBEDDABLE: {

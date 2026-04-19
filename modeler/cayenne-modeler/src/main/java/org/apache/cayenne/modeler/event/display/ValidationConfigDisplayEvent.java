@@ -26,11 +26,7 @@ import org.apache.cayenne.project.validation.Inspection;
  */
 public class ValidationConfigDisplayEvent extends DomainDisplayEvent {
 
-    private Inspection inspection;
-
-    public ValidationConfigDisplayEvent(Object src, DataChannelDescriptor domain) {
-        super(src, domain);
-    }
+    private final Inspection inspection;
 
     public ValidationConfigDisplayEvent(Object src, DataChannelDescriptor domain, Inspection inspection) {
         super(src, domain);
@@ -39,9 +35,5 @@ public class ValidationConfigDisplayEvent extends DomainDisplayEvent {
 
     public Inspection getInspection() {
         return inspection;
-    }
-
-    public void setInspection(Inspection inspection) {
-        this.inspection = inspection;
     }
 }

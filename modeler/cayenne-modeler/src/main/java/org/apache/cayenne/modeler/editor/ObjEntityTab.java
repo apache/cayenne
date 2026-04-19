@@ -441,7 +441,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
 
     public void currentObjEntityChanged(EntityDisplayEvent e) {
         ObjEntity entity = (ObjEntity) e.getEntity();
-        if (entity == null || !e.isEntityChanged()) {
+        if (entity == null) {
             return;
         }
 

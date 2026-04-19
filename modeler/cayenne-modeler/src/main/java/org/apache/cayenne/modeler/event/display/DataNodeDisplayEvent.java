@@ -22,44 +22,16 @@ package org.apache.cayenne.modeler.event.display;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 
-/**
- * Represents a display event of a DataNode.
- * 
- */
 public class DataNodeDisplayEvent extends DomainDisplayEvent {
 
-	protected DataNodeDescriptor dataNode;
-	
-	/** True if data node is different from the current data node. */
-	protected boolean dataNodeChanged = true;
+    protected final DataNodeDescriptor dataNode;
 
-	/** Current DataNode changed. */
-	public DataNodeDisplayEvent(Object src, DataChannelDescriptor dataChannelDescriptor, DataNodeDescriptor node) {
-		super(src, dataChannelDescriptor);
-		this.dataNode = node;
-		setDomainChanged(false);
-	}
+    public DataNodeDisplayEvent(Object src, DataChannelDescriptor dataChannelDescriptor, DataNodeDescriptor node) {
+        super(src, dataChannelDescriptor);
+        this.dataNode = node;
+    }
 
-	/** Get data node (data source) associated with this data map. */
-	public DataNodeDescriptor getDataNode() {
-		return dataNode;
-	}
-
-	/** Returns true if data node is different from the current data node. */
-	public boolean isDataNodeChanged() {
-		return dataNodeChanged;
-	}
-	
-	public void setDataNodeChanged(boolean temp) {
-		dataNodeChanged = temp;
-	}
-	/**
-	 * Sets the dataNode.
-	 * @param dataNode The dataNode to set
-	 */
-	public void setDataNode(DataNodeDescriptor dataNode) {
-		this.dataNode = dataNode;
-	}
-
-
+    public DataNodeDescriptor getDataNode() {
+        return dataNode;
+    }
 }

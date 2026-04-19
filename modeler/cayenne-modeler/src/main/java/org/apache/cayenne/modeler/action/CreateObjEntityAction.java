@@ -41,11 +41,7 @@ import java.awt.event.ActionEvent;
 
 public class CreateObjEntityAction extends CayenneAction {
 
-    public CreateObjEntityAction(Application application) {
-        super("Create ObjEntity", application);
-    }
-
-    static void fireObjEntityEvent(
+    static void onObjEntityCreated(
             Object src,
             ProjectController controller,
             DataMap dataMap,
@@ -60,6 +56,11 @@ public class CreateObjEntityAction extends CayenneAction {
         displayEvent.setMainTabFocus(true);
         controller.fireObjEntitySelected(displayEvent);
     }
+
+    public CreateObjEntityAction(Application application) {
+        super("Create ObjEntity", application);
+    }
+
 
     @Override
     public String getIconName() {
@@ -105,14 +106,14 @@ public class CreateObjEntityAction extends CayenneAction {
         merger.addEntityMergeListener(DeleteRuleUpdater.getEntityMergeListener());
         merger.synchronizeWithDbEntity(entity);
 
-        fireObjEntityEvent(this, controller, dataMap, entity);
+        onObjEntityCreated(this, controller, dataMap, entity);
 
         application.getUndoManager().addEdit(new CreateObjEntityUndoableEdit(dataMap, entity));
     }
 
     public void createObjEntity(DataMap dataMap, ObjEntity entity) {
         dataMap.addObjEntity(entity);
-        fireObjEntityEvent(this, getProjectController(), dataMap, entity);
+        onObjEntityCreated(this, getProjectController(), dataMap, entity);
     }
 
     /**

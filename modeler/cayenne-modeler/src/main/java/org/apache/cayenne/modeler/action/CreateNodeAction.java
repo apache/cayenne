@@ -24,6 +24,7 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
+import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
@@ -37,6 +38,13 @@ import java.awt.event.ActionEvent;
 
 public class CreateNodeAction extends CayenneAction {
 
+    public static void createDataNode(Object src, ProjectController controller, DataNodeDescriptor node) {
+        DataChannelDescriptor domain = (DataChannelDescriptor) controller.getProject().getRootNode();
+        domain.getNodeDescriptors().add(node);
+        controller.fireDataNodeEvent(new DataNodeEvent(src, node, MapEvent.ADD));
+        controller.fireDataNodeSelected(new DataNodeDisplayEvent(src, domain, node));
+    }
+
     public CreateNodeAction(Application application) {
         super("Create DataNode", application);
     }
@@ -49,16 +57,10 @@ public class CreateNodeAction extends CayenneAction {
     @Override
     public void performAction(ActionEvent e) {
         DataNodeDescriptor node = buildDataNode();
-        createDataNode(node);
-        application.getUndoManager().addEdit(new CreateNodeUndoableEdit(application, node));
+        createDataNode(this, getProjectController(), node);
+        application.getUndoManager().addEdit(new CreateNodeUndoableEdit(node));
     }
 
-    public void createDataNode(DataNodeDescriptor node) {
-        DataChannelDescriptor domain = (DataChannelDescriptor) getProjectController().getProject().getRootNode();
-        domain.getNodeDescriptors().add(node);
-        getProjectController().fireDataNodeEvent(new DataNodeEvent(this, node, MapEvent.ADD));
-        getProjectController().fireDataNodeSelected(new DataNodeDisplayEvent(this, domain, node));
-    }
 
     /**
      * Returns <code>true</code> if path contains a DataDomain object.

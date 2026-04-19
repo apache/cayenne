@@ -23,40 +23,20 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 
-/**
- * Display event for Stored Procedures.
- * 
- */
 public class ProcedureDisplayEvent extends DataMapDisplayEvent {
-	protected Procedure procedure;
-	protected boolean procedureChanged = true;
-	protected boolean tabReset;
 
-    /**
-     * Creates a new ProcedureDisplayEvent
-     */
+    protected final Procedure procedure;
+    protected boolean tabReset;
+
     public ProcedureDisplayEvent(Object src, Procedure procedure, DataMap map, DataChannelDescriptor domain) {
         super(src, map, domain);
         this.procedure = procedure;
     }
 
-
     public Procedure getProcedure() {
         return procedure;
     }
 
-    public void setProcedure(Procedure procedure) {
-        this.procedure = procedure;
-    }
-    
-    public boolean isProcedureChanged() {
-        return procedureChanged;
-    }
-
-    public void setProcedureChanged(boolean b) {
-        procedureChanged = b;
-    }
-    
     public boolean isTabReset() {
         return tabReset;
     }

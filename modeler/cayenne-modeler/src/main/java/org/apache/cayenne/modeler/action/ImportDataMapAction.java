@@ -91,7 +91,7 @@ public class ImportDataMapAction extends CayenneAction {
                 newMap.setConfigurationSource(dataMapResource);
             }
 
-            getProjectController().addDataMap(this, newMap);
+            CreateDataMapAction.onMapCreated(Application.getFrame(), getProjectController(), newMap);
         } catch (Exception ex) {
             LOGGER.info("Error importing DataMap.", ex);
             JOptionPane.showMessageDialog(Application.getFrame(), "Error reading DataMap: " + ex.getMessage(),

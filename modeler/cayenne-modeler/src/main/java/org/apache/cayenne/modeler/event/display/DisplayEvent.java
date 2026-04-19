@@ -24,20 +24,7 @@ import java.util.EventObject;
 
 public abstract class DisplayEvent extends EventObject {
 
-    protected boolean refired;
-
     protected DisplayEvent(Object source) {
         super(source);
-    }
-
-    /**
-     * Returns true if the event has been refired
-     */
-    public boolean isRefired() {
-        return refired;
-    }
-
-    public void setRefired(boolean refired) {
-        this.refired = refired;
     }
 }

@@ -37,10 +37,7 @@ import java.awt.event.ActionEvent;
 
 public class CreateDbEntityAction extends CayenneAction {
 
-    /**
-     * Fires events when a db entity was added
-     */
-    static void fireDbEntityEvent(Object src, ProjectController controller, DbEntity entity) {
+    static void onDbEntityCreated(Object src, ProjectController controller, DbEntity entity) {
         controller.fireDbEntityEvent(new EntityEvent(src, entity, MapEvent.ADD));
         EntityDisplayEvent displayEvent = new EntityDisplayEvent(src, entity, controller.getSelectedDataMap(),
                 controller.getSelectedDataNode(), (DataChannelDescriptor) controller.getProject().getRootNode());
@@ -77,7 +74,7 @@ public class CreateDbEntityAction extends CayenneAction {
         entity.setCatalog(map.getDefaultCatalog());
         entity.setSchema(map.getDefaultSchema());
         map.addDbEntity(entity);
-        fireDbEntityEvent(this, getProjectController(), entity);
+        onDbEntityCreated(this, getProjectController(), entity);
     }
 
     /**

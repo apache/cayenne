@@ -293,7 +293,8 @@ public class ImportEOModelAction extends CayenneAction {
 
             // side effect of this operation is that if a node was created, this DataMap
             // will be linked with it...
-            mediator.addDataMap(Application.getFrame(), map);
+            CreateDataMapAction.onMapCreated(Application.getFrame(), getProjectController(), map);
+
         }
     }
 

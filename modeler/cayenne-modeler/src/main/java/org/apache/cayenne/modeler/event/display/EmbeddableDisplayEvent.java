@@ -24,25 +24,14 @@ import org.apache.cayenne.map.Embeddable;
 
 public class EmbeddableDisplayEvent extends DataMapDisplayEvent {
 
-    protected Embeddable embeddable;
-    protected boolean embeddableChanged = true;
+    protected final Embeddable embeddable;
 
-    public EmbeddableDisplayEvent(Object src, Embeddable embeddable, DataMap dataMap,
-            DataChannelDescriptor dataChannelDescriptor) {
+    public EmbeddableDisplayEvent(Object src, Embeddable embeddable, DataMap dataMap, DataChannelDescriptor dataChannelDescriptor) {
         super(src, dataMap, dataChannelDescriptor);
         this.embeddable = embeddable;
-        setDataMapChanged(false);
     }
 
     public Embeddable getEmbeddable() {
         return embeddable;
-    }
-
-    public boolean isEmbeddableChanged() {
-        return embeddableChanged;
-    }
-
-    public void setEmbeddableChanged(boolean temp) {
-        this.embeddableChanged = temp;
     }
 }
