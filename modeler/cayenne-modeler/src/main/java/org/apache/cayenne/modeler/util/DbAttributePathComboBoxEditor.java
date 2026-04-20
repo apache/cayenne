@@ -86,8 +86,8 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
         if (path == null || path.isEmpty()) {
             return "";
         }
-        return path.parent()
-                .dot(path.last().value().replaceAll("\\$", "")).value();
+        CayennePath parent = path.parent();
+        return parent.isEmpty() ? "" : parent.value() + ".";
     }
 
     @Override
