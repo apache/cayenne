@@ -74,7 +74,8 @@ public class Main {
 
         // logger should go after Look And Feel or Logger Console will be without style
         LOGGER.info("Starting CayenneModeler.");
-        LOGGER.info("JRE v.{} at {}", System.getProperty("java.version"), System.getProperty("java.home"));
+        // TODO: ModelerLogger should process Slf4J {} substitutions in fallback "System.out" mode
+        LOGGER.info("JRE v." + System.getProperty("java.version") + " at " + System.getProperty("java.home"));
 
         SwingUtilities.invokeLater(() -> {
 
