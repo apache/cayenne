@@ -21,45 +21,42 @@ package org.apache.cayenne.modeler;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.dnd.DragGestureEvent;
 import java.awt.dnd.DragGestureListener;
-import java.awt.dnd.DragGestureRecognizer;
 import java.awt.dnd.DragSource;
 import java.awt.dnd.DragSourceDragEvent;
 import java.awt.dnd.DragSourceDropEvent;
 import java.awt.dnd.DragSourceEvent;
 import java.awt.dnd.DragSourceListener;
 
-public class TreeDragSource implements DragSourceListener, DragGestureListener {
+class TreeDragSource implements DragSourceListener, DragGestureListener {
 
-    private DragSource source;
-    private JTree sourceTree;
-    private ProjectController eventController;
-    private DragGestureRecognizer recognizer;
+    private final DragSource source;
+    private final JTree sourceTree;
+    private final ProjectController controller;
+
     private TreeDropTarget dt;
 
-    public TreeDragSource(JTree tree, int actions, ProjectController eventController) {
-        sourceTree = tree;
-        this.eventController = eventController;
-        source = new DragSource();
-        recognizer = source.createDefaultDragGestureRecognizer(sourceTree, actions, this);
+    public TreeDragSource(DragSource source, JTree sourceTree, ProjectController controller) {
+        this.sourceTree = sourceTree;
+        this.controller = controller;
+        this.source = source;
     }
 
-    /*
-     * Drag Gesture Handler
-     */
+    @Override
     public void dragGestureRecognized(DragGestureEvent dge) {
         TreePath path = sourceTree.getSelectionPath();
         if ((path == null) || (path.getPathCount() <= 1)) {
             return;
         }
-        dt = new TreeDropTarget(sourceTree, eventController, path);
+        dt = new TreeDropTarget(sourceTree, controller, path);
         source.startDrag(dge, DragSource.DefaultLinkDrop, dt, this);
     }
 
+    @Override
     public void dragOver(DragSourceDragEvent dsde) {
 
         TreePath sourcePath = sourceTree.getSelectionPath();
@@ -82,16 +79,19 @@ public class TreeDragSource implements DragSourceListener, DragGestureListener {
 
     }
 
+    @Override
     public void dropActionChanged(DragSourceDragEvent dsde) {
     }
 
+    @Override
     public void dragDropEnd(DragSourceDropEvent dsde) {
     }
 
+    @Override
     public void dragEnter(DragSourceDragEvent dsde) {
     }
 
+    @Override
     public void dragExit(DragSourceEvent dse) {
     }
-
 }

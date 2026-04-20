@@ -100,10 +100,10 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DragSource;
+import java.awt.dnd.MouseDragGestureRecognizer;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -127,9 +127,6 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
     private final ProjectController controller;
     private final TreeSelectionListener treeSelectionListener;
     private JPopupMenu popup;
-
-    // TODO: should we kep this var? TreeDragSource seems to operate on side effects?
-    private final TreeDragSource treeDragSource;
 
     public ProjectTreeView(ProjectController controller) {
         this.controller = controller;
@@ -166,7 +163,14 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                 CopyAction.class);
 
         initFromModel(controller.getProject());
-        this.treeDragSource = new TreeDragSource(this, DnDConstants.ACTION_COPY, controller);
+
+        DragSource dragSource = new DragSource();
+        Toolkit.getDefaultToolkit().createDragGestureRecognizer(
+                MouseDragGestureRecognizer.class,
+                dragSource,
+                this,
+                DnDConstants.ACTION_COPY,
+                new TreeDragSource(dragSource, this, controller));
     }
 
     private TreeSelectionListener createTreeSelectionListener() {

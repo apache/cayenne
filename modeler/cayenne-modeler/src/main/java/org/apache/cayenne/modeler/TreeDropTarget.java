@@ -22,35 +22,34 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.action.LinkDataMapAction;
 
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
-import java.io.IOException;
 
 public class TreeDropTarget implements DropTargetListener, Transferable {
 
     private DropTarget target;
-    private JTree targetTree;
-    private ProjectController eventController;
-    private TreePath parentPath;
+    private final JTree targetTree;
+    private final ProjectController controller;
+    private final TreePath parentPath;
     private TreePath targetPath;
 
-    public TreeDropTarget(JTree tree, ProjectController eventController, TreePath parentPath) {
-        targetTree = tree;
-        this.eventController = eventController;
+    public TreeDropTarget(JTree targetTree, ProjectController controller, TreePath parentPath) {
+        this.targetTree = targetTree;
+        this.controller = controller;
         this.parentPath = parentPath;
-        target = new DropTarget(targetTree, this);
-    }
 
+        // ugly - many DND objects are using constructors with side effects
+        new DropTarget(targetTree, this);
+    }
 
     public void dragEnter(DropTargetDragEvent dtde) {
     }
@@ -77,7 +76,7 @@ public class TreeDropTarget implements DropTargetListener, Transferable {
                     DataNodeDescriptor currentDataNode = (DataNodeDescriptor) target.getUserObject();
                     DataMap currentDataMap = (DataMap) parent.getUserObject();
 
-                    LinkDataMapAction action = eventController.getApplication().getActionManager().getAction(LinkDataMapAction.class);
+                    LinkDataMapAction action = controller.getApplication().getActionManager().getAction(LinkDataMapAction.class);
                     action.linkDataMap(currentDataMap, currentDataNode);
 
                     targetTree.makeVisible(targetPath.pathByAddingChild(target));
@@ -95,14 +94,17 @@ public class TreeDropTarget implements DropTargetListener, Transferable {
         return this.targetPath;
     }
 
-    public Object getTransferData(DataFlavor arg0) throws UnsupportedFlavorException, IOException {
+    @Override
+    public Object getTransferData(DataFlavor flavor) {
         return null;
     }
 
+    @Override
     public DataFlavor[] getTransferDataFlavors() {
         return null;
     }
 
+    @Override
     public boolean isDataFlavorSupported(DataFlavor arg0) {
         return false;
     }
