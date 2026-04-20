@@ -52,7 +52,7 @@
                         </goals>
                         <configuration>
                             <backend>html5</backend>
-                            <headerFooter>false</headerFooter> <!-- do not generate header and footer -->
+                            <standalone>false</standalone> <!-- do not generate header and footer -->
                             <outputDirectory>${project.build.directory}/tmp/</outputDirectory>
                             <extensions>
                                 <extension>
