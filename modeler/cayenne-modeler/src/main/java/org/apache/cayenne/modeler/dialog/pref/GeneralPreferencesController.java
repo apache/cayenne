@@ -44,37 +44,33 @@ public class GeneralPreferencesController extends ChildController<PreferenceDial
     private boolean autoLoadProjectPreference;
     private String encoding;
     private boolean deletePromptPreference;
-    private Preferences preferences;
+    private final Preferences preferences;
 
     public GeneralPreferencesController(PreferenceDialogController parent) {
         super(parent);
-        this.view = new GeneralPreferencesView();
+
+        this.preferences = application.getPreferencesNode(GeneralPreferencesController.class, "");
+        this.encoding = preferences.get(ENCODING_PREFERENCE, null);
+        this.autoLoadProjectPreference = preferences.getBoolean(AUTO_LOAD_PROJECT_PREFERENCE, false);
+        this.deletePromptPreference = preferences.getBoolean(DELETE_PROMPT_PREFERENCE, false);
+
+        // TODO: confusing: "encodingController" is dangling in the air, yet it doesn't go out of scope as it is a
+        //  listener for its own view events
+        EncodingPreferencesController encodingController = new EncodingPreferencesController(this);
+        encodingController.addPropertyChangeListener(EncodingPreferencesController.ENCODING_PROPERTY, evt -> setEncoding((String) evt.getNewValue()));
+        encodingController.setSelectedEncoding(encoding);
+
+        this.view = new GeneralPreferencesView(encodingController.getView());
         this.view.setEnabled(true);
-        initBindings();
+        this.view.getAutoLoadProject().addActionListener(e -> setAutoLoadProject(view.getAutoLoadProject().isSelected()));
+        this.view.getDeletePrompt().addActionListener(e -> setDeletePrompt(view.getDeletePrompt().isSelected()));
+        this.view.getAutoLoadProject().setSelected(autoLoadProjectPreference);
+        this.view.getDeletePrompt().setSelected(deletePromptPreference);
     }
 
     @Override
     public Component getView() {
         return view;
-    }
-
-    protected void initBindings() {
-        // init model objects
-        preferences = application.getPreferencesNode(GeneralPreferencesController.class, "");
-
-        this.encoding = preferences.get(ENCODING_PREFERENCE, null);
-        this.autoLoadProjectPreference = preferences.getBoolean(AUTO_LOAD_PROJECT_PREFERENCE, false);
-        this.deletePromptPreference = preferences.getBoolean(DELETE_PROMPT_PREFERENCE, false);
-
-        // build child controllers...
-        EncodingSelectorController encodingSelectorController = new EncodingSelectorController(this, view.getEncodingSelector());
-        encodingSelectorController.addPropertyChangeListener(EncodingSelectorController.ENCODING_PROPERTY, evt -> setEncoding((String) evt.getNewValue()));
-        encodingSelectorController.setSelectedEncoding(encoding);
-
-        view.getAutoLoadProject().addActionListener(e -> setAutoLoadProject(view.getAutoLoadProject().isSelected()));
-        view.getDeletePrompt().addActionListener(e -> setDeletePrompt(view.getDeletePrompt().isSelected()));
-        view.getAutoLoadProject().setSelected(autoLoadProjectPreference);
-        view.getDeletePrompt().setSelected(deletePromptPreference);
     }
 
     public String getEncoding() {

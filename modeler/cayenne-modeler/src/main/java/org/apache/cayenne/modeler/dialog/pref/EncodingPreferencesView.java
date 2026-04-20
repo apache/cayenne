@@ -27,16 +27,15 @@ import java.awt.*;
 
 /**
  * A panel for file encoding selection.
- * 
  */
-public class EncodingSelectorView extends JPanel {
+public class EncodingPreferencesView extends JPanel {
 
     private final JRadioButton defaultEncoding;
     private final JRadioButton otherEncoding;
     private final JComboBox encodingChoices;
     private final JLabel defaultEncodingLabel;
 
-    public EncodingSelectorView() {
+    public EncodingPreferencesView() {
         this.defaultEncoding = new JRadioButton();
         this.otherEncoding = new JRadioButton();
         this.encodingChoices = new JComboBox();

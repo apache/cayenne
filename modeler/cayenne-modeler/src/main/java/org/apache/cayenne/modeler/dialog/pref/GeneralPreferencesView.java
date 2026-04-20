@@ -29,13 +29,13 @@ import java.awt.*;
 
 public class GeneralPreferencesView extends JPanel {
 
-    protected EncodingSelectorView encodingSelector;
-    protected JLabel encodingSelectorLabel;
-    protected JCheckBox autoLoadProjectBox;
-    protected JCheckBox deletePromptBox;
+    private final EncodingPreferencesView encodingSelector;
+    private final JLabel encodingSelectorLabel;
+    private final JCheckBox autoLoadProjectBox;
+    private final JCheckBox deletePromptBox;
 
-    public GeneralPreferencesView() {
-        this.encodingSelector = new EncodingSelectorView();
+    public GeneralPreferencesView(EncodingPreferencesView encodingSelector) {
+        this.encodingSelector = encodingSelector;
         this.encodingSelectorLabel = new JLabel("File Encoding:");
         this.autoLoadProjectBox = new JCheckBox("Automatically Load Last Opened Project");
         this.deletePromptBox = new JCheckBox("Always Delete Items Without Prompt");
@@ -69,7 +69,7 @@ public class GeneralPreferencesView extends JPanel {
         deletePromptBox.setEnabled(b);
     }
 
-    public EncodingSelectorView getEncodingSelector() {
+    public EncodingPreferencesView getEncodingSelector() {
         return encodingSelector;
     }
 

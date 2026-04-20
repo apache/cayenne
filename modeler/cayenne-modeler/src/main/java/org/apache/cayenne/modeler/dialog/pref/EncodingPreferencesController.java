@@ -21,30 +21,28 @@
 package org.apache.cayenne.modeler.dialog.pref;
 
 import org.apache.cayenne.modeler.mvc.ChildController;
-import org.apache.cayenne.modeler.mvc.RootController;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.*;
-import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Vector;
 
-public class EncodingSelectorController extends ChildController<RootController> {
+public class EncodingPreferencesController extends ChildController<GeneralPreferencesController> {
 
     public static final String ENCODING_PROPERTY = "encoding";
 
-    private final EncodingSelectorView view;
+    private final EncodingPreferencesView view;
     private final String systemEncoding;
 
     private String encoding;
     private boolean defaultEncoding;
 
-    public EncodingSelectorController(RootController parent, EncodingSelectorView view) {
+    public EncodingPreferencesController(GeneralPreferencesController parent) {
         super(parent);
-        this.view = view;
+        this.view = new EncodingPreferencesView();
 
         // init static models...
         this.systemEncoding = detectPlatformEncoding();
@@ -64,7 +62,7 @@ public class EncodingSelectorController extends ChildController<RootController> 
     }
 
     @Override
-    public Component getView() {
+    public EncodingPreferencesView getView() {
         return view;
     }
 
