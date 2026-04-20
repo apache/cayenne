@@ -124,39 +124,53 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
     private static final Color SELECTION_COLOR = UIManager.getColor("Tree.selectionBackground");
 
-    protected ProjectController projectController;
-    protected TreeSelectionListener treeSelectionListener;
-    protected TreeWillExpandListener treeWillExpandListener;
-    protected JPopupMenu popup;
+    private final ProjectController controller;
+    private final TreeSelectionListener treeSelectionListener;
+    private JPopupMenu popup;
 
     // TODO: should we kep this var? TreeDragSource seems to operate on side effects?
     private final TreeDragSource treeDragSource;
 
-    public ProjectTreeView(ProjectController projectController) {
-        super();
-        this.projectController = projectController;
+    public ProjectTreeView(ProjectController controller) {
+        this.controller = controller;
 
-        initView();
-        initController();
-        initFromModel(Application.getInstance().getProject());
-        this.treeDragSource = new TreeDragSource(this, DnDConstants.ACTION_COPY, projectController);
-    }
-
-    private void initView() {
         setCellRenderer(CellRenderers.treeRenderer());
         setOpaque(false);
         setBorder(TopBorder.create());
-    }
 
-    private void initController() {
-        initTreeSelectionListener();
-        initTreeExpandListener();
+        this.treeSelectionListener = createTreeSelectionListener();
+        addTreeSelectionListener(treeSelectionListener);
+        addTreeWillExpandListener(createTreeExpandListener());
         addMouseListener(new MouseClickHandler());
-        setupMediator();
+
+        controller.addDomainListener(this);
+        controller.addDomainDisplayListener(this);
+        controller.addDataNodeListener(this);
+        controller.addDataNodeDisplayListener(this);
+        controller.addDataMapListener(this);
+        controller.addDataMapDisplayListener(this);
+        controller.addObjEntityListener(this);
+        controller.addObjEntityDisplayListener(this);
+        controller.addDbEntityListener(this);
+        controller.addDbEntityDisplayListener(this);
+        controller.addEmbeddableDisplayListener(this);
+        controller.addEmbeddableListener(this);
+        controller.addProcedureListener(this);
+        controller.addProcedureDisplayListener(this);
+        controller.addQueryListener(this);
+        controller.addQueryDisplayListener(this);
+        controller.addMultipleObjectsDisplayListener(this);
+        controller.getApplication().getActionManager().setupCutCopyPaste(
+                this,
+                CutAction.class,
+                CopyAction.class);
+
+        initFromModel(controller.getProject());
+        this.treeDragSource = new TreeDragSource(this, DnDConstants.ACTION_COPY, controller);
     }
 
-    private void initTreeSelectionListener() {
-        treeSelectionListener = new TreeSelectionListener() {
+    private TreeSelectionListener createTreeSelectionListener() {
+        return new TreeSelectionListener() {
 
             public void valueChanged(TreeSelectionEvent e) {
                 TreePath[] paths = getSelectionPaths();
@@ -181,7 +195,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                             projectParentPath = createProjectPath(parentPath);
                         }
 
-                        projectController.displayMultipleObjects(new MultipleObjectsDisplayEvent(
+                        controller.displayMultipleObjects(new MultipleObjectsDisplayEvent(
                                 this,
                                 projectPaths, projectParentPath));
                     } else if (paths.length == 1) {
@@ -199,12 +213,10 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                 return (ConfigurationNode) treeNode.getUserObject();
             }
         };
-
-        addTreeSelectionListener(treeSelectionListener);
     }
 
-    private void initTreeExpandListener() {
-        treeWillExpandListener = new TreeWillExpandListener() {
+    private TreeWillExpandListener createTreeExpandListener() {
+        return new TreeWillExpandListener() {
             @Override
             public void treeWillExpand(TreeExpansionEvent e) {
                 TreePath path = e.getPath();
@@ -221,33 +233,6 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                 }
             }
         };
-
-
-        addTreeWillExpandListener(treeWillExpandListener);
-    }
-
-    private void setupMediator() {
-        projectController.addDomainListener(this);
-        projectController.addDomainDisplayListener(this);
-        projectController.addDataNodeListener(this);
-        projectController.addDataNodeDisplayListener(this);
-        projectController.addDataMapListener(this);
-        projectController.addDataMapDisplayListener(this);
-        projectController.addObjEntityListener(this);
-        projectController.addObjEntityDisplayListener(this);
-        projectController.addDbEntityListener(this);
-        projectController.addDbEntityDisplayListener(this);
-        projectController.addEmbeddableDisplayListener(this);
-        projectController.addEmbeddableListener(this);
-        projectController.addProcedureListener(this);
-        projectController.addProcedureDisplayListener(this);
-        projectController.addQueryListener(this);
-        projectController.addQueryDisplayListener(this);
-        projectController.addMultipleObjectsDisplayListener(this);
-        projectController.getApplication().getActionManager().setupCutCopyPaste(
-                this,
-                CutAction.class,
-                CopyAction.class);
     }
 
     private void initFromModel(Project project) {
@@ -377,7 +362,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
         DefaultMutableTreeNode node = getProjectModel().getNodeForObjectPath(
                 new Object[]{
-                        projectController.getProject().getRootNode(),
+                        controller.getProject().getRootNode(),
                         e.getProcedure().getDataMap()
                 });
 
@@ -395,7 +380,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
     public void procedureChanged(ProcedureEvent e) {
         if (e.isNameChange()) {
             Object[] path = new Object[]{
-                    projectController.getProject().getRootNode(),
+                    controller.getProject().getRootNode(),
                     e.getProcedure().getDataMap(), e.getProcedure()
             };
 
@@ -409,7 +394,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
     public void procedureRemoved(ProcedureEvent e) {
 
         removeNode(new Object[]{
-                projectController.getProject().getRootNode(),
+                controller.getProject().getRootNode(),
                 e.getProcedure().getDataMap(), e.getProcedure()
         });
     }
@@ -421,7 +406,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                 new Object[]{
                         e.getDomain() != null
                                 ? e.getDomain()
-                                : (DataChannelDescriptor) projectController
+                                : (DataChannelDescriptor) controller
                                 .getProject()
                                 .getRootNode(), e.getDataMap()
                 });
@@ -443,7 +428,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
             Object[] path = new Object[]{
                     e.getDomain() != null
                             ? e.getDomain()
-                            : (DataChannelDescriptor) projectController.getProject().getRootNode(),
+                            : (DataChannelDescriptor) controller.getProject().getRootNode(),
                     e.getQuery().getDataMap(), e.getQuery()
             };
 
@@ -456,7 +441,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
     @Override
     public void queryRemoved(QueryEvent e) {
         removeNode(new Object[]{
-                e.getDomain() != null ? e.getDomain() : (DataChannelDescriptor) projectController
+                e.getDomain() != null ? e.getDomain() : (DataChannelDescriptor) controller
                         .getProject()
                         .getRootNode(), e.getDataMap(), e.getQuery()
         });
@@ -485,7 +470,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                 new Object[]{
                         e.getDomain() != null
                                 ? e.getDomain()
-                                : (DataChannelDescriptor) projectController
+                                : (DataChannelDescriptor) controller
                                 .getProject()
                                 .getRootNode(), e.getDataNode()
                 });
@@ -500,7 +485,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
                 getProjectModel().nodeChanged(node);
 
-                DataChannelDescriptor domain = (DataChannelDescriptor) projectController.getProject().getRootNode();
+                DataChannelDescriptor domain = (DataChannelDescriptor) controller.getProject().getRootNode();
 
                 // check for DataMap additions/removals...
                 String[] mapsName = e.getDataNode().getDataMapNames().toArray(new String[0]);
@@ -559,7 +544,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                 new Object[]{
                         e.getDomain() != null
                                 ? e.getDomain()
-                                : (DataChannelDescriptor) projectController.getProject().getRootNode()
+                                : (DataChannelDescriptor) controller.getProject().getRootNode()
                 });
 
         if (node == null) {
@@ -579,7 +564,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         }
 
         removeNode(new Object[]{
-                e.getDomain() != null ? e.getDomain() : (DataChannelDescriptor) projectController
+                e.getDomain() != null ? e.getDomain() : (DataChannelDescriptor) controller
                         .getProject()
                         .getRootNode(), e.getDataNode()
         });
@@ -589,7 +574,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
     public void dataMapChanged(DataMapEvent e) {
 
         Object[] path = new Object[]{
-                e.getDomain() != null ? e.getDomain() : (DataChannelDescriptor) projectController
+                e.getDomain() != null ? e.getDomain() : (DataChannelDescriptor) controller
                         .getProject()
                         .getRootNode(), e.getDataMap()
         };
@@ -597,7 +582,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         updateNode(path);
 
         if (e.isNameChange()) {
-            projectController.updateEntityResolver();
+            controller.updateEntityResolver();
             positionNode(path, Comparators.getDataDomainChildrenComparator());
             navigateTo(path);
         }
@@ -606,7 +591,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
     @Override
     public void dataMapAdded(DataMapEvent e) {
         DataChannelDescriptor dataChannelDescriptor = e.getDomain() != null ? e.getDomain() :
-                (DataChannelDescriptor) projectController.getProject().getRootNode();
+                (DataChannelDescriptor) controller.getProject().getRootNode();
         DefaultMutableTreeNode domainNode = getProjectModel().getNodeForObjectPath(
                 new Object[]{
                         dataChannelDescriptor
@@ -615,7 +600,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         DefaultMutableTreeNode newMapNode = ProjectTreeFactory.wrapProjectNode(e
                 .getDataMap());
 
-        projectController.getEntityResolver().addDataMap(e.getDataMap());
+        controller.getEntityResolver().addDataMap(e.getDataMap());
 
         positionNode(domainNode, newMapNode, Comparators.getDataDomainChildrenComparator());
         if (Application.getInstance().getFrameController().getDbImportController().isGlobalImport()) {
@@ -627,7 +612,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         for (DataNodeDescriptor dataNode : new ArrayList<>(dataChannelDescriptor.getNodeDescriptors())) {
             for (String dataMapName : dataNode.getDataMapNames()) {
                 if (e.getDataMap().getName().equals(dataMapName)) {
-                    projectController.fireDataNodeEvent(new DataNodeEvent(this, dataNode));
+                    controller.fireDataNodeEvent(new DataNodeEvent(this, dataNode));
                 }
             }
         }
@@ -644,7 +629,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                 dataChannelDescriptor, map
         });
 
-        projectController.getEntityResolver().removeDataMap(e.getDataMap());
+        controller.getEntityResolver().removeDataMap(e.getDataMap());
 
         // Clean up map from the nodes
         for (DataNodeDescriptor dataNode : new ArrayList<>(dataChannelDescriptor.getNodeDescriptors())) {
@@ -697,7 +682,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
             Object[] path = new Object[]{
                     e.getDomain() != null
                             ? e.getDomain()
-                            : (DataChannelDescriptor) projectController.getProject().getRootNode(),
+                            : (DataChannelDescriptor) controller.getProject().getRootNode(),
                     e.getEntity().getDataMap(), e.getEntity()
             };
 
@@ -719,7 +704,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                 new Object[]{
                         e.getDomain() != null
                                 ? e.getDomain()
-                                : (DataChannelDescriptor) projectController
+                                : (DataChannelDescriptor) controller
                                 .getProject()
                                 .getRootNode(), e.getEntity().getDataMap()
                 });
@@ -744,7 +729,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
         // remove from DataMap tree
         removeNode(new Object[]{
-                e.getDomain() != null ? e.getDomain() : (DataChannelDescriptor) projectController
+                e.getDomain() != null ? e.getDomain() : (DataChannelDescriptor) controller
                         .getProject()
                         .getRootNode(), e.getEntity().getDataMap(), e.getEntity()
         });
@@ -873,36 +858,36 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         Object[] data = getUserObjects(currentNode);
         if (data.length == 0) {
             // this should clear the right-side panel
-            projectController.displayDomain(new DomainDisplayEvent(
+            controller.displayDomain(new DomainDisplayEvent(
                     this,
-                    (DataChannelDescriptor) projectController.getProject().getRootNode()));
+                    (DataChannelDescriptor) controller.getProject().getRootNode()));
 
             return;
         }
 
         Object obj = data[data.length - 1];
         if (obj instanceof DataChannelDescriptor) {
-            projectController.displayDomain(new DomainDisplayEvent(
+            controller.displayDomain(new DomainDisplayEvent(
                     this,
                     (DataChannelDescriptor) obj));
         } else if (obj instanceof DataMap) {
             if (data.length == 2) {
-                projectController.displayDataMap(new DataMapDisplayEvent(
+                controller.displayDataMap(new DataMapDisplayEvent(
                         this,
                         (DataMap) obj,
-                        (DataChannelDescriptor) projectController.getProject().getRootNode(),
+                        (DataChannelDescriptor) controller.getProject().getRootNode(),
                         (DataNodeDescriptor) data[data.length - 2]));
             } else if (data.length == 1) {
-                projectController.displayDataMap(new DataMapDisplayEvent(
+                controller.displayDataMap(new DataMapDisplayEvent(
                         this,
                         (DataMap) obj,
-                        (DataChannelDescriptor) projectController.getProject().getRootNode()));
+                        (DataChannelDescriptor) controller.getProject().getRootNode()));
             }
         } else if (obj instanceof DataNodeDescriptor) {
             if (data.length == 1) {
-                projectController.displayDataNode(new DataNodeDisplayEvent(
+                controller.displayDataNode(new DataNodeDisplayEvent(
                         this,
-                        (DataChannelDescriptor) projectController.getProject().getRootNode(),
+                        (DataChannelDescriptor) controller.getProject().getRootNode(),
                         (DataNodeDescriptor) obj));
             }
         } else if (obj instanceof Entity) {
@@ -913,42 +898,42 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                     this,
                     (Entity) obj, (DataMap) data[data.length - 2],
                     (DataNodeDescriptor) data[data.length - 3],
-                    (DataChannelDescriptor) projectController.getProject().getRootNode())
+                    (DataChannelDescriptor) controller.getProject().getRootNode())
 
                     : new EntityDisplayEvent(
                     this,
                     (Entity) obj, (DataMap) data[data.length - 2],
-                    (DataChannelDescriptor) projectController.getProject().getRootNode());
+                    (DataChannelDescriptor) controller.getProject().getRootNode());
 
 
             e.setUnselectAttributes(true);
 
             if (obj instanceof ObjEntity) {
-                projectController.displayObjEntity(e);
+                controller.displayObjEntity(e);
             } else if (obj instanceof DbEntity) {
-                projectController.displayDbEntity(e);
+                controller.displayDbEntity(e);
             }
         } else if (obj instanceof Embeddable) {
             EmbeddableDisplayEvent e = new EmbeddableDisplayEvent(
                     this,
                     (Embeddable) obj,
                     (DataMap) data[data.length - 2],
-                    (DataChannelDescriptor) projectController.getProject().getRootNode());
-            projectController.displayEmbeddable(e);
+                    (DataChannelDescriptor) controller.getProject().getRootNode());
+            controller.displayEmbeddable(e);
         } else if (obj instanceof Procedure) {
             ProcedureDisplayEvent e = new ProcedureDisplayEvent(
                     this,
                     (Procedure) obj,
                     (DataMap) data[data.length - 2],
-                    (DataChannelDescriptor) projectController.getProject().getRootNode());
-            projectController.displayProcedure(e);
+                    (DataChannelDescriptor) controller.getProject().getRootNode());
+            controller.displayProcedure(e);
         } else if (obj instanceof QueryDescriptor) {
             QueryDisplayEvent e = new QueryDisplayEvent(
                     this,
                     (QueryDescriptor) obj,
                     (DataMap) data[data.length - 2],
-                    (DataChannelDescriptor) projectController.getProject().getRootNode());
-            projectController.displayQuery(e);
+                    (DataChannelDescriptor) controller.getProject().getRootNode());
+            controller.displayQuery(e);
         }
 
         this.scrollPathToVisible(path);
@@ -1026,7 +1011,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
      * @param actionType action type
      */
     private JMenuItem buildMenu(Class<? extends Action> actionType) {
-        CayenneAction action = (CayenneAction) projectController
+        CayenneAction action = (CayenneAction) controller
                 .getApplication()
                 .getActionManager()
                 .getAction(actionType);
@@ -1080,7 +1065,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                 new Object[]{
                         e.getDomain() != null
                                 ? e.getDomain()
-                                : (DataChannelDescriptor) projectController
+                                : (DataChannelDescriptor) controller
                                 .getProject()
                                 .getRootNode(), map
                 });
@@ -1099,7 +1084,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
             Object[] path = new Object[]{
                     e.getDomain() != null
                             ? e.getDomain()
-                            : (DataChannelDescriptor) projectController.getProject().getRootNode(),
+                            : (DataChannelDescriptor) controller.getProject().getRootNode(),
                     map, e.getEmbeddable()
             };
 
@@ -1116,7 +1101,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
         // remove from DataMap tree
         removeNode(new Object[]{
-                e.getDomain() != null ? e.getDomain() : (DataChannelDescriptor) projectController
+                e.getDomain() != null ? e.getDomain() : (DataChannelDescriptor) controller
                         .getProject()
                         .getRootNode(), map, e.getEmbeddable()
         });
@@ -1129,7 +1114,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
     // Filter all disabled actions in popupMenu, but skip Cut-Copy-Paste block. It should always exist.
     public void popupMenuFilter() {
-        Action cutAction = projectController.getApplication().getActionManager().getAction(CutAction.class);
+        Action cutAction = controller.getApplication().getActionManager().getAction(CutAction.class);
         for (MenuElement element : popup.getSubElements()) {
             JMenuItem item = (JMenuItem) element;
             if (!item.getAction().equals(cutAction)) {
