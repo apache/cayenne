@@ -25,9 +25,7 @@ import org.apache.cayenne.modeler.FileClassLoadingService;
 import org.apache.cayenne.modeler.event.model.DataSourceEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
-import org.apache.cayenne.pref.CayennePreferenceEditor;
 import org.apache.cayenne.pref.ChildrenMapPreference;
-import org.apache.cayenne.pref.PreferenceEditor;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.*;
@@ -51,21 +49,15 @@ import java.util.stream.Collectors;
  */
 public class DataSourcePreferencesController extends ChildController<PreferenceDialogController> {
 
-	protected DataSourcePreferencesView view;
-	protected String dataSourceKey;
-	protected Map dataSources;
-	protected ChildrenMapPreference dataSourcePreferences;
-	protected CayennePreferenceEditor editor;
+	private final DataSourcePreferencesView view;
+	private String dataSourceKey;
+	private Map dataSources;
+	private final ChildrenMapPreference dataSourcePreferences;
 
-	public DataSourcePreferencesController(PreferenceDialogController parentController) {
-		super(parentController);
+	public DataSourcePreferencesController(PreferenceDialogController parent) {
+		super(parent);
 
 		this.view = new DataSourcePreferencesView(this);
-
-		PreferenceEditor editor = parentController.getEditor();
-		if (editor instanceof CayennePreferenceEditor) {
-			this.editor = (CayennePreferenceEditor) editor;
-		}
 
 		// init view data
 		this.dataSourcePreferences = getApplication().getCayenneProjectPreferences().getDetailObject(
@@ -232,8 +224,8 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 			}
 
 			Preferences classPathPreferences = getApplication().getPreferencesNode(ClasspathPreferencesController.class, "");
-			if (editor.getChangedPreferences().containsKey(classPathPreferences)) {
-				Map<String, String> map = editor.getChangedPreferences().get(classPathPreferences);
+			if (parent.getEditor().getChangedPreferences().containsKey(classPathPreferences)) {
+				Map<String, String> map = parent.getEditor().getChangedPreferences().get(classPathPreferences);
 
 				for (Map.Entry<String, String> en : map.entrySet()) {
 					String key = en.getKey();
@@ -243,18 +235,16 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 				}
 			}
 
-			if (editor.getRemovedPreferences().containsKey(classPathPreferences)) {
-				Map<String, String> map = editor.getRemovedPreferences().get(classPathPreferences);
+			if (parent.getEditor().getRemovedPreferences().containsKey(classPathPreferences)) {
+				Map<String, String> map = parent.getEditor().getRemovedPreferences().get(classPathPreferences);
 
 				for (Map.Entry<String, String> en : map.entrySet()) {
 					String key = en.getKey();
-					if (details.contains(key)) {
-						details.remove(key);
-					}
+                    details.remove(key);
 				}
 			}
 
-			if (details.size() > 0) {
+			if (!details.isEmpty()) {
 				classLoader.setPathFiles(details.stream().map(File::new).collect(Collectors.toList()));
 			}
 

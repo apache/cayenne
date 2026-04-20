@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.dialog.db;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
+import org.apache.cayenne.modeler.dialog.pref.GeneralPreferencesController;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialogController;
 import org.apache.cayenne.modeler.event.model.DataSourceEvent;
 import org.apache.cayenne.modeler.event.model.DataSourceListener;
@@ -105,8 +105,8 @@ public class DataSourceWizardController extends ChildController<ProjectControlle
     }
 
     private void initFavouriteDataSource() {
-        final Preferences pref = getApplication().getPreferencesNode(GeneralPreferences.class, "");
-        final String favouriteDataSource = pref.get(GeneralPreferences.FAVOURITE_DATA_SOURCE, null);
+        final Preferences pref = getApplication().getPreferencesNode(GeneralPreferencesController.class, "");
+        final String favouriteDataSource = pref.get(GeneralPreferencesController.FAVOURITE_DATA_SOURCE, null);
         if (favouriteDataSource != null && dataSources.containsKey(favouriteDataSource)) {
             setDataSourceKey(favouriteDataSource);
             view.getDataSources().setSelectedItem(dataSourceKey);
@@ -212,8 +212,8 @@ public class DataSourceWizardController extends ChildController<ProjectControlle
         view.dispose();
         removeDataSourceListener();
         if (!canceled) {
-            Preferences pref = getApplication().getPreferencesNode(GeneralPreferences.class, "");
-            pref.put(GeneralPreferences.FAVOURITE_DATA_SOURCE, dataSourceKey);
+            Preferences pref = getApplication().getPreferencesNode(GeneralPreferencesController.class, "");
+            pref.put(GeneralPreferencesController.FAVOURITE_DATA_SOURCE, dataSourceKey);
         }
     }
 

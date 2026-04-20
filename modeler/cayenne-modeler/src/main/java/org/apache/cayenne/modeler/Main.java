@@ -25,7 +25,7 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
-import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
+import org.apache.cayenne.modeler.dialog.pref.GeneralPreferencesController;
 import org.apache.cayenne.modeler.init.CayenneModelerModule;
 import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
 import org.apache.cayenne.project.ProjectModule;
@@ -112,9 +112,9 @@ public class Main {
 
     protected File initialProjectFromPreferences() {
 
-        Preferences autoLoadLastProject = Application.getInstance().getPreferencesNode(GeneralPreferences.class, "");
+        Preferences autoLoadLastProject = Application.getInstance().getPreferencesNode(GeneralPreferencesController.class, "");
         if ((autoLoadLastProject != null)
-                && autoLoadLastProject.getBoolean(GeneralPreferences.AUTO_LOAD_PROJECT_PREFERENCE, false)) {
+                && autoLoadLastProject.getBoolean(GeneralPreferencesController.AUTO_LOAD_PROJECT_PREFERENCE, false)) {
             List<File> lastFiles = ModelerPreferences.getLastProjFiles();
             if (!lastFiles.isEmpty()) {
                 return lastFiles.get(0);

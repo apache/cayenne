@@ -24,7 +24,6 @@ import org.apache.cayenne.pref.CayennePreferenceEditor;
 
 /**
  * Specialized preferences editor for CayenneModeler.
- * 
  */
 public class CayenneModelerPreferenceEditor extends CayennePreferenceEditor {
 

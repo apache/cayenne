@@ -21,8 +21,6 @@ package org.apache.cayenne.modeler.dialog.pref;
 
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.util.FileFilters;
-import org.apache.cayenne.pref.CayennePreferenceEditor;
-import org.apache.cayenne.pref.PreferenceEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,20 +44,14 @@ public class ClasspathPreferencesController extends ChildController<PreferenceDi
     private final List<String> classPathEntries;
     private final List<String> classPathKeys;
     private final ClasspathTableModel tableModel;
-    private final CayennePreferenceEditor editor;
     private final Preferences preferences;
 
     private int counter;
 
-    public ClasspathPreferencesController(PreferenceDialogController parentController) {
-        super(parentController);
+    public ClasspathPreferencesController(PreferenceDialogController parent) {
+        super(parent);
 
         this.view = new ClasspathPreferencesView();
-
-        PreferenceEditor editor = parentController.getEditor();
-        this.editor = editor instanceof CayennePreferenceEditor
-                ? (CayennePreferenceEditor) editor
-                : null;
 
         // this prefs node is shared with other dialog panels... be aware of
         // that when accessing the keys
@@ -188,12 +180,12 @@ public class ClasspathPreferencesController extends ChildController<PreferenceDi
     }
 
     public void updatePreferences(String key, String value) {
-        Map<String, String> map = editor.getChangedPreferences().get(preferences);
+        Map<String, String> map = parent.getEditor().getChangedPreferences().get(preferences);
         if (map == null) {
             map = new HashMap<>();
         }
         map.put(key, value);
-        editor.getChangedPreferences().put(preferences, map);
+        parent.getEditor().getChangedPreferences().put(preferences, map);
     }
 
     static class ClasspathTableModel extends AbstractTableModel {

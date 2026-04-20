@@ -24,7 +24,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
+import org.apache.cayenne.modeler.dialog.pref.GeneralPreferencesController;
 
 /**
  * Used to confirm deleting items in the model.
@@ -65,10 +65,10 @@ public class ConfirmRemoveDialog {
         // it's non-sensical.
         if (shouldDelete) {
             Preferences pref = Application.getInstance().getPreferencesNode(
-                    GeneralPreferences.class,
+                    GeneralPreferencesController.class,
                     "");
             pref.putBoolean(
-                    GeneralPreferences.DELETE_PROMPT_PREFERENCE,
+                    GeneralPreferencesController.DELETE_PROMPT_PREFERENCE,
                     neverPromptAgainBox.isSelected());
         }
     }
@@ -81,13 +81,13 @@ public class ConfirmRemoveDialog {
         if (allowAsking) {
 
             Preferences pref = Application.getInstance().getPreferencesNode(
-                    GeneralPreferences.class,
+                    GeneralPreferencesController.class,
                     "");
 
             // See if the user has opted not to showDialog the delete dialog.
             if ((pref == null)
                     || !pref.getBoolean(
-                            GeneralPreferences.DELETE_PROMPT_PREFERENCE,
+                            GeneralPreferencesController.DELETE_PROMPT_PREFERENCE,
                             false)) {
                 showDialog(name);
             }

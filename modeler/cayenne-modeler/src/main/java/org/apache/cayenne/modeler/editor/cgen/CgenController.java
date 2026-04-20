@@ -38,7 +38,7 @@ import org.apache.cayenne.map.event.EmbeddableListener;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.ObjEntityListener;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
+import org.apache.cayenne.modeler.dialog.pref.GeneralPreferencesController;
 import org.apache.cayenne.modeler.editor.DbImportController;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.modeler.event.model.DataMapListener;
@@ -301,9 +301,9 @@ public class CgenController extends ChildController<ProjectController> implement
             configuration.setRootPath(Utils.getRootPathForDataMap(dataMap));
             configuration.updateOutputPath(basePath);
         }
-        Preferences preferences = application.getPreferencesNode(GeneralPreferences.class, "");
+        Preferences preferences = application.getPreferencesNode(GeneralPreferencesController.class, "");
         if (preferences != null) {
-            configuration.setEncoding(preferences.get(GeneralPreferences.ENCODING_PREFERENCE, null));
+            configuration.setEncoding(preferences.get(GeneralPreferencesController.ENCODING_PREFERENCE, null));
         }
         return configuration;
     }

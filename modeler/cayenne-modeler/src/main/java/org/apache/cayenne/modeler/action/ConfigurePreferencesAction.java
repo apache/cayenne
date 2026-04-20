@@ -41,8 +41,7 @@ public class ConfigurePreferencesAction extends CayenneAction {
     }
 
     public void showPreferencesDialog() {
-        new PreferenceDialogController(getApplication().getFrameController()).startupAction(null);
-        
+        new PreferenceDialogController(getApplication().getFrameController()).showGeneralEditorAction();
     }
     
 }

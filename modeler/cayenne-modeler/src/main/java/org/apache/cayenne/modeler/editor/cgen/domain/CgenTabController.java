@@ -32,7 +32,7 @@ import org.apache.cayenne.gen.ClassGenerationActionFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
+import org.apache.cayenne.modeler.dialog.pref.GeneralPreferencesController;
 import org.apache.cayenne.modeler.editor.GeneratorsTabController;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.util.ModelerUtil;
@@ -93,9 +93,9 @@ public class CgenTabController extends GeneratorsTabController<CgenConfiguration
         CgenConfiguration cgenConfiguration = new CgenConfiguration();
         cgenConfiguration.setDataMap(dataMap);
         cgenConfiguration.updateOutputPath(Paths.get(ModelerUtil.initOutputFolder()));
-        Preferences preferences = Application.getInstance().getPreferencesNode(GeneralPreferences.class, "");
+        Preferences preferences = Application.getInstance().getPreferencesNode(GeneralPreferencesController.class, "");
         if (preferences != null) {
-            cgenConfiguration.setEncoding(preferences.get(GeneralPreferences.ENCODING_PREFERENCE, null));
+            cgenConfiguration.setEncoding(preferences.get(GeneralPreferencesController.ENCODING_PREFERENCE, null));
         }
 
         cgenConfiguration.resolveExcludedEntities();

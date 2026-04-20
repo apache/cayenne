@@ -22,11 +22,11 @@ package org.apache.cayenne.pref;
 /**
  * Defines an API of a preferences editor used for editing preferences without affecting
  * the rest of the application until the editing is finished.
- * 
+ *
  */
 public interface PreferenceEditor {
 
-    public void save();
+    void save();
 
-    public void revert();
+    void revert();
 }

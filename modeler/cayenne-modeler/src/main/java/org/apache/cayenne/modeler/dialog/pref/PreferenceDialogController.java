@@ -21,56 +21,56 @@ package org.apache.cayenne.modeler.dialog.pref;
 
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.mvc.RootController;
-import org.apache.cayenne.pref.PreferenceEditor;
 
-import javax.swing.JDialog;
-import javax.swing.JList;
-import javax.swing.SwingUtilities;
-import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.Frame;
-import java.awt.Window;
-import java.util.HashMap;
-import java.util.Map;
+import javax.swing.*;
+import java.awt.*;
 
 public class PreferenceDialogController extends ChildController<RootController> {
 
-    public static final String GENERAL_KEY = "General";
-    public static final String DATA_SOURCES_KEY = "Local DataSources";
-    public static final String CLASS_PATH_KEY = "ClassPath";
+    private static final String GENERAL_KEY = "General";
+    private static final String DATA_SOURCES_KEY = "Local DataSources";
+    private static final String CLASS_PATH_KEY = "ClassPath";
 
     private static final String[] preferenceMenus = new String[]{
             GENERAL_KEY, DATA_SOURCES_KEY, CLASS_PATH_KEY
     };
 
-    protected PreferenceDialogView view;
-    protected Map<String, RootController> detailControllers;
-    protected PreferenceEditor editor;
+    private final PreferenceDialogView view;
+    private final CayenneModelerPreferenceEditor editor;
+
+    private final GeneralPreferencesController generalPrefsController;
+    private final DataSourcePreferencesController dataSourcePrefsController;
+    private final ClasspathPreferencesController classpathPrefsController;
 
     public PreferenceDialogController(final RootController parent) {
         super(parent);
 
-        final Window parentView = parent.getView() instanceof Window
+        Window parentView = parent.getView() instanceof Window
                 ? (Window) parent.getView()
                 : SwingUtilities.getWindowAncestor(parent.getView());
+
         this.view = (parentView instanceof Dialog)
                 ? new PreferenceDialogView((Dialog) parentView)
                 : new PreferenceDialogView((Frame) parentView);
-        this.detailControllers = new HashMap<>();
 
-        // editor must be configured before startup for "showDetailViewAction()" to work
+
         this.editor = new CayenneModelerPreferenceEditor(application);
 
-        initBindings();
-    }
-
-    protected void initBindings() {
-        final JList<String> list = view.getList();
+        JList<String> list = view.getList();
         list.setListData(preferenceMenus);
         list.addListSelectionListener(e -> updateSelection());
 
         view.getCancelButton().addActionListener(e -> cancelAction());
         view.getSaveButton().addActionListener(e -> savePreferencesAction());
+
+        this.generalPrefsController = new GeneralPreferencesController(this);
+        view.getDetailPanel().add(generalPrefsController.getView(), GENERAL_KEY);
+
+        this.dataSourcePrefsController = new DataSourcePreferencesController(this);
+        view.getDetailPanel().add(dataSourcePrefsController.getView(), DATA_SOURCES_KEY);
+
+        this.classpathPrefsController = new ClasspathPreferencesController(this);
+        view.getDetailPanel().add(classpathPrefsController.getView(), CLASS_PATH_KEY);
     }
 
     public void updateSelection() {
@@ -80,73 +80,43 @@ public class PreferenceDialogController extends ChildController<RootController> 
         }
     }
 
-    public void cancelAction() {
+    private void cancelAction() {
         editor.revert();
         view.dispose();
     }
 
-    public void savePreferencesAction() {
+    private void savePreferencesAction() {
         editor.save();
         view.dispose();
     }
 
-    /**
-     * Configures preferences dialog to display an editor for a local DataSource with
-     * specified name.
-     */
-    public void showDataSourceEditorAction(final Object dataSourceKey) {
-        configure();
-
-        // this will install needed controller
-        view.getDetailLayout().show(view.getDetailPanel(), DATA_SOURCES_KEY);
-
-        final DataSourcePreferencesController controller = (DataSourcePreferencesController) detailControllers
-                .get(DATA_SOURCES_KEY);
-        controller.editDataSourceAction(dataSourceKey);
-        view.setVisible(true);
+    public void showGeneralEditorAction() {
+        doShow(GENERAL_KEY, generalPrefsController);
     }
 
-    /**
-     * Configures preferences dialog to display an editor for a local DataSource with
-     * specified name.
-     */
     public void showClassPathEditorAction() {
-        configure();
-
-        // this will install needed controller
-        view.getDetailLayout().show(view.getDetailPanel(), CLASS_PATH_KEY);
-
-        ClasspathPreferencesController controller = (ClasspathPreferencesController) detailControllers
-                .get(CLASS_PATH_KEY);
-        controller.getView().setEnabled(true);
-        view.setVisible(true);
+        doShow(CLASS_PATH_KEY, classpathPrefsController);
     }
 
-    public void startupAction(final String key) {
-        configure();
-        view.getList().setSelectedValue(key == null ? GENERAL_KEY : key, true);
-        view.setVisible(true);
+    public void showDataSourceEditorAction(Object dataSourceKey) {
+        dataSourcePrefsController.editDataSourceAction(dataSourceKey);
+        doShow(DATA_SOURCES_KEY, dataSourcePrefsController);
     }
 
-    protected void configure() {
-        // init known panels
-        registerPanel(GENERAL_KEY, new GeneralPreferences(this));
-        registerPanel(DATA_SOURCES_KEY, new DataSourcePreferencesController(this));
-        registerPanel(CLASS_PATH_KEY, new ClasspathPreferencesController(this));
+    private void doShow(String cardKey, ChildController<?> childController) {
         view.getDetailLayout().show(view.getDetailPanel(), GENERAL_KEY);
         view.pack();
 
-        // show
         centerView();
         makeCloseableOnEscape();
 
         view.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         view.setModalityType(Dialog.ModalityType.MODELESS);
-    }
 
-    protected void registerPanel(final String name, final RootController panelController) {
-        detailControllers.put(name, panelController);
-        view.getDetailPanel().add(panelController.getView(), name);
+        view.getDetailLayout().show(view.getDetailPanel(), cardKey);
+        view.getList().setSelectedValue(cardKey, true);
+        childController.getView().setEnabled(true);
+        view.setVisible(true);
     }
 
     @Override
@@ -154,7 +124,7 @@ public class PreferenceDialogController extends ChildController<RootController> 
         return view;
     }
 
-    public PreferenceEditor getEditor() {
+    public CayenneModelerPreferenceEditor getEditor() {
         return editor;
     }
 }
