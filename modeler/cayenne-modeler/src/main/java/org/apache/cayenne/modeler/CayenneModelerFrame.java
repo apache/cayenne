@@ -75,9 +75,8 @@ public class CayenneModelerFrame extends JFrame {
         splitPane.getInsets().right = 5;
         splitPane.setResizeWeight(0.7);
 
-        //  Moving this to try-catch block per CAY-940. Exception will be stack-traced
         try {
-            ComponentGeometry geometry = new ComponentGeometry(this.getClass(), "splitPane/divider");
+            ComponentGeometry geometry = new ComponentGeometry(this.getClass(), getClass().getSimpleName() + "/splitPane/divider");
             geometry.bindIntProperty(splitPane, JSplitPane.DIVIDER_LOCATION_PROPERTY, 400);
         } catch (Exception ex) {
             LoggerFactory.getLogger(getClass()).error("Cannot bind divider property", ex);

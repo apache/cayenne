@@ -153,7 +153,7 @@ public class TemplateEditorView extends JFrame {
     private void bindGeometry() {
         ComponentGeometry geometry = new ComponentGeometry(this.getClass(), "split/divider");
         geometry.bindIntProperty(split, JSplitPane.DIVIDER_LOCATION_PROPERTY, 600);
-        geometry.bind(this, 1200, 700, 0);
+        geometry.resetAndTrackGeometry(this, 1200, 700, 0);
     }
 
     private void mapVelocityTokenMaker() {

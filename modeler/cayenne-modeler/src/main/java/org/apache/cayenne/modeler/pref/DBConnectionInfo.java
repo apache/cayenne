@@ -56,13 +56,10 @@ public class DBConnectionInfo extends CayennePreference {
 	private String url;
 	private String userName;
 
-	private Preferences dbConnectionInfoPreferences;
-
 	private boolean allowDataSourceFailure;
 
 	public DBConnectionInfo() {
-		dbConnectionInfoPreferences = getCayennePreference().node(DB_CONNECTION_INFO);
-		setCurrentPreference(dbConnectionInfoPreferences);
+		this.currentPreference = getCayennePreference().node(DB_CONNECTION_INFO);
 	};
 
 	public DBConnectionInfo(final String nameNode, final boolean initFromPreferences) {
@@ -78,7 +75,7 @@ public class DBConnectionInfo extends CayennePreference {
 		if (getNodeName() == null) {
 			return super.getCurrentPreference();
 		}
-		return dbConnectionInfoPreferences.node(getNodeName());
+		return currentPreference.node(getNodeName());
 	}
 
 	@Override
@@ -174,14 +171,6 @@ public class DBConnectionInfo extends CayennePreference {
 
 	public void setUserName(final String userName) {
 		this.userName = userName;
-	}
-
-	public Preferences getDbConnectionInfoPreferences() {
-		return dbConnectionInfoPreferences;
-	}
-
-	public void setDbConnectionInfoPreferences(final Preferences dbConnectionInfoPreferences) {
-		this.dbConnectionInfoPreferences = dbConnectionInfoPreferences;
 	}
 
 	/**

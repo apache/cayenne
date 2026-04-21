@@ -24,14 +24,10 @@ public class CayennePreference implements Preference {
 
     private Preferences rootPreference;
     private Preferences cayennePreference;
-    private Preferences currentPreference;
+    protected Preferences currentPreference;
 
     public Preferences getCurrentPreference() {
         return currentPreference;
-    }
-
-    public void setCurrentPreference(Preferences currentPreference) {
-        this.currentPreference = currentPreference;
     }
 
     public Preferences getRootPreference() {
@@ -51,10 +47,6 @@ public class CayennePreference implements Preference {
     public Preferences getNode(Class<?> aClass, String path) {
         Preferences pkgNode = Preferences.userNodeForPackage(aClass);
         return path == null || path.isEmpty() ? pkgNode : pkgNode.node(path);
-    }
-
-    public void setCurrentNodeForPreference(Class<?> aClass, String path) {
-        currentPreference = getNode(aClass, path);
     }
 
     public void setObject(CayennePreference object) {

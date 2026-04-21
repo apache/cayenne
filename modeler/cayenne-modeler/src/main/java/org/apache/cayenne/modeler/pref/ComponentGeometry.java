@@ -26,26 +26,24 @@ import org.apache.cayenne.reflect.PropertyUtils;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.prefs.Preferences;
 
 public class ComponentGeometry extends CayennePreference {
 
-    public static final String GEOMETRY_PREF_KEY = "geometry";
-    
-    public static final String HEIGHT_PROPERTY = "height";
-    public static final String WIDTH_PROPERTY = "width";
-    public static final String X_PROPERTY = "x";
-    public static final String Y_PROPERTY = "y";
-    
+    private static final String GEOMETRY_PREF_KEY = "geometry";
+
+    private static final String HEIGHT_PROPERTY = "height";
+    private static final String WIDTH_PROPERTY = "width";
+    private static final String X_PROPERTY = "x";
+    private static final String Y_PROPERTY = "y";
+
     public ComponentGeometry(Class<?> className, String path) {
-        setCurrentNodeForPreference(className, path);
-    };
-    
-    public Preferences getPreference() {
+        this.currentPreference = getNode(className, path);
+    }
+
+    private Preferences getPreference() {
         if (getCurrentPreference() == null) {
-            setCurrentNodeForPreference(this.getClass(), GEOMETRY_PREF_KEY);
+            this.currentPreference = getNode(this.getClass(), GEOMETRY_PREF_KEY);
         }
         return getCurrentPreference();
     }
@@ -54,88 +52,15 @@ public class ComponentGeometry extends CayennePreference {
      * Binds this preference object to synchronize its state with a given component,
      * allowing to specify an initial offset compared to the stored position.
      */
-    public void bind(
-            final Window window,
-            int initialWidth,
-            int initialHeight,
-            int maxOffset) {
+    public void resetAndTrackGeometry(Component c, int initialWidth, int initialHeight, int maxOffset) {
 
-        updateSize(window, initialWidth, initialHeight);
-        updateLocation(window, maxOffset);
-
-        window.addComponentListener(new ComponentAdapter() {
-
-            @Override
-            public void componentResized(ComponentEvent e) {
-                setWidth(window.getWidth());
-                setHeight(window.getHeight());
-            }
-
-            @Override
-            public void componentMoved(ComponentEvent e) {
-                setX(window.getX());
-                setY(window.getY());
-            }
-        });
-    }
-
-    /**
-     * Binds this preference object to synchronize its state with a given component,
-     * allowing to specify an initial offset compared to the stored position.
-     */
-    public void bindSize(final Window window, int initialWidth, int initialHeight) {
-        updateSize(window, initialWidth, initialHeight);
-
-        window.addComponentListener(new ComponentAdapter() {
-
-            @Override
-            public void componentResized(ComponentEvent e) {
-                setWidth(window.getWidth());
-                setHeight(window.getHeight());
-            }
-        });
-    }
-
-    /**
-     * Binds this preference object to synchronize its state with a given component
-     * property.
-     */
-    public void bindIntProperty(
-            final Component component,
-            final String property,
-            int defaultValue) {
-
-        updateIntProperty(component, property, defaultValue);
-
-        component.addPropertyChangeListener(property, new PropertyChangeListener() {
-
-            public void propertyChange(PropertyChangeEvent e) {
-                Object value = e.getNewValue();
-                getPreference().put(property, value != null ? value.toString() : null);
-            }
-        });
-    }
-
-    void updateIntProperty(Component c, String property, int defaultValue) {
-        int i = getPreference().getInt(property, defaultValue);
-        try {
-            PropertyUtils.setProperty(c, property, i);
-        }
-        catch (Throwable th) {
-            throw new PreferenceException("Error setting property: " + property, th);
-        }
-    }
-
-    void updateSize(Component c, int initialWidth, int initialHeight) {
         int w = getWidth(initialWidth);
         int h = getHeight(initialHeight);
-        
+
         if (w > 0 && h > 0) {
             c.setSize(w, h);
         }
-    }
 
-    void updateLocation(Component c, int maxOffset) {
         if (maxOffset != 0) {
             int xOffset = (int) (Math.random() * maxOffset);
             int yOffset = (int) (Math.random() * maxOffset);
@@ -149,50 +74,82 @@ public class ComponentGeometry extends CayennePreference {
         if (x > 0 && y > 0) {
             c.setLocation(x, y);
         }
+
+        c.addComponentListener(new ComponentAdapter() {
+
+            @Override
+            public void componentResized(ComponentEvent e) {
+                setWidth(c.getWidth());
+                setHeight(c.getHeight());
+            }
+
+            @Override
+            public void componentMoved(ComponentEvent e) {
+                setX(c.getX());
+                setY(c.getY());
+            }
+        });
     }
 
-    public void changeX(int xOffset) {
+    /**
+     * Binds this preference object to synchronize its state with a given component property.
+     */
+    public void bindIntProperty(Component component, String property, int defaultValue) {
+        int i = getPreference().getInt(property, defaultValue);
+        try {
+            PropertyUtils.setProperty(component, property, i);
+        } catch (Throwable th) {
+            throw new PreferenceException("Error setting property: " + property, th);
+        }
+
+        component.addPropertyChangeListener(property, e -> {
+            Object value = e.getNewValue();
+            getPreference().put(property, value != null ? value.toString() : null);
+        });
+    }
+
+    private void changeX(int xOffset) {
         if (xOffset != 0) {
             setX(getX(0) + xOffset);
         }
     }
 
-    public void changeY(int yOffset) {
+    private void changeY(int yOffset) {
         if (yOffset != 0) {
             setY(getY(0) + yOffset);
         }
     }
 
     private void setY(Integer y) {
-            getPreference().putInt(Y_PROPERTY, y);
+        getPreference().putInt(Y_PROPERTY, y);
     }
-    
+
     private void setX(Integer x) {
         getPreference().putInt(X_PROPERTY, x);
     }
-    
+
     private void setHeight(Integer height) {
         getPreference().putInt(HEIGHT_PROPERTY, height);
     }
-         
-  
+
+
     private void setWidth(Integer width) {
         getPreference().putInt(WIDTH_PROPERTY, width);
     }
-    
-    public int getWidth(int defaultValue) {
+
+    private int getWidth(int defaultValue) {
         return getPreference().getInt(WIDTH_PROPERTY, defaultValue);
     }
-         
-    public int getHeight(int defaultValue) {
+
+    private int getHeight(int defaultValue) {
         return getPreference().getInt(HEIGHT_PROPERTY, defaultValue);
     }
 
-    public int getX(int defaultValue) {
+    private int getX(int defaultValue) {
         return getPreference().getInt(X_PROPERTY, defaultValue);
     }
- 
-    public int getY(int defaultValue) {
+
+    private int getY(int defaultValue) {
         return getPreference().getInt(Y_PROPERTY, defaultValue);
     }
 }

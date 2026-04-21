@@ -18,14 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.pref;
 
+import org.apache.cayenne.CayenneRuntimeException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
-
-import org.apache.cayenne.CayenneRuntimeException;
 
 public class ChildrenMapPreference extends PreferenceDecorator {
 
@@ -36,12 +35,6 @@ public class ChildrenMapPreference extends PreferenceDecorator {
 		super(delegate);
 		this.children = new HashMap<>();
 		this.removeObject = new ArrayList<>();
-	}
-
-	public ChildrenMapPreference(CayennePreference delegate, Preferences preferences) {
-		super(delegate);
-		delegate.setCurrentPreference(preferences);
-		this.children = new HashMap<>();
 	}
 
 	public void initChildrenPreferences() {

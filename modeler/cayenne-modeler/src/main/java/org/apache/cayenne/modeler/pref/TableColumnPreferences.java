@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.pref;
 
-import java.util.Map;
-import java.util.prefs.Preferences;
+import org.apache.cayenne.modeler.util.CayenneTable;
+import org.apache.cayenne.pref.CayennePreference;
 
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.TableColumnModelEvent;
@@ -29,9 +29,8 @@ import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
-
-import org.apache.cayenne.modeler.util.CayenneTable;
-import org.apache.cayenne.pref.CayennePreference;
+import java.util.Map;
+import java.util.prefs.Preferences;
 
 public class TableColumnPreferences extends CayennePreference {
 
@@ -46,7 +45,7 @@ public class TableColumnPreferences extends CayennePreference {
     private boolean defaultSortOrder;
     private int[] currentWidth;
 
-    private TableColumnModelListener listener = new TableColumnModelListener() {
+    private final TableColumnModelListener listener = new TableColumnModelListener() {
 
         public void columnAdded(TableColumnModelEvent e) {
         }
@@ -75,13 +74,13 @@ public class TableColumnPreferences extends CayennePreference {
         }
     };
 
-    public TableColumnPreferences(Class className, String path) {
-        setCurrentNodeForPreference(className, path);
+    public TableColumnPreferences(Class<?> aClass, String path) {
+        this.currentPreference = getNode(aClass, path);
     }
 
-    public Preferences getPreference() {
+    private Preferences getPreference() {
         if (getCurrentPreference() == null) {
-            setCurrentNodeForPreference(this.getClass(), TABLE_COLUMN_PREF_KEY);
+            this.currentPreference = getNode(getClass(), TABLE_COLUMN_PREF_KEY);
         }
         return getCurrentPreference();
     }

@@ -19,7 +19,6 @@
 package org.apache.cayenne.pref;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -34,11 +33,11 @@ public abstract class RenamedPreferences extends CayennePreference {
     private static List<Preferences> oldNode;
 
     public RenamedPreferences(Preferences pref) {
-        setCurrentPreference(pref);
+        this.currentPreference = pref;
     }
 
     public void copyPreferences(String newName) {
-        setCurrentPreference(copyPreferences(newName, getCurrentPreference()));
+        this.currentPreference = copyPreferences(newName, getCurrentPreference());
     }
 
     public static Preferences copyPreferences(String newName, Preferences oldPref) {
@@ -56,10 +55,9 @@ public abstract class RenamedPreferences extends CayennePreference {
         try {
             String[] children = pref.childrenNames();
 
-            ArrayList<Preferences> prefChild = new ArrayList<Preferences>();
+            ArrayList<Preferences> prefChild = new ArrayList<>();
 
-            for (int j = 0; j < children.length; j++) {
-                String child = children[j];
+            for (String child : children) {
                 // get old preference
                 Preferences childNode = pref.node(child);
 
@@ -70,8 +68,8 @@ public abstract class RenamedPreferences extends CayennePreference {
                     // copy all preferences in this node
                     String[] names = childNode.keys();
                     Preferences newPref = Preferences.userRoot().node(path);
-                    for (int i = 0; i < names.length; i++) {
-                        newPref.put(names[i], childNode.get(names[i], ""));
+                    for (String name : names) {
+                        newPref.put(name, childNode.get(name, ""));
                     }
                     prefChild.add(newPref);
                 }
@@ -86,16 +84,12 @@ public abstract class RenamedPreferences extends CayennePreference {
 
     public static void removeOldPreferences() {
         if (oldNode != null) {
-            Iterator<Preferences> it = oldNode.iterator();
 
-            while (it.hasNext()) {
-                Preferences pref = it.next();
+            for (Preferences pref : oldNode) {
                 try {
                     pref.removeNode();
-                }
-                catch (BackingStoreException e) {
-                }
-                catch (IllegalStateException e) {
+                } catch (BackingStoreException e) {
+                } catch (IllegalStateException e) {
                     // do nothing
                 }
             }
@@ -106,17 +100,12 @@ public abstract class RenamedPreferences extends CayennePreference {
 
     public static void removeNewPreferences() {
         if (newNode != null) {
-            Iterator<Preferences> it = newNode.iterator();
 
-            while (it.hasNext()) {
-                Preferences pref = it.next();
-
+            for (Preferences pref : newNode) {
                 try {
                     pref.removeNode();
-                }
-                catch (BackingStoreException e) {
-                }
-                catch (IllegalStateException e) {
+                } catch (BackingStoreException e) {
+                } catch (IllegalStateException e) {
                     // do nothing
                 }
             }
@@ -138,8 +127,8 @@ public abstract class RenamedPreferences extends CayennePreference {
             // copy all preferences in this node
             String[] names = oldPref.keys();
 
-            for (int i = 0; i < names.length; i++) {
-                newPref.put(names[i], oldPref.get(names[i], ""));
+            for (String name : names) {
+                newPref.put(name, oldPref.get(name, ""));
             }
 
             String oldPath = oldPref.absolutePath();
@@ -151,13 +140,11 @@ public abstract class RenamedPreferences extends CayennePreference {
                     oldPath,
                     newPath);
 
-            while (childrenOldPref.size() > 0) {
+            while (!childrenOldPref.isEmpty()) {
 
-                ArrayList<Preferences> childrenPrefTemp = new ArrayList<Preferences>();
+                ArrayList<Preferences> childrenPrefTemp = new ArrayList<>();
 
-                Iterator<Preferences> it = childrenOldPref.iterator();
-                while (it.hasNext()) {
-                    Preferences child = it.next();
+                for (Preferences child : childrenOldPref) {
                     ArrayList<Preferences> childArray = childrenCopy(
                             child,
                             oldPath,
@@ -171,10 +158,10 @@ public abstract class RenamedPreferences extends CayennePreference {
             }
 
             if (newNode == null) {
-                newNode = new ArrayList<Preferences>();
+                newNode = new ArrayList<>();
             }
             if (oldNode == null) {
-                oldNode = new ArrayList<Preferences>();
+                oldNode = new ArrayList<>();
             }
 
             if (addToPreferenceList) {
@@ -195,11 +182,9 @@ public abstract class RenamedPreferences extends CayennePreference {
 
     private static boolean equalsPath(List<Preferences> listPref, Preferences pref) {
         if (listPref != null) {
-            Iterator<Preferences> it = listPref.iterator();
-            while (it.hasNext()) {
-                Preferences next = it.next();
-                String pathInList = (String) next.absolutePath();
-                String path = (String) pref.absolutePath();
+            for (Preferences next : listPref) {
+                String pathInList = next.absolutePath();
+                String path = pref.absolutePath();
                 if (pathInList.equals(path)) {
                     return true;
                 }

@@ -218,8 +218,8 @@ public class EditorPanel extends JPanel {
 
         // Moving this to try-catch block per CAY-940. Exception will be stack-traced
         try {
-            ComponentGeometry geometry = new ComponentGeometry(this.getClass(), "splitPane/divider");
-            geometry.bindIntProperty(splitPane, JSplitPane.DIVIDER_LOCATION_PROPERTY, 150);
+            ComponentGeometry geometry = new ComponentGeometry(this.getClass(), getClass().getSimpleName() + "/splitPane/divider");
+            geometry.bindIntProperty(splitPane, JSplitPane.DIVIDER_LOCATION_PROPERTY, 300);
         } catch (Exception ex) {
             LoggerFactory.getLogger(getClass()).error("Cannot bind divider property", ex);
         }

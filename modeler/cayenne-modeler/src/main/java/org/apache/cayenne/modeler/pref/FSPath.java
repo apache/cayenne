@@ -19,26 +19,25 @@
 
 package org.apache.cayenne.modeler.pref;
 
+import org.apache.cayenne.pref.CayennePreference;
+
+import javax.swing.*;
 import java.io.File;
 import java.util.prefs.Preferences;
-
-import javax.swing.JFileChooser;
-
-import org.apache.cayenne.pref.CayennePreference;
 
 
 /**
  * Represents a preferred directory or file.
- * 
+ *
  */
-public class FSPath extends CayennePreference { 
+public class FSPath extends CayennePreference {
 
     public static final String PATH_PROPERTY = "path";
-    
+
     public FSPath(Preferences preferences) {
-        setCurrentPreference(preferences);
+        this.currentPreference = preferences;
     }
-    
+
     public void updateFromChooser(JFileChooser chooser) {
         File file = chooser.getSelectedFile();
         if (file != null) {
@@ -57,8 +56,7 @@ public class FSPath extends CayennePreference {
 
         if (file.isFile()) {
             setPath(file.getParentFile().getAbsolutePath());
-        }
-        else {
+        } else {
             setPath(file.getAbsolutePath());
         }
     }
@@ -84,14 +82,15 @@ public class FSPath extends CayennePreference {
 
         return null;
     }
-    
+
     public void setPath(String path) {
         getCurrentPreference().put(PATH_PROPERTY, path);
     }
+
     public String getPath() {
         return getCurrentPreference().get(PATH_PROPERTY, null);
     }
-    
+
     public String getKey() {
         return getCurrentPreference().name();
     }

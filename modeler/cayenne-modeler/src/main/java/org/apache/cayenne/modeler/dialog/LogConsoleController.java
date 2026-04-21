@@ -135,8 +135,7 @@ public class LogConsoleController extends RootController {
 
             if (logWindow == null) {
                 logWindow = new LogConsoleWindow(this);
-                ComponentGeometry geometry = new ComponentGeometry(getClass(), null);
-                geometry.bind(logWindow, 600, 300, 0);
+                new ComponentGeometry(getClass(), null).resetAndTrackGeometry(logWindow, 600, 300, 0);
             }
 
             logWindow.setContentPane(view);
@@ -217,13 +216,6 @@ public class LogConsoleController extends RootController {
      */
     public boolean getConsoleProperty(String prop) {
         return Application.getInstance().getPreferencesNode(getClass(), null).getBoolean(prop, false);
-    }
-
-    /**
-     * Appends a message to the console.
-     */
-    public void appendMessage(String level, String message, AttributeSet style) {
-        appendMessage(level, message, null, style);
     }
 
     /**
