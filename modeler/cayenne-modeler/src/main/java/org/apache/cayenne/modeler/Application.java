@@ -48,8 +48,6 @@ import java.util.stream.Collectors;
  * <ul>
  * <li>cayenne.modeler.application.name - name of the application, 'CayenneModeler' is
  * default. Used to locate preferences domain among other things.</li>
- * <li>cayenne.modeler.pref.version - a version of the preferences DB schema. Default is
- * "1.1".</li>
  * </ul>
  */
 public class Application {
@@ -85,7 +83,6 @@ public class Application {
         Application.instance = instance;
     }
 
-    // TODO: must be injectable directly in components
     public static WidgetFactory getWidgetFactory() {
         return instance.getInjector().getInstance(WidgetFactory.class);
     }
@@ -93,6 +90,12 @@ public class Application {
     // static methods that should probably go away eventually...
     public static CayenneModelerFrame getFrame() {
         return (CayenneModelerFrame) getInstance().getFrameController().getView();
+    }
+
+    public Application() {
+        String configuredName = System.getProperty(APPLICATION_NAME_PROPERTY);
+        this.name = (configuredName != null) ? configuredName : DEFAULT_APPLICATION_NAME;
+        this.cayennePreference = new CayennePreference();
     }
 
     public String getNewProjectTemporaryName() {
@@ -107,12 +110,6 @@ public class Application {
         }
 
         return newProjectTemporaryName;
-    }
-
-    public Application() {
-        String configuredName = System.getProperty(APPLICATION_NAME_PROPERTY);
-        this.name = (configuredName != null) ? configuredName : DEFAULT_APPLICATION_NAME;
-        this.cayennePreference = new CayennePreference();
     }
 
     public Injector getInjector() {

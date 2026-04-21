@@ -48,15 +48,13 @@ public class CayennePreference implements Preference {
         return cayennePreference;
     }
 
-    public Preferences getNode(Class className, String path) {
-        if (path == null || path.length() == 0) {
-            return Preferences.userNodeForPackage(className);
-        }
-        return Preferences.userNodeForPackage(className).node(path);
+    public Preferences getNode(Class<?> aClass, String path) {
+        Preferences pkgNode = Preferences.userNodeForPackage(aClass);
+        return path == null || path.isEmpty() ? pkgNode : pkgNode.node(path);
     }
 
-    public void setCurrentNodeForPreference(Class className, String path) {
-        currentPreference = getNode(className, path);
+    public void setCurrentNodeForPreference(Class<?> aClass, String path) {
+        currentPreference = getNode(aClass, path);
     }
 
     public void setObject(CayennePreference object) {
