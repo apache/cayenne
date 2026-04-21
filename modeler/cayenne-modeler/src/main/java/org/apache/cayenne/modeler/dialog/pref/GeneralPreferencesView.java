@@ -60,6 +60,7 @@ public class GeneralPreferencesView extends JPanel {
         this.add(builder.getPanel(), BorderLayout.CENTER);
     }
 
+    @Override
     public void setEnabled(boolean b) {
         super.setEnabled(b);
 
@@ -67,10 +68,6 @@ public class GeneralPreferencesView extends JPanel {
         encodingSelectorLabel.setEnabled(b);
         autoLoadProjectBox.setEnabled(b);
         deletePromptBox.setEnabled(b);
-    }
-
-    public EncodingPreferencesView getEncodingSelector() {
-        return encodingSelector;
     }
 
     public JCheckBox getAutoLoadProject() {
