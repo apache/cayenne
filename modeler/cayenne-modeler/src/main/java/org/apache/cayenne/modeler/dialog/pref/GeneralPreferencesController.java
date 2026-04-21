@@ -93,20 +93,20 @@ public class GeneralPreferencesController extends ChildController<PreferenceDial
     }
 
     public void addChangedBooleanPreferences(String key, boolean value) {
-        Map<String, Boolean> map = parent.getEditor().getChangedBooleanPreferences().get(preferences);
+        Map<String, Boolean> map = parent.getContext().getChangedBooleanPreferences().get(preferences);
         if (map == null) {
             map = new HashMap<>();
         }
         map.put(key, value);
-        parent.getEditor().getChangedBooleanPreferences().put(preferences, map);
+        parent.getContext().getChangedBooleanPreferences().put(preferences, map);
     }
 
     public void addChangedPreferences(String key, String value) {
-        Map<String, String> map = parent.getEditor().getChangedPreferences().get(preferences);
+        Map<String, String> map = parent.getContext().getChangedPreferences().get(preferences);
         if (map == null) {
             map = new HashMap<>();
         }
         map.put(key, value);
-        parent.getEditor().getChangedPreferences().put(preferences, map);
+        parent.getContext().getChangedPreferences().put(preferences, map);
     }
 }

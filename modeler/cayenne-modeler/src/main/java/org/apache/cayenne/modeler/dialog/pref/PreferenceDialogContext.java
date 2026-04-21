@@ -17,51 +17,33 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.pref;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
+package org.apache.cayenne.modeler.dialog.pref;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.cayenne.pref.CayenneProjectPreferences;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.prefs.Preferences;
 
 /**
- * An editor for modifying CayennePreferenceService.
- * 
+ * Holds preferences editing state.
  */
-public abstract class CayennePreferenceEditor implements PreferenceEditor {
+public class PreferenceDialogContext {
 
-    protected boolean restartRequired;
-    protected CayenneProjectPreferences cayenneProjectPreferences;
-    private Map<Preferences, Map<String, String>> changedPreferences;
-    private Map<Preferences, Map<String, String>> removedPreferences;
-    private Map<Preferences, Map<String, Boolean>> changedBooleanPreferences;
-    private List<Preferences> removedNode;
-    private List<Preferences> addedNode;
+    private final Application application;
+    private final CayenneProjectPreferences cayenneProjectPreferences;
+    private final Map<Preferences, Map<String, String>> changedPreferences;
+    private final Map<Preferences, Map<String, String>> removedPreferences;
+    private final Map<Preferences, Map<String, Boolean>> changedBooleanPreferences;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CayennePreferenceEditor.class);
-
-    public CayennePreferenceEditor(CayenneProjectPreferences cayenneProjectPreferences) {
-        this.cayenneProjectPreferences = cayenneProjectPreferences;
+    public PreferenceDialogContext(Application application) {
+        this.application = application;
+        this.cayenneProjectPreferences = application.getCayenneProjectPreferences();
         this.changedPreferences = new HashMap<>();
         this.removedPreferences = new HashMap<>();
         this.changedBooleanPreferences = new HashMap<>();
-        this.removedNode = new ArrayList<>();
-        this.addedNode = new ArrayList<>();
-    }
-
-    public List<Preferences> getAddedNode() {
-        return addedNode;
-    }
-
-    public List<Preferences> getRemovedNode() {
-        return removedNode;
     }
 
     public Map<Preferences, Map<String, String>> getRemovedPreferences() {
@@ -76,20 +58,8 @@ public abstract class CayennePreferenceEditor implements PreferenceEditor {
         return changedBooleanPreferences;
     }
 
-    protected boolean isRestartRequired() {
-        return restartRequired;
-    }
-
-    protected void setRestartRequired(boolean restartOnSave) {
-        this.restartRequired = restartOnSave;
-    }
-
     public void save() {
         cayenneProjectPreferences.getDetailObject(DBConnectionInfo.class).save();
-
-        if (restartRequired) {
-            restart();
-        }
 
         // update boolean preferences
         for (Map.Entry<Preferences, Map<String, Boolean>> entry : changedBooleanPreferences.entrySet()) {
@@ -115,30 +85,10 @@ public abstract class CayennePreferenceEditor implements PreferenceEditor {
             }
         }
 
-        // remove preferences node
-        for (Preferences pref : removedNode) {
-            try {
-                pref.removeNode();
-            } catch (BackingStoreException e) {
-                LOGGER.warn("Error removing preferences");
-            }
-        }
-
-        Application.getInstance().initClassLoader();
+        application.initClassLoader();
     }
 
     public void revert() {
-        // remove added preferences node
-        for (Preferences pref : addedNode) {
-            try {
-                pref.removeNode();
-            } catch (BackingStoreException ignored) {
-            }
-        }
-
         cayenneProjectPreferences.getDetailObject(DBConnectionInfo.class).cancel();
-        restartRequired = false;
     }
-
-    protected abstract void restart();
 }

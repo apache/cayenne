@@ -36,7 +36,7 @@ public class PreferenceDialogController extends ChildController<RootController> 
     };
 
     private final PreferenceDialogView view;
-    private final CayenneModelerPreferenceEditor editor;
+    private final PreferenceDialogContext context;
 
     private final GeneralPreferencesController generalPrefsController;
     private final DataSourcePreferencesController dataSourcePrefsController;
@@ -54,7 +54,7 @@ public class PreferenceDialogController extends ChildController<RootController> 
                 : new PreferenceDialogView((Frame) parentView);
 
 
-        this.editor = new CayenneModelerPreferenceEditor(application);
+        this.context = new PreferenceDialogContext(application);
 
         JList<String> list = view.getList();
         list.setListData(preferenceMenus);
@@ -81,12 +81,12 @@ public class PreferenceDialogController extends ChildController<RootController> 
     }
 
     private void cancelAction() {
-        editor.revert();
+        context.revert();
         view.dispose();
     }
 
     private void savePreferencesAction() {
-        editor.save();
+        context.save();
         view.dispose();
     }
 
@@ -124,7 +124,7 @@ public class PreferenceDialogController extends ChildController<RootController> 
         return view;
     }
 
-    public CayenneModelerPreferenceEditor getEditor() {
-        return editor;
+    public PreferenceDialogContext getContext() {
+        return context;
     }
 }

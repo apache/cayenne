@@ -224,8 +224,8 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 			}
 
 			Preferences classPathPreferences = getApplication().getPreferencesNode(ClasspathPreferencesController.class, "");
-			if (parent.getEditor().getChangedPreferences().containsKey(classPathPreferences)) {
-				Map<String, String> map = parent.getEditor().getChangedPreferences().get(classPathPreferences);
+			if (parent.getContext().getChangedPreferences().containsKey(classPathPreferences)) {
+				Map<String, String> map = parent.getContext().getChangedPreferences().get(classPathPreferences);
 
 				for (Map.Entry<String, String> en : map.entrySet()) {
 					String key = en.getKey();
@@ -235,8 +235,8 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 				}
 			}
 
-			if (parent.getEditor().getRemovedPreferences().containsKey(classPathPreferences)) {
-				Map<String, String> map = parent.getEditor().getRemovedPreferences().get(classPathPreferences);
+			if (parent.getContext().getRemovedPreferences().containsKey(classPathPreferences)) {
+				Map<String, String> map = parent.getContext().getRemovedPreferences().get(classPathPreferences);
 
 				for (Map.Entry<String, String> en : map.entrySet()) {
 					String key = en.getKey();

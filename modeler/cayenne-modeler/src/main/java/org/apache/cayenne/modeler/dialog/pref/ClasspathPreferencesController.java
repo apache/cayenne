@@ -180,12 +180,12 @@ public class ClasspathPreferencesController extends ChildController<PreferenceDi
     }
 
     public void updatePreferences(String key, String value) {
-        Map<String, String> map = parent.getEditor().getChangedPreferences().get(preferences);
+        Map<String, String> map = parent.getContext().getChangedPreferences().get(preferences);
         if (map == null) {
             map = new HashMap<>();
         }
         map.put(key, value);
-        parent.getEditor().getChangedPreferences().put(preferences, map);
+        parent.getContext().getChangedPreferences().put(preferences, map);
     }
 
     static class ClasspathTableModel extends AbstractTableModel {
