@@ -110,6 +110,7 @@ public class ProjectController extends ChildController<CayenneModelerController>
         this.history = new NavigationHistory();
     }
 
+    // TODO: this is wrong. ProjectController should own and return ProjectView
     @Override
     public Component getView() {
         return parent.getView();

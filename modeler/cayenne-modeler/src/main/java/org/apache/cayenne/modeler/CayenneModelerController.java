@@ -184,6 +184,7 @@ public class CayenneModelerController extends RootController {
         projectController.projectOpened(project);
         frame.setTitle(getProjectLocationString());
 
+        // TODO: ProjectView should be owned by ProjectController
         projectView = new ProjectView(projectController);
         frame.setEditorPanel(projectView);
 
@@ -225,7 +226,9 @@ public class CayenneModelerController extends RootController {
         }
     }
 
-    public ProjectView getEditorView() {
+    // TODO: ProjectView should be owned by ProjectController
+    @Deprecated
+    public ProjectView getProjectView() {
         return projectView;
     }
 
