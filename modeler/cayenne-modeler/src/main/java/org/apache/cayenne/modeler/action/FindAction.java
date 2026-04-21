@@ -45,7 +45,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.ProjectTreeModel;
 import org.apache.cayenne.modeler.ProjectTreeView;
 import org.apache.cayenne.modeler.dialog.FindDialogController;
-import org.apache.cayenne.modeler.editor.EditorPanel;
+import org.apache.cayenne.modeler.ProjectView;
 import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableAttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
@@ -139,7 +139,7 @@ public class FindAction extends CayenneAction {
      * Used also in {@link org.apache.cayenne.modeler.graph.action.EntityDisplayAction}
      */
     public static void jumpToResult(FindAction.SearchResultEntry searchResultEntry) {
-        EditorPanel editor = ((CayenneModelerFrame) Application.getInstance().getFrameController().getView()).getEditorPanel();
+        ProjectView editor = ((CayenneModelerFrame) Application.getInstance().getFrameController().getView()).getEditorPanel();
         DataChannelDescriptor domain = (DataChannelDescriptor) Application.getInstance().getProject().getRootNode();
         ProjectController controller = Application.getInstance().getFrameController().getProjectController();
 
@@ -263,7 +263,7 @@ public class FindAction extends CayenneAction {
         return pattern.matcher(entityName).find();
     }
 
-    private static void jumpToAttributeResult(SearchResultEntry searchResultEntry, EditorPanel editor, DataChannelDescriptor domain,
+    private static void jumpToAttributeResult(SearchResultEntry searchResultEntry, ProjectView editor, DataChannelDescriptor domain,
                                               ProjectController controller) {
         DataMap map;
         Entity<?, ?, ?> entity;
@@ -303,7 +303,7 @@ public class FindAction extends CayenneAction {
 
     private static void jumpToEmbeddableAttributeResult(
             EmbeddableAttribute attribute,
-            EditorPanel editor,
+            ProjectView editor,
             DataChannelDescriptor domain,
             ProjectController controller) {
 
@@ -316,7 +316,7 @@ public class FindAction extends CayenneAction {
         editor.getEmbeddableView().repaint();
     }
 
-    private static void jumpToEmbeddableResult(Embeddable embeddable, EditorPanel editor, DataChannelDescriptor domain,
+    private static void jumpToEmbeddableResult(Embeddable embeddable, ProjectView editor, DataChannelDescriptor domain,
                                                ProjectController controller) {
         DataMap map = embeddable.getDataMap();
         buildAndSelectTreePath(map, embeddable, editor);
@@ -325,14 +325,14 @@ public class FindAction extends CayenneAction {
         controller.displayEmbeddable(event);
     }
 
-    private static void jumpToQueryResult(QueryDescriptor queryDescriptor, EditorPanel editor, DataChannelDescriptor domain, ProjectController controller) {
+    private static void jumpToQueryResult(QueryDescriptor queryDescriptor, ProjectView editor, DataChannelDescriptor domain, ProjectController controller) {
         DataMap map = queryDescriptor.getDataMap();
         buildAndSelectTreePath(map, queryDescriptor, editor);
         QueryDisplayEvent event = new QueryDisplayEvent(editor.getProjectTreeView(), queryDescriptor, map, domain);
         controller.displayQuery(event);
     }
 
-    private static void jumpToEntityResult(Entity<?, ?, ?> entity, EditorPanel editor, DataChannelDescriptor domain, ProjectController controller) {
+    private static void jumpToEntityResult(Entity<?, ?, ?> entity, ProjectView editor, DataChannelDescriptor domain, ProjectController controller) {
         DataMap map = entity.getDataMap();
         buildAndSelectTreePath(map, entity, editor);
         EntityDisplayEvent event = new EntityDisplayEvent(editor.getProjectTreeView(), entity, map, domain);
@@ -345,7 +345,7 @@ public class FindAction extends CayenneAction {
         }
     }
 
-    private static void jumpToProcedureResult(Procedure procedure, EditorPanel editor, DataChannelDescriptor domain,
+    private static void jumpToProcedureResult(Procedure procedure, ProjectView editor, DataChannelDescriptor domain,
                                               ProjectController controller) {
         DataMap map = procedure.getDataMap();
         buildAndSelectTreePath(map, procedure, editor);
@@ -354,7 +354,7 @@ public class FindAction extends CayenneAction {
         editor.getProcedureView().repaint();
     }
 
-    private static void jumpToProcedureResult(ProcedureParameter parameter, EditorPanel editor, DataChannelDescriptor domain,
+    private static void jumpToProcedureResult(ProcedureParameter parameter, ProjectView editor, DataChannelDescriptor domain,
                                               ProjectController controller) {
         Procedure procedure = parameter.getProcedure();
         DataMap map = procedure.getDataMap();
@@ -368,7 +368,7 @@ public class FindAction extends CayenneAction {
     /**
      * Builds a tree path for a given path and make selection in it
      */
-    private static void buildAndSelectTreePath(DataMap map, Object object, EditorPanel editor) {
+    private static void buildAndSelectTreePath(DataMap map, Object object, ProjectView editor) {
         ProjectTreeView projectTreeView = editor.getProjectTreeView();
         ProjectTreeModel treeModel = (ProjectTreeModel) projectTreeView.getModel();
 

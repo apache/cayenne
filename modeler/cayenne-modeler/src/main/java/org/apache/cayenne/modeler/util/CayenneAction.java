@@ -28,7 +28,7 @@ import org.apache.cayenne.modeler.CayenneModelerFrame;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.ProjectTreeModel;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
-import org.apache.cayenne.modeler.editor.EditorPanel;
+import org.apache.cayenne.modeler.ProjectView;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.swing.components.image.FilteredIconFactory;
 import org.apache.cayenne.util.Util;
@@ -258,7 +258,7 @@ public abstract class CayenneAction extends AbstractAction {
         }
     }
     
-    protected static EditorPanel editor() {
+    protected static ProjectView editor() {
         return ((CayenneModelerFrame) Application
                 .getInstance()
                 .getFrameController()

@@ -17,15 +17,22 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor;
+package org.apache.cayenne.modeler;
 
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.ProjectTreeView;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CollapseTreeAction;
 import org.apache.cayenne.modeler.action.FilterAction;
 import org.apache.cayenne.modeler.dialog.datadomain.FilterController;
+import org.apache.cayenne.modeler.editor.DataDomainTabbedView;
+import org.apache.cayenne.modeler.editor.DataMapTabbedView;
+import org.apache.cayenne.modeler.editor.EjbqlTabbedView;
+import org.apache.cayenne.modeler.editor.EmbeddableTabbedView;
+import org.apache.cayenne.modeler.editor.ObjEntityTabbedView;
+import org.apache.cayenne.modeler.editor.ProcedureQueryView;
+import org.apache.cayenne.modeler.editor.ProcedureTabbedView;
+import org.apache.cayenne.modeler.editor.SQLTemplateTabbedView;
+import org.apache.cayenne.modeler.editor.SelectQueryTabbedView;
 import org.apache.cayenne.modeler.editor.datanode.DataNodeEditorController;
 import org.apache.cayenne.modeler.editor.dbentity.DbEntityTabbedView;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
@@ -38,7 +45,7 @@ import java.awt.*;
 /**
  * Main display area split into the project navigation tree on the left and selected object editor on the right.
  */
-public class EditorPanel extends JPanel {
+public class ProjectView extends JPanel {
 
     private static final String EMPTY_VIEW = "Empty";
     private static final String DOMAIN_VIEW = "Domain";
@@ -113,7 +120,7 @@ public class EditorPanel extends JPanel {
         return dataNodeView;
     }
 
-    public EditorPanel(ProjectController controller) {
+    public ProjectView(ProjectController controller) {
 
         ActionManager actionManager = controller.getApplication().getActionManager();
         actionManager.getAction(CollapseTreeAction.class).setAlwaysOn(true);

@@ -24,7 +24,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerFrame;
-import org.apache.cayenne.modeler.editor.EditorPanel;
+import org.apache.cayenne.modeler.ProjectView;
 import org.apache.cayenne.query.SQLTemplate;
 
 import javax.swing.*;
@@ -42,7 +42,7 @@ public class JUndoableCheckBoxEdit extends AbstractUndoableEdit {
     private JTabbedPane tabbedPane;
     private TreePath treePath;
     private Object targetObject;
-    private EditorPanel editorPanel;
+    private ProjectView projectView;
 
     private int selectedTabIndex;
 
@@ -55,9 +55,9 @@ public class JUndoableCheckBoxEdit extends AbstractUndoableEdit {
         this.actionListener = actionListener;
         this.isSelected = checkBox.isSelected();
 
-        editorPanel = ((CayenneModelerFrame) Application.getInstance().getFrameController().getView()).getEditorPanel();
+        projectView = ((CayenneModelerFrame) Application.getInstance().getFrameController().getView()).getEditorPanel();
 
-        treePath = editorPanel.getProjectTreeView().getSelectionPath();
+        treePath = projectView.getProjectTreeView().getSelectionPath();
 
         if (treePath != null) {
             DefaultMutableTreeNode newPath = (DefaultMutableTreeNode) treePath.getLastPathComponent();
@@ -65,19 +65,19 @@ public class JUndoableCheckBoxEdit extends AbstractUndoableEdit {
         }
 
         if (targetObject instanceof DataChannelDescriptor) {
-            tabbedPane = editorPanel.getDataDomainView();
+            tabbedPane = projectView.getDataDomainView();
         }
 
         if (targetObject instanceof DataMap) {
-            tabbedPane = editorPanel.getDataMapView();
+            tabbedPane = projectView.getDataMapView();
         }
 
         if (targetObject instanceof ObjEntity) {
-            tabbedPane = editorPanel.getObjDetailView();
+            tabbedPane = projectView.getObjDetailView();
         }
 
         if (targetObject instanceof SQLTemplate) {
-            tabbedPane = editorPanel.getSqlTemplateView();
+            tabbedPane = projectView.getSqlTemplateView();
         }
 
         if (tabbedPane != null) {
@@ -87,7 +87,7 @@ public class JUndoableCheckBoxEdit extends AbstractUndoableEdit {
 
     private void restoreSelections() {
 
-        editorPanel.getProjectTreeView().getSelectionModel().setSelectionPath(treePath);
+        projectView.getProjectTreeView().getSelectionModel().setSelectionPath(treePath);
 
         if (tabbedPane != null) {
             tabbedPane.setSelectedIndex(selectedTabIndex);

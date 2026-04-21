@@ -22,7 +22,6 @@ package org.apache.cayenne.modeler;
 import org.apache.cayenne.modeler.action.*;
 import org.apache.cayenne.modeler.dialog.LogConsoleController;
 import org.apache.cayenne.modeler.dialog.welcome.WelcomeScreen;
-import org.apache.cayenne.modeler.editor.EditorPanel;
 import org.apache.cayenne.modeler.event.model.RecentFileListListener;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.util.ModelerUtil;
@@ -53,7 +52,7 @@ public class CayenneModelerFrame extends JFrame {
     private final JLabel status;
     private final WelcomeScreen welcomePanel;
 
-    private EditorPanel editorPanel;
+    private ProjectView projectView;
     private JCheckBoxMenuItem logMenu;
     private Component dockComponent;
 
@@ -318,21 +317,21 @@ public class CayenneModelerFrame extends JFrame {
         });
     }
 
-    public EditorPanel getEditorPanel() {
-        return editorPanel;
+    public ProjectView getEditorPanel() {
+        return projectView;
     }
 
     public JLabel getStatus() {
         return status;
     }
 
-    public void setEditorPanel(EditorPanel editorPanel) {
+    public void setEditorPanel(ProjectView projectView) {
         int oldLocation = splitPane.getDividerLocation();
 
-        this.editorPanel = editorPanel;
+        this.projectView = projectView;
 
-        if (editorPanel != null) {
-            splitPane.setTopComponent(editorPanel);
+        if (projectView != null) {
+            splitPane.setTopComponent(projectView);
         } else {
             splitPane.setTopComponent(welcomePanel);
         }

@@ -24,7 +24,6 @@ import org.apache.cayenne.modeler.action.ExitAction;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
 import org.apache.cayenne.modeler.editor.DbImportController;
-import org.apache.cayenne.modeler.editor.EditorPanel;
 import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
 import org.apache.cayenne.modeler.mvc.RootController;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
@@ -61,7 +60,7 @@ public class CayenneModelerController extends RootController {
 
     private final ProjectController projectController;
     private final CayenneModelerFrame frame;
-    private EditorPanel editorPanel;
+    private ProjectView projectView;
     private final DbImportController dbImportController;
 
     public CayenneModelerController(Application application) {
@@ -185,8 +184,8 @@ public class CayenneModelerController extends RootController {
         projectController.projectOpened(project);
         frame.setTitle(getProjectLocationString());
 
-        editorPanel = new EditorPanel(projectController);
-        frame.setEditorPanel(editorPanel);
+        projectView = new ProjectView(projectController);
+        frame.setEditorPanel(projectView);
 
         projectController.restoreSelectionFromPrefs();
         application.getActionManager().projectOpened();
@@ -226,8 +225,8 @@ public class CayenneModelerController extends RootController {
         }
     }
 
-    public EditorPanel getEditorView() {
-        return editorPanel;
+    public ProjectView getEditorView() {
+        return projectView;
     }
 
     /**
