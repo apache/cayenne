@@ -31,6 +31,7 @@ import org.apache.cayenne.modeler.graph.GraphRegistry;
 import org.apache.cayenne.modeler.graph.GraphType;
 import org.apache.cayenne.util.Util;
 import org.jgraph.graph.DefaultGraphCell;
+import org.jgraph.graph.GraphConstants;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -66,8 +67,12 @@ class GraphHandler extends NamespaceAwareNestedTagHandler {
 
             // lookup
             Map<DefaultGraphCell, Map<String, ?>> propertiesMap = new HashMap<>();
-            for(Map.Entry<String, Map<String, ?>> entry : GraphHandler.this.propertiesMap.entrySet()) {
+            for (Map.Entry<String, Map<String, ?>> entry : this.propertiesMap.entrySet()) {
                 DefaultGraphCell cell = builder.getEntityCell(entry.getKey());
+                if (cell != null) {
+                    // Prevent saved cell size from being reset on the next edit
+                    GraphConstants.setResize(cell.getAttributes(), false);
+                }
                 propertiesMap.put(cell, entry.getValue());
             }
 
