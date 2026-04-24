@@ -34,7 +34,6 @@ import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datanode.custom.CustomDataSourceEditorController;
 import org.apache.cayenne.modeler.ui.project.editor.datanode.jdbc.JDBCDataSourceEditorController;
-import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextBinder;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -143,7 +142,7 @@ public class DataNodeEditorController extends ChildController<ProjectController>
         }
 
         // passed validation, set value...
-        ProjectUtil.setDataNodeName(node, newName);
+        node.setName(newName);
 
         oldPref.copyPreferences(newName);
     }

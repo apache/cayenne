@@ -27,7 +27,6 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
-import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 
@@ -167,8 +166,15 @@ public class ObjRelationshipTableModel extends CayenneTableModel<ObjRelationship
         switch (column) {
             case REL_NAME:
                 String text = (String) value;
-                event.setOldName(relationship.getName());
-                ProjectUtil.setRelationshipName(entity, relationship, text);
+                String oldName = relationship.getName();
+                ObjRelationship clash = entity.getRelationship(text);
+                if (clash != null && clash != relationship) {
+                    throw new IllegalArgumentException("An attempt to override relationship '" + oldName + "'");
+                }
+                event.setOldName(oldName);
+                entity.removeRelationship(oldName);
+                relationship.setName(text);
+                entity.addRelationship(relationship);
                 fireTableCellUpdated(row, column);
                 break;
             case REL_TARGET:

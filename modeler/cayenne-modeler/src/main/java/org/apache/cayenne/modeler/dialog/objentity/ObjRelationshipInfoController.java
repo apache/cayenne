@@ -40,7 +40,6 @@ import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.EntityTreeRelationshipFilter;
 import org.apache.cayenne.modeler.util.MultiColumnBrowser;
-import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.Util;
@@ -464,8 +463,16 @@ public class ObjRelationshipInfoController extends ChildController<ProjectContro
         boolean oldPathNotEmpty = !relationship.getDbRelationships().isEmpty();
 
         String relationshipName = getRelationshipName();
-        if (!Util.nullSafeEquals(relationship.getName(), relationshipName)) {
-            ProjectUtil.setRelationshipName(relationship.getSourceEntity(), relationship, relationshipName);
+        String oldName = relationship.getName();
+        if (!Util.nullSafeEquals(oldName, relationshipName)) {
+            ObjEntity source = relationship.getSourceEntity();
+            ObjRelationship clash = source.getRelationship(relationshipName);
+            if (clash != null && clash != relationship) {
+                throw new IllegalArgumentException("An attempt to override relationship '" + oldName + "'");
+            }
+            source.removeRelationship(oldName);
+            relationship.setName(relationshipName);
+            source.addRelationship(relationship);
             hasChanges = true;
         }
 

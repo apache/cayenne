@@ -136,11 +136,18 @@ public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> 
         // If name column
         if (column == NAME) {
             String newName = (String) aValue;
-            if (Util.nullSafeEquals(newName, rel.getName())) {
+            String oldName = rel.getName();
+            if (Util.nullSafeEquals(newName, oldName)) {
                 return;
             }
-            RelationshipEvent e = new RelationshipEvent(eventSource, rel, entity, rel.getName());
-            ProjectUtil.setDbRelationshipName(entity, rel, newName);
+            DbRelationship clash = entity.getRelationship(newName);
+            if (clash != null && clash != rel) {
+                throw new IllegalArgumentException("Duplicate relationship name: " + newName);
+            }
+            RelationshipEvent e = new RelationshipEvent(eventSource, rel, entity, oldName);
+            entity.removeRelationship(oldName);
+            rel.setName(newName);
+            entity.addRelationship(rel);
             controller.fireDbRelationshipEvent(e);
             fireTableCellUpdated(row, column);
         } else if (column == TO_DEPENDENT_KEY) {

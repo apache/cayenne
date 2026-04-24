@@ -28,7 +28,6 @@ import org.apache.cayenne.modeler.ui.CayenneModelerFrame;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneDialog;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
-import org.apache.cayenne.modeler.util.ProjectUtil;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -153,7 +152,11 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
                 entity.removeAttribute(attributeInfo.getName());
             }
             if (attributeInfo.getAction().equals(RENAME_ACTION)) {
-                ProjectUtil.setAttributeName(entity.getAttribute(attributeInfo.getName()), attributeInfo.getNewName());
+                ObjAttribute attribute = entity.getAttribute(attributeInfo.getName());
+                String oldName = attribute.getName();
+                attribute.setName(attributeInfo.getNewName());
+                entity.removeAttribute(oldName);
+                entity.addAttribute(attribute);
             }
         }
     }

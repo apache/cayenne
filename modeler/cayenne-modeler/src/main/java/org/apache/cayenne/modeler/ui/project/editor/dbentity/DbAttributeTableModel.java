@@ -203,16 +203,20 @@ public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
     }
 
     private void setDbAttributeName(DbAttribute attr, String newName, AttributeEvent e) {
-        if (Util.nullSafeEquals(newName, attr.getName())) {
+        String oldName = attr.getName();
+        if (Util.nullSafeEquals(newName, oldName)) {
             return;
         }
-        DbAttribute clash = attr.getEntity().getAttributeMap().get(newName);
+        DbEntity parent = attr.getEntity();
+        DbAttribute clash = parent.getAttributeMap().get(newName);
         if (clash != null && clash != attr) {
             throw new IllegalArgumentException("Duplicate attribute name: " + newName);
         }
-        e.setOldName(attr.getName());
-        ProjectUtil.setDbAttributeName(attr, newName);
-        attr.getEntity().dbAttributeChanged(e);
+        e.setOldName(oldName);
+        attr.setName(newName);
+        parent.removeAttribute(oldName);
+        parent.addAttribute(attr);
+        parent.dbAttributeChanged(e);
     }
 
     public String getMaxLength(DbAttribute attr) {

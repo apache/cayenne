@@ -25,7 +25,7 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
-import org.apache.cayenne.modeler.util.ProjectUtil;
+import org.apache.cayenne.util.Util;
 
 import javax.swing.JOptionPane;
 import java.util.ArrayList;
@@ -149,7 +149,15 @@ public class ProcedureParameterTableModel extends CayenneTableModel<ProcedurePar
     }
 
     protected void setParameterName(String newVal, ProcedureParameter parameter) {
-        ProjectUtil.setProcedureParameterName(parameter, newVal.trim());
+        String newName = newVal.trim();
+        String oldName = parameter.getName();
+        if (Util.nullSafeEquals(oldName, newName)) {
+            return;
+        }
+        Procedure procedure = parameter.getProcedure();
+        procedure.removeCallParameter(oldName);
+        parameter.setName(newName);
+        procedure.addCallParameter(parameter);
     }
 
     @Override

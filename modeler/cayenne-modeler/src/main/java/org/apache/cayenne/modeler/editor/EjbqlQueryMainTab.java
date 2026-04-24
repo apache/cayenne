@@ -24,8 +24,9 @@ import javax.swing.JTextField;
 
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
@@ -133,8 +134,16 @@ public class EjbqlQueryMainTab extends JPanel{
 
         if (map.getQueryDescriptor(newName) == null) {
             // completely new name, set new name for entity
-            QueryEvent e = new QueryEvent(this, query, query.getName());
-            ProjectUtil.setQueryName(map, query, newName);
+            String oldName = query.getName();
+            QueryEvent e = new QueryEvent(this, query, oldName);
+            query.setName(newName);
+            query.setDataMap(map);
+            map.removeQueryDescriptor(oldName);
+            map.addQueryDescriptor(query);
+            MappingNamespace ns = map.getNamespace();
+            if (ns instanceof EntityResolver) {
+                ((EntityResolver) ns).refreshMappingCache();
+            }
             mediator.fireQueryEvent(e);
         }
         else {

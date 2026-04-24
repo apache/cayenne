@@ -21,12 +21,13 @@ package org.apache.cayenne.modeler.editor;
 
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.CellRenderers;
-import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import org.apache.cayenne.util.Util;
@@ -94,8 +95,16 @@ abstract class BaseQueryMainTab extends JPanel {
 
         if (matchingQuery == null) {
             // completely new name, set new name for entity
-            QueryEvent e = new QueryEvent(this, query, query.getName());
-            ProjectUtil.setQueryName(map, query, newName);
+            String oldName = query.getName();
+            QueryEvent e = new QueryEvent(this, query, oldName);
+            query.setName(newName);
+            query.setDataMap(map);
+            map.removeQueryDescriptor(oldName);
+            map.addQueryDescriptor(query);
+            MappingNamespace ns = map.getNamespace();
+            if (ns instanceof EntityResolver) {
+                ((EntityResolver) ns).refreshMappingCache();
+            }
             mediator.fireQueryEvent(e);
         } else if (matchingQuery != query) {
             // there is a query with the same name

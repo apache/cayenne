@@ -30,7 +30,6 @@ import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.modeler.util.CellEditorForAttributeTable;
-import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.util.Util;
 
 public class EmbeddableAttributeTableModel extends CayenneTableModel {
@@ -75,10 +74,16 @@ public class EmbeddableAttributeTableModel extends CayenneTableModel {
         Collection<String> nameAttr = null;
 
         if (col == OBJ_ATTRIBUTE) {
-            event.setOldName(attribute.getName());
-            ProjectUtil.setEmbeddableAttributeName(attribute, value != null ? value
-                    .toString()
-                    .trim() : null);
+            String oldName = attribute.getName();
+            String newName = value != null ? value.toString().trim() : null;
+            event.setOldName(oldName);
+            if (!Util.nullSafeEquals(oldName, newName)) {
+                attribute.setName(newName);
+                if (embeddable != null) {
+                    embeddable.removeAttribute(oldName);
+                    embeddable.addAttribute(attribute);
+                }
+            }
 
             fireTableCellUpdated(row, col);
         }

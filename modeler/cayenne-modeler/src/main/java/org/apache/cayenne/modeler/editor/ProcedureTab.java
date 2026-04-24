@@ -26,8 +26,10 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ProcedureDisplayListener;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.modeler.event.model.ProcedureEvent;
-import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.swing.components.JCayenneCheckBox;
@@ -159,8 +161,16 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
             throw new ValidationException("Procedure name is required.");
         } else if (procedure.getDataMap().getProcedure(newName) == null) {
             // completely new name, set new name for entity
-            ProcedureEvent e = new ProcedureEvent(this, procedure, procedure.getName());
-            ProjectUtil.setProcedureName(procedure.getDataMap(), procedure, newName);
+            String oldName = procedure.getName();
+            ProcedureEvent e = new ProcedureEvent(this, procedure, oldName);
+            DataMap map = procedure.getDataMap();
+            procedure.setName(newName);
+            map.removeProcedure(oldName);
+            map.addProcedure(procedure);
+            MappingNamespace ns = map.getNamespace();
+            if (ns instanceof EntityResolver) {
+                ((EntityResolver) ns).refreshMappingCache();
+            }
             eventController.fireProcedureEvent(e);
         } else {
             // there is an entity with the same name

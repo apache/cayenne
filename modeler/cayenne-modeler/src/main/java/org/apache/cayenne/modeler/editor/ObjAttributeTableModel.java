@@ -250,14 +250,18 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttribute> {
     
     private void setObjAttribute(ObjAttribute attribute, Object value) {
         String newName = value != null ? value.toString().trim() : null;
-        if (Util.nullSafeEquals(newName, attribute.getName())) {
+        String oldName = attribute.getName();
+        if (Util.nullSafeEquals(newName, oldName)) {
             return;
         }
-        ObjAttribute clash = attribute.getEntity().getAttributeMap().get(newName);
+        ObjEntity parent = attribute.getEntity();
+        ObjAttribute clash = parent.getAttributeMap().get(newName);
         if (clash != null && clash != attribute) {
             throw new IllegalArgumentException("Duplicate attribute name: " + newName);
         }
-        ProjectUtil.setAttributeName(attribute, newName);
+        attribute.setName(newName);
+        parent.removeAttribute(oldName);
+        parent.addAttribute(attribute);
     }
 
     private void setObjAttributeType(ObjAttribute attribute, Object value) {

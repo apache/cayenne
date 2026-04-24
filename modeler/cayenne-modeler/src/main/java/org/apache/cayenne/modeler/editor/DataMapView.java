@@ -38,7 +38,6 @@ import org.apache.cayenne.modeler.event.model.ProjectSavedEvent;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
-import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.swing.components.JCayenneCheckBox;
@@ -53,7 +52,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Panel for editing a DataMap.
@@ -386,10 +387,22 @@ public class DataMapView extends JPanel {
         }
         // completely new name, set new name for domain
         DataMapDefaults pref = eventController.getSelectedDataMapPreferences("");
-        DataMapEvent e = new DataMapEvent(this, map, map.getName());
-        ProjectUtil.setDataMapName((DataChannelDescriptor) eventController
-                .getProject()
-                .getRootNode(), map, newName);
+        DataMapEvent e = new DataMapEvent(this, map, oldName);
+        DataChannelDescriptor domain = (DataChannelDescriptor) eventController.getProject().getRootNode();
+
+        // must fully relink renamed map across node descriptors
+        List<DataNodeDescriptor> nodesUsingMap = new ArrayList<>();
+        for (DataNodeDescriptor node : domain.getNodeDescriptors()) {
+            if (node.getDataMapNames().contains(oldName)) {
+                nodesUsingMap.add(node);
+            }
+        }
+        map.setName(newName);
+        for (DataNodeDescriptor node : nodesUsingMap) {
+            node.getDataMapNames().remove(oldName);
+            node.getDataMapNames().add(newName);
+        }
+
         pref.copyPreferences(newName);
         eventController.fireDataMapEvent(e);
     }
