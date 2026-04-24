@@ -41,9 +41,9 @@ import java.sql.Connection;
 /**
  * @since 4.0
  */
-public class DbLoaderContext {
+public class ModelerDbLoaderContext {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DbLoaderContext.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelerDbLoaderContext.class);
 
     private final ProjectController projectController;
     private final DataMap dataMap;
@@ -55,7 +55,7 @@ public class DbLoaderContext {
     private String loadStatusNote;
     private volatile boolean isInterrupted;
 
-    public DbLoaderContext(ProjectController projectController, DataChannelMetaData dataChannelMetaData, DataMap dataMap) {
+    public ModelerDbLoaderContext(ProjectController projectController, DataChannelMetaData dataChannelMetaData, DataMap dataMap) {
         this.projectController = projectController;
         this.dataChannelMetaData = dataChannelMetaData;
         this.dataMap = dataMap;
@@ -73,7 +73,7 @@ public class DbLoaderContext {
         this.config = config;
     }
 
-    DbImportConfiguration getConfig() {
+    public DbImportConfiguration getConfig() {
         return config;
     }
 
@@ -89,15 +89,15 @@ public class DbLoaderContext {
         return stopping;
     }
 
-    void setStopping(boolean stopping) {
+    public void setStopping(boolean stopping) {
         this.stopping = stopping;
     }
 
-    String getStatusNote() {
+    public String getStatusNote() {
         return loadStatusNote;
     }
 
-    void setStatusNote(String loadStatusNote) {
+    public void setStatusNote(String loadStatusNote) {
         this.loadStatusNote = loadStatusNote;
     }
 
@@ -131,7 +131,7 @@ public class DbLoaderContext {
         DbImportConfiguration config = new DbImportConfiguration() {
             @Override
             public DbLoaderDelegate createLoaderDelegate() {
-                return new LoaderDelegate(DbLoaderContext.this);
+                return new ModelerDbLoaderDelegate(ModelerDbLoaderContext.this);
             }
         };
         fillConfig(config, connectionInfo, reverseEngineering);

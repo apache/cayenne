@@ -19,14 +19,24 @@
 
 package org.apache.cayenne.modeler.action;
 
+import org.apache.cayenne.dbsync.DbSyncModule;
+import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
+import org.apache.cayenne.dbsync.reverse.dbimport.DbImportAction;
+import org.apache.cayenne.dbsync.reverse.dbimport.DbImportModule;
+import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.dbimport.ModelerDbImportModule;
+import org.apache.cayenne.modeler.dbimport.ModelerDbLoaderContext;
+import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.ui.dbloadresult.DbLoadResultDialog;
-import org.apache.cayenne.modeler.dbimport.DbLoaderContext;
-import org.apache.cayenne.modeler.dbimport.LoadDataMapTask;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportView;
-import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+import org.apache.cayenne.modeler.util.LongRunningTask;
+import org.apache.cayenne.modeler.util.ProjectUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -39,6 +49,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Action that imports database structure into a DataMap.
  */
 public class ReverseEngineeringAction extends DBConnectionAwareAction {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReverseEngineeringAction.class);
 
     private static final String ACTION_NAME = "Reengineer Database Schema";
     private static final String ICON_NAME = "icon-dbi-runImport.png";
@@ -65,7 +77,7 @@ public class ReverseEngineeringAction extends DBConnectionAwareAction {
     }
 
     private void startImport(DataMap dataMap) {
-        DbLoaderContext context = new DbLoaderContext(
+        ModelerDbLoaderContext context = new ModelerDbLoaderContext(
                 getProjectController(),
                 application.getMetaData(),
                 dataMap);
@@ -127,7 +139,7 @@ public class ReverseEngineeringAction extends DBConnectionAwareAction {
         this.dataMaps = new HashSet<>();
     }
 
-    private void runLoaderInThread(final DbLoaderContext context, final Runnable callback) {
+    private void runLoaderInThread(final ModelerDbLoaderContext context, final Runnable callback) {
         Thread th = new Thread(() -> {
             LoadDataMapTask task = new LoadDataMapTask(Application.getFrame(), "Reengineering DB", context);
             task.startAndWait();
@@ -139,4 +151,64 @@ public class ReverseEngineeringAction extends DBConnectionAwareAction {
     public void setView(DbImportView view) {
         this.view = view;
     }
+
+    static class LoadDataMapTask extends LongRunningTask<Object> {
+
+        private final ModelerDbLoaderContext context;
+
+        public LoadDataMapTask(JFrame frame, String title, ModelerDbLoaderContext context) {
+            super(frame, title);
+            setMinValue(0);
+            setMaxValue(10);
+            this.context = context;
+        }
+
+        @Override
+        protected void execute() {
+            context.setStatusNote("Preparing...");
+            try {
+                createAction().execute(context.getConfig());
+            } catch (Exception e) {
+                context.processException(e, "Error importing database schema.");
+            }
+            ProjectUtil.cleanObjMappings(context.getDataMap());
+        }
+
+        private DbImportAction createAction() {
+            Injector injector = DIBootstrap.createInjector(new DbSyncModule(),
+                    new ToolsModule(LOGGER),
+                    new DbImportModule(),
+                    new ModelerDbImportModule(context));
+            return injector.getInstance(DbImportAction.class);
+        }
+
+        @Override
+        protected String getCurrentNote() {
+            return context.getStatusNote();
+        }
+
+        @Override
+        protected int getCurrentValue() {
+            return getMinValue();
+        }
+
+        @Override
+        protected boolean isIndeterminate() {
+            return true;
+        }
+
+        @Override
+        public boolean isCanceled() {
+            return context.isStopping();
+        }
+
+        @Override
+        public void setCanceled(boolean canceled) {
+            if (canceled) {
+                context.setStatusNote("Canceling..");
+            }
+            context.setStopping(canceled);
+        }
+    }
+
 }

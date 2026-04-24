@@ -18,29 +18,23 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport;
 
-import javax.swing.AbstractAction;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.border.EmptyBorder;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.action.LoadDbSchemaAction;
 import org.apache.cayenne.modeler.action.ReverseEngineeringAction;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.ColorTreeRenderer;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.TransferableNode;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.ColorTreeRenderer;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.ModelerUtil;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 
 /**
  * @since 4.1
@@ -63,7 +57,7 @@ public class DbImportView extends JPanel {
     private JProgressBar reverseEngineeringProgress;
     private CayenneAction.CayenneToolbarButton loadDbSchemaButton;
 
-    private ProjectController projectController;
+    private final ProjectController projectController;
 
     private boolean initFromModel;
 

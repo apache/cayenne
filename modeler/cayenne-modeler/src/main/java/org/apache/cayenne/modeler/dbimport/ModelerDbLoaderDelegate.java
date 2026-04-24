@@ -27,11 +27,11 @@ import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 
-final class LoaderDelegate extends DefaultDbLoaderDelegate {
+final class ModelerDbLoaderDelegate extends DefaultDbLoaderDelegate {
 
-    private final DbLoaderContext context;
+    private final ModelerDbLoaderContext context;
 
-    LoaderDelegate(DbLoaderContext dbLoaderContext) {
+    ModelerDbLoaderDelegate(ModelerDbLoaderContext dbLoaderContext) {
         this.context = dbLoaderContext;
     }
 

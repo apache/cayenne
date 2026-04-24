@@ -26,19 +26,19 @@ import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportAction;
 
-class ModelerSyncModule implements Module {
+public class ModelerDbImportModule implements Module {
 
-    private DbLoaderContext dbLoaderContext;
+    private final ModelerDbLoaderContext loaderContext;
 
-    ModelerSyncModule(DbLoaderContext dbLoaderHelper) {
-        this.dbLoaderContext = dbLoaderHelper;
+    public ModelerDbImportModule(ModelerDbLoaderContext dbLoaderHelper) {
+        this.loaderContext = dbLoaderHelper;
     }
 
     @Override
     public void configure(Binder binder) {
-        binder.bind(ProjectController.class).toInstance(dbLoaderContext.getProjectController());
+        binder.bind(ProjectController.class).toInstance(loaderContext.getProjectController());
         binder.bind(ProjectSaver.class).to(DbImportProjectSaver.class);
         binder.bind(DbImportAction.class).to(ModelerDbImportAction.class);
-        binder.bind(DataMap.class).toInstance(dbLoaderContext.getDataMap());
+        binder.bind(DataMap.class).toInstance(loaderContext.getDataMap());
     }
 }
