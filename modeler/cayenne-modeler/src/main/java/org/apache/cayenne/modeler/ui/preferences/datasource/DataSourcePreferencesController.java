@@ -17,8 +17,12 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.pref;
+package org.apache.cayenne.modeler.ui.preferences.datasource;
 
+import org.apache.cayenne.modeler.ui.preferences.PreferenceDialogController;
+import org.apache.cayenne.modeler.ui.preferences.classpath.ClasspathPreferencesController;
+import org.apache.cayenne.modeler.ui.preferences.datasource.creator.DataSourceCreatorController;
+import org.apache.cayenne.modeler.ui.preferences.datasource.duplicator.DataSourceDuplicatorController;
 import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.FileClassLoadingService;

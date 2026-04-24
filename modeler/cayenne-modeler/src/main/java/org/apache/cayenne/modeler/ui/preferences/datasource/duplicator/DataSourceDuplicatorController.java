@@ -17,9 +17,10 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.pref;
+package org.apache.cayenne.modeler.ui.preferences.datasource.duplicator;
 
 import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.ui.preferences.datasource.DataSourcePreferencesController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 
 import javax.swing.*;

@@ -24,7 +24,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dialog.pref.GeneralPreferencesController;
+import org.apache.cayenne.modeler.ui.preferences.general.GeneralPreferencesController;
 
 /**
  * Used to confirm deleting items in the model.

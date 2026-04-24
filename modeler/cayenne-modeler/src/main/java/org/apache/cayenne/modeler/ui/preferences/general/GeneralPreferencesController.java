@@ -17,9 +17,12 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.pref;
+package org.apache.cayenne.modeler.ui.preferences.general;
 
 import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.ui.preferences.PreferenceDialogController;
+import org.apache.cayenne.modeler.ui.preferences.encoding.EncodingPreferencesController;
+import org.apache.cayenne.modeler.ui.preferences.encoding.EncodingPreferencesView;
 
 import java.awt.*;
 import java.util.HashMap;

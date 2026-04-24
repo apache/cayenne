@@ -17,10 +17,13 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.pref;
+package org.apache.cayenne.modeler.ui.preferences;
 
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.mvc.RootController;
+import org.apache.cayenne.modeler.ui.preferences.classpath.ClasspathPreferencesController;
+import org.apache.cayenne.modeler.ui.preferences.datasource.DataSourcePreferencesController;
+import org.apache.cayenne.modeler.ui.preferences.general.GeneralPreferencesController;
 
 import javax.swing.*;
 import java.awt.*;

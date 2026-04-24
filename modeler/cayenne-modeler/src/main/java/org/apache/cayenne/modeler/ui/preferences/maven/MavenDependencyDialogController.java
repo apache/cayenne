@@ -17,10 +17,11 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.pref;
+package org.apache.cayenne.modeler.ui.preferences.maven;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.ui.preferences.classpath.ClasspathPreferencesController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

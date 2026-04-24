@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.action;
 import java.awt.event.ActionEvent;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dialog.pref.PreferenceDialogController;
+import org.apache.cayenne.modeler.ui.preferences.PreferenceDialogController;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
 

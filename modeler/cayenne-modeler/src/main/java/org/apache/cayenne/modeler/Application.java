@@ -25,7 +25,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.ui.logconsole.LogConsoleController;
-import org.apache.cayenne.modeler.dialog.pref.ClasspathPreferencesController;
+import org.apache.cayenne.modeler.ui.preferences.classpath.ClasspathPreferencesController;
 import org.apache.cayenne.modeler.ui.CayenneModelerController;
 import org.apache.cayenne.modeler.ui.CayenneModelerFrame;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;

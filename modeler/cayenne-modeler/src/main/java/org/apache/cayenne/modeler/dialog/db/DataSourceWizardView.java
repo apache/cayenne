@@ -23,7 +23,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dialog.pref.DBConnectionInfoEditorController;
+import org.apache.cayenne.modeler.ui.preferences.datasource.DBConnectionInfoEditorController;
 import org.apache.cayenne.modeler.mvc.RootController;
 
 import javax.swing.*;
