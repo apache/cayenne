@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.modeler.undo;
 
-import org.apache.cayenne.modeler.editor.SQLTemplatePrefetchTab;
-import org.apache.cayenne.modeler.editor.SelectQueryPrefetchTab;
+import org.apache.cayenne.modeler.ui.project.editor.query.sqltemplate.SQLTemplatePrefetchTab;
+import org.apache.cayenne.modeler.ui.project.editor.query.selectquery.SelectQueryPrefetchTab;
 
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;

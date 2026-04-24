@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.procedure;
 
-import org.apache.cayenne.modeler.editor.ExistingSelectionProcessor;
+import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;

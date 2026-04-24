@@ -17,8 +17,9 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor;
+package org.apache.cayenne.modeler.ui.project.editor.query.selectquery;
 
+import org.apache.cayenne.modeler.ui.project.editor.query.PrefetchModel;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.Entity;
@@ -50,10 +51,10 @@ import javax.swing.tree.TreeModel;
  */
 public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
 
-    static final String JOINT_PREFETCH_SEMANTICS = "Joint";
-    static final String DISJOINT_PREFETCH_SEMANTICS = "Disjoint";
-    static final String DISJOINT_BY_ID_PREFETCH_SEMANTICS = "Disjoint by id";
-    static final String UNDEFINED_SEMANTICS = "Undefined semantics";
+    public static final String JOINT_PREFETCH_SEMANTICS = "Joint";
+    public static final String DISJOINT_PREFETCH_SEMANTICS = "Disjoint";
+    public static final String DISJOINT_BY_ID_PREFETCH_SEMANTICS = "Disjoint by id";
+    public static final String UNDEFINED_SEMANTICS = "Undefined semantics";
 
     public SelectQueryPrefetchTab(ProjectController mediator) {
         super(mediator);

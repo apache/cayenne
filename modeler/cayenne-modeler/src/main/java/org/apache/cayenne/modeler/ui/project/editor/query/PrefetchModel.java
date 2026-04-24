@@ -17,8 +17,9 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor;
+package org.apache.cayenne.modeler.ui.project.editor.query;
 
+import org.apache.cayenne.modeler.ui.project.editor.query.selectquery.SelectQueryPrefetchTab;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -30,7 +31,7 @@ import java.util.Map;
 /**
  * A table model for the Prefetch table.
  */
-class PrefetchModel extends AbstractTableModel {
+public class PrefetchModel extends AbstractTableModel {
 
     private final Map<String, Integer> prefetchMap;
 
@@ -38,7 +39,7 @@ class PrefetchModel extends AbstractTableModel {
 
     private final String[] prefetches;
 
-    PrefetchModel(Map<String, Integer> prefetchMap, Object root) {
+    public PrefetchModel(Map<String, Integer> prefetchMap, Object root) {
         this.prefetchMap = prefetchMap;
         this.prefetches = prefetchMap.keySet().toArray(new String[0]);
         this.root = root;
@@ -110,7 +111,7 @@ class PrefetchModel extends AbstractTableModel {
         }
     }
 
-    static int getPrefetchType(String semantics) {
+    public static int getPrefetchType(String semantics) {
 
         //case 2: disjoint isn't use for SQLTemplate prefetch
         switch (semantics){

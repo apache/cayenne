@@ -37,7 +37,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.CayenneModelerFrame;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
-import org.apache.cayenne.modeler.editor.SQLTemplateTabbedView;
+import org.apache.cayenne.modeler.ui.project.editor.query.sqltemplate.SQLTemplateTabbedView;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.SQLTemplate;

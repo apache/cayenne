@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.procedure;
 
-import org.apache.cayenne.modeler.editor.ExistingSelectionProcessor;
+import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.configuration.DataChannelDescriptor;

@@ -17,7 +17,11 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor;
+package org.apache.cayenne.modeler.ui.project.editor.query.sqltemplate;
+
+import org.apache.cayenne.modeler.ui.project.editor.query.BaseQueryMainTab;
+import org.apache.cayenne.modeler.ui.project.editor.query.RawQueryPropertiesPanel;
+import org.apache.cayenne.modeler.ui.project.editor.query.SelectPropertiesPanel;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;

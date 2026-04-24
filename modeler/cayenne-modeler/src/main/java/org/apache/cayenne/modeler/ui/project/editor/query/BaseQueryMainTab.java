@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor;
+package org.apache.cayenne.modeler.ui.project.editor.query;
 
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.map.DataMap;
@@ -35,12 +35,12 @@ import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.*;
 
-abstract class BaseQueryMainTab extends JPanel {
+public abstract class BaseQueryMainTab extends JPanel {
     protected ProjectController mediator;
     protected TextAdapter name;
     protected JComboBox<ObjEntity> queryRoot;
 
-    BaseQueryMainTab(ProjectController mediator) {
+    protected BaseQueryMainTab(ProjectController mediator) {
         this.mediator = mediator;
     }
 
@@ -71,7 +71,7 @@ abstract class BaseQueryMainTab extends JPanel {
     /**
      * Initializes Query name from string.
      */
-    void setQueryName(String newName) {
+    protected void setQueryName(String newName) {
         if (newName != null && newName.trim().length() == 0) {
             newName = null;
         }
@@ -114,5 +114,5 @@ abstract class BaseQueryMainTab extends JPanel {
         }
     }
 
-    abstract QueryDescriptor getQuery();
+    protected abstract QueryDescriptor getQuery();
 }

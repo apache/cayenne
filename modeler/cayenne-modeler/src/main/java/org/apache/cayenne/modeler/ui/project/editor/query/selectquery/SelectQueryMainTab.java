@@ -17,7 +17,10 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor;
+package org.apache.cayenne.modeler.ui.project.editor.query.selectquery;
+
+import org.apache.cayenne.modeler.ui.project.editor.query.BaseQueryMainTab;
+import org.apache.cayenne.modeler.ui.project.editor.query.ObjectQueryPropertiesPanel;
 
 import java.awt.BorderLayout;
 import java.util.Arrays;

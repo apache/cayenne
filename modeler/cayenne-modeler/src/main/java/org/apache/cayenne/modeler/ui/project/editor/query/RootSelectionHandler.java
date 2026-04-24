@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor;
+package org.apache.cayenne.modeler.ui.project.editor.query;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;

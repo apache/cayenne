@@ -22,7 +22,7 @@ import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
-import org.apache.cayenne.modeler.editor.SelectQueryPrefetchTab;
+import org.apache.cayenne.modeler.ui.project.editor.query.selectquery.SelectQueryPrefetchTab;
 
 public class AddPrefetchUndoableEdit extends AbstractUndoableEdit {
 

@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.procedure;
 
-import org.apache.cayenne.modeler.editor.RawQueryPropertiesPanel;
-import org.apache.cayenne.modeler.editor.SelectPropertiesPanel;
+import org.apache.cayenne.modeler.ui.project.editor.query.RawQueryPropertiesPanel;
+import org.apache.cayenne.modeler.ui.project.editor.query.SelectPropertiesPanel;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
