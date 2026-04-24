@@ -44,8 +44,10 @@ public class CreateProcedureAction extends CayenneAction {
      */
     static void fireProcedureEvent(Object src, ProjectController controller, DataMap dataMap, Procedure procedure) {
         controller.fireProcedureEvent(new ProcedureEvent(src, procedure, MapEvent.ADD));
-        controller.displayProcedure(new ProcedureDisplayEvent(src, procedure, controller.getSelectedDataMap(),
-                (DataChannelDescriptor) controller.getProject().getRootNode()));
+        ProcedureDisplayEvent displayEvent = new ProcedureDisplayEvent(src, procedure, controller.getSelectedDataMap(),
+                (DataChannelDescriptor) controller.getProject().getRootNode());
+        displayEvent.setTabReset(true);
+        controller.displayProcedure(displayEvent);
     }
 
     public CreateProcedureAction(Application application) {

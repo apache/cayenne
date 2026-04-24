@@ -667,7 +667,7 @@ public class ProjectController extends ChildController<CayenneModelerController>
                 state.dbEntity != null || state.objEntity != null || state.procedure != null || state.query != null || state.embeddable != null
         );
 
-        LOGGER.debug("displayDataMap: {}{}", e.getDataMap().getName(), changed ? "" : ", ignored unchanged");
+        LOGGER.debug("displayDataMap: {}{}", e.getDataMap().getName(), changed ? "" : (e.isMainTabFocus() ? ", unchanged but main-tab-focus" : ", ignored unchanged"));
         if (changed) {
             state = new ControllerState();
             state.dataDomain = e.getDomain();
@@ -675,7 +675,11 @@ public class ProjectController extends ChildController<CayenneModelerController>
             state.dataMap = e.getDataMap();
 
             history.recordEvent(e);
+        }
 
+        // Always deliver events that explicitly request main tab focus (e.g. "Create DataMap"),
+        // even when selection is unchanged — otherwise the tab switch would be silently skipped.
+        if (changed || e.isMainTabFocus()) {
             for (DataMapDisplayListener listener : listeners.getListeners(DataMapDisplayListener.class)) {
                 listener.dataMapSelected(e);
             }
@@ -865,7 +869,7 @@ public class ProjectController extends ChildController<CayenneModelerController>
     public void displayObjEntity(EntityDisplayEvent e) {
         boolean changed = e.getEntity() != state.objEntity;
 
-        LOGGER.debug("displayObjEntity: {}{}", e.getEntity().getName(), changed ? "" : ", ignored unchanged");
+        LOGGER.debug("displayObjEntity: {}{}", e.getEntity().getName(), changed ? "" : (e.isMainTabFocus() ? ", unchanged but main-tab-focus" : ", ignored unchanged"));
 
         if (changed) {
             state = new ControllerState();
@@ -875,7 +879,11 @@ public class ProjectController extends ChildController<CayenneModelerController>
             state.objEntity = (ObjEntity) e.getEntity();
 
             history.recordEvent(e);
+        }
 
+        // Always deliver events that explicitly request main tab focus (e.g. "Create ObjEntity"),
+        // even when selection is unchanged — otherwise the tab switch would be silently skipped.
+        if (changed || e.isMainTabFocus()) {
             for (ObjEntityDisplayListener l : listeners.getListeners(ObjEntityDisplayListener.class)) {
                 l.objEntitySelected(e);
             }
@@ -884,7 +892,7 @@ public class ProjectController extends ChildController<CayenneModelerController>
 
     public void displayEmbeddable(EmbeddableDisplayEvent e) {
         boolean changed = e.getEmbeddable() != state.embeddable;
-        LOGGER.debug("displayEmbeddable: {}{}", e.getEmbeddable().getClassName(), changed ? "" : ", ignored unchanged");
+        LOGGER.debug("displayEmbeddable: {}{}", e.getEmbeddable().getClassName(), changed ? "" : (e.isMainTabFocus() ? ", unchanged but main-tab-focus" : ", ignored unchanged"));
 
         if (changed) {
             state = new ControllerState();
@@ -893,7 +901,11 @@ public class ProjectController extends ChildController<CayenneModelerController>
             state.dataMap = e.getDataMap();
             state.embeddable = e.getEmbeddable();
             history.recordEvent(e);
+        }
 
+        // Always deliver events that explicitly request main tab focus (e.g. "Create Embeddable"),
+        // even when selection is unchanged — otherwise the tab switch would be silently skipped.
+        if (changed || e.isMainTabFocus()) {
             for (EmbeddableDisplayListener l : listeners.getListeners(EmbeddableDisplayListener.class)) {
                 l.embeddableSelected(e);
             }
@@ -919,7 +931,7 @@ public class ProjectController extends ChildController<CayenneModelerController>
 
     public void displayProcedure(ProcedureDisplayEvent e) {
         boolean changed = e.getProcedure() != state.procedure;
-        LOGGER.debug("displayProcedure: {}{}", e.getProcedure().getName(), changed ? "" : ", ignored unchanged");
+        LOGGER.debug("displayProcedure: {}{}", e.getProcedure().getName(), changed ? "" : (e.isTabReset() ? ", unchanged but tab-reset" : ", ignored unchanged"));
 
         if (changed) {
             state = new ControllerState();
@@ -927,7 +939,11 @@ public class ProjectController extends ChildController<CayenneModelerController>
             state.dataMap = e.getDataMap();
             state.procedure = e.getProcedure();
             history.recordEvent(e);
+        }
 
+        // Always deliver events that explicitly request a tab reset (e.g. validator error click),
+        // even when selection is unchanged — otherwise the tab switch would be silently skipped.
+        if (changed || e.isTabReset()) {
             for (ProcedureDisplayListener l : listeners.getListeners(ProcedureDisplayListener.class)) {
                 l.procedureSelected(e);
             }
@@ -955,7 +971,7 @@ public class ProjectController extends ChildController<CayenneModelerController>
 
     public void displayDbEntity(EntityDisplayEvent e) {
         boolean changed = e.getEntity() != state.dbEntity;
-        LOGGER.debug("displayDbEntity: {}{}", e.getEntity().getName(), changed ? "" : ", ignored unchanged");
+        LOGGER.debug("displayDbEntity: {}{}", e.getEntity().getName(), changed ? "" : (e.isMainTabFocus() ? ", unchanged but main-tab-focus" : ", ignored unchanged"));
 
         if (changed) {
             state = new ControllerState();
@@ -964,7 +980,11 @@ public class ProjectController extends ChildController<CayenneModelerController>
             state.dataMap = e.getDataMap();
             state.dbEntity = (DbEntity) e.getEntity();
             history.recordEvent(e);
+        }
 
+        // Always deliver events that explicitly request main tab focus (e.g. "Create DbEntity"),
+        // even when selection is unchanged — otherwise the tab switch would be silently skipped.
+        if (changed || e.isMainTabFocus()) {
             for (DbEntityDisplayListener l : listeners.getListeners(DbEntityDisplayListener.class)) {
                 l.dbEntitySelected(e);
             }
