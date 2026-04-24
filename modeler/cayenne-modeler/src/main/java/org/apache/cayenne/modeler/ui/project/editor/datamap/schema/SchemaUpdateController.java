@@ -16,7 +16,8 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.dialog.datamap;
+
+package org.apache.cayenne.modeler.ui.project.editor.datamap.schema;
 
 import org.apache.cayenne.modeler.event.model.ProcedureEvent;
 import org.apache.cayenne.map.DataMap;
@@ -24,26 +25,35 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.defaults.DefaultsPreferencesController;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.defaults.DefaultsPreferencesView;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.*;
 
-public class CatalogUpdateController extends DefaultsPreferencesController {
+/**
+ * A controller for batch DbEntities schema update.
+ * 
+ */
+public class SchemaUpdateController extends DefaultsPreferencesController {
 
-    public static final String ALL_CONTROL = "Set/update catalog for all DbEntities";
-    public static final String UNINIT_CONTROL = "Do not override existing non-empty catalog";
-
+    private static final String ALL_CONTROL = "Set/update schema for all DbEntities";
+    private static final String UNINIT_CONTROL = "Do not override existing non-empty schema";
+    
     private DefaultsPreferencesView view;
 
-    public CatalogUpdateController(ProjectController controller, DataMap dataMap) {
+    public SchemaUpdateController(ProjectController controller, DataMap dataMap) {
         super(controller, dataMap);
     }
 
+    /**
+     * Creates and runs the schema update dialog.
+     */
     public void startupAction() {
         view = new DefaultsPreferencesView(ALL_CONTROL, UNINIT_CONTROL);
-        view.setTitle("Update DbEntities Catalog");
-        view.getUpdateButton().addActionListener(e -> updateCatalog());
+        view.setTitle("Update DbEntities Schema");
         view.getCancelButton().addActionListener(e -> view.dispose());
+        view.getUpdateButton().addActionListener(e -> updateSchema());
 
         view.pack();
         view.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -58,36 +68,33 @@ public class CatalogUpdateController extends DefaultsPreferencesController {
         return this.view;
     }
 
-    private void updateCatalog() {
+    private void updateSchema() {
         boolean doAll = isAllEntities();
-        String defaultCatalog = dataMap.getDefaultCatalog();
+        String defaultSchema = dataMap.getDefaultSchema();
 
-        // set catalog for DbEntities
+        // set schema for DbEntities
         for (DbEntity entity : dataMap.getDbEntities()) {
-            if (doAll || Util.isEmptyString(entity.getCatalog())) {
-                if (!Util.nullSafeEquals(defaultCatalog, entity.getCatalog())) {
-                    entity.setCatalog(defaultCatalog);
+            if (doAll || Util.isEmptyString(entity.getSchema())) {
+                if (!Util.nullSafeEquals(defaultSchema, entity.getSchema())) {
+                    entity.setSchema(defaultSchema);
 
-                    // any way to batch events, a big change will flood the app
-                    // with entity events..?
+                    // any way to batch events, a big change will flood the app with entity events?
                     parent.fireDbEntityEvent(new EntityEvent(this, entity));
                 }
             }
         }
 
-        // set catalog for procedures...
+        // set schema for procedures...
         for (Procedure procedure : dataMap.getProcedures()) {
-            if (doAll || Util.isEmptyString(procedure.getCatalog())) {
-                if (!Util.nullSafeEquals(defaultCatalog, procedure.getCatalog())) {
-                    procedure.setCatalog(defaultCatalog);
+            if (doAll || Util.isEmptyString(procedure.getSchema())) {
+                if (!Util.nullSafeEquals(defaultSchema, procedure.getSchema())) {
+                    procedure.setSchema(defaultSchema);
 
-                    // any way to batch events, a big change will flood the app
-                    // with procedure events..?
+                    // any way to batch events, a big change will flood the app with procedure events?
                     parent.fireProcedureEvent(new ProcedureEvent(this, procedure));
                 }
             }
         }
         view.dispose();
     }
-
 }

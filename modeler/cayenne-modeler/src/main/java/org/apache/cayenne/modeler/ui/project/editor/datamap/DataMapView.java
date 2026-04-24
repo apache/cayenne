@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor;
+package org.apache.cayenne.modeler.ui.project.editor.datamap;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -29,11 +29,11 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.action.LinkDataMapAction;
-import org.apache.cayenne.modeler.dialog.datamap.CatalogUpdateController;
-import org.apache.cayenne.modeler.dialog.datamap.LockingUpdateController;
-import org.apache.cayenne.modeler.dialog.datamap.PackageUpdateController;
-import org.apache.cayenne.modeler.dialog.datamap.SchemaUpdateController;
-import org.apache.cayenne.modeler.dialog.datamap.SuperclassUpdateController;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.catalog.CatalogUpdateController;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.locking.LockingUpdateController;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.pkg.PackageUpdateController;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.schema.SchemaUpdateController;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.superclass.SuperclassUpdateController;
 import org.apache.cayenne.modeler.event.model.ProjectSavedEvent;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.util.CellRenderers;

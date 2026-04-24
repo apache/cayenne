@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.datamap;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.pkg;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
@@ -28,6 +28,8 @@ import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.EmbeddableEvent;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.defaults.DefaultsPreferencesController;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.defaults.DefaultsPreferencesView;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.*;

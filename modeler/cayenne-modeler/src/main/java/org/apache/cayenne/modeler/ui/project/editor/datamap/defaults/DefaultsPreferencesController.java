@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.datamap;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.defaults;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
