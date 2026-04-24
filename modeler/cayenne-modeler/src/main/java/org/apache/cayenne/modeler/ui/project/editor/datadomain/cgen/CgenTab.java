@@ -21,8 +21,8 @@ package org.apache.cayenne.modeler.ui.project.editor.datadomain.cgen;
 
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.editor.GeneratorsTab;
-import org.apache.cayenne.modeler.editor.GeneratorsTabController;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.GeneratorsTab;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.GeneratorsTabController;
 
 import javax.swing.JOptionPane;
 

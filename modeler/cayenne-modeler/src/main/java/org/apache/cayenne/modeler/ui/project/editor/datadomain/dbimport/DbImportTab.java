@@ -20,8 +20,8 @@ package org.apache.cayenne.modeler.ui.project.editor.datadomain.dbimport;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.editor.GeneratorsTab;
-import org.apache.cayenne.modeler.editor.GeneratorsTabController;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.GeneratorsTab;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.GeneratorsTabController;
 
 /**
  * @since 4.1

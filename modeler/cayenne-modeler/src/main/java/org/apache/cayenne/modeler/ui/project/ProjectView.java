@@ -25,7 +25,7 @@ import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CollapseTreeAction;
 import org.apache.cayenne.modeler.action.FilterAction;
 import org.apache.cayenne.modeler.ui.project.tree.filter.FilterController;
-import org.apache.cayenne.modeler.editor.DataDomainTabbedView;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.DataDomainTabbedView;
 import org.apache.cayenne.modeler.editor.DataMapTabbedView;
 import org.apache.cayenne.modeler.editor.EjbqlTabbedView;
 import org.apache.cayenne.modeler.editor.EmbeddableTabbedView;

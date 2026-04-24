@@ -25,7 +25,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.action.ReverseEngineeringAction;
-import org.apache.cayenne.modeler.editor.GeneratorsTabController;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.GeneratorsTabController;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 
 /**
