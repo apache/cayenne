@@ -35,7 +35,7 @@ import org.apache.cayenne.modeler.editor.ProcedureTabbedView;
 import org.apache.cayenne.modeler.editor.SQLTemplateTabbedView;
 import org.apache.cayenne.modeler.editor.SelectQueryTabbedView;
 import org.apache.cayenne.modeler.ui.project.editor.datanode.DataNodeEditorController;
-import org.apache.cayenne.modeler.editor.dbentity.DbEntityTabbedView;
+import org.apache.cayenne.modeler.ui.project.editor.dbentity.DbEntityTabbedView;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.slf4j.LoggerFactory;

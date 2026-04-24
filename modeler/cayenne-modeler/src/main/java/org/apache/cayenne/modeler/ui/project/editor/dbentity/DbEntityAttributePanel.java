@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.editor.dbentity;
+package org.apache.cayenne.modeler.ui.project.editor.dbentity;
 
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;

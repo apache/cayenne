@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor.dbentity;
+package org.apache.cayenne.modeler.ui.project.editor.dbentity;
 
 import javax.swing.JOptionPane;
 import java.util.ArrayList;
