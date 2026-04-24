@@ -219,7 +219,7 @@ public abstract class SelectPropertiesPanel extends JPanel {
         cacheGroupsLabel.setEnabled(enabled);
     }
 
-    void setQueryProperty(String property, String value) {
+    protected void setQueryProperty(String property, String value) {
         QueryDescriptor query = getQuery();
         if (query != null) {
             try {

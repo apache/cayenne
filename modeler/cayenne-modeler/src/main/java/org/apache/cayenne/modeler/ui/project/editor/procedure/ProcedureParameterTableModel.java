@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor;
+package org.apache.cayenne.modeler.ui.project.editor.procedure;
 
 import org.apache.cayenne.modeler.event.model.ProcedureParameterEvent;
 import org.apache.cayenne.dba.TypesMapping;

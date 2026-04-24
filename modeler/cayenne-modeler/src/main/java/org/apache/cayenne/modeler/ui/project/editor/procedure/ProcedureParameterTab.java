@@ -17,8 +17,9 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor;
+package org.apache.cayenne.modeler.ui.project.editor.procedure;
 
+import org.apache.cayenne.modeler.editor.ExistingSelectionProcessor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.event.model.ProcedureEvent;
 import org.apache.cayenne.modeler.event.model.ProcedureParameterEvent;
