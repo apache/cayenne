@@ -17,28 +17,21 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.db.load;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport;
 
-import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.project.ProjectSaver;
-import org.apache.cayenne.dbsync.reverse.dbimport.DbImportAction;
+/**
+ * @since 4.1
+ */
+public class IncludeTablePopUpMenu extends RootPopUpMenu {
 
-class ModelerSyncModule implements Module {
-
-    private DbLoaderContext dbLoaderContext;
-
-    ModelerSyncModule(DbLoaderContext dbLoaderHelper) {
-        this.dbLoaderContext = dbLoaderHelper;
-    }
-
-    @Override
-    public void configure(Binder binder) {
-        binder.bind(ProjectController.class).toInstance(dbLoaderContext.getProjectController());
-        binder.bind(ProjectSaver.class).to(DbImportProjectSaver.class);
-        binder.bind(DbImportAction.class).to(ModelerDbImportAction.class);
-        binder.bind(DataMap.class).toInstance(dbLoaderContext.getDataMap());
+    public IncludeTablePopUpMenu() {
+        rename.setVisible(true);
+        delete.setVisible(true);
+        addCatalog.setVisible(false);
+        addSchema.setVisible(false);
+        addIncludeTable.setVisible(false);
+        addExcludeTable.setVisible(false);
+        addIncludeProcedure.setVisible(false);
+        addExcludeProcedure.setVisible(false);
     }
 }

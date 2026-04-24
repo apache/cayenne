@@ -42,8 +42,8 @@ import org.apache.cayenne.modeler.action.dbimport.DragAndDropNodeAction;
 import org.apache.cayenne.modeler.action.dbimport.MoveImportNodeAction;
 import org.apache.cayenne.modeler.action.dbimport.MoveInvertNodeAction;
 import org.apache.cayenne.modeler.action.dbimport.TreeManipulationAction;
-import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
-import org.apache.cayenne.modeler.dialog.db.load.TransferableNode;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.TransferableNode;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.ColorTreeRenderer;
 import org.apache.cayenne.modeler.util.CayenneAction;
 

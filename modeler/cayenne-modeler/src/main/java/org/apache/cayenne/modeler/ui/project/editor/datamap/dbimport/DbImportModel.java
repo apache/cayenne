@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
-import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;

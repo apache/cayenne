@@ -43,7 +43,7 @@ import org.apache.cayenne.modeler.action.dbimport.AddSchemaAction;
 import org.apache.cayenne.modeler.action.dbimport.DeleteNodeAction;
 import org.apache.cayenne.modeler.action.dbimport.EditNodeAction;
 import org.apache.cayenne.modeler.action.dbimport.TreeManipulationAction;
-import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 
 import javax.swing.JButton;
 import javax.swing.JToolBar;

@@ -17,17 +17,17 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.db.load;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport;
 
 /**
  * @since 4.1
  */
-public class CatalogPopUpMenu extends RootPopUpMenu {
+public class SchemaPopUpMenu extends RootPopUpMenu {
 
-    public CatalogPopUpMenu() {
-        delete.setVisible(true);
+    public SchemaPopUpMenu() {
         rename.setVisible(true);
+        delete.setVisible(true);
+        addSchema.setVisible(false);
         addCatalog.setVisible(false);
     }
-
 }

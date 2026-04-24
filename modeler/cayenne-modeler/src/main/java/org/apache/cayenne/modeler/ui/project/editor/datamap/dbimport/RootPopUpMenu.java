@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.db.load;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport;
 
 import org.apache.cayenne.modeler.action.dbimport.AddCatalogAction;
 import org.apache.cayenne.modeler.action.dbimport.AddExcludeColumnAction;

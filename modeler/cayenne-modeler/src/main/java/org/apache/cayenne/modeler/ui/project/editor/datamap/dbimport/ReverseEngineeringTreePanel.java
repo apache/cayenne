@@ -30,12 +30,12 @@ import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.dialog.db.load.CatalogPopUpMenu;
-import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
-import org.apache.cayenne.modeler.dialog.db.load.DefaultPopUpMenu;
-import org.apache.cayenne.modeler.dialog.db.load.IncludeTablePopUpMenu;
-import org.apache.cayenne.modeler.dialog.db.load.RootPopUpMenu;
-import org.apache.cayenne.modeler.dialog.db.load.SchemaPopUpMenu;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.CatalogPopUpMenu;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DefaultPopUpMenu;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.IncludeTablePopUpMenu;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.RootPopUpMenu;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.SchemaPopUpMenu;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTree;

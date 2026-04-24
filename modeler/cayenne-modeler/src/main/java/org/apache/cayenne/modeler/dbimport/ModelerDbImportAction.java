@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.db.load;
+package org.apache.cayenne.modeler.dbimport;
 
 import org.apache.cayenne.modeler.ui.dbloadresult.DbLoadResultDialog;
 
