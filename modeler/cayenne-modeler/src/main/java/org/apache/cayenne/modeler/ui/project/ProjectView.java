@@ -24,6 +24,7 @@ import org.apache.cayenne.modeler.action.CollapseTreeAction;
 import org.apache.cayenne.modeler.action.FilterAction;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.ui.project.editor.EditorPanelView;
+import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeController;
 import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeView;
 import org.apache.cayenne.modeler.ui.project.tree.treefilter.TreeFilterController;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,7 @@ import java.awt.*;
  */
 public class ProjectView extends JPanel {
 
+    private final ProjectTreeController treeController;
     private final ProjectTreeView treePanel;
     private final EditorPanelView editorPanel;
     private final TreeFilterController filterController;
@@ -61,7 +63,8 @@ public class ProjectView extends JPanel {
         barPanel.add(filterButton);
         barPanel.add(collapseButton);
 
-        treePanel = new ProjectTreeView(controller);
+        treeController = new ProjectTreeController(controller);
+        treePanel = treeController.getView();
         treePanel.setMinimumSize(new Dimension(75, 180));
 
         JPanel treeNavigatePanel = new JPanel();
