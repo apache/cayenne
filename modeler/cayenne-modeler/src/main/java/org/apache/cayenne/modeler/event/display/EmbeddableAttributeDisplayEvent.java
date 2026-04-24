@@ -27,8 +27,8 @@ public class EmbeddableAttributeDisplayEvent extends EmbeddableDisplayEvent {
 
     protected final EmbeddableAttribute[] embeddableAttributes;
 
-    public EmbeddableAttributeDisplayEvent(Object src, Embeddable embeddable, EmbeddableAttribute attr, DataMap dataMap, DataChannelDescriptor dataChannelDescriptor) {
-        super(src, embeddable, dataMap, dataChannelDescriptor);
+    public EmbeddableAttributeDisplayEvent(Object src, Embeddable embeddable, EmbeddableAttribute attr, DataMap dataMap, DataChannelDescriptor domain) {
+        super(src, embeddable, dataMap, domain);
         embeddableAttributes = new EmbeddableAttribute[]{attr};
     }
 

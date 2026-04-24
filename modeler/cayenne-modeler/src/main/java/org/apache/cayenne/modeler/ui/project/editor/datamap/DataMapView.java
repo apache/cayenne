@@ -18,59 +18,32 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.datamap;
 
+import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.CgenController;
-import org.apache.cayenne.modeler.ui.project.editor.datadomain.cgen.CgenTab;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportView;
-import org.apache.cayenne.modeler.ui.project.editor.datadomain.dbimport.DbImportTab;
-import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.DataMapMainView;
 
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.event.ChangeEvent;
+import javax.swing.*;
 
 public class DataMapView extends JTabbedPane {
-
-    private final JScrollPane dbImportPane;
-    private final JScrollPane cgenPane;
-
-    private int lastTabIndex;
 
     public DataMapView(ProjectController controller) {
 
         setTabPlacement(JTabbedPane.TOP);
+        
+        addTab("DataMap", new JScrollPane(new DataMapMainView(controller)));
+        addTab("DB Import", new JScrollPane(new DbImportView(controller)));
+        addTab("Class Generation", new JScrollPane(new CgenController(controller).getView()));
 
-        // add panels to tabs
-        // note that those panels that have no internal scrollable tables
-        // must be wrapped in a scroll pane
-        JScrollPane dataMapScrollPane = new JScrollPane(new DataMapMainView(controller));
-        dbImportPane = new JScrollPane(new DbImportView(controller));
-        cgenPane = new JScrollPane(new CgenController(controller).getView());
-        addTab("DataMap", dataMapScrollPane);
-        addTab("DB Import", dbImportPane);
-        addTab("Class Generation", cgenPane);
-
-        addChangeListener(this::stateChanged);
         controller.addDataMapDisplayListener(this::currentDataMapChanged);
     }
 
     private void currentDataMapChanged(DataMapDisplayEvent e) {
-        if (e.getSource() instanceof CgenTab) {
-            setSelectedComponent(cgenPane);
-        } else if (e.getSource() instanceof DbImportTab) {
-            setSelectedComponent(dbImportPane);
-        } else {
-            if (e.isMainTabFocus()) {
-                lastTabIndex = 0;
-            }
 
-            setSelectedIndex(lastTabIndex);
+        if (e.isMainTabFocus()) {
+            setSelectedIndex(0);
         }
-    }
-
-    private void stateChanged(ChangeEvent e) {
-        lastTabIndex = getSelectedIndex();
     }
 }
 
