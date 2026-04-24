@@ -70,8 +70,8 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
     @Override
     protected void initializeCombo(ObjAttributeTableModel model, int row, final JTable table) {
         super.initializeCombo(model, row, table);
-        comboBoxPathChooser.setSelectedItem(model.getAttribute(row).getValue().getDbAttributePath());
-        savePath = this.model.getAttribute(row).getValue().getDbAttributePath().value();
+        comboBoxPathChooser.setSelectedItem(model.getAttribute(row).getDbAttributePath());
+        savePath = this.model.getAttribute(row).getDbAttributePath().value();
     }
 
 
@@ -82,7 +82,7 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
 
     @Override
     protected String getPathToInitializeCombo(ObjAttributeTableModel model, int row) {
-        CayennePath path = model.getAttribute(row).getValue().getDbAttributePath();
+        CayennePath path = model.getAttribute(row).getDbAttributePath();
         if (path == null || path.isEmpty()) {
             return "";
         }
@@ -107,7 +107,7 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
                     return;
                 }
                 model.setUpdatedValueAt(dbAttributePath, row, DB_ATTRIBUTE_PATH_COLUMN);
-                model.getAttribute(row).getValue().setDbAttributePath(dbAttributePath);
+                model.getAttribute(row).setDbAttributePath(dbAttributePath);
             }
         }else if (ModelerUtil.getObjectName(currentNode).equals(lastStringInPath) &&
                 currentNode instanceof DbRelationship) {
@@ -129,7 +129,7 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
 
     @Override
     protected EntityTreeModel createTreeModelForComboBox(int attributeIndexInTable) {
-        ObjAttribute attribute = model.getAttribute(attributeIndexInTable).getValue();
+        ObjAttribute attribute = model.getAttribute(attributeIndexInTable);
         DbEntity firstEntity = null;
         if (attribute.getDbAttribute() == null) {
 

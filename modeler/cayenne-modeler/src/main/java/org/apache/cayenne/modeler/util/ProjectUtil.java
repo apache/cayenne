@@ -189,6 +189,21 @@ public class ProjectUtil {
         }
     }
 
+    /**
+     * Changes the name of the DbAttribute and re-indexes it in its parent DbEntity.
+     */
+    public static void setDbAttributeName(DbAttribute attribute, String newName) {
+        String oldName = attribute.getName();
+
+        attribute.setName(newName);
+        DbEntity entity = attribute.getEntity();
+
+        if (entity != null) {
+            entity.removeAttribute(oldName);
+            entity.addAttribute(attribute);
+        }
+    }
+
 
     /**
      * Changes the name of the embeddable attribute and all references to this embeddable attribute.
@@ -212,6 +227,21 @@ public class ProjectUtil {
         ObjRelationship existingRelationship = entity.getRelationship(newName);
         if (existingRelationship != null && existingRelationship != rel) {
             throw new IllegalArgumentException("An attempt to override relationship '" + rel.getName() + "'");
+        }
+        if (rel != null) {
+            entity.removeRelationship(rel.getName());
+            rel.setName(newName);
+            entity.addRelationship(rel);
+        }
+    }
+
+    /**
+     * Changes the name of the DbRelationship and re-indexes it in its parent DbEntity.
+     */
+    public static void setDbRelationshipName(DbEntity entity, DbRelationship rel, String newName) {
+        DbRelationship existing = entity.getRelationship(newName);
+        if (existing != null && existing != rel) {
+            throw new IllegalArgumentException("Duplicate relationship name: " + newName);
         }
         if (rel != null) {
             entity.removeRelationship(rel.getName());

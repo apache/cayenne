@@ -91,7 +91,7 @@ public class ObjAttributeInfoDialogController extends ChildController<ProjectCon
 			stringToEmbeddables.put(emb.getClassName(), emb);
 			embeddableNames.add(emb.getClassName());
 		}
-		initController(model.getAttribute(row).getValue());
+		initController(model.getAttribute(row));
 	}
 
 	@Override

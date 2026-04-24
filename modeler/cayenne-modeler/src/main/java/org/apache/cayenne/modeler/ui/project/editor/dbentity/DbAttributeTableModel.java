@@ -29,6 +29,7 @@ import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
+import org.apache.cayenne.util.Util;
 
 import javax.swing.JOptionPane;
 import java.util.ArrayList;
@@ -173,10 +174,7 @@ public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
 
         switch (col) {
             case DB_ATTRIBUTE_NAME:
-                e.setOldName(attr.getName());
-                attr.setName((String) newVal);
-                attr.getEntity().dbAttributeChanged(e);
-                
+                setDbAttributeName(attr, (String) newVal, e);
                 fireTableCellUpdated(row, col);
                 break;
             case DB_ATTRIBUTE_TYPE:
@@ -202,6 +200,19 @@ public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
         }
 
         controller.fireDbAttributeEvent(e);
+    }
+
+    private void setDbAttributeName(DbAttribute attr, String newName, AttributeEvent e) {
+        if (Util.nullSafeEquals(newName, attr.getName())) {
+            return;
+        }
+        DbAttribute clash = attr.getEntity().getAttributeMap().get(newName);
+        if (clash != null && clash != attr) {
+            throw new IllegalArgumentException("Duplicate attribute name: " + newName);
+        }
+        e.setOldName(attr.getName());
+        ProjectUtil.setDbAttributeName(attr, newName);
+        attr.getEntity().dbAttributeChanged(e);
     }
 
     public String getMaxLength(DbAttribute attr) {

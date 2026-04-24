@@ -36,7 +36,6 @@ import org.apache.cayenne.modeler.action.ObjEntityToSuperEntityAction;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeRelationshipAction;
 import org.apache.cayenne.modeler.dialog.objentity.ObjAttributeInfoDialogController;
-import org.apache.cayenne.modeler.editor.wrapper.ObjAttributeWrapper;
 import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
@@ -106,7 +105,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
             public void mouseReleased(MouseEvent e) {
                 int row = table.rowAtPoint(e.getPoint());
                 int col = table.columnAtPoint(e.getPoint());
-                ObjAttribute objAttribute = ((ObjAttributeTableModel) table.getModel()).getAttribute(row).getValue();
+                ObjAttribute objAttribute = ((ObjAttributeTableModel) table.getModel()).getAttribute(row);
                 int columnFromModel = table.getColumnModel().getColumn(col).getModelIndex();
                 if (row >= 0 && columnFromModel == ObjAttributeTableModel.OBJ_ATTRIBUTE) {
                     if (objAttribute.isInherited()) {
@@ -177,7 +176,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
     public void selectAttributes(ObjAttribute[] attrs) {
         ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
 
-        List<ObjAttributeWrapper> listAttrs = model.getObjectList();
+        List<ObjAttribute> listAttrs = model.getObjectList();
         int[] newSel = new int[attrs.length];
 
         parentPanel.updateActions(attrs);
@@ -185,7 +184,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
         // search for attributes to select from attributes that model has
         for (int i = 0; i < attrs.length; i++) {
             for (int j = 0; j < listAttrs.size(); j++) {
-                if (listAttrs.get(j).getValue() == attrs[i]) {
+                if (listAttrs.get(j) == attrs[i]) {
                     newSel[i] = j;
                     break;
                 }
@@ -200,16 +199,12 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
     public void objAttributeChanged(AttributeEvent e) {
         ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
 
-        if (!model.isValid()) {
-            model.resetModel();
-        }
-
         model.fireTableDataChanged();
 
         int ind = -1;
-        List<ObjAttributeWrapper> list = model.getObjectList();
+        List<ObjAttribute> list = model.getObjectList();
         for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).getValue() == e.getAttribute()) {
+            if (list.get(i) == e.getAttribute()) {
                 ind = i;
             }
         }
@@ -223,17 +218,13 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
     public void objAttributeAdded(AttributeEvent e) {
         ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
 
-        if (!model.isValid()) {
-            model.resetModel();
-        }
-
-        model.addRow(new ObjAttributeWrapper((ObjAttribute) e.getAttribute()));
+        model.addRow((ObjAttribute) e.getAttribute());
         model.fireTableDataChanged();
 
         int ind = -1;
-        List<ObjAttributeWrapper> list = model.getObjectList();
+        List<ObjAttribute> list = model.getObjectList();
         for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).getValue() == e.getAttribute()) {
+            if (list.get(i) == e.getAttribute()) {
                 ind = i;
             }
         }
@@ -244,16 +235,12 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
     public void objAttributeRemoved(AttributeEvent e) {
         ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
         int ind = -1;
-        List<ObjAttributeWrapper> list = model.getObjectList();
+        List<ObjAttribute> list = model.getObjectList();
 
         for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).getValue() == e.getAttribute()) {
+            if (list.get(i) == e.getAttribute()) {
                 ind = i;
             }
-        }
-
-        if (!model.isValid()) {
-            model.resetModel();
         }
 
         if (ind >= 0) {
@@ -388,7 +375,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
 
             ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
             column = table.getColumnModel().getColumn(column).getModelIndex();
-            ObjAttribute attribute = model.getAttribute(row).getValue();
+            ObjAttribute attribute = model.getAttribute(row);
 
             if (!model.isCellEditable(row, column)) {
                 setForeground(isSelected ? new Color(0xEEEEEE) : Color.GRAY);
@@ -484,7 +471,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
                 attrs = new ObjAttribute[sel.length];
 
                 for (int i = 0; i < sel.length; i++) {
-                    attrs[i] = model.getAttribute(sel[i]).getValue();
+                    attrs[i] = model.getAttribute(sel[i]);
                 }
 
                 if (sel.length == 1) {

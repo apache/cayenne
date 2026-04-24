@@ -32,6 +32,7 @@ import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
+import org.apache.cayenne.util.Util;
 
 /**
  * Table model for DbRelationship table.
@@ -134,8 +135,12 @@ public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> 
         DbRelationship rel = getRelationship(row);
         // If name column
         if (column == NAME) {
+            String newName = (String) aValue;
+            if (Util.nullSafeEquals(newName, rel.getName())) {
+                return;
+            }
             RelationshipEvent e = new RelationshipEvent(eventSource, rel, entity, rel.getName());
-            rel.setName((String) aValue);
+            ProjectUtil.setDbRelationshipName(entity, rel, newName);
             controller.fireDbRelationshipEvent(e);
             fireTableCellUpdated(row, column);
         } else if (column == TO_DEPENDENT_KEY) {
