@@ -17,9 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.validator;
-
-import javax.swing.JFrame;
+package org.apache.cayenne.modeler.ui.project.validator;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.Attribute;
@@ -29,25 +27,22 @@ import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.Relationship;
+import org.apache.cayenne.modeler.pref.DataNodeDefaults;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
+
 /**
  * Superclass of CayenneModeler validation messages.
- * 
  */
 public abstract class ValidationDisplayHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ValidationDisplayHandler.class);
-
-    public static final int NO_ERROR = 0;
-    public static final int WARNING = 1;
-    public static final int ERROR = 2;
 
     protected ValidationFailure validationFailure;
     protected DataChannelDescriptor domain;

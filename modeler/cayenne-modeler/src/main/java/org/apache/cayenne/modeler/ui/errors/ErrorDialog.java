@@ -18,49 +18,25 @@
  ****************************************************************/
 
 
-package org.apache.cayenne.modeler.ui.errordebug;
+package org.apache.cayenne.modeler.ui.errors;
 
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.CayenneModelerFrame;
-import org.apache.cayenne.modeler.ui.warning.WarningDialog;
 import org.apache.cayenne.modeler.util.CayenneDialog;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.util.LocalizedStringsHandler;
 import org.apache.cayenne.util.Util;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JEditorPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.ScrollPaneConstants;
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.HeadlessException;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-/**
- * Displays CayenneModeler exceptions and warning messages.
- * 
- */
-public class ErrorDebugDialog extends CayenneDialog implements ActionListener {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ErrorDebugDialog.class);
-    
-    /**
-     * Sole instance of error/warning dialog to disallow showing of multiple dialogs
-     */
-    private static ErrorDebugDialog instance;
-    
+class ErrorDialog extends CayenneDialog implements ActionListener {
+
     protected JButton close;
     protected JButton showHide;
     protected JTextArea exText = new JTextArea();
@@ -68,66 +44,13 @@ public class ErrorDebugDialog extends CayenneDialog implements ActionListener {
     protected Throwable throwable;
     protected boolean detailed;
 
-    /**
-     * Shows an error dialog with stack trace
-     */
-    public static void guiException(Throwable th) {
-        if (th != null) {
-            LOGGER.error("CayenneModeler Error", th);
-        }
-
-        ErrorDebugDialog dialog =
-            new ErrorDebugDialog(Application.getFrame(), "CayenneModeler Error", th, true, false);
-        showDialog(dialog);
-    }
-
-    /**
-     * Shows an warning dialog with stack trace
-     */
-    public static void guiWarning(Throwable th, String message) {
-        if (th != null) {
-            LOGGER.warn("CayenneModeler Warning", th);
-        }
-
-        WarningDialog dialog = new WarningDialog(Application.getFrame(), message, th, false, false);
-        showDialog(dialog);
-    }
-    
-    /**
-     * Shows an error/warning dialog, closing existing if needed
-     */
-    private static void showDialog(ErrorDebugDialog dialog) {
-        if (instance != null) {
-            instance.dispose();
-        }
-        
-        instance = dialog;
-        dialog.setVisible(true);
-    }
-
-    /**
-     * Constructor for ErrorDebugDialog.
-     */
-    protected ErrorDebugDialog(
-    CayenneModelerFrame owner,
-        String title,
-        Throwable throwable,
-        boolean detailed)
-        throws HeadlessException {
-
-        this(owner, title, throwable, detailed, true);
-    }
-    
-    /**
-     * Constructor for ErrorDebugDialog, allowing to specify 'modal' property
-     */
-    protected ErrorDebugDialog(
-    CayenneModelerFrame owner,
-        String title,
-        Throwable throwable,
-        boolean detailed,
-        boolean modal)
-        throws HeadlessException {
+    public ErrorDialog(
+            CayenneModelerFrame owner,
+            String title,
+            Throwable throwable,
+            boolean detailed,
+            boolean modal)
+            throws HeadlessException {
 
         super(owner, title, modal);
 
@@ -162,10 +85,10 @@ public class ErrorDebugDialog extends CayenneDialog implements ActionListener {
             exText.setRows(16);
             exText.setColumns(40);
             JScrollPane exScroll =
-                new JScrollPane(
-                    exText,
-                    ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-                    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                    new JScrollPane(
+                            exText,
+                            ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             exPanel = new JPanel();
             exPanel.setLayout(new BorderLayout());
             exPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -186,16 +109,9 @@ public class ErrorDebugDialog extends CayenneDialog implements ActionListener {
 
         getRootPane().setDefaultButton(showHide);
 
-        JButton[] buttons = (showHide != null) ? new JButton[] { close, showHide }
-        : new JButton[] { close };
+        JButton[] buttons = (showHide != null) ? new JButton[]{close, showHide}
+                : new JButton[]{close};
         pane.add(PanelFactory.createButtonPanel(buttons), BorderLayout.SOUTH);
-        
-        //add a listener to clear static variables, not to produce garbage
-        addWindowListener(new WindowAdapter() {
-           public void windowClosing(WindowEvent e) {
-               instance = null;
-           }
-        });
 
         // prepare to display
         this.pack();
@@ -205,15 +121,15 @@ public class ErrorDebugDialog extends CayenneDialog implements ActionListener {
     protected String infoHTML() {
         String bugreportURL = ModelerUtil.getProperty("cayenne.bugreport.url");
         return "<b><font face='Arial,Helvetica' size='+1' color='red'>"
-            + getTitle()
-            + "</font></b><br>"
-            + "<font face='Arial,Helvetica' size='-1'>Please copy the message below and "
-            + "report this error by going to <br>"
-            + "<a href='"
-            + bugreportURL
-            + "'>"
-            + bugreportURL
-            + "</a></font>";
+                + getTitle()
+                + "</font></b><br>"
+                + "<font face='Arial,Helvetica' size='-1'>Please copy the message below and "
+                + "report this error by going to <br>"
+                + "<a href='"
+                + bugreportURL
+                + "'>"
+                + bugreportURL
+                + "</a></font>";
     }
 
     protected void setThrowable(Throwable throwable) {
@@ -292,6 +208,7 @@ public class ErrorDebugDialog extends CayenneDialog implements ActionListener {
 
     /**
      * Returns the detailed.
+     *
      * @return boolean
      */
     public boolean isDetailed() {
@@ -300,6 +217,7 @@ public class ErrorDebugDialog extends CayenneDialog implements ActionListener {
 
     /**
      * Sets the detailed.
+     *
      * @param detailed The detailed to set
      */
     public void setDetailed(boolean detailed) {

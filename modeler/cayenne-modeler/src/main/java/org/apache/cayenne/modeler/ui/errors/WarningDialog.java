@@ -17,37 +17,22 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.validator;
+package org.apache.cayenne.modeler.ui.errors;
 
-import javax.swing.JFrame;
+import org.apache.cayenne.modeler.ui.CayenneModelerFrame;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
-import org.apache.cayenne.validation.ValidationFailure;
+import java.awt.*;
 
-/**
- * DataDomain validation message.
- * 
- */
-public class DomainErrorMsg extends ValidationDisplayHandler {
+class WarningDialog extends ErrorDialog {
 
-    /**
-     * Constructor for DomainErrorMsg.
-     * 
-     * @param result
-     */
-    public DomainErrorMsg(ValidationFailure result) {
-        super(result);
-
-        Object object = result.getSource();
-        domain = (DataChannelDescriptor) object;
+    public WarningDialog(CayenneModelerFrame owner, String title, Throwable throwable, boolean detailed, boolean modal) throws HeadlessException {
+        super(owner, title, throwable, detailed, modal);
     }
 
-    public void displayField(ProjectController mediator, JFrame frame) {
-        DomainDisplayEvent event;
-        event = new DomainDisplayEvent(frame, domain);
-        mediator.displayDomain(event);
+    @Override
+    protected String infoHTML() {
+        return "<font face='Arial,Helvetica' size='+1' color='blue'>"
+                + getTitle()
+                + "</font>";
     }
-
 }

@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.ui.querytype;
+package org.apache.cayenne.modeler.ui.project.querytype;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -31,7 +31,6 @@ import java.awt.BorderLayout;
 
 public class QueryTypeView extends JDialog {
     
-    protected ButtonGroup buttonGroup;
     protected JRadioButton objectSelect;
     protected JRadioButton sqlSelect;
     protected JRadioButton procedureSelect;

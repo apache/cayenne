@@ -16,11 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.ui.project.editor.embeddable;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
+package org.apache.cayenne.modeler.ui.project.editor.embeddable.attributes;
 
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
@@ -31,6 +27,10 @@ import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.modeler.util.CellEditorForAttributeTable;
 import org.apache.cayenne.util.Util;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 
 public class EmbeddableAttributeTableModel extends CayenneTableModel {
 

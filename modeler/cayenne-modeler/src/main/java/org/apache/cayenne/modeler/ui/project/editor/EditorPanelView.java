@@ -24,9 +24,9 @@ import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.DataDomainTabbedView;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.DataMapView;
-import org.apache.cayenne.modeler.ui.project.editor.datanode.DataNodeEditorController;
+import org.apache.cayenne.modeler.ui.project.editor.datanode.DataNodeController;
 import org.apache.cayenne.modeler.ui.project.editor.dbentity.DbEntityTabbedView;
-import org.apache.cayenne.modeler.ui.project.editor.embeddable.EmbeddableTabbedView;
+import org.apache.cayenne.modeler.ui.project.editor.embeddable.EmbeddableView;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.ObjEntityTabbedView;
 import org.apache.cayenne.modeler.ui.project.editor.procedure.ProcedureQueryView;
 import org.apache.cayenne.modeler.ui.project.editor.procedure.ProcedureTabbedView;
@@ -59,7 +59,7 @@ public class EditorPanelView extends JPanel {
 
     private final DbEntityTabbedView dbDetailView;
     private final ObjEntityTabbedView objDetailView;
-    private final EmbeddableTabbedView embeddableView;
+    private final EmbeddableView embeddableView;
     private final DataDomainTabbedView dataDomainView;
     private final DataMapView dataMapView;
     private final ProcedureTabbedView procedureView;
@@ -80,7 +80,7 @@ public class EditorPanelView extends JPanel {
         dataDomainView = new DataDomainTabbedView(controller);
         add(dataDomainView, DOMAIN_VIEW);
 
-        DataNodeEditorController nodeController = new DataNodeEditorController(controller);
+        DataNodeController nodeController = new DataNodeController(controller);
         add(new JScrollPane(nodeController.getView()), NODE_VIEW);
 
         dataMapView = new DataMapView(controller);
@@ -101,7 +101,7 @@ public class EditorPanelView extends JPanel {
         ejbqlQueryView = new EjbqlTabbedView(controller);
         add(ejbqlQueryView, EJBQL_QUERY_VIEW);
 
-        embeddableView = new EmbeddableTabbedView(controller);
+        embeddableView = new EmbeddableView(controller);
         add(embeddableView, EMBEDDABLE_VIEW);
 
         objDetailView = new ObjEntityTabbedView(controller);
@@ -133,7 +133,7 @@ public class EditorPanelView extends JPanel {
         return procedureView;
     }
 
-    public EmbeddableTabbedView getEmbeddableView() {
+    public EmbeddableView getEmbeddableView() {
         return embeddableView;
     }
 

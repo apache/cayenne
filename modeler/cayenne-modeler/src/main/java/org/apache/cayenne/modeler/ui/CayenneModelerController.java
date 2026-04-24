@@ -25,8 +25,8 @@ import org.apache.cayenne.modeler.ModelerPreferences;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.action.ExitAction;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
-import org.apache.cayenne.modeler.ui.validator.ValidatorDialog;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportController;
+import org.apache.cayenne.modeler.ui.project.validator.ProjectValidatorDialogController;
 import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
 import org.apache.cayenne.modeler.mvc.RootController;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
@@ -221,7 +221,7 @@ public class CayenneModelerController extends RootController {
         allFailures.addAll(validationResult.getFailures());
 
         if (!allFailures.isEmpty()) {
-            ValidatorDialog.showDialog(view, validationResult.getFailures());
+            new ProjectValidatorDialogController(projectController).showOnFailures(validationResult.getFailures());
         }
     }
 

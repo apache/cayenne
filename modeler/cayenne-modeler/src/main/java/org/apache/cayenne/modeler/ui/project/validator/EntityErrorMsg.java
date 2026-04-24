@@ -17,55 +17,51 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.validator;
+package org.apache.cayenne.modeler.ui.project.validator;
 
 import javax.swing.JFrame;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.validation.ValidationFailure;
 
 /**
- * Attribute validation message.
+ * DataDomain validation message.
  * 
  */
-public class AttributeErrorMsg extends ValidationDisplayHandler {
+public class EntityErrorMsg extends ValidationDisplayHandler {
 
     protected DataMap map;
     protected Entity<?,?,?> entity;
-    protected Attribute<?,?,?> attribute;
 
     /**
-     * Constructor for AttributeErrorMsg.
+     * Constructor for EntityErrorMsg.
      */
-    public AttributeErrorMsg(ValidationFailure result) {
+    public EntityErrorMsg(ValidationFailure result) {
         super(result);
 
         Object object = result.getSource();
-        attribute = (Attribute<?,?,?>) object;
-        entity = attribute.getEntity();
+        entity = (Entity<?,?,?>) object;
         map = entity.getDataMap();
-        domain = (DataChannelDescriptor) Application.getInstance().getProject().getRootNode();
+        domain = (DataChannelDescriptor) Application
+                .getInstance()
+                .getProject()
+                .getRootNode();
     }
 
     public void displayField(ProjectController mediator, JFrame frame) {
-        AttributeDisplayEvent event = new AttributeDisplayEvent(frame, attribute, entity, map, domain);
-
-        // must first display entity, and then switch to relationship display ..
-        // so fire twice
+        EntityDisplayEvent event = new EntityDisplayEvent(frame, entity, map, domain);
         if (entity instanceof ObjEntity) {
             mediator.displayObjEntity(event);
-            mediator.displayObjAttribute(event);
-        } else if (entity instanceof DbEntity) {
+        }
+        else if (entity instanceof DbEntity) {
             mediator.displayDbEntity(event);
-            mediator.displayDbAttribute(event);
         }
     }
 }

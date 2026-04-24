@@ -17,34 +17,29 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.validator;
+package org.apache.cayenne.modeler.ui.project.validator;
 
 import javax.swing.JFrame;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.validation.ValidationFailure;
 
 /**
- * DataNode validation message.
- * 
+ * DataMap validation message.
  */
-public class DataNodeErrorMsg extends ValidationDisplayHandler {
+public class DataMapErrorMsg extends ValidationDisplayHandler {
 
-    protected DataNodeDescriptor node;
+    protected DataMap map;
 
-    /**
-     * Constructor for DataNodeErrorMsg.
-     * 
-     * @param result
-     */
-    public DataNodeErrorMsg(ValidationFailure result) {
+    public DataMapErrorMsg(ValidationFailure result) {
         super(result);
+
         Object object = result.getSource();
-        node = (DataNodeDescriptor) object;
+        map = (DataMap) object;
         domain = (DataChannelDescriptor) Application
                 .getInstance()
                 .getProject()
@@ -52,9 +47,8 @@ public class DataNodeErrorMsg extends ValidationDisplayHandler {
     }
 
     public void displayField(ProjectController mediator, JFrame frame) {
-        DataNodeDisplayEvent event;
-        event = new DataNodeDisplayEvent(frame, domain, node);
-        mediator.displayDataNode(event);
+        DataMapDisplayEvent event;
+        event = new DataMapDisplayEvent(frame, map, domain);
+        mediator.displayDataMap(event);
     }
-
 }

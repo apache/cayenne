@@ -17,38 +17,35 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.validator;
+package org.apache.cayenne.modeler.ui.project.validator;
 
 import javax.swing.JFrame;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
+import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.validation.ValidationFailure;
 
 /**
- * DataMap validation message.
+ * @since 1.1
  */
-public class DataMapErrorMsg extends ValidationDisplayHandler {
+public class QueryErrorMsg extends ValidationDisplayHandler {
 
-    protected DataMap map;
-
-    public DataMapErrorMsg(ValidationFailure result) {
+    public QueryErrorMsg(ValidationFailure result) {
         super(result);
-
-        Object object = result.getSource();
-        map = (DataMap) object;
-        domain = (DataChannelDescriptor) Application
-                .getInstance()
-                .getProject()
-                .getRootNode();
     }
 
     public void displayField(ProjectController mediator, JFrame frame) {
-        DataMapDisplayEvent event;
-        event = new DataMapDisplayEvent(frame, map, domain);
-        mediator.displayDataMap(event);
+        Object object = super.validationFailure.getSource();
+        DataChannelDescriptor domain = (DataChannelDescriptor) mediator
+                .getProject()
+                .getRootNode();
+        QueryDescriptor query = (QueryDescriptor) object;
+        DataMap map = query.getDataMap();
+
+        QueryDisplayEvent event = new QueryDisplayEvent(frame, query, map, domain);
+        mediator.displayQuery(event);
     }
 }

@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.util;
 
-import org.apache.cayenne.modeler.ui.validator.ValidatorDialog;
+import org.apache.cayenne.modeler.ui.project.validator.ProjectValidatorDialogView;
 
 import javax.swing.JTextField;
 import java.awt.event.FocusEvent;
@@ -63,7 +63,7 @@ public class JTextFieldValidator implements FocusListener {
     public void focusLost(FocusEvent e) {
         String text = jTextField.getText();
         if(validator.test(text)) {
-            jTextField.setBackground(ValidatorDialog.WARNING_COLOR);
+            jTextField.setBackground(ProjectValidatorDialogView.WARNING_COLOR);
             jTextField.setToolTipText(message.apply(text));
         }
     }

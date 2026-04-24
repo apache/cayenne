@@ -24,7 +24,6 @@ import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.util.Util;
 
-
 public abstract class DataSourceEditorController extends ChildController<ProjectController> {
 
     private DataNodeDescriptor node;
@@ -36,11 +35,11 @@ public abstract class DataSourceEditorController extends ChildController<Project
         initFieldListeners();
     }
 
-    public DataNodeDescriptor getNode() {
+    protected DataNodeDescriptor getNode() {
         return node;
     }
 
-    public void setNode(DataNodeDescriptor node) {
+    protected void setNode(DataNodeDescriptor node) {
         if (!Util.nullSafeEquals(this.node, node)) {
             this.node = node;
             refreshView();

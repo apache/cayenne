@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.ui.validator;
+package org.apache.cayenne.modeler.ui.project.validator;
 
 import javax.swing.JFrame;
 

@@ -19,24 +19,18 @@
 
 package org.apache.cayenne.modeler.util;
 
-import java.awt.Dialog;
-import java.awt.Frame;
-import java.awt.GraphicsConfiguration;
-import java.awt.HeadlessException;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ui.CayenneModelerFrame;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
+
+import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
-
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.KeyStroke;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
-
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.CayenneModelerFrame;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
 
 /**
  * Superclass of CayenneModeler dialogs. Adds support for popping hyperlinks 
@@ -45,16 +39,8 @@ import org.apache.cayenne.modeler.ui.project.ProjectController;
  */
 public class CayenneDialog extends JDialog implements HyperlinkListener {
 
-    public CayenneDialog() throws HeadlessException {
-        super();
-    }
-
     public CayenneDialog(Frame owner) throws HeadlessException {
         super(owner);
-    }
-
-    public CayenneDialog(Frame owner, boolean modal) throws HeadlessException {
-        super(owner, modal);
     }
 
     public CayenneDialog(Frame owner, String title) throws HeadlessException {
@@ -66,38 +52,9 @@ public class CayenneDialog extends JDialog implements HyperlinkListener {
         super(owner, title, modal);
     }
 
-    public CayenneDialog(
-        Frame owner,
-        String title,
-        boolean modal,
-        GraphicsConfiguration gc) {
-        super(owner, title, modal, gc);
-    }
-
-    public CayenneDialog(Dialog owner) throws HeadlessException {
-        super(owner);
-    }
-
-    public CayenneDialog(Dialog owner, boolean modal) throws HeadlessException {
-        super(owner, modal);
-    }
-
-    public CayenneDialog(Dialog owner, String title) throws HeadlessException {
-        super(owner, title);
-    }
-
     public CayenneDialog(Dialog owner, String title, boolean modal)
         throws HeadlessException {
         super(owner, title, modal);
-    }
-
-    public CayenneDialog(
-        Dialog owner,
-        String title,
-        boolean modal,
-        GraphicsConfiguration gc)
-        throws HeadlessException {
-        super(owner, title, modal, gc);
     }
 
     public CayenneDialog(CayenneModelerFrame frame, String title, boolean modal) {
@@ -156,7 +113,7 @@ public class CayenneDialog extends JDialog implements HyperlinkListener {
     /**
      * Returns current CayenneModeler mediator.
      */
-    public ProjectController getMediator() {
+    public ProjectController getProjectController() {
         return Application.getInstance().getFrameController().getProjectController();
     }
 

@@ -45,7 +45,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.validationbrowser.ValidationResultBrowserController;
+import org.apache.cayenne.modeler.ui.validation.ValidationController;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
@@ -322,7 +322,7 @@ public class MergerOptionsController extends ChildController<ProjectController> 
         if (failures == null || !failures.hasFailures()) {
             JOptionPane.showMessageDialog(view, "Migration Complete.");
         } else {
-            new ValidationResultBrowserController(this).startupAction(
+            new ValidationController(this).startupAction(
                     "Migration Complete",
                     "Migration finished. The following problem(s) were ignored.",
                     failures);

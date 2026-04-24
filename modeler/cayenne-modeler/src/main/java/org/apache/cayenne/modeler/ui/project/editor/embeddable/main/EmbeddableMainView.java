@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.ui.project.editor.embeddable;
+package org.apache.cayenne.modeler.ui.project.editor.embeddable.main;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -44,13 +44,13 @@ import java.awt.*;
 import java.util.Collection;
 import java.util.Iterator;
 
-public class EmbeddableTab extends JPanel implements EmbeddableDisplayListener {
+public class EmbeddableMainView extends JPanel implements EmbeddableDisplayListener {
 
     protected ProjectController mediator;
     protected TextAdapter className;
     protected TextAdapter comment;
 
-    public EmbeddableTab(ProjectController mediator) {
+    public EmbeddableMainView(ProjectController mediator) {
         this.mediator = mediator;
         initView();
         initController();

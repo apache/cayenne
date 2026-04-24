@@ -18,32 +18,23 @@
  ****************************************************************/
 
 
-package org.apache.cayenne.modeler.ui.validationbrowser;
-
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.ScrollPaneConstants;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+package org.apache.cayenne.modeler.ui.validation;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.Application;
 
+import javax.swing.*;
+import java.awt.*;
 
-public class ValidationResultBrowserView extends JDialog {
+public class ValidationView extends JDialog {
 
     protected JTextArea messageLabel;
     protected JTextArea errorsDisplay;
     protected JButton closeButton;
 
-    public ValidationResultBrowserView() {
+    public ValidationView() {
         super(Application.getFrame());
 
         this.closeButton = new JButton("Close");

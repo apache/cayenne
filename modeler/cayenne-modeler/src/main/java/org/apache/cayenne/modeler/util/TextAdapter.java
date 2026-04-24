@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.util;
 
-import org.apache.cayenne.modeler.ui.validator.ValidatorDialog;
+import org.apache.cayenne.modeler.ui.project.validator.ProjectValidatorDialogView;
 import org.apache.cayenne.modeler.undo.JTextFieldUndoListener;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -61,7 +61,7 @@ public abstract class TextAdapter {
 
     public TextAdapter(JTextComponent textComponent, boolean checkOnFocusLost, boolean checkOnTyping) {
 
-        this.errorColor = ValidatorDialog.WARNING_COLOR;
+        this.errorColor = ProjectValidatorDialogView.WARNING_COLOR;
         this.defaultBGColor = textComponent.getBackground();
         this.defaultToolTip = textComponent.getToolTipText();
         this.textComponent = textComponent;

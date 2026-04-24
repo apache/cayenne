@@ -16,64 +16,43 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
-package org.apache.cayenne.modeler.ui.validator;
+package org.apache.cayenne.modeler.ui.project.validator;
 
 import javax.swing.JFrame;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.Relationship;
+import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 import org.apache.cayenne.validation.ValidationFailure;
 
-/**
- * Relationship validation message.
- * 
- */
-public class RelationshipErrorMsg extends ValidationDisplayHandler {
+public class EmbeddableErrorMsg extends ValidationDisplayHandler {
 
     protected DataMap map;
-    protected Entity<?,?,?> entity;
-    protected Relationship<?,?,?> rel;
+    protected Embeddable embeddable;
 
-    /**
-     * Constructor for RelationshipErrorMsg.
-     */
-    public RelationshipErrorMsg(ValidationFailure result) {
+    public EmbeddableErrorMsg(ValidationFailure result) {
         super(result);
+
         Object object = result.getSource();
-        rel = (Relationship<?,?,?>) object;
-        entity = rel.getSourceEntity();
-        map = entity.getDataMap();
+        embeddable = (Embeddable) object;
+        map = embeddable.getDataMap();
         domain = (DataChannelDescriptor) Application
                 .getInstance()
                 .getProject()
                 .getRootNode();
     }
 
+    @Override
     public void displayField(ProjectController mediator, JFrame frame) {
-        RelationshipDisplayEvent event = new RelationshipDisplayEvent(
+        EmbeddableDisplayEvent event = new EmbeddableDisplayEvent(
                 frame,
-                rel,
-                entity,
+                embeddable,
                 map,
                 domain);
-
-        // must first display entity, and then switch to relationship display .. so fire
-        // twice
-        if (entity instanceof ObjEntity) {
-            mediator.displayObjEntity(event);
-            mediator.displayObjRelationship(event);
-        }
-        else if (entity instanceof DbEntity) {
-            mediator.displayDbEntity(event);
-            mediator.displayDbRelationship(event);
-        }
+        mediator.displayEmbeddable(event);
     }
+
 }

@@ -17,51 +17,37 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.validator;
+package org.apache.cayenne.modeler.ui.project.validator;
 
 import javax.swing.JFrame;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 import org.apache.cayenne.validation.ValidationFailure;
 
 /**
  * DataDomain validation message.
  * 
  */
-public class EntityErrorMsg extends ValidationDisplayHandler {
-
-    protected DataMap map;
-    protected Entity<?,?,?> entity;
+public class DomainErrorMsg extends ValidationDisplayHandler {
 
     /**
-     * Constructor for EntityErrorMsg.
+     * Constructor for DomainErrorMsg.
+     * 
+     * @param result
      */
-    public EntityErrorMsg(ValidationFailure result) {
+    public DomainErrorMsg(ValidationFailure result) {
         super(result);
 
         Object object = result.getSource();
-        entity = (Entity<?,?,?>) object;
-        map = entity.getDataMap();
-        domain = (DataChannelDescriptor) Application
-                .getInstance()
-                .getProject()
-                .getRootNode();
+        domain = (DataChannelDescriptor) object;
     }
 
     public void displayField(ProjectController mediator, JFrame frame) {
-        EntityDisplayEvent event = new EntityDisplayEvent(frame, entity, map, domain);
-        if (entity instanceof ObjEntity) {
-            mediator.displayObjEntity(event);
-        }
-        else if (entity instanceof DbEntity) {
-            mediator.displayDbEntity(event);
-        }
+        DomainDisplayEvent event;
+        event = new DomainDisplayEvent(frame, domain);
+        mediator.displayDomain(event);
     }
+
 }

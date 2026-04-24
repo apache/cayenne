@@ -38,9 +38,9 @@ import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ui.errors.ErrorsController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.errordebug.ErrorDebugDialog;
-import org.apache.cayenne.modeler.ui.querytype.QueryTypeController;
+import org.apache.cayenne.modeler.ui.project.querytype.QueryTypeController;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.ObjCallbackMethod;
 import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
 import org.apache.cayenne.modeler.undo.PasteCompoundUndoableEdit;
@@ -136,7 +136,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
         } catch (UnsupportedFlavorException ufe) {
             // do nothing
         } catch (Exception ex) {
-            ErrorDebugDialog.guiException(ex);
+            ErrorsController.guiException(ex);
         }
     }
 

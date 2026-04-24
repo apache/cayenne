@@ -17,35 +17,40 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.validator;
+package org.apache.cayenne.modeler.ui.project.validator;
 
 import javax.swing.JFrame;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
 import org.apache.cayenne.validation.ValidationFailure;
 
-/**
- * @since 1.1
- */
-public class QueryErrorMsg extends ValidationDisplayHandler {
 
-    public QueryErrorMsg(ValidationFailure result) {
+public class ProcedureErrorMsg extends ValidationDisplayHandler {
+
+    public ProcedureErrorMsg(ValidationFailure result) {
         super(result);
     }
 
     public void displayField(ProjectController mediator, JFrame frame) {
         Object object = super.validationFailure.getSource();
+
         DataChannelDescriptor domain = (DataChannelDescriptor) mediator
                 .getProject()
                 .getRootNode();
-        QueryDescriptor query = (QueryDescriptor) object;
-        DataMap map = query.getDataMap();
 
-        QueryDisplayEvent event = new QueryDisplayEvent(frame, query, map, domain);
-        mediator.displayQuery(event);
+        Procedure procedure = (Procedure) object;
+        DataMap map = procedure.getDataMap();
+
+        ProcedureDisplayEvent event = new ProcedureDisplayEvent(
+                frame,
+                procedure,
+                map,
+                domain);
+        event.setTabReset(true);
+        mediator.displayProcedure(event);
     }
 }

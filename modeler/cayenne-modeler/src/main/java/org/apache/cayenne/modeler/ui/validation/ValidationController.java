@@ -18,7 +18,7 @@
  ****************************************************************/
 
 
-package org.apache.cayenne.modeler.ui.validationbrowser;
+package org.apache.cayenne.modeler.ui.validation;
 
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.mvc.RootController;
@@ -29,14 +29,13 @@ import javax.swing.WindowConstants;
 import java.awt.Component;
 import java.util.Collection;
 
+public class ValidationController extends ChildController<RootController> {
 
-public class ValidationResultBrowserController extends ChildController<RootController> {
+    private final ValidationView view;
 
-    private final ValidationResultBrowserView view;
-
-    public ValidationResultBrowserController(RootController parent) {
+    public ValidationController(RootController parent) {
         super(parent);
-        this.view = new ValidationResultBrowserView();
+        this.view = new ValidationView();
         view.getCloseButton().addActionListener(e -> closeDialogAction());
     }
 

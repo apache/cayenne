@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.embeddable;
 
+import org.apache.cayenne.modeler.ui.project.editor.embeddable.attributes.EmbeddableAttributesView;
+import org.apache.cayenne.modeler.ui.project.editor.embeddable.main.EmbeddableMainView;
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
@@ -33,19 +35,19 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import java.awt.*;
 
-public class EmbeddableTabbedView extends JTabbedPane {
+public class EmbeddableView extends JTabbedPane {
 
     private final JScrollPane embeddablePanel;
-    private final EmbeddableAttributeTab attributesPanel;
+    private final EmbeddableAttributesView attributesPanel;
 
-    public EmbeddableTabbedView(ProjectController controller) {
+    public EmbeddableView(ProjectController controller) {
 
         setTabPlacement(JTabbedPane.TOP);
 
-        embeddablePanel = new JScrollPane(new EmbeddableTab(controller));
+        embeddablePanel = new JScrollPane(new EmbeddableMainView(controller));
         addTab("Embeddable", embeddablePanel);
 
-        attributesPanel = new EmbeddableAttributeTab(controller);
+        attributesPanel = new EmbeddableAttributesView(controller);
         addTab("Attributes", attributesPanel);
 
         controller.addEmbeddableAttributeDisplayListener(this::currentEmbeddableAttributeChanged);

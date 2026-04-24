@@ -45,7 +45,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DataNodeEditorController extends ChildController<ProjectController> {
+public class DataNodeController extends ChildController<ProjectController> {
 
     protected static final String NO_LOCAL_DATA_SOURCE = "Select DataSource for Local Work...";
     private final static String XML_POOLING_DATA_SOURCE_FACTORY = XMLPoolingDataSourceFactory.class.getName();
@@ -70,13 +70,13 @@ public class DataNodeEditorController extends ChildController<ProjectController>
     protected Runnable nodeChangeProcessor;
     private boolean refreshing;
 
-    public DataNodeEditorController(ProjectController parent) {
+    public DataNodeController(ProjectController parent) {
 
         super(parent);
 
         this.view = new DataNodeView();
         this.datasourceEditors = new HashMap<>();
-        this.nodeChangeProcessor = () -> parent.fireDataNodeEvent(new DataNodeEvent(DataNodeEditorController.this, node));
+        this.nodeChangeProcessor = () -> parent.fireDataNodeEvent(new DataNodeEvent(DataNodeController.this, node));
         this.defaultSubeditor = new CustomDataSourceEditorController(parent, nodeChangeProcessor);
 
         initController();
@@ -181,7 +181,7 @@ public class DataNodeEditorController extends ChildController<ProjectController>
             } catch (ValidationException ignored) {
                 return;
             }
-            DataNodeEvent e = new DataNodeEvent(DataNodeEditorController.this, node);
+            DataNodeEvent e = new DataNodeEvent(DataNodeController.this, node);
             e.setOldName(oldName);
             parent.fireDataNodeEvent(e);
         });
@@ -189,19 +189,19 @@ public class DataNodeEditorController extends ChildController<ProjectController>
         TextBinder.bind(view.getCustomAdapter(), v -> {
             if (node == null) return;
             setAdapterName(v);
-            parent.fireDataNodeEvent(new DataNodeEvent(DataNodeEditorController.this, node));
+            parent.fireDataNodeEvent(new DataNodeEvent(DataNodeController.this, node));
         });
 
         view.getFactories().addActionListener(e -> {
             if (refreshing) return;
             setFactoryName((String) view.getFactories().getSelectedItem());
-            parent.fireDataNodeEvent(new DataNodeEvent(DataNodeEditorController.this, node));
+            parent.fireDataNodeEvent(new DataNodeEvent(DataNodeController.this, node));
         });
 
         view.getSchemaUpdateStrategy().addActionListener(e -> {
             if (refreshing) return;
             setSchemaUpdateStrategy((String) view.getSchemaUpdateStrategy().getSelectedItem());
-            parent.fireDataNodeEvent(new DataNodeEvent(DataNodeEditorController.this, node));
+            parent.fireDataNodeEvent(new DataNodeEvent(DataNodeController.this, node));
         });
 
         // one way bindings

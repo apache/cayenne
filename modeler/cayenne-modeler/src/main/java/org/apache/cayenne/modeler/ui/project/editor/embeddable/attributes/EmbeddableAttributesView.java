@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.ui.project.editor.embeddable;
+package org.apache.cayenne.modeler.ui.project.editor.embeddable.attributes;
 
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -53,7 +53,7 @@ import java.awt.*;
 import java.util.EventObject;
 import java.util.List;
 
-public class EmbeddableAttributeTab extends JPanel implements
+public class EmbeddableAttributesView extends JPanel implements
         EmbeddableAttributeListener, EmbeddableDisplayListener, EmbeddableListener,
         ExistingSelectionProcessor {
 
@@ -61,7 +61,7 @@ public class EmbeddableAttributeTab extends JPanel implements
     private CayenneTable table;
     private TableColumnPreferences tablePreferences;
 
-    public EmbeddableAttributeTab(ProjectController controller) {
+    public EmbeddableAttributesView(ProjectController controller) {
         this.controller = controller;
         init();
         initController();

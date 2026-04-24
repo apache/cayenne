@@ -23,7 +23,7 @@ package org.apache.cayenne.modeler.util;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.CayenneModelerFrame;
-import org.apache.cayenne.modeler.ui.errordebug.ErrorDebugDialog;
+import org.apache.cayenne.modeler.ui.errors.ErrorsController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
 import org.apache.cayenne.project.Project;
@@ -152,7 +152,7 @@ public abstract class CayenneAction extends AbstractAction {
             performAction(e);
         }
         catch (Throwable th) {
-            ErrorDebugDialog.guiException(th);
+            ErrorsController.guiException(th);
         }
     }
 

@@ -17,21 +17,17 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.validator;
+package org.apache.cayenne.modeler.ui.project.validator;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.CayenneModelerFrame;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.DisableValidationInspectionAction;
 import org.apache.cayenne.modeler.action.ShowValidationOptionAction;
-import org.apache.cayenne.modeler.action.ValidateAction;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.util.CayenneDialog;
-import org.apache.cayenne.project.validation.Inspection;
-import org.apache.cayenne.project.validation.ProjectValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 
 import javax.swing.*;
@@ -49,51 +45,23 @@ import java.util.List;
 /**
  * Dialog for displaying validation errors.
  */
-public class ValidatorDialog extends CayenneDialog {
-
-    protected static ValidatorDialog instance;
+public class ProjectValidatorDialogView extends CayenneDialog {
 
     public static final Color WARNING_COLOR = new Color(245, 194, 194);
-    public static final Color ERROR_COLOR = new Color(237, 121, 121);
 
-    protected JTable problemsTable;
-    protected JButton closeButton;
-    protected JButton refreshButton;
-    protected List<ValidationFailure> validationObjects;
+    private final ProjectValidatorDialogController controller;
+    private final JTable problemsTable;
 
-    public static void showDialog(CayenneModelerFrame frame, List<ValidationFailure> list) {
-        if (instance == null) {
-            instance = new ValidatorDialog(frame);
-            instance.centerWindow();
-        }
+    private List<ValidationFailure> validationObjects;
 
-        instance.refreshFromModel(list);
-        instance.setVisible(true);
-    }
+    public ProjectValidatorDialogView(ProjectValidatorDialogController controller) {
+        super(Application.getFrame(), "Validation Problems", false);
 
-    public static void showValidationSuccess(CayenneModelerFrame editor) {
-
-        if (instance != null) {
-            instance.dispose();
-            instance = null;
-        }
-
-        JOptionPane.showMessageDialog(editor, "Cayenne project is valid.");
-    }
-
-    protected ValidatorDialog(CayenneModelerFrame editor) {
-        super(editor, "Validation Problems", false);
-
+        this.controller = controller;
         this.validationObjects = Collections.emptyList();
 
-        initView();
-        initController();
-    }
-
-    private void initView() {
-
-        refreshButton = new JButton("Refresh");
-        closeButton = new JButton("Close");
+        JButton refreshButton = new JButton("Refresh");
+        JButton closeButton = new JButton("Close");
 
         problemsTable = new JTable();
         problemsTable.setRowHeight(25);
@@ -109,7 +77,6 @@ public class ValidatorDialog extends CayenneDialog {
         popup.add(actionManager.getAction(DisableValidationInspectionAction.class).buildMenu());
         TablePopupHandler.install(problemsTable, popup);
 
-        // assemble
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(new FormLayout("fill:200dlu:grow", "pref, 3dlu, fill:40dlu:grow"));
 
@@ -130,21 +97,19 @@ public class ValidatorDialog extends CayenneDialog {
 
         // TODO: use preferences
         setSize(450, 350);
-    }
 
-    private void initController() {
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         problemsTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        problemsTable.getSelectionModel().addListSelectionListener(e -> showFailedObject());
+        problemsTable.getSelectionModel().addListSelectionListener(e -> fireFailedObjectSelection());
         problemsTable.getSelectionModel().addListSelectionListener(new ContextMenuSelectionListener());
 
-        closeButton.addActionListener(e -> {
-            setVisible(false);
-            dispose();
-        });
+        closeButton.addActionListener(e -> controller.onClose());
+        refreshButton.addActionListener(controller::onRefresh);
+    }
 
-        refreshButton.addActionListener(e -> Application.getInstance().getActionManager()
-                .getAction(ValidateAction.class).actionPerformed(e));
+    public void showProblems(List<ValidationFailure> list) {
+        refreshFromModel(list);
+        setVisible(true);
     }
 
     protected void refreshFromModel(List<ValidationFailure> list) {
@@ -152,13 +117,13 @@ public class ValidatorDialog extends CayenneDialog {
         problemsTable.setModel(new ValidatorTableModel());
     }
 
-    private void showFailedObject() {
+    private void fireFailedObjectSelection() {
         if (problemsTable.getSelectedRow() < 0) {
             return;
         }
         ValidationFailure failure = (ValidationFailure) problemsTable.getModel()
                 .getValueAt(problemsTable.getSelectedRow(), 0);
-        ValidationDisplayHandler.getErrorMsg(failure).displayField(getMediator(), super.getParentEditor());
+        controller.onFailedObjectSelected(failure);
     }
 
     class ValidatorTableModel extends AbstractTableModel {
@@ -173,10 +138,6 @@ public class ValidatorDialog extends CayenneDialog {
 
         public Object getValueAt(int row, int col) {
             return validationObjects.get(row);
-        }
-
-        public boolean isCellEditable(int row, int col) {
-            return false;
         }
 
         public String getColumnName(int column) {
@@ -194,14 +155,13 @@ public class ValidatorDialog extends CayenneDialog {
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
                                                        boolean hasFocus, int row, int column) {
 
-            boolean error = false;
             if (value != null) {
                 ValidationFailure info = (ValidationFailure) value;
                 value = info.getDescription();
                 setToolTipText(info.getDescription());
             }
 
-            setBackground(error ? ERROR_COLOR : WARNING_COLOR);
+            setBackground(WARNING_COLOR);
             return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         }
     }
@@ -212,26 +172,12 @@ public class ValidatorDialog extends CayenneDialog {
         public void valueChanged(ListSelectionEvent e) {
             int index = problemsTable.getSelectedRow();
             if (e.getValueIsAdjusting() || index < 0) {
-                // not valid
-                setActionsFor(null);
+                controller.onSelectionChanged(null);
                 return;
             }
 
             ValidationFailure failure = (ValidationFailure) problemsTable.getModel().getValueAt(index, 0);
-            Inspection inspection = failure instanceof ProjectValidationFailure
-                    ? ((ProjectValidationFailure) failure).getInspection()
-                    : null;
-            setActionsFor(inspection);
+            controller.onSelectionChanged(failure);
         }
-
-        private void setActionsFor(Inspection inspection) {
-            ActionManager actionManager = Application.getInstance().getActionManager();
-            actionManager.getAction(DisableValidationInspectionAction.class)
-                    .putInspection(inspection)
-                    .setEnabled(inspection != null);
-            actionManager.getAction(ShowValidationOptionAction.class)
-                    .putInspection(inspection);
-        }
-
     }
 }

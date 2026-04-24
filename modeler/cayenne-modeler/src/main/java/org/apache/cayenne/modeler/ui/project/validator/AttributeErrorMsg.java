@@ -16,43 +16,56 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.ui.validator;
+
+package org.apache.cayenne.modeler.ui.project.validator;
 
 import javax.swing.JFrame;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
+import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
 import org.apache.cayenne.validation.ValidationFailure;
 
-public class EmbeddableErrorMsg extends ValidationDisplayHandler {
+/**
+ * Attribute validation message.
+ * 
+ */
+public class AttributeErrorMsg extends ValidationDisplayHandler {
 
     protected DataMap map;
-    protected Embeddable embeddable;
+    protected Entity<?,?,?> entity;
+    protected Attribute<?,?,?> attribute;
 
-    public EmbeddableErrorMsg(ValidationFailure result) {
+    /**
+     * Constructor for AttributeErrorMsg.
+     */
+    public AttributeErrorMsg(ValidationFailure result) {
         super(result);
 
         Object object = result.getSource();
-        embeddable = (Embeddable) object;
-        map = embeddable.getDataMap();
-        domain = (DataChannelDescriptor) Application
-                .getInstance()
-                .getProject()
-                .getRootNode();
+        attribute = (Attribute<?,?,?>) object;
+        entity = attribute.getEntity();
+        map = entity.getDataMap();
+        domain = (DataChannelDescriptor) Application.getInstance().getProject().getRootNode();
     }
 
-    @Override
     public void displayField(ProjectController mediator, JFrame frame) {
-        EmbeddableDisplayEvent event = new EmbeddableDisplayEvent(
-                frame,
-                embeddable,
-                map,
-                domain);
-        mediator.displayEmbeddable(event);
-    }
+        AttributeDisplayEvent event = new AttributeDisplayEvent(frame, attribute, entity, map, domain);
 
+        // must first display entity, and then switch to relationship display ..
+        // so fire twice
+        if (entity instanceof ObjEntity) {
+            mediator.displayObjEntity(event);
+            mediator.displayObjAttribute(event);
+        } else if (entity instanceof DbEntity) {
+            mediator.displayDbEntity(event);
+            mediator.displayDbAttribute(event);
+        }
+    }
 }

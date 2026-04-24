@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.validator.ValidatorDialog;
+import org.apache.cayenne.modeler.ui.project.validator.ProjectValidatorDialogController;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.validation.ProjectValidator;
 import org.apache.cayenne.validation.ValidationResult;
@@ -57,10 +57,10 @@ public class ValidateAction extends CayenneAction {
                 .getRootNode());
 
         if (!validationResult.getFailures().isEmpty()) {
-            ValidatorDialog.showDialog(Application.getFrame(), validationResult.getFailures());
+            new ProjectValidatorDialogController(getProjectController()).showOnFailures(validationResult.getFailures());
         }
         else {
-            ValidatorDialog.showValidationSuccess(Application.getFrame());
+            ProjectValidatorDialogController.showOnSuccess();
         }
     }
 }

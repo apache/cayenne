@@ -24,7 +24,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.validationbrowser.ValidationResultBrowserController;
+import org.apache.cayenne.modeler.ui.validation.ValidationController;
 import org.apache.cayenne.modeler.ui.datasource.DataSourceController;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
@@ -246,7 +246,7 @@ public class DBGeneratorOptionsController extends ChildController<ProjectControl
         if (failures.isEmpty()) {
             JOptionPane.showMessageDialog(view, "Schema Generation Complete.");
         } else {
-            new ValidationResultBrowserController(this)
+            new ValidationController(this)
                     .startupAction(
                             "Schema Generation Complete",
                             "Schema generation finished. The following problem(s) were ignored.",

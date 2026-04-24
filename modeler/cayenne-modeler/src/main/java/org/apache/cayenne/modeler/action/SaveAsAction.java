@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.action;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.validator.ValidatorDialog;
+import org.apache.cayenne.modeler.ui.project.validator.ProjectValidatorDialogController;
 import org.apache.cayenne.modeler.event.model.ProjectOnSaveEvent;
 import org.apache.cayenne.modeler.event.model.ProjectSavedEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
@@ -171,7 +171,8 @@ public class SaveAsAction extends CayenneAction {
 
         // If there were errors or warnings at validation, display them
         if (!validationResult.getFailures().isEmpty()) {
-            ValidatorDialog.showDialog(Application.getFrame(), validationResult.getFailures());
+            new ProjectValidatorDialogController(getProjectController())
+                    .showOnFailures(validationResult.getFailures());
         }
     }
 

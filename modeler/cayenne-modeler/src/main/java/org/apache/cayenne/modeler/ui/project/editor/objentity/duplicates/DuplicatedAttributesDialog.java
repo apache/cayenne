@@ -174,7 +174,7 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
             duplicatedAttributes.add(attributeInfo);
         }
 
-        attributesTable.setModel(new DuplicatedAttributeTableModel(getMediator(), this, duplicatedAttributes));
+        attributesTable.setModel(new DuplicatedAttributeTableModel(getProjectController(), this, duplicatedAttributes));
 
     }
 

@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.CayenneModelerController;
-import org.apache.cayenne.modeler.ui.errordebug.ErrorDebugDialog;
+import org.apache.cayenne.modeler.ui.errors.ErrorsController;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectLoader;
 import org.apache.cayenne.project.upgrade.UpgradeMetaData;
@@ -175,7 +175,7 @@ public class OpenProjectAction extends ProjectAction {
             openProjectResourse(rootSource, controller);
         } catch (Exception ex) {
             LOGGER.warn("Error loading project file.", ex);
-            ErrorDebugDialog.guiWarning(ex, "Error loading project");
+            ErrorsController.guiWarning(ex, "Error loading project");
         }
     }
 
