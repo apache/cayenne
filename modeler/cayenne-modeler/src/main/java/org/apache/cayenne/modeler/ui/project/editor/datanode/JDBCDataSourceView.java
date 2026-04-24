@@ -17,21 +17,16 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor.datanode;
-
-import java.awt.BorderLayout;
-
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-
-import org.apache.cayenne.modeler.util.JTextFieldValidator;
-import org.apache.cayenne.modeler.util.JTextFieldUndoable;
+package org.apache.cayenne.modeler.ui.project.editor.datanode;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.modeler.util.JTextFieldUndoable;
+import org.apache.cayenne.modeler.util.JTextFieldValidator;
+
+import javax.swing.*;
+import java.awt.*;
 
 public class JDBCDataSourceView extends JPanel {
 

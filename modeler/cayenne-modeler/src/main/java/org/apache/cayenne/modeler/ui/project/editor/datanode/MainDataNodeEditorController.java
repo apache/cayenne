@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor.datanode;
+package org.apache.cayenne.modeler.ui.project.editor.datanode;
 
 import org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;

@@ -17,31 +17,37 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor.datanode;
+package org.apache.cayenne.modeler.ui.project.editor.datanode;
 
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.mvc.ChildController;
-
-import javax.swing.*;
-import java.awt.*;
+import org.apache.cayenne.util.Util;
 
 
-public class DataNodeEditorController extends ChildController<ProjectController> {
+public abstract class DataSourceEditorController extends ChildController<ProjectController> {
 
-    protected JTabbedPane view;
+    private DataNodeDescriptor node;
+    protected Runnable nodeChangeProcessor;
 
-    public DataNodeEditorController(ProjectController parent) {
-        super(parent);
-        
-        this.view = new JTabbedPane();
-        view.addTab("Main", new JScrollPane(new MainDataNodeEditorController(parent,this).getView()));
+    public DataSourceEditorController(ProjectController controller, Runnable nodeChangeProcessor) {
+        super(controller);
+        this.nodeChangeProcessor = nodeChangeProcessor;
+        initFieldListeners();
     }
 
-    public Component getView() {
-        return view;
+    public DataNodeDescriptor getNode() {
+        return node;
     }
-    
-    public JTabbedPane getTabComponent() {
-        return view;
+
+    public void setNode(DataNodeDescriptor node) {
+        if (!Util.nullSafeEquals(this.node, node)) {
+            this.node = node;
+            refreshView();
+        }
     }
+
+    protected abstract void initFieldListeners();
+
+    protected abstract void refreshView();
 }
