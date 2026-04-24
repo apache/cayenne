@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.dialog;
+package org.apache.cayenne.modeler.ui.confirmremove;
 
 import java.util.prefs.Preferences;
 

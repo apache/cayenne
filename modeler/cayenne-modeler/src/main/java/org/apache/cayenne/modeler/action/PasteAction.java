@@ -39,7 +39,7 @@ import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
+import org.apache.cayenne.modeler.ui.errordebug.ErrorDebugDialog;
 import org.apache.cayenne.modeler.ui.querytype.QueryTypeController;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.ObjCallbackMethod;
 import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;

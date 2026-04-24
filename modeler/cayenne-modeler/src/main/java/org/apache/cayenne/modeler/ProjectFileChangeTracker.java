@@ -23,7 +23,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.cayenne.modeler.action.SaveAction;
-import org.apache.cayenne.modeler.dialog.FileDeletedDialog;
+import org.apache.cayenne.modeler.ui.filedeleted.FileDeletedDialog;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.project.Project;
 import org.slf4j.Logger;

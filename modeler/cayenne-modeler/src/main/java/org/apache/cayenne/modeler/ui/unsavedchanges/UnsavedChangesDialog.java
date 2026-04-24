@@ -17,54 +17,51 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog;
+package org.apache.cayenne.modeler.ui.unsavedchanges;
 
 import java.awt.Component;
-import java.io.File;
-
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
+public class UnsavedChangesDialog {
 
-public class OverwriteDialog {
-
-    private static final String SELECT_ANOTHER = "Select Another";
-    private static final String OVERWRITE = "Overwrite";
+    private static final String SAVE_AND_CLOSE = "Save Changes";
+    private static final String CLOSE_WITHOUT_SAVE = "Discard Changes";
     private static final String CANCEL = "Cancel";
-    private static final String[] OPTIONS = new String[] {
-            SELECT_ANOTHER, OVERWRITE, CANCEL
-    };
 
-    protected File file;
     protected Component parent;
     protected String result = CANCEL;
 
-    public OverwriteDialog(File file, Component parent) {
-        this.file = file;
+    public UnsavedChangesDialog(Component parent) {
         this.parent = parent;
     }
-
+    
     public void show() {
-        JOptionPane pane = new JOptionPane("Do you want to overwrite an existing file: "
-                + file, JOptionPane.QUESTION_MESSAGE);
-        pane.setOptions(OPTIONS);
+        JOptionPane pane = new JOptionPane(
+                "You have unsaved changes. Do you want to save them?",
+                JOptionPane.QUESTION_MESSAGE);
+        pane.setOptions(new Object[] {SAVE_AND_CLOSE, CLOSE_WITHOUT_SAVE, CANCEL});
+        pane.setInitialValue(SAVE_AND_CLOSE);
 
-        JDialog dialog = pane.createDialog(parent, "File exists");
-        dialog.setVisible(true);
-
+        pane.createDialog(parent, "Unsaved Changes").setVisible(true);
         Object selectedValue = pane.getValue();
-        result = (selectedValue != null) ? selectedValue.toString() : CANCEL;
+        result = CANCEL;
+        if (SAVE_AND_CLOSE.equals(selectedValue)) {
+            result = SAVE_AND_CLOSE;
+        } else if (CLOSE_WITHOUT_SAVE.equals(selectedValue)) {
+            result = CLOSE_WITHOUT_SAVE;
+        }
     }
 
-    public boolean shouldSelectAnother() {
-        return SELECT_ANOTHER.equals(result);
+    public boolean shouldSave() {
+        return SAVE_AND_CLOSE.equals(result);
     }
 
-    public boolean shouldOverwrite() {
-        return OVERWRITE.equals(result);
+    public boolean shouldNotSave() {
+        return CLOSE_WITHOUT_SAVE.equals(result);
     }
 
     public boolean shouldCancel() {
         return result == null || CANCEL.equals(result);
     }
 }
+

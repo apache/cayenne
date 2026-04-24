@@ -24,7 +24,7 @@ import java.awt.event.ActionEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.CayenneModelerController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.dialog.UnsavedChangesDialog;
+import org.apache.cayenne.modeler.ui.unsavedchanges.UnsavedChangesDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
 

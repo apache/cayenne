@@ -28,7 +28,7 @@ import javax.swing.filechooser.FileFilter;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dialog.OverwriteDialog;
+import org.apache.cayenne.modeler.ui.overwrite.OverwriteDialog;
 import org.apache.cayenne.modeler.util.FileFilters;
 import org.apache.cayenne.project.Project;
 import org.slf4j.Logger;

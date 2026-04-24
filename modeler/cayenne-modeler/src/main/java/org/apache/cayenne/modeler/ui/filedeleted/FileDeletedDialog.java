@@ -17,51 +17,66 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog;
+package org.apache.cayenne.modeler.ui.filedeleted;
 
 import java.awt.Component;
+
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
-public class UnsavedChangesDialog {
+/**
+ * A dialog to show if cayenne.xml was renamed or deleted by other program
+ */
+public class FileDeletedDialog {
 
-    private static final String SAVE_AND_CLOSE = "Save Changes";
-    private static final String CLOSE_WITHOUT_SAVE = "Discard Changes";
+    private static final String SAVE = "Save Changes";
+    private static final String CLOSE = "Close Project";
     private static final String CANCEL = "Cancel";
+
+    private static final String[] OPTIONS = new String[] {
+            SAVE, CLOSE, CANCEL
+    };
 
     protected Component parent;
     protected String result = CANCEL;
 
-    public UnsavedChangesDialog(Component parent) {
+    public FileDeletedDialog(Component parent) {
         this.parent = parent;
     }
-    
+
     public void show() {
         JOptionPane pane = new JOptionPane(
-                "You have unsaved changes. Do you want to save them?",
+                "One or more project files were deleted or renamed. "
+                        + "Do you want to save the changes or close the project?",
                 JOptionPane.QUESTION_MESSAGE);
-        pane.setOptions(new Object[] {SAVE_AND_CLOSE, CLOSE_WITHOUT_SAVE, CANCEL});
-        pane.setInitialValue(SAVE_AND_CLOSE);
+        pane.setOptions(OPTIONS);
 
-        pane.createDialog(parent, "Unsaved Changes").setVisible(true);
+        JDialog dialog = pane.createDialog(parent, "File deleted");
+        dialog.setVisible(true);
+
         Object selectedValue = pane.getValue();
-        result = CANCEL;
-        if (SAVE_AND_CLOSE.equals(selectedValue)) {
-            result = SAVE_AND_CLOSE;
-        } else if (CLOSE_WITHOUT_SAVE.equals(selectedValue)) {
-            result = CLOSE_WITHOUT_SAVE;
+        // need to do an if..else chain, since
+        // sometimes values are unexpected
+        if (SAVE.equals(selectedValue)) {
+            result = SAVE;
+        }
+        else if (CLOSE.equals(selectedValue)) {
+            result = CLOSE;
+        }
+        else {
+            result = CANCEL;
         }
     }
 
     public boolean shouldSave() {
-        return SAVE_AND_CLOSE.equals(result);
+        return SAVE.equals(result);
     }
 
-    public boolean shouldNotSave() {
-        return CLOSE_WITHOUT_SAVE.equals(result);
+    public boolean shouldClose() {
+        return CLOSE.equals(result);
     }
 
     public boolean shouldCancel() {
         return result == null || CANCEL.equals(result);
     }
 }
-

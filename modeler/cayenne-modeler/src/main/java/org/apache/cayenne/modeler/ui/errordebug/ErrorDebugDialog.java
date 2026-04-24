@@ -18,10 +18,11 @@
  ****************************************************************/
 
 
-package org.apache.cayenne.modeler.dialog;
+package org.apache.cayenne.modeler.ui.errordebug;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.CayenneModelerFrame;
+import org.apache.cayenne.modeler.ui.warning.WarningDialog;
 import org.apache.cayenne.modeler.util.CayenneDialog;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;

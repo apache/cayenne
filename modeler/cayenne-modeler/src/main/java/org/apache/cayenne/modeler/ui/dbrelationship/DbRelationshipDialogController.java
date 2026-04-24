@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.dbrelationship;
 
-import org.apache.cayenne.modeler.dialog.WarningDialogByDbTargetChange;
+import org.apache.cayenne.modeler.ui.warning.WarningDialogByDbTargetChange;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.naming.NameBuilder;

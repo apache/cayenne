@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog;
+package org.apache.cayenne.modeler.ui.warning;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
