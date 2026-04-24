@@ -33,11 +33,7 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Font;
 
-/**
- * A view for the main DataNode editor tab.
- * 
- */
-public class MainDataNodeView extends JPanel {
+public class DataNodeView extends JPanel {
 
     protected JTextField dataNodeName;
     protected JComboBox<String> factories;
@@ -48,7 +44,7 @@ public class MainDataNodeView extends JPanel {
     protected JButton configLocalDataSources;
     protected JComboBox<String> schemaUpdateStrategy;
 
-    public MainDataNodeView() {
+    public DataNodeView() {
 
         // create widgets
         this.dataNodeName = new JTextFieldUndoable();

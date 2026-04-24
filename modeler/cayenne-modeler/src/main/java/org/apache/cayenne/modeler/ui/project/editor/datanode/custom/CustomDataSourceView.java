@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.project.editor.datanode;
+package org.apache.cayenne.modeler.ui.project.editor.datanode.custom;
 
 import java.awt.BorderLayout;
 

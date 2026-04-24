@@ -73,7 +73,6 @@ public class ProjectView extends JPanel {
     private final ProcedureTabbedView procedureView;
     private final SQLTemplateTabbedView sqlTemplateView;
     private final EjbqlTabbedView ejbqlQueryView;
-    private final JTabbedPane dataNodeView;
 
     private final FilterController filterController;
 
@@ -115,10 +114,6 @@ public class ProjectView extends JPanel {
 
     public DataMapTabbedView getDataMapView() {
         return dataMapView;
-    }
-
-    public JTabbedPane getDataNodeView() {
-        return dataNodeView;
     }
 
     public ProjectView(ProjectController controller) {
@@ -170,9 +165,7 @@ public class ProjectView extends JPanel {
         editorPanel.add(dataDomainView, DOMAIN_VIEW);
 
         DataNodeEditorController nodeController = new DataNodeEditorController(controller);
-        editorPanel.add(nodeController.getView(), NODE_VIEW);
-
-        dataNodeView = nodeController.getTabComponent();
+        editorPanel.add(new JScrollPane(nodeController.getView()), NODE_VIEW);
 
         dataMapView = new DataMapTabbedView(controller);
         editorPanel.add(dataMapView, DATA_MAP_VIEW);

@@ -30,7 +30,6 @@ import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.CompoundEdit;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Embeddable;
@@ -103,10 +102,6 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
 
         if (targetObject instanceof EJBQLQuery) {
             tabbedPane = projectView.getEjbqlQueryView();
-        }
-
-        if (targetObject instanceof DataNodeDescriptor) {
-            tabbedPane = projectView.getDataNodeView();
         }
 
         if (targetObject instanceof DataMap) {

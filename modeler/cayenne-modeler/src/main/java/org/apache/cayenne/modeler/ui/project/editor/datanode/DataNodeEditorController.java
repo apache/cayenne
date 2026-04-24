@@ -19,29 +19,302 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datanode;
 
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy;
+import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
+import org.apache.cayenne.access.dbsync.ThrowOnPartialOrCreateSchemaStrategy;
+import org.apache.cayenne.access.dbsync.ThrowOnPartialSchemaStrategy;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory;
+import org.apache.cayenne.modeler.dialog.pref.PreferenceDialogController;
+import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+import org.apache.cayenne.modeler.pref.DataNodeDefaults;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.ui.project.editor.datanode.custom.CustomDataSourceEditorController;
+import org.apache.cayenne.modeler.ui.project.editor.datanode.jdbc.JDBCDataSourceEditorController;
+import org.apache.cayenne.modeler.util.ProjectUtil;
+import org.apache.cayenne.modeler.util.TextBinder;
+import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.*;
 import java.awt.*;
-
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DataNodeEditorController extends ChildController<ProjectController> {
 
-    protected JTabbedPane view;
+    protected static final String NO_LOCAL_DATA_SOURCE = "Select DataSource for Local Work...";
+    private final static String XML_POOLING_DATA_SOURCE_FACTORY = XMLPoolingDataSourceFactory.class.getName();
+
+    private final static String[] STANDARD_DATA_SOURCE_FACTORIES = new String[]{
+            DataSourceFactoryType.CAYENNE.getLabel(),
+            DataSourceFactoryType.CUSTOM.getLabel()
+    };
+
+    private final static String[] STANDARD_SCHEMA_UPDATE_STRATEGY = new String[]{
+            SkipSchemaUpdateStrategy.class.getName(),
+            CreateIfNoSchemaStrategy.class.getName(),
+            ThrowOnPartialSchemaStrategy.class.getName(),
+            ThrowOnPartialOrCreateSchemaStrategy.class.getName()
+    };
+
+    protected DataNodeView view;
+    protected DataNodeDescriptor node;
+    protected Map<String, DataSourceEditorController> datasourceEditors;
+
+    protected CustomDataSourceEditorController defaultSubeditor;
+    protected Runnable nodeChangeProcessor;
+    private boolean refreshing;
 
     public DataNodeEditorController(ProjectController parent) {
+
         super(parent);
-        
-        this.view = new JTabbedPane();
-        view.addTab("Main", new JScrollPane(new MainDataNodeEditorController(parent,this).getView()));
+
+        this.view = new DataNodeView();
+        this.datasourceEditors = new HashMap<>();
+        this.nodeChangeProcessor = () -> parent.fireDataNodeEvent(new DataNodeEvent(DataNodeEditorController.this, node));
+        this.defaultSubeditor = new CustomDataSourceEditorController(parent, nodeChangeProcessor);
+
+        initController();
     }
 
+    @Override
     public Component getView() {
         return view;
     }
-    
-    public JTabbedPane getTabComponent() {
-        return view;
+
+    public String getFactoryName() {
+        return XML_POOLING_DATA_SOURCE_FACTORY.equals(node.getDataSourceFactoryType())
+                ? DataSourceFactoryType.CAYENNE.getLabel()
+                : DataSourceFactoryType.CUSTOM.getLabel();
+    }
+
+    public void setFactoryName(String factoryName) {
+        if (node != null) {
+            if (DataSourceFactoryType.CAYENNE.getLabel().equals(factoryName)) {
+                node.setDataSourceFactoryType(XML_POOLING_DATA_SOURCE_FACTORY);
+            } else {
+                node.setDataSourceFactoryType(defaultSubeditor.getFactoryName());
+            }
+            showDataSourceSubview(factoryName);
+        }
+    }
+
+    public String getSchemaUpdateStrategy() {
+        return (node != null) ? node.getSchemaUpdateStrategyType() : null;
+    }
+
+    public void setSchemaUpdateStrategy(String schemaUpdateStrategy) {
+        if (node != null) {
+            node.setSchemaUpdateStrategyType(schemaUpdateStrategy);
+        }
+    }
+
+    public String getNodeName() {
+        return (node != null) ? node.getName() : null;
+    }
+
+    public void setNodeName(String newName) {
+        if (node == null) {
+            return;
+        }
+
+        // validate...
+        if (newName == null) {
+            throw new ValidationException("Empty DataNode Name");
+        }
+
+        DataNodeDefaults oldPref = parent.getSelectedDataNodePreferences();
+        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) getApplication().getProject()
+                .getRootNode();
+
+        Collection<DataNodeDescriptor> matchingNode = dataChannelDescriptor.getNodeDescriptors();
+        for (DataNodeDescriptor node : matchingNode) {
+            if (node.getName().equals(newName)) {
+                // there is an entity with the same name
+                throw new ValidationException("There is another DataNode named '" + newName
+                        + "'. Use a different name.");
+            }
+        }
+
+        // passed validation, set value...
+        ProjectUtil.setDataNodeName(node, newName);
+
+        oldPref.copyPreferences(newName);
+    }
+
+    protected void initController() {
+        view.getDataSourceDetail().add(defaultSubeditor.getView(), "default");
+        view.getFactories().setEditable(false);
+        // init combo box choices
+        view.getFactories().setModel(new DefaultComboBoxModel<>(STANDARD_DATA_SOURCE_FACTORIES));
+
+        view.getSchemaUpdateStrategy().setEditable(true);
+        view.getSchemaUpdateStrategy().setModel(new DefaultComboBoxModel<>(STANDARD_SCHEMA_UPDATE_STRATEGY));
+
+        // init listeners
+        parent.addDataNodeDisplayListener(e -> refreshView(e.getDataNode()));
+
+        view.addComponentListener(new ComponentAdapter() {
+
+            public void componentShown(ComponentEvent e) {
+                refreshView(node != null ? node : parent.getSelectedDataNode());
+            }
+        });
+
+        view.getLocalDataSources().addActionListener(e -> {
+            if (refreshing) return;
+            Object sel = view.getLocalDataSources().getSelectedItem();
+            String key = (sel == null || NO_LOCAL_DATA_SOURCE.equals(sel)) ? null : sel.toString();
+            parent.getSelectedDataNodePreferences().setLocalDataSource(key);
+        });
+
+        TextBinder.bind(view.getDataNodeName(), v -> {
+            if (node == null) return;
+            String oldName = node.getName();
+            try {
+                setNodeName(v);
+            } catch (ValidationException ignored) {
+                return;
+            }
+            DataNodeEvent e = new DataNodeEvent(DataNodeEditorController.this, node);
+            e.setOldName(oldName);
+            parent.fireDataNodeEvent(e);
+        });
+
+        TextBinder.bind(view.getCustomAdapter(), v -> {
+            if (node == null) return;
+            setAdapterName(v);
+            parent.fireDataNodeEvent(new DataNodeEvent(DataNodeEditorController.this, node));
+        });
+
+        view.getFactories().addActionListener(e -> {
+            if (refreshing) return;
+            setFactoryName((String) view.getFactories().getSelectedItem());
+            parent.fireDataNodeEvent(new DataNodeEvent(DataNodeEditorController.this, node));
+        });
+
+        view.getSchemaUpdateStrategy().addActionListener(e -> {
+            if (refreshing) return;
+            setSchemaUpdateStrategy((String) view.getSchemaUpdateStrategy().getSelectedItem());
+            parent.fireDataNodeEvent(new DataNodeEvent(DataNodeEditorController.this, node));
+        });
+
+        // one way bindings
+        view.getConfigLocalDataSources().addActionListener(e -> dataSourceConfigAction());
+    }
+
+    public void dataSourceConfigAction() {
+        PreferenceDialogController prefs = new PreferenceDialogController(this);
+        prefs.showDataSourceEditorAction(view.getLocalDataSources().getSelectedItem());
+        refreshLocalDataSources();
+    }
+
+    protected void refreshLocalDataSources() {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> sources = (Map<String, Object>) getApplication().getCayenneProjectPreferences()
+                .getDetailObject(DBConnectionInfo.class).getChildrenPreferences();
+
+        int len = sources.size();
+        String[] keys = new String[len + 1];
+
+        // a slight chance that a real datasource is called
+        // NO_LOCAL_DATA_SOURCE...
+        keys[0] = NO_LOCAL_DATA_SOURCE;
+
+        String[] dataSources = sources.keySet().toArray(new String[0]);
+        System.arraycopy(dataSources, 0, keys, 1, dataSources.length);
+
+        refreshing = true;
+        try {
+            view.getLocalDataSources().setModel(new DefaultComboBoxModel<>(keys));
+            String localDs = parent.getSelectedDataNodePreferences().getLocalDataSource();
+            view.getLocalDataSources().setSelectedItem(localDs != null ? localDs : NO_LOCAL_DATA_SOURCE);
+        } finally {
+            refreshing = false;
+        }
+    }
+
+    /**
+     * Reinitializes widgets to display selected DataNode.
+     */
+    protected void refreshView(DataNodeDescriptor node) {
+        this.node = node;
+
+        if (node == null) {
+            view.setVisible(false);
+            return;
+        }
+
+        refreshLocalDataSources();
+
+        view.getDataNodeName().setText(getNodeName());
+        view.getCustomAdapter().setText(getAdapterName());
+        refreshing = true;
+        try {
+            view.getFactories().setSelectedItem(getFactoryName());
+            view.getSchemaUpdateStrategy().setSelectedItem(getSchemaUpdateStrategy());
+        } finally {
+            refreshing = false;
+        }
+
+        showDataSourceSubview(getFactoryName());
+    }
+
+    /**
+     * Selects a subview for a currently selected DataSource factory.
+     */
+    protected void showDataSourceSubview(String factoryName) {
+
+        DataSourceEditorController c = datasourceEditors.get(factoryName);
+        // create subview dynamically...
+        if (c == null) {
+            if (DataSourceFactoryType.CAYENNE.getLabel().equals(factoryName)) {
+                c = new JDBCDataSourceEditorController(parent, nodeChangeProcessor);
+            } else {
+                // special case - no detail view, just show it and bail..
+                defaultSubeditor.setNode(node);
+                view.getDataSourceDetailLayout().show(view.getDataSourceDetail(), "default");
+                return;
+            }
+
+            datasourceEditors.put(factoryName, c);
+            view.getDataSourceDetail().add(c.getView(), factoryName);
+
+            // this is needed to display freshly added panel...
+            view.getDataSourceDetail().getParent().validate();
+        }
+
+        // this will refresh subview...
+        c.setNode(node);
+        // display the right subview...
+        view.getDataSourceDetailLayout().show(view.getDataSourceDetail(), factoryName);
+    }
+
+    public String getAdapterName() {
+        return node.getAdapterType();
+    }
+
+    public void setAdapterName(String name) {
+        node.setAdapterType(name);
+    }
+
+    enum DataSourceFactoryType {
+        CAYENNE("Cayenne Data Source Factory"),
+        CUSTOM("Custom Data Source Factory");
+        private final String label;
+
+        DataSourceFactoryType(String label) {
+            this.label = label;
+        }
+
+        public String getLabel() {
+            return label;
+        }
     }
 }

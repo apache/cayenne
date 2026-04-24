@@ -17,10 +17,11 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.project.editor.datanode;
+package org.apache.cayenne.modeler.ui.project.editor.datanode.custom;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.ui.project.editor.datanode.DataSourceEditorController;
 import org.apache.cayenne.modeler.util.TextBinder;
 
 
