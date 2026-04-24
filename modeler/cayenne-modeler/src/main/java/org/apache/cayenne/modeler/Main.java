@@ -24,7 +24,7 @@ import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
+import org.apache.cayenne.modeler.platform.PlatformInitializer;
 import org.apache.cayenne.project.ProjectModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

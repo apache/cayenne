@@ -18,19 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.generic;
 
-import java.awt.Color;
-import javax.swing.BorderFactory;
-import javax.swing.JFrame;
-import javax.swing.UIManager;
-
-import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
+import com.jgoodies.looks.plastic.PlasticLookAndFeel;
+import com.jgoodies.looks.plastic.PlasticTheme;
+import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
+import org.apache.cayenne.modeler.platform.PlatformInitializer;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.jgoodies.looks.plastic.PlasticLookAndFeel;
-import com.jgoodies.looks.plastic.PlasticTheme;
-import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
+import javax.swing.*;
+import java.awt.*;
 
 public class GenericPlatformInitializer implements PlatformInitializer {
 

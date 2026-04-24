@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.generic;
 
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
+import org.apache.cayenne.modeler.platform.PlatformInitializer;
 
 public class GenericCayenneModelerModule implements Module {
 

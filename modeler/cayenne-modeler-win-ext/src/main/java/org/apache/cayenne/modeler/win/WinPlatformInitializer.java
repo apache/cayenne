@@ -19,7 +19,7 @@
 package org.apache.cayenne.modeler.win;
 
 import com.jgoodies.looks.windows.WindowsLookAndFeel;
-import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
+import org.apache.cayenne.modeler.platform.PlatformInitializer;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

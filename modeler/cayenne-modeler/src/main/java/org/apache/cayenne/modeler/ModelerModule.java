@@ -29,8 +29,8 @@ import org.apache.cayenne.gen.xml.CgenExtension;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.DefaultActionManager;
 import org.apache.cayenne.modeler.graph.extension.GraphExtension;
-import org.apache.cayenne.modeler.init.platform.GenericPlatformInitializer;
-import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
+import org.apache.cayenne.modeler.platform.DefaultPlatformInitializer;
+import org.apache.cayenne.modeler.platform.PlatformInitializer;
 import org.apache.cayenne.modeler.util.DefaultWidgetFactory;
 import org.apache.cayenne.modeler.util.WidgetFactory;
 import org.apache.cayenne.modeler.validation.ConfigurableProjectValidator;
@@ -50,7 +50,7 @@ public class ModelerModule implements Module {
 
         binder.bind(ActionManager.class).to(DefaultActionManager.class);
         binder.bind(Application.class).to(Application.class);
-        binder.bind(PlatformInitializer.class).to(GenericPlatformInitializer.class);
+        binder.bind(PlatformInitializer.class).to(DefaultPlatformInitializer.class);
         binder.bind(WidgetFactory.class).to(DefaultWidgetFactory.class);
         binder.bind(HandlerFactory.class).to(ExtensionAwareHandlerFactory.class);
         binder.bind(DataChannelMetaData.class).to(DefaultDataChannelMetaData.class);

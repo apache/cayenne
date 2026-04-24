@@ -16,22 +16,23 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.init.platform;
+package org.apache.cayenne.modeler.platform;
 
 import javax.swing.JFrame;
 
-/**
- * An interface that provides methods for platform-specific Modeler initialization.
- */
-public interface PlatformInitializer {
+public class DefaultPlatformInitializer implements PlatformInitializer {
 
     /**
-     * Initializes application look and feel.
+     * Does nothing, leaving unchanged the default platform Look and Feel.
      */
-    void initLookAndFeel();
+    public void initLookAndFeel() {
+        // noop
+    }
 
     /**
-     * Updates default frame menus according to the platform specifics.
+     * Does nothing, leaving unchanged the default frame menus.
      */
-    void setupMenus(JFrame frame);
+    public void setupMenus(JFrame frame) {
+        // noop - keep all the default menus...
+    }
 }
