@@ -26,7 +26,6 @@ import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ClassLoadingService;
-import org.apache.cayenne.pref.CayennePreference;
 import org.apache.cayenne.util.Util;
 
 import javax.sql.DataSource;
@@ -59,7 +58,7 @@ public class DBConnectionInfo extends CayennePreference {
 	private boolean allowDataSourceFailure;
 
 	public DBConnectionInfo() {
-		this.currentPreference = getCayennePreference().node(DB_CONNECTION_INFO);
+		this.currentPreference = CayennePreference.getRoot().node(DB_CONNECTION_INFO);
 	};
 
 	public DBConnectionInfo(final String nameNode, final boolean initFromPreferences) {
@@ -76,17 +75,6 @@ public class DBConnectionInfo extends CayennePreference {
 			return super.getCurrentPreference();
 		}
 		return currentPreference.node(getNodeName());
-	}
-
-	@Override
-	public void setObject(final CayennePreference object) {
-		if (object instanceof DBConnectionInfo) {
-			setUrl(((DBConnectionInfo) object).getUrl());
-			setUserName(((DBConnectionInfo) object).getUserName());
-			setPassword(((DBConnectionInfo) object).getPassword());
-			setJdbcDriver(((DBConnectionInfo) object).getJdbcDriver());
-			setDbAdapter(((DBConnectionInfo) object).getDbAdapter());
-		}
 	}
 
 	public void setAllowDataSourceFailure(boolean allowDataSourceFailure) {

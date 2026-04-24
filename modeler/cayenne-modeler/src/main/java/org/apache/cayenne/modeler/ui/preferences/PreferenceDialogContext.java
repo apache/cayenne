@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.preferences;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
-import org.apache.cayenne.pref.CayenneProjectPreferences;
+import org.apache.cayenne.modeler.pref.CayenneProjectPreferences;
 
 import java.util.HashMap;
 import java.util.Map;

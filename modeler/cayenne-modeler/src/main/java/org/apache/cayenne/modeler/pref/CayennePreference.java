@@ -16,46 +16,31 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.pref;
+package org.apache.cayenne.modeler.pref;
 
 import java.util.prefs.Preferences;
 
 public class CayennePreference implements Preference {
 
-    private Preferences rootPreference;
-    private Preferences cayennePreference;
+    private static final String CAYENNE_PREFERENCES_PATH = "org/apache/cayenne";
+
     protected Preferences currentPreference;
 
+    public static Preferences getRoot() {
+        return Preferences.userRoot().node(CAYENNE_PREFERENCES_PATH);
+    }
+
+    @Override
     public Preferences getCurrentPreference() {
         return currentPreference;
     }
 
-    public Preferences getRootPreference() {
-        if (rootPreference == null) {
-            rootPreference = Preferences.userRoot();
-        }
-        return rootPreference;
-    }
-
-    public Preferences getCayennePreference() {
-        if (cayennePreference == null) {
-            cayennePreference = getRootPreference().node(CAYENNE_PREFERENCES_PATH);
-        }
-        return cayennePreference;
-    }
 
     public Preferences getNode(Class<?> aClass, String path) {
         Preferences pkgNode = Preferences.userNodeForPackage(aClass);
         return path == null || path.isEmpty() ? pkgNode : pkgNode.node(path);
     }
 
-    public void setObject(CayennePreference object) {
-    }
-
     public void saveObjectPreference() {
-    }
-
-    public static String filePathToPrefereceNodePath(String path) {
-        return path.replace(".xml", "");
     }
 }

@@ -31,7 +31,7 @@ import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DomainDisplayListener;
 import org.apache.cayenne.modeler.util.TextAdapter;
-import org.apache.cayenne.pref.RenamedPreferences;
+import org.apache.cayenne.modeler.pref.RenamedPreferences;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 

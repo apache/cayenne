@@ -19,7 +19,6 @@
 package org.apache.cayenne.modeler.pref;
 
 import org.apache.cayenne.access.DbGenerator;
-import org.apache.cayenne.pref.RenamedPreferences;
 
 import java.util.Collection;
 import java.util.prefs.Preferences;

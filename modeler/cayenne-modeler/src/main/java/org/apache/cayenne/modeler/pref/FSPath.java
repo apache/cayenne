@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.modeler.pref;
 
-import org.apache.cayenne.pref.CayennePreference;
-
 import javax.swing.*;
 import java.io.File;
 import java.util.prefs.Preferences;

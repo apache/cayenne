@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.pref;
+package org.apache.cayenne.modeler.pref;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -176,7 +176,7 @@ public abstract class RenamedPreferences extends CayennePreference {
             return newPref;
         }
         catch (BackingStoreException e) {
-            throw new PreferenceException("Error remane preferences");
+            throw new RuntimeException("Error remane preferences");
         }
     }
 

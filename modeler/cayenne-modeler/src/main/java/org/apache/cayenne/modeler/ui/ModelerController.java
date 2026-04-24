@@ -21,16 +21,16 @@ package org.apache.cayenne.modeler.ui;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ModelerPreferences;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
 import org.apache.cayenne.modeler.action.ExitAction;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportController;
-import org.apache.cayenne.modeler.ui.project.validator.ProjectValidatorDialogController;
 import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
 import org.apache.cayenne.modeler.mvc.RootController;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.pref.FSPath;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportController;
+import org.apache.cayenne.modeler.ui.project.validator.ProjectValidatorDialogController;
 import org.apache.cayenne.modeler.util.FileFilters;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.validation.ProjectValidator;
@@ -55,6 +55,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 
 /**
  * Controller of the main application frame.
@@ -229,30 +230,30 @@ public class ModelerController extends RootController {
      * Adds path to the list of last opened projects in preferences.
      */
     public void addToLastProjListAction(File file) {
-        Preferences prefLastProjFiles = ModelerPreferences.getLastProjFilesPref();
-        List<File> arr = ModelerPreferences.getLastProjFiles();
+        Preferences prefs = LastProjectsPreferences.getPrefs();
+        List<File> files = LastProjectsPreferences.getFiles();
 
-        // Add proj path to the preferences
-        arr.remove(file);
-        arr.add(0, file);
-        while (arr.size() > ModelerPreferences.LAST_PROJ_FILES_SIZE) {
-            arr.remove(arr.size() - 1);
-        }
+        files.remove(file);
+        files.add(0, file);
+
+        List<File> truncatedFiles = files.stream()
+                .limit(LastProjectsPreferences.LAST_PROJ_FILES_SIZE)
+                .collect(Collectors.toList());
 
         try {
-            prefLastProjFiles.clear();
+            prefs.clear();
         } catch (BackingStoreException ignored) {
             // ignore exception
         }
 
-        int size = arr.size();
+        int size = truncatedFiles.size();
         for (int i = 0; i < size; i++) {
-            prefLastProjFiles.put(String.valueOf(i), arr.get(i).getAbsolutePath());
+            prefs.put(String.valueOf(i), truncatedFiles.get(i).getAbsolutePath());
         }
     }
 
     public void changePathInLastProjListAction(File oldFile, File newFile) {
-        ModelerPreferences.getLastProjFiles().remove(oldFile);
+        LastProjectsPreferences.getFiles().remove(oldFile);
 
         addToLastProjListAction(newFile);
 

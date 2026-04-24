@@ -20,8 +20,6 @@ package org.apache.cayenne.modeler.pref;
 
 import java.util.prefs.Preferences;
 
-import org.apache.cayenne.pref.RenamedPreferences;
-
 public class DataNodeDefaults extends RenamedPreferences {
 
     private String localDataSource;

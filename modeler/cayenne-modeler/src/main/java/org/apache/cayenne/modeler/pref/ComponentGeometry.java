@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.modeler.pref;
 
-import org.apache.cayenne.pref.CayennePreference;
-import org.apache.cayenne.pref.PreferenceException;
 import org.apache.cayenne.reflect.PropertyUtils;
 
 import java.awt.*;
@@ -99,7 +97,7 @@ public class ComponentGeometry extends CayennePreference {
         try {
             PropertyUtils.setProperty(component, property, i);
         } catch (Throwable th) {
-            throw new PreferenceException("Error setting property: " + property, th);
+            throw new RuntimeException("Error setting property: " + property, th);
         }
 
         component.addPropertyChangeListener(property, e -> {

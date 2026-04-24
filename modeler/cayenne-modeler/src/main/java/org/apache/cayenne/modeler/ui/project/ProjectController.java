@@ -189,9 +189,7 @@ public class ProjectController extends ChildController<ModelerController> {
     }
 
     public DataMapDefaults getSelectedDataMapPreferences(DataMap dataMap) {
-        Preferences pref;
-        pref = getDataDomainPreferences().node("DataMap").node(dataMap.getName());
-
+        Preferences pref = getDataDomainPreferences().node("DataMap").node(dataMap.getName());
         return (DataMapDefaults) application.getCayenneProjectPreferences().getProjectDetailObject(DataMapDefaults.class, pref);
     }
 

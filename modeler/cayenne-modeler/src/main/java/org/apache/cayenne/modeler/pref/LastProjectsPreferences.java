@@ -17,10 +17,8 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler;
+package org.apache.cayenne.modeler.pref;
 
-import org.apache.cayenne.pref.CayennePreference;
-import org.apache.cayenne.pref.Preference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,58 +28,44 @@ import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-public class ModelerPreferences {
+public class LastProjectsPreferences {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ModelerPreferences.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LastProjectsPreferences.class);
 
-    /**
-     * List of the last 12 opened project files.
-     */
+    // TODO: relocate this node from under "editor"
+    private static final String LAST_X_PROJECTS_PREF = "editor/lastSeveralProjectFiles";
     public static final int LAST_PROJ_FILES_SIZE = 12;
 
-    private static Preferences cayennePrefs;
+    private static final Preferences LAST_X_PROJECTS;
 
-    /**
-     * Returns Cayenne preferences singleton.
-     */
-    public static Preferences getPreferences() {
-        if (cayennePrefs == null) {
-            Preference decoratedPref = new CayennePreference();
-            cayennePrefs = decoratedPref.getCayennePreference();
-        }
-        return cayennePrefs;
+    static {
+        LAST_X_PROJECTS = CayennePreference.getRoot().node(LAST_X_PROJECTS_PREF);
     }
 
-    public static Preferences getEditorPreferences() {
-        return getPreferences().node(CayennePreference.EDITOR);
-    }
-
-    public static Preferences getLastProjFilesPref() {
-        return getEditorPreferences().node(CayennePreference.LAST_PROJ_FILES);
-    }
-
-    public static List<File> getLastProjFiles() {
-        Preferences filesPrefs = getLastProjFilesPref();
+    public static List<File> getFiles() {
         String[] keys;
         try {
-            keys = filesPrefs.keys();
+            keys = LAST_X_PROJECTS.keys();
         } catch (BackingStoreException e) {
             LOGGER.warn("Error reading preferences file.", e);
             return new ArrayList<>();
         }
 
         int len = keys.length;
-        List<File> lastProjectsFiles = new ArrayList<>(len);
+        List<File> files = new ArrayList<>(len);
         for (int i = 0; i < len; i++) {
-            String fileName = filesPrefs.get(Integer.toString(i), "");
+            String fileName = LAST_X_PROJECTS.get(Integer.toString(i), "");
             if (!fileName.isEmpty()) {
                 File file = new File(fileName);
-                if (!lastProjectsFiles.contains(file) && file.exists()) {
-                    lastProjectsFiles.add(file);
+                if (!files.contains(file) && file.exists()) {
+                    files.add(file);
                 }
             }
         }
-        return lastProjectsFiles;
+        return files;
     }
 
+    public static Preferences getPrefs() {
+        return LAST_X_PROJECTS;
+    }
 }

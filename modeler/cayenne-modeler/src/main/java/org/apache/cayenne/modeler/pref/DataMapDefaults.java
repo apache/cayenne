@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.pref;
 
-import org.apache.cayenne.pref.RenamedPreferences;
-
 import java.util.prefs.Preferences;
 
 public class DataMapDefaults extends RenamedPreferences {

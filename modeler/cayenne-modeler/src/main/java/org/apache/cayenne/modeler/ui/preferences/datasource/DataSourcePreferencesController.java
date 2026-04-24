@@ -29,7 +29,7 @@ import org.apache.cayenne.modeler.FileClassLoadingService;
 import org.apache.cayenne.modeler.event.model.DataSourceEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
-import org.apache.cayenne.pref.ChildrenMapPreference;
+import org.apache.cayenne.modeler.pref.ChildrenMapPreference;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.*;

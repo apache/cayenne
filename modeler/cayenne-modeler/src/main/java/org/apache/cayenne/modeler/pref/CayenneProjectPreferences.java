@@ -16,7 +16,9 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.pref;
+package org.apache.cayenne.modeler.pref;
+
+import org.apache.cayenne.CayenneRuntimeException;
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
@@ -24,42 +26,36 @@ import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.modeler.pref.DBConnectionInfo;
-
 public class CayenneProjectPreferences {
 
-    // for preferences not dependent on project
-    private Map<Class<?>, ChildrenMapPreference> cayennePreferences;
-
-    // for preferences dependent on project
-    private Map<Preferences, CayennePreference> projectCayennePreferences;
+    private final Map<Class<?>, ChildrenMapPreference> modelerPreferences;
+    private final Map<Preferences, CayennePreference> modelerProjectPreferences;
 
     public CayenneProjectPreferences() {
-        cayennePreferences = new HashMap<>();
-        cayennePreferences.put(DBConnectionInfo.class, new ChildrenMapPreference(new DBConnectionInfo()));
-        projectCayennePreferences = new HashMap<>();
+        modelerPreferences = new HashMap<>();
+        modelerPreferences.put(DBConnectionInfo.class, new ChildrenMapPreference(new DBConnectionInfo()));
+        modelerProjectPreferences = new HashMap<>();
 
-        for (ChildrenMapPreference value : cayennePreferences.values()) {
+        for (ChildrenMapPreference value : modelerPreferences.values()) {
             value.initChildrenPreferences();
         }
     }
 
     public ChildrenMapPreference getDetailObject(Class<?> className) {
-        return cayennePreferences.get(className);
+        return modelerPreferences.get(className);
     }
 
     public CayennePreference getProjectDetailObject(
             Class<? extends CayennePreference> objectClass,
             Preferences preferences) {
 
-        CayennePreference preference = projectCayennePreferences.get(preferences);
+        CayennePreference preference = modelerProjectPreferences.get(preferences);
 
         if (preference == null) {
             try {
                 Constructor<? extends CayennePreference> ct = objectClass.getConstructor(Preferences.class);
                 preference = ct.newInstance(preferences);
-                projectCayennePreferences.put(preferences, preference);
+                modelerProjectPreferences.put(preferences, preference);
             } catch (Throwable e) {
                 throw new CayenneRuntimeException("Error initializing preferences", e);
             }
@@ -72,7 +68,7 @@ public class CayenneProjectPreferences {
     public void removeProjectDetailObject(Preferences preference) {
         try {
             preference.removeNode();
-            projectCayennePreferences.remove(preference);
+            modelerProjectPreferences.remove(preference);
         } catch (BackingStoreException e) {
             throw new CayenneRuntimeException("Error delete preferences", e);
         }

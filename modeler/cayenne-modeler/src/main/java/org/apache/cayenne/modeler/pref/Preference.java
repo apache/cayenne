@@ -16,30 +16,11 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.pref;
+package org.apache.cayenne.modeler.pref;
 
 import java.util.prefs.Preferences;
 
+
 public interface Preference {
-
-    /**
-     * Key for preferences.
-     */
-    String CAYENNE_PREFERENCES_PATH = "org/apache/cayenne";
-
-    /**
-     * Preferences node name for the editor
-     */
-    String EDITOR = "editor";
-
-    /**
-     * Preferences node name for list of the last 12 opened project files.
-     */
-    String LAST_PROJ_FILES = "lastSeveralProjectFiles";
-
-    Preferences getRootPreference();
-
-    Preferences getCayennePreference();
-
     Preferences getCurrentPreference();
 }

@@ -25,6 +25,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
+import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
 import org.apache.cayenne.modeler.ui.ModelerController;
 import org.apache.cayenne.modeler.ui.ModelerFrame;
 import org.apache.cayenne.modeler.ui.logconsole.LogConsoleController;
@@ -33,8 +34,8 @@ import org.apache.cayenne.modeler.ui.preferences.general.GeneralPreferencesContr
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 import org.apache.cayenne.modeler.util.AdapterMapping;
 import org.apache.cayenne.modeler.util.WidgetFactory;
-import org.apache.cayenne.pref.CayennePreference;
-import org.apache.cayenne.pref.CayenneProjectPreferences;
+import org.apache.cayenne.modeler.pref.CayennePreference;
+import org.apache.cayenne.modeler.pref.CayenneProjectPreferences;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.util.IDUtil;
 
@@ -203,10 +204,12 @@ public class Application {
                     getNewProjectTemporaryName());
         }
 
-        String path = CayennePreference.filePathToPrefereceNodePath(descriptor
+        String path = descriptor
                 .getConfigurationSource()
                 .getURL()
-                .getPath());
+                .getPath()
+                .replace(".xml", "");
+
         Preferences pref = getPreferencesNode(getProject().getClass(), "");
         return pref.node(pref.absolutePath() + path);
     }
@@ -260,9 +263,9 @@ public class Application {
 
         Preferences autoLoadLastProject = getPreferencesNode(GeneralPreferencesController.class, "");
         if ((autoLoadLastProject != null) && autoLoadLastProject.getBoolean(GeneralPreferencesController.AUTO_LOAD_PROJECT_PREFERENCE, false)) {
-            List<File> lastFiles = ModelerPreferences.getLastProjFiles();
-            if (!lastFiles.isEmpty()) {
-                return lastFiles.get(0);
+            List<File> files = LastProjectsPreferences.getFiles();
+            if (!files.isEmpty()) {
+                return files.get(0);
             }
         }
 

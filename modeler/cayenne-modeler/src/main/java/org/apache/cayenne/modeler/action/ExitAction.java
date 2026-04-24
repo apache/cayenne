@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.pref.RenamedPreferences;
+import org.apache.cayenne.modeler.pref.RenamedPreferences;
 
 import java.awt.event.ActionEvent;
 

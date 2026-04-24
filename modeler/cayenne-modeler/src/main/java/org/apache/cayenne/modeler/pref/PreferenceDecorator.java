@@ -16,29 +16,20 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.modeler.pref;
 
-package org.apache.cayenne.pref;
+import java.util.prefs.Preferences;
 
-/**
- * An exception describing a problem with preferences operations.
- * 
- */
-public class PreferenceException extends RuntimeException {
+public abstract class PreferenceDecorator implements Preference {
 
-    public PreferenceException() {
-        super();
+    protected Preference delegate;
+
+    public PreferenceDecorator(Preference delegate) {
+        this.delegate = delegate;
     }
 
-    public PreferenceException(String message) {
-        super(message);
+    @Override
+    public Preferences getCurrentPreference() {
+        return delegate.getCurrentPreference();
     }
-
-    public PreferenceException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public PreferenceException(Throwable cause) {
-        super(cause);
-    }
-
 }

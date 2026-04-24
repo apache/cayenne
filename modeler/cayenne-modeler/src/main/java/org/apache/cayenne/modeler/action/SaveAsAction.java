@@ -26,7 +26,7 @@ import org.apache.cayenne.modeler.ui.project.validator.ProjectValidatorDialogCon
 import org.apache.cayenne.modeler.event.model.ProjectOnSaveEvent;
 import org.apache.cayenne.modeler.event.model.ProjectSavedEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.pref.RenamedPreferences;
+import org.apache.cayenne.modeler.pref.RenamedPreferences;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.project.validation.ProjectValidator;

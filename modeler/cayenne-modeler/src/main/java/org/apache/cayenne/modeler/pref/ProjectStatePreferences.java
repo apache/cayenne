@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.modeler.pref;
 
-import org.apache.cayenne.pref.RenamedPreferences;
-
 import java.util.prefs.Preferences;
 
 public class ProjectStatePreferences extends RenamedPreferences {
