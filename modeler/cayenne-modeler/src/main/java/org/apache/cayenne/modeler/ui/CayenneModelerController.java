@@ -63,22 +63,22 @@ import java.util.prefs.Preferences;
 public class CayenneModelerController extends RootController {
 
     private final ProjectController projectController;
-    private final CayenneModelerFrame frame;
+    private final CayenneModelerFrame view;
     private ProjectView projectView;
     private final DbImportController dbImportController;
 
     public CayenneModelerController(Application application) {
         super(application);
 
-        this.frame = new CayenneModelerFrame(application.getActionManager(), application.getLogConsoleController());
-        application.getInjector().getInstance(PlatformInitializer.class).setupMenus(frame);
+        this.view = new CayenneModelerFrame(application.getActionManager(), application.getLogConsoleController());
+        application.getInjector().getInstance(PlatformInitializer.class).setupMenus(view);
         this.projectController = new ProjectController(this);
         this.dbImportController = new DbImportController();
     }
 
     @Override
     public Component getView() {
-        return frame;
+        return view;
     }
 
     public ProjectController getProjectController() {
@@ -121,9 +121,9 @@ public class CayenneModelerController extends RootController {
     }
 
     public void onStartup() {
-        frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        view.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
-        frame.addWindowListener(new WindowAdapter() {
+        view.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 projectController.saveSelectionToPrefs();
@@ -138,7 +138,7 @@ public class CayenneModelerController extends RootController {
             Runtime.getRuntime().addShutdownHook(new Thread(runner, "Window Prefs Hook"));
         }
 
-        new DropTarget(frame, new DropTargetAdapter() {
+        new DropTarget(view, new DropTargetAdapter() {
             @Override
             public void drop(DropTargetDropEvent dtde) {
                 dtde.acceptDrop(dtde.getDropAction());
@@ -147,32 +147,32 @@ public class CayenneModelerController extends RootController {
             }
         });
 
-        new ComponentGeometry(frame.getClass(), null).resetAndTrackGeometry(frame, 1200, 720, 0);
+        new ComponentGeometry(view.getClass(), null).resetAndTrackGeometry(view, 1200, 720, 0);
 
-        frame.setVisible(true);
+        view.setVisible(true);
     }
 
     public void onProjectModified() {
-        frame.setTitle("* - " + getProjectLocationString());
+        view.setTitle("* - " + getProjectLocationString());
     }
 
     public void onProjectSaved() {
         projectController.setDirty(false);
         projectController.updateProjectControllerPreferences();
         updateStatus("Project saved...");
-        frame.setTitle(getProjectLocationString());
+        view.setTitle(getProjectLocationString());
     }
 
     public void onProjectClosed() {
         projectController.saveSelectionToPrefs();
 
         // --- update view
-        frame.setEditorPanel(null);
+        view.setEditorPanel(null);
 
         // repaint is needed, since sometimes there is a
         // trace from menu left on the screen
-        frame.repaint();
-        frame.setTitle("");
+        view.repaint();
+        view.setTitle("");
 
         projectController.projectClosed();
         application.getActionManager().projectClosed();
@@ -186,11 +186,11 @@ public class CayenneModelerController extends RootController {
     public void onProjectOpened(Project project) {
 
         projectController.projectOpened(project);
-        frame.setTitle(getProjectLocationString());
+        view.setTitle(getProjectLocationString());
 
         // TODO: ProjectView should be owned by ProjectController
         projectView = new ProjectView(projectController);
-        frame.setEditorPanel(projectView);
+        view.setEditorPanel(projectView);
 
         projectController.restoreSelectionFromPrefs();
         application.getActionManager().projectOpened();
@@ -204,7 +204,7 @@ public class CayenneModelerController extends RootController {
                 // update preferences
                 File file = new File(project.getConfigurationResource().getURL().toURI());
                 getLastDirectory().setDirectory(file);
-                frame.fireRecentFileListChanged();
+                view.fireRecentFileListChanged();
             } catch (URISyntaxException ignore) {
             }
         }
@@ -226,7 +226,7 @@ public class CayenneModelerController extends RootController {
         allFailures.addAll(validationResult.getFailures());
 
         if (!allFailures.isEmpty()) {
-            ValidatorDialog.showDialog(frame, validationResult.getFailures());
+            ValidatorDialog.showDialog(view, validationResult.getFailures());
         }
     }
 
@@ -268,14 +268,14 @@ public class CayenneModelerController extends RootController {
         addToLastProjListAction(newFile);
 
         getLastDirectory().setDirectory(newFile);
-        frame.fireRecentFileListChanged();
+        view.fireRecentFileListChanged();
     }
 
     /**
      * Performs status bar update with a message. Message will disappear in 6 seconds.
      */
     public void updateStatus(String message) {
-        frame.getStatus().setText(message);
+        view.getStatus().setText(message);
 
         // start message cleanup thread that would remove the message after X seconds
         if (message != null && !message.trim().isEmpty()) {
@@ -284,7 +284,7 @@ public class CayenneModelerController extends RootController {
                     Thread.sleep(6 * 10000);
                 } catch (InterruptedException ignore) {
                 }
-                if (message.equals(frame.getStatus().getText())) {
+                if (message.equals(view.getStatus().getText())) {
                     updateStatus(null);
                 }
             }).start();
