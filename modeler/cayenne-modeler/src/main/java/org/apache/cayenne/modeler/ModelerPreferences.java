@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler;
 
 import org.apache.cayenne.pref.CayennePreference;
 import org.apache.cayenne.pref.Preference;
-import org.apache.cayenne.pref.UpgradeCayennePreference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +46,7 @@ public class ModelerPreferences {
      */
     public static Preferences getPreferences() {
         if (cayennePrefs == null) {
-            Preference decoratedPref = new UpgradeCayennePreference(new CayennePreference());
+            Preference decoratedPref = new CayennePreference();
             cayennePrefs = decoratedPref.getCayennePreference();
         }
         return cayennePrefs;
