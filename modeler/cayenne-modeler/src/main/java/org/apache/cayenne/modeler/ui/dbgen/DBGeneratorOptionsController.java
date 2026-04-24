@@ -24,7 +24,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.dialog.ValidationResultBrowserController;
+import org.apache.cayenne.modeler.ui.validationbrowser.ValidationResultBrowserController;
 import org.apache.cayenne.modeler.ui.datasourcewizard.DataSourceWizardController;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;

@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.action;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
+import org.apache.cayenne.modeler.ui.validator.ValidatorDialog;
 import org.apache.cayenne.modeler.event.model.ProjectOnSaveEvent;
 import org.apache.cayenne.modeler.event.model.ProjectSavedEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;

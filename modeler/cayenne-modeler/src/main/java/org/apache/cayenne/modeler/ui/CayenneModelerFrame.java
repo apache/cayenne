@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
 import org.apache.cayenne.modeler.action.*;
 import org.apache.cayenne.modeler.ui.logconsole.LogConsoleController;
-import org.apache.cayenne.modeler.dialog.welcome.WelcomeScreen;
+import org.apache.cayenne.modeler.ui.welcome.WelcomeScreen;
 import org.apache.cayenne.modeler.event.model.RecentFileListListener;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.util.ModelerUtil;

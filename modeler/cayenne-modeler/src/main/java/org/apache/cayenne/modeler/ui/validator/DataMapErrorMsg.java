@@ -16,31 +16,39 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.action;
 
+package org.apache.cayenne.modeler.ui.validator;
+
+import javax.swing.JFrame;
+
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.autorelationship.InferRelationshipsController;
-import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
+import org.apache.cayenne.validation.ValidationFailure;
 
-import java.awt.event.ActionEvent;
+/**
+ * DataMap validation message.
+ */
+public class DataMapErrorMsg extends ValidationDisplayHandler {
 
+    protected DataMap map;
 
-public class InferRelationshipsAction extends CayenneAction {
-    
-    /**
-     * Constructor for ShowLogConsoleAction.
-     */
-    public InferRelationshipsAction(Application application) {
-        super("Infer Relationships", application);
+    public DataMapErrorMsg(ValidationFailure result) {
+        super(result);
+
+        Object object = result.getSource();
+        map = (DataMap) object;
+        domain = (DataChannelDescriptor) Application
+                .getInstance()
+                .getProject()
+                .getRootNode();
     }
-    
-    @Override
-    public void performAction(ActionEvent e) {
-        DataMap dataMap = getProjectController().getSelectedDataMap();
-        if (dataMap != null) {
-            new InferRelationshipsController(getApplication().getFrameController(), dataMap)
-                    .startup();
-        }
+
+    public void displayField(ProjectController mediator, JFrame frame) {
+        DataMapDisplayEvent event;
+        event = new DataMapDisplayEvent(frame, map, domain);
+        mediator.displayDataMap(event);
     }
 }

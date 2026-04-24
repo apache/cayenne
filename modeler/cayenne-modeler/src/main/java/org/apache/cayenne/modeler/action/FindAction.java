@@ -44,7 +44,7 @@ import org.apache.cayenne.modeler.ui.CayenneModelerFrame;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeModel;
 import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeView;
-import org.apache.cayenne.modeler.dialog.FindDialogController;
+import org.apache.cayenne.modeler.ui.find.FindDialogController;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
 import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableAttributeDisplayEvent;

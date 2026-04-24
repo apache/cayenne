@@ -1,0 +1,60 @@
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
+
+package org.apache.cayenne.modeler.ui.validator;
+
+import javax.swing.JFrame;
+
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
+import org.apache.cayenne.validation.ValidationFailure;
+
+/**
+ * DataNode validation message.
+ * 
+ */
+public class DataNodeErrorMsg extends ValidationDisplayHandler {
+
+    protected DataNodeDescriptor node;
+
+    /**
+     * Constructor for DataNodeErrorMsg.
+     * 
+     * @param result
+     */
+    public DataNodeErrorMsg(ValidationFailure result) {
+        super(result);
+        Object object = result.getSource();
+        node = (DataNodeDescriptor) object;
+        domain = (DataChannelDescriptor) Application
+                .getInstance()
+                .getProject()
+                .getRootNode();
+    }
+
+    public void displayField(ProjectController mediator, JFrame frame) {
+        DataNodeDisplayEvent event;
+        event = new DataNodeDisplayEvent(frame, domain, node);
+        mediator.displayDataNode(event);
+    }
+
+}

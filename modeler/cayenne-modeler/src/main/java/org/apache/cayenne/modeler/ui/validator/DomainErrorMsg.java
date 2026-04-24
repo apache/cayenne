@@ -16,31 +16,38 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.action;
 
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.autorelationship.InferRelationshipsController;
-import org.apache.cayenne.modeler.util.CayenneAction;
+package org.apache.cayenne.modeler.ui.validator;
 
-import java.awt.event.ActionEvent;
+import javax.swing.JFrame;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
+import org.apache.cayenne.validation.ValidationFailure;
 
-public class InferRelationshipsAction extends CayenneAction {
-    
+/**
+ * DataDomain validation message.
+ * 
+ */
+public class DomainErrorMsg extends ValidationDisplayHandler {
+
     /**
-     * Constructor for ShowLogConsoleAction.
+     * Constructor for DomainErrorMsg.
+     * 
+     * @param result
      */
-    public InferRelationshipsAction(Application application) {
-        super("Infer Relationships", application);
+    public DomainErrorMsg(ValidationFailure result) {
+        super(result);
+
+        Object object = result.getSource();
+        domain = (DataChannelDescriptor) object;
     }
-    
-    @Override
-    public void performAction(ActionEvent e) {
-        DataMap dataMap = getProjectController().getSelectedDataMap();
-        if (dataMap != null) {
-            new InferRelationshipsController(getApplication().getFrameController(), dataMap)
-                    .startup();
-        }
+
+    public void displayField(ProjectController mediator, JFrame frame) {
+        DomainDisplayEvent event;
+        event = new DomainDisplayEvent(frame, domain);
+        mediator.displayDomain(event);
     }
+
 }

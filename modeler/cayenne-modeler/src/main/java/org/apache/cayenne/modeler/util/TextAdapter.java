@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.util;
 
-import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
+import org.apache.cayenne.modeler.ui.validator.ValidatorDialog;
 import org.apache.cayenne.modeler.undo.JTextFieldUndoListener;
 import org.apache.cayenne.validation.ValidationException;
 
