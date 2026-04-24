@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.editor.validation;
+package org.apache.cayenne.modeler.ui.project.editor.datadomain.validation;
 
 import org.apache.cayenne.project.validation.Inspection;
 import org.apache.cayenne.swing.components.tree.ChangeOptimizingTreeModel;
