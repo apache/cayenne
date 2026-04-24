@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.db.load;
+package org.apache.cayenne.modeler.ui.dbloadresult;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;

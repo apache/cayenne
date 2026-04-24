@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dialog.db.load.DbLoadResultDialog;
+import org.apache.cayenne.modeler.ui.dbloadresult.DbLoadResultDialog;
 
 /**
  * @since 4.1

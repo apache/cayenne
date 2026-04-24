@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.db.gen;
+package org.apache.cayenne.modeler.ui.dbgen;
 
 import java.awt.BorderLayout;
 import java.awt.Component;

@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.modeler.dialog.db.load;
 
+import org.apache.cayenne.modeler.ui.dbloadresult.DbLoadResultDialog;
+
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.Collection;

@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.action;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dialog.db.gen.DBGeneratorOptionsController;
+import org.apache.cayenne.modeler.ui.dbgen.DBGeneratorOptionsController;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.Project;
 

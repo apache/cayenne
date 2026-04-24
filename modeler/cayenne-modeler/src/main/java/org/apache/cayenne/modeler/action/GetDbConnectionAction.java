@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dialog.db.DataSourceWizardController;
+import org.apache.cayenne.modeler.ui.datasourcewizard.DataSourceWizardController;
 
 import java.awt.event.ActionEvent;
 

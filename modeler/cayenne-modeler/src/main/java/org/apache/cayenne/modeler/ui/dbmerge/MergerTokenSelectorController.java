@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.db.merge;
+package org.apache.cayenne.modeler.ui.dbmerge;
 
 import org.apache.cayenne.dbsync.merge.context.MergeDirection;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;

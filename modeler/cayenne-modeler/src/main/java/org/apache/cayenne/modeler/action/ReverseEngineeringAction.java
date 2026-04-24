@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dialog.db.load.DbLoadResultDialog;
+import org.apache.cayenne.modeler.ui.dbloadresult.DbLoadResultDialog;
 import org.apache.cayenne.modeler.dialog.db.load.DbLoaderContext;
 import org.apache.cayenne.modeler.dialog.db.load.LoadDataMapTask;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportController;

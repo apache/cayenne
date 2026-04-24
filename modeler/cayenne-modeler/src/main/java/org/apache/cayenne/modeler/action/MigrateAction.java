@@ -23,9 +23,9 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoader;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dialog.db.DataSourceWizardController;
-import org.apache.cayenne.modeler.dialog.db.DbActionOptionsDialog;
-import org.apache.cayenne.modeler.dialog.db.merge.MergerOptionsController;
+import org.apache.cayenne.modeler.ui.datasourcewizard.DataSourceWizardController;
+import org.apache.cayenne.modeler.ui.dbactionoptions.DbActionOptionsDialog;
+import org.apache.cayenne.modeler.ui.dbmerge.MergerOptionsController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
