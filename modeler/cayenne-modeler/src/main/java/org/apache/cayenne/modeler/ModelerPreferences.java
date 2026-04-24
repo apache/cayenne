@@ -29,37 +29,18 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
-import java.util.prefs.PreferenceChangeEvent;
-import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
 
-/**
- * ModelerPreferences class supports persistent user preferences. Preferences are saved in
- * the user home directory in "<code>$HOME/.cayenne/modeler.preferences</code>" file.
- * <p>
- * <i>This class is obsolete; its users will be migrated to use preference service. </i>
- * </p>
- */
-public class ModelerPreferences implements PreferenceChangeListener {
-
-    private static Preferences cayennePrefs;
+public class ModelerPreferences {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelerPreferences.class);
 
-    /** Name of the log file. */
-    public static final String LOGFILE_NAME = "modeler.log";
-
-    /** List of the last 12 opened project files. */
+    /**
+     * List of the last 12 opened project files.
+     */
     public static final int LAST_PROJ_FILES_SIZE = 12;
 
-    /** Log file */
-    public static final String EDITOR_LOGFILE_ENABLED = "logfileEnabled";
-    public static final String EDITOR_LOGFILE = "logfile";
-
-    /**
-     * Number of items in combobox visible without scrolling
-     */
-    public static final int COMBOBOX_MAX_VISIBLE_SIZE = 12;
+    private static Preferences cayennePrefs;
 
     /**
      * Returns Cayenne preferences singleton.
@@ -68,7 +49,6 @@ public class ModelerPreferences implements PreferenceChangeListener {
         if (cayennePrefs == null) {
             Preference decoratedPref = new UpgradeCayennePreference(new CayennePreference());
             cayennePrefs = decoratedPref.getCayennePreference();
-            cayennePrefs.addPreferenceChangeListener(new ModelerPreferences());
         }
         return cayennePrefs;
     }
@@ -95,9 +75,9 @@ public class ModelerPreferences implements PreferenceChangeListener {
         List<File> lastProjectsFiles = new ArrayList<>(len);
         for (int i = 0; i < len; i++) {
             String fileName = filesPrefs.get(Integer.toString(i), "");
-            if(!fileName.isEmpty()) {
+            if (!fileName.isEmpty()) {
                 File file = new File(fileName);
-                if(!lastProjectsFiles.contains(file) && file.exists()) {
+                if (!lastProjectsFiles.contains(file) && file.exists()) {
                     lastProjectsFiles.add(file);
                 }
             }
@@ -105,7 +85,4 @@ public class ModelerPreferences implements PreferenceChangeListener {
         return lastProjectsFiles;
     }
 
-    public void preferenceChange(PreferenceChangeEvent evt) {
-        evt.getNode().put(evt.getKey(), evt.getNewValue());
-    }
 }

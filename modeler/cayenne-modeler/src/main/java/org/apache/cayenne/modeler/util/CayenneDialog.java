@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.util;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.CayenneModelerFrame;
+import org.apache.cayenne.modeler.ui.ModelerFrame;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 
 import javax.swing.*;
@@ -57,7 +57,7 @@ public class CayenneDialog extends JDialog implements HyperlinkListener {
         super(owner, title, modal);
     }
 
-    public CayenneDialog(CayenneModelerFrame frame, String title, boolean modal) {
+    public CayenneDialog(ModelerFrame frame, String title, boolean modal) {
         super(frame, title, modal);
     }
 
@@ -97,8 +97,8 @@ public class CayenneDialog extends JDialog implements HyperlinkListener {
         ModelerUtil.centerWindow(getParentEditor(), this);
     }
 
-    public CayenneModelerFrame getParentEditor() {
-        return (CayenneModelerFrame) super.getParent();
+    public ModelerFrame getParentEditor() {
+        return (ModelerFrame) super.getParent();
     }
 
     /** 

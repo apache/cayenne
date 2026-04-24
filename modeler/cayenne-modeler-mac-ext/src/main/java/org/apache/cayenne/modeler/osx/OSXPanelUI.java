@@ -27,7 +27,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicPanelUI;
 
-import org.apache.cayenne.modeler.ui.CayenneModelerFrame;
+import org.apache.cayenne.modeler.ui.SearchPanel;
 
 /**
  * @since 4.0
@@ -65,8 +65,8 @@ public class OSXPanelUI extends BasicPanelUI {
     @Override
     protected void installDefaults(final JPanel p) {
         super.installDefaults(p);
-        if(p instanceof CayenneModelerFrame.SearchPanel) {
-            SwingUtilities.invokeLater(((CayenneModelerFrame.SearchPanel) p)::hideSearchLabel);
+        if(p instanceof SearchPanel) {
+            SwingUtilities.invokeLater(((SearchPanel) p)::hideSearchLabel);
         } else {
             p.setBackground(BACKGROUND);
         }

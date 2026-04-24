@@ -59,16 +59,16 @@ import java.util.prefs.Preferences;
 /**
  * Controller of the main application frame.
  */
-public class CayenneModelerController extends RootController {
+public class ModelerController extends RootController {
 
     private final ProjectController projectController;
-    private final CayenneModelerFrame view;
+    private final ModelerFrame view;
     private final DbImportController dbImportController;
 
-    public CayenneModelerController(Application application) {
+    public ModelerController(Application application) {
         super(application);
 
-        this.view = new CayenneModelerFrame(application.getActionManager(), application.getLogConsoleController());
+        this.view = new ModelerFrame(application.getActionManager(), application.getLogConsoleController());
         application.getInjector().getInstance(PlatformInitializer.class).setupMenus(view);
         this.projectController = new ProjectController(this);
         this.dbImportController = new DbImportController();

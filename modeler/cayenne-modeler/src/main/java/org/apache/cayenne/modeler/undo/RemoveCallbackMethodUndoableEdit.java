@@ -18,18 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.undo;
 
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
-
 import org.apache.cayenne.modeler.action.CreateCallbackMethodAction;
 import org.apache.cayenne.modeler.action.RemoveCallbackMethodAction;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.CallbackType;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.ObjCallbackMethod;
 
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+
 public class RemoveCallbackMethodUndoableEdit extends CayenneUndoableEdit {
 
-    private CallbackType callbackType;
-    private ObjCallbackMethod[] methods;
+    private final CallbackType callbackType;
+    private final ObjCallbackMethod[] methods;
 
     public RemoveCallbackMethodUndoableEdit(CallbackType callbackType,
     		ObjCallbackMethod[] methods) {

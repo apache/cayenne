@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.project.editor.datanode.jdbc;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
-import org.apache.cayenne.modeler.ui.CayenneModelerController;
+import org.apache.cayenne.modeler.ui.ModelerController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datanode.DataSourceEditorController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
@@ -106,7 +106,7 @@ public class JDBCDataSourceEditorController extends DataSourceEditorController {
     }
 
     public void syncDataSourceAction() {
-        CayenneModelerController mainController = getApplication().getFrameController();
+        ModelerController mainController = getApplication().getFrameController();
 
         if (getNode() == null || getNode().getDataSourceDescriptor() == null) {
             return;

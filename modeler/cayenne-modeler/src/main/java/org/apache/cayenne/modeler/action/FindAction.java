@@ -40,7 +40,7 @@ import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.SQLTemplateDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.CayenneModelerFrame;
+import org.apache.cayenne.modeler.ui.ModelerFrame;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeModel;
 import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeView;
@@ -138,7 +138,7 @@ public class FindAction extends CayenneAction {
      * Navigate to search result
      */
     public static void jumpToResult(FindAction.SearchResultEntry searchResultEntry) {
-        ProjectView projectView = ((CayenneModelerFrame) Application.getInstance().getFrameController().getView()).getEditorPanel();
+        ProjectView projectView = ((ModelerFrame) Application.getInstance().getFrameController().getView()).getEditorPanel();
         DataChannelDescriptor domain = (DataChannelDescriptor) Application.getInstance().getProject().getRootNode();
         ProjectController controller = Application.getInstance().getFrameController().getProjectController();
 

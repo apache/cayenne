@@ -27,7 +27,6 @@ import org.apache.cayenne.modeler.event.model.RecentFileListListener;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.RecentFileMenu;
-import org.apache.cayenne.swing.components.MainToolBar;
 import org.apache.cayenne.swing.components.TopBorder;
 import org.slf4j.LoggerFactory;
 
@@ -36,14 +35,13 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Main frame of CayenneModeler GUI
  */
-public class CayenneModelerFrame extends JFrame {
+public class ModelerFrame extends JFrame {
 
     private final LogConsoleController logConsoleController;
     private final ActionManager actionManager;
@@ -57,7 +55,7 @@ public class CayenneModelerFrame extends JFrame {
     private JCheckBoxMenuItem logMenu;
     private Component dockComponent;
 
-    public CayenneModelerFrame(ActionManager actionManager, LogConsoleController logConsoleController) {
+    public ModelerFrame(ActionManager actionManager, LogConsoleController logConsoleController) {
         this.actionManager = actionManager;
         this.logConsoleController = logConsoleController;
         this.recentFileListeners = new ArrayList<>();
@@ -225,64 +223,11 @@ public class CayenneModelerFrame extends JFrame {
 
     protected void initToolbar() {
 
-        final JToolBar toolBar = new MainToolBar();
-
-        Dimension smallBtnDim = new Dimension(30, 30);
-        JButton backButton = actionManager.getAction(NavigateBackwardAction.class).buildButton(1);
-        backButton.setMinimumSize(smallBtnDim);
-        backButton.setPreferredSize(smallBtnDim);
-        toolBar.add(backButton);
-
-        JButton forwardButton = actionManager.getAction(NavigateForwardAction.class).buildButton(3);
-        forwardButton.setMinimumSize(smallBtnDim);
-        forwardButton.setPreferredSize(smallBtnDim);
-        toolBar.add(forwardButton);
-
-        toolBar.addSeparator(new Dimension(30, 0));
-
-        toolBar.add(actionManager.getAction(NewProjectAction.class).buildButton(1));
-        toolBar.add(actionManager.getAction(OpenProjectAction.class).buildButton(2));
-        toolBar.add(actionManager.getAction(SaveAction.class).buildButton(3));
-
-        toolBar.addSeparator();
-
-        JButton removeButton = actionManager.getAction(RemoveAction.class).buildButton();
-        toolBar.add(removeButton);
-
-        toolBar.addSeparator();
-
-        toolBar.add(actionManager.getAction(CutAction.class).buildButton(1));
-        toolBar.add(actionManager.getAction(CopyAction.class).buildButton(2));
-        toolBar.add(actionManager.getAction(PasteAction.class).buildButton(3));
-
-        toolBar.addSeparator();
-
-        toolBar.add(actionManager.getAction(UndoAction.class).buildButton(1));
-        toolBar.add(actionManager.getAction(RedoAction.class).buildButton(3));
-
-        toolBar.addSeparator();
-
-        toolBar.add(actionManager.getAction(CreateNodeAction.class).buildButton(1));
-        toolBar.add(actionManager.getAction(CreateDataMapAction.class).buildButton(3));
-
-        toolBar.addSeparator();
-
-        toolBar.add(actionManager.getAction(CreateDbEntityAction.class).buildButton(1));
-        toolBar.add(actionManager.getAction(CreateProcedureAction.class).buildButton(3));
-
-        toolBar.addSeparator();
-
-        toolBar.add(actionManager.getAction(CreateObjEntityAction.class).buildButton(1));
-        toolBar.add(actionManager.getAction(CreateEmbeddableAction.class).buildButton(2));
-        toolBar.add(actionManager.getAction(CreateQueryAction.class).buildButton(3));
-
-        // is used to place search feature components the most right on a toolbar
-        toolBar.add(new SearchPanel());
-
+        MainToolBar toolBar = new MainToolBar(actionManager);
         getContentPane().add(toolBar, BorderLayout.NORTH);
 
         // Hide some buttons when frame is too small
-        final int defaultBtnWidth = removeButton.getUI().getPreferredSize(backButton).width;
+        int defaultBtnWidth = toolBar.getDefaultButtonWidth();
         addComponentListener(new ComponentAdapter() {
             private final int[] empty = {};
             private final int[] all = {6, 7, 8, 9, 10, 11, 12, 13, 14};
@@ -347,64 +292,6 @@ public class CayenneModelerFrame extends JFrame {
     public void fireRecentFileListChanged() {
         for (RecentFileListListener recentFileListener : recentFileListeners) {
             recentFileListener.recentFileListChanged();
-        }
-    }
-
-    public class SearchPanel extends JPanel {
-
-        private final JLabel searchLabel;
-        private final JPanel box;
-        private final JTextField findField;
-
-        SearchPanel() {
-            super(new BorderLayout());
-            searchLabel = new JLabel("Search: ");
-            box = new JPanel();
-
-            findField = new JTextField(10);
-            findField.putClientProperty("JTextField.variant", "search");
-            findField.setMaximumSize(new Dimension(100, 22));
-            findField.setPreferredSize(new Dimension(100, 22));
-            findField.addKeyListener(new KeyListener() {
-                public void keyPressed(KeyEvent e) {
-                    if (e.getKeyCode() != KeyEvent.VK_ENTER) {
-                        findField.setBackground(Color.white);
-                    }
-                }
-
-                public void keyReleased(KeyEvent e) {
-                }
-
-                public void keyTyped(KeyEvent e) {
-                }
-            });
-            findField.setAction(actionManager.getAction(FindAction.class));
-
-            Toolkit.getDefaultToolkit().addAWTEventListener(event -> {
-                if (event instanceof KeyEvent) {
-                    if (((KeyEvent) event).getModifiersEx() == Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()
-                            && ((KeyEvent) event).getKeyCode() == KeyEvent.VK_F) {
-                        findField.requestFocus();
-                    }
-                }
-            }, AWTEvent.KEY_EVENT_MASK);
-
-            searchLabel.setLabelFor(findField);
-            // is used to place label and text field one after another
-            box.setLayout(new BoxLayout(box, BoxLayout.X_AXIS));
-            box.add(searchLabel);
-            box.add(findField);
-
-            add(box, BorderLayout.EAST);
-        }
-
-        public void hideSearchLabel() {
-            searchLabel.setVisible(false);
-            findField.setMaximumSize(null);
-            findField.setPreferredSize(new Dimension(100, 40));
-            findField.setToolTipText("Search");
-            box.setOpaque(false);
-            box.setBackground(null);
         }
     }
 

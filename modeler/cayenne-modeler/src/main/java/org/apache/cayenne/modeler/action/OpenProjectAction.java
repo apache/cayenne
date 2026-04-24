@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.CayenneModelerController;
+import org.apache.cayenne.modeler.ui.ModelerController;
 import org.apache.cayenne.modeler.ui.errors.ErrorsController;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectLoader;
@@ -134,7 +134,7 @@ public class OpenProjectAction extends ProjectAction {
                 return;
             }
 
-            CayenneModelerController controller = Application.getInstance().getFrameController();
+            ModelerController controller = Application.getInstance().getFrameController();
             controller.addToLastProjListAction(file);
 
             URL url = file.toURI().toURL();
@@ -179,7 +179,7 @@ public class OpenProjectAction extends ProjectAction {
         }
     }
 
-    private Project openProjectResourse(Resource resource, CayenneModelerController controller) {
+    private Project openProjectResourse(Resource resource, ModelerController controller) {
         Project project = getApplication().getInjector().getInstance(ProjectLoader.class).loadProject(resource);
         controller.onProjectOpened(project);
         return project;

@@ -24,7 +24,7 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.CayenneModelerFrame;
+import org.apache.cayenne.modeler.ui.ModelerFrame;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
@@ -73,7 +73,7 @@ public class ShowGraphEntityAction extends CayenneAction {
 
     void showEntity(Entity<?,?,?> entity) {
         // we're always in same domain
-        ProjectView editor = ((CayenneModelerFrame) Application
+        ProjectView editor = ((ModelerFrame) Application
                 .getInstance()
                 .getFrameController()
                 .getView()).getEditorPanel();

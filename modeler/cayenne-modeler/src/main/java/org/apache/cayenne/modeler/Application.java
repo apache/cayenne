@@ -24,10 +24,12 @@ import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.modeler.action.ActionManager;
+import org.apache.cayenne.modeler.action.OpenProjectAction;
+import org.apache.cayenne.modeler.ui.ModelerController;
+import org.apache.cayenne.modeler.ui.ModelerFrame;
 import org.apache.cayenne.modeler.ui.logconsole.LogConsoleController;
 import org.apache.cayenne.modeler.ui.preferences.classpath.ClasspathPreferencesController;
-import org.apache.cayenne.modeler.ui.CayenneModelerController;
-import org.apache.cayenne.modeler.ui.CayenneModelerFrame;
+import org.apache.cayenne.modeler.ui.preferences.general.GeneralPreferencesController;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 import org.apache.cayenne.modeler.util.AdapterMapping;
 import org.apache.cayenne.modeler.util.WidgetFactory;
@@ -40,6 +42,7 @@ import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
@@ -63,7 +66,7 @@ public class Application {
 
     protected FileClassLoadingService modelerClassLoader;
     protected LogConsoleController logConsoleController;
-    protected CayenneModelerController frameController;
+    protected ModelerController frameController;
     protected String name;
     protected AdapterMapping adapterMapping;
     protected CayenneUndoManager undoManager;
@@ -90,8 +93,8 @@ public class Application {
     }
 
     // static methods that should probably go away eventually...
-    public static CayenneModelerFrame getFrame() {
-        return (CayenneModelerFrame) getInstance().getFrameController().getView();
+    public static ModelerFrame getFrame() {
+        return (ModelerFrame) getInstance().getFrameController().getView();
     }
 
     public Application() {
@@ -147,7 +150,7 @@ public class Application {
         return undoManager;
     }
 
-    public CayenneModelerController getFrameController() {
+    public ModelerController getFrameController() {
         return frameController;
     }
 
@@ -155,7 +158,7 @@ public class Application {
         return logConsoleController;
     }
 
-    public void startup() {
+    public void startup(File initialProject) {
         this.logConsoleController = new LogConsoleController(this);
 
         // init subsystems
@@ -164,7 +167,7 @@ public class Application {
 
         this.adapterMapping = new AdapterMapping();
         this.undoManager = new CayenneUndoManager(this);
-        this.frameController = new CayenneModelerController(this);
+        this.frameController = new ModelerController(this);
 
         // open up
         frameController.onStartup();
@@ -172,6 +175,14 @@ public class Application {
         // After prefs have been loaded, we can now show the console if needed
         logConsoleController.showConsoleIfNeeded();
         getFrame().setVisible(true);
+
+        if (initialProject == null) {
+            initialProject = initialProjectFromPreferences();
+        }
+
+        if (initialProject != null) {
+            getActionManager().getAction(OpenProjectAction.class).openProject(initialProject);
+        }
     }
 
     public CayenneProjectPreferences getCayenneProjectPreferences() {
@@ -243,5 +254,18 @@ public class Application {
 
     protected void initPreferences() {
         this.cayenneProjectPreferences = new CayenneProjectPreferences();
+    }
+
+    private File initialProjectFromPreferences() {
+
+        Preferences autoLoadLastProject = getPreferencesNode(GeneralPreferencesController.class, "");
+        if ((autoLoadLastProject != null) && autoLoadLastProject.getBoolean(GeneralPreferencesController.AUTO_LOAD_PROJECT_PREFERENCE, false)) {
+            List<File> lastFiles = ModelerPreferences.getLastProjFiles();
+            if (!lastFiles.isEmpty()) {
+                return lastFiles.get(0);
+            }
+        }
+
+        return null;
     }
 }

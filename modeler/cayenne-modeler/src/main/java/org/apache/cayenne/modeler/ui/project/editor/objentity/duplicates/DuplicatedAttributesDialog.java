@@ -24,7 +24,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.CayenneModelerFrame;
+import org.apache.cayenne.modeler.ui.ModelerFrame;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneDialog;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
@@ -66,8 +66,8 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
     protected JButton cancelButton;
     protected JButton proceedButton;
 
-    public static void showDialog(CayenneModelerFrame editor, List<ObjAttribute> duplicatedAttributes,
-            ObjEntity superEntity, ObjEntity entity) {
+    public static void showDialog(ModelerFrame editor, List<ObjAttribute> duplicatedAttributes,
+                                  ObjEntity superEntity, ObjEntity entity) {
 
         if (instance == null) {
             instance = new DuplicatedAttributesDialog(editor);
@@ -81,7 +81,7 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
         instance.setVisible(true);
     }
 
-    protected DuplicatedAttributesDialog(CayenneModelerFrame editor) {
+    protected DuplicatedAttributesDialog(ModelerFrame editor) {
         super(editor, "Duplicated Attributes", true);
 
         result = CANCEL_RESULT;

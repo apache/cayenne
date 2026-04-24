@@ -66,7 +66,7 @@ import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.modeler.pref.ProjectStatePreferences;
-import org.apache.cayenne.modeler.ui.CayenneModelerController;
+import org.apache.cayenne.modeler.ui.ModelerController;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.state.DisplayEventTypes;
 import org.apache.cayenne.modeler.util.state.MultipleObjectsDisplayEventType;
@@ -92,7 +92,7 @@ import java.util.prefs.Preferences;
 /**
  * A controller that works with the project tree, tracking selection and dispatching project events.
  */
-public class ProjectController extends ChildController<CayenneModelerController> {
+public class ProjectController extends ChildController<ModelerController> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProjectController.class);
 
@@ -106,7 +106,7 @@ public class ProjectController extends ChildController<CayenneModelerController>
     private EntityResolver entityResolver;
     private ProjectFileChangeTracker fileChangeTracker;
 
-    public ProjectController(CayenneModelerController parent) {
+    public ProjectController(ModelerController parent) {
         super(parent);
         this.listeners = new EventListenerList();
         this.state = new ControllerState();

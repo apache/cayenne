@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.undo;
 
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
-
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
@@ -31,14 +28,15 @@ import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+
 public class RelationshipUndoableEdit extends CayenneUndoableEdit {
 
-	private static final long serialVersionUID = -1864303176024098961L;
-
-	private Relationship<?,?,?> relationship;
-    private Relationship<?,?,?> prevRelationship;
-    private ProjectController projectController;
-    private boolean useDb;
+	private final Relationship<?,?,?> relationship;
+    private final Relationship<?,?,?> prevRelationship;
+    private final ProjectController projectController;
+    private final boolean useDb;
 
 	public RelationshipUndoableEdit(Relationship<?,?,?> relationship) {
 		this.projectController = Application.getInstance().getFrameController().getProjectController();

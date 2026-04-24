@@ -23,7 +23,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.CayenneModelerFrame;
+import org.apache.cayenne.modeler.ui.ModelerFrame;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
 import org.apache.cayenne.modeler.ui.project.editor.EditorPanelView;
 import org.apache.cayenne.query.SQLTemplate;
@@ -38,8 +38,8 @@ import java.awt.event.ActionListener;
 
 public class JUndoableCheckBoxEdit extends AbstractUndoableEdit {
 
-    private JCheckBox checkBox;
-    private ActionListener actionListener;
+    private final JCheckBox checkBox;
+    private final ActionListener actionListener;
     private JTabbedPane tabbedPane;
     private TreePath treePath;
     private Object targetObject;
@@ -56,7 +56,7 @@ public class JUndoableCheckBoxEdit extends AbstractUndoableEdit {
         this.actionListener = actionListener;
         this.isSelected = checkBox.isSelected();
 
-        projectView = ((CayenneModelerFrame) Application.getInstance().getFrameController().getView()).getEditorPanel();
+        projectView = ((ModelerFrame) Application.getInstance().getFrameController().getView()).getEditorPanel();
 
         treePath = projectView.getProjectTreeView().getSelectionPath();
 

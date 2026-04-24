@@ -24,20 +24,15 @@ import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.modeler.action.OpenProjectAction;
-import org.apache.cayenne.modeler.ui.preferences.general.GeneralPreferencesController;
-import org.apache.cayenne.modeler.init.CayenneModelerModule;
 import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
 import org.apache.cayenne.project.ProjectModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.prefs.Preferences;
 
 /**
  * Main class responsible for starting CayenneModeler.
@@ -78,50 +73,24 @@ public class Main {
         LOGGER.info("JRE v." + System.getProperty("java.version") + " at " + System.getProperty("java.home"));
 
         SwingUtilities.invokeLater(() -> {
-
             Application application = injector.getInstance(Application.class);
             Application.setInstance(application);
-            application.startup();
-
-            // start initial project AFTER the app startup, as we need Application
-            // preferences to be bootstrapped.
-
-            File project = initialProjectFromArgs();
-            if (project == null) {
-                project = initialProjectFromPreferences();
-            }
-
-            if (project != null) {
-                new OpenProjectAction(application).openProject(project);
-            }
+            application.startup(initialProjectFromArgs());
         });
 
     }
 
     protected Collection<Module> appendModules(Collection<Module> modules) {
+
         // TODO: this is dirty... CoreModule is out of place inside the Modeler...
         // If we need CayenneRuntime for certain operations, those should start their own stack...
         modules.add(new CoreModule());
 
         modules.add(new ProjectModule());
         modules.add(new DbSyncModule());
-        modules.add(new CayenneModelerModule());
+        modules.add(new ModelerModule());
 
         return modules;
-    }
-
-    protected File initialProjectFromPreferences() {
-
-        Preferences autoLoadLastProject = Application.getInstance().getPreferencesNode(GeneralPreferencesController.class, "");
-        if ((autoLoadLastProject != null)
-                && autoLoadLastProject.getBoolean(GeneralPreferencesController.AUTO_LOAD_PROJECT_PREFERENCE, false)) {
-            List<File> lastFiles = ModelerPreferences.getLastProjFiles();
-            if (!lastFiles.isEmpty()) {
-                return lastFiles.get(0);
-            }
-        }
-
-        return null;
     }
 
     protected File initialProjectFromArgs() {

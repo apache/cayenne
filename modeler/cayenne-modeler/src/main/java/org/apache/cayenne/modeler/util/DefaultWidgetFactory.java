@@ -18,23 +18,22 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.util;
 
-import org.apache.cayenne.modeler.ModelerPreferences;
 import org.apache.cayenne.modeler.undo.JComboBoxUndoListener;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import org.apache.cayenne.modeler.util.combo.ComboBoxCellEditor;
 
-import javax.swing.BorderFactory;
-import javax.swing.DefaultCellEditor;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.table.TableCellEditor;
-import java.awt.Color;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.Collection;
 
 public class DefaultWidgetFactory implements WidgetFactory {
+
+    /**
+     * Number of items in combobox visible without scrolling
+     */
+    private static final int COMBOBOX_MAX_VISIBLE_SIZE = 12;
 
     /**
      * Creates a new JComboBox with a collection of model objects.
@@ -64,7 +63,7 @@ public class DefaultWidgetFactory implements WidgetFactory {
         JComboBox<T> comboBox = new JComboBox<>();
         comboBox.setFont(UIManager.getFont("Label.font"));
         comboBox.setBackground(Color.WHITE);
-        comboBox.setMaximumRowCount(ModelerPreferences.COMBOBOX_MAX_VISIBLE_SIZE);
+        comboBox.setMaximumRowCount(COMBOBOX_MAX_VISIBLE_SIZE);
         return comboBox;
     }
 
@@ -76,7 +75,7 @@ public class DefaultWidgetFactory implements WidgetFactory {
         JComboBox<T> comboBox = new JComboBox<>();
         comboBox.addItemListener(new JComboBoxUndoListener());
         comboBox.setBackground(Color.WHITE);
-        comboBox.setMaximumRowCount(ModelerPreferences.COMBOBOX_MAX_VISIBLE_SIZE);
+        comboBox.setMaximumRowCount(COMBOBOX_MAX_VISIBLE_SIZE);
         return comboBox;
     }
 

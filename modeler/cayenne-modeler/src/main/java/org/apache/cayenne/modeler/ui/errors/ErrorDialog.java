@@ -20,7 +20,7 @@
 
 package org.apache.cayenne.modeler.ui.errors;
 
-import org.apache.cayenne.modeler.ui.CayenneModelerFrame;
+import org.apache.cayenne.modeler.ui.ModelerFrame;
 import org.apache.cayenne.modeler.util.CayenneDialog;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
@@ -45,7 +45,7 @@ class ErrorDialog extends CayenneDialog implements ActionListener {
     protected boolean detailed;
 
     public ErrorDialog(
-            CayenneModelerFrame owner,
+            ModelerFrame owner,
             String title,
             Throwable throwable,
             boolean detailed,

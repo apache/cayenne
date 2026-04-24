@@ -18,8 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.undo;
 
-import javax.swing.JTabbedPane;
-import javax.swing.SwingUtilities;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ui.ModelerFrame;
+import org.apache.cayenne.modeler.ui.project.ProjectView;
+import org.apache.cayenne.modeler.ui.project.editor.EditorPanelView;
+import org.apache.cayenne.modeler.ui.project.editor.query.sqltemplate.SQLTemplateTabbedView;
+import org.apache.cayenne.modeler.util.TextAdapter;
+import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.query.SQLTemplate;
+
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
@@ -29,37 +42,19 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.CompoundEdit;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.Embeddable;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.CayenneModelerFrame;
-import org.apache.cayenne.modeler.ui.project.ProjectView;
-import org.apache.cayenne.modeler.ui.project.editor.EditorPanelView;
-import org.apache.cayenne.modeler.ui.project.editor.query.sqltemplate.SQLTemplateTabbedView;
-import org.apache.cayenne.modeler.util.TextAdapter;
-import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.query.SQLTemplate;
-
 public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
 
     private TextAdapter adapter;
-    private JTextComponent editor;
+    private final JTextComponent editor;
 
-    private TreePath treePath;
+    private final TreePath treePath;
     private int selectedTabIndex;
     private int selectedItem;
     private JTabbedPane tabbedPane;
 
     private Object targetObject;
 
-    private JTextFieldUndoListener listener;
-
-    public Object getTargetObject() {
-        return targetObject;
-    }
+    private final JTextFieldUndoListener listener;
 
     public TextCompoundEdit(TextAdapter adapter, JTextFieldUndoListener listener) {
         this(adapter.getComponent(), listener);
@@ -71,12 +66,12 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
         this.editor = editor;
         this.listener = listener;
 
-        ProjectView projectView = ((CayenneModelerFrame) Application.getInstance().getFrameController().getView())
+        ProjectView projectView = ((ModelerFrame) Application.getInstance().getFrameController().getView())
                 .getEditorPanel();
 
         treePath = projectView.getProjectTreeView().getSelectionPath();
 
-        if(treePath != null) {
+        if (treePath != null) {
             DefaultMutableTreeNode newPath = (DefaultMutableTreeNode) treePath.getLastPathComponent();
             targetObject = newPath.getUserObject();
         }
@@ -122,7 +117,7 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
 
     private void restoreSelections() {
 
-        ProjectView projectView = ((CayenneModelerFrame) Application.getInstance().getFrameController().getView())
+        ProjectView projectView = ((ModelerFrame) Application.getInstance().getFrameController().getView())
                 .getEditorPanel();
 
         projectView.getProjectTreeView().getSelectionModel().setSelectionPath(treePath);
@@ -137,23 +132,24 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
     }
 
     public void insertUpdate(final DocumentEvent e) {
-        SwingUtilities.invokeLater(new Runnable() {
-
-            public void run() {
-                int offset = e.getOffset() + e.getLength();
-                offset = Math.min(offset, editor.getDocument().getLength());
-                editor.setCaretPosition(offset);
-            }
+        SwingUtilities.invokeLater(() -> {
+            int offset = e.getOffset() + e.getLength();
+            offset = Math.min(offset, editor.getDocument().getLength());
+            editor.setCaretPosition(offset);
         });
     }
 
+
+    @Override
     public void removeUpdate(DocumentEvent e) {
         editor.setCaretPosition(e.getOffset());
     }
 
+    @Override
     public void changedUpdate(DocumentEvent e) {
     }
 
+    @Override
     public boolean isInProgress() {
         return false;
     }
@@ -171,6 +167,7 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
         editor.requestFocusInWindow();
     }
 
+    @Override
     public void undo() throws CannotUndoException {
         restoreSelections();
 

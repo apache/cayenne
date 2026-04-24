@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.CayenneModelerController;
+import org.apache.cayenne.modeler.ui.ModelerController;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.Project;
 
@@ -43,7 +43,7 @@ public class RevertAction extends CayenneAction {
 
         boolean isNew = project.getConfigurationResource() == null;
 
-        CayenneModelerController controller = getApplication().getFrameController();
+        ModelerController controller = getApplication().getFrameController();
 
         // close ... don't use OpenProjectAction close method as it will ask for save, we don't want that here
         controller.onProjectClosed();

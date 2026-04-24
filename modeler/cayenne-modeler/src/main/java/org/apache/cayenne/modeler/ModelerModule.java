@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.init;
+package org.apache.cayenne.modeler;
 
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.DefaultDataChannelMetaData;
@@ -26,7 +26,6 @@ import org.apache.cayenne.dbsync.xml.DbImportExtension;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.gen.xml.CgenExtension;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.DefaultActionManager;
 import org.apache.cayenne.modeler.graph.extension.GraphExtension;
@@ -45,7 +44,7 @@ import org.xml.sax.XMLReader;
 /**
  * A DI module for bootstrapping CayenneModeler services.
  */
-public class CayenneModelerModule implements Module {
+public class ModelerModule implements Module {
 
     public void configure(Binder binder) {
 

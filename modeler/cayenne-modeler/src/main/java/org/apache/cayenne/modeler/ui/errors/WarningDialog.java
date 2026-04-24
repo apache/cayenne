@@ -19,13 +19,13 @@
 
 package org.apache.cayenne.modeler.ui.errors;
 
-import org.apache.cayenne.modeler.ui.CayenneModelerFrame;
+import org.apache.cayenne.modeler.ui.ModelerFrame;
 
 import java.awt.*;
 
 class WarningDialog extends ErrorDialog {
 
-    public WarningDialog(CayenneModelerFrame owner, String title, Throwable throwable, boolean detailed, boolean modal) throws HeadlessException {
+    public WarningDialog(ModelerFrame owner, String title, Throwable throwable, boolean detailed, boolean modal) throws HeadlessException {
         super(owner, title, throwable, detailed, modal);
     }
 

@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.action;
 import java.awt.event.ActionEvent;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.CayenneModelerController;
+import org.apache.cayenne.modeler.ui.ModelerController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.unsavedchanges.UnsavedChangesDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
@@ -65,7 +65,7 @@ public class ProjectAction extends CayenneAction {
             return false;
         }
 
-        CayenneModelerController controller = Application
+        ModelerController controller = Application
                 .getInstance()
                 .getFrameController();
 

@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.pref;
 
+import org.apache.cayenne.modeler.ModelerPreferences;
+import org.apache.cayenne.modeler.util.CayenneUserDir;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,23 +30,12 @@ import java.util.Properties;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import org.apache.cayenne.modeler.ModelerPreferences;
-import org.apache.cayenne.modeler.util.CayenneUserDir;
-
 public class UpgradeCayennePreference extends PreferenceDecorator {
 
     /** Name of the preferences file. */
     public static final String PREFERENCES_NAME_OLD = "modeler.preferences";
 
     public static final String LAST_PROJ_FILES_OLD = "Editor.lastSeveralProjectFiles";
-
-    /** GUI layout */
-    public static final String EDITOR_LAFNAME_OLD = "Editor.lookAndFeel";
-    public static final String EDITOR_THEMENAME_OLD = "Editor.theme";
-
-    /** Log file */
-    public static final String EDITOR_LOGFILE_ENABLED_OLD = "Editor.logfileEnabled";
-    public static final String EDITOR_LOGFILE_OLD = "Editor.logfile";
 
     public static final String DELIMITER = ",";
 
@@ -63,11 +55,6 @@ public class UpgradeCayennePreference extends PreferenceDecorator {
                         ep.load(new FileInputStream(prefsFile));
 
                         Preferences prefEditor = Preferences.userRoot().node(CAYENNE_PREFERENCES_PATH).node(EDITOR);
-
-                        prefEditor.putBoolean(ModelerPreferences.EDITOR_LOGFILE_ENABLED,
-                                Boolean.valueOf(ep.getProperty(EDITOR_LOGFILE_ENABLED_OLD)));
-                        prefEditor.put(ModelerPreferences.EDITOR_LOGFILE,
-                                ep.getProperty(EDITOR_LOGFILE_OLD));
 
                         Preferences frefLastProjFiles = prefEditor.node(LAST_PROJ_FILES);
 

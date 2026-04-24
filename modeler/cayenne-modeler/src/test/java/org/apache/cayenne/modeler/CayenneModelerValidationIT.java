@@ -22,7 +22,6 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.modeler.init.CayenneModelerModule;
 import org.apache.cayenne.modeler.validation.ConfigurableProjectValidator;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectLoader;
@@ -55,7 +54,7 @@ public class CayenneModelerValidationIT {
         injector = DIBootstrap.createInjector(List.of(
                 new ToolsModule(LOGGER),
                 new ProjectModule(),
-                new CayenneModelerModule()
+                new ModelerModule()
         ));
     }
 

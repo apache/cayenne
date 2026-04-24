@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.util;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.CayenneModelerFrame;
+import org.apache.cayenne.modeler.ui.ModelerFrame;
 import org.apache.cayenne.modeler.ui.errors.ErrorsController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
@@ -255,7 +255,7 @@ public abstract class CayenneAction extends AbstractAction {
     }
     
     protected static ProjectView editor() {
-        return ((CayenneModelerFrame) Application
+        return ((ModelerFrame) Application
                 .getInstance()
                 .getFrameController()
                 .getView()).getEditorPanel();

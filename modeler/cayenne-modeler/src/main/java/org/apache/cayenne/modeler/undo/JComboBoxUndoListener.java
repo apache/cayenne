@@ -18,19 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.undo;
 
+import org.apache.cayenne.modeler.Application;
+
+import javax.swing.*;
+import javax.swing.undo.UndoManager;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-
-import javax.swing.JComboBox;
-import javax.swing.undo.UndoManager;
-
-import org.apache.cayenne.modeler.Application;
 
 public class JComboBoxUndoListener implements ItemListener {
 
     private Object deselectedItem;
-    private boolean isUserAction = true;
 
+    @Override
     public void itemStateChanged(ItemEvent e) {
         int stateChange = e.getStateChange();
 
@@ -39,22 +38,11 @@ public class JComboBoxUndoListener implements ItemListener {
                 deselectedItem = e.getItem();
                 break;
             case ItemEvent.SELECTED:
-                // don't add event to undo list, if it was just the default setting
-                if (isUserAction) {
-                    UndoManager undoManager = Application.getInstance().getUndoManager();
-                    undoManager.addEdit(new JComboBoxUndoableEdit((JComboBox) e
-                            .getSource(), deselectedItem, e.getItem(), this));
-                    
-                }
-                //set back to default value after the selecting new option
-                isUserAction = true;
+                // TODO: don't add event to undo list, if it was just the default setting?
+                UndoManager undoManager = Application.getInstance().getUndoManager();
+                undoManager.addEdit(new JComboBoxUndoableEdit((JComboBox) e
+                        .getSource(), deselectedItem, e.getItem(), this));
                 break;
-
         }
-
-    }
-
-    public void setIsUserAction(boolean isUserAction) {
-        this.isUserAction = isUserAction;
     }
 }
