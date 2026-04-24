@@ -34,7 +34,7 @@ import java.util.List;
  * {@link #rebuildFromPreferences()}
  */
 public class RecentFileMenu extends JMenu implements RecentFileListListener {
-    
+
     public RecentFileMenu(String s) {
         super(s);
     }

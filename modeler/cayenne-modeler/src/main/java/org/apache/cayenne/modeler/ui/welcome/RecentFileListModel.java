@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.modeler.ui.welcome;
 
-import org.apache.cayenne.modeler.ui.welcome.path.PathTrimmer;
-
 import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
@@ -28,16 +26,22 @@ import java.util.List;
 
 class RecentFileListModel extends AbstractListModel<String> {
 
+    private static final int MAX_LENGTH = 120;
+    private static final String homeDir = System.getProperty("user.home");
+    private final static String replacement;
+
+    static {
+        replacement = homeDir.endsWith(File.separator) ? "~" + File.separator : "~";
+    }
+
     private final List<File> fileListFull;
     private final List<String> fileList;
-
-    private static final PathTrimmer pathTrimmer = PathTrimmer.getInstance();
 
     RecentFileListModel(List<File> fileList) {
         this.fileListFull = fileList;
         this.fileList = new ArrayList<>(fileList.size());
         for (File next : fileList) {
-            this.fileList.add(pathTrimmer.trim(next.getAbsolutePath()));
+            this.fileList.add(trim(next.getAbsolutePath()));
         }
     }
 
@@ -53,5 +57,10 @@ class RecentFileListModel extends AbstractListModel<String> {
 
     File getFullElementAt(int index) {
         return fileListFull.get(index);
+    }
+
+    private static String trim(String path) {
+        String t1 = path.replace(homeDir, replacement);
+        return t1.length() <= MAX_LENGTH ? t1 : "..." + path.substring(path.length() - MAX_LENGTH);
     }
 }

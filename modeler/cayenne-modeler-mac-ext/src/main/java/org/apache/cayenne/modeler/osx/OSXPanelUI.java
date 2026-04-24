@@ -19,19 +19,13 @@
 
 package org.apache.cayenne.modeler.osx;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import javax.swing.plaf.ComponentUI;
-import javax.swing.plaf.basic.BasicPanelUI;
-
 import org.apache.cayenne.modeler.ui.SearchPanel;
 
-/**
- * @since 4.0
- */
+import javax.swing.*;
+import javax.swing.plaf.ComponentUI;
+import javax.swing.plaf.basic.BasicPanelUI;
+import java.awt.*;
+
 public class OSXPanelUI extends BasicPanelUI {
 
     private static final Color BACKGROUND = new Color(0xEEEEEE);
@@ -42,7 +36,7 @@ public class OSXPanelUI extends BasicPanelUI {
         BasicPanelUI delegate;
         try {
             @SuppressWarnings("unchecked")
-            Class<? extends  BasicPanelUI> delegateClass = (Class<? extends  BasicPanelUI>)
+            Class<? extends BasicPanelUI> delegateClass = (Class<? extends BasicPanelUI>)
                     Class.forName("com.apple.laf.AquaPanelUI");
             delegate = delegateClass.getDeclaredConstructor().newInstance();
         } catch (Exception ex) {
@@ -63,9 +57,9 @@ public class OSXPanelUI extends BasicPanelUI {
     }
 
     @Override
-    protected void installDefaults(final JPanel p) {
+    protected void installDefaults(JPanel p) {
         super.installDefaults(p);
-        if(p instanceof SearchPanel) {
+        if (p instanceof SearchPanel) {
             SwingUtilities.invokeLater(((SearchPanel) p)::hideSearchLabel);
         } else {
             p.setBackground(BACKGROUND);

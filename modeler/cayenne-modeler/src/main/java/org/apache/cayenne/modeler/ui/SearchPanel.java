@@ -7,7 +7,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-class SearchPanel extends JPanel {
+public class SearchPanel extends JPanel {
 
     private final JLabel searchLabel;
     private final JPanel box;
