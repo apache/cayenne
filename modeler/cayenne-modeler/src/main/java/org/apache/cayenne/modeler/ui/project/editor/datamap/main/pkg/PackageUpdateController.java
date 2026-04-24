@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.project.editor.datamap.pkg;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.main.pkg;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;

@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.project.editor.datamap.schema;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.main.schema;
 
 import org.apache.cayenne.modeler.event.model.ProcedureEvent;
 import org.apache.cayenne.map.DataMap;

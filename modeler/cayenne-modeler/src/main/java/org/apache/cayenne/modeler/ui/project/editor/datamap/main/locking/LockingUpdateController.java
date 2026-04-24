@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.project.editor.datamap.locking;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.main.locking;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjAttribute;

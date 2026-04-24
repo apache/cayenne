@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.ui.project.editor.datamap.catalog;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.main.catalog;
 
 import org.apache.cayenne.modeler.event.model.ProcedureEvent;
 import org.apache.cayenne.map.DataMap;

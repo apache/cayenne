@@ -23,7 +23,7 @@ import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.DataDomainTabbedView;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.DataMapTabbedView;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.DataMapView;
 import org.apache.cayenne.modeler.ui.project.editor.datanode.DataNodeEditorController;
 import org.apache.cayenne.modeler.ui.project.editor.dbentity.DbEntityTabbedView;
 import org.apache.cayenne.modeler.ui.project.editor.embeddable.EmbeddableTabbedView;
@@ -61,7 +61,7 @@ public class EditorPanelView extends JPanel {
     private final ObjEntityTabbedView objDetailView;
     private final EmbeddableTabbedView embeddableView;
     private final DataDomainTabbedView dataDomainView;
-    private final DataMapTabbedView dataMapView;
+    private final DataMapView dataMapView;
     private final ProcedureTabbedView procedureView;
     private final SQLTemplateTabbedView sqlTemplateView;
     private final EjbqlTabbedView ejbqlQueryView;
@@ -83,7 +83,7 @@ public class EditorPanelView extends JPanel {
         DataNodeEditorController nodeController = new DataNodeEditorController(controller);
         add(new JScrollPane(nodeController.getView()), NODE_VIEW);
 
-        dataMapView = new DataMapTabbedView(controller);
+        dataMapView = new DataMapView(controller);
         add(dataMapView, DATA_MAP_VIEW);
 
         procedureView = new ProcedureTabbedView(controller);
@@ -149,7 +149,7 @@ public class EditorPanelView extends JPanel {
         return dataDomainView;
     }
 
-    public DataMapTabbedView getDataMapView() {
+    public DataMapView getDataMapView() {
         return dataMapView;
     }
 
