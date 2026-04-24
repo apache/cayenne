@@ -21,12 +21,17 @@ package org.apache.cayenne.modeler.ui.preferences.general;
 
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.ui.preferences.PreferenceDialogController;
-import org.apache.cayenne.modeler.ui.preferences.encoding.EncodingPreferencesController;
-import org.apache.cayenne.modeler.ui.preferences.encoding.EncodingPreferencesView;
+import org.apache.cayenne.util.Util;
 
+import javax.swing.*;
 import java.awt.*;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStreamWriter;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 import java.util.prefs.Preferences;
 
 public class GeneralPreferencesController extends ChildController<PreferenceDialogController> {
@@ -43,11 +48,13 @@ public class GeneralPreferencesController extends ChildController<PreferenceDial
     public static final String FAVOURITE_DATA_SOURCE = "favouriteDataSource";
 
     private final GeneralPreferencesView view;
+    private final String systemEncoding;
+    private final Preferences preferences;
 
     private boolean autoLoadProjectPreference;
     private String encoding;
+    private boolean defaultEncoding;
     private boolean deletePromptPreference;
-    private final Preferences preferences;
 
     public GeneralPreferencesController(PreferenceDialogController parent) {
         super(parent);
@@ -57,14 +64,25 @@ public class GeneralPreferencesController extends ChildController<PreferenceDial
         this.autoLoadProjectPreference = preferences.getBoolean(AUTO_LOAD_PROJECT_PREFERENCE, false);
         this.deletePromptPreference = preferences.getBoolean(DELETE_PROMPT_PREFERENCE, false);
 
-        // TODO: confusing: "encodingController" is dangling in the air, yet it doesn't go out of scope as it is a
-        //  listener for its own view events
-        EncodingPreferencesController encodingController = new EncodingPreferencesController(this);
-        encodingController.addPropertyChangeListener(EncodingPreferencesController.ENCODING_PROPERTY, evt -> setEncoding((String) evt.getNewValue()));
-        encodingController.setSelectedEncoding(encoding);
+        this.systemEncoding = detectPlatformEncoding();
 
-        this.view = new GeneralPreferencesView(encodingController.getView());
+        this.view = new GeneralPreferencesView();
         this.view.setEnabled(true);
+
+        Vector allEncodings = supportedEncodings(systemEncoding);
+        view.getEncodingChoices().setModel(new DefaultComboBoxModel(allEncodings));
+        view.getDefaultEncodingLabel().setText("Default (" + systemEncoding + ")");
+        view.getDefaultEncoding().setSelected(true);
+
+        view.getDefaultEncoding().addActionListener(e -> setDefaultEncoding(view.getDefaultEncoding().isSelected()));
+        view.getOtherEncoding().addActionListener(e -> setDefaultEncoding(!view.getOtherEncoding().isSelected()));
+        view.getEncodingChoices().addActionListener(e -> {
+            Object sel = view.getEncodingChoices().getSelectedItem();
+            setEncoding(sel != null ? sel.toString() : null);
+        });
+
+        setSelectedEncoding(encoding);
+
         this.view.getAutoLoadProject().addActionListener(e -> setAutoLoadProject(view.getAutoLoadProject().isSelected()));
         this.view.getDeletePrompt().addActionListener(e -> setDeletePrompt(view.getDeletePrompt().isSelected()));
         this.view.getAutoLoadProject().setSelected(autoLoadProjectPreference);
@@ -81,8 +99,64 @@ public class GeneralPreferencesController extends ChildController<PreferenceDial
     }
 
     public void setEncoding(String encoding) {
-        addChangedPreferences(ENCODING_PREFERENCE, encoding);
+        if (!Util.nullSafeEquals(this.encoding, encoding)) {
+            addChangedPreferences(ENCODING_PREFERENCE, encoding);
+            this.encoding = encoding;
+        }
+    }
+
+    /**
+     * Returns default encoding on the current platform.
+     */
+    protected String detectPlatformEncoding() {
+        // this info is private until 1.5, so have to hack it...
+        return new OutputStreamWriter(new ByteArrayOutputStream()).getEncoding();
+    }
+
+    /**
+     * Returns an array of charsets that all JVMs must support cross-platform combined
+     * with a default platform charset. See Javadocs for java.nio.charset.Charset for the
+     * list of "standard" charsets.
+     */
+    protected Vector supportedEncodings(String platformEncoding) {
+        String[] defaultCharsets = new String[] {
+                "US-ASCII", "ISO-8859-1", "UTF-8", "UTF-16BE", "UTF-16LE", "UTF-16"
+        };
+
+        Vector charsets = new Vector(Arrays.asList(defaultCharsets));
+        if (!charsets.contains(platformEncoding)) {
+            charsets.add(platformEncoding);
+        }
+
+        Collections.sort(charsets);
+        return charsets;
+    }
+
+    private void setSelectedEncoding(String encoding) {
         this.encoding = encoding;
+        this.defaultEncoding = encoding == null || encoding.equals(systemEncoding);
+
+        view.getEncodingChoices().setSelectedItem(encoding);
+        view.getDefaultEncoding().setSelected(defaultEncoding);
+        view.getOtherEncoding().setSelected(!defaultEncoding);
+        view.getEncodingChoices().setEnabled(!defaultEncoding);
+        view.getDefaultEncodingLabel().setEnabled(defaultEncoding);
+    }
+
+    private void setDefaultEncoding(boolean b) {
+        if (b != defaultEncoding) {
+            this.defaultEncoding = b;
+
+            if (b) {
+                setEncoding(systemEncoding);
+                view.getEncodingChoices().setEnabled(false);
+                view.getDefaultEncodingLabel().setEnabled(true);
+            }
+            else {
+                view.getEncodingChoices().setEnabled(true);
+                view.getDefaultEncodingLabel().setEnabled(false);
+            }
+        }
     }
 
     private void setAutoLoadProject(boolean autoLoadProject) {

@@ -19,8 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.preferences.general;
 
-import org.apache.cayenne.modeler.ui.preferences.encoding.EncodingPreferencesView;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -31,13 +30,31 @@ import java.awt.*;
 
 public class GeneralPreferencesView extends JPanel {
 
-    private final EncodingPreferencesView encodingSelector;
+    private final JRadioButton defaultEncoding;
+    private final JRadioButton otherEncoding;
+    private final JComboBox encodingChoices;
+    private final JLabel defaultEncodingLabel;
+    private final JPanel encodingSelector;
     private final JLabel encodingSelectorLabel;
     private final JCheckBox autoLoadProjectBox;
     private final JCheckBox deletePromptBox;
 
-    public GeneralPreferencesView(EncodingPreferencesView encodingSelector) {
-        this.encodingSelector = encodingSelector;
+    public GeneralPreferencesView() {
+        this.defaultEncoding = new JRadioButton();
+        this.otherEncoding = new JRadioButton();
+        this.encodingChoices = new JComboBox();
+        this.defaultEncodingLabel = new JLabel();
+
+        ButtonGroup group = new ButtonGroup();
+        group.add(defaultEncoding);
+        group.add(otherEncoding);
+
+        FormLayout encodingLayout = new FormLayout("pref, 3dlu, pref", "");
+        DefaultFormBuilder encodingBuilder = new DefaultFormBuilder(encodingLayout);
+        encodingBuilder.append(defaultEncoding, defaultEncodingLabel);
+        encodingBuilder.append(otherEncoding, encodingChoices);
+        this.encodingSelector = encodingBuilder.getPanel();
+
         this.encodingSelectorLabel = new JLabel("File Encoding:");
         this.autoLoadProjectBox = new JCheckBox("Automatically Load Last Opened Project");
         this.deletePromptBox = new JCheckBox("Always Delete Items Without Prompt");
@@ -70,6 +87,22 @@ public class GeneralPreferencesView extends JPanel {
         encodingSelectorLabel.setEnabled(b);
         autoLoadProjectBox.setEnabled(b);
         deletePromptBox.setEnabled(b);
+    }
+
+    public JRadioButton getDefaultEncoding() {
+        return defaultEncoding;
+    }
+
+    public JLabel getDefaultEncodingLabel() {
+        return defaultEncodingLabel;
+    }
+
+    public JComboBox getEncodingChoices() {
+        return encodingChoices;
+    }
+
+    public JRadioButton getOtherEncoding() {
+        return otherEncoding;
     }
 
     public JCheckBox getAutoLoadProject() {
