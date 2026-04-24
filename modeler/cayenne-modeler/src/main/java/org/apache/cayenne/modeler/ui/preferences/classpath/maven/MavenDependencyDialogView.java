@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.preferences.maven;
+package org.apache.cayenne.modeler.ui.preferences.classpath.maven;
 
 import java.awt.BorderLayout;
 import java.awt.Dialog;

@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.preferences.classpath;
 
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.ui.preferences.PreferenceDialogController;
-import org.apache.cayenne.modeler.ui.preferences.maven.MavenDependencyDialogController;
+import org.apache.cayenne.modeler.ui.preferences.classpath.maven.MavenDependencyDialogController;
 import org.apache.cayenne.modeler.util.FileFilters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

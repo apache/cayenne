@@ -19,21 +19,16 @@
 
 package org.apache.cayenne.modeler.ui.warning;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import java.awt.BorderLayout;
-import java.util.Collection;
-
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.ProjectUtil;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.Collection;
 
 /**
  * @since 4.0
