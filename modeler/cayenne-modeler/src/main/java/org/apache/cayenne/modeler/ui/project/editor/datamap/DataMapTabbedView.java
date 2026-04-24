@@ -66,12 +66,22 @@ public class DataMapTabbedView extends JTabbedPane {
             if (e.isMainTabFocus()) {
                 lastTabIndex = 0;
             }
-            setSelectedIndex(lastTabIndex);
+            if (getSelectedIndex() == lastTabIndex) {
+                // setSelectedIndex won't fire a state change when the index stays the same,
+                // so refresh the active tab's model manually
+                refreshActiveTab();
+            } else {
+                setSelectedIndex(lastTabIndex);
+            }
         }
     }
 
     private void stateChanged(ChangeEvent e) {
         lastTabIndex = getSelectedIndex();
+        refreshActiveTab();
+    }
+
+    private void refreshActiveTab() {
         if (getSelectedComponent() == cgenView) {
             cgenController.initFromModel();
         } else if (getSelectedComponent() == dbImportScrollPane) {
