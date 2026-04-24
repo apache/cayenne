@@ -19,33 +19,24 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 
-public class CatalogNodeTest extends BaseNodeTest {
+abstract class Node<P extends Node> {
+    private final String name;
+    private final P parent;
 
-    private CatalogNode node;
-
-    @Before
-    public void createNode() {
-        node = new CatalogNode("catalog");
+    Node(String name, P parent) {
+        this.name = name;
+        this.parent = parent;
     }
 
-    @Test
-    public void testIncludeEmptyConfig() {
-        config = config().build();
-        assertIncluded(node);
+    P getParent() {
+        return parent;
     }
 
-    @Test
-    public void testIncludeCatalog() {
-        config = config().catalog(catalog("catalog")).build();
-        assertIncluded(node);
+    String getName() {
+        return name;
     }
 
-    @Test
-    public void testNoIncludeCatalog() {
-        config = config().catalog(catalog("catalog1")).build();
-        assertExcludedImplicitly(node);
-    }
+    public abstract Status getStatus(ReverseEngineering config);
 }

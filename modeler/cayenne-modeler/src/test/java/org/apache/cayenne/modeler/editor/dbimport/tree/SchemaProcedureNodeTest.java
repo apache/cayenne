@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor.dbimport.tree;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree;
 
 import org.junit.Before;
 import org.junit.Test;

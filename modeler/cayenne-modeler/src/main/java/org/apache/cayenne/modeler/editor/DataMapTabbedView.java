@@ -21,8 +21,8 @@ package org.apache.cayenne.modeler.editor;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.CgenController;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.cgen.CgenTab;
-import org.apache.cayenne.modeler.editor.dbimport.DbImportView;
-import org.apache.cayenne.modeler.editor.dbimport.domain.DbImportTab;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportView;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.dbimport.DbImportTab;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 
 import javax.swing.JScrollPane;

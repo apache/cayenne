@@ -37,7 +37,7 @@ import org.apache.cayenne.dbsync.reverse.dbimport.DefaultDbImportAction;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.editor.DbImportController;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportController;
 import org.apache.cayenne.project.ProjectSaver;
 import org.slf4j.Logger;
 

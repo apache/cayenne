@@ -23,7 +23,7 @@ import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.action.dbimport.TreeManipulationAction;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
-import org.apache.cayenne.modeler.editor.dbimport.DbImportSorter;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportSorter;
 
 import java.awt.event.ActionEvent;
 import java.util.List;

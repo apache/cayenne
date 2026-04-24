@@ -24,8 +24,8 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.load.DbLoadResultDialog;
 import org.apache.cayenne.modeler.dialog.db.load.DbLoaderContext;
 import org.apache.cayenne.modeler.dialog.db.load.LoadDataMapTask;
-import org.apache.cayenne.modeler.editor.DbImportController;
-import org.apache.cayenne.modeler.editor.dbimport.DbImportView;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportController;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportView;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 
 import javax.swing.*;

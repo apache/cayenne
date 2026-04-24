@@ -22,8 +22,8 @@ package org.apache.cayenne.modeler.action.dbimport;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
-import org.apache.cayenne.modeler.editor.dbimport.DbImportModel;
-import org.apache.cayenne.modeler.editor.dbimport.DbImportSorter;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportModel;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportSorter;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTree;

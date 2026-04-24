@@ -19,33 +19,25 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree;
 
-import org.junit.Before;
-import org.junit.Test;
+import java.util.ArrayList;
+import java.util.List;
 
-public class CatalogNodeTest extends BaseNodeTest {
+import org.apache.cayenne.dbsync.reverse.dbimport.FilterContainer;
+import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 
-    private CatalogNode node;
+class CatalogTableNode extends TableNode<CatalogNode> {
 
-    @Before
-    public void createNode() {
-        node = new CatalogNode("catalog");
+    CatalogTableNode(String name, CatalogNode parent) {
+        super(name, parent);
     }
 
-    @Test
-    public void testIncludeEmptyConfig() {
-        config = config().build();
-        assertIncluded(node);
-    }
-
-    @Test
-    public void testIncludeCatalog() {
-        config = config().catalog(catalog("catalog")).build();
-        assertIncluded(node);
-    }
-
-    @Test
-    public void testNoIncludeCatalog() {
-        config = config().catalog(catalog("catalog1")).build();
-        assertExcludedImplicitly(node);
+    @Override
+    List<FilterContainer> getContainers(ReverseEngineering config) {
+        List<FilterContainer> containers = new ArrayList<>();
+        if(getParent() != null) {
+            containers.add(getParent().getCatalog(config));
+        }
+        containers.add(config);
+        return containers;
     }
 }

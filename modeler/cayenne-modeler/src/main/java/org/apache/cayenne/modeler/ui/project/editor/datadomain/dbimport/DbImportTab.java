@@ -7,7 +7,7 @@
  *  "License"); you may not use this file except in compliance
  *  with the License.  You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *    https://www.apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing,
  *  software distributed under the License is distributed on an
@@ -16,36 +16,20 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.modeler.ui.project.editor.datadomain.dbimport;
 
-package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree;
+import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.editor.GeneratorsTab;
+import org.apache.cayenne.modeler.editor.GeneratorsTabController;
 
-import org.junit.Before;
-import org.junit.Test;
+/**
+ * @since 4.1
+ */
+public class DbImportTab extends GeneratorsTab {
 
-public class CatalogNodeTest extends BaseNodeTest {
-
-    private CatalogNode node;
-
-    @Before
-    public void createNode() {
-        node = new CatalogNode("catalog");
+    public DbImportTab(ProjectController projectController, GeneratorsTabController<ReverseEngineering> additionalTabController) {
+        super(projectController, additionalTabController, "icon-dbi-runImport.png", "Run reverse engineering on selected datamaps.");
     }
 
-    @Test
-    public void testIncludeEmptyConfig() {
-        config = config().build();
-        assertIncluded(node);
-    }
-
-    @Test
-    public void testIncludeCatalog() {
-        config = config().catalog(catalog("catalog")).build();
-        assertIncluded(node);
-    }
-
-    @Test
-    public void testNoIncludeCatalog() {
-        config = config().catalog(catalog("catalog1")).build();
-        assertExcludedImplicitly(node);
-    }
 }

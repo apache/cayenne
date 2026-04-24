@@ -39,7 +39,7 @@ import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.ObjEntityListener;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.dialog.pref.GeneralPreferencesController;
-import org.apache.cayenne.modeler.editor.DbImportController;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportController;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.modeler.event.model.DataMapListener;
 import org.apache.cayenne.modeler.event.model.ProjectSavedEvent;

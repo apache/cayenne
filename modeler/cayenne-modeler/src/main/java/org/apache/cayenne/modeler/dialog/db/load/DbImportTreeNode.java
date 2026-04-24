@@ -30,7 +30,7 @@ import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.PatternParam;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
-import org.apache.cayenne.modeler.editor.dbimport.tree.NodeType;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.NodeType;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.ArrayList;

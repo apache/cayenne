@@ -7,7 +7,7 @@
  *  "License"); you may not use this file except in compliance
  *  with the License.  You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *    https://www.apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing,
  *  software distributed under the License is distributed on an
@@ -19,33 +19,17 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree;
 
-import org.junit.Before;
-import org.junit.Test;
-
-public class CatalogNodeTest extends BaseNodeTest {
-
-    private CatalogNode node;
-
-    @Before
-    public void createNode() {
-        node = new CatalogNode("catalog");
-    }
-
-    @Test
-    public void testIncludeEmptyConfig() {
-        config = config().build();
-        assertIncluded(node);
-    }
-
-    @Test
-    public void testIncludeCatalog() {
-        config = config().catalog(catalog("catalog")).build();
-        assertIncluded(node);
-    }
-
-    @Test
-    public void testNoIncludeCatalog() {
-        config = config().catalog(catalog("catalog1")).build();
-        assertExcludedImplicitly(node);
-    }
+/**
+ * @since 5.0
+ */
+public enum NodeType {
+    UNKNOWN,
+    CATALOG,
+    SCHEMA,
+    INCLUDE_TABLE,
+    EXCLUDE_TABLE,
+    INCLUDE_COLUMN,
+    EXCLUDE_COLUMN,
+    INCLUDE_PROCEDURE,
+    EXCLUDE_PROCEDURE
 }

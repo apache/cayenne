@@ -19,33 +19,20 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree;
 
-import org.junit.Before;
-import org.junit.Test;
+import java.awt.Color;
 
-public class CatalogNodeTest extends BaseNodeTest {
+enum Status {
+    INCLUDE             (new Color(60,179,113)),
+    EXCLUDE_EXPLICIT    (new Color(178, 0, 0)),
+    EXCLUDE_IMPLICIT    (Color.LIGHT_GRAY);
 
-    private CatalogNode node;
+    private final Color color;
 
-    @Before
-    public void createNode() {
-        node = new CatalogNode("catalog");
+    Status(Color color) {
+        this.color = color;
     }
 
-    @Test
-    public void testIncludeEmptyConfig() {
-        config = config().build();
-        assertIncluded(node);
-    }
-
-    @Test
-    public void testIncludeCatalog() {
-        config = config().catalog(catalog("catalog")).build();
-        assertIncluded(node);
-    }
-
-    @Test
-    public void testNoIncludeCatalog() {
-        config = config().catalog(catalog("catalog1")).build();
-        assertExcludedImplicitly(node);
+    public Color getColor() {
+        return color;
     }
 }
