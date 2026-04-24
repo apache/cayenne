@@ -17,28 +17,23 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util.path;
+package org.apache.cayenne.modeler.ui.welcome.path;
 
-public class CompoundPathTrimmer implements PathTrimmer {
+class CompoundPathTrimmer implements PathTrimmer {
 
-    protected int maxLength;
-
-    private PathTrimmer[] decorators;
+    private final int maxLength;
+    private final PathTrimmer[] decorators;
 
     public CompoundPathTrimmer(int maxLength, PathTrimmer... decorators) {
         this.maxLength = maxLength;
         this.decorators = decorators;
     }
 
-    public CompoundPathTrimmer(PathTrimmer... decorators) {
-        this(DEFAULT_MAX_LENGTH, decorators);
-    }
-
     @Override
     public String trim(String path) {
-        for(PathTrimmer decorator : decorators) {
+        for (PathTrimmer decorator : decorators) {
             path = decorator.trim(path);
-            if(path.length() <= maxLength) {
+            if (path.length() <= maxLength) {
                 return path;
             }
         }

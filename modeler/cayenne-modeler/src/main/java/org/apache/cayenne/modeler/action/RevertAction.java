@@ -55,11 +55,10 @@ public class RevertAction extends CayenneAction {
 
         // reopen existing
         if (!isNew && fileDirectory.isFile()) {
-            OpenProjectAction openAction = controller
+            controller
                     .getApplication()
                     .getActionManager()
-                    .getAction(OpenProjectAction.class);
-            openAction.openProject(fileDirectory);
+                    .getAction(OpenProjectAction.class).openProject(fileDirectory);
         }
 
         // create new

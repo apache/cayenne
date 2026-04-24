@@ -21,13 +21,13 @@ package org.apache.cayenne.modeler.ui;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
 import org.apache.cayenne.modeler.action.ExitAction;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
-import org.apache.cayenne.modeler.platform.PlatformInitializer;
 import org.apache.cayenne.modeler.mvc.RootController;
+import org.apache.cayenne.modeler.platform.PlatformInitializer;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.pref.FSPath;
+import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportController;
 import org.apache.cayenne.modeler.ui.project.validator.ProjectValidatorDialogController;
@@ -45,7 +45,6 @@ import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
-import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -110,8 +109,7 @@ public class ModelerController extends RootController {
         if (transferFile.isFile()) {
             FileFilter filter = FileFilters.getApplicationFilter();
             if (filter.accept(transferFile)) {
-                ActionEvent e = new ActionEvent(transferFile, ActionEvent.ACTION_PERFORMED, "OpenProject");
-                Application.getInstance().getActionManager().getAction(OpenProjectAction.class).actionPerformed(e);
+                Application.getInstance().getActionManager().getAction(OpenProjectAction.class).openProject(transferFile);
                 return true;
             }
         }

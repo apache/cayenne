@@ -17,10 +17,21 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util.path;
+package org.apache.cayenne.modeler.ui.welcome.path;
 
-public interface PathTrimmer {
-    int DEFAULT_MAX_LENGTH = 120;
+public class MaxLengthTrimmer implements PathTrimmer {
 
-    String trim(String path);
+    private final int maxLength;
+
+    public MaxLengthTrimmer(int maxLength) {
+        this.maxLength = maxLength;
+    }
+
+    @Override
+    public String trim(String path) {
+        if (path.length() <= maxLength) {
+            return path;
+        }
+        return "..." + path.substring(path.length() - maxLength);
+    }
 }

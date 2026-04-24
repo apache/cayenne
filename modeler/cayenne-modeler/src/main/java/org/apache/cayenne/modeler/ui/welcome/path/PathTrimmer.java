@@ -17,24 +17,17 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util.path;
+package org.apache.cayenne.modeler.ui.welcome.path;
 
-import java.io.File;
+public interface PathTrimmer {
+    int DEFAULT_MAX_LENGTH = 120;
 
-public class DefaultResourceTrimmer implements PathTrimmer {
+    String trim(String path);
 
-    private static String DEFAULT_RESOURCE_PATH;
-    private static String DEFAULT_TEST_RESOURCE_PATH;
-    static {
-        String separator = File.separator;
-        DEFAULT_RESOURCE_PATH = "src" + separator + "main" + separator + "resources";
-        DEFAULT_TEST_RESOURCE_PATH = "src" + separator + "test" + separator + "resources";
-    }
-
-    @Override
-    public String trim(String path) {
-        path = path.replace(DEFAULT_TEST_RESOURCE_PATH, "..test..");
-        path = path.replace(DEFAULT_RESOURCE_PATH, "..main..");
-        return path;
+    static PathTrimmer getInstance() {
+        return new CompoundPathTrimmer(
+                DEFAULT_MAX_LENGTH,
+                new HomePathTrimmer(),
+                new MaxLengthTrimmer(DEFAULT_MAX_LENGTH));
     }
 }

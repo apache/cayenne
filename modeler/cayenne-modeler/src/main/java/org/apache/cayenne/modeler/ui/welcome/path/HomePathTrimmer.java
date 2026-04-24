@@ -17,38 +17,21 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util;
+package org.apache.cayenne.modeler.ui.welcome.path;
 
-import javax.swing.*;
 import java.io.File;
 
-/**
- * A menu item that points to a file.
- */
-public class FileMenuItem extends JMenuItem {
+class HomePathTrimmer implements PathTrimmer {
 
-    public FileMenuItem(String fileName) {
-        super(fileName);
+    private static final String homeDir = System.getProperty("user.home");
+    private final static String replacement;
+
+    static {
+        replacement = homeDir.endsWith(File.separator) ? "~" + File.separator : "~";
     }
 
     @Override
-    protected void configurePropertiesFromAction(Action a) {
-        // excludes most generic action keys that are not applicable here...
-        setIcon(a != null ? (Icon) a.getValue(Action.SMALL_ICON) : null);
-        setEnabled(a == null || a.isEnabled());
+    public String trim(String path) {
+        return path.replace(homeDir, replacement);
     }
-
-    /**
-     * Returns a file if this menu item points to a readable file or directory, or null
-     * otherwise.
-     */
-    public File getFile() {
-        if (getText() == null) {
-            return null;
-        }
-
-        File f = new File(getText());
-        return f.canRead() ? f : null;
-    }
-
 }

@@ -17,15 +17,33 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util.path;
+package org.apache.cayenne.modeler.ui.welcome;
 
-public class DefaultPathTrimmer extends CompoundPathTrimmer {
-    public DefaultPathTrimmer() {
-        super(
-                new HomePathTrimmer(),
-//                new DefaultResourceTrimmer(),
-//                new LongPathTrimmer(),
-                new MaxLengthTrimmer(DEFAULT_MAX_LENGTH)
-        );
+import org.apache.cayenne.modeler.util.ModelerUtil;
+
+import javax.swing.ImageIcon;
+import javax.swing.JPanel;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
+
+class BackgroundPanel extends JPanel {
+
+    private final Image backgroundImage;
+
+    public BackgroundPanel(String imagePath) {
+        super(null);
+        ImageIcon imageIcon = ModelerUtil.buildIcon(imagePath);
+        backgroundImage = imageIcon.getImage();
+        Dimension dimension = new Dimension(imageIcon.getIconWidth(), imageIcon.getIconHeight());
+        setSize(dimension);
+        setPreferredSize(dimension);
+        setOpaque(false);
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.drawImage(backgroundImage, 0, 0, null);
     }
 }

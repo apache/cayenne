@@ -19,24 +19,24 @@
 
 package org.apache.cayenne.modeler.ui.welcome;
 
+import org.apache.cayenne.modeler.ui.welcome.path.PathTrimmer;
+
+import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.AbstractListModel;
-
-import org.apache.cayenne.modeler.util.path.DefaultPathTrimmer;
-import org.apache.cayenne.modeler.util.path.PathTrimmer;
 
 class RecentFileListModel extends AbstractListModel<String> {
 
-    private List<File> fileListFull;
-    private List<String> fileList;
-    private static PathTrimmer pathTrimmer = new DefaultPathTrimmer();
+    private final List<File> fileListFull;
+    private final List<String> fileList;
+
+    private static final PathTrimmer pathTrimmer = PathTrimmer.getInstance();
 
     RecentFileListModel(List<File> fileList) {
         this.fileListFull = fileList;
         this.fileList = new ArrayList<>(fileList.size());
-        for(File next : fileList) {
+        for (File next : fileList) {
             this.fileList.add(pathTrimmer.trim(next.getAbsolutePath()));
         }
     }

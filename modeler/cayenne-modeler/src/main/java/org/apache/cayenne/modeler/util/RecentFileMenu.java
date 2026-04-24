@@ -30,29 +30,17 @@ import java.io.File;
 import java.util.List;
 
 /**
- * Menu that contains a list of previously used files. It is built from CayenneModeler
- * preferences by calling <code>rebuildFromPreferences</code>.
- * 
+ * Menu that contains a list of previously used files. It is built from CayenneModeler preferences via
+ * {@link #rebuildFromPreferences()}
  */
 public class RecentFileMenu extends JMenu implements RecentFileListListener {
-
-    /**
-     * Constructor for RecentFileMenu.
-     */
+    
     public RecentFileMenu(String s) {
         super(s);
     }
 
     /**
-     * @see javax.swing.JMenu#add(JMenuItem)
-     */
-    public FileMenuItem add(FileMenuItem menuItem) {
-        return (FileMenuItem) super.add(menuItem);
-    }
-
-    /**
-     * Rebuilds internal menu items list with the files stored in CayenneModeler
-     * preferences.
+     * Rebuilds internal menu items list with the files stored in CayenneModeler preferences.
      */
     public void rebuildFromPreferences() {
 
@@ -63,16 +51,24 @@ public class RecentFileMenu extends JMenu implements RecentFileListListener {
         int curSize = comps.length;
         int prefSize = files.size();
 
+        OpenProjectAction action = Application.getInstance().getActionManager().getAction(OpenProjectAction.class);
+
         for (int i = 0; i < prefSize; i++) {
             String name = files.get(i).getAbsolutePath();
             if (i < curSize) {
-                // update existing one
-                FileMenuItem item = (FileMenuItem) comps[i];
-                item.setText(name);
+                ((JMenuItem) comps[i]).setText(name);
             } else {
-                // add a new one
-                FileMenuItem item = new FileMenuItem(name);
-                item.setAction(findAction());
+
+                JMenuItem item = new JMenuItem(name) {
+                    @Override
+                    protected void configurePropertiesFromAction(Action a) {
+                        // exclude most generic action keys that are not applicable here
+                        setIcon((Icon) a.getValue(Action.SMALL_ICON));
+                        setEnabled(a.isEnabled());
+                    }
+                };
+
+                item.setAction(action);
                 add(item);
             }
         }
@@ -83,11 +79,7 @@ public class RecentFileMenu extends JMenu implements RecentFileListListener {
         }
     }
 
-    protected Action findAction() {
-        return Application.getInstance().getActionManager().getAction(
-                OpenProjectAction.class);
-    }
-
+    @Override
     public void recentFileListChanged() {
         rebuildFromPreferences();
         setEnabled(getMenuComponentCount() > 0);

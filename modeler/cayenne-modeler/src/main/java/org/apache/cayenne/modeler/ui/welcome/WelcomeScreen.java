@@ -24,7 +24,6 @@ import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
 import org.apache.cayenne.modeler.action.NewProjectAction;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.cayenne.modeler.event.model.RecentFileListListener;
-import org.apache.cayenne.modeler.util.BackgroundPanel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 
 import javax.swing.*;

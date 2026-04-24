@@ -28,13 +28,11 @@ import org.apache.cayenne.project.upgrade.UpgradeMetaData;
 import org.apache.cayenne.project.upgrade.UpgradeService;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
-import org.apache.cayenne.modeler.util.FileMenuItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.JOptionPane;
-import javax.swing.KeyStroke;
-import java.awt.Toolkit;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -51,19 +49,20 @@ public class OpenProjectAction extends ProjectAction {
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenProjectAction.class);
 
     private static final Map<String, String> PROJECT_TO_MODELER_VERSION;
+
     static {
         // Correspondence between project version and latest Modeler version that can upgrade it.
         // Modeler v4.1 can handle versions from 3.1 and 4.0 (including intermediate versions) modeler.
         Map<String, String> map = new HashMap<>();
-        map.put("1.0",      "v3.0");
-        map.put("1.1",      "v3.0");
-        map.put("1.2",      "v3.0");
-        map.put("2.0",      "v3.0");
-        map.put("3.0.0.1",  "v3.1");
+        map.put("1.0", "v3.0");
+        map.put("1.1", "v3.0");
+        map.put("1.2", "v3.0");
+        map.put("2.0", "v3.0");
+        map.put("3.0.0.1", "v3.1");
         PROJECT_TO_MODELER_VERSION = Collections.unmodifiableMap(map);
     }
 
-    private ProjectOpener fileChooser;
+    private final ProjectOpener fileChooser;
 
     public static String getActionName() {
         return "Open Project";
@@ -94,9 +93,13 @@ public class OpenProjectAction extends ProjectAction {
         }
 
         File f = null;
-        if (e.getSource() instanceof FileMenuItem) {
-            FileMenuItem menu = (FileMenuItem) e.getSource();
-            f = menu.getFile();
+        if (e.getSource() instanceof JMenuItem) {
+            JMenuItem menu = (JMenuItem) e.getSource();
+
+            if (menu.getText() != null) {
+                f = new File(menu.getText());
+            }
+
         } else if (e.getSource() instanceof File) {
             f = (File) e.getSource();
         }
@@ -122,7 +125,9 @@ public class OpenProjectAction extends ProjectAction {
         application.getUndoManager().discardAllEdits();
     }
 
-    /** Opens specified project file. File must already exist. */
+    /**
+     * Opens specified project file. File must already exist.
+     */
     public void openProject(File file) {
         try {
             if (!file.exists()) {
@@ -145,20 +150,20 @@ public class OpenProjectAction extends ProjectAction {
             switch (metaData.getUpgradeType()) {
                 case INTERMEDIATE_UPGRADE_NEEDED:
                     String modelerVersion = PROJECT_TO_MODELER_VERSION.get(metaData.getProjectVersion());
-                    if(modelerVersion == null) {
+                    if (modelerVersion == null) {
                         modelerVersion = "";
                     }
                     JOptionPane.showMessageDialog(Application.getFrame(),
-                                    "Open the project in the older Modeler " + modelerVersion
-                                            + " to do an intermediate upgrade\nbefore you can upgrade to latest version.",
-                                    "Can't Upgrade Project", JOptionPane.ERROR_MESSAGE);
+                            "Open the project in the older Modeler " + modelerVersion
+                                    + " to do an intermediate upgrade\nbefore you can upgrade to latest version.",
+                            "Can't Upgrade Project", JOptionPane.ERROR_MESSAGE);
                     closeProject(false);
                     return;
 
                 case DOWNGRADE_NEEDED:
                     JOptionPane.showMessageDialog(Application.getFrame(),
-                                    "Can't open project - it was created using a newer version of the Modeler",
-                                    "Can't Open Project", JOptionPane.ERROR_MESSAGE);
+                            "Can't open project - it was created using a newer version of the Modeler",
+                            "Can't Open Project", JOptionPane.ERROR_MESSAGE);
                     closeProject(false);
                     return;
 
