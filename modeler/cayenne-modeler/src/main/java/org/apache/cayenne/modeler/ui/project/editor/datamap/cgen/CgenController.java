@@ -37,13 +37,13 @@ import org.apache.cayenne.map.event.EmbeddableEvent;
 import org.apache.cayenne.map.event.EmbeddableListener;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.ObjEntityListener;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.preferences.general.GeneralPreferencesController;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportController;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.modeler.event.model.DataMapListener;
 import org.apache.cayenne.modeler.event.model.ProjectSavedEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.ui.preferences.general.GeneralPreferencesController;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportController;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.tools.ToolsInjectorBuilder;
 import org.slf4j.Logger;
@@ -69,7 +69,7 @@ public class CgenController extends ChildController<ProjectController> implement
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CgenController.class);
 
-    private final ProjectController projectController;
+    private final ProjectController controller;
     private final Set<ConfigurationNode> classes;
     private final SelectionModel selectionModel;
     private final CgenPane view;
@@ -80,15 +80,14 @@ public class CgenController extends ChildController<ProjectController> implement
     private Object currentClass;
     private CgenConfiguration cgenConfiguration;
 
-    private DataMap dataMap;
     private boolean initFromModel;
 
-    public CgenController(ProjectController projectController) {
-        super(projectController);
+    public CgenController(ProjectController controller) {
+        super(controller);
         this.cgenConfigController = new CgenConfigController(this);
         this.classesSelector = new CgenArtefactSelectorController(this);
         this.view = new CgenPane(cgenConfigController.getView(), classesSelector.getView());
-        this.projectController = projectController;
+        this.controller = controller;
         this.classes = new TreeSet<>(
                 Comparator.comparing((ConfigurationNode o) -> o.acceptVisitor(TYPE_GETTER))
                         .thenComparing(o -> o.acceptVisitor(NAME_GETTER))
@@ -96,6 +95,13 @@ public class CgenController extends ChildController<ProjectController> implement
         this.selectionModel = new SelectionModel();
         initBindings();
         initListeners();
+
+        controller.addDataMapDisplayListener(e -> {
+            DataMap map = e.getDataMap();
+            if (map != null) {
+                initFromModel(map);
+            }
+        });
     }
 
     private void initConfigurationsComboBox() {
@@ -103,11 +109,10 @@ public class CgenController extends ChildController<ProjectController> implement
         cgenConfigList.getNames().forEach(n -> view.getConfigurationsComboBox().addItem(n));
     }
 
-    public void initFromModel() {
+    public void initFromModel(DataMap map) {
         initFromModel = true;
-        dataMap = projectController.getSelectedDataMap();
-        prepareClasses(dataMap);
-        initCgenConfigurations();
+        prepareClasses(map);
+        initCgenConfigurations(map);
         initConfigurationsComboBox();
         setConfiguration((String) view.getConfigurationsComboBox().getSelectedItem());
         cgenConfigController.initForm(cgenConfiguration);
@@ -127,20 +132,20 @@ public class CgenController extends ChildController<ProjectController> implement
         });
     }
 
-    private void initCgenConfigurations() {
-        cgenConfigList = projectController.getApplication().getMetaData().get(dataMap, CgenConfigList.class);
+    private void initCgenConfigurations(DataMap dataMap) {
+        cgenConfigList = controller.getApplication().getMetaData().get(dataMap, CgenConfigList.class);
         if (cgenConfigList == null) {
             cgenConfigList = new CgenConfigList();
             cgenConfigList.add(createDefaultCgenConfiguration(dataMap));
-            projectController.getApplication().getMetaData().add(dataMap, cgenConfigList);
+            controller.getApplication().getMetaData().add(dataMap, cgenConfigList);
         }
     }
 
     private void initListeners() {
-        projectController.addObjEntityListener(this);
-        projectController.addEmbeddableListener(this);
-        projectController.addDataMapListener(this);
-        projectController.addProjectSavedListener(this::onProjectSaved);
+        controller.addObjEntityListener(this);
+        controller.addEmbeddableListener(this);
+        controller.addDataMapListener(this);
+        controller.addProjectSavedListener(this::onProjectSaved);
     }
 
     @Override
@@ -166,7 +171,7 @@ public class CgenController extends ChildController<ProjectController> implement
         ClassGenerationAction generator = new ToolsInjectorBuilder()
                 .addModule(binder
                         -> binder.bind(DataChannelMetaData.class)
-                        .toInstance(projectController.getApplication().getMetaData()))
+                        .toInstance(controller.getApplication().getMetaData()))
                 .create()
                 .getInstance(ClassGenerationActionFactory.class)
                 .createAction(cgenConfiguration);
@@ -196,7 +201,7 @@ public class CgenController extends ChildController<ProjectController> implement
                 "Type the name for new cgenConfiguration",
                 view.getConfigurationsComboBox().getSelectedItem()
         );
-        CgenConfiguration configuration = createDefaultCgenConfiguration(dataMap);
+        CgenConfiguration configuration = createDefaultCgenConfiguration(controller.getSelectedDataMap());
         if (name != null) {
             if (configuration != null && !cgenConfigList.isExist(name) && !name.isEmpty()) {
                 configuration.setName(name);
@@ -277,6 +282,7 @@ public class CgenController extends ChildController<ProjectController> implement
             return;
         }
 
+        DataMap dataMap = controller.getSelectedDataMap();
         cgenConfiguration = createDefaultCgenConfiguration(dataMap);
         addToSelectedEntities(dataMap.getObjEntities()
                 .stream()
@@ -298,7 +304,7 @@ public class CgenController extends ChildController<ProjectController> implement
         map.getEmbeddables().forEach(configuration::loadEmbeddable);
         if (map.getLocation() != null) {
             Path basePath = Paths.get(ModelerUtil.initOutputFolder());
-            configuration.setRootPath(Utils.getRootPathForDataMap(dataMap));
+            configuration.setRootPath(Utils.getRootPathForDataMap(map));
             configuration.updateOutputPath(basePath);
         }
         Preferences preferences = application.getPreferencesNode(GeneralPreferencesController.class, "");
@@ -370,14 +376,14 @@ public class CgenController extends ChildController<ProjectController> implement
             return;
         }
 
-        DataMap map = projectController.getSelectedDataMap();
-        CgenConfigList existingConfigurations = projectController.getApplication().getMetaData().get(map, CgenConfigList.class);
+        DataMap map = controller.getSelectedDataMap();
+        CgenConfigList existingConfigurations = controller.getApplication().getMetaData().get(map, CgenConfigList.class);
         if (existingConfigurations == null) {
             cgenConfigList.add(cgenConfiguration);
             getApplication().getMetaData().add(map, cgenConfigList);
         }
 
-        projectController.setDirty(true);
+        controller.setDirty(true);
     }
 
     private void updateEntities() {
@@ -439,8 +445,8 @@ public class CgenController extends ChildController<ProjectController> implement
         return selectionModel.getSelectedDataMapsCount() > 0;
     }
 
-    public ProjectController getProjectController() {
-        return projectController;
+    public ProjectController getController() {
+        return controller;
     }
 
     public boolean isInitFromModel() {

@@ -32,10 +32,8 @@ import javax.swing.event.ChangeEvent;
 
 public class DataMapView extends JTabbedPane {
 
-    private final DbImportView dbImportView;
-    private final JScrollPane dbImportScrollPane;
-    private final CgenController cgenController;
-    private final JScrollPane cgenView;
+    private final JScrollPane dbImportPane;
+    private final JScrollPane cgenPane;
 
     private int lastTabIndex;
 
@@ -47,13 +45,11 @@ public class DataMapView extends JTabbedPane {
         // note that those panels that have no internal scrollable tables
         // must be wrapped in a scroll pane
         JScrollPane dataMapScrollPane = new JScrollPane(new DataMapMainView(controller));
-        dbImportView = new DbImportView(controller);
-        dbImportScrollPane = new JScrollPane(dbImportView);
-        cgenController = new CgenController(controller);
-        cgenView = new JScrollPane(cgenController.getView());
+        dbImportPane = new JScrollPane(new DbImportView(controller));
+        cgenPane = new JScrollPane(new CgenController(controller).getView());
         addTab("DataMap", dataMapScrollPane);
-        addTab("DB Import", dbImportScrollPane);
-        addTab("Class Generation", cgenView);
+        addTab("DB Import", dbImportPane);
+        addTab("Class Generation", cgenPane);
 
         addChangeListener(this::stateChanged);
         controller.addDataMapDisplayListener(this::currentDataMapChanged);
@@ -61,34 +57,20 @@ public class DataMapView extends JTabbedPane {
 
     private void currentDataMapChanged(DataMapDisplayEvent e) {
         if (e.getSource() instanceof CgenTab) {
-            setSelectedComponent(cgenView);
+            setSelectedComponent(cgenPane);
         } else if (e.getSource() instanceof DbImportTab) {
-            setSelectedComponent(dbImportScrollPane);
+            setSelectedComponent(dbImportPane);
         } else {
             if (e.isMainTabFocus()) {
                 lastTabIndex = 0;
             }
-            if (getSelectedIndex() == lastTabIndex) {
-                // setSelectedIndex won't fire a state change when the index stays the same,
-                // so refresh the active tab's model manually
-                refreshActiveTab();
-            } else {
-                setSelectedIndex(lastTabIndex);
-            }
+
+            setSelectedIndex(lastTabIndex);
         }
     }
 
     private void stateChanged(ChangeEvent e) {
         lastTabIndex = getSelectedIndex();
-        refreshActiveTab();
-    }
-
-    private void refreshActiveTab() {
-        if (getSelectedComponent() == cgenView) {
-            cgenController.initFromModel();
-        } else if (getSelectedComponent() == dbImportScrollPane) {
-            dbImportView.initFromModel();
-        }
     }
 }
 
