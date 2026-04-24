@@ -13,4 +13,5 @@ bin/
 .factorypath
 build
 .gradle
-.claude/
+
+.claude/settings.local.json
