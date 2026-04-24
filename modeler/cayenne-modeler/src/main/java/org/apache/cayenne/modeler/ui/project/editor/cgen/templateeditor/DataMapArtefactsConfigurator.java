@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor.cgen.templateeditor;
+package org.apache.cayenne.modeler.ui.project.editor.cgen.templateeditor;
 
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.map.DataMap;

@@ -19,8 +19,8 @@
 package org.apache.cayenne.modeler.editor;
 
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.editor.cgen.CgenController;
-import org.apache.cayenne.modeler.editor.cgen.domain.CgenTab;
+import org.apache.cayenne.modeler.ui.project.editor.cgen.CgenController;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.cgen.CgenTab;
 import org.apache.cayenne.modeler.editor.dbimport.DbImportView;
 import org.apache.cayenne.modeler.editor.dbimport.domain.DbImportTab;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;

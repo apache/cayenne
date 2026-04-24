@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor.cgen.domain;
+package org.apache.cayenne.modeler.ui.project.editor.datadomain.cgen;
 
 import java.nio.file.Paths;
 import java.util.Set;

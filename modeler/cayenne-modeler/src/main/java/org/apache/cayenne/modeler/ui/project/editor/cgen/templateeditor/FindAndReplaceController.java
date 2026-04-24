@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor.cgen.templateeditor;
+package org.apache.cayenne.modeler.ui.project.editor.cgen.templateeditor;
 
 import org.fife.ui.rtextarea.SearchContext;
 import org.fife.ui.rtextarea.SearchEngine;

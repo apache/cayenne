@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor.cgen;
+package org.apache.cayenne.modeler.ui.project.editor.cgen;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;

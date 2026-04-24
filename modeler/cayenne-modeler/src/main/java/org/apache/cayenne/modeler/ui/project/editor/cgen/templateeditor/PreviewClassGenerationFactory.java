@@ -17,41 +17,39 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor.cgen.templateeditor;
+package org.apache.cayenne.modeler.ui.project.editor.cgen.templateeditor;
 
-
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
-import org.apache.cayenne.gen.TemplateType;
+import org.apache.cayenne.gen.ClassGenerationActionFactory;
+import org.apache.cayenne.gen.MetadataUtils;
+import org.apache.cayenne.gen.ToolsUtilsFactory;
 
 import java.io.StringWriter;
-import java.io.Writer;
+
 
 /**
- * Used for generating class preview in template editor
  * @since 5.0
  */
-public class PreviewGenerationAction extends ClassGenerationAction {
+public class PreviewClassGenerationFactory implements ClassGenerationActionFactory {
 
+    @Inject
+    private ToolsUtilsFactory utilsFactory;
+
+    @Inject
+    private MetadataUtils metadataUtils;
+
+    @Inject(PreviewActionConfigurator.TEMPLATE_EDITOR_WRITER)
     private StringWriter writer;
 
-    public PreviewGenerationAction(CgenConfiguration cgenConfig) {
-        super(cgenConfig);
-    }
-
     @Override
-    protected void validateAttributes() {
-        //Mock
+    public ClassGenerationAction createAction(CgenConfiguration cgenConfiguration) {
+        PreviewGenerationAction action = new PreviewGenerationAction(cgenConfiguration);
+        action.setUtilsFactory(utilsFactory);
+        action.setMetadataUtils(metadataUtils);
+        action.setWriter(writer);
+        return action;
     }
 
-    public void setWriter(StringWriter writer) {
-        this.writer = writer;
-    }
-
-    @Override
-    protected Writer openWriter(TemplateType templateType) {
-        // clear and return
-        writer.getBuffer().setLength(0);
-        return writer;
-    }
 }

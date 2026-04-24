@@ -17,34 +17,41 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor.cgen.domain;
+package org.apache.cayenne.modeler.ui.project.editor.cgen.templateeditor;
+
 
 import org.apache.cayenne.gen.CgenConfiguration;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.editor.GeneratorsTab;
-import org.apache.cayenne.modeler.editor.GeneratorsTabController;
+import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.TemplateType;
 
-import javax.swing.JOptionPane;
+import java.io.StringWriter;
+import java.io.Writer;
 
 /**
- * @since 4.1
+ * Used for generating class preview in template editor
+ * @since 5.0
  */
-public class CgenTab extends GeneratorsTab {
+public class PreviewGenerationAction extends ClassGenerationAction {
 
-    public CgenTab(ProjectController projectController, GeneratorsTabController<CgenConfiguration> additionalTabController) {
-        super(projectController, additionalTabController, "icon-gen_java.png", "Run class generation on selected datamaps.");
+    private StringWriter writer;
+
+    public PreviewGenerationAction(CgenConfiguration cgenConfig) {
+        super(cgenConfig);
     }
 
-    void showSuccessMessage() {
-        JOptionPane.showMessageDialog(
-                this,
-                "Class generation finished");
+    @Override
+    protected void validateAttributes() {
+        //Mock
     }
 
-    void showErrorMessage(String msg) {
-        JOptionPane.showMessageDialog(
-                this,
-                "Error generating classes - " + msg);
+    public void setWriter(StringWriter writer) {
+        this.writer = writer;
     }
 
+    @Override
+    protected Writer openWriter(TemplateType templateType) {
+        // clear and return
+        writer.getBuffer().setLength(0);
+        return writer;
+    }
 }

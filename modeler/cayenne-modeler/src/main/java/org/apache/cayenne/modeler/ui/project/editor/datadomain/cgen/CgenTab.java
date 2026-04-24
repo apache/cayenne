@@ -17,39 +17,34 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor.cgen.templateeditor;
+package org.apache.cayenne.modeler.ui.project.editor.datadomain.cgen;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.gen.CgenConfiguration;
-import org.apache.cayenne.gen.ClassGenerationAction;
-import org.apache.cayenne.gen.ClassGenerationActionFactory;
-import org.apache.cayenne.gen.MetadataUtils;
-import org.apache.cayenne.gen.ToolsUtilsFactory;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.editor.GeneratorsTab;
+import org.apache.cayenne.modeler.editor.GeneratorsTabController;
 
-import java.io.StringWriter;
-
+import javax.swing.JOptionPane;
 
 /**
- * @since 5.0
+ * @since 4.1
  */
-public class PreviewClassGenerationFactory implements ClassGenerationActionFactory {
+public class CgenTab extends GeneratorsTab {
 
-    @Inject
-    private ToolsUtilsFactory utilsFactory;
+    public CgenTab(ProjectController projectController, GeneratorsTabController<CgenConfiguration> additionalTabController) {
+        super(projectController, additionalTabController, "icon-gen_java.png", "Run class generation on selected datamaps.");
+    }
 
-    @Inject
-    private MetadataUtils metadataUtils;
+    void showSuccessMessage() {
+        JOptionPane.showMessageDialog(
+                this,
+                "Class generation finished");
+    }
 
-    @Inject(PreviewActionConfigurator.TEMPLATE_EDITOR_WRITER)
-    private StringWriter writer;
-
-    @Override
-    public ClassGenerationAction createAction(CgenConfiguration cgenConfiguration) {
-        PreviewGenerationAction action = new PreviewGenerationAction(cgenConfiguration);
-        action.setUtilsFactory(utilsFactory);
-        action.setMetadataUtils(metadataUtils);
-        action.setWriter(writer);
-        return action;
+    void showErrorMessage(String msg) {
+        JOptionPane.showMessageDialog(
+                this,
+                "Error generating classes - " + msg);
     }
 
 }

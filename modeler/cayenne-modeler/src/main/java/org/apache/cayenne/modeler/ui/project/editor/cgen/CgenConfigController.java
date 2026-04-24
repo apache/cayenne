@@ -17,12 +17,12 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor.cgen;
+package org.apache.cayenne.modeler.ui.project.editor.cgen;
 
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.editor.cgen.templateeditor.TemplateEditorController;
+import org.apache.cayenne.modeler.ui.project.editor.cgen.templateeditor.TemplateEditorController;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.pref.FSPath;

@@ -17,11 +17,11 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor.cgen.templateeditor;
+package org.apache.cayenne.modeler.ui.project.editor.cgen.templateeditor;
 
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.Embeddable;
 
 import java.util.Collections;
 import java.util.List;
@@ -30,26 +30,26 @@ import java.util.stream.Collectors;
 /**
  * @since 5.0
  */
-public class EntityArtefactsConfigurator implements ArtefactsConfigurator {
+public class EmbeddableArtefactsConfigurator implements ArtefactsConfigurator {
 
     @Override
     public void config(ClassGenerationAction action, String artifactName) {
-        action.addEntities(Collections.singleton(getSelectedEntity(artifactName, action)));
+        action.addEmbeddables(Collections.singleton(getSelectedEntity(artifactName, action)));
     }
 
     public List<String> getArtifactsNames(DataMap dataMap) {
         if (dataMap != null) {
-            return dataMap.getObjEntities().stream()
-                    .map(ObjEntity::getName)
+            return dataMap.getEmbeddables().stream()
+                    .map(Embeddable::getClassName)
                     .collect(Collectors.toList());
         }
         return Collections.emptyList();
     }
 
-    private ObjEntity getSelectedEntity(String artifactName, ClassGenerationAction action) {
+    private Embeddable getSelectedEntity(String artifactName, ClassGenerationAction action) {
         DataMap dataMap = action.getCgenConfiguration().getDataMap();
         if (dataMap != null) {
-            return dataMap.getObjEntity(artifactName);
+            return dataMap.getEmbeddable(artifactName);
         }
         return null;
     }
