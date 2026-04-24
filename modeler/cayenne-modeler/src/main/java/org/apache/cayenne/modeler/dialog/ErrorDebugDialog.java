@@ -21,7 +21,7 @@
 package org.apache.cayenne.modeler.dialog;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.CayenneModelerFrame;
+import org.apache.cayenne.modeler.ui.CayenneModelerFrame;
 import org.apache.cayenne.modeler.util.CayenneDialog;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;

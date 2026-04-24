@@ -23,7 +23,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 
-import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.map.QueryDescriptor;
 
 public class SelectQueryTabbedView extends JTabbedPane {

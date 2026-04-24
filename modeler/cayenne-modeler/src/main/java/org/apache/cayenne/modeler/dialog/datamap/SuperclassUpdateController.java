@@ -22,12 +22,11 @@ package org.apache.cayenne.modeler.dialog.datamap;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EntityEvent;
-import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class SuperclassUpdateController extends DefaultsPreferencesController {
 

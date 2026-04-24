@@ -25,7 +25,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SQLTemplateDescriptor;
-import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.DbAdapterInfo;
 import org.apache.cayenne.modeler.util.JUndoableCayenneTextPane;
 import org.apache.cayenne.swing.components.textpane.JCayenneTextPane;

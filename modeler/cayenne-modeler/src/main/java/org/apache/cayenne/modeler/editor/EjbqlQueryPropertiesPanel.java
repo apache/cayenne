@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.editor;
 
 import java.awt.BorderLayout;
 
-import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;

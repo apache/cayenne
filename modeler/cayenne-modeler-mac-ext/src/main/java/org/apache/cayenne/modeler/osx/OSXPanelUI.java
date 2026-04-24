@@ -27,7 +27,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicPanelUI;
 
-import org.apache.cayenne.modeler.CayenneModelerFrame;
+import org.apache.cayenne.modeler.ui.CayenneModelerFrame;
 
 /**
  * @since 4.0

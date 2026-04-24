@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.dialog.db;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.modeler.ClassLoadingService;
-import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.dialog.pref.GeneralPreferencesController;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialogController;
 import org.apache.cayenne.modeler.event.model.DataSourceEvent;

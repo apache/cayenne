@@ -21,8 +21,8 @@ package org.apache.cayenne.modeler.editor.datanode;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
-import org.apache.cayenne.modeler.CayenneModelerController;
-import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.ui.CayenneModelerController;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.TextBinder;
 import org.apache.cayenne.util.Util;

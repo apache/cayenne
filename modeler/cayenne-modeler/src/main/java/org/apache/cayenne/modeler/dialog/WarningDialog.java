@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.dialog;
 
-import org.apache.cayenne.modeler.CayenneModelerFrame;
+import org.apache.cayenne.modeler.ui.CayenneModelerFrame;
 
 import java.awt.*;
 

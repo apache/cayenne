@@ -24,7 +24,7 @@ import javax.swing.JPanel;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.event.EntityEvent;
-import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.undo.ChangePKGeneratorUndoableEdit;
 
 public abstract class PKGeneratorPanel extends JPanel {

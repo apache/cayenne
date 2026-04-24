@@ -36,6 +36,7 @@ import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.modeler.event.model.DomainEvent;
 import org.apache.cayenne.modeler.event.model.ProcedureEvent;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 
 import java.util.ArrayList;
 import java.util.EventObject;
@@ -43,7 +44,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 
-class NavigationHistory {
+public class NavigationHistory {
     private final static int MAX_HISTORY_SIZE = 20;
 
     private final List<DisplayEvent> history;

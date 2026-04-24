@@ -17,9 +17,13 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler;
+package org.apache.cayenne.modeler.ui;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ModelerPreferences;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.ui.project.ProjectView;
 import org.apache.cayenne.modeler.action.ExitAction;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;

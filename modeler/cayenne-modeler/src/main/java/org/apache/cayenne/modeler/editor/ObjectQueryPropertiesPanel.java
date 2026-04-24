@@ -24,7 +24,7 @@ import java.awt.BorderLayout;
 import javax.swing.JCheckBox;
 
 import org.apache.cayenne.swing.components.JCayenneCheckBox;
-import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.query.QueryMetadata;
 

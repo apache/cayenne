@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.dialog;
+package org.apache.cayenne.modeler.ui.logconsole;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;

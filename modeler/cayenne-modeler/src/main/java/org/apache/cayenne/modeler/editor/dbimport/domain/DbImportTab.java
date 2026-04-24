@@ -19,7 +19,7 @@
 package org.apache.cayenne.modeler.editor.dbimport.domain;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
-import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.editor.GeneratorsTab;
 import org.apache.cayenne.modeler.editor.GeneratorsTabController;
 

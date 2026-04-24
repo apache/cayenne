@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.editor.validation;
 import org.apache.cayenne.modeler.event.model.DomainEvent;
 import org.apache.cayenne.modeler.event.model.DomainListener;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
-import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.action.UpdateValidationConfigAction;
 import org.apache.cayenne.modeler.event.display.ValidationConfigDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ValidationConfigDisplayListener;

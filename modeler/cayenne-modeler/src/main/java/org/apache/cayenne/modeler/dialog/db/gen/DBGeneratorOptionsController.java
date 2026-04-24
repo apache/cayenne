@@ -23,7 +23,7 @@ import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.dialog.ValidationResultBrowserController;
 import org.apache.cayenne.modeler.dialog.db.DataSourceWizardController;
 import org.apache.cayenne.modeler.mvc.ChildController;

@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.editor.cgen.domain;
 
 import org.apache.cayenne.gen.CgenConfiguration;
-import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.editor.GeneratorsTab;
 import org.apache.cayenne.modeler.editor.GeneratorsTabController;
 

@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.CayenneModelerController;
+import org.apache.cayenne.modeler.ui.CayenneModelerController;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectLoader;

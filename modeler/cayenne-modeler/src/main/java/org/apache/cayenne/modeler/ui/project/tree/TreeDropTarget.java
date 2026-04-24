@@ -16,11 +16,12 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler;
+package org.apache.cayenne.modeler.ui.project.tree;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.action.LinkDataMapAction;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -34,7 +35,7 @@ import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 
-public class TreeDropTarget implements DropTargetListener, Transferable {
+class TreeDropTarget implements DropTargetListener, Transferable {
 
     private DropTarget target;
     private final JTree targetTree;

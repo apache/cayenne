@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.editor.ObjEntityAttributePanel;
 import org.apache.cayenne.modeler.editor.dbentity.DbEntityAttributePanel;
 import javax.swing.JComponent;

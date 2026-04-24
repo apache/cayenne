@@ -23,7 +23,7 @@ import java.util.Arrays;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 
 /**
  * Action for copying relationship(s)

@@ -23,7 +23,7 @@ import java.util.HashMap;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 
 /**
  * Map that stores graph builders <b>for a single domain</b> by their type 

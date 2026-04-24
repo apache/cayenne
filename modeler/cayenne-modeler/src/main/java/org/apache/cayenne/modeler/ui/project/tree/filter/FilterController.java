@@ -16,10 +16,10 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.dialog.datadomain;
+package org.apache.cayenne.modeler.ui.project.tree.filter;
 
-import org.apache.cayenne.modeler.ProjectTreeModel;
-import org.apache.cayenne.modeler.ProjectTreeView;
+import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeModel;
+import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeView;
 
 import javax.swing.*;
 import javax.swing.tree.TreeNode;

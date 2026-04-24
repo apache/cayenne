@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
-import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.action.GenerateCodeAction;
 import org.apache.cayenne.modeler.action.ShowValidationConfigAction;
 import org.apache.cayenne.modeler.editor.cgen.domain.CgenTabController;

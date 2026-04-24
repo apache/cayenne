@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.util;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.undo.CayenneTableModelUndoableEdit;
 import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;

@@ -19,7 +19,7 @@
 package org.apache.cayenne.modeler.editor;
 
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

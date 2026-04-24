@@ -19,7 +19,7 @@
 package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dialog.datadomain.FilterDialog;
+import org.apache.cayenne.modeler.ui.project.tree.filter.FilterDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
 import javax.swing.*;

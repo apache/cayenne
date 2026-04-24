@@ -19,7 +19,7 @@
 package org.slf4j.impl;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dialog.LogConsoleController;
+import org.apache.cayenne.modeler.ui.logconsole.LogConsoleController;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.helpers.FormattingTuple;

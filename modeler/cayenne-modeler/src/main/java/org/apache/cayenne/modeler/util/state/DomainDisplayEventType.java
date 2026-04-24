@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.util.state;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 
 class DomainDisplayEventType extends DisplayEventType {

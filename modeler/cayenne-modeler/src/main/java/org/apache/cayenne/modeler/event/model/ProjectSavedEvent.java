@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.event.model;
 
-import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 
 import java.util.EventObject;
 

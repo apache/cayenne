@@ -32,7 +32,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
 import org.apache.cayenne.modeler.event.model.QueryEvent;
-import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.JUndoableCayenneTextPane;
 import org.apache.cayenne.project.validation.EJBQLStatementValidator;
 import org.apache.cayenne.project.validation.EJBQLStatementValidator.PositionException;

@@ -16,10 +16,11 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler;
+package org.apache.cayenne.modeler.ui.project.tree;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;

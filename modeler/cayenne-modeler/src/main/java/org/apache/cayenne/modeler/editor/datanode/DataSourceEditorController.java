@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.editor.datanode;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.util.Util;
 
