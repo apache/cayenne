@@ -45,7 +45,8 @@ public class FilterAction extends CayenneAction {
         JButton source = (JButton) e.getSource();
         FilterDialog dialog = getApplication()
                 .getFrameController()
-                .getProjectView()
+                .getProjectController()
+                .getView()
                 .getFilterController()
                 .getView();
 

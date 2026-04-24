@@ -23,7 +23,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ModelerPreferences;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.project.ProjectView;
 import org.apache.cayenne.modeler.action.ExitAction;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.cayenne.modeler.ui.validator.ValidatorDialog;
@@ -64,7 +63,6 @@ public class CayenneModelerController extends RootController {
 
     private final ProjectController projectController;
     private final CayenneModelerFrame view;
-    private ProjectView projectView;
     private final DbImportController dbImportController;
 
     public CayenneModelerController(Application application) {
@@ -187,10 +185,7 @@ public class CayenneModelerController extends RootController {
 
         projectController.projectOpened(project);
         view.setTitle(getProjectLocationString());
-
-        // TODO: ProjectView should be owned by ProjectController
-        projectView = new ProjectView(projectController);
-        view.setEditorPanel(projectView);
+        view.setEditorPanel(projectController.getView());
 
         projectController.restoreSelectionFromPrefs();
         application.getActionManager().projectOpened();
@@ -228,12 +223,6 @@ public class CayenneModelerController extends RootController {
         if (!allFailures.isEmpty()) {
             ValidatorDialog.showDialog(view, validationResult.getFailures());
         }
-    }
-
-    // TODO: ProjectView should be owned by ProjectController
-    @Deprecated
-    public ProjectView getProjectView() {
-        return projectView;
     }
 
     /**

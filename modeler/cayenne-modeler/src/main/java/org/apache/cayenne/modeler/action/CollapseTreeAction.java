@@ -39,7 +39,7 @@ public class CollapseTreeAction extends CayenneAction {
 	}
 
 	@Override
-	public void performAction(ActionEvent e) {	
-		getApplication().getFrameController().getProjectView().getFilterController().treeExpOrCollPath(COLLAPSE);
+	public void performAction(ActionEvent e) {
+		getApplication().getFrameController().getProjectController().getView().getFilterController().treeExpOrCollPath(COLLAPSE);
 	}
 }

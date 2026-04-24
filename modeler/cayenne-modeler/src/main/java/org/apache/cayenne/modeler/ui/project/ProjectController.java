@@ -77,7 +77,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.event.EventListenerList;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -101,6 +100,7 @@ public class ProjectController extends ChildController<CayenneModelerController>
     private EventListenerList listeners;
     private boolean dirty;
     private Project project;
+    private ProjectView projectView;
     private Preferences projectControllerPreferences;
     private ControllerState state;
     private EntityResolver entityResolver;
@@ -113,10 +113,9 @@ public class ProjectController extends ChildController<CayenneModelerController>
         this.history = new NavigationHistory();
     }
 
-    // TODO: this is wrong. ProjectController should own and return ProjectView
     @Override
-    public Component getView() {
-        return parent.getView();
+    public ProjectView getView() {
+        return projectView;
     }
 
     public Project getProject() {
@@ -283,6 +282,8 @@ public class ProjectController extends ChildController<CayenneModelerController>
         addProcedureDisplayListener(e -> actionManager.procedureSelected());
         addMultipleObjectsDisplayListener(e -> actionManager.multipleObjectsSelected(e.getNodes()));
         addEmbeddableDisplayListener(e -> actionManager.embeddableSelected());
+
+        this.projectView = new ProjectView(this);
     }
 
     public void projectClosed() {
@@ -290,6 +291,7 @@ public class ProjectController extends ChildController<CayenneModelerController>
         setDirty(false);
 
         this.project = null;
+        this.projectView = null;
         this.projectControllerPreferences = null;
         this.entityResolver = null;
 
