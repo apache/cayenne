@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.project.editor.cgen;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.cgen;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;

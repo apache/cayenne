@@ -17,13 +17,13 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.project.editor.cgen.templateeditor;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor;
 
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.ui.project.editor.cgen.CgenConfigController;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.CgenConfigController;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.velocity.exception.ParseErrorException;
 

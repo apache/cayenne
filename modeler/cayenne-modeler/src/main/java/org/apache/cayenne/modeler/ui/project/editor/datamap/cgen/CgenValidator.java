@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.ui.project.editor.cgen;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.cgen;
 
 import java.util.Collection;
 

@@ -17,40 +17,24 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.project.editor.cgen.templateeditor;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor;
 
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.ObjEntity;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @since 5.0
  */
-public class EntityArtefactsConfigurator implements ArtefactsConfigurator {
+public interface ArtefactsConfigurator {
+    /**
+     * adds selected artefact to action for generating class preview.
+     *
+     * @param action class preview generating action
+     * @param artifactName name of artifact to add
+     */
+    void config(ClassGenerationAction action, String artifactName);
 
-    @Override
-    public void config(ClassGenerationAction action, String artifactName) {
-        action.addEntities(Collections.singleton(getSelectedEntity(artifactName, action)));
-    }
-
-    public List<String> getArtifactsNames(DataMap dataMap) {
-        if (dataMap != null) {
-            return dataMap.getObjEntities().stream()
-                    .map(ObjEntity::getName)
-                    .collect(Collectors.toList());
-        }
-        return Collections.emptyList();
-    }
-
-    private ObjEntity getSelectedEntity(String artifactName, ClassGenerationAction action) {
-        DataMap dataMap = action.getCgenConfiguration().getDataMap();
-        if (dataMap != null) {
-            return dataMap.getObjEntity(artifactName);
-        }
-        return null;
-    }
+    List<String> getArtifactsNames(DataMap dataMap);
 }

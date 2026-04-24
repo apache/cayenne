@@ -21,8 +21,8 @@ package org.apache.cayenne.modeler.editor.templateeditor;
 
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.TemplateType;
-import org.apache.cayenne.modeler.ui.project.editor.cgen.templateeditor.TemplateEditorView;
-import org.apache.cayenne.modeler.ui.project.editor.cgen.templateeditor.EditorTemplateSaver;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.TemplateEditorView;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.EditorTemplateSaver;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.editor.templateeditor;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.CgenTemplate;
 import org.apache.cayenne.gen.TemplateType;
-import org.apache.cayenne.modeler.ui.project.editor.cgen.templateeditor.EditorTemplateLoader;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.EditorTemplateLoader;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
