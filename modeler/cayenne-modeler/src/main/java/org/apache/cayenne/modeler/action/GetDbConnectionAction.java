@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.datasourcewizard.DataSourceWizardController;
+import org.apache.cayenne.modeler.ui.datasource.DataSourceController;
 
 import java.awt.event.ActionEvent;
 
@@ -44,7 +44,7 @@ public class GetDbConnectionAction extends DBConnectionAwareAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        DataSourceWizardController connectWizard = getDataSourceWizard(DIALOG_TITLE, new String[]{"Continue", "Cancel"});
+        DataSourceController connectWizard = getDataSourceWizard(DIALOG_TITLE, new String[]{"Continue", "Cancel"});
         if (connectWizard == null) {
             return;
         }

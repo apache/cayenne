@@ -25,6 +25,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.CayenneModelerFrame;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
+import org.apache.cayenne.modeler.ui.project.editor.EditorPanelView;
 import org.apache.cayenne.query.SQLTemplate;
 
 import javax.swing.*;
@@ -64,20 +65,22 @@ public class JUndoableCheckBoxEdit extends AbstractUndoableEdit {
             targetObject = newPath.getUserObject();
         }
 
+        EditorPanelView editor = projectView.getEditorPanel();
+
         if (targetObject instanceof DataChannelDescriptor) {
-            tabbedPane = projectView.getDataDomainView();
+            tabbedPane = editor.getDataDomainView();
         }
 
         if (targetObject instanceof DataMap) {
-            tabbedPane = projectView.getDataMapView();
+            tabbedPane = editor.getDataMapView();
         }
 
         if (targetObject instanceof ObjEntity) {
-            tabbedPane = projectView.getObjDetailView();
+            tabbedPane = editor.getObjDetailView();
         }
 
         if (targetObject instanceof SQLTemplate) {
-            tabbedPane = projectView.getSqlTemplateView();
+            tabbedPane = editor.getSqlTemplateView();
         }
 
         if (tabbedPane != null) {

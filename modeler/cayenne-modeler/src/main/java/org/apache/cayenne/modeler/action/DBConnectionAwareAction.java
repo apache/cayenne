@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.datasourcewizard.DataSourceWizardController;
+import org.apache.cayenne.modeler.ui.datasource.DataSourceController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.util.CayenneAction;
@@ -29,7 +29,7 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 import static org.apache.cayenne.modeler.pref.DBConnectionInfo.*;
 
 /**
- * Base action that provides DBConnectionInfo for the current DataMap or calls {@link DataSourceWizardController} dialog to
+ * Base action that provides DBConnectionInfo for the current DataMap or calls {@link DataSourceController} dialog to
  * create one.
  *
  * @since 4.2
@@ -44,7 +44,7 @@ public abstract class DBConnectionAwareAction extends CayenneAction {
 
         DBConnectionInfo connectionInfo = getConnectionInfoFromPreferences(dataMap);
         if (connectionInfo == null) {
-            DataSourceWizardController connectWizard = getDataSourceWizard(title);
+            DataSourceController connectWizard = getDataSourceWizard(title);
             if (connectWizard == null) {
                 return null;
             }
@@ -55,16 +55,16 @@ public abstract class DBConnectionAwareAction extends CayenneAction {
         return connectionInfo;
     }
 
-    protected DataSourceWizardController getDataSourceWizard(String title, String[] buttons) {
-        DataSourceWizardController connectWizard = new DataSourceWizardController(getProjectController(), title, buttons);
+    protected DataSourceController getDataSourceWizard(String title, String[] buttons) {
+        DataSourceController connectWizard = new DataSourceController(getProjectController(), title, buttons);
         if (!connectWizard.startupAction()) {
             return null;
         }
         return connectWizard;
     }
 
-    protected DataSourceWizardController getDataSourceWizard(String title) {
-        DataSourceWizardController connectWizard = new DataSourceWizardController(getProjectController(), title);
+    protected DataSourceController getDataSourceWizard(String title) {
+        DataSourceController connectWizard = new DataSourceController(getProjectController(), title);
         if (!connectWizard.startupAction()) {
             return null;
         }
@@ -89,7 +89,7 @@ public abstract class DBConnectionAwareAction extends CayenneAction {
         return connectionInfo;
     }
 
-    protected void saveConnectionInfo(DataMap dataMap, DataSourceWizardController connectWizard) {
+    protected void saveConnectionInfo(DataMap dataMap, DataSourceController connectWizard) {
         DataMapDefaults dataMapDefaults = getProjectController().getSelectedDataMapPreferences(dataMap);
 
         String dbAdapter = connectWizard.getConnectionInfo().getDbAdapter();

@@ -25,7 +25,7 @@ import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.validationbrowser.ValidationResultBrowserController;
-import org.apache.cayenne.modeler.ui.datasourcewizard.DataSourceWizardController;
+import org.apache.cayenne.modeler.ui.datasource.DataSourceController;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.pref.DBGeneratorDefaults;
@@ -217,7 +217,7 @@ public class DBGeneratorOptionsController extends ChildController<ProjectControl
      */
     public void generateSchemaAction() {
 
-        DataSourceWizardController connectWizard = new DataSourceWizardController(parent, "Generate DB Schema: Connect to Database");
+        DataSourceController connectWizard = new DataSourceController(parent, "Generate DB Schema: Connect to Database");
         if (!connectWizard.startupAction()) {
             return;
         }

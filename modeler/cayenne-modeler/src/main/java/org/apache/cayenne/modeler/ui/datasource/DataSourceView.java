@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.datasourcewizard;
+package org.apache.cayenne.modeler.ui.datasource;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -30,7 +30,7 @@ import javax.swing.*;
 import java.awt.*;
 
 
-public class DataSourceWizardView extends JDialog {
+public class DataSourceView extends JDialog {
 
     private static final byte OK_BUTTON_INDEX = 0;
     private static final byte CANCEL_BUTTON_INDEX = 1;
@@ -41,7 +41,7 @@ public class DataSourceWizardView extends JDialog {
     protected JButton cancelButton;
     protected DBConnectionInfoEditorController connectionInfo;
 
-    public DataSourceWizardView(RootController controller, String[] labels) {
+    public DataSourceView(RootController controller, String[] labels) {
         super(Application.getFrame());
         
         this.dataSources = new JComboBox<>();

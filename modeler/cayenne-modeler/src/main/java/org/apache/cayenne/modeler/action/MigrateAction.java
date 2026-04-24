@@ -23,7 +23,7 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoader;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.datasourcewizard.DataSourceWizardController;
+import org.apache.cayenne.modeler.ui.datasource.DataSourceController;
 import org.apache.cayenne.modeler.ui.dbactionoptions.DbActionOptionsDialog;
 import org.apache.cayenne.modeler.ui.dbmerge.MergerOptionsController;
 import org.slf4j.Logger;
@@ -55,7 +55,7 @@ public class MigrateAction extends DBConnectionAwareAction {
 
     public void performAction(ActionEvent e) {
 
-        DataSourceWizardController connectWizard = getDataSourceWizard("Migrate DB Schema: Connect to Database");
+        DataSourceController connectWizard = getDataSourceWizard("Migrate DB Schema: Connect to Database");
         if(connectWizard == null) {
             return;
         }
@@ -95,7 +95,7 @@ public class MigrateAction extends DBConnectionAwareAction {
         return null;
     }
 
-    protected DbActionOptionsDialog loaderOptionDialog(DataSourceWizardController connectWizard) {
+    protected DbActionOptionsDialog loaderOptionDialog(DataSourceController connectWizard) {
 
         // use this catalog as the default...
         List<String> catalogs;
@@ -142,7 +142,7 @@ public class MigrateAction extends DBConnectionAwareAction {
     }
 
     @SuppressWarnings("unchecked")
-    private List<String> getCatalogs(DataSourceWizardController connectWizard, Connection connection) throws Exception {
+    private List<String> getCatalogs(DataSourceController connectWizard, Connection connection) throws Exception {
         if(!connectWizard.getAdapter().supportsCatalogsOnReverseEngineering()) {
             return (List<String>) Collections.EMPTY_LIST;
         }

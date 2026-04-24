@@ -19,25 +19,13 @@
 
 package org.apache.cayenne.modeler.ui.project;
 
-import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeView;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CollapseTreeAction;
 import org.apache.cayenne.modeler.action.FilterAction;
-import org.apache.cayenne.modeler.ui.project.tree.filter.FilterController;
-import org.apache.cayenne.modeler.ui.project.editor.datadomain.DataDomainTabbedView;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.DataMapTabbedView;
-import org.apache.cayenne.modeler.ui.project.editor.query.ejbql.EjbqlTabbedView;
-import org.apache.cayenne.modeler.ui.project.editor.embeddable.EmbeddableTabbedView;
-import org.apache.cayenne.modeler.ui.project.editor.objentity.ObjEntityTabbedView;
-import org.apache.cayenne.modeler.ui.project.editor.procedure.ProcedureQueryView;
-import org.apache.cayenne.modeler.ui.project.editor.procedure.ProcedureTabbedView;
-import org.apache.cayenne.modeler.ui.project.editor.query.sqltemplate.SQLTemplateTabbedView;
-import org.apache.cayenne.modeler.ui.project.editor.query.selectquery.SelectQueryTabbedView;
-import org.apache.cayenne.modeler.ui.project.editor.datanode.DataNodeEditorController;
-import org.apache.cayenne.modeler.ui.project.editor.dbentity.DbEntityTabbedView;
-import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
+import org.apache.cayenne.modeler.ui.project.editor.EditorPanelView;
+import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeView;
+import org.apache.cayenne.modeler.ui.project.tree.treefilter.TreeFilterController;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
@@ -48,73 +36,9 @@ import java.awt.*;
  */
 public class ProjectView extends JPanel {
 
-    private static final String EMPTY_VIEW = "Empty";
-    private static final String DOMAIN_VIEW = "Domain";
-    private static final String NODE_VIEW = "Node";
-    private static final String DATA_MAP_VIEW = "DataMap";
-    private static final String OBJ_VIEW = "ObjView";
-    private static final String DB_VIEW = "DbView";
-    private static final String EMBEDDABLE_VIEW = "EmbeddableView";
-    private static final String PROCEDURE_VIEW = "ProcedureView";
-    private static final String SELECT_QUERY_VIEW = "SelectQueryView";
-    private static final String SQL_TEMPLATE_VIEW = "SQLTemplateView";
-    private static final String PROCEDURE_QUERY_VIEW = "ProcedureQueryView";
-    private static final String EJBQL_QUERY_VIEW = "EjbqlQueryView";
-
-    private final Container editorPanel;
-    private final CardLayout detailLayout;
     private final ProjectTreeView treePanel;
-
-    private final DbEntityTabbedView dbDetailView;
-    private final ObjEntityTabbedView objDetailView;
-    private final EmbeddableTabbedView embeddableView;
-    private final DataDomainTabbedView dataDomainView;
-    private final DataMapTabbedView dataMapView;
-    private final ProcedureTabbedView procedureView;
-    private final SQLTemplateTabbedView sqlTemplateView;
-    private final EjbqlTabbedView ejbqlQueryView;
-
-    private final FilterController filterController;
-
-    public FilterController getFilterController() {
-        return filterController;
-    }
-
-    public SQLTemplateTabbedView getSqlTemplateView() {
-        return sqlTemplateView;
-    }
-
-    public EjbqlTabbedView getEjbqlQueryView() {
-        return ejbqlQueryView;
-    }
-
-    public ProcedureTabbedView getProcedureView() {
-        return procedureView;
-    }
-
-    public ProjectTreeView getProjectTreeView() {
-        return treePanel;
-    }
-
-    public EmbeddableTabbedView getEmbeddableView() {
-        return embeddableView;
-    }
-
-    public DbEntityTabbedView getDbDetailView() {
-        return dbDetailView;
-    }
-
-    public ObjEntityTabbedView getObjDetailView() {
-        return objDetailView;
-    }
-
-    public DataDomainTabbedView getDataDomainView() {
-        return dataDomainView;
-    }
-
-    public DataMapTabbedView getDataMapView() {
-        return dataMapView;
-    }
+    private final EditorPanelView editorPanel;
+    private final TreeFilterController filterController;
 
     public ProjectView(ProjectController controller) {
 
@@ -145,55 +69,13 @@ public class ProjectView extends JPanel {
         treeNavigatePanel.setLayout(new BorderLayout());
         treeNavigatePanel.add(treePanel, BorderLayout.CENTER);
 
-        editorPanel = new JPanel();
+        editorPanel = new EditorPanelView(controller);
+
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true);
         splitPane.setDividerSize(2);
         splitPane.setBorder(BorderFactory.createEmptyBorder());
+
         JPanel leftPanel = new JPanel(new BorderLayout());
-
-        // assemble...
-        detailLayout = new CardLayout();
-        editorPanel.setLayout(detailLayout);
-
-        // some but not all panels must be wrapped in a scroll pane
-        // those that are not wrapped usually have their own scrollers
-        // in subpanels...
-
-        editorPanel.add(new JPanel(), EMPTY_VIEW);
-
-        dataDomainView = new DataDomainTabbedView(controller);
-        editorPanel.add(dataDomainView, DOMAIN_VIEW);
-
-        DataNodeEditorController nodeController = new DataNodeEditorController(controller);
-        editorPanel.add(new JScrollPane(nodeController.getView()), NODE_VIEW);
-
-        dataMapView = new DataMapTabbedView(controller);
-        editorPanel.add(dataMapView, DATA_MAP_VIEW);
-
-        procedureView = new ProcedureTabbedView(controller);
-        editorPanel.add(procedureView, PROCEDURE_VIEW);
-
-        SelectQueryTabbedView selectQueryView = new SelectQueryTabbedView(controller);
-        editorPanel.add(selectQueryView, SELECT_QUERY_VIEW);
-
-        sqlTemplateView = new SQLTemplateTabbedView(controller);
-        editorPanel.add(sqlTemplateView, SQL_TEMPLATE_VIEW);
-
-        Component procedureQueryView = new ProcedureQueryView(controller);
-        editorPanel.add(new JScrollPane(procedureQueryView), PROCEDURE_QUERY_VIEW);
-
-        ejbqlQueryView = new EjbqlTabbedView(controller);
-        editorPanel.add(ejbqlQueryView, EJBQL_QUERY_VIEW);
-
-        embeddableView = new EmbeddableTabbedView(controller);
-        editorPanel.add(embeddableView, EMBEDDABLE_VIEW);
-
-        objDetailView = new ObjEntityTabbedView(controller);
-        editorPanel.add(objDetailView, OBJ_VIEW);
-
-        dbDetailView = new DbEntityTabbedView(controller);
-        editorPanel.add(dbDetailView, DB_VIEW);
-
         leftPanel.add(barPanel, BorderLayout.NORTH);
         leftPanel.setBorder(BorderFactory.createEmptyBorder());
         JScrollPane scrollPane = new JScrollPane(treeNavigatePanel);
@@ -205,17 +87,7 @@ public class ProjectView extends JPanel {
         setLayout(new BorderLayout());
         add(splitPane, BorderLayout.CENTER);
 
-        this.filterController = new FilterController(treePanel);
-
-        controller.addDomainDisplayListener(e -> detailLayout.show(editorPanel, e.getDomain() == null ? EMPTY_VIEW : DOMAIN_VIEW));
-        controller.addDataNodeDisplayListener(e -> detailLayout.show(editorPanel, e.getDataNode() == null ? EMPTY_VIEW : NODE_VIEW));
-        controller.addDataMapDisplayListener(e -> detailLayout.show(editorPanel, e.getDataMap() == null ? EMPTY_VIEW : DATA_MAP_VIEW));
-        controller.addObjEntityDisplayListener(e -> detailLayout.show(editorPanel, e.getEntity() == null ? EMPTY_VIEW : OBJ_VIEW));
-        controller.addDbEntityDisplayListener(e -> detailLayout.show(editorPanel, e.getEntity() == null ? EMPTY_VIEW : DB_VIEW));
-        controller.addProcedureDisplayListener(e -> detailLayout.show(editorPanel, e.getProcedure() == null ? EMPTY_VIEW : PROCEDURE_VIEW));
-        controller.addQueryDisplayListener(this::querySelected);
-        controller.addMultipleObjectsDisplayListener(e -> detailLayout.show(editorPanel, EMPTY_VIEW));
-        controller.addEmbeddableDisplayListener(e -> detailLayout.show(editorPanel, e.getEmbeddable() == null ? EMPTY_VIEW : EMBEDDABLE_VIEW));
+        this.filterController = new TreeFilterController(treePanel);
 
         // Moving this to try-catch block per CAY-940. Exception will be stack-traced
         try {
@@ -226,24 +98,15 @@ public class ProjectView extends JPanel {
         }
     }
 
-    private void querySelected(QueryDisplayEvent e) {
-        QueryDescriptor query = e.getQuery();
+    public EditorPanelView getEditorPanel() {
+        return editorPanel;
+    }
 
-        switch (query.getType()) {
-            case QueryDescriptor.SELECT_QUERY:
-                detailLayout.show(editorPanel, SELECT_QUERY_VIEW);
-                break;
-            case QueryDescriptor.SQL_TEMPLATE:
-                detailLayout.show(editorPanel, SQL_TEMPLATE_VIEW);
-                break;
-            case QueryDescriptor.PROCEDURE_QUERY:
-                detailLayout.show(editorPanel, PROCEDURE_QUERY_VIEW);
-                break;
-            case QueryDescriptor.EJBQL_QUERY:
-                detailLayout.show(editorPanel, EJBQL_QUERY_VIEW);
-                break;
-            default:
-                detailLayout.show(editorPanel, EMPTY_VIEW);
-        }
+    public TreeFilterController getFilterController() {
+        return filterController;
+    }
+
+    public ProjectTreeView getProjectTreeView() {
+        return treePanel;
     }
 }

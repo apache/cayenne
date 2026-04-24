@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.datasourcewizard;
+package org.apache.cayenne.modeler.ui.datasource;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.modeler.ClassLoadingService;
@@ -46,10 +46,10 @@ import static org.apache.cayenne.modeler.pref.DBConnectionInfo.*;
  * keep an open connection.
  *
  */
-public class DataSourceWizardController extends ChildController<ProjectController> {
+public class DataSourceController extends ChildController<ProjectController> {
 
     private final ProjectController projectController;
-    private final DataSourceWizardView view;
+    private final DataSourceView view;
 
     private Map<String, DBConnectionInfo> dataSources;
     private String dataSourceKey;
@@ -60,17 +60,17 @@ public class DataSourceWizardController extends ChildController<ProjectControlle
     private boolean canceled;
     private DataSourceListener dataSourceListener;
 
-    public DataSourceWizardController(ProjectController parent, String title) {
+    public DataSourceController(ProjectController parent, String title) {
         this(parent, title, new String[]{"Continue", "Cancel"});
     }
 
-    public DataSourceWizardController(ProjectController parent, String title, String[] buttons) {
+    public DataSourceController(ProjectController parent, String title, String[] buttons) {
         super(parent);
 
         this.connectionInfo = new DBConnectionInfo();
         this.projectController = parent;
 
-        this.view = new DataSourceWizardView(this, buttons);
+        this.view = new DataSourceView(this, buttons);
         this.view.setTitle(title);
 
         initBindings();

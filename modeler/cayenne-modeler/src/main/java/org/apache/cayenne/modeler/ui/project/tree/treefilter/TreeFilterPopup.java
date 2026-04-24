@@ -16,11 +16,11 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.ui.project.tree.filter;
+package org.apache.cayenne.modeler.ui.project.tree.treefilter;
 
 import javax.swing.*;
 
-public class FilterDialog extends JPopupMenu {
+public class TreeFilterPopup extends JPopupMenu {
 
     private final JCheckBox dbEntity;
     private final JCheckBox objEntity;
@@ -29,7 +29,7 @@ public class FilterDialog extends JPopupMenu {
     private final JCheckBox query;
     private final JCheckBox all;
 
-    public FilterDialog() {
+    public TreeFilterPopup() {
         this.all = new JCheckBox("Show all");
         this.dbEntity = new JCheckBox("DbEntity");
         this.objEntity = new JCheckBox("ObjEntity");

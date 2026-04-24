@@ -37,6 +37,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.CayenneModelerFrame;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
+import org.apache.cayenne.modeler.ui.project.editor.EditorPanelView;
 import org.apache.cayenne.modeler.ui.project.editor.query.sqltemplate.SQLTemplateTabbedView;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.query.EJBQLQuery;
@@ -80,20 +81,22 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
             targetObject = newPath.getUserObject();
         }
 
+        EditorPanelView editorPanel = projectView.getEditorPanel();
+
         if (targetObject instanceof ObjEntity) {
-            tabbedPane = projectView.getObjDetailView();
+            tabbedPane = editorPanel.getObjDetailView();
         }
 
         if (targetObject instanceof DbEntity) {
-            tabbedPane = projectView.getDbDetailView();
+            tabbedPane = editorPanel.getDbDetailView();
         }
 
         if (targetObject instanceof Embeddable) {
-            tabbedPane = projectView.getEmbeddableView();
+            tabbedPane = editorPanel.getEmbeddableView();
         }
 
         if (targetObject instanceof SQLTemplate) {
-            tabbedPane = projectView.getSqlTemplateView();
+            tabbedPane = editorPanel.getSqlTemplateView();
 
             if (tabbedPane != null) {
                 selectedItem = ((SQLTemplateTabbedView) tabbedPane).getScriptsTab().getSelectedIndex();
@@ -101,15 +104,15 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
         }
 
         if (targetObject instanceof EJBQLQuery) {
-            tabbedPane = projectView.getEjbqlQueryView();
+            tabbedPane = editorPanel.getEjbqlQueryView();
         }
 
         if (targetObject instanceof DataMap) {
-            tabbedPane = projectView.getDataMapView();
+            tabbedPane = editorPanel.getDataMapView();
         }
 
         if (targetObject instanceof DataChannelDescriptor) {
-            tabbedPane = projectView.getDataDomainView();
+            tabbedPane = editorPanel.getDataDomainView();
         }
 
         if (tabbedPane != null) {

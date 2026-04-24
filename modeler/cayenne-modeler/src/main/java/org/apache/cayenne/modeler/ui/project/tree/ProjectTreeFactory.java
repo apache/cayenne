@@ -35,7 +35,7 @@ import java.util.List;
 /**
  * A helper class that wraps a tree of project nodes into Swing tree nodes.
  */
-public class ProjectTreeFactory {
+class ProjectTreeFactory {
 
     public static DefaultMutableTreeNode wrapProjectNode(ConfigurationNode node) {
         return node.acceptVisitor(new TreeWrapper());

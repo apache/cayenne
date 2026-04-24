@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.ui.project.tree.filter;
+package org.apache.cayenne.modeler.ui.project.tree.treefilter;
 
 import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeModel;
 import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeView;
@@ -26,7 +26,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.util.Enumeration;
 
-public class FilterController {
+public class TreeFilterController {
 
     private boolean showDbEntity;
     private boolean showObjEntity;
@@ -36,11 +36,11 @@ public class FilterController {
 
     private final ProjectTreeView treeView;
     private final ProjectTreeModel treeModel;
-    private final FilterDialog view;
+    private final TreeFilterPopup view;
 
-    public FilterController(ProjectTreeView treeView) {
+    public TreeFilterController(ProjectTreeView treeView) {
 
-        this.view = new FilterDialog();
+        this.view = new TreeFilterPopup();
         this.treeView = treeView;
         this.treeModel = treeView.getProjectModel();
 
@@ -96,7 +96,7 @@ public class FilterController {
         view.getAll().setEnabled(!all);
     }
 
-    public FilterDialog getView() {
+    public TreeFilterPopup getView() {
         return view;
     }
 

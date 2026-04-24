@@ -25,6 +25,7 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeModel;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
 import javax.swing.tree.TreePath;
@@ -35,7 +36,7 @@ import java.awt.event.ActionEvent;
  */
 public abstract class BaseViewEntityAction extends CayenneAction {
 
-    abstract protected Entity<?,?,?> getEntity();
+    abstract protected Entity<?, ?, ?> getEntity();
 
     public BaseViewEntityAction(String name, Application application) {
         super(name, application);
@@ -50,13 +51,13 @@ public abstract class BaseViewEntityAction extends CayenneAction {
     }
 
     protected void viewEntity() {
-        Entity<?,?,?> entity = getEntity();
-        if(entity != null) {
+        Entity<?, ?, ?> entity = getEntity();
+        if (entity != null) {
             navigateToEntity(entity);
         }
     }
 
-    public void navigateToEntity(Entity<?,?,?> entity) {
+    public void navigateToEntity(Entity<?, ?, ?> entity) {
         TreePath path = buildTreePath(entity);
         editor().getProjectTreeView().getSelectionModel().setSelectionPath(path);
 
@@ -67,8 +68,31 @@ public abstract class BaseViewEntityAction extends CayenneAction {
                 (DataChannelDescriptor) getProjectController().getProject().getRootNode());
         if (entity instanceof DbEntity) {
             getProjectController().displayDbEntity(event);
-        } else if (entity instanceof ObjEntity){
+        } else if (entity instanceof ObjEntity) {
             getProjectController().displayObjEntity(event);
         }
+    }
+
+    private TreePath buildTreePath(Entity<?, ?, ?> entity) {
+
+        DataChannelDescriptor domain = (DataChannelDescriptor) getCurrentProject().getRootNode();
+
+        Object[] path = new Object[]{domain, entity.getDataMap(), entity};
+
+        Object[] mutableTreeNodes = new Object[path.length];
+        mutableTreeNodes[0] = ((ProjectTreeModel) editor().getProjectTreeView().getModel())
+                .getRootNode();
+
+        Object[] helper;
+        for (int i = 1; i < path.length; i++) {
+            helper = new Object[i];
+            for (int j = 0; j < i; ) {
+                helper[j] = path[++j];
+            }
+            mutableTreeNodes[i] = ((ProjectTreeModel) editor()
+                    .getProjectTreeView()
+                    .getModel()).getNodeForObjectPath(helper);
+        }
+        return new TreePath(mutableTreeNodes);
     }
 }
