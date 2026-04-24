@@ -26,7 +26,7 @@ import org.apache.cayenne.modeler.ui.project.editor.datadomain.dbimport.DbImport
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.validation.ValidationTabController;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
-import org.apache.cayenne.modeler.graph.DataDomainGraphTab;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.DataDomainGraphTab;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

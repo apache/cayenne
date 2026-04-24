@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.graph.action;
+package org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;

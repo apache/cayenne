@@ -16,36 +16,33 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.graph.action;
+package org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action;
 
 import java.awt.event.ActionEvent;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.graph.DataDomainGraphTab;
-import org.apache.cayenne.modeler.graph.GraphBuilder;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.DataDomainGraphTab;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.jgraph.JGraph;
 
 /**
- * Action for zooming out graph
+ * Action for refreshing the graph 
  */
-public class ZoomOutAction extends CayenneAction {    
+public class RebuildGraphAction extends CayenneAction {
     private final DataDomainGraphTab dataDomainGraphTab;
-    
-    public ZoomOutAction(DataDomainGraphTab dataDomainGraphTab, Application application) {
-        super("Zoom Out", application);
+
+    public RebuildGraphAction(DataDomainGraphTab dataDomainGraphTab, Application application) {
+        super("Rebuild", application);
         this.dataDomainGraphTab = dataDomainGraphTab;
         setEnabled(true);
     }
     
     @Override
     public String getIconName() {
-        return "icon-zoom-out.png";
+        return "icon-refresh.png";
     }
     
     @Override
     public void performAction(ActionEvent e) {
-        JGraph graph = dataDomainGraphTab.getGraph();
-        graph.setScale(graph.getScale() / GraphBuilder.ZOOM_FACTOR);
+        this.dataDomainGraphTab.rebuild();
     }
 }

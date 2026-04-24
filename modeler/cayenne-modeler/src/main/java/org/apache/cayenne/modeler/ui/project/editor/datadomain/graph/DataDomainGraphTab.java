@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.graph;
+package org.apache.cayenne.modeler.ui.project.editor.datadomain.graph;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -39,10 +39,14 @@ import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DomainDisplayListener;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
-import org.apache.cayenne.modeler.graph.action.RebuildGraphAction;
-import org.apache.cayenne.modeler.graph.action.SaveAsImageAction;
-import org.apache.cayenne.modeler.graph.action.ZoomInAction;
-import org.apache.cayenne.modeler.graph.action.ZoomOutAction;
+import org.apache.cayenne.modeler.graph.GraphBuilder;
+import org.apache.cayenne.modeler.graph.GraphMap;
+import org.apache.cayenne.modeler.graph.GraphRegistry;
+import org.apache.cayenne.modeler.graph.GraphType;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.RebuildGraphAction;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.SaveAsImageAction;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ZoomInAction;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ZoomOutAction;
 import org.jgraph.JGraph;
 
 /**

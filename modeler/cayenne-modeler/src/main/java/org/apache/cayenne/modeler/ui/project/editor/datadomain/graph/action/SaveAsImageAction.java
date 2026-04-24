@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.graph.action;
+package org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action;
 
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
@@ -30,7 +30,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.graph.DataDomainGraphTab;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.DataDomainGraphTab;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.FileFilters;

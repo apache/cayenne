@@ -35,7 +35,7 @@ import org.apache.cayenne.modeler.action.dbimport.DragAndDropNodeAction;
 import org.apache.cayenne.modeler.action.dbimport.EditNodeAction;
 import org.apache.cayenne.modeler.action.dbimport.MoveImportNodeAction;
 import org.apache.cayenne.modeler.action.dbimport.MoveInvertNodeAction;
-import org.apache.cayenne.modeler.graph.action.ShowGraphEntityAction;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ShowGraphEntityAction;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.ConfigurationNodeParentGetter;
 

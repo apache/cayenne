@@ -136,7 +136,6 @@ public class FindAction extends CayenneAction {
 
     /**
      * Navigate to search result
-     * Used also in {@link org.apache.cayenne.modeler.graph.action.EntityDisplayAction}
      */
     public static void jumpToResult(FindAction.SearchResultEntry searchResultEntry) {
         ProjectView editor = ((CayenneModelerFrame) Application.getInstance().getFrameController().getView()).getEditorPanel();
