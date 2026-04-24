@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.dialog.objentity;
+package org.apache.cayenne.modeler.ui.project.editor.objentity.relinfo;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -95,6 +95,9 @@ public class ObjRelationshipPathBrowser extends MultiColumnBrowser {
      */
     protected class PanelOpener extends MouseAdapter {
 
+        public PanelOpener() {
+        }
+
         /**
          * Invoked when the mouse has been clicked on a component.
          */
@@ -119,6 +122,9 @@ public class ObjRelationshipPathBrowser extends MultiColumnBrowser {
      * Listener, which performs removing columns to the right of selected row
      */
     protected class PanelRemover implements ListSelectionListener {
+
+        public PanelRemover() {
+        }
 
         public void valueChanged(ListSelectionEvent e) {
             // ignore "adjusting"

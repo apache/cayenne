@@ -16,8 +16,9 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.dialog.objentity;
+package org.apache.cayenne.modeler.ui.project.editor.objentity.attrinfo;
 
+import org.apache.cayenne.modeler.ui.project.editor.objentity.relinfo.ObjRelationshipPathBrowser;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbRelationship;
 

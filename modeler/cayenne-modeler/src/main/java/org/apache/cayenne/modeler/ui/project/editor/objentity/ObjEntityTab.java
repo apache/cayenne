@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor;
+package org.apache.cayenne.modeler.ui.project.editor.objentity;
 
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
@@ -37,8 +37,8 @@ import org.apache.cayenne.modeler.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.action.ObjEntityCounterpartAction;
 import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
-import org.apache.cayenne.modeler.dialog.objentity.ClassNameUpdaterController;
-import org.apache.cayenne.modeler.dialog.validator.DuplicatedAttributesDialog;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.classname.ClassNameUpdaterController;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.duplicates.DuplicatedAttributesDialog;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ShowGraphEntityAction;

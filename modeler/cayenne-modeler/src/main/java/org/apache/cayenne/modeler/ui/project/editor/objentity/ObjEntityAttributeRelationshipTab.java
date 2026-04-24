@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.editor;
+package org.apache.cayenne.modeler.ui.project.editor.objentity;
 
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.ObjEntityListener;

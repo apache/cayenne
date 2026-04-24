@@ -41,7 +41,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
 import org.apache.cayenne.modeler.dialog.query.QueryTypeController;
-import org.apache.cayenne.modeler.editor.ObjCallbackMethod;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.ObjCallbackMethod;
 import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
 import org.apache.cayenne.modeler.undo.PasteCompoundUndoableEdit;
 import org.apache.cayenne.modeler.undo.PasteUndoableEdit;

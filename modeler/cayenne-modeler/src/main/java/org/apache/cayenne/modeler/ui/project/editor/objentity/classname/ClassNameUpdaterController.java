@@ -18,7 +18,7 @@
  ****************************************************************/
 
 
-package org.apache.cayenne.modeler.dialog.objentity;
+package org.apache.cayenne.modeler.ui.project.editor.objentity.classname;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;

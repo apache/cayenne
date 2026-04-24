@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.dialog.objentity;
+package org.apache.cayenne.modeler.ui.project.editor.objentity.attrinfo;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DbAttribute;
@@ -31,7 +31,7 @@ import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.editor.ObjAttributeTableModel;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.ObjAttributeTableModel;
 import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
@@ -58,8 +58,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static org.apache.cayenne.modeler.dialog.objentity.ObjAttributeInfoDialogView.EMBEDDABLE_PANEL;
-import static org.apache.cayenne.modeler.dialog.objentity.ObjAttributeInfoDialogView.FLATTENED_PANEL;
+import static org.apache.cayenne.modeler.ui.project.editor.objentity.attrinfo.ObjAttributeInfoDialogView.EMBEDDABLE_PANEL;
+import static org.apache.cayenne.modeler.ui.project.editor.objentity.attrinfo.ObjAttributeInfoDialogView.FLATTENED_PANEL;
 
 public class ObjAttributeInfoDialogController extends ChildController<ProjectController> implements TreeSelectionListener {
 

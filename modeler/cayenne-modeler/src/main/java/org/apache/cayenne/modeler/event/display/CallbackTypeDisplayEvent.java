@@ -19,7 +19,7 @@
 package org.apache.cayenne.modeler.event.display;
 
 import org.apache.cayenne.event.CayenneEvent;
-import org.apache.cayenne.modeler.editor.CallbackType;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.CallbackType;
 
 public class CallbackTypeDisplayEvent extends CayenneEvent {
 

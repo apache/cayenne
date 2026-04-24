@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.editor;
+package org.apache.cayenne.modeler.ui.project.editor.objentity;
 
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
@@ -33,7 +33,7 @@ import org.apache.cayenne.modeler.action.CutAttributeRelationshipAction;
 import org.apache.cayenne.modeler.action.ObjEntityToSuperEntityAction;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeRelationshipAction;
-import org.apache.cayenne.modeler.dialog.objentity.ObjRelationshipInfoController;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.relinfo.ObjRelationshipInfoController;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;

@@ -29,7 +29,7 @@ import org.apache.cayenne.modeler.ui.project.editor.datadomain.DataDomainTabbedV
 import org.apache.cayenne.modeler.ui.project.editor.datamap.DataMapTabbedView;
 import org.apache.cayenne.modeler.ui.project.editor.query.ejbql.EjbqlTabbedView;
 import org.apache.cayenne.modeler.ui.project.editor.embeddable.EmbeddableTabbedView;
-import org.apache.cayenne.modeler.editor.ObjEntityTabbedView;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.ObjEntityTabbedView;
 import org.apache.cayenne.modeler.ui.project.editor.procedure.ProcedureQueryView;
 import org.apache.cayenne.modeler.ui.project.editor.procedure.ProcedureTabbedView;
 import org.apache.cayenne.modeler.ui.project.editor.query.sqltemplate.SQLTemplateTabbedView;

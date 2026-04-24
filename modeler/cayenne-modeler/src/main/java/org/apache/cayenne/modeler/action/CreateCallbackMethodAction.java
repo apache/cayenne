@@ -23,7 +23,7 @@ import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.editor.CallbackType;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.CallbackType;
 import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
 import org.apache.cayenne.modeler.undo.CreateCallbackMethodUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;

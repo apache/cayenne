@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor;
+package org.apache.cayenne.modeler.ui.project.editor.objentity;
 
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 import org.apache.cayenne.map.Attribute;
