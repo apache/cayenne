@@ -19,6 +19,9 @@
 
 package org.apache.cayenne.modeler.pref;
 
+import org.apache.cayenne.modeler.ui.project.ProjectController;
+
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 public class ProjectStatePreferences extends RenamedPreferences {
@@ -61,6 +64,22 @@ public class ProjectStatePreferences extends RenamedPreferences {
 
     public ProjectStatePreferences(Preferences pref) {
         super(pref);
+    }
+
+    public void saveSelection(ProjectController controller) {
+        if (getCurrentPreference() == null) {
+            return;
+        }
+        try {
+            getCurrentPreference().clear();
+        } catch (BackingStoreException e) {
+            // ignore exception
+        }
+        ProjectSelectionMemo.save(controller, this);
+    }
+
+    public void restoreSelection(ProjectController controller) {
+        ProjectSelectionMemo.restore(controller, this);
     }
 
     public String getEvent() {

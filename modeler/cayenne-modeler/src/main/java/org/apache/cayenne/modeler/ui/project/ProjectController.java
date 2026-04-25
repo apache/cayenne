@@ -66,8 +66,6 @@ import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.modeler.pref.ProjectStatePreferences;
 import org.apache.cayenne.modeler.ui.ModelerController;
 import org.apache.cayenne.modeler.util.Comparators;
-import org.apache.cayenne.modeler.pref.project.DisplayEventTypes;
-import org.apache.cayenne.modeler.pref.project.MultipleObjectsDisplayEventType;
 import org.apache.cayenne.project.ConfigurationNodeParentGetter;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.util.IDUtil;
@@ -79,12 +77,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EventListener;
-import java.util.EventObject;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
@@ -298,45 +294,14 @@ public class ProjectController extends ChildController<ModelerController> {
     }
 
     public void saveSelectionToPrefs() {
-
         if (project == null) {
             return;
         }
-
-        EventObject displayEvent = getLastDisplayEvent();
-        ConfigurationNode[] multiplyObjects = getSelectedPaths();
-
-        if (displayEvent == null && multiplyObjects == null) {
-            return;
-        }
-
-        ProjectStatePreferences preferences = getProjectStatePreferences();
-        if (preferences.getCurrentPreference() == null) {
-            return;
-        }
-
-        try {
-            preferences.getCurrentPreference().clear();
-        } catch (BackingStoreException e) {
-            // ignore exception
-        }
-
-        if (displayEvent != null) {
-            DisplayEventTypes.valueOf(displayEvent.getClass().getSimpleName())
-                    .createDisplayEventType(this)
-                    .saveLastDisplayEvent();
-        } else if (multiplyObjects.length != 0) {
-            new MultipleObjectsDisplayEventType(this).saveLastDisplayEvent();
-        }
+        getProjectStatePreferences().saveSelection(this);
     }
 
     public void restoreSelectionFromPrefs() {
-        ProjectStatePreferences preferences = getProjectStatePreferences();
-
-        String displayEventName = preferences.getEvent();
-        if (!displayEventName.isEmpty()) {
-            DisplayEventTypes.valueOf(displayEventName).createDisplayEventType(this).fireLastDisplayEvent();
-        }
+        getProjectStatePreferences().restoreSelection(this);
     }
 
     public boolean isDirty() {
