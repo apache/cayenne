@@ -20,13 +20,11 @@
 package org.apache.cayenne.modeler.ui;
 
 import org.apache.cayenne.modeler.ui.project.ProjectView;
-import org.apache.cayenne.modeler.action.*;
+import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.ui.logconsole.LogConsoleController;
 import org.apache.cayenne.modeler.ui.welcome.WelcomeScreen;
-import org.apache.cayenne.modeler.event.model.RecentFileListListener;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.util.RecentFileMenu;
 import org.apache.cayenne.modeler.swing.border.TopBorder;
 import org.slf4j.LoggerFactory;
 
@@ -34,34 +32,29 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Main frame of CayenneModeler GUI
  */
 public class ModelerFrame extends JFrame {
 
-    private final LogConsoleController logConsoleController;
     private final ActionManager actionManager;
-    private final List<RecentFileListListener> recentFileListeners;
 
     private final JSplitPane splitPane;
     private final JLabel status;
     private final WelcomeScreen welcomePanel;
+    private final ModelerMenuBar menuBar;
 
     private ProjectView projectView;
-    private JCheckBoxMenuItem logMenu;
     private Component dockComponent;
 
     public ModelerFrame(ActionManager actionManager, LogConsoleController logConsoleController) {
         this.actionManager = actionManager;
-        this.logConsoleController = logConsoleController;
-        this.recentFileListeners = new ArrayList<>();
 
         setIconImage(ModelerUtil.buildIcon("CayenneModeler.png").getImage());
-        initMenus();
+        getContentPane().setLayout(new BorderLayout());
+        this.menuBar = new ModelerMenuBar(actionManager, logConsoleController);
+        setJMenuBar(menuBar);
         initToolbar();
 
         status = new JLabel();
@@ -93,111 +86,18 @@ public class ModelerFrame extends JFrame {
         getContentPane().add(statusBar, BorderLayout.SOUTH);
 
         this.welcomePanel = new WelcomeScreen();
-        recentFileListeners.add(welcomePanel);
+        this.menuBar.addRecentFileListener(welcomePanel);
 
         fireRecentFileListChanged(); // start filling list in welcome screen and in menu
 
-        setEditorPanel(null);
-    }
-
-    protected void initMenus() {
-        getContentPane().setLayout(new BorderLayout());
-
-        JMenu fileMenu = new JMenu("File");
-        JMenu editMenu = new JMenu("Edit");
-        JMenu projectMenu = new JMenu("Project");
-        JMenu toolMenu = new JMenu("Tools");
-        JMenu helpMenu = new JMenu("Help");
-
-        fileMenu.setMnemonic(KeyEvent.VK_F);
-        editMenu.setMnemonic(KeyEvent.VK_E);
-        projectMenu.setMnemonic(KeyEvent.VK_P);
-        toolMenu.setMnemonic(KeyEvent.VK_T);
-        helpMenu.setMnemonic(KeyEvent.VK_H);
-
-        fileMenu.add(actionManager.getAction(NewProjectAction.class).buildMenu());
-        fileMenu.add(actionManager.getAction(OpenProjectAction.class).buildMenu());
-        fileMenu.add(actionManager.getAction(ProjectAction.class).buildMenu());
-        fileMenu.add(actionManager.getAction(ImportDataMapAction.class).buildMenu());
-        fileMenu.addSeparator();
-        fileMenu.add(actionManager.getAction(SaveAction.class).buildMenu());
-        fileMenu.add(actionManager.getAction(SaveAsAction.class).buildMenu());
-        fileMenu.add(actionManager.getAction(RevertAction.class).buildMenu());
-        fileMenu.addSeparator();
-
-        editMenu.add(actionManager.getAction(UndoAction.class).buildMenu());
-        editMenu.add(actionManager.getAction(RedoAction.class).buildMenu());
-        editMenu.add(actionManager.getAction(CutAction.class).buildMenu());
-        editMenu.add(actionManager.getAction(CopyAction.class).buildMenu());
-        editMenu.add(actionManager.getAction(PasteAction.class).buildMenu());
-
-        RecentFileMenu recentFileMenu = new RecentFileMenu("Recent Projects");
-        recentFileListeners.add(recentFileMenu);
-        fileMenu.add(recentFileMenu);
-
-        fileMenu.addSeparator();
-        fileMenu.add(actionManager.getAction(ExitAction.class).buildMenu());
-
-        projectMenu.add(actionManager.getAction(ValidateAction.class).buildMenu());
-        projectMenu.add(actionManager.getAction(ShowValidationConfigAction.class).buildMenu());
-        projectMenu.addSeparator();
-        projectMenu.add(actionManager.getAction(CreateNodeAction.class).buildMenu());
-        projectMenu.add(actionManager.getAction(CreateDataMapAction.class).buildMenu());
-
-        projectMenu.add(actionManager.getAction(CreateObjEntityAction.class).buildMenu());
-        projectMenu.add(actionManager.getAction(CreateEmbeddableAction.class).buildMenu());
-        projectMenu.add(actionManager.getAction(CreateDbEntityAction.class).buildMenu());
-
-        projectMenu.add(actionManager.getAction(CreateProcedureAction.class).buildMenu());
-        projectMenu.add(actionManager.getAction(CreateQueryAction.class).buildMenu());
-
-        projectMenu.addSeparator();
-        projectMenu.add(actionManager.getAction(ObjEntitySyncAction.class).buildMenu());
-        projectMenu.add(actionManager.getAction(DbEntitySyncAction.class).buildMenu());
-        projectMenu.addSeparator();
-        projectMenu.add(actionManager.getAction(RemoveAction.class).buildMenu());
-
-        toolMenu.add(actionManager.getAction(InferRelationshipsAction.class).buildMenu());
-        toolMenu.add(actionManager.getAction(ImportEOModelAction.class).buildMenu());
-        toolMenu.addSeparator();
-        toolMenu.add(actionManager.getAction(GenerateCodeAction.class).buildMenu());
-        toolMenu.add(actionManager.getAction(GenerateDBAction.class).buildMenu());
-        toolMenu.add(actionManager.getAction(MigrateAction.class).buildMenu());
-
-        // Menu for opening Log console
-        toolMenu.addSeparator();
-        logMenu = actionManager.getAction(ShowLogConsoleAction.class).buildCheckBoxMenu();
-
-        if (!logConsoleController.getConsoleProperty(LogConsoleController.DOCKED_PROPERTY)
-                && logConsoleController.getConsoleProperty(LogConsoleController.SHOW_CONSOLE_PROPERTY)) {
-            logConsoleController.setConsoleProperty(LogConsoleController.SHOW_CONSOLE_PROPERTY, false);
-        }
-
-        updateLogConsoleMenu();
-        toolMenu.add(logMenu);
-
-        toolMenu.addSeparator();
-        toolMenu.add(actionManager.getAction(ConfigurePreferencesAction.class).buildMenu());
-
-        helpMenu.add(actionManager.getAction(AboutAction.class).buildMenu());
-        helpMenu.add(actionManager.getAction(DocumentationAction.class).buildMenu());
-
-        JMenuBar menuBar = new JMenuBar();
-
-        menuBar.add(fileMenu);
-        menuBar.add(editMenu);
-        menuBar.add(projectMenu);
-        menuBar.add(toolMenu);
-        menuBar.add(helpMenu);
-
-        setJMenuBar(menuBar);
+        setProjectView(null);
     }
 
     /**
      * Selects/deselects menu item, depending on status of log console
      */
     public void updateLogConsoleMenu() {
-        logMenu.setSelected(logConsoleController.getConsoleProperty(LogConsoleController.SHOW_CONSOLE_PROPERTY));
+        menuBar.updateLogConsoleMenu();
     }
 
     /**
@@ -263,15 +163,15 @@ public class ModelerFrame extends JFrame {
         });
     }
 
-    public ProjectView getEditorPanel() {
-        return projectView;
-    }
-
     public JLabel getStatus() {
         return status;
     }
 
-    public void setEditorPanel(ProjectView projectView) {
+    public ProjectView getProjectView() {
+        return projectView;
+    }
+
+    public void setProjectView(ProjectView projectView) {
         int oldLocation = splitPane.getDividerLocation();
 
         this.projectView = projectView;
@@ -290,9 +190,6 @@ public class ModelerFrame extends JFrame {
      * Notifies all listeners that recent file list has changed
      */
     public void fireRecentFileListChanged() {
-        for (RecentFileListListener recentFileListener : recentFileListeners) {
-            recentFileListener.recentFileListChanged();
-        }
+        menuBar.fireRecentFileListChanged();
     }
-
 }

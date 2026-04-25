@@ -137,7 +137,7 @@ public class FindAction extends ModelerAbstractAction {
      * Navigate to search result
      */
     public static void jumpToResult(FindAction.SearchResultEntry searchResultEntry) {
-        ProjectView projectView = ((ModelerFrame) Application.getInstance().getFrameController().getView()).getEditorPanel();
+        ProjectView projectView = ((ModelerFrame) Application.getInstance().getFrameController().getView()).getProjectView();
         DataChannelDescriptor domain = (DataChannelDescriptor) Application.getInstance().getProject().getRootNode();
         ProjectController controller = Application.getInstance().getFrameController().getProjectController();
 

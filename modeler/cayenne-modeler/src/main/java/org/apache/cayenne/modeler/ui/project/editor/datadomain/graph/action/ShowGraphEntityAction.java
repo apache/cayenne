@@ -76,7 +76,7 @@ public class ShowGraphEntityAction extends ModelerAbstractAction {
         ProjectView editor = ((ModelerFrame) Application
                 .getInstance()
                 .getFrameController()
-                .getView()).getEditorPanel();
+                .getView()).getProjectView();
 
         editor.getProjectTreeView().getSelectionModel().setSelectionPath(
                 editor

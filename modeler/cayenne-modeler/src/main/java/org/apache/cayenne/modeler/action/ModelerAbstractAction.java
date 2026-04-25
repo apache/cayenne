@@ -255,6 +255,6 @@ public abstract class ModelerAbstractAction extends AbstractAction {
         return ((ModelerFrame) Application
                 .getInstance()
                 .getFrameController()
-                .getView()).getEditorPanel();
+                .getView()).getProjectView();
     }
 }

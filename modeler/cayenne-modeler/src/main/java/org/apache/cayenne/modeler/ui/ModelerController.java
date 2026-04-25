@@ -38,7 +38,6 @@ import org.apache.cayenne.validation.ValidationResult;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
-import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTarget;
@@ -162,7 +161,7 @@ public class ModelerController extends RootController {
         projectController.saveSelectionToPrefs();
 
         // --- update view
-        view.setEditorPanel(null);
+        view.setProjectView(null);
 
         // repaint is needed, since sometimes there is a
         // trace from menu left on the screen
@@ -182,7 +181,7 @@ public class ModelerController extends RootController {
 
         projectController.projectOpened(project);
         view.setTitle(getProjectLocationString());
-        view.setEditorPanel(projectController.getView());
+        view.setProjectView(projectController.getView());
 
         projectController.restoreSelectionFromPrefs();
         application.getActionManager().projectOpened();

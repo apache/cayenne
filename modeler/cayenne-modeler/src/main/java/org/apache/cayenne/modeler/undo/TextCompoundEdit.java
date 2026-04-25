@@ -67,7 +67,7 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
         this.listener = listener;
 
         ProjectView projectView = ((ModelerFrame) Application.getInstance().getFrameController().getView())
-                .getEditorPanel();
+                .getProjectView();
 
         treePath = projectView.getProjectTreeView().getSelectionPath();
 
@@ -118,7 +118,7 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
     private void restoreSelections() {
 
         ProjectView projectView = ((ModelerFrame) Application.getInstance().getFrameController().getView())
-                .getEditorPanel();
+                .getProjectView();
 
         projectView.getProjectTreeView().getSelectionModel().setSelectionPath(treePath);
 
