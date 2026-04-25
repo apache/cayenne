@@ -26,7 +26,6 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.EntityTreeRelationshipFilter;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.util.PathChooserComboBoxCellEditor;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;

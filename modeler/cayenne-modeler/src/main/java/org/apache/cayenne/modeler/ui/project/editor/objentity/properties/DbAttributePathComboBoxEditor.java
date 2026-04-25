@@ -28,7 +28,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.util.EntityTreeAttributeRelationshipFilter;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.util.PathChooserComboBoxCellEditor;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 

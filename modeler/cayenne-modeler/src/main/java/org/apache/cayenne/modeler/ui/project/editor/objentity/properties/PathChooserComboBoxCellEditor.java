@@ -17,13 +17,15 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util;
+package org.apache.cayenne.modeler.ui.project.editor.objentity.properties;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.modeler.swing.CellRenderers;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
 import org.apache.cayenne.modeler.swing.table.CayenneTableModel;
+import org.apache.cayenne.modeler.util.EntityTreeModel;
+import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.AbstractCellEditor;
@@ -53,10 +55,9 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 /**
- * This class used as cell editor, when you need to
- * choose path in comboBox and use autocompletion.
+ * Used as cell editor, when you need to choose path in comboBox and use autocompletion.
  */
-public abstract class PathChooserComboBoxCellEditor<T extends CayenneTableModel<?>> extends AbstractCellEditor implements TableCellEditor, ActionListener, PopupMenuListener {
+abstract class PathChooserComboBoxCellEditor<T extends CayenneTableModel<?>> extends AbstractCellEditor implements TableCellEditor, ActionListener, PopupMenuListener {
 
     protected JComboBox<String> comboBoxPathChooser;
     protected int previousEmbeddedLevel = 0;
@@ -92,7 +93,7 @@ public abstract class PathChooserComboBoxCellEditor<T extends CayenneTableModel<
         });
         AutoCompletion.enable(comboBoxPathChooser, true, true);
         ((JComponent) comboBoxPathChooser.getEditor().getEditorComponent()).setBorder(null);
-        comboBoxPathChooser.setBorder(BorderFactory.createEmptyBorder(0,5,0,0));
+        comboBoxPathChooser.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
         comboBoxPathChooser.setRenderer(new PathChooserComboBoxCellRenderer());
         comboBoxPathChooser.addActionListener(this);
         comboBoxPathChooser.addPopupMenuListener(this);
@@ -102,7 +103,7 @@ public abstract class PathChooserComboBoxCellEditor<T extends CayenneTableModel<
         List<String> currentNodeChildren = new ArrayList<>(getChildren(getCurrentNode(pathString), pathString));
         comboBoxPathChooser.setModel(new DefaultComboBoxModel<>(currentNodeChildren.toArray(new String[0])));
         comboBoxPathChooser.setSelectedItem(pathString);
-        if(!pathString.isEmpty()) {
+        if (!pathString.isEmpty()) {
             comboBoxPathChooser.showPopup();
         }
     }
@@ -239,7 +240,7 @@ public abstract class PathChooserComboBoxCellEditor<T extends CayenneTableModel<
 
     private final class PathChooserComboBoxCellRenderer extends DefaultListCellRenderer {
 
-        private  final ImageIcon rightArrow = ModelerUtil.buildIcon("icon-arrow-closed.png");
+        private final ImageIcon rightArrow = ModelerUtil.buildIcon("icon-arrow-closed.png");
 
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index,
