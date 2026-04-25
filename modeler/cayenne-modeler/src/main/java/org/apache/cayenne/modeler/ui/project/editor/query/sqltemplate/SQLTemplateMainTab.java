@@ -31,7 +31,6 @@ import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.Comparators;
@@ -99,7 +98,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
             }
         };
 
-        properties = new SQLTemplateQueryPropertiesPanel(mediator);
+        properties = new SQLTemplateQueryPropertiesPanel(controller);
 
         // assemble
         CellConstraints cc = new CellConstraints();
@@ -127,7 +126,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
      * query is changed.
      */
     void initFromModel() {
-        QueryDescriptor query = mediator.getSelectedQuery();
+        QueryDescriptor query = controller.getSelectedQuery();
 
         if (query == null || !QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) {
             setVisible(false);
@@ -138,7 +137,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
         properties.initFromModel(query);
         comment.setText(getQueryComment(query));
 
-        DataMap map = mediator.getSelectedDataMap();
+        DataMap map = controller.getSelectedDataMap();
         ObjEntity[] roots = map.getObjEntities().toArray(new ObjEntity[0]);
 
         if (roots.length > 1) {
@@ -154,7 +153,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
 
     @Override
     protected QueryDescriptor getQuery() {
-        QueryDescriptor query = mediator.getSelectedQuery();
+        QueryDescriptor query = controller.getSelectedQuery();
         return (query != null && QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) ? query : null;
     }
 
@@ -170,10 +169,10 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
         QueryDescriptor template = getQuery();
         if (template != null) {
             // in case of null entity, set root to DataMap
-            Object root = entity != null ? entity : mediator.getSelectedDataMap();
+            Object root = entity != null ? entity : controller.getSelectedDataMap();
             template.setRoot(root);
 
-            mediator.fireQueryEvent(new QueryEvent(this, template));
+            controller.fireQueryEvent(new QueryEvent(this, template));
         }
     }
 
@@ -182,12 +181,12 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
         if (query == null) {
             return;
         }
-        ObjectInfo.putToMetaData(mediator.getApplication().getMetaData(), query, ObjectInfo.COMMENT, text);
-        mediator.fireQueryEvent(new QueryEvent(this, query));
+        ObjectInfo.putToMetaData(controller.getApplication().getMetaData(), query, ObjectInfo.COMMENT, text);
+        controller.fireQueryEvent(new QueryEvent(this, query));
     }
 
     private String getQueryComment(QueryDescriptor queryDescriptor) {
-        return ObjectInfo.getFromMetaData(mediator.getApplication().getMetaData(), queryDescriptor, ObjectInfo.COMMENT);
+        return ObjectInfo.getFromMetaData(controller.getApplication().getMetaData(), queryDescriptor, ObjectInfo.COMMENT);
     }
 
     final class LabelCapsRenderer extends DefaultListCellRenderer {

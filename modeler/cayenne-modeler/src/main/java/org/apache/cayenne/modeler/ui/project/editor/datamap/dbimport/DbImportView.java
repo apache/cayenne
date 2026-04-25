@@ -28,7 +28,7 @@ import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.ColorTreeRenderer;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.TransferableNode;
-import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.modeler.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 
 import javax.swing.*;
@@ -55,7 +55,7 @@ public class DbImportView extends JPanel {
     private DraggableTreePanel draggableTreePanel;
     private JProgressBar loadDbSchemaProgress;
     private JProgressBar reverseEngineeringProgress;
-    private CayenneAction.CayenneToolbarButton loadDbSchemaButton;
+    private ModelerAbstractAction.CayenneToolbarButton loadDbSchemaButton;
 
     private final ProjectController controller;
 
@@ -93,7 +93,7 @@ public class DbImportView extends JPanel {
         LoadDbSchemaAction loadDbSchemaAction = controller.getApplication().getActionManager().
                 getAction(LoadDbSchemaAction.class);
         loadDbSchemaAction.setDraggableTreePanel(draggableTreePanel);
-        loadDbSchemaButton = (CayenneAction.CayenneToolbarButton) loadDbSchemaAction.buildButton(0);
+        loadDbSchemaButton = (ModelerAbstractAction.CayenneToolbarButton) loadDbSchemaAction.buildButton(0);
         loadDbSchemaButton.setShowingText(false);
         loadDbSchemaButton.setText("Refresh DB Schema");
         treeToolbar.add(loadDbSchemaButton);
@@ -101,7 +101,7 @@ public class DbImportView extends JPanel {
         ReverseEngineeringAction reverseEngineeringAction = controller.getApplication().getActionManager().
                 getAction(ReverseEngineeringAction.class);
         reverseEngineeringAction.setView(this);
-        CayenneAction.CayenneToolbarButton reverseEngineeringButton = (CayenneAction.CayenneToolbarButton)
+        ModelerAbstractAction.CayenneToolbarButton reverseEngineeringButton = (ModelerAbstractAction.CayenneToolbarButton)
                 reverseEngineeringAction.buildButton(0);
         reverseEngineeringButton.setShowingText(true);
         reverseEngineeringButton.setText("Run Import");

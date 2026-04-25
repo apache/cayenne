@@ -61,7 +61,7 @@ public class ObjRelationshipInfoView extends JDialog{
     private final JTextField comment;
 
     public ObjRelationshipInfoView() {
-        super(Application.getFrame());
+        super(Application.getInstance().getFrameController().getView());
 
         this.cancelButton = new JButton("Cancel");
         this.saveButton = new JButton("Done");

@@ -187,7 +187,7 @@ public class ModelerDbLoaderContext {
         LOGGER.info("Exception on reverse engineering", Util.unwindException(th));
         isInterrupted = true;
         SwingUtilities.invokeLater(() -> JOptionPane
-                .showMessageDialog(Application.getFrame(), th.getMessage(), message, JOptionPane.ERROR_MESSAGE));
+                .showMessageDialog(projectController.getApplication().getFrameController().getView(), th.getMessage(), message, JOptionPane.ERROR_MESSAGE));
     }
 
     public boolean isInterrupted() {

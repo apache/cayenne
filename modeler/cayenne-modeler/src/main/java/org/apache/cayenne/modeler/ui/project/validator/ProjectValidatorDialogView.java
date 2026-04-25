@@ -27,7 +27,7 @@ import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.DisableValidationInspectionAction;
 import org.apache.cayenne.modeler.action.ShowValidationOptionAction;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
-import org.apache.cayenne.modeler.util.CayenneDialog;
+import org.apache.cayenne.modeler.swing.dialog.CayenneDialog;
 import org.apache.cayenne.validation.ValidationFailure;
 
 import javax.swing.*;
@@ -55,7 +55,7 @@ public class ProjectValidatorDialogView extends CayenneDialog {
     private List<ValidationFailure> validationObjects;
 
     public ProjectValidatorDialogView(ProjectValidatorDialogController controller) {
-        super(Application.getFrame(), "Validation Problems", false);
+        super(controller.getApplication().getFrameController().getView(), "Validation Problems", false);
 
         this.controller = controller;
         this.validationObjects = Collections.emptyList();

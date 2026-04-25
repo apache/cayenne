@@ -103,7 +103,7 @@ public class RemoveRelationshipAction extends RemoveAction implements MultipleOb
 
 		for (ObjRelationship rel : rels) {
 			entity.removeRelationship(rel.getName());
-			RelationshipEvent e = new RelationshipEvent(Application.getFrame(),
+			RelationshipEvent e = new RelationshipEvent(application.getFrameController().getView(),
 					rel, entity, MapEvent.REMOVE);
 			mediator.fireObjRelationshipEvent(e);
 		}
@@ -116,7 +116,7 @@ public class RemoveRelationshipAction extends RemoveAction implements MultipleOb
 			rels[i] = entity.getRelationship(rels[i].getName());
 			entity.removeRelationship(rels[i].getName());
 
-			RelationshipEvent e = new RelationshipEvent(Application.getFrame(),
+			RelationshipEvent e = new RelationshipEvent(application.getFrameController().getView(),
 					rels[i], entity, MapEvent.REMOVE);
 			mediator.fireDbRelationshipEvent(e);
 		}

@@ -26,7 +26,6 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.CallbackType;
 import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
 import org.apache.cayenne.modeler.undo.CreateCallbackMethodUndoableEdit;
-import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.util.Util;
 
 import java.awt.event.ActionEvent;
@@ -34,7 +33,7 @@ import java.awt.event.ActionEvent;
 /**
  * Action class for creating callback methods on ObjEntity
  */
-public class CreateCallbackMethodAction extends CayenneAction {
+public class CreateCallbackMethodAction extends ModelerAbstractAction {
 
     public CreateCallbackMethodAction(Application application) {
         super("Create callback method", application);

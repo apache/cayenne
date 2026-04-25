@@ -45,7 +45,7 @@ import org.apache.cayenne.modeler.action.dbimport.TreeManipulationAction;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.TransferableNode;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.ColorTreeRenderer;
-import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.modeler.action.ModelerAbstractAction;
 
 import javax.swing.DropMode;
 import javax.swing.JButton;
@@ -91,8 +91,8 @@ public class DraggableTreePanel extends JScrollPane {
     private final Map<Class<?>, List<Class<?>>> insertableLevels;
     private final Map<Class<?>, Class<? extends TreeManipulationAction>> actions;
 
-    private CayenneAction.CayenneToolbarButton moveButton;
-    private CayenneAction.CayenneToolbarButton moveInvertButton;
+    private ModelerAbstractAction.CayenneToolbarButton moveButton;
+    private ModelerAbstractAction.CayenneToolbarButton moveInvertButton;
     private ImportSourceTree importSourceTree;
 
     public DraggableTreePanel(ProjectController projectController, DbImportTree sourceTree, DbImportTree targetTree) {
@@ -165,7 +165,7 @@ public class DraggableTreePanel extends JScrollPane {
         action.setPanel(this);
         action.setSourceTree(sourceTree);
         action.setTargetTree(targetTree);
-        moveButton = (CayenneAction.CayenneToolbarButton) action.buildButton();
+        moveButton = (ModelerAbstractAction.CayenneToolbarButton) action.buildButton();
         moveButton.setShowingText(true);
         moveButton.setText(MOVE_BUTTON_LABEL);
         MoveInvertNodeAction actionInv = projectController.getApplication().getActionManager()
@@ -173,7 +173,7 @@ public class DraggableTreePanel extends JScrollPane {
         actionInv.setPanel(this);
         actionInv.setSourceTree(sourceTree);
         actionInv.setTargetTree(targetTree);
-        moveInvertButton = (CayenneAction.CayenneToolbarButton) actionInv.buildButton();
+        moveInvertButton = (ModelerAbstractAction.CayenneToolbarButton) actionInv.buildButton();
         moveInvertButton.setShowingText(true);
         moveInvertButton.setText(MOVE_INV_BUTTON_LABEL);
     }

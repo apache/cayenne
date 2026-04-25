@@ -22,7 +22,6 @@ package org.apache.cayenne.modeler.ui.project.editor.datanode.custom;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datanode.DataSourceEditorController;
-import org.apache.cayenne.modeler.util.TextBinder;
 
 
 public class CustomDataSourceEditorController extends DataSourceEditorController {
@@ -44,11 +43,11 @@ public class CustomDataSourceEditorController extends DataSourceEditorController
     protected void initFieldListeners() {
         this.view = new CustomDataSourceView();
 
-        TextBinder.bind(view.getFactoryName(), v -> {
+        view.getFactoryName().addCommitListener(v -> {
             setFactoryName(v);
             nodeChangeProcessor.run();
         });
-        TextBinder.bind(view.getLocationHint(), v -> {
+        view.getLocationHint().addCommitListener(v -> {
             getNode().setParameters(v);
             nodeChangeProcessor.run();
         });

@@ -25,10 +25,9 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.ModelerController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.unsavedchanges.UnsavedChangesDialog;
-import org.apache.cayenne.modeler.util.CayenneAction;
 
 
-public class ProjectAction extends CayenneAction {
+public class ProjectAction extends ModelerAbstractAction {
 
     public static String getActionName() {
         return "Close Project";
@@ -82,7 +81,7 @@ public class ProjectAction extends CayenneAction {
     public boolean checkSaveOnClose() {
         ProjectController projectController = getProjectController();
         if (projectController != null && projectController.isDirty()) {
-            UnsavedChangesDialog dialog = new UnsavedChangesDialog(Application.getFrame());
+            UnsavedChangesDialog dialog = new UnsavedChangesDialog(application.getFrameController().getView());
             dialog.show();
 
             if (dialog.shouldCancel()) {

@@ -34,7 +34,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 
-public class JCayenneTextPane extends JPanel {
+public class CayenneTextPane extends JPanel {
 
     protected Highlighter.HighlightPainter painter;
     private JTextPaneScrollable pane;
@@ -57,7 +57,7 @@ public class JCayenneTextPane extends JPanel {
         this.tooltipTextError = tooltipTextError;
     }
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JCayenneTextPane.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CayenneTextPane.class);
 
     public void setText(String text) {
         pane.setText(text);
@@ -108,11 +108,6 @@ public class JCayenneTextPane extends JPanel {
 
     /**
      * Return an int position at the given line number and symbol position in this line
-     * 
-     * @param posInLine int
-     * @param line int
-     * @return int
-     * @throws BadLocationException
      */
     public int getPosition(int line, int posInLine) throws BadLocationException {
         // translate lines to offsets
@@ -131,7 +126,7 @@ public class JCayenneTextPane extends JPanel {
         return position + posInLine;
     }
 
-    public JCayenneTextPane(TextSyntax syntax) {
+    public CayenneTextPane(TextSyntax syntax) {
         super();
 
         Dimension dimension = new Dimension(15, 15);
@@ -143,7 +138,7 @@ public class JCayenneTextPane extends JPanel {
         pane = new JTextPaneScrollable(new EditorKit(syntax)) {
             public void paint(Graphics g) {
                 super.paint(g);
-                JCayenneTextPane.this.repaint();
+                CayenneTextPane.this.repaint();
             }
         };
 

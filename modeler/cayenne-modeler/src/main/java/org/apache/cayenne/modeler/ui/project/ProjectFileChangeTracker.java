@@ -121,7 +121,7 @@ class ProjectFileChangeTracker extends Thread {
 
             SwingUtilities.invokeLater(() -> {
                 isShownRemoveDialog = true;
-                FileDeletedDialog dialog = new FileDeletedDialog(Application.getFrame());
+                FileDeletedDialog dialog = new FileDeletedDialog(controller.getApplication().getFrameController().getView());
                 dialog.show();
 
                 if (dialog.shouldSave()) {
@@ -137,7 +137,7 @@ class ProjectFileChangeTracker extends Thread {
     }
 
     private boolean showConfirmation(String message) {
-        int outcome = JOptionPane.showConfirmDialog(Application.getFrame(), message, "File changed", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        int outcome = JOptionPane.showConfirmDialog(controller.getApplication().getFrameController().getView(), message, "File changed", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         return outcome == JOptionPane.YES_OPTION;
     }
 

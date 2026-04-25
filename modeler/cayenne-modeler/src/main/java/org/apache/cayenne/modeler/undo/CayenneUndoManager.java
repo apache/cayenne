@@ -25,7 +25,7 @@ import javax.swing.undo.UndoableEdit;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.action.RedoAction;
 import org.apache.cayenne.modeler.action.UndoAction;
-import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.modeler.action.ModelerAbstractAction;
 
 public class CayenneUndoManager extends javax.swing.undo.UndoManager {
 
@@ -88,9 +88,9 @@ public class CayenneUndoManager extends javax.swing.undo.UndoManager {
     }
 
     private void updateUI() {
-        CayenneAction undoAction = application.getActionManager().getAction(UndoAction.class);
+        ModelerAbstractAction undoAction = application.getActionManager().getAction(UndoAction.class);
 
-        CayenneAction redoAction = application.getActionManager().getAction(RedoAction.class);
+        ModelerAbstractAction redoAction = application.getActionManager().getAction(RedoAction.class);
 
         undoAction.setEnabled(canUndo());
         redoAction.setEnabled(canRedo());

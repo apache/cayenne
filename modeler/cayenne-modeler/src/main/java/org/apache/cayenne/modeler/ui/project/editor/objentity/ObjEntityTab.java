@@ -42,7 +42,7 @@ import org.apache.cayenne.modeler.ui.project.editor.objentity.duplicates.Duplica
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ShowGraphEntityAction;
-import org.apache.cayenne.modeler.util.CellRenderers;
+import org.apache.cayenne.modeler.swing.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.ExpressionConvertor;
 import org.apache.cayenne.modeler.util.TextAdapter;
@@ -208,7 +208,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
 
                 if (duplicateAttributes != null && !duplicateAttributes.isEmpty()) {
                     DuplicatedAttributesDialog.showDialog(
-                            Application.getFrame(), duplicateAttributes, superEntity, entity);
+                            Application.getInstance().getFrameController().getView(), duplicateAttributes, superEntity, entity);
                     if (DuplicatedAttributesDialog.getResult().equals(DuplicatedAttributesDialog.CANCEL_RESULT)) {
                         superEntityCombo.setSelectedItem(entity.getSuperEntity());
                         superClassName.setText(entity.getSuperClassName());

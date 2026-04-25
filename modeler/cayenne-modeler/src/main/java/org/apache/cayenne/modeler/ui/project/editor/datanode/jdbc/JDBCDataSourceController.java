@@ -25,16 +25,15 @@ import org.apache.cayenne.modeler.ui.ModelerController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datanode.DataSourceEditorController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
-import org.apache.cayenne.modeler.util.TextBinder;
 import org.apache.cayenne.util.Util;
 
 import java.awt.*;
 
-public class JDBCDataSourceEditorController extends DataSourceEditorController {
+public class JDBCDataSourceController extends DataSourceEditorController {
 
     protected JDBCDataSourceView view;
 
-    public JDBCDataSourceEditorController(ProjectController parent, Runnable nodeChangeProcessor) {
+    public JDBCDataSourceController(ProjectController parent, Runnable nodeChangeProcessor) {
         super(parent, nodeChangeProcessor);
     }
 
@@ -56,23 +55,23 @@ public class JDBCDataSourceEditorController extends DataSourceEditorController {
     protected void initFieldListeners() {
         this.view = new JDBCDataSourceView();
 
-        TextBinder.bind(view.getUserName(), v -> {
+        view.getUserName().addCommitListener(v -> {
             getNode().getDataSourceDescriptor().setUserName(v);
             nodeChangeProcessor.run();
         });
-        TextBinder.bind(view.getPassword(), v -> {
+        view.getPassword().addCommitListener(v -> {
             getNode().getDataSourceDescriptor().setPassword(v);
             nodeChangeProcessor.run();
         });
-        TextBinder.bind(view.getUrl(), v -> {
+        view.getUrl().addCommitListener(v -> {
             getNode().getDataSourceDescriptor().setDataSourceUrl(v);
             nodeChangeProcessor.run();
         });
-        TextBinder.bind(view.getDriver(), v -> {
+        view.getDriver().addCommitListener(v -> {
             getNode().getDataSourceDescriptor().setJdbcDriver(v);
             nodeChangeProcessor.run();
         });
-        TextBinder.bind(view.getMaxConnections(), v -> {
+        view.getMaxConnections().addCommitListener(v -> {
             if (v != null) {
                 try {
                     getNode().getDataSourceDescriptor().setMaxConnections(Integer.parseInt(v));
@@ -81,7 +80,7 @@ public class JDBCDataSourceEditorController extends DataSourceEditorController {
                 }
             }
         });
-        TextBinder.bind(view.getMinConnections(), v -> {
+        view.getMinConnections().addCommitListener(v -> {
             if (v != null) {
                 try {
                     getNode().getDataSourceDescriptor().setMinConnections(Integer.parseInt(v));

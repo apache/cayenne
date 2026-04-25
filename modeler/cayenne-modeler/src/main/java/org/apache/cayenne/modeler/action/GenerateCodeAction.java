@@ -23,12 +23,11 @@ package org.apache.cayenne.modeler.action;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
-import org.apache.cayenne.modeler.util.CayenneAction;
 
 import java.awt.event.ActionEvent;
 
 
-public class GenerateCodeAction extends CayenneAction {
+public class GenerateCodeAction extends ModelerAbstractAction {
 
     public static String getActionName() {
         return "Generate Classes";

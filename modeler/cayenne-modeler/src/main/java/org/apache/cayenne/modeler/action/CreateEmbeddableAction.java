@@ -30,11 +30,10 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateEmbeddableUndoableEdit;
-import org.apache.cayenne.modeler.util.CayenneAction;
 
 import java.awt.event.ActionEvent;
 
-public class CreateEmbeddableAction extends CayenneAction {
+public class CreateEmbeddableAction extends ModelerAbstractAction {
 
     static void fireEmbeddableEvent(
             Object src,

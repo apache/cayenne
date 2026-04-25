@@ -21,26 +21,24 @@ package org.apache.cayenne.modeler.ui.project.editor.datanode;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
-import org.apache.cayenne.modeler.swing.text.JTextFieldUndoable;
+import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Font;
 
 public class DataNodeView extends JPanel {
 
-    protected JTextField dataNodeName;
+    protected CayenneUndoableTextField dataNodeName;
     protected JComboBox<String> factories;
     protected JPanel dataSourceDetail;
     protected CardLayout dataSourceDetailLayout;
-    protected JTextFieldUndoable customAdapter;
+    protected CayenneUndoableTextField customAdapter;
     protected JComboBox<String> localDataSources;
     protected JButton configLocalDataSources;
     protected JComboBox<String> schemaUpdateStrategy;
@@ -48,7 +46,7 @@ public class DataNodeView extends JPanel {
     public DataNodeView() {
 
         // create widgets
-        this.dataNodeName = new JTextFieldUndoable();
+        this.dataNodeName = new CayenneUndoableTextField();
 
         this.factories = WidgetFactory.createUndoableComboBox();
 
@@ -58,7 +56,7 @@ public class DataNodeView extends JPanel {
         this.dataSourceDetailLayout = new CardLayout();
         this.dataSourceDetail = new JPanel(dataSourceDetailLayout);
 
-        this.customAdapter = new JTextFieldUndoable();
+        this.customAdapter = new CayenneUndoableTextField();
 
         this.configLocalDataSources = new JButton("...");
         this.configLocalDataSources.setToolTipText("configure local DataSource");
@@ -100,7 +98,7 @@ public class DataNodeView extends JPanel {
         return schemaUpdateStrategy;
     }
 
-    public JTextField getDataNodeName() {
+    public CayenneUndoableTextField getDataNodeName() {
         return dataNodeName;
     }
 
@@ -124,7 +122,7 @@ public class DataNodeView extends JPanel {
         return configLocalDataSources;
     }
 
-    public JTextFieldUndoable getCustomAdapter() {
+    public CayenneUndoableTextField getCustomAdapter() {
         return customAdapter;
     }
 }

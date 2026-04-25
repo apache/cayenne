@@ -37,7 +37,7 @@ import org.apache.cayenne.modeler.action.RemoveAttributeRelationshipAction;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
-import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.modeler.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.swing.image.FilteredIconFactory;
 import org.slf4j.LoggerFactory;
@@ -65,7 +65,7 @@ public class DbEntityAttributeRelationshipTab extends JPanel implements DbEntity
 
         this.setLayout(new BorderLayout());
 
-        editButton = new CayenneAction.CayenneToolbarButton(null, 0);
+        editButton = new ModelerAbstractAction.CayenneToolbarButton(null, 0);
 
         attributePanel = new DbAttributePanel(controller, this);
         relationshipPanel = new DbRelationshipPanel(controller, this);

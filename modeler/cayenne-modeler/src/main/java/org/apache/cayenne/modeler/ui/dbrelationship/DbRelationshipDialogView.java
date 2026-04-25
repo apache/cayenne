@@ -38,8 +38,8 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
-import org.apache.cayenne.modeler.util.CayenneDialog;
-import org.apache.cayenne.modeler.util.CayenneTable;
+import org.apache.cayenne.modeler.swing.dialog.CayenneDialog;
+import org.apache.cayenne.modeler.swing.table.CayenneTable;
 
 /**
  * @since 4.2
@@ -63,7 +63,7 @@ public class DbRelationshipDialogView extends CayenneDialog {
     private boolean cancelPressed;
 
     public DbRelationshipDialogView() {
-        super(Application.getFrame(), "Create dbRelationship", true);
+        super(Application.getInstance().getFrameController().getView(), "Create dbRelationship", true);
 
         initView();
         this.pack();

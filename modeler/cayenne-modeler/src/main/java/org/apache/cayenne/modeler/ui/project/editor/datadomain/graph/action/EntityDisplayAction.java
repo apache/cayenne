@@ -28,17 +28,17 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.action.FindAction;
 import org.apache.cayenne.modeler.graph.GraphBuilder;
-import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.modeler.action.ModelerAbstractAction;
 
 /**
  * Action that displays one of the objects in main tree, and then fires another action (if specified)
  */
-public class EntityDisplayAction extends CayenneAction {
+public class EntityDisplayAction extends ModelerAbstractAction {
 
     /**
      * Action that will be performed after selection
      */
-    private CayenneAction delegate;
+    private ModelerAbstractAction delegate;
 
     private final GraphBuilder builder;
 
@@ -48,7 +48,7 @@ public class EntityDisplayAction extends CayenneAction {
         init();
     }
 
-    public EntityDisplayAction(GraphBuilder builder, CayenneAction delegate) {
+    public EntityDisplayAction(GraphBuilder builder, ModelerAbstractAction delegate) {
         super((String) delegate.getValue(Action.NAME), Application.getInstance());
         this.delegate = delegate;
         this.builder = builder;

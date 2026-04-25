@@ -19,14 +19,13 @@
 package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.util.CayenneAction;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-public class UndoAction extends CayenneAction {
+public class UndoAction extends ModelerAbstractAction {
 
     public UndoAction(Application application) {
         super("Undo", application);

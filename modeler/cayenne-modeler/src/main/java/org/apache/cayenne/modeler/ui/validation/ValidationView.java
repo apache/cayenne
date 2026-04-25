@@ -35,7 +35,7 @@ public class ValidationView extends JDialog {
     protected JButton closeButton;
 
     public ValidationView() {
-        super(Application.getFrame());
+        super(Application.getInstance().getFrameController().getView());
 
         this.closeButton = new JButton("Close");
 

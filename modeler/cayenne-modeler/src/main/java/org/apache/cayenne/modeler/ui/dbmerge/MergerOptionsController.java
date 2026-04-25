@@ -56,10 +56,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.io.File;
 import java.io.FileWriter;
@@ -84,7 +80,7 @@ public class MergerOptionsController extends ChildController<ProjectController> 
     protected MergerTokenSelectorController tokens;
     protected String defaultCatalog;
     protected String defaultSchema;
-    private MergerTokenFactoryProvider mergerTokenFactoryProvider;
+    private final MergerTokenFactoryProvider mergerTokenFactoryProvider;
 
     public MergerOptionsController(
             ProjectController parent,
@@ -118,41 +114,18 @@ public class MergerOptionsController extends ChildController<ProjectController> 
 
     protected void initController() {
 
-        view.getSql().getDocument().addDocumentListener(new DocumentListener() {
-
-            private void update() {
-                String s = view.getSql().getText();
-                textForSQL = s != null && s.isEmpty() ? null : s;
-            }
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                update();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                update();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-            }
-        });
+        view.getSql().addCommitListener(s -> textForSQL = s);
 
         view.getGenerateButton().addActionListener(e -> generateSchemaAction());
         view.getSaveSqlButton().addActionListener(e -> storeSQLAction());
         view.getCancelButton().addActionListener(e -> closeAction());
 
         // refresh SQL if different tables were selected
-        view.getTabs().addChangeListener(new ChangeListener() {
-
-            public void stateChanged(ChangeEvent e) {
-                if (view.getTabs().getSelectedIndex() == 1) {
-                    // this assumes that some tables where checked/unchecked... not very
-                    // efficient
-                    refreshGeneratorAction();
-                }
+        view.getTabs().addChangeListener(e -> {
+            if (view.getTabs().getSelectedIndex() == 1) {
+                // this assumes that some tables where checked/unchecked... not very
+                // efficient
+                refreshGeneratorAction();
             }
         });
     }
@@ -181,7 +154,7 @@ public class MergerOptionsController extends ChildController<ProjectController> 
             DataSource dataSource = connectionInfo.makeDataSource(getApplication().getClassLoadingService());
 
             DataMap dbImport;
-            try (Connection conn = dataSource.getConnection();) {
+            try (Connection conn = dataSource.getConnection()) {
                 dbImport = new DbLoader(adapter, conn,
                         config,
                         new LoggingDbLoaderDelegate(LoggerFactory.getLogger(DbLoader.class)),
@@ -362,9 +335,9 @@ public class MergerOptionsController extends ChildController<ProjectController> 
         ProjectController projectController = getProjectController();
         projectController.setDirty(true);
 
-        projectController.fireDataMapEvent(new DataMapEvent(Application.getFrame(),
+        projectController.fireDataMapEvent(new DataMapEvent(application.getFrameController().getView(),
                 dataMap, MapEvent.REMOVE));
-        projectController.fireDataMapEvent(new DataMapEvent(Application.getFrame(),
+        projectController.fireDataMapEvent(new DataMapEvent(application.getFrameController().getView(),
                 dataMap, MapEvent.ADD));
     }
 

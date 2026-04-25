@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.ui.project.tree;
 
 import org.apache.cayenne.map.Embeddable;
-import org.apache.cayenne.modeler.util.CellRenderers;
+import org.apache.cayenne.modeler.swing.CellRenderers;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.reflect.PropertyUtils;
 import org.apache.cayenne.resource.Resource;

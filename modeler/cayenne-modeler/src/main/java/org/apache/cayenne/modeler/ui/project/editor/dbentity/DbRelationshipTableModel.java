@@ -159,7 +159,7 @@ public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> 
                 if (reverse != null && reverse.isToDependentPK()) {
                     String message = "Unset reverse relationship's \"To Dep PK\" setting?";
                     int answer = JOptionPane.showConfirmDialog(
-                            Application.getFrame(),
+                            Application.getInstance().getFrameController().getView(),
                             message);
                     if (answer != JOptionPane.YES_OPTION) {
                         // no action needed

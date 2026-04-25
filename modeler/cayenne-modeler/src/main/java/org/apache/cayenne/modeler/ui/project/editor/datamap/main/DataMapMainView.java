@@ -36,7 +36,7 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.main.schema.SchemaUp
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.superclass.SuperclassUpdateController;
 import org.apache.cayenne.modeler.event.model.ProjectSavedEvent;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
-import org.apache.cayenne.modeler.util.CellRenderers;
+import org.apache.cayenne.modeler.swing.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.project.extension.info.ObjectInfo;

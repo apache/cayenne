@@ -27,7 +27,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.ui.ModelerFrame;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.util.CayenneDialog;
+import org.apache.cayenne.modeler.swing.dialog.CayenneDialog;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
 
 import javax.swing.JButton;
@@ -175,7 +175,8 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
             duplicatedAttributes.add(attributeInfo);
         }
 
-        attributesTable.setModel(new DuplicatedAttributeTableModel(getProjectController(), this, duplicatedAttributes));
+        ProjectController controller = Application.getInstance().getFrameController().getProjectController();
+        attributesTable.setModel(new DuplicatedAttributeTableModel(controller, this, duplicatedAttributes));
 
     }
 
@@ -197,8 +198,8 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
         /**
          * Constructor for CayenneTableModel.
          */
-        public DuplicatedAttributeTableModel(ProjectController mediator, Object eventSource, List objectList) {
-            super(mediator, eventSource, objectList);
+        public DuplicatedAttributeTableModel(ProjectController controller, Object eventSource, List objectList) {
+            super(controller, eventSource, objectList);
         }
 
         public void setUpdatedValueAt(Object newValue, int row, int column) {

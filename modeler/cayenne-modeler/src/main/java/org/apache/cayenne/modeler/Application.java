@@ -27,7 +27,6 @@ import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
 import org.apache.cayenne.modeler.ui.ModelerController;
-import org.apache.cayenne.modeler.ui.ModelerFrame;
 import org.apache.cayenne.modeler.ui.logconsole.LogConsoleController;
 import org.apache.cayenne.modeler.ui.preferences.classpath.ClasspathPreferencesController;
 import org.apache.cayenne.modeler.ui.preferences.general.GeneralPreferencesController;
@@ -86,11 +85,6 @@ public class Application {
 
     public static void setInstance(Application instance) {
         Application.instance = instance;
-    }
-
-    // static methods that should probably go away eventually...
-    public static ModelerFrame getFrame() {
-        return (ModelerFrame) getInstance().getFrameController().getView();
     }
 
     public Application() {
@@ -170,7 +164,7 @@ public class Application {
 
         // After prefs have been loaded, we can now show the console if needed
         logConsoleController.showConsoleIfNeeded();
-        getFrame().setVisible(true);
+        getFrameController().getView().setVisible(true);
 
         if (initialProject == null) {
             initialProject = initialProjectFromPreferences();
@@ -214,7 +208,7 @@ public class Application {
      * Reinitializes ModelerClassLoader from preferences.
      */
     public void initClassLoader() {
-        final FileClassLoadingService classLoader = new FileClassLoadingService();
+        FileClassLoadingService classLoader = new FileClassLoadingService();
 
         // init from preferences...
         Preferences classLoaderPreference = Application.getInstance().getPreferencesNode(

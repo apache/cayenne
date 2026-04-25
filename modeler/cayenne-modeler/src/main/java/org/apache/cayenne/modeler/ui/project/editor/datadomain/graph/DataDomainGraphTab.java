@@ -177,7 +177,7 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
             JOptionPane pane = new JOptionPane("Rebuilding graph from domain will cause all user"
                     + " changes to be lost. Continue?", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
 
-            JDialog dialog = pane.createDialog(Application.getFrame(), "Confirm Rebuild");
+            JDialog dialog = pane.createDialog(Application.getInstance().getFrameController().getView(), "Confirm Rebuild");
             dialog.setVisible(true);
 
             if (pane.getValue().equals(JOptionPane.YES_OPTION)) {

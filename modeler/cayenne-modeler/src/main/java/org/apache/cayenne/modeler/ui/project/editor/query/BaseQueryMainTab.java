@@ -25,9 +25,8 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.util.CellRenderers;
+import org.apache.cayenne.modeler.swing.CellRenderers;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
@@ -37,12 +36,13 @@ import org.apache.cayenne.validation.ValidationException;
 import javax.swing.*;
 
 public abstract class BaseQueryMainTab extends JPanel {
-    protected ProjectController mediator;
+
+    protected final ProjectController controller;
     protected TextAdapter name;
     protected JComboBox<ObjEntity> queryRoot;
 
-    protected BaseQueryMainTab(ProjectController mediator) {
-        this.mediator = mediator;
+    protected BaseQueryMainTab(ProjectController controller) {
+        this.controller = controller;
     }
 
     protected void initQueryRoot() {
@@ -65,8 +65,8 @@ public abstract class BaseQueryMainTab extends JPanel {
         return queryRoot;
     }
 
-    public ProjectController getMediator() {
-        return mediator;
+    public ProjectController getController() {
+        return controller;
     }
 
     /**
@@ -91,7 +91,7 @@ public abstract class BaseQueryMainTab extends JPanel {
             throw new ValidationException("SelectQuery name is required.");
         }
 
-        DataMap map = mediator.getSelectedDataMap();
+        DataMap map = controller.getSelectedDataMap();
         QueryDescriptor matchingQuery = map.getQueryDescriptor(newName);
 
         if (matchingQuery == null) {
@@ -106,7 +106,7 @@ public abstract class BaseQueryMainTab extends JPanel {
             if (ns instanceof EntityResolver) {
                 ((EntityResolver) ns).refreshMappingCache();
             }
-            mediator.fireQueryEvent(e);
+            controller.fireQueryEvent(e);
         } else if (matchingQuery != query) {
             // there is a query with the same name
             throw new ValidationException("There is another query named '"

@@ -24,7 +24,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.mvc.ChildController;
-import org.apache.cayenne.modeler.util.CellRenderers;
+import org.apache.cayenne.modeler.swing.CellRenderers;
 import org.apache.cayenne.modeler.swing.table.CheckBoxHeader;
 import org.apache.cayenne.modeler.swing.table.ImageRendererColumn;
 import org.apache.cayenne.modeler.util.ModelerUtil;

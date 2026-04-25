@@ -33,8 +33,7 @@ import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datanode.custom.CustomDataSourceEditorController;
-import org.apache.cayenne.modeler.ui.project.editor.datanode.jdbc.JDBCDataSourceEditorController;
-import org.apache.cayenne.modeler.util.TextBinder;
+import org.apache.cayenne.modeler.ui.project.editor.datanode.jdbc.JDBCDataSourceController;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.*;
@@ -173,7 +172,7 @@ public class DataNodeController extends ChildController<ProjectController> {
             parent.getSelectedDataNodePreferences().setLocalDataSource(key);
         });
 
-        TextBinder.bind(view.getDataNodeName(), v -> {
+        view.getDataNodeName().addCommitListener(v -> {
             if (node == null) return;
             String oldName = node.getName();
             try {
@@ -186,7 +185,7 @@ public class DataNodeController extends ChildController<ProjectController> {
             parent.fireDataNodeEvent(e);
         });
 
-        TextBinder.bind(view.getCustomAdapter(), v -> {
+        view.getCustomAdapter().addCommitListener(v -> {
             if (node == null) return;
             setAdapterName(v);
             parent.fireDataNodeEvent(new DataNodeEvent(DataNodeController.this, node));
@@ -274,7 +273,7 @@ public class DataNodeController extends ChildController<ProjectController> {
         // create subview dynamically...
         if (c == null) {
             if (DataSourceFactoryType.CAYENNE.getLabel().equals(factoryName)) {
-                c = new JDBCDataSourceEditorController(parent, nodeChangeProcessor);
+                c = new JDBCDataSourceController(parent, nodeChangeProcessor);
             } else {
                 // special case - no detail view, just show it and bail..
                 defaultSubeditor.setNode(node);

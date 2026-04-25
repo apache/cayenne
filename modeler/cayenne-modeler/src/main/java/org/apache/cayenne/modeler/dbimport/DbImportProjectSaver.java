@@ -46,8 +46,8 @@ public class DbImportProjectSaver implements ProjectSaver {
     public void save(Project project) {
 
         DataMap dataMap = (DataMap) project.getRootNode();
-        projectController.fireDataMapEvent(new DataMapEvent(Application.getFrame(), dataMap, MapEvent.REMOVE));
-        projectController.fireDataMapEvent(new DataMapEvent(Application.getFrame(), dataMap, MapEvent.ADD));
+        projectController.fireDataMapEvent(new DataMapEvent(projectController.getApplication().getFrameController().getView(), dataMap, MapEvent.REMOVE));
+        projectController.fireDataMapEvent(new DataMapEvent(projectController.getApplication().getFrameController().getView(), dataMap, MapEvent.ADD));
     }
 
     @Override

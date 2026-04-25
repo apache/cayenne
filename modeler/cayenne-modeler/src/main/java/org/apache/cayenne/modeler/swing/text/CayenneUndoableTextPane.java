@@ -16,26 +16,32 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.modeler.swing.text;
 
-package org.apache.cayenne.modeler.action;
+import org.apache.cayenne.modeler.swing.text.syntax.TextSyntax;
+import org.apache.cayenne.modeler.undo.JTextFieldUndoListener;
 
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.about.AboutDialog;
+import javax.swing.event.UndoableEditListener;
 
-import java.awt.event.ActionEvent;
+public class CayenneUndoableTextPane extends CayenneTextPane {
 
-public class AboutAction extends ModelerAbstractAction {
+    private UndoableEditListener undoListener;
 
-    public AboutAction(Application application) {
-        super("About CayenneModeler", application);
+    public CayenneUndoableTextPane(TextSyntax syntax) {
+        super(syntax);
+
+        this.undoListener = new JTextFieldUndoListener(this.getPane());
+        getDocument().addUndoableEditListener(this.undoListener);
     }
 
     @Override
-    public void performAction(ActionEvent e) {
-        showAboutDialog();
-    }
+    public void setText(String t) {
+        getDocument().removeUndoableEditListener(this.undoListener);
 
-    public void showAboutDialog() {
-        new AboutDialog();
+        try {
+            super.setText(t);
+        } finally {
+            getDocument().addUndoableEditListener(this.undoListener);
+        }
     }
 }

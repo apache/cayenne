@@ -123,7 +123,7 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
             entity.removeAttribute(attrib.getName());
 
             AttributeEvent e = new AttributeEvent(
-                    Application.getFrame(),
+                    application.getFrameController().getView(),
                     attrib,
                     entity,
                     MapEvent.REMOVE);
@@ -140,7 +140,7 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
         for (ObjAttribute attrib : attribs) {
             entity.removeAttribute(attrib.getName());
             AttributeEvent e = new AttributeEvent(
-                    Application.getFrame(),
+                    application.getFrameController().getView(),
                     attrib,
                     entity,
                     MapEvent.REMOVE);
@@ -158,8 +158,7 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
 
         for (EmbeddableAttribute attrib : attrs) {
             embeddable.removeAttribute(attrib.getName());
-            EmbeddableAttributeEvent e = new EmbeddableAttributeEvent(Application
-                    .getFrame(), attrib, embeddable, MapEvent.REMOVE);
+            EmbeddableAttributeEvent e = new EmbeddableAttributeEvent(application.getFrameController().getView(), attrib, embeddable, MapEvent.REMOVE);
             mediator.fireEmbeddableAttributeEvent(e);
         }
     }

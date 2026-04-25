@@ -28,7 +28,6 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.entitysync.EntitySyncController;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
-import org.apache.cayenne.modeler.util.CayenneAction;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,7 +39,7 @@ import java.awt.event.KeyEvent;
  * DbEntity.
  * 
  */
-public class ObjEntitySyncAction extends CayenneAction {
+public class ObjEntitySyncAction extends ModelerAbstractAction {
 
     public static String getActionName() {
         return "Sync ObjEntity with DbEntity";
@@ -59,7 +58,7 @@ public class ObjEntitySyncAction extends CayenneAction {
     }
 
     /**
-     * @see org.apache.cayenne.modeler.util.CayenneAction#performAction(ActionEvent)
+     * @see ModelerAbstractAction#performAction(ActionEvent)
      */
     public void performAction(ActionEvent e) {
         syncObjEntity();

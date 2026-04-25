@@ -30,7 +30,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
-import org.apache.cayenne.modeler.util.CayenneDialog;
+import org.apache.cayenne.modeler.swing.dialog.CayenneDialog;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 
 public class MavenDependencyDialogView extends CayenneDialog {

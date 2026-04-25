@@ -18,6 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action;
 
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.pref.FSPath;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.DataDomainGraphTab;
+import org.apache.cayenne.modeler.util.FileFilters;
+import org.jgraph.JGraph;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -25,23 +36,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.imageio.ImageIO;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.DataDomainGraphTab;
-import org.apache.cayenne.modeler.pref.FSPath;
-import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.modeler.util.FileFilters;
-import org.slf4j.Logger;
-import org.jgraph.JGraph;
-import org.slf4j.LoggerFactory;
-
 /**
  * Action for saving graph as image
  */
-public class SaveAsImageAction extends CayenneAction {
+public class SaveAsImageAction extends ModelerAbstractAction {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SaveAsImageAction.class);
 
 	private final DataDomainGraphTab dataDomainGraphTab;
@@ -60,7 +58,7 @@ public class SaveAsImageAction extends CayenneAction {
 	@Override
 	public void performAction(ActionEvent e) {
 		// find start directory in preferences
-		FSPath lastDir = getApplication().getFrameController().getLastDirectory();
+		FSPath lastDir = application.getFrameController().getLastDirectory();
 
 		// configure dialog
 		JFileChooser chooser = new JFileChooser();
@@ -72,7 +70,7 @@ public class SaveAsImageAction extends CayenneAction {
 		String ext = "png";
 		chooser.addChoosableFileFilter(FileFilters.getExtensionFileFilter(ext, "PNG Images"));
 
-		int status = chooser.showSaveDialog(Application.getFrame());
+		int status = chooser.showSaveDialog(application.getFrameController().getView());
 		if (status == JFileChooser.APPROVE_OPTION) {
 			lastDir.updateFromChooser(chooser);
 
@@ -104,7 +102,7 @@ public class SaveAsImageAction extends CayenneAction {
 
 			} catch (IOException ex) {
 				LOGGER.error("Could not save image", ex);
-				JOptionPane.showMessageDialog(Application.getFrame(), "Could not save image.", "Error saving image",
+				JOptionPane.showMessageDialog(application.getFrameController().getView(), "Could not save image.", "Error saving image",
 						JOptionPane.ERROR_MESSAGE);
 			}
 		}

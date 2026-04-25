@@ -21,11 +21,10 @@ package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.util.CayenneAction;
 
 import java.awt.event.ActionEvent;
 
-public abstract class NavigateAction extends CayenneAction {
+public abstract class NavigateAction extends ModelerAbstractAction {
 
     protected NavigateAction(String name, Application application) {
         super(name, application);

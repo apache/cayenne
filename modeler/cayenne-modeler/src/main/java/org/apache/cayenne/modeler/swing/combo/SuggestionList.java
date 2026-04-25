@@ -18,69 +18,61 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.swing.combo;
 
-import java.awt.Color;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.swing.CellRenderers;
+
+import javax.swing.*;
+import javax.swing.event.MouseInputAdapter;
+import javax.swing.plaf.basic.BasicComboPopup;
+import java.awt.*;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import javax.swing.BorderFactory;
-import javax.swing.ComboBoxModel;
-import javax.swing.DefaultListModel;
-import javax.swing.JComboBox;
-import javax.swing.event.MouseInputAdapter;
-import javax.swing.plaf.basic.BasicComboPopup;
-
-import org.apache.cayenne.modeler.util.CellRenderers;
-
 /**
  * SuggestionList is a combo-popup displaying all items matching for
  * autocompletion.
- * 
+ *
  */
 public class SuggestionList extends BasicComboPopup {
+
     /**
      * 'Strict' matching, i.e. whether 'startWith' or 'contains' function
-     * should be used for checking match 
+     * should be used for checking match
      */
     protected boolean strict;
-    
-    /**
-     * Creates a strict suggestion-popup for a combobox
-     */
-    public SuggestionList(JComboBox cb) {
-       this(cb, false); 
-    }
-    
-    /**
-     * Creates a suggestion-popup for a combobox
-     */
+
     public SuggestionList(JComboBox cb, boolean strict) {
         super(cb);
-        
+
         this.strict = strict;
         list.addMouseListener(new MouseHandler());
         setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
     }
-    
+
     /**
      * 'Filters' the list, leaving only matching items
+     *
      * @param prefix user-typed string, used to filter
      */
     public void filter(String prefix) {
         ComboBoxModel model = comboBox.getModel();
         DefaultListModel lm = new DefaultListModel();
-        
+
         for (int i = 0; i < model.getSize(); i++) {
-            String item = CellRenderers.asString(model.getElementAt(i));
-            
+            String item = CellRenderers.asString(
+                    model.getElementAt(i),
+                    // TODO: Application should not be accessed in this scope
+                    Application.getInstance().getFrameController().getProjectController().getSelectedDataMap());
+
             if (matches(item, prefix)) {
                 lm.addElement(model.getElementAt(i));
             }
         }
-        
+
         list.setModel(lm);
     }
-    
+
     /**
      * Checks if an item matches input pattern
      */
@@ -91,11 +83,11 @@ public class SuggestionList extends BasicComboPopup {
             return item.toLowerCase().contains(pattern.toLowerCase());
         }
     }
-    
+
     /**
      * Retrieves the height of the popup based on the current
      * ListCellRenderer and the maximum row count.
-     * 
+     * <p>
      * Overrriden to count for local list size
      */
     @Override
@@ -109,14 +101,14 @@ public class SuggestionList extends BasicComboPopup {
     public int getSelectedIndex() {
         return list.getSelectedIndex();
     }
-    
+
     /**
      * @return selected item in popup
      */
     public Object getSelectedValue() {
         return list.getSelectedValue();
     }
-    
+
     /**
      * Selects an item in list
      */
@@ -124,41 +116,42 @@ public class SuggestionList extends BasicComboPopup {
         list.setSelectedIndex(i);
         comboBox.setSelectedItem(list.getModel().getElementAt(i));
     }
-    
+
     /**
      * @return current suggestions count
      */
     public int getItemCount() {
         return list.getModel().getSize();
     }
-    
+
     /**
      * @return an item from the list
      */
     public Object getItemAt(int i) {
         return list.getModel().getElementAt(i);
     }
-    
+
     @Override
     public MouseListener createListMouseListener() {
         return new MouseHandler();
     }
-    
+
     /**
      * We don't want items in the list be automatically selected at all
      */
     @Override
     protected ItemListener createItemListener() {
-        return e -> {};
+        return e -> {
+        };
     }
-    
+
     /**
      * @return Whether match-check is 'strict'
      */
     public boolean isStrict() {
         return strict;
     }
-    
+
     protected class MouseHandler extends MouseInputAdapter {
         @Override
         public void mouseReleased(MouseEvent e) {
@@ -169,7 +162,7 @@ public class SuggestionList extends BasicComboPopup {
             if (comboBox.isEditable() && comboBox.getEditor() != null) {
                 comboBox.configureEditor(comboBox.getEditor(), comboBox.getSelectedItem());
             }
-            
+
             hide();
         }
     }

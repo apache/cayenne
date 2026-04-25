@@ -89,10 +89,10 @@ public class ReverseEngineeringAction extends DBConnectionAwareAction {
         }
 
         try {
-            context.setConnection(connectionInfo.makeDataSource(getApplication().getClassLoadingService()).getConnection());
+            context.setConnection(connectionInfo.makeDataSource(application.getClassLoadingService()).getConnection());
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(
-                    Application.getFrame(),
+                    application.getFrameController().getView(),
                     ex.getMessage(),
                     "Error loading schemas dialog",
                     JOptionPane.ERROR_MESSAGE);
@@ -142,7 +142,7 @@ public class ReverseEngineeringAction extends DBConnectionAwareAction {
 
     private void runLoaderInThread(final ModelerDbLoaderContext context, final Runnable callback) {
         Thread th = new Thread(() -> {
-            new DbImportTask(Application.getFrame(), "Reengineering DB", context).startAndWait();
+            new DbImportTask(application.getFrameController().getView(), "Reengineering DB", context).startAndWait();
             SwingUtilities.invokeLater(callback);
         });
         th.start();

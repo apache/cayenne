@@ -35,7 +35,7 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportTre
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportView;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DraggableTreePanel;
 import org.apache.cayenne.modeler.undo.DbImportTreeUndoableEdit;
-import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.modeler.action.ModelerAbstractAction;
 
 import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
@@ -47,7 +47,7 @@ import java.util.regex.Matcher;
 /**
  * @since 4.1
  */
-public class MoveImportNodeAction extends CayenneAction {
+public class MoveImportNodeAction extends ModelerAbstractAction {
 
     private static final String ICON_NAME = "icon-backward.png";
     private static final String ACTION_NAME = "Include";

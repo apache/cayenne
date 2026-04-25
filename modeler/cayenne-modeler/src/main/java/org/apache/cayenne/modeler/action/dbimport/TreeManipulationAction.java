@@ -32,7 +32,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportTree;
 import org.apache.cayenne.modeler.undo.DbImportTreeUndoableEdit;
-import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.modeler.action.ModelerAbstractAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +48,7 @@ import java.util.Map;
 /**
  * @since 4.1
  */
-public abstract class TreeManipulationAction extends CayenneAction {
+public abstract class TreeManipulationAction extends ModelerAbstractAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TreeManipulationAction.class);
 

@@ -34,7 +34,7 @@ import org.apache.cayenne.modeler.action.RemoveAttributeRelationshipAction;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
-import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.modeler.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.swing.image.FilteredIconFactory;
 import org.slf4j.LoggerFactory;
@@ -61,7 +61,7 @@ public class ObjEntityAttributeRelationshipTab extends JPanel implements ObjEnti
     public ObjEntityAttributeRelationshipTab(ProjectController controller) {
         this.setLayout(new BorderLayout());
 
-        this.editButton = new CayenneAction.CayenneToolbarButton(null, 0);
+        this.editButton = new ModelerAbstractAction.CayenneToolbarButton(null, 0);
         attributePanel = new ObjAttributePanel(controller, this);
         relationshipPanel = new ObjRelationshipPanel(controller, this);
 

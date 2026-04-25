@@ -21,26 +21,20 @@ package org.apache.cayenne.modeler.action;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.autorelationship.InferRelationshipsController;
-import org.apache.cayenne.modeler.util.CayenneAction;
 
 import java.awt.event.ActionEvent;
 
+public class InferRelationshipsAction extends ModelerAbstractAction {
 
-public class InferRelationshipsAction extends CayenneAction {
-    
-    /**
-     * Constructor for ShowLogConsoleAction.
-     */
     public InferRelationshipsAction(Application application) {
         super("Infer Relationships", application);
     }
-    
+
     @Override
     public void performAction(ActionEvent e) {
         DataMap dataMap = getProjectController().getSelectedDataMap();
         if (dataMap != null) {
-            new InferRelationshipsController(getApplication().getFrameController(), dataMap)
-                    .startup();
+            new InferRelationshipsController(application.getFrameController(), dataMap).startup();
         }
     }
 }

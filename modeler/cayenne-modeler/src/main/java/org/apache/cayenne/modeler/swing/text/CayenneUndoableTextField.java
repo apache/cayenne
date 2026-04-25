@@ -16,33 +16,34 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.util;
+package org.apache.cayenne.modeler.swing.text;
+
+import org.apache.cayenne.modeler.undo.JTextFieldUndoListener;
 
 import javax.swing.event.UndoableEditListener;
 
-import org.apache.cayenne.modeler.undo.JTextFieldUndoListener;
-import org.apache.cayenne.modeler.swing.text.JCayenneTextPane;
-import org.apache.cayenne.modeler.swing.text.syntax.TextSyntax;
+public class CayenneUndoableTextField extends CayenneTextField {
 
-public class JUndoableCayenneTextPane extends JCayenneTextPane {
+    private final UndoableEditListener undoListener;
 
-    private UndoableEditListener undoListener;
+    public CayenneUndoableTextField() {
+        this.undoListener = new JTextFieldUndoListener(this);
+        this.getDocument().addUndoableEditListener(this.undoListener);
+    }
 
-    public JUndoableCayenneTextPane(TextSyntax syntax) {
-        super(syntax);
-
-        this.undoListener = new JTextFieldUndoListener(this.getPane());
-        getDocument().addUndoableEditListener(this.undoListener);
+    public CayenneUndoableTextField(int columns) {
+        super(columns);
+        this.undoListener = new JTextFieldUndoListener(this);
+        this.getDocument().addUndoableEditListener(this.undoListener);
     }
 
     @Override
     public void setText(String t) {
-        getDocument().removeUndoableEditListener(this.undoListener);
-
+        this.getDocument().removeUndoableEditListener(this.undoListener);
         try {
             super.setText(t);
         } finally {
-            getDocument().addUndoableEditListener(this.undoListener);
+            this.getDocument().addUndoableEditListener(this.undoListener);
         }
     }
 }

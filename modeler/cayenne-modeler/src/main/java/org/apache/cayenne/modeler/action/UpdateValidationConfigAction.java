@@ -25,7 +25,6 @@ import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 import org.apache.cayenne.modeler.undo.UpdateValidationConfigUndoableEdit;
-import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.validation.ValidationConfig;
 
 import java.awt.event.ActionEvent;
@@ -35,7 +34,7 @@ import java.awt.event.ActionEvent;
  *
  * @since 5.0
  */
-public class UpdateValidationConfigAction extends CayenneAction {
+public class UpdateValidationConfigAction extends ModelerAbstractAction {
 
     private static final String CONFIG_PARAM = "config";
 

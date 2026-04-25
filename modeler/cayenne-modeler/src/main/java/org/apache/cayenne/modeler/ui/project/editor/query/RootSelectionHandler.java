@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.project.editor.query;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.modeler.util.CellRenderers;
+import org.apache.cayenne.modeler.swing.CellRenderers;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,7 +33,8 @@ import java.awt.event.FocusListener;
  * Handler to user's actions with root selection combobox
  */
 class RootSelectionHandler implements FocusListener, ActionListener {
-    private String newName = null;
+
+    private String newName;
     private boolean needChangeName;
     private final BaseQueryMainTab queryTab;
 
@@ -44,7 +45,7 @@ class RootSelectionHandler implements FocusListener, ActionListener {
     public void actionPerformed(ActionEvent ae) {
         QueryDescriptor query = queryTab.getQuery();
         if (query != null) {
-            Entity<?,?,?> root = (Entity<?,?,?>) queryTab.getQueryRoot().getModel().getSelectedItem();
+            Entity<?, ?, ?> root = (Entity<?, ?, ?>) queryTab.getQueryRoot().getModel().getSelectedItem();
 
             if (root != null) {
                 query.setRoot(root);
@@ -56,7 +57,7 @@ class RootSelectionHandler implements FocusListener, ActionListener {
                     String newPrefix = root.getName() + "Query";
                     newName = newPrefix;
 
-                    DataMap map = queryTab.getMediator().getSelectedDataMap();
+                    DataMap map = queryTab.getController().getSelectedDataMap();
                     long postfix = 1;
 
                     while (map.getQueryDescriptor(newName) != null) {
@@ -93,12 +94,12 @@ class RootSelectionHandler implements FocusListener, ActionListener {
     /**
      * @return whether specified's query name is 'default' i.e. Cayenne generated
      * A query's name is 'default' if it starts with 'UntitledQuery' or with root name.
-     *
+     * <p>
      * We cannot follow user input because tab might be opened many times
      */
     boolean hasDefaultName(QueryDescriptor query) {
         String prefix = query.getRoot() == null ? "UntitledQuery" :
-            CellRenderers.asString(query.getRoot()) + "Query";
+                CellRenderers.asString(query.getRoot(), queryTab.getController().getSelectedDataMap()) + "Query";
 
         return queryTab.getNameField().getComponent().getText().startsWith(prefix);
     }

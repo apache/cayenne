@@ -26,6 +26,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.action.ActionManager;
+import org.apache.cayenne.modeler.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.action.MultipleObjectsAction;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.reflect.PropertyUtils;
@@ -189,7 +190,7 @@ public final class ModelerUtil {
             if (action instanceof MultipleObjectsAction) {
                 MultipleObjectsAction multiObjectAction = (MultipleObjectsAction) action;
                 multiObjectAction.setEnabled(numSelected > 0);
-                ((CayenneAction) multiObjectAction).setName(multiObjectAction.getActionName(numSelected > 1));
+                ((ModelerAbstractAction) multiObjectAction).setName(multiObjectAction.getActionName(numSelected > 1));
             }
         }
     }

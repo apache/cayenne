@@ -18,28 +18,28 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.action;
 
+import org.apache.cayenne.modeler.Application;
+
 import java.awt.event.ActionEvent;
 
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.util.CayenneAction;
+public class CollapseTreeAction extends ModelerAbstractAction {
+    private final static String COLLAPSE = "collapse";
 
-public class CollapseTreeAction extends CayenneAction {
-	private final static String COLLAPSE = "collapse";
-	
-	public static String getActionName() {
-		return "Collapse tree";
-	}
-	 
-	public String getIconName() {
-		return "icon-tree-collapse.png";
-	}
+    public static String getActionName() {
+        return "Collapse tree";
+    }
 
-	public CollapseTreeAction(Application application) {
-		super(getActionName(), application);
-	}
+    @Override
+    public String getIconName() {
+        return "icon-tree-collapse.png";
+    }
 
-	@Override
-	public void performAction(ActionEvent e) {
-		getApplication().getFrameController().getProjectController().getView().getFilterController().treeExpOrCollPath(COLLAPSE);
-	}
+    public CollapseTreeAction(Application application) {
+        super(getActionName(), application);
+    }
+
+    @Override
+    public void performAction(ActionEvent e) {
+        application.getFrameController().getProjectController().getView().getFilterController().treeExpOrCollPath(COLLAPSE);
+    }
 }

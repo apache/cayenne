@@ -25,13 +25,12 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.undo.LinkDataMapUndoableEdit;
-import org.apache.cayenne.modeler.util.CayenneAction;
 
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class LinkDataMapAction extends CayenneAction {
+public class LinkDataMapAction extends ModelerAbstractAction {
 
     public LinkDataMapAction(Application application) {
         super("Link DataMap", application);

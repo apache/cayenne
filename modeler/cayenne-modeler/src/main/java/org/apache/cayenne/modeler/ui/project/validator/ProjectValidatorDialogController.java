@@ -59,7 +59,7 @@ public class ProjectValidatorDialogController extends ChildController<ProjectCon
     }
 
     public static void showOnSuccess() {
-        JOptionPane.showMessageDialog(Application.getFrame(), "Cayenne project is valid.");
+        JOptionPane.showMessageDialog(Application.getInstance().getFrameController().getView(), "Cayenne project is valid.");
     }
 
     void onClose() {
@@ -72,7 +72,7 @@ public class ProjectValidatorDialogController extends ChildController<ProjectCon
     }
 
     void onFailedObjectSelected(ValidationFailure failure) {
-        ValidationDisplayHandler.getErrorMsg(failure).displayField(parent, Application.getFrame());
+        ValidationDisplayHandler.getErrorMsg(failure).displayField(parent, application.getFrameController().getView());
     }
 
     void onSelectionChanged(ValidationFailure failure) {

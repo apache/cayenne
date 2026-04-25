@@ -18,13 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.swing.combo;
 
-import java.lang.reflect.Method;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.swing.CellRenderers;
 
-import javax.swing.ComboBoxModel;
-import javax.swing.JComboBox;
+import javax.swing.*;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
-
-import org.apache.cayenne.modeler.util.CellRenderers;
+import java.lang.reflect.Method;
 
 /**
  * CustomTypeComboBoxEditor is used as an editor of a combobox, when
@@ -32,54 +32,30 @@ import org.apache.cayenne.modeler.util.CellRenderers;
  * cannot be used, because it converts String values to other types
  * incorrectly (in fact, only classes with valueOf(String) methods
  * are supported).
- * 
  */
 public class CustomTypeComboBoxEditor extends BasicComboBoxEditor {
-    /**
-     * 'oldValue' property is private somewhy, so we make our local
-     * copy
-     */
+
     protected Object localOldValue;
-    
-    /**
-     * The combobox being edited
-     */
     protected final JComboBox combo;
-    
-    /**
-     * Whether non-present items are allowed
-     */
     protected final boolean allowsUserValues;
-    
-    /**
-     * Creates new editor
-     * @param combo ComboBox being edited
-     */
+
     public CustomTypeComboBoxEditor(JComboBox combo, boolean allowsUserValues) {
-        editor = new EditorTextField(combo);
+        this.editor = new EditorTextField(combo);
         this.combo = combo;
         this.allowsUserValues = allowsUserValues;
     }
-    
-    /** 
-     * Sets the item that should be edited. 
-     *
-     * @param anObject the displayed value of the editor
-     */
+
     @Override
     public void setItem(Object anObject) {
         localOldValue = anObject;
-        super.setItem(anObject == null ? null : CellRenderers.asString(anObject));
+        super.setItem(anObject == null ? null : CellRenderers.asString(anObject, selectedDataMap()));
     }
-    
-    /**
-     * @return edited item
-     */
+
     @Override
     public Object getItem() {
         Object newValue = editor.getText();
-        
-        if (localOldValue != null && !(localOldValue instanceof String))  {
+
+        if (localOldValue != null && !(localOldValue instanceof String)) {
             // The original value is not a string. Should return the value in it's
             // original type.
             if (newValue.equals(localOldValue.toString())) {
@@ -88,66 +64,66 @@ public class CustomTypeComboBoxEditor extends BasicComboBoxEditor {
                 // Must take the value from the editor and get the value and cast it to the new type.
                 Class cls = localOldValue.getClass();
                 try {
-                    newValue = convert((String)newValue, cls);
+                    newValue = convert((String) newValue, cls);
+                } catch (Exception ignored) {
                 }
-                catch (Exception ignored) {}
             }
         }
-        
+
         if (!allowsUserValues && newValue != null) {
             boolean contains = false;
-            
+
             for (int i = 0; i < combo.getItemCount(); i++) {
                 if (newValue.equals(combo.getItemAt(i))) {
                     contains = true;
                     break;
                 }
             }
-                   
+
             if (!contains) {
                 return null;
             }
         }
-        
+
         return newValue;
     }
-    
+
     /**
      * Converts String value to specified type
-     *
-     * @param value String value of textfield
-     * @param classTo type of result item
-     * 
-     * @return value of classTo type, or null if conversion is impossible
      */
     protected Object convert(String value, Class<?> classTo) {
         if (classTo == String.class) {
             return value;
         }
-        
+
         /*
          * We still try to it in BasicComboBox's way, so that primary object
-         * types (such as numbers) would still be supported 
+         * types (such as numbers) would still be supported
          */
         try {
             Method method = classTo.getMethod("valueOf", String.class);
             return method.invoke(null, value);
-        } catch (Exception ignored) {}
-        
+        } catch (Exception ignored) {
+        }
+
         /*
          * We could manually convert strings to dbentities, attrs and other, but
-         * in this implementation we use reverse operation instead, and convert 
+         * in this implementation we use reverse operation instead, and convert
          * combobox model's items to String.
          * All string values are assumed unique is one model.
          */
         ComboBoxModel model = combo.getModel();
         for (int i = 0; i < model.getSize(); i++) {
-            if (value.equals(CellRenderers.asString(model.getElementAt(i)))) {
+            if (value.equals(CellRenderers.asString(model.getElementAt(i), selectedDataMap()))) {
                 return model.getElementAt(i);
             }
         }
-        
-        //we return null, since String will not be appreciated
+
         return null;
+    }
+
+    // TODO: dependency on Application is out of place
+    private static DataMap selectedDataMap() {
+        return Application.getInstance().getFrameController().getProjectController().getSelectedDataMap();
     }
 }

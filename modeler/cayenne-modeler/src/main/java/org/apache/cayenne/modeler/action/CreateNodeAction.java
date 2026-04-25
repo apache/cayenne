@@ -32,11 +32,10 @@ import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateNodeUndoableEdit;
-import org.apache.cayenne.modeler.util.CayenneAction;
 
 import java.awt.event.ActionEvent;
 
-public class CreateNodeAction extends CayenneAction {
+public class CreateNodeAction extends ModelerAbstractAction {
 
     public static void createDataNode(Object src, ProjectController controller, DataNodeDescriptor node) {
         DataChannelDescriptor domain = (DataChannelDescriptor) controller.getProject().getRootNode();

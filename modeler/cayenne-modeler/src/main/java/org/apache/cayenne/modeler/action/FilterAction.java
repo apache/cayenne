@@ -20,12 +20,11 @@ package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.tree.treefilter.TreeFilterPopup;
-import org.apache.cayenne.modeler.util.CayenneAction;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
-public class FilterAction extends CayenneAction {
+public class FilterAction extends ModelerAbstractAction {
 
     public static String getActionName() {
         return "Filter tree";
@@ -43,7 +42,7 @@ public class FilterAction extends CayenneAction {
     @Override
     public void performAction(ActionEvent e) {
         JButton source = (JButton) e.getSource();
-        TreeFilterPopup dialog = getApplication()
+        TreeFilterPopup dialog = application
                 .getFrameController()
                 .getProjectController()
                 .getView()

@@ -25,7 +25,7 @@ import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.modeler.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.swing.MultiColumnBrowser;
@@ -99,7 +99,7 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
 
         Preferences detail = Application.getInstance().getPreferencesNode(this.getClass(), "");
 
-        int defLocation = Application.getFrame().getHeight() / 2;
+        int defLocation = Application.getInstance().getFrameController().getView().getHeight() / 2;
         int location = detail != null ? detail.getInt(
                 getDividerLocationProperty(),
                 defLocation) : defLocation;
@@ -193,14 +193,14 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
 
     protected JComponent createToolbar() {
 
-        JButton add = new CayenneAction.CayenneToolbarButton(null, 1);
+        JButton add = new ModelerAbstractAction.CayenneToolbarButton(null, 1);
         add.setText("Add Ordering");
         Icon addIcon = ModelerUtil.buildIcon("icon-plus.png");
         add.setIcon(addIcon);
         add.setDisabledIcon(FilteredIconFactory.createDisabledIcon(addIcon));
         add.addActionListener(e -> addOrdering());
 
-        JButton remove = new CayenneAction.CayenneToolbarButton(null, 3);
+        JButton remove = new ModelerAbstractAction.CayenneToolbarButton(null, 3);
         remove.setText("Remove Ordering");
         Icon removeIcon = ModelerUtil.buildIcon("icon-trash.png");
         remove.setIcon(removeIcon);

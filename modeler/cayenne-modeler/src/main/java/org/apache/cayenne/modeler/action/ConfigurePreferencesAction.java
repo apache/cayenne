@@ -19,14 +19,13 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.preferences.PreferenceDialogController;
-import org.apache.cayenne.modeler.util.CayenneAction;
+
+import java.awt.event.ActionEvent;
 
 
-public class ConfigurePreferencesAction extends CayenneAction {
+public class ConfigurePreferencesAction extends ModelerAbstractAction {
 
     public static String getActionName() {
         return "Preferences";
@@ -41,7 +40,7 @@ public class ConfigurePreferencesAction extends CayenneAction {
     }
 
     public void showPreferencesDialog() {
-        new PreferenceDialogController(getApplication().getFrameController()).showGeneralEditorAction();
+        new PreferenceDialogController(application.getFrameController()).showGeneralEditorAction();
     }
     
 }

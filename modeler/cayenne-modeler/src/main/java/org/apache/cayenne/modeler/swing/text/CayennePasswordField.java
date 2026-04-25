@@ -17,40 +17,47 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util;
+package org.apache.cayenne.modeler.swing.text;
 
-import javax.swing.*;
+import javax.swing.InputVerifier;
+import javax.swing.JComponent;
+import javax.swing.JPasswordField;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * Utility for wiring Swing text components to model setters using default content update rules.
- * <p>
- * For {@link JTextField}: registers both an {@code ActionListener} (fires on Enter) and an {@code InputVerifier}
- * (fires on focus loss) so every commit path is covered.
- * <p>
- * For {@link JTextArea}: registers a {@code DocumentListener} that fires on every character change.
- * <p>
- * Empty strings are normalized to {@code null} before the consumer is called.
+ * A {@link JPasswordField} that fires registered commit listeners on Enter (action) or
+ * focus loss (input verifier). Empty strings are normalized to {@code null} before listeners
+ * are notified.
  *
  * @since 5.0
  */
-public final class TextBinder {
+public class CayennePasswordField extends JPasswordField {
 
-    private TextBinder() {
-    }
+    private final List<Consumer<String>> commitListeners;
 
-    public static void bind(JTextField field, Consumer<String> onCommit) {
-        field.addActionListener(e -> onCommit.accept(nullIfEmpty(field.getText())));
-        field.setInputVerifier(new InputVerifier() {
+    public CayennePasswordField() {
+        commitListeners = new ArrayList<>(2);
+        addActionListener(e -> fireCommit());
+        setInputVerifier(new InputVerifier() {
             @Override
             public boolean verify(JComponent c) {
-                onCommit.accept(nullIfEmpty(field.getText()));
+                fireCommit();
                 return true;
             }
         });
     }
 
-    private static String nullIfEmpty(String s) {
-        return (s != null && s.isEmpty()) ? null : s;
+    public void addCommitListener(Consumer<String> listener) {
+        commitListeners.add(listener);
+    }
+
+    private void fireCommit() {
+        String text = getText();
+        String value = (text != null && text.isEmpty()) ? null : text;
+        for (Consumer<String> listener : commitListeners) {
+            listener.accept(value);
+        }
     }
 }

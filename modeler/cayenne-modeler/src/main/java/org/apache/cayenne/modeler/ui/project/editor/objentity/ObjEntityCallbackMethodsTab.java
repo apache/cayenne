@@ -38,8 +38,8 @@ import org.apache.cayenne.modeler.event.model.CallbackMethodListener;
 import org.apache.cayenne.modeler.event.display.CallbackTypeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
-import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.modeler.util.CayenneTable;
+import org.apache.cayenne.modeler.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.swing.table.CayenneTable;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -188,7 +188,7 @@ public class ObjEntityCallbackMethodsTab extends JPanel {
         return null;
     }
 
-    private CayenneAction getCreateCallbackMethodAction() {
+    private ModelerAbstractAction getCreateCallbackMethodAction() {
         return Application.getInstance().getActionManager().getAction(CreateCallbackMethodAction.class);
     }
 

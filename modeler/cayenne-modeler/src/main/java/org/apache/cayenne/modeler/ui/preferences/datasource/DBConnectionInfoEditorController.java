@@ -23,7 +23,6 @@ import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.mvc.RootController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.DbAdapterInfo;
-import org.apache.cayenne.modeler.util.TextBinder;
 
 import javax.swing.*;
 import java.awt.*;
@@ -49,28 +48,23 @@ public class DBConnectionInfoEditorController extends ChildController<RootContro
         view.getAdapters().setModel(adapterModel);
         view.getAdapters().setSelectedIndex(0);
 
-        TextBinder.bind(view.getUserName(), v -> {
-            DBConnectionInfo ci = connectionInfo;
-            if (ci != null) ci.setUserName(v);
+        view.getUserName().addCommitListener(v -> {
+            if (connectionInfo != null) connectionInfo.setUserName(v);
         });
-        TextBinder.bind(view.getPassword(), v -> {
-            DBConnectionInfo ci = connectionInfo;
-            if (ci != null) ci.setPassword(v);
+        view.getPassword().addCommitListener(v -> {
+            if (connectionInfo != null) connectionInfo.setPassword(v);
         });
-        TextBinder.bind(view.getDriver(), v -> {
-            DBConnectionInfo ci = connectionInfo;
-            if (ci != null) ci.setJdbcDriver(v);
+        view.getDriver().addCommitListener(v -> {
+            if (connectionInfo != null) connectionInfo.setJdbcDriver(v);
         });
-        TextBinder.bind(view.getUrl(), v -> {
-            DBConnectionInfo ci = connectionInfo;
-            if (ci != null) ci.setUrl(v);
+        view.getUrl().addCommitListener(v -> {
+            if (connectionInfo != null) connectionInfo.setUrl(v);
         });
 
         view.getAdapters().addActionListener(e -> {
-            DBConnectionInfo ci = connectionInfo;
-            if (ci != null) {
+            if (connectionInfo != null) {
                 Object sel = view.getAdapters().getSelectedItem();
-                ci.setDbAdapter("Automatic".equals(sel) ? null : (String) sel);
+                connectionInfo.setDbAdapter("Automatic".equals(sel) ? null : (String) sel);
             }
         });
     }

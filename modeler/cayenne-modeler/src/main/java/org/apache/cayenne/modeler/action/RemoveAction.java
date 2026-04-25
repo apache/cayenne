@@ -60,7 +60,6 @@ import org.apache.cayenne.modeler.undo.RemoveCallbackMethodUndoableEdit;
 import org.apache.cayenne.modeler.undo.RemoveCompoundUndoableEdit;
 import org.apache.cayenne.modeler.undo.RemoveRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.RemoveUndoableEdit;
-import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 
 import javax.swing.*;
@@ -77,7 +76,7 @@ import java.util.Collection;
  * Removes currently selected object from the project. This can be Domain, DataNode,
  * Entity, Attribute or Relationship.
  */
-public class RemoveAction extends CayenneAction {
+public class RemoveAction extends ModelerAbstractAction {
 
     public RemoveAction(Application application) {
         super("Remove", application);
@@ -215,7 +214,7 @@ public class RemoveAction extends CayenneAction {
         ProjectController mediator = getProjectController();
         for (ProcedureParameter parameter : parameters) {
             procedure.removeCallParameter(parameter.getName());
-            ProcedureParameterEvent e = new ProcedureParameterEvent(Application.getFrame(), parameter, MapEvent.REMOVE);
+            ProcedureParameterEvent e = new ProcedureParameterEvent(application.getFrameController().getView(), parameter, MapEvent.REMOVE);
             mediator.fireProcedureParameterEvent(e);
         }
     }
@@ -233,7 +232,7 @@ public class RemoveAction extends CayenneAction {
 
                 for (EmbeddableAttribute attrib : embAttrs) {
                     embeddable.removeAttribute(attrib.getName());
-                    EmbeddableAttributeEvent e = new EmbeddableAttributeEvent(Application.getFrame(),
+                    EmbeddableAttributeEvent e = new EmbeddableAttributeEvent(application.getFrameController().getView(),
                             attrib, embeddable, MapEvent.REMOVE);
                     mediator.fireEmbeddableAttributeEvent(e);
                 }
@@ -256,7 +255,7 @@ public class RemoveAction extends CayenneAction {
 
                 for (ObjAttribute attrib : objAttrs) {
                     entity.removeAttribute(attrib.getName());
-                    AttributeEvent e = new AttributeEvent(Application.getFrame(), attrib, entity, MapEvent.REMOVE);
+                    AttributeEvent e = new AttributeEvent(application.getFrameController().getView(), attrib, entity, MapEvent.REMOVE);
                     mediator.fireObjAttributeEvent(e);
                 }
 
@@ -277,7 +276,7 @@ public class RemoveAction extends CayenneAction {
 
                 for (DbAttribute attrib : dbAttrs) {
                     entity.removeAttribute(attrib.getName());
-                    AttributeEvent e = new AttributeEvent(Application.getFrame(), attrib, entity, MapEvent.REMOVE);
+                    AttributeEvent e = new AttributeEvent(application.getFrameController().getView(), attrib, entity, MapEvent.REMOVE);
                     controller.fireDbAttributeEvent(e);
                 }
 
@@ -294,7 +293,7 @@ public class RemoveAction extends CayenneAction {
 				
 				for (DbRelationship rel : dbRels) {
 					entity.removeRelationship(rel.getName());
-					RelationshipEvent e = new RelationshipEvent(Application.getFrame(), rel, entity, MapEvent.REMOVE);
+					RelationshipEvent e = new RelationshipEvent(application.getFrameController().getView(), rel, entity, MapEvent.REMOVE);
 					controller.fireDbRelationshipEvent(e);
 				}
 
@@ -310,7 +309,7 @@ public class RemoveAction extends CayenneAction {
 			ObjEntity entity = controller.getSelectedObjEntity();
 			for (ObjRelationship rel : rels) {
 				entity.removeRelationship(rel.getName());
-				RelationshipEvent e = new RelationshipEvent(Application.getFrame(), rel, entity, MapEvent.REMOVE);
+				RelationshipEvent e = new RelationshipEvent(application.getFrameController().getView(), rel, entity, MapEvent.REMOVE);
 				controller.fireObjRelationshipEvent(e);
 			}
 			Application.getInstance().getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(entity, rels));
@@ -341,7 +340,7 @@ public class RemoveAction extends CayenneAction {
 	public void removeDataMap(DataMap map) {
         ProjectController mediator = getProjectController();
         DataChannelDescriptor domain = (DataChannelDescriptor) mediator.getProject().getRootNode();
-        DataMapEvent e = new DataMapEvent(Application.getFrame(), map, MapEvent.REMOVE);
+        DataMapEvent e = new DataMapEvent(application.getFrameController().getView(), map, MapEvent.REMOVE);
         e.setDomain((DataChannelDescriptor) mediator.getProject().getRootNode());
 
         domain.getDataMaps().remove(map);
@@ -363,7 +362,7 @@ public class RemoveAction extends CayenneAction {
     public void removeDataNode(DataNodeDescriptor node) {
         ProjectController mediator = getProjectController();
         DataChannelDescriptor domain = (DataChannelDescriptor) mediator.getProject().getRootNode();
-        DataNodeEvent e = new DataNodeEvent(Application.getFrame(), node, MapEvent.REMOVE);
+        DataNodeEvent e = new DataNodeEvent(application.getFrameController().getView(), node, MapEvent.REMOVE);
         e.setDomain((DataChannelDescriptor) mediator.getProject().getRootNode());
 
         domain.getNodeDescriptors().remove(node);
@@ -376,7 +375,7 @@ public class RemoveAction extends CayenneAction {
     public void removeDbEntity(DataMap map, DbEntity ent) {
         ProjectController mediator = getProjectController();
 
-        EntityEvent e = new EntityEvent(Application.getFrame(), ent, MapEvent.REMOVE);
+        EntityEvent e = new EntityEvent(application.getFrameController().getView(), ent, MapEvent.REMOVE);
         e.setDomain((DataChannelDescriptor) mediator.getProject().getRootNode());
 
         map.removeDbEntity(ent.getName(), true);
@@ -389,7 +388,7 @@ public class RemoveAction extends CayenneAction {
     public void removeQuery(DataMap map, QueryDescriptor query) {
         ProjectController mediator = getProjectController();
 
-        QueryEvent e = new QueryEvent(Application.getFrame(), query, MapEvent.REMOVE, map);
+        QueryEvent e = new QueryEvent(application.getFrameController().getView(), query, MapEvent.REMOVE, map);
         e.setDomain((DataChannelDescriptor) mediator.getProject().getRootNode());
 
         map.removeQueryDescriptor(query.getName());
@@ -402,7 +401,7 @@ public class RemoveAction extends CayenneAction {
     public void removeProcedure(DataMap map, Procedure procedure) {
         ProjectController mediator = getProjectController();
 
-        ProcedureEvent e = new ProcedureEvent(Application.getFrame(), procedure, MapEvent.REMOVE);
+        ProcedureEvent e = new ProcedureEvent(application.getFrameController().getView(), procedure, MapEvent.REMOVE);
         e.setDomain((DataChannelDescriptor) mediator.getProject().getRootNode());
 
         map.removeProcedure(procedure.getName());
@@ -415,7 +414,7 @@ public class RemoveAction extends CayenneAction {
     public void removeObjEntity(DataMap map, ObjEntity entity) {
         ProjectController mediator = getProjectController();
 
-        EntityEvent e = new EntityEvent(Application.getFrame(), entity, MapEvent.REMOVE);
+        EntityEvent e = new EntityEvent(application.getFrameController().getView(), entity, MapEvent.REMOVE);
         e.setDomain((DataChannelDescriptor) mediator.getProject().getRootNode());
 
         map.removeObjEntity(entity.getName(), true);
@@ -439,7 +438,7 @@ public class RemoveAction extends CayenneAction {
     public void removeEmbeddable(DataMap map, Embeddable embeddable) {
         ProjectController mediator = getProjectController();
 
-        EmbeddableEvent e = new EmbeddableEvent(Application.getFrame(), embeddable, MapEvent.REMOVE);
+        EmbeddableEvent e = new EmbeddableEvent(application.getFrameController().getView(), embeddable, MapEvent.REMOVE);
         e.setDomain((DataChannelDescriptor) mediator.getProject().getRootNode());
 
         map.removeEmbeddable(embeddable.getClassName());
@@ -449,7 +448,7 @@ public class RemoveAction extends CayenneAction {
     public void removeDataMapFromDataNode(DataNodeDescriptor node, DataMap map) {
         ProjectController mediator = getProjectController();
 
-        DataNodeEvent e = new DataNodeEvent(Application.getFrame(), node);
+        DataNodeEvent e = new DataNodeEvent(application.getFrameController().getView(), node);
         e.setDomain((DataChannelDescriptor) mediator.getProject().getRootNode());
 
         node.getDataMapNames().remove(map.getName());

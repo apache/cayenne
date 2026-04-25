@@ -247,7 +247,7 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
             case MAP_FROM_NODE: {
                 this.dataNode.getDataMapNames().add(map.getName());
                 ProjectController controller = Application.getInstance().getFrameController().getProjectController();
-                DataNodeEvent e = new DataNodeEvent(Application.getFrame(), this.dataNode);
+                DataNodeEvent e = new DataNodeEvent(Application.getInstance().getFrameController().getView(), this.dataNode);
                 e.setDomain((DataChannelDescriptor) controller.getProject().getRootNode());
                 controller.fireDataNodeEvent(e);
                 break;

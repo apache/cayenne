@@ -36,7 +36,6 @@ import org.apache.cayenne.modeler.action.dbimport.EditNodeAction;
 import org.apache.cayenne.modeler.action.dbimport.MoveImportNodeAction;
 import org.apache.cayenne.modeler.action.dbimport.MoveInvertNodeAction;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ShowGraphEntityAction;
-import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.ConfigurationNodeParentGetter;
 
 import javax.swing.*;
@@ -266,7 +265,7 @@ public class DefaultActionManager implements ActionManager {
         registerAction(new DisableValidationInspectionAction(application));
     }
 
-    private CayenneAction registerAction(CayenneAction action) {
+    private ModelerAbstractAction registerAction(ModelerAbstractAction action) {
         actionMap.put(action.getClass().getName(), action);
         return action;
     }
@@ -345,7 +344,7 @@ public class DefaultActionManager implements ActionManager {
 
         updateActions("Selected Objects");
 
-        CayenneAction cutAction = getAction(CutAction.class);
+        ModelerAbstractAction cutAction = getAction(CutAction.class);
         boolean canCopy = true; // cut/copy can be performed if selected objects are on
         // the same level
 

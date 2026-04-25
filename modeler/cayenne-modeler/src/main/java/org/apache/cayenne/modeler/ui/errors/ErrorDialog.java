@@ -22,12 +22,14 @@ package org.apache.cayenne.modeler.ui.errors;
 
 import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.ui.ModelerFrame;
-import org.apache.cayenne.modeler.util.CayenneDialog;
+import org.apache.cayenne.modeler.util.BrowserControl;
+import org.apache.cayenne.modeler.swing.dialog.CayenneDialog;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.util.LocalizedStringsHandler;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -70,7 +72,11 @@ class ErrorDialog extends CayenneDialog implements ActionListener {
         infoText.setBackground(pane.getBackground());
         infoText.setEditable(false);
         // popup hyperlinks
-        infoText.addHyperlinkListener(this);
+        infoText.addHyperlinkListener(e -> {
+            if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                BrowserControl.displayURL(e.getURL().toExternalForm());
+            }
+        });
 
         JPanel infoPanel = new JPanel();
         infoPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));

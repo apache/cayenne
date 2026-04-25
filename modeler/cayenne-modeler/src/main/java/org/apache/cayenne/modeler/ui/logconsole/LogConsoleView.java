@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.logconsole;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 
-import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.modeler.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.swing.border.TopBorder;
 
@@ -77,17 +77,17 @@ public class LogConsoleView extends JPanel {
         buttonsBar.setBorder(BorderFactory.createEmptyBorder());
         buttonsBar.setFloatable(false);
 
-        copyItem = new CayenneAction.CayenneToolbarButton(null, 0);
+        copyItem = new ModelerAbstractAction.CayenneToolbarButton(null, 0);
         copyItem.setIcon(ModelerUtil.buildIcon("icon-copy.png"));
         copyItem.setText("Copy");
         buttonsBar.add(copyItem);
 
-        clearItem = new CayenneAction.CayenneToolbarButton(null, 0);
+        clearItem = new ModelerAbstractAction.CayenneToolbarButton(null, 0);
         clearItem.setIcon(ModelerUtil.buildIcon("icon-trash.png"));
         clearItem.setText("Clear");
         buttonsBar.add(clearItem);
 
-        dockItem = new CayenneAction.CayenneToolbarButton(null, 0);
+        dockItem = new ModelerAbstractAction.CayenneToolbarButton(null, 0);
         setDocked(false);
         buttonsBar.add(dockItem);
 

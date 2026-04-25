@@ -26,7 +26,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeModel;
-import org.apache.cayenne.modeler.util.CayenneAction;
 
 import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
@@ -34,7 +33,7 @@ import java.awt.event.ActionEvent;
 /**
  * @since 4.0
  */
-public abstract class BaseViewEntityAction extends CayenneAction {
+public abstract class BaseViewEntityAction extends ModelerAbstractAction {
 
     abstract protected Entity<?, ?, ?> getEntity();
 
@@ -43,7 +42,7 @@ public abstract class BaseViewEntityAction extends CayenneAction {
     }
 
     /**
-     * @see org.apache.cayenne.modeler.util.CayenneAction#performAction(ActionEvent)
+     * @see ModelerAbstractAction#performAction(ActionEvent)
      */
     @Override
     public void performAction(ActionEvent e) {

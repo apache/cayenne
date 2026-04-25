@@ -43,7 +43,7 @@ import org.apache.cayenne.modeler.event.model.ProjectOnSaveEvent;
 import org.apache.cayenne.modeler.event.model.ProjectOnSaveListener;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
-import org.apache.cayenne.modeler.util.CayenneTable;
+import org.apache.cayenne.modeler.swing.table.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.modeler.util.DbAttributePathComboBoxEditor;
 import org.apache.cayenne.modeler.util.DbAttributePathComboBoxRenderer;
@@ -264,7 +264,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
                         JOptionPane.QUESTION_MESSAGE,
                         JOptionPane.YES_NO_OPTION);
 
-                JDialog dialog = pane.createDialog(Application.getFrame(), "Confirm Remove");
+                JDialog dialog = pane.createDialog(Application.getInstance().getFrameController().getView(), "Confirm Remove");
                 dialog.setVisible(true);
 
                 boolean shouldDelete;

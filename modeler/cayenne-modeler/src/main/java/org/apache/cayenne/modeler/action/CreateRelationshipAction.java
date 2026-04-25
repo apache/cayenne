@@ -34,12 +34,11 @@ import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.dbrelationship.DbRelationshipDialogController;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.relinfo.ObjRelationshipInfoController;
 import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
-import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 
 import java.awt.event.ActionEvent;
 
-public class CreateRelationshipAction extends CayenneAction {
+public class CreateRelationshipAction extends ModelerAbstractAction {
 
     /**
      * Fires events when a obj rel was added
@@ -78,7 +77,7 @@ public class CreateRelationshipAction extends CayenneAction {
     }
 
     /**
-     * @see org.apache.cayenne.modeler.util.CayenneAction#performAction(ActionEvent)
+     * @see ModelerAbstractAction#performAction(ActionEvent)
      */
     @Override
     public void performAction(ActionEvent e) {

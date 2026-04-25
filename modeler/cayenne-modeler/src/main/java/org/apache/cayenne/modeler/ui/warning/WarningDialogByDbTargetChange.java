@@ -51,7 +51,7 @@ public class WarningDialogByDbTargetChange {
         Collection<ObjAttribute> fObjAttributesForDbRelationship = ProjectUtil
                 .findObjAttributesForDbRelationship(mediator, relationship);
         if (fObjAttributesForDbRelationship.isEmpty() && objRelationshipsForDbRelationship.isEmpty()) {
-            result = JOptionPane.showConfirmDialog(Application.getFrame(), "Changing target entity will reset all joins.",
+            result = JOptionPane.showConfirmDialog(Application.getInstance().getFrameController().getView(), "Changing target entity will reset all joins.",
                     "Warning", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
             return (result == JOptionPane.OK_OPTION);
         }
@@ -82,7 +82,7 @@ public class WarningDialogByDbTargetChange {
         }
 
         dialogPanel.add(scrollPane, BorderLayout.SOUTH);
-        result = JOptionPane.showConfirmDialog(Application.getFrame(), dialogPanel,
+        result = JOptionPane.showConfirmDialog(Application.getInstance().getFrameController().getView(), dialogPanel,
                 "Warning", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         return (result == JOptionPane.OK_OPTION);
     }

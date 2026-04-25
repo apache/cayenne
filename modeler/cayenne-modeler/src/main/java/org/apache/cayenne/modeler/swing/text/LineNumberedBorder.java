@@ -18,21 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.swing.text;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Insets;
-import javax.swing.JTextPane;
+import javax.swing.*;
 import javax.swing.border.AbstractBorder;
 import javax.swing.text.Document;
+import java.awt.*;
 
 public class LineNumberedBorder extends AbstractBorder {
 	private int etalon;
 	private int lineNumberWidth;
-	private JCayenneTextPane pane;
+	private CayenneTextPane pane;
 
-	public LineNumberedBorder(JCayenneTextPane pane) {
+	public LineNumberedBorder(CayenneTextPane pane) {
 		setEtalon(10);
 		this.pane = pane;
 	}

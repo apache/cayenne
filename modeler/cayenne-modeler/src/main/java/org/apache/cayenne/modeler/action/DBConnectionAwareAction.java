@@ -24,7 +24,6 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.datasource.DataSourceController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
-import org.apache.cayenne.modeler.util.CayenneAction;
 
 import static org.apache.cayenne.modeler.pref.DBConnectionInfo.*;
 
@@ -34,7 +33,7 @@ import static org.apache.cayenne.modeler.pref.DBConnectionInfo.*;
  *
  * @since 4.2
  */
-public abstract class DBConnectionAwareAction extends CayenneAction {
+public abstract class DBConnectionAwareAction extends ModelerAbstractAction {
 
     public DBConnectionAwareAction(String name, Application application) {
         super(name, application);

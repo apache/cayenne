@@ -28,14 +28,13 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.querytype.QueryTypeController;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
-import org.apache.cayenne.modeler.util.CayenneAction;
 
 import java.awt.event.ActionEvent;
 
 /**
  * @since 1.1
  */
-public class CreateQueryAction extends CayenneAction {
+public class CreateQueryAction extends ModelerAbstractAction {
 
     public CreateQueryAction(Application application) {
         super("Create Query", application);

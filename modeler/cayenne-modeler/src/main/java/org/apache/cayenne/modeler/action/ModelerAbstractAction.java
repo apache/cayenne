@@ -18,7 +18,7 @@
  ****************************************************************/
 
 
-package org.apache.cayenne.modeler.util;
+package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
@@ -26,6 +26,7 @@ import org.apache.cayenne.modeler.ui.ModelerFrame;
 import org.apache.cayenne.modeler.ui.errors.ErrorsController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
+import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.modeler.swing.image.FilteredIconFactory;
 import org.apache.cayenne.util.Util;
@@ -34,19 +35,19 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 /**
- * Superclass of CayenneModeler actions that implements support for some common
- * functionality, exception handling, etc.
+ * Superclass of CayenneModeler actions that implements support for some common functionality, exception handling,
+ * etc.
  */
-public abstract class CayenneAction extends AbstractAction {
+public abstract class ModelerAbstractAction extends AbstractAction {
 
     protected boolean alwaysOn;
     protected Application application;
 
-    public CayenneAction(String name, Application application) {
+    public ModelerAbstractAction(String name, Application application) {
         this(name, application, name);
     }
 
-    public CayenneAction(String name, Application application, String shortDescription) {
+    public ModelerAbstractAction(String name, Application application, String shortDescription) {
         super(name);
         super.putValue(Action.DEFAULT, name);
 
@@ -67,10 +68,6 @@ public abstract class CayenneAction extends AbstractAction {
         }
 
         setEnabled(false);
-    }
-
-    public Application getApplication() {
-        return application;
     }
 
     protected Project getCurrentProject() {

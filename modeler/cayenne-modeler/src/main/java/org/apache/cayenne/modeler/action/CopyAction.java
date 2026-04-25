@@ -34,7 +34,6 @@ import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.ObjCallbackMethod;
-import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.swing.CayenneTransferable;
 
 import javax.swing.*;
@@ -46,7 +45,7 @@ import java.awt.event.KeyEvent;
 /**
  * Action for copying entities, queries etc. into system buffer
  */
-public class CopyAction extends CayenneAction {
+public class CopyAction extends ModelerAbstractAction {
 
     public static String getActionName() {
         return "Copy";
@@ -91,7 +90,7 @@ public class CopyAction extends CayenneAction {
         }
 
         // update paste button
-        getApplication().getActionManager().getAction(PasteAction.class).updateState();
+        application.getActionManager().getAction(PasteAction.class).updateState();
     }
 
     /**

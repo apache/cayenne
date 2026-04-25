@@ -107,7 +107,7 @@ public class OpenProjectAction extends ProjectAction {
         if (f == null) {
             try {
                 // Get the project file name (always cayenne.xml)
-                f = fileChooser.openProjectFile(Application.getFrame());
+                f = fileChooser.openProjectFile(application.getFrameController().getView());
             } catch (Exception ex) {
                 LOGGER.warn("Error loading project file.", ex);
             }
@@ -132,7 +132,7 @@ public class OpenProjectAction extends ProjectAction {
         try {
             if (!file.exists()) {
                 JOptionPane.showMessageDialog(
-                        Application.getFrame(),
+                        application.getFrameController().getView(),
                         "Can't open project - file \"" + file.getPath() + "\" does not exist",
                         "Can't Open Project",
                         JOptionPane.ERROR_MESSAGE);
@@ -145,7 +145,7 @@ public class OpenProjectAction extends ProjectAction {
             URL url = file.toURI().toURL();
             Resource rootSource = new URLResource(url);
 
-            UpgradeService upgradeService = getApplication().getInjector().getInstance(UpgradeService.class);
+            UpgradeService upgradeService = application.getInjector().getInstance(UpgradeService.class);
             UpgradeMetaData metaData = upgradeService.getUpgradeType(rootSource);
             switch (metaData.getUpgradeType()) {
                 case INTERMEDIATE_UPGRADE_NEEDED:
@@ -153,7 +153,7 @@ public class OpenProjectAction extends ProjectAction {
                     if (modelerVersion == null) {
                         modelerVersion = "";
                     }
-                    JOptionPane.showMessageDialog(Application.getFrame(),
+                    JOptionPane.showMessageDialog(application.getFrameController().getView(),
                             "Open the project in the older Modeler " + modelerVersion
                                     + " to do an intermediate upgrade\nbefore you can upgrade to latest version.",
                             "Can't Upgrade Project", JOptionPane.ERROR_MESSAGE);
@@ -161,7 +161,7 @@ public class OpenProjectAction extends ProjectAction {
                     return;
 
                 case DOWNGRADE_NEEDED:
-                    JOptionPane.showMessageDialog(Application.getFrame(),
+                    JOptionPane.showMessageDialog(application.getFrameController().getView(),
                             "Can't open project - it was created using a newer version of the Modeler",
                             "Can't Open Project", JOptionPane.ERROR_MESSAGE);
                     closeProject(false);
@@ -185,7 +185,7 @@ public class OpenProjectAction extends ProjectAction {
     }
 
     private Project openProjectResourse(Resource resource, ModelerController controller) {
-        Project project = getApplication().getInjector().getInstance(ProjectLoader.class).loadProject(resource);
+        Project project = application.getInjector().getInstance(ProjectLoader.class).loadProject(resource);
         controller.onProjectOpened(project);
         return project;
     }
@@ -193,7 +193,7 @@ public class OpenProjectAction extends ProjectAction {
     private boolean processUpgrades() {
         // need an upgrade
         int returnCode = JOptionPane.showConfirmDialog(
-                Application.getFrame(),
+                application.getFrameController().getView(),
                 "Project needs an upgrade to a newer version. Upgrade?",
                 "Upgrade Needed",
                 JOptionPane.YES_NO_OPTION);

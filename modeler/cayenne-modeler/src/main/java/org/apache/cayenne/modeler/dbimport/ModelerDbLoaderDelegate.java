@@ -44,7 +44,7 @@ final class ModelerDbLoaderDelegate extends DefaultDbLoaderDelegate {
     @Override
     public void dbEntityRemoved(DbEntity entity) {
         checkCanceled();
-        context.getProjectController().fireDbEntityEvent(new EntityEvent(Application.getFrame(), entity, MapEvent.REMOVE));
+        context.getProjectController().fireDbEntityEvent(new EntityEvent(context.getProjectController().getApplication().getFrameController().getView(), entity, MapEvent.REMOVE));
     }
 
     @Override

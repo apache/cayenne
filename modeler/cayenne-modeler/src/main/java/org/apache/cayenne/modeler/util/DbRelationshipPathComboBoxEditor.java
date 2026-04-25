@@ -184,7 +184,7 @@ public class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEdi
         String path = model.getRelationship(row).getDbRelationshipPath().value();
         if(!changeObjEntity(path)) {
             JOptionPane.showMessageDialog(
-                    Application.getFrame(),
+                    Application.getInstance().getFrameController().getView(),
                     "Can't set dbAttribute path. At first set target entity in dbEntity.",
                     "Error",
                     JOptionPane.ERROR_MESSAGE);

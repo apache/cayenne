@@ -32,7 +32,6 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.entitysync.EntitySyncController;
 import org.apache.cayenne.modeler.undo.DbEntitySyncUndoableEdit;
-import org.apache.cayenne.modeler.util.CayenneAction;
 
 import javax.swing.*;
 import java.awt.*;
@@ -44,7 +43,7 @@ import java.util.Collection;
  * Action that synchronizes all ObjEntities with the current state of the
  * selected DbEntity.
  */
-public class DbEntitySyncAction extends CayenneAction {
+public class DbEntitySyncAction extends ModelerAbstractAction {
 
     public DbEntitySyncAction(Application application) {
         super("Sync Dependent ObjEntities with DbEntity", application);
@@ -60,7 +59,7 @@ public class DbEntitySyncAction extends CayenneAction {
     }
 
     /**
-     * @see org.apache.cayenne.modeler.util.CayenneAction#performAction(ActionEvent)
+     * @see ModelerAbstractAction#performAction(ActionEvent)
      */
     public void performAction(ActionEvent e) {
         syncDbEntity();

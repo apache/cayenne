@@ -22,22 +22,21 @@ package org.apache.cayenne.modeler.ui.project.editor.datanode.custom;
 import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
-import org.apache.cayenne.modeler.swing.text.JTextFieldUndoable;
+import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 
 public class CustomDataSourceView extends JPanel {
 
-    protected JTextField factoryName;
-    protected JTextField locationHint;
+    protected CayenneUndoableTextField factoryName;
+    protected CayenneUndoableTextField locationHint;
 
     public CustomDataSourceView() {
 
-        factoryName = new JTextFieldUndoable();
-        locationHint = new JTextFieldUndoable();
+        factoryName = new CayenneUndoableTextField();
+        locationHint = new CayenneUndoableTextField();
 
         // assemble
         FormLayout layout = new FormLayout("right:80dlu, 3dlu, fill:200dlu", "");
@@ -53,11 +52,11 @@ public class CustomDataSourceView extends JPanel {
         this.add(builder.getPanel(), BorderLayout.CENTER);
     }
 
-    public JTextField getLocationHint() {
+    public CayenneUndoableTextField getLocationHint() {
         return locationHint;
     }
 
-    public JTextField getFactoryName() {
+    public CayenneUndoableTextField getFactoryName() {
         return factoryName;
     }
 }

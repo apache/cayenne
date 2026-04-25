@@ -40,8 +40,8 @@ import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
-import org.apache.cayenne.modeler.util.CayenneTable;
-import org.apache.cayenne.modeler.util.CellRenderers;
+import org.apache.cayenne.modeler.swing.table.CayenneTable;
+import org.apache.cayenne.modeler.swing.CellRenderers;
 import org.apache.cayenne.modeler.util.DbRelationshipPathComboBoxEditor;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.UIUtil;
@@ -289,7 +289,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
                 true);
     }
 
-    static class EntityRenderer extends StringRenderer {
+    class EntityRenderer extends StringRenderer {
 
         @Override
         public Component getTableCellRendererComponent(
@@ -301,7 +301,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
                 int column) {
 
             Object oldValue = value;
-            value = CellRenderers.asString(value);
+            value = CellRenderers.asString(value, controller.getSelectedDataMap());
 
             super.getTableCellRendererComponent(
                     table,

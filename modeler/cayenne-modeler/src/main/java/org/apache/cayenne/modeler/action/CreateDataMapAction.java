@@ -31,14 +31,13 @@ import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.modeler.undo.CreateDataMapUndoableEdit;
-import org.apache.cayenne.modeler.util.CayenneAction;
 
 import java.awt.event.ActionEvent;
 
 /**
  * Action that creates new DataMap in the project.
  */
-public class CreateDataMapAction extends CayenneAction {
+public class CreateDataMapAction extends ModelerAbstractAction {
     
     public static void onMapCreated(Object src, ProjectController controller, DataMap map) {
 

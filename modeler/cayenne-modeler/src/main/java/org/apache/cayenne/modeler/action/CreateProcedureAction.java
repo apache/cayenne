@@ -30,14 +30,13 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateProcedureUndoableEdit;
-import org.apache.cayenne.modeler.util.CayenneAction;
 
 import java.awt.event.ActionEvent;
 
 /**
  * Action class to create a new stored procedure mapping.
  */
-public class CreateProcedureAction extends CayenneAction {
+public class CreateProcedureAction extends ModelerAbstractAction {
 
     /**
      * Fires events when a procedure was added

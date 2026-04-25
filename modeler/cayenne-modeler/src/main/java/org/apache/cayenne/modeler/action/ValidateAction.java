@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.validator.ProjectValidatorDialogController;
-import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.validation.ProjectValidator;
 import org.apache.cayenne.validation.ValidationResult;
 
@@ -34,7 +33,7 @@ import java.awt.event.KeyEvent;
 /**
  * UI action that performs full project validation.
  */
-public class ValidateAction extends CayenneAction {
+public class ValidateAction extends ModelerAbstractAction {
 
     public ValidateAction(Application application) {
         super("Validate Project", application);
@@ -51,7 +50,7 @@ public class ValidateAction extends CayenneAction {
     @Override
     public void performAction(ActionEvent e) {
 
-        ProjectValidator projectValidator = getApplication().getInjector().getInstance(
+        ProjectValidator projectValidator = application.getInjector().getInstance(
                 ProjectValidator.class);
         ValidationResult validationResult = projectValidator.validate(getCurrentProject()
                 .getRootNode());

@@ -143,7 +143,7 @@ public class LogConsoleController extends RootController {
             logWindow.setVisible(true);
         } else {
             view.setDocked(true);
-            Application.getFrame().setDockComponent(view);
+            application.getFrameController().getView().setDockComponent(view);
         }
     }
 
@@ -155,7 +155,7 @@ public class LogConsoleController extends RootController {
             logWindow.dispose();
             logWindow = null;
         } else {
-            Application.getFrame().setDockComponent(null);
+            application.getFrameController().getView().setDockComponent(null);
         }
     }
 

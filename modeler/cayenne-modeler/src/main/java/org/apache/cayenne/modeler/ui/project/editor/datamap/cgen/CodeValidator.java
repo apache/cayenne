@@ -17,13 +17,12 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.cgen;
 
 import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 
-// TODO, andrus 4/13/2006 - merge with BeanValidationFailure.
-public class CodeValidationUtil {
+class CodeValidator {
 
     private static String validationMessage(String attribute, String message) {
         StringBuffer buffer = new StringBuffer(message.length() + attribute.length() + 5);
@@ -40,7 +39,7 @@ public class CodeValidationUtil {
                 bean,
                 attribute,
                 identifier);
-        
+
         if (emptyFailure != null) {
             return emptyFailure;
         }

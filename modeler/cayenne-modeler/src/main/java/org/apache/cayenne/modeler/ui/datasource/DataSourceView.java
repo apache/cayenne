@@ -42,7 +42,7 @@ public class DataSourceView extends JDialog {
     protected DBConnectionInfoEditorController connectionInfo;
 
     public DataSourceView(RootController controller, String[] labels) {
-        super(Application.getFrame());
+        super(controller.getApplication().getFrameController().getView());
         
         this.dataSources = new JComboBox<>();
 

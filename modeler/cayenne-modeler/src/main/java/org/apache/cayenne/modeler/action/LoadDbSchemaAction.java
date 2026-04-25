@@ -102,7 +102,7 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
                 }
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(
-                        Application.getFrame(),
+                        application.getFrameController().getView(),
                         ex.getMessage(),
                         "Error loading db schema",
                         JOptionPane.ERROR_MESSAGE);
@@ -118,8 +118,7 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
 
     private void loadDataBase(DBConnectionInfo connectionInfo) throws Exception {
         ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader()
-                .load(connectionInfo,
-                        getApplication().getClassLoadingService());
+                .load(connectionInfo, application.getClassLoadingService());
         draggableTreePanel.getSourceTree()
                 .setEnabled(true);
         draggableTreePanel.getSourceTree()
@@ -134,7 +133,7 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
                             DbImportView rootParent) throws Exception {
         ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader()
                 .loadTables(connectionInfo,
-                        getApplication().getClassLoadingService(),
+                        application.getClassLoadingService(),
                         tablePath,
                         rootParent.getTableTypes());
         draggableTreePanel.getSourceTree()
@@ -144,7 +143,7 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
 
     private void loadColumns(DBConnectionInfo connectionInfo, TreePath tablePath) throws SQLException {
         ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader()
-                .loadColumns(connectionInfo, getApplication().getClassLoadingService(), tablePath);
+                .loadColumns(connectionInfo, application.getClassLoadingService(), tablePath);
         draggableTreePanel.getSourceTree()
                 .update(databaseReverseEngineering,
                         new PrintColumnsBiFunction(draggableTreePanel.getSourceTree()));

@@ -105,7 +105,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
 
         distinct = new JCayenneCheckBox();
 
-        properties = new ObjectQueryPropertiesPanel(mediator);
+        properties = new ObjectQueryPropertiesPanel(controller);
 
         // assemble
         CellConstraints cc = new CellConstraints();
@@ -137,7 +137,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
             QueryDescriptor query = getQuery();
             if (query != null) {
                 query.setProperty(SelectQueryDescriptor.DISTINCT_PROPERTY, Boolean.toString(distinct.isSelected()));
-                mediator.fireQueryEvent(new QueryEvent(this, query));
+                controller.fireQueryEvent(new QueryEvent(this, query));
             }
         });
     }
@@ -147,7 +147,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
      * query is changed.
      */
     void initFromModel() {
-        QueryDescriptor descriptor = mediator.getSelectedQuery();
+        QueryDescriptor descriptor = controller.getSelectedQuery();
 
         if (descriptor == null || !QueryDescriptor.SELECT_QUERY.equals(descriptor.getType())) {
             setVisible(false);
@@ -171,7 +171,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
         // since query root is fully resolved during map loading,
         // making it impossible to reference other DataMaps.
 
-        DataMap map = mediator.getSelectedDataMap();
+        DataMap map = controller.getSelectedDataMap();
         ObjEntity[] roots = map.getObjEntities().toArray(new ObjEntity[0]);
 
         if (roots.length > 1) {
@@ -189,11 +189,11 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
 
     @Override
     protected SelectQueryDescriptor getQuery() {
-        if(mediator.getSelectedQuery() == null) {
+        if(controller.getSelectedQuery() == null) {
             return null;
         }
-        return QueryDescriptor.SELECT_QUERY.equals(mediator.getSelectedQuery().getType())
-                ? (SelectQueryDescriptor) mediator.getSelectedQuery()
+        return QueryDescriptor.SELECT_QUERY.equals(controller.getSelectedQuery().getType())
+                ? (SelectQueryDescriptor) controller.getSelectedQuery()
                 : null;
     }
 
@@ -209,7 +209,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
 
         //getQuery() is not null if we reached here
         getQuery().setQualifier((qualifier));
-        mediator.fireQueryEvent(new QueryEvent(this, getQuery()));
+        controller.fireQueryEvent(new QueryEvent(this, getQuery()));
     }
 
     /**
@@ -291,11 +291,11 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
         if (query == null) {
             return;
         }
-        ObjectInfo.putToMetaData(mediator.getApplication().getMetaData(), query, ObjectInfo.COMMENT, text);
-        mediator.fireQueryEvent(new QueryEvent(this, query));
+        ObjectInfo.putToMetaData(controller.getApplication().getMetaData(), query, ObjectInfo.COMMENT, text);
+        controller.fireQueryEvent(new QueryEvent(this, query));
     }
 
     private String getQueryComment(QueryDescriptor queryDescriptor) {
-        return ObjectInfo.getFromMetaData(mediator.getApplication().getMetaData(), queryDescriptor, ObjectInfo.COMMENT);
+        return ObjectInfo.getFromMetaData(controller.getApplication().getMetaData(), queryDescriptor, ObjectInfo.COMMENT);
     }
 }

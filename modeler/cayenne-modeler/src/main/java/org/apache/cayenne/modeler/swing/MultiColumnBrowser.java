@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.modeler.swing;
 
-import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 
 import javax.swing.AbstractListModel;

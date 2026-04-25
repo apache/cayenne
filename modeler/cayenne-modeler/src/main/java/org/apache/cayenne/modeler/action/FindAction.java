@@ -54,7 +54,6 @@ import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
-import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.map.QueryDescriptor;
 
 import javax.swing.JTextField;
@@ -70,7 +69,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-public class FindAction extends CayenneAction {
+public class FindAction extends ModelerAbstractAction {
 
     /**
      * Result sort priority based on result type
@@ -126,7 +125,7 @@ public class FindAction extends CayenneAction {
         } else if (searchResults.size() == 1) {
             jumpToResult(searchResults.iterator().next());
         } else {
-            new FindDialogController(getApplication().getFrameController(), searchResults).startupAction();
+            new FindDialogController(application.getFrameController(), searchResults).startupAction();
         }
     }
 

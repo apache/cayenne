@@ -42,6 +42,7 @@ import java.util.List;
  * Superclass of CayenneModeler table model classes.
  */
 public abstract class CayenneTableModel<T> extends AbstractTableModel {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(CayenneTableModel.class);
 
     protected ProjectController controller;
@@ -49,26 +50,27 @@ public abstract class CayenneTableModel<T> extends AbstractTableModel {
     protected List<T> objectList;
 
     public CayenneTableModel(ProjectController controller, Object eventSource, List<T> objectList) {
-        super();
         this.eventSource = eventSource;
         this.controller = controller;
         this.objectList = objectList;
     }
 
+    @Override
     public void setValueAt(Object newVal, int row, int col) {
         try {
-            
+
             Object oldValue = getValueAt(row, col);
             if (!Util.nullSafeEquals(newVal, oldValue)) {
                 setUpdatedValueAt(newVal, row, col);
-                
-                this.controller.getApplication().getUndoManager().addEdit(
-                        new CayenneTableModelUndoableEdit(this, oldValue, newVal, row, col));
+
+                this.controller.getApplication()
+                        .getUndoManager()
+                        .addEdit(new CayenneTableModelUndoableEdit(this, oldValue, newVal, row, col));
             }
         } catch (IllegalArgumentException e) {
             LOGGER.error("Error setting table model value", e);
             JOptionPane.showMessageDialog(
-                    Application.getFrame(),
+                    controller.getApplication().getFrameController().getView(),
                     e.getMessage(),
                     "Invalid value",
                     JOptionPane.ERROR_MESSAGE);
@@ -162,20 +164,20 @@ public abstract class CayenneTableModel<T> extends AbstractTableModel {
         Collections.swap(objectList, i, j);
         fireTableDataChanged();
     }
-    
+
     /**
      * Correct errors that model has.
      */
     public void resetModel() {
-		// do nothing by default
-	}
-    
+        // do nothing by default
+    }
+
     /**
-     * @return false, if model is not valid. 
+     * @return false, if model is not valid.
      */
     public boolean isValid() {
-		return true;
-	}
+        return true;
+    }
 
     protected static class PropertyComparator<C> implements Comparator<C> {
 
@@ -216,7 +218,7 @@ public abstract class CayenneTableModel<T> extends AbstractTableModel {
             try {
                 Comparable p1 = (Comparable) getter.invoke(o1);
                 Comparable p2 = (Comparable) getter.invoke(o2);
-                return (p1 == null) ? -1 : (p2 == null)? 1 : p1.compareTo(p2);
+                return (p1 == null) ? -1 : (p2 == null) ? 1 : p1.compareTo(p2);
             } catch (Exception ex) {
                 throw new CayenneRuntimeException("Error reading property.", ex);
             }
@@ -224,14 +226,14 @@ public abstract class CayenneTableModel<T> extends AbstractTableModel {
     }
 
     public abstract void sortByColumn(int sortCol, boolean isAscent);
-    
+
     public abstract boolean isColumnSortable(int sortCol);
-    
+
     public void sortByElementProperty(String string, boolean isAscent) {
         objectList.sort(new PropertyComparator<>(string, getElementsClass()));
-        if(!isAscent){
+        if (!isAscent) {
             Collections.reverse(objectList);
         }
     }
-    
+
 }

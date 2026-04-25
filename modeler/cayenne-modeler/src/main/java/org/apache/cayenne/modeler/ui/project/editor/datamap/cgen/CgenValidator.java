@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.datamap.cgen;
 
-import java.util.Collection;
-
 import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.map.DataMap;
@@ -29,11 +27,12 @@ import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.modeler.util.CodeValidationUtil;
 import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.SimpleValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
+
+import java.util.Collection;
 
 /**
  * Validator that checks classes and embeddables for code-generation specific problems.
@@ -78,7 +77,7 @@ class CgenValidator {
             return emptyName;
         }
 
-        ValidationFailure badName = CodeValidationUtil.validateJavaIdentifier(objectName, "attribute.name",
+        ValidationFailure badName = CodeValidator.validateJavaIdentifier(objectName, "attribute.name",
                 attributeName);
         if (badName != null) {
             return badName;
@@ -191,7 +190,7 @@ class CgenValidator {
             return emptyEmbeddedName;
         }
 
-        ValidationFailure badEmbeddedName = CodeValidationUtil.validateJavaIdentifier(name, "attribute.name",
+        ValidationFailure badEmbeddedName = CodeValidator.validateJavaIdentifier(name, "attribute.name",
                 nameEmbeddedAttribute);
         if (badEmbeddedName != null) {
             return badEmbeddedName;
@@ -210,7 +209,7 @@ class CgenValidator {
             return emptyName;
         }
 
-        ValidationFailure badName = CodeValidationUtil.validateJavaIdentifier(name, "relationship.name",
+        ValidationFailure badName = CodeValidator.validateJavaIdentifier(name, "relationship.name",
                 relationship.getName());
         if (badName != null) {
             return badName;

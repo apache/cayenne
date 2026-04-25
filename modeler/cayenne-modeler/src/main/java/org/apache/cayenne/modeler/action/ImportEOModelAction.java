@@ -42,7 +42,6 @@ import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.AdapterMapping;
-import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.FileFilters;
 import org.apache.cayenne.wocompat.EOModelProcessor;
 import org.slf4j.Logger;
@@ -62,9 +61,9 @@ import java.util.Map;
 
 /**
  * Action handler for WebObjects EOModel import function.
- * 
+ *
  */
-public class ImportEOModelAction extends CayenneAction {
+public class ImportEOModelAction extends ModelerAbstractAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImportEOModelAction.class);
 
@@ -91,12 +90,12 @@ public class ImportEOModelAction extends CayenneAction {
      */
     protected void importEOModel() {
         JFileChooser fileChooser = getEOModelChooser();
-        int status = fileChooser.showOpenDialog(Application.getFrame());
+        int status = fileChooser.showOpenDialog(application.getFrameController().getView());
 
         if (status == JFileChooser.APPROVE_OPTION) {
 
             // save preferences
-            FSPath lastDir = getApplication()
+            FSPath lastDir = application
                     .getFrameController()
                     .getLastEOModelDirectory();
             lastDir.updateFromChooser(fileChooser);
@@ -122,8 +121,7 @@ public class ImportEOModelAction extends CayenneAction {
                 DataMap map = processor.loadEOModel(url);
                 addDataMap(map, currentMap);
 
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 LOGGER.info("EOModel Loading Exception", ex);
                 ErrorsController.guiException(ex);
             }
@@ -140,7 +138,7 @@ public class ImportEOModelAction extends CayenneAction {
         Map connection = (Map) eomodelIndex.get("connectionDictionary");
 
         if (adapter != null && connection != null) {
-            CreateNodeAction nodeBuilder = getApplication().getActionManager().getAction(CreateNodeAction.class);
+            CreateNodeAction nodeBuilder = application.getActionManager().getAction(CreateNodeAction.class);
 
             // this should make created node current, resulting in the new map being added
             // to the node automatically once it is loaded
@@ -152,13 +150,13 @@ public class ImportEOModelAction extends CayenneAction {
                 node.setParameters((String) connection.get("serverUrl"));
             } else {
                 // guess adapter from plugin or driver
-                AdapterMapping adapterDefaults = getApplication().getAdapterMapping();
+                AdapterMapping adapterDefaults = application.getAdapterMapping();
                 String cayenneAdapter = adapterDefaults.adapterForEOFPluginOrDriver(
                         (String) connection.get("plugin"),
                         (String) connection.get("driver"));
                 if (cayenneAdapter != null) {
                     try {
-                        Class<DbAdapter> adapterClass = getApplication()
+                        Class<DbAdapter> adapterClass = application
                                 .getClassLoadingService()
                                 .loadClass(DbAdapter.class, cayenneAdapter);
                         node.setAdapterType(adapterClass.toString());
@@ -206,7 +204,7 @@ public class ImportEOModelAction extends CayenneAction {
      */
     protected void addDataMap(DataMap map, DataMap currentMap) {
 
-        ProjectController mediator = getProjectController();
+        ProjectController controller = getProjectController();
 
         if (currentMap != null) {
             // merge with existing map... have to memorize map state before and after
@@ -224,8 +222,8 @@ public class ImportEOModelAction extends CayenneAction {
             Collection<DbEntity> newDE = new ArrayList<>(currentMap.getDbEntities());
             Collection<QueryDescriptor> newQueries = new ArrayList<>(currentMap.getQueryDescriptors());
 
-            EntityEvent entityEvent = new EntityEvent(Application.getFrame(), null);
-            QueryEvent queryEvent = new QueryEvent(Application.getFrame(), null);
+            EntityEvent entityEvent = new EntityEvent(application.getFrameController().getView(), null);
+            QueryEvent queryEvent = new QueryEvent(application.getFrameController().getView(), null);
 
             // 1. ObjEntities
             Collection<ObjEntity> addedOE = new ArrayList<>(newOE);
@@ -233,7 +231,7 @@ public class ImportEOModelAction extends CayenneAction {
             for (ObjEntity e : addedOE) {
                 entityEvent.setEntity(e);
                 entityEvent.setId(MapEvent.ADD);
-                mediator.fireObjEntityEvent(entityEvent);
+                controller.fireObjEntityEvent(entityEvent);
             }
 
             Collection<ObjEntity> removedOE = new ArrayList<>(originalOE);
@@ -241,51 +239,53 @@ public class ImportEOModelAction extends CayenneAction {
             for (ObjEntity e : removedOE) {
                 entityEvent.setEntity(e);
                 entityEvent.setId(MapEvent.REMOVE);
-                mediator.fireObjEntityEvent(entityEvent);
+                controller.fireObjEntityEvent(entityEvent);
             }
 
             // 2. DbEntities
             Collection<DbEntity> addedDE = new ArrayList<>(newDE);
             addedDE.removeAll(originalDE);
-            for(DbEntity e: addedDE) {
+            for (DbEntity e : addedDE) {
                 entityEvent.setEntity(e);
                 entityEvent.setId(MapEvent.ADD);
-                mediator.fireDbEntityEvent(entityEvent);
+                controller.fireDbEntityEvent(entityEvent);
             }
 
             Collection<DbEntity> removedDE = new ArrayList<>(originalDE);
             removedDE.removeAll(newDE);
-            for(DbEntity e: removedDE) {
+            for (DbEntity e : removedDE) {
                 entityEvent.setEntity(e);
                 entityEvent.setId(MapEvent.REMOVE);
-                mediator.fireDbEntityEvent(entityEvent);
+                controller.fireDbEntityEvent(entityEvent);
             }
 
             // 3. queries
             Collection<QueryDescriptor> addedQueries = new ArrayList<>(newQueries);
             addedQueries.removeAll(originalQueries);
-            for(QueryDescriptor q: addedQueries) {
+            for (QueryDescriptor q : addedQueries) {
                 queryEvent.setQuery(q);
                 queryEvent.setId(MapEvent.ADD);
-                mediator.fireQueryEvent(queryEvent);
+                controller.fireQueryEvent(queryEvent);
             }
 
             Collection<QueryDescriptor> removedQueries = new ArrayList<>(originalQueries);
             removedQueries.removeAll(newQueries);
-            for(QueryDescriptor q: removedQueries) {
+            for (QueryDescriptor q : removedQueries) {
                 queryEvent.setQuery(q);
                 queryEvent.setId(MapEvent.REMOVE);
-                mediator.fireQueryEvent(queryEvent);
+                controller.fireQueryEvent(queryEvent);
             }
 
-            mediator.displayDataMap(new DataMapDisplayEvent(Application
-                    .getFrame(), map, (DataChannelDescriptor) mediator
-                    .getProject()
-                    .getRootNode(), mediator.getSelectedDataNode()));
-        }
-        else {
+            controller.displayDataMap(new DataMapDisplayEvent(
+                    application.getFrameController().getView(),
+                    map,
+                    (DataChannelDescriptor) controller
+                            .getProject()
+                            .getRootNode(),
+                    controller.getSelectedDataNode()));
+        } else {
             // fix DataMap name, as there maybe a map with the same name already
-            ConfigurationNode root = mediator.getProject().getRootNode();
+            ConfigurationNode root = controller.getProject().getRootNode();
             map.setName(NameBuilder
                     .builder(map, root)
                     .baseName(map.getName())
@@ -293,7 +293,7 @@ public class ImportEOModelAction extends CayenneAction {
 
             // side effect of this operation is that if a node was created, this DataMap
             // will be linked with it...
-            CreateDataMapAction.onMapCreated(Application.getFrame(), getProjectController(), map);
+            CreateDataMapAction.onMapCreated(application.getFrameController().getView(), getProjectController(), map);
 
         }
     }
@@ -307,7 +307,7 @@ public class ImportEOModelAction extends CayenneAction {
             eoModelChooser = new EOModelChooser("Select EOModel");
         }
 
-        FSPath lastDir = getApplication().getFrameController().getLastEOModelDirectory();
+        FSPath lastDir = application.getFrameController().getLastEOModelDirectory();
         lastDir.updateChooser(eoModelChooser);
 
         return eoModelChooser;
@@ -341,8 +341,7 @@ public class ImportEOModelAction extends CayenneAction {
             if (selectFilter.accept(file)) {
                 cachedDialog = null;
                 return JFileChooser.APPROVE_OPTION;
-            }
-            else {
+            } else {
                 if (file.isDirectory()) {
                     this.setCurrentDirectory(file);
                 }

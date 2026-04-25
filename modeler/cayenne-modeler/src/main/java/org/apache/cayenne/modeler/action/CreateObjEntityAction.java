@@ -34,12 +34,11 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateObjEntityUndoableEdit;
-import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 
 import java.awt.event.ActionEvent;
 
-public class CreateObjEntityAction extends CayenneAction {
+public class CreateObjEntityAction extends ModelerAbstractAction {
 
     static void onObjEntityCreated(
             Object src,

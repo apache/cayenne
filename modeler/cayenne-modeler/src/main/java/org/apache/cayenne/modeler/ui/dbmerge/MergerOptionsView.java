@@ -25,6 +25,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.swing.border.TopBorder;
+import org.apache.cayenne.modeler.swing.text.CayenneTextArea;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -32,7 +33,6 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import java.awt.BorderLayout;
@@ -46,7 +46,7 @@ import java.awt.FlowLayout;
  */
 public class MergerOptionsView extends JDialog {
 
-    protected JTextArea sql;
+    protected CayenneTextArea sql;
     protected JButton generateButton;
     protected JButton cancelButton;
     protected JButton saveSqlButton;
@@ -55,7 +55,7 @@ public class MergerOptionsView extends JDialog {
     protected JTabbedPane tabs;
 
     public MergerOptionsView(Component tables) {
-        super(Application.getFrame());
+        super(Application.getInstance().getFrameController().getView());
         
         // create widgets
         this.generateButton = new JButton("Migrate");
@@ -66,7 +66,7 @@ public class MergerOptionsView extends JDialog {
         this.tables = tables;
         this.tabs = new JTabbedPane(SwingConstants.TOP);
         this.tabs.setFocusable(false);
-        this.sql = new JTextArea();
+        this.sql = new CayenneTextArea();
         sql.setEditable(false);
         sql.setLineWrap(true);
         sql.setWrapStyleWord(true);
@@ -132,7 +132,7 @@ public class MergerOptionsView extends JDialog {
         return saveSqlButton;
     }
 
-    public JTextArea getSql() {
+    public CayenneTextArea getSql() {
         return sql;
     }
 }

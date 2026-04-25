@@ -30,7 +30,7 @@ import javax.swing.JComponent;
 import javax.swing.border.Border;
 import javax.swing.plaf.ComponentUI;
 
-import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.modeler.action.ModelerAbstractAction;
 
 /**
  * @since 4.0
@@ -73,7 +73,7 @@ public class GenericButtonUI extends com.jgoodies.looks.plastic.PlasticButtonUI 
     public void installDefaults(final AbstractButton b) {
         super.installDefaults(b);
         b.putClientProperty("Plastic.is3D", Boolean.FALSE);
-        if(b instanceof CayenneAction.CayenneToolbarButton) {
+        if(b instanceof ModelerAbstractAction.CayenneToolbarButton) {
             b.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseEntered(MouseEvent e) {
@@ -89,7 +89,7 @@ public class GenericButtonUI extends com.jgoodies.looks.plastic.PlasticButtonUI 
 
     @Override
     public void update(Graphics g, JComponent c) {
-        if(c instanceof CayenneAction.CayenneToolbarButton) {
+        if(c instanceof ModelerAbstractAction.CayenneToolbarButton) {
             AbstractButton b = (AbstractButton)c;
             if(!b.isEnabled()) {
                 b.setBorder(DISABLED_BORDER);
@@ -107,7 +107,7 @@ public class GenericButtonUI extends com.jgoodies.looks.plastic.PlasticButtonUI 
         if ( b.isContentAreaFilled() ) {
             Dimension size = b.getSize();
             g.setColor(getSelectColor());
-            if(b instanceof CayenneAction.CayenneToolbarButton) {
+            if(b instanceof ModelerAbstractAction.CayenneToolbarButton) {
                 // don't paint outer border area
                 g.fillRect(1, 1, size.width - 2, size.height - 2);
             } else {

@@ -153,7 +153,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
                     String[] tableTypesFromReverseEngineering = reverseEngineering.getTableTypes();
                     tableTypes.setText(String.join(",", tableTypesFromReverseEngineering));
                     JOptionPane.showMessageDialog(
-                            Application.getFrame(),
+                            Application.getInstance().getFrameController().getView(),
                             "Table types field can't be empty.",
                             "Error setting table types",
                             JOptionPane.ERROR_MESSAGE);

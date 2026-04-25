@@ -275,7 +275,7 @@ public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
                             + " \"To Dep PK\" relationships using this attribute?";
 
                     int answer = JOptionPane.showConfirmDialog(
-                            Application.getFrame(),
+                            Application.getInstance().getFrameController().getView(),
                             message);
                     if (answer != JOptionPane.YES_OPTION) {
                         // no action needed

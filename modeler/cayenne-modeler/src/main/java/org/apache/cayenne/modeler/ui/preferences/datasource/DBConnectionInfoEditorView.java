@@ -26,36 +26,35 @@ import java.util.Collection;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.modeler.swing.text.CayennePasswordField;
+import org.apache.cayenne.modeler.swing.text.CayenneTextField;
 
 /**
  * A generic panel for entering DataSource information.
- * 
  */
 public class DBConnectionInfoEditorView extends JPanel {
 
     protected JComboBox adapters;
-    protected JTextField driver;
-    protected JTextField url;
-    protected JTextField userName;
-    protected JPasswordField password;
+    protected CayenneTextField driver;
+    protected CayenneTextField url;
+    protected CayenneTextField userName;
+    protected CayennePasswordField password;
 
     protected Collection<JLabel> labels;
-    
+
     protected DefaultFormBuilder builder;
 
     public DBConnectionInfoEditorView() {
         adapters = new JComboBox();
         adapters.setEditable(true);
 
-        driver = new JTextField();
-        url = new JTextField();
-        userName = new JTextField();
-        password = new JPasswordField();
+        driver = new CayenneTextField();
+        url = new CayenneTextField();
+        userName = new CayenneTextField();
+        password = new CayennePasswordField();
         labels = new ArrayList<>();
 
         // assemble
@@ -77,22 +76,22 @@ public class DBConnectionInfoEditorView extends JPanel {
         return adapters;
     }
 
-    public JTextField getDriver() {
+    public CayenneTextField getDriver() {
         return driver;
     }
 
-    public JPasswordField getPassword() {
+    public CayennePasswordField getPassword() {
         return password;
     }
 
-    public JTextField getUrl() {
+    public CayenneTextField getUrl() {
         return url;
     }
 
-    public JTextField getUserName() {
+    public CayenneTextField getUserName() {
         return userName;
     }
-    
+
     /**
      * @return Builder of the view (to allow dynamic extending of the component)
      */

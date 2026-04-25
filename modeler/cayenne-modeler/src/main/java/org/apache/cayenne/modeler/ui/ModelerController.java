@@ -75,7 +75,7 @@ public class ModelerController extends RootController {
     }
 
     @Override
-    public Component getView() {
+    public ModelerFrame getView() {
         return view;
     }
 

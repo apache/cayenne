@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.dbactionoptions;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.util.CayenneDialog;
+import org.apache.cayenne.modeler.swing.dialog.CayenneDialog;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -54,7 +54,7 @@ public class DbActionOptionsDialog extends CayenneDialog {
 
     public DbActionOptionsDialog(Frame owner, String title, Collection<String> catalogs, Collection<String> schemas,
                                  String currentCatalog, String currentSchema) throws HeadlessException {
-        super(owner, title);
+        super(owner, title, false);
         init();
         initController();
         initFromModel(catalogs, schemas, currentCatalog, currentSchema);

@@ -78,7 +78,7 @@ import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.event.model.QueryListener;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.modeler.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.util.Comparators;
 
 import javax.swing.Action;
@@ -938,7 +938,7 @@ public class ProjectTreeController extends ChildController<ProjectController>
      * Creates and returns a menu item associated with the given action type.
      */
     private JMenuItem buildMenu(Class<? extends Action> actionType) {
-        CayenneAction action = (CayenneAction) parent
+        ModelerAbstractAction action = (ModelerAbstractAction) parent
                 .getApplication()
                 .getActionManager()
                 .getAction(actionType);

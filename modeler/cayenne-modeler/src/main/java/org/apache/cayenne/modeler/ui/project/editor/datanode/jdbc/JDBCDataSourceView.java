@@ -22,38 +22,35 @@ package org.apache.cayenne.modeler.ui.project.editor.datanode.jdbc;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.swing.text.JTextFieldUndoable;
-import org.apache.cayenne.modeler.util.JTextFieldValidator;
+import org.apache.cayenne.modeler.swing.text.CayennePasswordField;
+import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class JDBCDataSourceView extends JPanel {
 
-    protected JTextField driver;
-    protected JTextField url;
-    protected JTextField userName;
-    protected JPasswordField password;
+    protected CayenneUndoableTextField driver;
+    protected CayenneUndoableTextField url;
+    protected CayenneUndoableTextField userName;
+    protected CayennePasswordField password;
 
-    protected JTextField minConnections;
-    protected JTextField maxConnections;
+    protected CayenneUndoableTextField minConnections;
+    protected CayenneUndoableTextField maxConnections;
     protected JButton syncWithLocal;
 
     public JDBCDataSourceView() {
 
-        driver = new JTextFieldUndoable();
-        url = new JTextFieldUndoable();
-        userName = new JTextFieldUndoable();
-        password = new JPasswordField();
-        minConnections = new JTextFieldUndoable(6);
-        maxConnections = new JTextFieldUndoable(6);
+        driver = new CayenneUndoableTextField();
+        driver.setTrim(true);
+        url = new CayenneUndoableTextField();
+        url.setTrim(true);
+        userName = new CayenneUndoableTextField();
+        password = new CayennePasswordField();
+        minConnections = new CayenneUndoableTextField(6);
+        maxConnections = new CayenneUndoableTextField(6);
         syncWithLocal = new JButton("Sync with Local");
         syncWithLocal.setToolTipText("Update from local DataSource");
-
-        JTextFieldValidator.addValidation(driver, text -> text.length() != text.trim().length(),
-                "There are some whitespaces in this field");
-        JTextFieldValidator.addValidation(url, text -> text.length() != text.trim().length(),
-                "There are some whitespaces in this field");
 
         // assemble
         CellConstraints cc = new CellConstraints();
@@ -83,27 +80,27 @@ public class JDBCDataSourceView extends JPanel {
         this.add(builder.getPanel(), BorderLayout.CENTER);
     }
 
-    public JTextField getDriver() {
+    public CayenneUndoableTextField getDriver() {
         return driver;
     }
 
-    public JPasswordField getPassword() {
+    public CayennePasswordField getPassword() {
         return password;
     }
 
-    public JTextField getUrl() {
+    public CayenneUndoableTextField getUrl() {
         return url;
     }
 
-    public JTextField getUserName() {
+    public CayenneUndoableTextField getUserName() {
         return userName;
     }
 
-    public JTextField getMaxConnections() {
+    public CayenneUndoableTextField getMaxConnections() {
         return maxConnections;
     }
 
-    public JTextField getMinConnections() {
+    public CayenneUndoableTextField getMinConnections() {
         return minConnections;
     }
 

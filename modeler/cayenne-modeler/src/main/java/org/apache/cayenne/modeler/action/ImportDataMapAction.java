@@ -27,7 +27,6 @@ import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.FSPath;
-import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.FileFilters;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
@@ -46,7 +45,7 @@ import java.net.URL;
  *
  * @since 1.1
  */
-public class ImportDataMapAction extends CayenneAction {
+public class ImportDataMapAction extends ModelerAbstractAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImportDataMapAction.class);
 
@@ -66,7 +65,7 @@ public class ImportDataMapAction extends CayenneAction {
     }
 
     protected void importDataMap() {
-        File dataMapFile = selectDataMap(Application.getFrame());
+        File dataMapFile = selectDataMap(application.getFrameController().getView());
         if (dataMapFile == null) {
             return;
         }
@@ -91,10 +90,10 @@ public class ImportDataMapAction extends CayenneAction {
                 newMap.setConfigurationSource(dataMapResource);
             }
 
-            CreateDataMapAction.onMapCreated(Application.getFrame(), getProjectController(), newMap);
+            CreateDataMapAction.onMapCreated(application.getFrameController().getView(), getProjectController(), newMap);
         } catch (Exception ex) {
             LOGGER.info("Error importing DataMap.", ex);
-            JOptionPane.showMessageDialog(Application.getFrame(), "Error reading DataMap: " + ex.getMessage(),
+            JOptionPane.showMessageDialog(application.getFrameController().getView(), "Error reading DataMap: " + ex.getMessage(),
                     "Can't Open DataMap", JOptionPane.OK_OPTION);
         }
     }
@@ -102,7 +101,7 @@ public class ImportDataMapAction extends CayenneAction {
     protected File selectDataMap(Frame f) {
 
         // find start directory in preferences
-        FSPath lastDir = getApplication().getFrameController().getLastDirectory();
+        FSPath lastDir = application.getFrameController().getLastDirectory();
 
         // configure dialog
         JFileChooser chooser = new JFileChooser();

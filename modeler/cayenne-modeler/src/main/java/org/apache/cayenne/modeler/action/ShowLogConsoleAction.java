@@ -19,14 +19,13 @@
 package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.util.CayenneAction;
 
 import java.awt.event.ActionEvent;
 
 /**
  * Action for opening log console window.
  */
-public class ShowLogConsoleAction extends CayenneAction {
+public class ShowLogConsoleAction extends ModelerAbstractAction {
 
     public ShowLogConsoleAction(Application application) {
         super("Show log console", application);

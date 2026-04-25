@@ -26,9 +26,8 @@ import java.awt.event.KeyEvent;
 import javax.swing.KeyStroke;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.util.CayenneAction;
 
-public class RedoAction extends CayenneAction {
+public class RedoAction extends ModelerAbstractAction {
 
     @Override
     public void setEnabled(boolean b) {

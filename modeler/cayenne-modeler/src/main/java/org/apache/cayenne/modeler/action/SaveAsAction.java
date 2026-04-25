@@ -22,11 +22,10 @@ package org.apache.cayenne.modeler.action;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.validator.ProjectValidatorDialogController;
 import org.apache.cayenne.modeler.event.model.ProjectOnSaveEvent;
 import org.apache.cayenne.modeler.event.model.ProjectSavedEvent;
-import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.pref.RenamedPreferences;
+import org.apache.cayenne.modeler.ui.project.validator.ProjectValidatorDialogController;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.project.validation.ProjectValidator;
@@ -45,7 +44,7 @@ import java.util.prefs.Preferences;
  * A "Save As" action that allows user to pick save location.
  * 
  */
-public class SaveAsAction extends CayenneAction {
+public class SaveAsAction extends ModelerAbstractAction {
 
     private final ProjectOpener fileChooser;
 
@@ -76,13 +75,13 @@ public class SaveAsAction extends CayenneAction {
             oldPath = p.getConfigurationResource().getURL().getPath();
         }
 
-        File projectDir = fileChooser.newProjectDir(Application.getFrame(), p);
+        File projectDir = fileChooser.newProjectDir(application.getFrameController().getView(), p);
         if (projectDir == null) {
             return false;
         }
 
         if (projectDir.exists() && !projectDir.canWrite()) {
-            JOptionPane.showMessageDialog(Application.getFrame(), "Can't save project - unable to write to file \""
+            JOptionPane.showMessageDialog(application.getFrameController().getView(), "Can't save project - unable to write to file \""
                     + projectDir.getPath() + "\"", "Can't Save Project", JOptionPane.ERROR_MESSAGE);
             return false;
         }
@@ -91,12 +90,12 @@ public class SaveAsAction extends CayenneAction {
 
         URLResource res = new URLResource(projectDir.toURI().toURL());
 
-        ProjectSaver saver = getApplication().getInjector().getInstance(ProjectSaver.class);
+        ProjectSaver saver = application.getInjector().getInstance(ProjectSaver.class);
 
         boolean isNewProject = p.getConfigurationResource() == null;
         Preferences tempOldPref = null;
         if (isNewProject) {
-            tempOldPref = getApplication().getMainPreferenceForProject();
+            tempOldPref = application.getMainPreferenceForProject();
         }
 
         saver.saveAs(p, res);
@@ -114,14 +113,14 @@ public class SaveAsAction extends CayenneAction {
         } else if (isNewProject) {
             if (tempOldPref != null) {
 
-                String newProjectName = getApplication().getNewProjectTemporaryName();
+                String newProjectName = application.getNewProjectTemporaryName();
 
                 if (tempOldPref.absolutePath().contains(newProjectName)) {
 
                     String projPath = tempOldPref.absolutePath().replace("/" + newProjectName, "");
                     String newName = p.getConfigurationResource().getURL().getPath().replace(".xml", "");
 
-                    Preferences newPref = getApplication().getMainPreferenceForProject().node(projPath + newName);
+                    Preferences newPref = application.getMainPreferenceForProject().node(projPath + newName);
 
                     RenamedPreferences.copyPreferences(newPref, tempOldPref, false);
                     tempOldPref.removeNode();
@@ -133,8 +132,8 @@ public class SaveAsAction extends CayenneAction {
         RenamedPreferences.removeNewPreferences();
 
         File file = new File(p.getConfigurationResource().getURL().toURI());
-        getApplication().getFrameController().addToLastProjListAction(file);
-        Application.getFrame().fireRecentFileListChanged();
+        application.getFrameController().addToLastProjListAction(file);
+        application.getFrameController().getView().fireRecentFileListChanged();
 
         getProjectController().fireProjectSavedEvent(new ProjectSavedEvent(getProjectController()));
 
@@ -152,7 +151,7 @@ public class SaveAsAction extends CayenneAction {
 
     public void performAction() {
 
-        ProjectValidator projectValidator = getApplication().getInjector().getInstance(ProjectValidator.class);
+        ProjectValidator projectValidator = application.getInjector().getInstance(ProjectValidator.class);
         ValidationResult validationResult = projectValidator.validate(getCurrentProject().getRootNode());
         
         getProjectController().fireProjectOnSaveEvent(new ProjectOnSaveEvent(SaveAsAction.class));
@@ -165,7 +164,7 @@ public class SaveAsAction extends CayenneAction {
             throw new CayenneRuntimeException("Error on save", ex);
         }
 
-        getApplication().getFrameController().onProjectSaved();
+        application.getFrameController().onProjectSaved();
 
         // If there were errors or warnings at validation, display them
         if (!validationResult.getFailures().isEmpty()) {
@@ -184,7 +183,7 @@ public class SaveAsAction extends CayenneAction {
             return false;
         }
 
-        Project project = getApplication().getProject();
+        Project project = application.getProject();
         return project != null && project.isModified();
     }
 }

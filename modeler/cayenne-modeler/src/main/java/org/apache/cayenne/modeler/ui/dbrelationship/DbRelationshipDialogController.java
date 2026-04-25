@@ -213,7 +213,7 @@ public class DbRelationshipDialogController extends ChildController<ProjectContr
             boolean isSelected = view.getToDepPk().isSelected();
             DbRelationship reverseRelationship = relationship.getReverseRelationship();
             if (reverseRelationship != null && reverseRelationship.isToDependentPK() && isSelected) {
-                boolean setToDepPk = JOptionPane.showConfirmDialog(Application.getFrame(), "Unset reverse relationship's \"To Dep PK\" setting?",
+                boolean setToDepPk = JOptionPane.showConfirmDialog(application.getFrameController().getView(), "Unset reverse relationship's \"To Dep PK\" setting?",
                         "Warning", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION;
                 relationship.setToDependentPK(setToDepPk);
                 reverseRelationship.setToDependentPK(!setToDepPk);

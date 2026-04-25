@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.dbgen;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.util.CayenneTable;
+import org.apache.cayenne.modeler.swing.table.CayenneTable;
 
 import javax.swing.*;
 import java.awt.*;

@@ -57,7 +57,7 @@ public class ConfirmRemoveDialog {
         JOptionPane pane = new JOptionPane(message, JOptionPane.QUESTION_MESSAGE);
         pane.setOptions(new Object[]{ DELETE, "Cancel" });
         pane.setInitialValue(DELETE);
-        pane.createDialog(Application.getFrame(), "Confirm Delete").setVisible(true);
+        pane.createDialog(Application.getInstance().getFrameController().getView(), "Confirm Delete").setVisible(true);
 
         shouldDelete = DELETE.equals(pane.getValue());
 

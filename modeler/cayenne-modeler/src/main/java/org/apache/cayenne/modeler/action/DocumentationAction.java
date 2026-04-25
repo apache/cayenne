@@ -23,10 +23,9 @@ import java.awt.event.ActionEvent;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.util.BrowserControl;
-import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.util.LocalizedStringsHandler;
 
-public class DocumentationAction extends CayenneAction {
+public class DocumentationAction extends ModelerAbstractAction {
 
     public static String getActionName() {
         return "Documentation";

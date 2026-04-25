@@ -45,7 +45,6 @@ import org.apache.cayenne.modeler.ui.project.editor.objentity.ObjCallbackMethod;
 import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
 import org.apache.cayenne.modeler.undo.PasteCompoundUndoableEdit;
 import org.apache.cayenne.modeler.undo.PasteUndoableEdit;
-import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.swing.CayenneTransferable;
 import org.apache.cayenne.query.Query;
 
@@ -64,7 +63,7 @@ import java.util.Map;
 /**
  * Action for pasting entities, queries etc. from the system buffer
  */
-public class PasteAction extends CayenneAction implements FlavorListener {
+public class PasteAction extends ModelerAbstractAction implements FlavorListener {
 
     private static final String COPY_PATTERN = "copy of %s (%d)";
 

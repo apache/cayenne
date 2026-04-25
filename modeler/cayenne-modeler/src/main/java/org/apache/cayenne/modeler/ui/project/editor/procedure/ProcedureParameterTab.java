@@ -41,10 +41,10 @@ import org.apache.cayenne.modeler.event.display.ProcedureDisplayListener;
 import org.apache.cayenne.modeler.event.display.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
-import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.modeler.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.table.CayenneCellEditor;
-import org.apache.cayenne.modeler.util.CayenneTable;
+import org.apache.cayenne.modeler.swing.table.CayenneTable;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
@@ -126,13 +126,13 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
         Icon up = ModelerUtil.buildIcon("icon-up.png");
         Icon down = ModelerUtil.buildIcon("icon-down.png");
 
-        moveUp = new CayenneAction.CayenneToolbarButton(null, 1);
+        moveUp = new ModelerAbstractAction.CayenneToolbarButton(null, 1);
         moveUp.setIcon(up);
         moveUp.setDisabledIcon(FilteredIconFactory.createDisabledIcon(up));
         moveUp.setToolTipText("Move Parameter Up");
         toolBar.add(moveUp);
 
-        moveDown = new CayenneAction.CayenneToolbarButton(null, 3);
+        moveDown = new ModelerAbstractAction.CayenneToolbarButton(null, 3);
         moveDown.setIcon(down);
         moveDown.setDisabledIcon(FilteredIconFactory.createDisabledIcon(down));
         moveDown.setToolTipText("Move Parameter Down");

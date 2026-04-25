@@ -352,7 +352,7 @@ public class InferRelationshipsController extends ChildController<RootController
             DbRelationship rel = new DbRelationship(uniqueRelName(temp.getSource(), temp
                     .getName()));
 
-            RelationshipEvent e = new RelationshipEvent(Application.getFrame(), rel, temp
+            RelationshipEvent e = new RelationshipEvent(application.getFrameController().getView(), rel, temp
                     .getSource(), MapEvent.ADD);
             mediator.fireDbRelationshipEvent(e);
 

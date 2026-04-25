@@ -17,12 +17,12 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util;
+package org.apache.cayenne.modeler.swing.table;
 
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
-import org.apache.cayenne.modeler.swing.table.SortButtonRenderer;
+import org.apache.cayenne.modeler.util.CayenneTableModel;
+import org.apache.cayenne.modeler.util.TableHeaderListener;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -39,7 +39,6 @@ import java.util.EventObject;
 /**
  * Common superclass of tables used in Cayenne. Contains some common configuration
  * settings and utility methods.
- *
  */
 public class CayenneTable extends JTable {
 
