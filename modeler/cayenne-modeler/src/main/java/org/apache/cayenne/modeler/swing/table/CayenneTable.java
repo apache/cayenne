@@ -28,12 +28,10 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
-import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -44,9 +42,13 @@ import java.util.EventObject;
  */
 public class CayenneTable extends JTable {
 
-    private final SortButtonRenderer renderer;
-    private final CayenneTableHeaderListener tableHeaderListener;
+    private final static int EPSILON = 5;
+    private final static Cursor east = Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR);
+    private final static Cursor west = Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR);
 
+    private final SortButtonRenderer renderer;
+
+    private TableColumnPreferences columnPreferences;
     private boolean isColumnWidthChanged;
 
     public CayenneTable() {
@@ -54,9 +56,8 @@ public class CayenneTable extends JTable {
         setRowMargin(3);
 
         this.renderer = new SortButtonRenderer();
-        this.tableHeaderListener = new CayenneTableHeaderListener(getTableHeader(), renderer);
-        
-        getTableHeader().addMouseListener(tableHeaderListener);
+
+        getTableHeader().addMouseListener(new HeaderListener());
         setSelectionModel(new CayenneListSelectionModel());
     }
 
@@ -134,23 +135,6 @@ public class CayenneTable extends JTable {
      */
     public void select(int[] rows) {
         ((CayenneListSelectionModel) getSelectionModel()).setSelection(rows);
-    }
-
-    public JTextComponent getSelectedTextComponent() {
-        int row = getSelectedRow();
-        int column = getSelectedColumn();
-        if (row < 0 || column < 0) {
-            return null;
-        }
-
-        TableCellEditor editor = this.getCellEditor(row, column);
-        if (editor instanceof DefaultCellEditor) {
-            Component comp = ((DefaultCellEditor) editor).getComponent();
-            if (comp instanceof JTextComponent) {
-                return (JTextComponent) comp;
-            }
-        }
-        return null;
     }
 
     @Override
@@ -242,14 +226,16 @@ public class CayenneTable extends JTable {
     }
 
     public void sort(int column, boolean isAscend) {
-        tableHeaderListener.sortByDefinedColumn(
+        sortByDefinedColumn(
                 convertColumnIndexToView(column),
                 column,
                 isAscend);
     }
 
-    public void setSortPreferenceSaver(TableColumnPreferences tableColumnPreferences) {
-        tableHeaderListener.setPreferences(tableColumnPreferences);
+    public void setColumnPreferences(TableColumnPreferences tableColumnPreferences) {
+        if (this.columnPreferences == null) {
+            this.columnPreferences = tableColumnPreferences;
+        }
     }
 
     public boolean getColumnWidthChanged() {
@@ -264,88 +250,67 @@ public class CayenneTable extends JTable {
         renderer.setSortingEnabled(sortable);
     }
 
-    static class CayenneTableHeaderListener extends MouseAdapter {
+    private void sortByDefinedColumn(int col, int sortCol, boolean order) {
+        CayenneTableModel model = (CayenneTableModel) getModel();
+        if (renderer.isSortingEnabled() && model.isColumnSortable(sortCol)) {
+            renderer.setSelectedColumn(col, order);
+            getTableHeader().repaint();
 
-        private static final int EPSILON = 5;
-        private static final Cursor EAST = Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR);
-        private static final Cursor WEST = Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR);
+            if (isEditing()) {
+                getCellEditor().stopCellEditing();
+            }
 
-        private JTableHeader header;
-        private SortButtonRenderer renderer;
-        private JTable table;
-
-        private TableColumnPreferences tableColumnPreferences;
-
-        public CayenneTableHeaderListener(JTableHeader header, SortButtonRenderer renderer) {
-            this.header = header;
-            this.renderer = renderer;
-            table = header.getTable();
+            model.sortByColumn(sortCol, order);
         }
+    }
+
+    class HeaderListener extends MouseAdapter {
 
         @Override
         public void mouseClicked(MouseEvent e) {
+            JTableHeader header = getTableHeader();
             if (e.getClickCount() > 1 && isResizeCursor()) {
                 resize(getLeftColumn(e.getPoint()));
             } else if (!isResizeCursor()) {
                 int col = header.columnAtPoint(e.getPoint());
-                int sortCol = table.convertColumnIndexToModel(col);
-                if (renderer.isSortingEnabled() && ((CayenneTableModel) table.getModel()).isColumnSortable(sortCol)) {
+                int sortCol = convertColumnIndexToModel(col);
+                if (renderer.isSortingEnabled() && ((CayenneTableModel) getModel()).isColumnSortable(sortCol)) {
                     boolean isAscent = SortButtonRenderer.DOWN != renderer.getState(col);
                     sortByDefinedColumn(col, sortCol, isAscent);
-                    tableColumnPreferences.setSortOrder(isAscent);
-                    tableColumnPreferences.setSortColumn(sortCol);
+                    columnPreferences.setSortOrder(isAscent);
+                    columnPreferences.setSortColumn(sortCol);
                 }
             }
         }
 
+        @Override
         public void mouseReleased(MouseEvent e) {
-            header.repaint();
-        }
-
-        public void sortByDefinedColumn(int col, int sortCol, boolean order) {
-            CayenneTableModel model = (CayenneTableModel) table.getModel();
-            if (renderer.isSortingEnabled() && model.isColumnSortable(sortCol)) {
-                renderer.setSelectedColumn(col, order);
-                header.repaint();
-
-                if (table.isEditing()) {
-                    table.getCellEditor().stopCellEditing();
-                }
-
-                model.sortByColumn(sortCol, order);
-            }
-        }
-
-        public void setPreferences(TableColumnPreferences tableColumnPreferences) {
-            if (this.tableColumnPreferences == null) {
-                this.tableColumnPreferences = tableColumnPreferences;
-            }
+            getTableHeader().repaint();
         }
 
         private boolean isResizeCursor() {
-            Cursor cursor = table.getTableHeader().getCursor();
-            return cursor.equals(EAST) || cursor.equals(WEST);
+            Cursor cursor = getTableHeader().getCursor();
+            return cursor.equals(east) || cursor.equals(west);
         }
 
         private int getLeftColumn(Point pt) {
             pt.x -= EPSILON;
-            return table.getTableHeader().columnAtPoint(pt);
+            return getTableHeader().columnAtPoint(pt);
         }
 
         private void resize(int col) {
-            TableColumnModel tcm = table.getColumnModel();
-            TableColumn tc = tcm.getColumn(col);
+            TableColumn tc = getColumnModel().getColumn(col);
             TableCellRenderer tcr = tc.getHeaderRenderer();
             if (tcr == null)
-                tcr = table.getTableHeader().getDefaultRenderer();
+                tcr = getTableHeader().getDefaultRenderer();
             Object obj = tc.getHeaderValue();
-            Component comp = tcr.getTableCellRendererComponent(table, obj, false, false, 0, 0);
+            Component comp = tcr.getTableCellRendererComponent(CayenneTable.this, obj, false, false, 0, 0);
             int maxWidth = comp.getPreferredSize().width;
 
-            for (int i = 0, ub = table.getRowCount(); i != ub; ++i) {
-                tcr = table.getCellRenderer(i, col);
-                obj = table.getValueAt(i, col);
-                comp = tcr.getTableCellRendererComponent(table, obj, false, false, i, col);
+            for (int i = 0, ub = getRowCount(); i != ub; ++i) {
+                tcr = getCellRenderer(i, col);
+                obj = getValueAt(i, col);
+                comp = tcr.getTableCellRendererComponent(CayenneTable.this, obj, false, false, i, col);
                 int w = comp.getPreferredSize().width;
                 if (w > maxWidth)
                     maxWidth = w;
@@ -354,6 +319,5 @@ public class CayenneTable extends JTable {
             tc.setPreferredWidth(maxWidth);
             tc.setWidth(maxWidth);
         }
-
     }
 }

@@ -19,11 +19,9 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.objentity.main;
 
-import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -31,25 +29,26 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.action.ObjEntityCounterpartAction;
 import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
-import org.apache.cayenne.modeler.ui.project.editor.objentity.classname.ClassNameUpdaterController;
-import org.apache.cayenne.modeler.ui.project.editor.objentity.duplicates.DuplicatedAttributesDialog;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
-import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ShowGraphEntityAction;
 import org.apache.cayenne.modeler.swing.CellRenderers;
-import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
-import org.apache.cayenne.modeler.util.Comparators;
-import org.apache.cayenne.modeler.util.ExpressionConvertor;
+import org.apache.cayenne.modeler.swing.JCayenneCheckBox;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
+import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.ui.project.editor.ExpressionConvertor;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ShowGraphEntityAction;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.classname.ClassNameUpdaterController;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.duplicates.DuplicatedAttributesDialog;
+import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
+import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
-import org.apache.cayenne.modeler.swing.JCayenneCheckBox;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -281,7 +280,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
         isAbstract.setSelected(entity.isAbstract());
         comment.setText(getComment(entity));
 
-        qualifier.setText(new ExpressionConvertor().valueAsString(entity.getDeclaredQualifier()));
+        qualifier.setText(ExpressionConvertor.asString(entity.getDeclaredQualifier()));
 
         // TODO: fix inheritance - we should allow to select optimistic
         // lock if superclass is not already locked,
@@ -353,12 +352,10 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
 
         ObjEntity entity = controller.getSelectedObjEntity();
         if (entity != null) {
-            ExpressionConvertor convertor = new ExpressionConvertor();
             try {
-                String oldQualifier = convertor.valueAsString(entity.getDeclaredQualifier());
+                String oldQualifier = ExpressionConvertor.asString(entity.getDeclaredQualifier());
                 if (!Util.nullSafeEquals(oldQualifier, text)) {
-                    Expression exp = (Expression) convertor.stringAsValue(text);
-                    entity.setDeclaredQualifier(exp);
+                    entity.setDeclaredQualifier(ExpressionConvertor.fromString(text));
                     controller.fireObjEntityEvent(new EntityEvent(this, entity));
                 }
             } catch (IllegalArgumentException ex) {

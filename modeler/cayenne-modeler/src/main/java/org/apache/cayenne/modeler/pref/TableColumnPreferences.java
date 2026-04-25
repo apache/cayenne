@@ -97,7 +97,7 @@ public class TableColumnPreferences extends CayennePreference {
             int defaultSortColumn,
             boolean defaultSortOrder) {
         bind(table, minSizes, maxSizes, defaultSizes);
-        ((CayenneTable) table).setSortPreferenceSaver(this);
+        ((CayenneTable) table).setColumnPreferences(this);
         this.defaultSortColumn = defaultSortColumn;
         this.defaultSortOrder = defaultSortOrder;
         updateSort(defaultSortColumn, defaultSortOrder);

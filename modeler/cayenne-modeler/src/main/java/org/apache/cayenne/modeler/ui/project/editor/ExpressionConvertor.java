@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util;
+package org.apache.cayenne.modeler.ui.project.editor;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
@@ -25,25 +25,13 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.parser.ParseException;
 import org.apache.cayenne.util.Util;
 
-/**
- * A Scope convertor that allows to display expressions in text fields.
- */
 public class ExpressionConvertor {
 
-    public String valueAsString(Object value) throws IllegalArgumentException {
-        if (value == null) {
-            return null;
-        }
-
-        if (!(value instanceof Expression)) {
-            throw new IllegalArgumentException(
-                "Unsupported value class: " + value.getClass().getName());
-        }
-
-        return value.toString();
+    public static String asString(Expression value) throws IllegalArgumentException {
+        return value != null ? value.toString() : null;
     }
 
-    public Object stringAsValue(String string) throws IllegalArgumentException {
+    public static Expression fromString(String string) throws IllegalArgumentException {
         if (string == null || string.trim().length() == 0) {
             return null;
         }
@@ -53,16 +41,11 @@ public class ExpressionConvertor {
         } catch (ExpressionException eex) {
             // this is likely a parse exception... show detailed message
             Throwable cause = Util.unwindException(eex);
-            String message =
-                (cause instanceof ParseException)
+            String message = (cause instanceof ParseException)
                     ? cause.getMessage()
                     : "Invalid expression: " + string;
 
             throw new IllegalArgumentException(message);
         }
-    }
-
-    public boolean supportsStringAsValue() {
-        return true;
     }
 }

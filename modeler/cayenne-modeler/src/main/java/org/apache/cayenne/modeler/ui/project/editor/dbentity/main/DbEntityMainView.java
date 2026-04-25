@@ -22,24 +22,23 @@ package org.apache.cayenne.modeler.ui.project.editor.dbentity.main;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.action.CreateObjEntityFromDbAction;
 import org.apache.cayenne.modeler.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.action.DbEntityCounterpartAction;
 import org.apache.cayenne.modeler.action.DbEntitySyncAction;
-import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.ui.project.editor.ExpressionConvertor;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ShowGraphEntityAction;
-import org.apache.cayenne.modeler.util.ExpressionConvertor;
+import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
@@ -184,7 +183,7 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
         name.setText(entity.getName());
         catalog.setText(entity.getCatalog());
         schema.setText(entity.getSchema());
-        qualifier.setText(new ExpressionConvertor().valueAsString(entity.getQualifier()));
+        qualifier.setText(ExpressionConvertor.asString(entity.getQualifier()));
         comment.setText(getComment(entity));
 
         String type = PK_DEFAULT_GENERATOR;
@@ -281,12 +280,10 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
         DbEntity ent = controller.getSelectedDbEntity();
 
         if (ent != null && !Util.nullSafeEquals(ent.getQualifier(), qualifier)) {
-            ExpressionConvertor convertor = new ExpressionConvertor();
             try {
-                String oldQualifier = convertor.valueAsString(ent.getQualifier());
+                String oldQualifier = ExpressionConvertor.asString(ent.getQualifier());
                 if (!Util.nullSafeEquals(oldQualifier, qualifier)) {
-                    Expression exp = (Expression) convertor.stringAsValue(qualifier);
-                    ent.setQualifier(exp);
+                    ent.setQualifier(ExpressionConvertor.fromString(qualifier));
                     controller.fireDbEntityEvent(new EntityEvent(this, ent));
                 }
             } catch (IllegalArgumentException ex) {

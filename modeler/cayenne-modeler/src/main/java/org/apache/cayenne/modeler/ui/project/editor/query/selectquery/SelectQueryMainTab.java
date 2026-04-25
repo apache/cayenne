@@ -19,17 +19,9 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.query.selectquery;
 
-import org.apache.cayenne.modeler.ui.project.editor.query.BaseQueryMainTab;
-import org.apache.cayenne.modeler.ui.project.editor.query.ObjectQueryPropertiesPanel;
-
-import java.awt.BorderLayout;
-import java.util.Arrays;
-import java.util.Iterator;
-
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JCheckBox;
-
-import org.apache.cayenne.modeler.event.model.QueryEvent;
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.parser.ASTPath;
@@ -38,19 +30,23 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.swing.JCayenneCheckBox;
 import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.ui.project.editor.ExpressionConvertor;
+import org.apache.cayenne.modeler.ui.project.editor.query.BaseQueryMainTab;
+import org.apache.cayenne.modeler.ui.project.editor.query.ObjectQueryPropertiesPanel;
 import org.apache.cayenne.modeler.util.Comparators;
-import org.apache.cayenne.modeler.util.ExpressionConvertor;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * A tabbed pane that contains editors for various SelectQuery parts.
@@ -176,18 +172,12 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
                 : null;
     }
 
-    /**
-     * Initializes Query qualifier from string.
-     */
     void setQueryQualifier(String text) {
-        if (text != null && text.trim().length() == 0) {
+        if (text != null && text.trim().isEmpty()) {
             text = null;
         }
 
-        Expression qualifier = createQualifier(text);
-
-        //getQuery() is not null if we reached here
-        getQuery().setQualifier((qualifier));
+        getQuery().setQualifier(createQualifier(text));
         controller.fireQueryEvent(new QueryEvent(this, getQuery()));
     }
 
@@ -204,11 +194,10 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
             return null;
         }
 
-        ExpressionConvertor convertor = new ExpressionConvertor();
         try {
-            String oldQualifier = convertor.valueAsString(query.getQualifier());
+            String oldQualifier = ExpressionConvertor.asString(query.getQualifier());
             if (!Util.nullSafeEquals(oldQualifier, text)) {
-                Expression exp = (Expression) convertor.stringAsValue(text);
+                Expression exp = ExpressionConvertor.fromString(text);
 
                 /*
                  * Advanced checking. See CAY-888 #1
