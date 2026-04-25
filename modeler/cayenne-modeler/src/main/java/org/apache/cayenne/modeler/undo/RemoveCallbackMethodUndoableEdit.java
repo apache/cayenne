@@ -20,8 +20,8 @@ package org.apache.cayenne.modeler.undo;
 
 import org.apache.cayenne.modeler.action.CreateCallbackMethodAction;
 import org.apache.cayenne.modeler.action.RemoveCallbackMethodAction;
-import org.apache.cayenne.modeler.ui.project.editor.objentity.CallbackType;
-import org.apache.cayenne.modeler.ui.project.editor.objentity.ObjCallbackMethod;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.CallbackType;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
 
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;

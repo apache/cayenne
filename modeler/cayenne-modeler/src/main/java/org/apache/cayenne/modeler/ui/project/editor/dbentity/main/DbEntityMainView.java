@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.project.editor.dbentity;
+package org.apache.cayenne.modeler.ui.project.editor.dbentity.main;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -49,7 +49,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.EventObject;
 
-public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, DbEntityDisplayListener {
+public class DbEntityMainView extends JPanel implements ExistingSelectionProcessor, DbEntityDisplayListener {
 
     static final String PK_DEFAULT_GENERATOR = "Cayenne-Generated (Default)";
     static final String PK_DB_GENERATOR = "Database-Generated";
@@ -74,7 +74,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
 
     private final JToolBar toolBar;
 
-    public DbEntityTab(ProjectController controller) {
+    public DbEntityMainView(ProjectController controller) {
         super();
         this.controller = controller;
 

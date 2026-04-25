@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.ui.project.editor.objentity;
+package org.apache.cayenne.modeler.ui.project.editor.objentity.properties;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
@@ -79,13 +79,13 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
     private static final ImageIcon INHERITANCE_ICON = ModelerUtil.buildIcon("icon-inheritance.png");
 
     private final ProjectController controller;
-    private final ObjEntityAttributeRelationshipTab parentPanel;
+    private final ObjEntityPropertiesView parentPanel;
 
     private final CayenneTable table;
     private final TableColumnPreferences tablePreferences;
     private final JMenuItem editMenu;
 
-    public ObjAttributePanel(ProjectController controller, ObjEntityAttributeRelationshipTab parentPanel) {
+    public ObjAttributePanel(ProjectController controller, ObjEntityPropertiesView parentPanel) {
         this.controller = controller;
         this.parentPanel = parentPanel;
 

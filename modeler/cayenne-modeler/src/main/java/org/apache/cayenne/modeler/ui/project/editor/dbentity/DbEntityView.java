@@ -33,25 +33,29 @@ import org.apache.cayenne.modeler.action.RemoveRelationshipAction;
 import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.ui.project.editor.dbentity.main.DbEntityMainView;
+import org.apache.cayenne.modeler.ui.project.editor.dbentity.properties.DbAttributePanel;
+import org.apache.cayenne.modeler.ui.project.editor.dbentity.properties.DbEntityPropertiesView;
+import org.apache.cayenne.modeler.ui.project.editor.dbentity.properties.DbRelationshipPanel;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import java.awt.*;
 
-public class DbEntityTabbedView extends JTabbedPane {
+public class DbEntityView extends JTabbedPane {
 
     private final Component entityPanel;
-    private final DbEntityAttributeRelationshipTab attributeRelationshipTab;
+    private final DbEntityPropertiesView attributeRelationshipTab;
     private int lastTabIndex;
 
-    public DbEntityTabbedView(ProjectController controller) {
+    public DbEntityView(ProjectController controller) {
 
         setTabPlacement(JTabbedPane.TOP);
 
-        this.entityPanel = new JScrollPane(new DbEntityTab(controller));
+        this.entityPanel = new JScrollPane(new DbEntityMainView(controller));
         addTab("Entity", entityPanel);
 
-        this.attributeRelationshipTab = new DbEntityAttributeRelationshipTab(controller);
+        this.attributeRelationshipTab = new DbEntityPropertiesView(controller);
         addTab("Properties", attributeRelationshipTab);
 
         controller.addDbEntityDisplayListener(this::currentDbEntityChanged);

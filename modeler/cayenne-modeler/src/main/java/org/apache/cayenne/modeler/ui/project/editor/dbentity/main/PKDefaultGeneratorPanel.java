@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.project.editor.dbentity;
+package org.apache.cayenne.modeler.ui.project.editor.dbentity.main;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.modeler.ui.project.ProjectController;

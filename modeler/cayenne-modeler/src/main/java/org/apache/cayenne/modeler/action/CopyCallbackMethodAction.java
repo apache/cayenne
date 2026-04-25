@@ -23,7 +23,7 @@ import java.util.Arrays;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.project.editor.objentity.ObjCallbackMethod;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
 
 public class CopyCallbackMethodAction extends CopyAction implements MultipleObjectsAction {
 

@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.ui.project.editor.objentity;
+package org.apache.cayenne.modeler.ui.project.editor.objentity.properties;
 
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
@@ -74,10 +74,10 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
     private final ProjectController controller;
     private final CayenneTable table;
     private final TableColumnPreferences tablePreferences;
-    private final ObjEntityAttributeRelationshipTab parentPanel;
+    private final ObjEntityPropertiesView parentPanel;
     private final JMenuItem editMenu;
 
-    public ObjRelationshipPanel(ProjectController controller, ObjEntityAttributeRelationshipTab parentPanel) {
+    public ObjRelationshipPanel(ProjectController controller, ObjEntityPropertiesView parentPanel) {
         this.controller = controller;
         this.parentPanel = parentPanel;
 

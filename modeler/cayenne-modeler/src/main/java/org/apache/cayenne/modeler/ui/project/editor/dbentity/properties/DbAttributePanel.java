@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.ui.project.editor.dbentity;
+package org.apache.cayenne.modeler.ui.project.editor.dbentity.properties;
 
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
@@ -57,9 +57,9 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
     private final ProjectController controller;
     private final CayenneTable table;
     private final TableColumnPreferences tablePreferences;
-    private final DbEntityAttributeRelationshipTab parentPanel;
+    private final DbEntityPropertiesView parentPanel;
 
-    public DbAttributePanel(ProjectController controller, DbEntityAttributeRelationshipTab parentPanel) {
+    public DbAttributePanel(ProjectController controller, DbEntityPropertiesView parentPanel) {
         this.controller = controller;
         this.parentPanel = parentPanel;
 

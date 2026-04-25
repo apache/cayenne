@@ -23,7 +23,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.editor.objentity.ObjRelationshipTableModel;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.properties.ObjRelationshipTableModel;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;

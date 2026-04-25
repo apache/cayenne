@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.ui.project.editor.objentity;
+package org.apache.cayenne.modeler.ui.project.editor.objentity.properties;
 
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.ObjEntityListener;
@@ -50,7 +50,7 @@ import java.awt.event.ActionListener;
 /**
  * Combines ObjEntityAttributeTab and ObjEntityRelationshipTab in JSplitPane.
  */
-public class ObjEntityAttributeRelationshipTab extends JPanel implements ObjEntityDisplayListener, ObjEntityListener {
+public class ObjEntityPropertiesView extends JPanel implements ObjEntityDisplayListener, ObjEntityListener {
 
     private final ObjAttributePanel attributePanel;
     private final ObjRelationshipPanel relationshipPanel;
@@ -58,7 +58,7 @@ public class ObjEntityAttributeRelationshipTab extends JPanel implements ObjEnti
     private final JToolBar toolBar;
     private final JButton editButton;
 
-    public ObjEntityAttributeRelationshipTab(ProjectController controller) {
+    public ObjEntityPropertiesView(ProjectController controller) {
         this.setLayout(new BorderLayout());
 
         this.editButton = new ModelerAbstractAction.CayenneToolbarButton(null, 0);

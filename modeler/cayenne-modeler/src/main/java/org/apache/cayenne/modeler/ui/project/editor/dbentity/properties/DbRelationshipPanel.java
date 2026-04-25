@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.ui.project.editor.dbentity;
+package org.apache.cayenne.modeler.ui.project.editor.dbentity.properties;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -65,11 +65,11 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
     private final ProjectController controller;
     private final CayenneTable table;
     private final TableColumnPreferences tablePreferences;
-    private final DbEntityAttributeRelationshipTab parentPanel;
+    private final DbEntityPropertiesView parentPanel;
     private final JMenuItem editMenu;
     private JComboBox<DbEntity> targetCombo;
 
-    public DbRelationshipPanel(ProjectController controller, DbEntityAttributeRelationshipTab parentPanel) {
+    public DbRelationshipPanel(ProjectController controller, DbEntityPropertiesView parentPanel) {
         this.controller = controller;
         this.parentPanel = parentPanel;
 

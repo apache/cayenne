@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.project.editor.objentity;
+package org.apache.cayenne.modeler.ui.project.editor.objentity.main;
 
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
@@ -62,7 +62,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, ExistingSelectionProcessor {
+public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListener, ExistingSelectionProcessor {
 
     private static final ObjEntity NO_INHERITANCE = new ObjEntity("Direct Mapping to Table/View");
 
@@ -81,7 +81,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
     private final JCheckBox isAbstract;
     private final CayenneUndoableTextField comment;
 
-    public ObjEntityTab(ProjectController controller) {
+    public ObjEntityMainView(ProjectController controller) {
         this.controller = controller;
 
         this.setLayout(new BorderLayout());
@@ -176,7 +176,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
 
             if (dbEntity != entity.getDbEntity()) {
                 entity.setDbEntity(dbEntity);
-                controller.fireObjEntityEvent(new EntityEvent(ObjEntityTab.this, entity));
+                controller.fireObjEntityEvent(new EntityEvent(ObjEntityMainView.this, entity));
             }
         });
 

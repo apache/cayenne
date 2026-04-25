@@ -35,19 +35,24 @@ import org.apache.cayenne.modeler.action.RemoveRelationshipAction;
 import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjEntityCallbacksView;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.main.ObjEntityMainView;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.properties.ObjAttributePanel;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.properties.ObjEntityPropertiesView;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.properties.ObjRelationshipPanel;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import java.awt.*;
 
-public class ObjEntityTabbedView extends JTabbedPane {
+public class ObjEntityView extends JTabbedPane {
 
     private final Component entityPanel;
-    private final ObjEntityAttributeRelationshipTab attributeRelationshipTab;
-    private final ObjEntityCallbackMethodsTab callbacksPanel;
+    private final ObjEntityPropertiesView attributeRelationshipTab;
+    private final ObjEntityCallbacksView callbacksPanel;
     private int lastTabIndex;
 
-    public ObjEntityTabbedView(ProjectController controller) {
+    public ObjEntityView(ProjectController controller) {
 
         setTabPlacement(JTabbedPane.TOP);
 
@@ -55,13 +60,13 @@ public class ObjEntityTabbedView extends JTabbedPane {
         // note that those panels that have no internal scrollable tables
         // must be wrapped in a scroll pane
 
-        entityPanel = new JScrollPane(new ObjEntityTab(controller));
+        entityPanel = new JScrollPane(new ObjEntityMainView(controller));
         addTab("Entity", entityPanel);
 
-        attributeRelationshipTab = new ObjEntityAttributeRelationshipTab(controller);
+        attributeRelationshipTab = new ObjEntityPropertiesView(controller);
         addTab("Properties", attributeRelationshipTab);
 
-        callbacksPanel = new ObjEntityCallbackMethodsTab(controller);
+        callbacksPanel = new ObjEntityCallbacksView(controller);
         addTab("Callbacks", callbacksPanel);
 
         controller.addObjEntityDisplayListener(this::currentObjEntityChanged);

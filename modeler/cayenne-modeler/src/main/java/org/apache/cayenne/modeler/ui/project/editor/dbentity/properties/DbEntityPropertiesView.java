@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.ui.project.editor.dbentity;
+package org.apache.cayenne.modeler.ui.project.editor.dbentity.properties;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -50,10 +50,7 @@ import javax.swing.JToolBar;
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 
-/**
- * Combines DbEntityAttributeTab and DbEntityRelationshipTab in JSplitPane.
- */
-public class DbEntityAttributeRelationshipTab extends JPanel implements DbEntityDisplayListener, DbEntityListener {
+public class DbEntityPropertiesView extends JPanel implements DbEntityDisplayListener, DbEntityListener {
 
     private final DbAttributePanel attributePanel;
     private final DbRelationshipPanel relationshipPanel;
@@ -61,7 +58,7 @@ public class DbEntityAttributeRelationshipTab extends JPanel implements DbEntity
     private final JSplitPane splitPane;
     private final JToolBar toolBar;
 
-    public DbEntityAttributeRelationshipTab(ProjectController controller) {
+    public DbEntityPropertiesView(ProjectController controller) {
 
         this.setLayout(new BorderLayout());
 

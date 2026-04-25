@@ -25,9 +25,9 @@ import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.DataDomainTabbedView;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.DataMapView;
 import org.apache.cayenne.modeler.ui.project.editor.datanode.DataNodeController;
-import org.apache.cayenne.modeler.ui.project.editor.dbentity.DbEntityTabbedView;
+import org.apache.cayenne.modeler.ui.project.editor.dbentity.DbEntityView;
 import org.apache.cayenne.modeler.ui.project.editor.embeddable.EmbeddableView;
-import org.apache.cayenne.modeler.ui.project.editor.objentity.ObjEntityTabbedView;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.ObjEntityView;
 import org.apache.cayenne.modeler.ui.project.editor.procedure.ProcedureQueryView;
 import org.apache.cayenne.modeler.ui.project.editor.procedure.ProcedureTabbedView;
 import org.apache.cayenne.modeler.ui.project.editor.query.ejbql.EjbqlTabbedView;
@@ -57,8 +57,8 @@ public class EditorPanelView extends JPanel {
 
     private final CardLayout detailLayout;
 
-    private final DbEntityTabbedView dbDetailView;
-    private final ObjEntityTabbedView objDetailView;
+    private final DbEntityView dbDetailView;
+    private final ObjEntityView objDetailView;
     private final EmbeddableView embeddableView;
     private final DataDomainTabbedView dataDomainView;
     private final DataMapView dataMapView;
@@ -104,10 +104,10 @@ public class EditorPanelView extends JPanel {
         embeddableView = new EmbeddableView(controller);
         add(embeddableView, EMBEDDABLE_VIEW);
 
-        objDetailView = new ObjEntityTabbedView(controller);
+        objDetailView = new ObjEntityView(controller);
         add(objDetailView, OBJ_VIEW);
 
-        dbDetailView = new DbEntityTabbedView(controller);
+        dbDetailView = new DbEntityView(controller);
         add(dbDetailView, DB_VIEW);
 
         controller.addDomainDisplayListener(e -> detailLayout.show(this, e.getDomain() == null ? EMPTY_VIEW : DOMAIN_VIEW));
@@ -137,11 +137,11 @@ public class EditorPanelView extends JPanel {
         return embeddableView;
     }
 
-    public DbEntityTabbedView getDbDetailView() {
+    public DbEntityView getDbDetailView() {
         return dbDetailView;
     }
 
-    public ObjEntityTabbedView getObjDetailView() {
+    public ObjEntityView getObjDetailView() {
         return objDetailView;
     }
 

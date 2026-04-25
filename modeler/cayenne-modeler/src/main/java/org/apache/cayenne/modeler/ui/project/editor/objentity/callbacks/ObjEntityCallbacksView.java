@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.ui.project.editor.objentity;
+package org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -77,9 +77,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class ObjEntityCallbackMethodsTab extends JPanel {
+public class ObjEntityCallbacksView extends JPanel {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ObjEntityCallbackMethodsTab.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ObjEntityCallbacksView.class);
 
     private static final Map<Integer, Integer> MIN_SIZES = Collections.singletonMap(0, 150);
 
@@ -102,7 +102,7 @@ public class ObjEntityCallbackMethodsTab extends JPanel {
 
     private final CayenneTable[] tables = new CayenneTable[callbackTypes.length];
 
-    public ObjEntityCallbackMethodsTab(ProjectController controller) {
+    public ObjEntityCallbacksView(ProjectController controller) {
         this.controller = controller;
         this.setLayout(new BorderLayout());
 
@@ -175,7 +175,7 @@ public class ObjEntityCallbackMethodsTab extends JPanel {
         });
 
         controller.addObjEntityDisplayListener(e -> {
-            if (ObjEntityCallbackMethodsTab.this.isVisible()) {
+            if (ObjEntityCallbacksView.this.isVisible()) {
                 rebuildTables();
             }
         });
@@ -243,7 +243,7 @@ public class ObjEntityCallbackMethodsTab extends JPanel {
             builder.append(createTablePanel(tables[index++]));
         }
 
-        tablePreferences = new TableColumnPreferences(ObjEntityCallbackMethodsTab.class, "objEntity/callbackTable");
+        tablePreferences = new TableColumnPreferences(ObjEntityCallbacksView.class, "objEntity/callbackTable");
 
         auxPanel.add(builder.getPanel(), BorderLayout.CENTER);
         validate();
@@ -496,7 +496,7 @@ public class ObjEntityCallbackMethodsTab extends JPanel {
                 for (CayenneTable nextTable : tables) {
                     nextTable.getColumnModel().getColumn(0).setPreferredWidth(table.getWidth());
                 }
-                tablePreferences = new TableColumnPreferences(ObjEntityCallbackMethodsTab.class, "objEntity/callbackTable");
+                tablePreferences = new TableColumnPreferences(ObjEntityCallbacksView.class, "objEntity/callbackTable");
                 table.setColumnWidthChanged(false);
             }
         }

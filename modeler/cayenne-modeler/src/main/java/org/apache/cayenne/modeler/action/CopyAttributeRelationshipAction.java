@@ -21,8 +21,8 @@ package org.apache.cayenne.modeler.action;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.project.editor.objentity.ObjAttributePanel;
-import org.apache.cayenne.modeler.ui.project.editor.dbentity.DbAttributePanel;
+import org.apache.cayenne.modeler.ui.project.editor.dbentity.properties.DbAttributePanel;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.properties.ObjAttributePanel;
 import javax.swing.JComponent;
 
 public class CopyAttributeRelationshipAction extends CopyAction implements MultipleObjectsAction {

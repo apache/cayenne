@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.event.display;
 
-import org.apache.cayenne.modeler.ui.project.editor.objentity.ObjCallbackMethod;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
 
 import java.util.EventObject;
 
