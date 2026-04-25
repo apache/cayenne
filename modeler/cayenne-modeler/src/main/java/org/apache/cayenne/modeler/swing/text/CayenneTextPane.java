@@ -30,8 +30,6 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Highlighter;
 import javax.swing.text.JTextComponent;
-import javax.swing.text.StyledEditorKit;
-import javax.swing.text.ViewFactory;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
@@ -137,7 +135,7 @@ public class CayenneTextPane extends JPanel {
         setMinimumSize(dimension);
         setBorder(null);
 
-        pane = new JTextPaneScrollable(new EditorKit(syntax)) {
+        pane = new JTextPaneScrollable(new CayenneTextPaneEditorKit(syntax)) {
             public void paint(Graphics g) {
                 super.paint(g);
                 CayenneTextPane.this.repaint();
@@ -340,7 +338,7 @@ public class CayenneTextPane extends JPanel {
 
     class JTextPaneScrollable extends JTextPane {
 
-        JTextPaneScrollable(EditorKit editorKit) {
+        JTextPaneScrollable(CayenneTextPaneEditorKit editorKit) {
             // Set editor kit
             this.setEditorKitForContentType(editorKit.getContentType(), editorKit);
             this.setContentType(editorKit.getContentType());
@@ -360,27 +358,6 @@ public class CayenneTextPane extends JPanel {
         @Override
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
-        }
-    }
-
-    static class EditorKit extends StyledEditorKit {
-
-        private final ViewFactory xmlViewFactory;
-        private final String contentType;
-
-        public EditorKit(TextSyntax syntax) {
-            contentType = syntax.contentType();
-            xmlViewFactory = new TextPaneViewFactory(syntax);
-        }
-
-        @Override
-        public ViewFactory getViewFactory() {
-            return xmlViewFactory;
-        }
-
-        @Override
-        public String getContentType() {
-            return contentType;
         }
     }
 

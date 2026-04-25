@@ -19,7 +19,7 @@
 package org.apache.cayenne.modeler.ui.autorelationship;
 
 import org.apache.cayenne.modeler.mvc.ChildController;
-import org.apache.cayenne.modeler.util.TableSizer;
+import org.apache.cayenne.modeler.swing.table.TableSizer;
 
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;

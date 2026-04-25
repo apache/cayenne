@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util;
+package org.apache.cayenne.modeler.swing.table;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
