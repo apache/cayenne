@@ -30,6 +30,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Highlighter;
 import javax.swing.text.JTextComponent;
+import javax.swing.text.StyledEditorKit;
+import javax.swing.text.ViewFactory;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
@@ -86,7 +88,7 @@ public class CayenneTextPane extends JPanel {
 
     /**
      * Return an int containing the wrapped line index at the given position
-     * 
+     *
      * @param pos int
      * @return int
      */
@@ -181,11 +183,11 @@ public class CayenneTextPane extends JPanel {
 
     /**
      * set underlines text in JCayenneTextPane
-     * 
-     * @param line int - starting line for underlined text
+     *
+     * @param line      int - starting line for underlined text
      * @param lastIndex int - starting position in line for underlined text
-     * @param size int
-     * @param message String - text for toolTip, contains the text of the error
+     * @param size      int
+     * @param message   String - text for toolTip, contains the text of the error
      */
 
     public void setHighlightText(int line, int lastIndex, int size, String message) {
@@ -259,9 +261,9 @@ public class CayenneTextPane extends JPanel {
         Highlighter highlighter = pane.getHighlighter();
         removeHighlightText(highlighter);
     }
-    
+
     public int getCaretPosition() {
-        return pane.getCaretPosition();        
+        return pane.getCaretPosition();
     }
 
     public void paint(Graphics g) {
@@ -284,7 +286,7 @@ public class CayenneTextPane extends JPanel {
             if (pane.modelToView2D(start) == null) {
                 starting_y = -1;
             } else {
-                starting_y = (int)pane.modelToView2D(start).getY()
+                starting_y = (int) pane.modelToView2D(start).getY()
                         - scrollPane.getViewport().getViewPosition().y
                         + fontHeight
                         - fontDesc;
@@ -317,7 +319,7 @@ public class CayenneTextPane extends JPanel {
     public void setDocumentTextDirect(String text) {
         Document document = getDocument();
         try {
-            if(!document.getText(0, document.getLength()).equals(text)) {
+            if (!document.getText(0, document.getLength()).equals(text)) {
                 document.remove(0, document.getLength());
                 document.insertString(0, text, null);
             }
@@ -358,6 +360,27 @@ public class CayenneTextPane extends JPanel {
         @Override
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
+        }
+    }
+
+    static class EditorKit extends StyledEditorKit {
+
+        private final ViewFactory xmlViewFactory;
+        private final String contentType;
+
+        public EditorKit(TextSyntax syntax) {
+            contentType = syntax.contentType();
+            xmlViewFactory = new TextPaneViewFactory(syntax);
+        }
+
+        @Override
+        public ViewFactory getViewFactory() {
+            return xmlViewFactory;
+        }
+
+        @Override
+        public String getContentType() {
+            return contentType;
         }
     }
 
