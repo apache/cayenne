@@ -40,6 +40,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.modeler.swing.JCayenneCheckBox;
+import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.ExpressionConvertor;
@@ -60,7 +61,7 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class SelectQueryMainTab extends BaseQueryMainTab {
 
-    protected TextAdapter comment;
+    protected CayenneUndoableTextField comment;
     protected TextAdapter qualifier;
     protected JCheckBox distinct;
     protected ObjectQueryPropertiesPanel properties;
@@ -96,12 +97,8 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
             }
         };
 
-        comment = new TextAdapter(new JTextField()) {
-            @Override
-            protected void updateModel(String text) {
-                setQueryComment(text);
-            }
-        };
+        comment = new CayenneUndoableTextField();
+        comment.addCommitListener(this::setQueryComment);
 
         distinct = new JCayenneCheckBox();
 
@@ -125,7 +122,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
         builder.addLabel("Distinct:", cc.xy(1, 9));
         builder.add(distinct, cc.xy(3, 9));
         builder.addLabel("Comment:", cc.xy(1, 11));
-        builder.add(comment.getComponent(), cc.xy(3, 11));
+        builder.add(comment, cc.xy(3, 11));
 
         this.setLayout(new BorderLayout());
         this.add(builder.getPanel(), BorderLayout.NORTH);

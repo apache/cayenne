@@ -24,7 +24,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import java.util.Vector;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
@@ -32,27 +31,26 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
-import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
-import org.apache.cayenne.validation.ValidationException;
 
 public class ReverseEngineeringConfigPanel extends JPanel {
 
     private static final String DATA_FIELDS_LAYOUT = "right:pref, 3dlu, fill:235dlu";
 
     private JComboBox<String> strategyCombo;
-    private TextAdapter meaningfulPk;
-    private TextAdapter stripFromTableNames;
+    private CayenneUndoableTextField meaningfulPk;
+    private CayenneUndoableTextField stripFromTableNames;
     private JCheckBox skipRelationshipsLoading;
     private JCheckBox skipPrimaryKeyLoading;
     private JCheckBox forceDataMapCatalog;
     private JCheckBox forceDataMapSchema;
     private JCheckBox useJava7Types;
 
-    private TextAdapter tableTypes;
+    private CayenneUndoableTextField tableTypes;
 
     private ProjectController projectController;
 
@@ -71,15 +69,15 @@ public class ReverseEngineeringConfigPanel extends JPanel {
         DefaultFormBuilder panelBuilder = new DefaultFormBuilder(panelLayout);
         panelBuilder.setDefaultDialogBorder();
 
-        panelBuilder.append("Tables with Meaningful PK Pattern:", meaningfulPk.getComponent());
-        panelBuilder.append("Strip from table names:", stripFromTableNames.getComponent());
+        panelBuilder.append("Tables with Meaningful PK Pattern:", meaningfulPk);
+        panelBuilder.append("Strip from table names:", stripFromTableNames);
         panelBuilder.append("Skip relationships loading:", skipRelationshipsLoading);
         panelBuilder.append("Skip primary key loading:", skipPrimaryKeyLoading);
         panelBuilder.append("Force datamap catalog:", forceDataMapCatalog);
         panelBuilder.append("Force datamap schema:", forceDataMapSchema);
         panelBuilder.append("Use java.util.Date type:", useJava7Types);
         panelBuilder.append("Naming strategy:", strategyCombo);
-        panelBuilder.append("Table types:", tableTypes.getComponent());
+        panelBuilder.append("Table types:", tableTypes);
 
         add(panelBuilder.getPanel());
     }
@@ -115,59 +113,30 @@ public class ReverseEngineeringConfigPanel extends JPanel {
         AutoCompletion.enable(strategyCombo, false, true);
         strategyCombo.setToolTipText("Naming strategy to use");
 
-        JTextField meaningfulPkField = new JTextField();
-        meaningfulPkField.setToolTipText("<html>Regular expression to filter tables with meaningful primary keys.<br>" +
+        meaningfulPk = new CayenneUndoableTextField();
+        meaningfulPk.setToolTipText("<html>Regular expression to filter tables with meaningful primary keys.<br>" +
                 "Multiple expressions divided by comma can be used.<br>" +
                 "Example: <b>^table1|^table2|^prefix.*|table_name</b></html>");
-        meaningfulPk = new TextAdapter(meaningfulPkField) {
-            protected void updateModel(String text) {
-                getReverseEngineeringBySelectedMap().setMeaningfulPkTables(text);
-                if(!dbImportView.isInitFromModel()) {
-                    projectController.setDirty(true);
-                }
+        meaningfulPk.addCommitListener(text -> {
+            getReverseEngineeringBySelectedMap().setMeaningfulPkTables(text);
+            if (!dbImportView.isInitFromModel()) {
+                projectController.setDirty(true);
             }
-        };
+        });
 
-        JTextField stripFromTableNamesField = new JTextField();
-        stripFromTableNamesField.setToolTipText("<html>Regex that matches the part of the table name that needs to be stripped off " +
+        stripFromTableNames = new CayenneUndoableTextField();
+        stripFromTableNames.setToolTipText("<html>Regex that matches the part of the table name that needs to be stripped off " +
                 "when generating ObjEntity name</html>");
-        stripFromTableNames = new TextAdapter(stripFromTableNamesField) {
-            protected void updateModel(String text) {
-                getReverseEngineeringBySelectedMap().setStripFromTableNames(text);
-                if(!dbImportView.isInitFromModel()) {
-                    projectController.setDirty(true);
-                }
+        stripFromTableNames.addCommitListener(text -> {
+            getReverseEngineeringBySelectedMap().setStripFromTableNames(text);
+            if (!dbImportView.isInitFromModel()) {
+                projectController.setDirty(true);
             }
-        };
+        });
 
-        JTextField tableTypesField = new JTextField();
-        tableTypesField.setToolTipText("<html>Default types to import is TABLE and VIEW.");
-        tableTypes = new TextAdapter(tableTypesField) {
-            @Override
-            protected void updateModel(String text) throws ValidationException {
-                ReverseEngineering reverseEngineering = getReverseEngineeringBySelectedMap();
-                if(text == null || text.isEmpty()) {
-                    String[] tableTypesFromReverseEngineering = reverseEngineering.getTableTypes();
-                    tableTypes.setText(String.join(",", tableTypesFromReverseEngineering));
-                    JOptionPane.showMessageDialog(
-                            Application.getInstance().getFrameController().getView(),
-                            "Table types field can't be empty.",
-                            "Error setting table types",
-                            JOptionPane.ERROR_MESSAGE);
-                } else {
-                    reverseEngineering.getTableTypesCollection().clear();
-                    String[] types = text.split("\\s*,\\s*");
-                    for(String type : types) {
-                        if(!type.isEmpty()) {
-                            reverseEngineering.addTableType(type.trim());
-                        }
-                    }
-                    if(!dbImportView.isInitFromModel()) {
-                        projectController.setDirty(true);
-                    }
-                }
-            }
-        };
+        tableTypes = new CayenneUndoableTextField();
+        tableTypes.setToolTipText("<html>Default types to import is TABLE and VIEW.");
+        tableTypes.addCommitListener(this::applyTableTypes);
 
         skipRelationshipsLoading = new JCheckBox();
         skipRelationshipsLoading.setToolTipText("<html>Whether to load relationships.</html>");
@@ -240,15 +209,39 @@ public class ReverseEngineeringConfigPanel extends JPanel {
         }
     }
 
+    void applyTableTypes(String text) {
+        ReverseEngineering reverseEngineering = getReverseEngineeringBySelectedMap();
+        if (text == null || text.isEmpty()) {
+            String[] tableTypesFromReverseEngineering = reverseEngineering.getTableTypes();
+            tableTypes.setText(String.join(",", tableTypesFromReverseEngineering));
+            JOptionPane.showMessageDialog(
+                    Application.getInstance().getFrameController().getView(),
+                    "Table types field can't be empty.",
+                    "Error setting table types",
+                    JOptionPane.ERROR_MESSAGE);
+        } else {
+            reverseEngineering.getTableTypesCollection().clear();
+            String[] types = text.split("\\s*,\\s*");
+            for (String type : types) {
+                if (!type.isEmpty()) {
+                    reverseEngineering.addTableType(type.trim());
+                }
+            }
+            if (!dbImportView.isInitFromModel()) {
+                projectController.setDirty(true);
+            }
+        }
+    }
+
     JComboBox<String> getStrategyCombo() {
         return strategyCombo;
     }
 
-    TextAdapter getMeaningfulPk() {
+    CayenneUndoableTextField getMeaningfulPk() {
         return meaningfulPk;
     }
 
-    TextAdapter getStripFromTableNames() {
+    CayenneUndoableTextField getStripFromTableNames() {
         return stripFromTableNames;
     }
 
@@ -272,7 +265,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
         return useJava7Types;
     }
 
-    TextAdapter getTableTypes() {
+    CayenneUndoableTextField getTableTypes() {
         return tableTypes;
     }
 

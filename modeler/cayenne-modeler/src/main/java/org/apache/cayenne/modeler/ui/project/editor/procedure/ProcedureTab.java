@@ -31,6 +31,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.modeler.event.model.ProcedureEvent;
+import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.modeler.swing.JCayenneCheckBox;
@@ -48,9 +49,9 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
 
     protected ProjectController eventController;
     protected TextAdapter name;
-    protected TextAdapter schema;
-    protected TextAdapter catalog;
-    protected TextAdapter comment;
+    protected CayenneUndoableTextField schema;
+    protected CayenneUndoableTextField catalog;
+    protected CayenneUndoableTextField comment;
     protected JCheckBox returnsValue;
     protected boolean ignoreChange;
 
@@ -71,26 +72,14 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
             }
         };
 
-        this.schema = new TextAdapter(new JTextField()) {
-            @Override
-            protected void updateModel(String text) {
-                setSchema(text);
-            }
-        };
+        this.schema = new CayenneUndoableTextField();
+        this.schema.addCommitListener(this::setSchema);
 
-        this.catalog = new TextAdapter(new JTextField()) {
-            @Override
-            protected void updateModel(String text) {
-                setCatalog(text);
-            }
-        };
+        this.catalog = new CayenneUndoableTextField();
+        this.catalog.addCommitListener(this::setCatalog);
 
-        this.comment = new TextAdapter(new JTextField()) {
-            @Override
-            protected void updateModel(String text) {
-                setComment(text);
-            }
-        };
+        this.comment = new CayenneUndoableTextField();
+        this.comment.addCommitListener(this::setComment);
 
         this.returnsValue = new JCayenneCheckBox();
         this.returnsValue.setToolTipText("first parameter will be used as return value");
@@ -101,10 +90,10 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
 
         builder.appendSeparator("Stored Procedure Configuration");
         builder.append("Procedure Name:", name.getComponent());
-        builder.append("Catalog:", catalog.getComponent());
-        builder.append("Schema:", schema.getComponent());
+        builder.append("Catalog:", catalog);
+        builder.append("Schema:", schema);
         builder.append("Returns Value:", returnsValue);
-        builder.append("Comment:", comment.getComponent());
+        builder.append("Comment:", comment);
 
         this.setLayout(new BorderLayout());
         this.add(builder.getPanel(), BorderLayout.CENTER);

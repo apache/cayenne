@@ -28,6 +28,7 @@ import javax.swing.JTextField;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
 import org.apache.cayenne.map.event.EntityEvent;
+import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.util.Util;
@@ -38,7 +39,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
 
-    protected TextAdapter customPKName;
+    protected CayenneUndoableTextField customPKName;
     protected TextAdapter customPKSize;
 
     public PKCustomSequenceGeneratorPanel(ProjectController mediator) {
@@ -52,12 +53,8 @@ public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
                 "* Custom sequences are supported on Oracle and Postgres");
         note.setFont(note.getFont().deriveFont(Font.ITALIC).deriveFont(11f));
 
-        customPKName = new TextAdapter(new JTextField()) {
-
-            protected void updateModel(String text) throws ValidationException {
-                setPKName(text);
-            }
-        };
+        customPKName = new CayenneUndoableTextField();
+        customPKName.addCommitListener(this::setPKName);
         customPKSize = new TextAdapter(new JTextField()) {
 
             protected void updateModel(String text) throws ValidationException {
@@ -73,7 +70,7 @@ public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
 
         builder.setDefaultDialogBorder();
 
-        builder.append("Sequence Name:", customPKName.getComponent(), 3);
+        builder.append("Sequence Name:", customPKName, 3);
         builder.append("Cached PK Size:", customPKSize.getComponent());
         builder.nextLine();
         builder.append("", note, 3);

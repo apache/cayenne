@@ -32,6 +32,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
+import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.TextAdapter;
@@ -72,7 +73,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
         labelCapsLabels.put(CapsStrategy.UPPER, UPPER_CAPS_LABEL);
     }
 
-    protected TextAdapter comment;
+    protected CayenneUndoableTextField comment;
     protected SelectPropertiesPanel properties;
 
     public SQLTemplateMainTab(ProjectController mediator) {
@@ -91,12 +92,8 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
             }
         };
 
-        comment = new TextAdapter(new JTextField()) {
-            @Override
-            protected void updateModel(String text) {
-                setQueryComment(text);
-            }
-        };
+        comment = new CayenneUndoableTextField();
+        comment.addCommitListener(this::setQueryComment);
 
         properties = new SQLTemplateQueryPropertiesPanel(controller);
 
@@ -112,7 +109,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
         builder.addLabel("Query Name:", cc.xy(1, 3));
         builder.add(name.getComponent(), cc.xy(3, 3));
         builder.addLabel("Comment:", cc.xy(1, 5));
-        builder.add(comment.getComponent(), cc.xy(3, 5));
+        builder.add(comment, cc.xy(3, 5));
         builder.addLabel("Query Root:", cc.xy(1, 7));
         builder.add(queryRoot, cc.xy(3, 7));
 

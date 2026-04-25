@@ -33,6 +33,7 @@ import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayListener;
+import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
@@ -48,7 +49,7 @@ public class EmbeddableMainView extends JPanel implements EmbeddableDisplayListe
 
     protected ProjectController mediator;
     protected TextAdapter className;
-    protected TextAdapter comment;
+    protected CayenneUndoableTextField comment;
 
     public EmbeddableMainView(ProjectController mediator) {
         this.mediator = mediator;
@@ -78,12 +79,8 @@ public class EmbeddableMainView extends JPanel implements EmbeddableDisplayListe
             }
         };
 
-        comment = new TextAdapter(new JTextField()) {
-            @Override
-            protected void updateModel(String text) {
-                setComment(text);
-            }
-        };
+        comment = new CayenneUndoableTextField();
+        comment.addCommitListener(this::setComment);
 
         FormLayout layout = new FormLayout(
                 "right:50dlu, 3dlu, fill:150dlu, 3dlu, fill:100",
@@ -91,7 +88,7 @@ public class EmbeddableMainView extends JPanel implements EmbeddableDisplayListe
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
         builder.append("Class Name:", className.getComponent(), 3);
-        builder.append("Comment:", comment.getComponent(), 3);
+        builder.append("Comment:", comment, 3);
 
         add(builder.getPanel(), BorderLayout.CENTER);
     }

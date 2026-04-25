@@ -78,7 +78,7 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
         builder.addLabel("Result Caching:", cc.xy(1, 3));
         builder.add(cacheStrategy, cc.xywh(3, 3, 5, 1));
         cacheGroupsLabel = builder.addLabel("Cache Group:", cc.xy(1, 7));
-        builder.add(cacheGroups.getComponent(), cc.xywh(3, 7, 5, 1));
+        builder.add(cacheGroups, cc.xywh(3, 7, 5, 1));
         builder.addLabel("Fetch Persistent Objects:", cc.xy(1, 9));
         builder.add(persistentObjects, cc.xy(3, 9));
         builder.add(entities, cc.xywh(5, 9, 3, 1));

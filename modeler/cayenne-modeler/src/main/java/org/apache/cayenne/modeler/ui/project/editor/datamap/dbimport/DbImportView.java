@@ -210,7 +210,7 @@ public class DbImportView extends JPanel {
                 configPanel.getTableTypes().setText(String.join(",", tableTypes));
             } else {
                 configPanel.getTableTypes().setText("TABLE, VIEW");
-                configPanel.getTableTypes().updateModel();
+                configPanel.applyTableTypes("TABLE, VIEW");
             }
             treePanel.updateTree();
             DbImportTreeNode root = draggableTreePanel.getSourceTree().getRootNode();
@@ -243,8 +243,8 @@ public class DbImportView extends JPanel {
     }
 
     public String getMeaningfulPk() {
-        return "".equals(configPanel.getMeaningfulPk().getComponent().getText())
-                ? null : configPanel.getMeaningfulPk().getComponent().getText();
+        return "".equals(configPanel.getMeaningfulPk().getText())
+                ? null : configPanel.getMeaningfulPk().getText();
     }
 
     public String getNamingStrategy() {
@@ -252,7 +252,7 @@ public class DbImportView extends JPanel {
     }
 
     public String getStripFromTableNames() {
-        return configPanel.getStripFromTableNames().getComponent().getText();
+        return configPanel.getStripFromTableNames().getText();
     }
 
     public JProgressBar getLoadDbSchemaProgress() {

@@ -43,6 +43,7 @@ import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ShowGraphEntityAction;
 import org.apache.cayenne.modeler.swing.CellRenderers;
+import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.ExpressionConvertor;
 import org.apache.cayenne.modeler.util.TextAdapter;
@@ -67,10 +68,10 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
 
     private final ProjectController controller;
     private final TextAdapter name;
-    private final TextAdapter className;
+    private final CayenneUndoableTextField className;
 
     private final JLabel superclassLabel;
-    private final TextAdapter superClassName;
+    private final CayenneUndoableTextField superClassName;
     private final TextAdapter qualifier;
     private final JComboBox<DbEntity> dbEntityCombo;
     private final JComboBox<ObjEntity> superEntityCombo;
@@ -78,7 +79,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
     private final JCheckBox optimisticLocking;
 
     private final JCheckBox isAbstract;
-    private final TextAdapter comment;
+    private final CayenneUndoableTextField comment;
 
     public ObjEntityTab(ProjectController controller) {
         this.controller = controller;
@@ -107,18 +108,10 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
                 setEntityName(text);
             }
         };
-        superClassName = new TextAdapter(new JTextField()) {
-            @Override
-            protected void updateModel(String text) {
-                setSuperClassName(text);
-            }
-        };
-        className = new TextAdapter(new JTextField()) {
-            @Override
-            protected void updateModel(String text) {
-                setClassName(text);
-            }
-        };
+        superClassName = new CayenneUndoableTextField();
+        superClassName.addCommitListener(this::setSuperClassName);
+        className = new CayenneUndoableTextField();
+        className.addCommitListener(this::setClassName);
         qualifier = new TextAdapter(new JTextField()) {
             @Override
             protected void updateModel(String text) {
@@ -147,12 +140,8 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
 
         isAbstract = new JCayenneCheckBox();
 
-        comment = new TextAdapter(new JTextField()) {
-            @Override
-            protected void updateModel(String text) throws ValidationException {
-                setComment(text);
-            }
-        };
+        comment = new CayenneUndoableTextField();
+        comment.addCommitListener(this::setComment);
 
         // assemble
         FormLayout layout = new FormLayout("right:pref, 3dlu, fill:200dlu", "");
@@ -163,12 +152,12 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
         builder.append("ObjEntity Name:", name.getComponent());
         builder.append("Inheritance:", superEntityCombo);
         builder.append(tableLabel, dbEntityCombo);
-        builder.append("Comment:", comment.getComponent());
+        builder.append("Comment:", comment);
         builder.appendSeparator();
 
-        builder.append("Java Class:", className.getComponent());
-     
-        superclassLabel = builder.append("Superclass:", superClassName.getComponent());
+        builder.append("Java Class:", className);
+
+        superclassLabel = builder.append("Superclass:", superClassName);
         builder.append("Qualifier:", qualifier.getComponent());
         builder.append("Read-Only:", readOnly);
         builder.append("Optimistic Locking:", optimisticLocking);
@@ -427,7 +416,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
     }
 
     void toggleEnabled(boolean directTableMapping) {
-        superClassName.getComponent().setEnabled(directTableMapping);
+        superClassName.setEnabled(directTableMapping);
         superclassLabel.setEnabled(directTableMapping);
     }
 

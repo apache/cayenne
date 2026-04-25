@@ -35,6 +35,7 @@ import javax.swing.JTextField;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
+import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.query.QueryCacheStrategy;
@@ -80,7 +81,7 @@ public abstract class SelectPropertiesPanel extends JPanel {
     protected TextAdapter fetchLimit;
     protected TextAdapter pageSize;
     protected JComboBox<QueryCacheStrategy> cacheStrategy;
-    protected TextAdapter cacheGroups;
+    protected CayenneUndoableTextField cacheGroups;
     protected JComponent cacheGroupsLabel;
 
     protected ProjectController mediator;
@@ -112,11 +113,8 @@ public abstract class SelectPropertiesPanel extends JPanel {
 
         cacheStrategy = WidgetFactory.createUndoableComboBox();
         cacheStrategy.setRenderer(new CacheStrategyRenderer());
-        cacheGroups = new TextAdapter(new JTextField()) {
-            protected void updateModel(String text) {
-                setCacheGroups(text);
-            }
-        };
+        cacheGroups = new CayenneUndoableTextField();
+        cacheGroups.addCommitListener(this::setCacheGroups);
     }
 
     protected void initController() {
@@ -216,7 +214,7 @@ public abstract class SelectPropertiesPanel extends JPanel {
     }
 
     protected void setCacheGroupsEnabled(boolean enabled) {
-        cacheGroups.getComponent().setEnabled(enabled);
+        cacheGroups.setEnabled(enabled);
         cacheGroupsLabel.setEnabled(enabled);
     }
 

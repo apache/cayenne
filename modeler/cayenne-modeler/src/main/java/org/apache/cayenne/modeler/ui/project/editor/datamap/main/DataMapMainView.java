@@ -37,6 +37,7 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.main.superclass.Supe
 import org.apache.cayenne.modeler.event.model.ProjectSavedEvent;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.swing.CellRenderers;
+import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
@@ -68,13 +69,13 @@ public class DataMapMainView extends JPanel {
     private final JLabel location;
     private final JComboBox<DataNodeDescriptor> nodeSelector;
     private final JCheckBox defaultLockType;
-    private final TextAdapter defaultCatalog;
-    private final TextAdapter defaultSchema;
-    private final TextAdapter defaultPackage;
-    private final TextAdapter defaultSuperclass;
+    private final CayenneUndoableTextField defaultCatalog;
+    private final CayenneUndoableTextField defaultSchema;
+    private final CayenneUndoableTextField defaultPackage;
+    private final CayenneUndoableTextField defaultSuperclass;
     private final JCheckBox quoteSQLIdentifiers;
 
-    private final TextAdapter comment;
+    private final CayenneUndoableTextField comment;
 
     public DataMapMainView(ProjectController controller) {
         this.controller = controller;
@@ -92,45 +93,25 @@ public class DataMapMainView extends JPanel {
         nodeSelector.setRenderer(CellRenderers.listRendererWithIcons());
 
         JButton updateDefaultCatalog = new JButton("Update...");
-        defaultCatalog = new TextAdapter(new JTextField()) {
-
-            protected void updateModel(String text) {
-                setDefaultCatalog(text);
-            }
-        };
+        defaultCatalog = new CayenneUndoableTextField();
+        defaultCatalog.addCommitListener(this::setDefaultCatalog);
 
         JButton updateDefaultSchema = new JButton("Update...");
-        defaultSchema = new TextAdapter(new JTextField()) {
-
-            protected void updateModel(String text) {
-                setDefaultSchema(text);
-            }
-        };
+        defaultSchema = new CayenneUndoableTextField();
+        defaultSchema.addCommitListener(this::setDefaultSchema);
 
         quoteSQLIdentifiers = new JCayenneCheckBox();
 
-        comment = new TextAdapter(new JTextField()) {
-            @Override
-            protected void updateModel(String text) throws ValidationException {
-                updateComment(text);
-            }
-        };
+        comment = new CayenneUndoableTextField();
+        comment.addCommitListener(this::updateComment);
 
         JButton updateDefaultPackage = new JButton("Update...");
-        defaultPackage = new TextAdapter(new JTextField()) {
-
-            protected void updateModel(String text) {
-                setDefaultPackage(text);
-            }
-        };
+        defaultPackage = new CayenneUndoableTextField();
+        defaultPackage.addCommitListener(this::setDefaultPackage);
 
         JButton updateDefaultSuperclass = new JButton("Update...");
-        defaultSuperclass = new TextAdapter(new JTextField()) {
-
-            protected void updateModel(String text) {
-                setDefaultSuperclass(text);
-            }
-        };
+        defaultSuperclass = new CayenneUndoableTextField();
+        defaultSuperclass.addCommitListener(this::setDefaultSuperclass);
 
         JButton updateDefaultLockType = new JButton("Update...");
         defaultLockType = new JCayenneCheckBox();
@@ -147,18 +128,18 @@ public class DataMapMainView extends JPanel {
         builder.append("File:", location, 3);
         builder.append("DataNode:", nodeSelector, 2);
         builder.append("Quote SQL Identifiers:", quoteSQLIdentifiers, 3);
-        builder.append("Comment:", comment.getComponent(), 2);
+        builder.append("Comment:", comment, 2);
 
         builder.appendSeparator("Entity Defaults");
-        builder.append("DB Catalog:", defaultCatalog.getComponent(), updateDefaultCatalog);
-        builder.append("DB Schema:", defaultSchema.getComponent(), updateDefaultSchema);
+        builder.append("DB Catalog:", defaultCatalog, updateDefaultCatalog);
+        builder.append("DB Schema:", defaultSchema, updateDefaultSchema);
         builder.append(
                 "Java Package:",
-                defaultPackage.getComponent(),
+                defaultPackage,
                 updateDefaultPackage);
         builder.append(
                 "Custom Superclass:",
-                defaultSuperclass.getComponent(),
+                defaultSuperclass,
                 updateDefaultSuperclass);
         builder.append("Optimistic Locking:", defaultLockType, updateDefaultLockType);
 

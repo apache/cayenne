@@ -24,6 +24,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.TemplateType;
+import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.modeler.swing.JCayenneCheckBox;
 import org.apache.cayenne.validation.ValidationException;
@@ -53,8 +54,8 @@ public class CgenConfigPanel extends JPanel {
     private final JCheckBox usePackagePath;
     private final JCheckBox createPropertyNames;
     private final JCheckBox pkProperties;
-    private TextAdapter superPkg;
-    protected TextAdapter outputPattern;
+    private CayenneUndoableTextField superPkg;
+    protected CayenneUndoableTextField outputPattern;
     private JButton editSuperclassTemplateBtn;
     private JButton editSubclassTemplateBtn;
     private JButton editEmbeddableTemplateBtn;
@@ -135,10 +136,10 @@ public class CgenConfigPanel extends JPanel {
         builder.addLabel("Create PK properties", cc.xyw(3, 17, 3));
 
         builder.addLabel("Output Pattern", cc.xyw(1, 19, 5));
-        builder.add(outputPattern.getComponent(), cc.xyw(1, 21, 5));
+        builder.add(outputPattern, cc.xyw(1, 21, 5));
 
         builder.addLabel("Superclass package", cc.xyw(1, 23, 5));
-        builder.add(superPkg.getComponent(), cc.xyw(1, 25, 5));
+        builder.add(superPkg, cc.xyw(1, 25, 5));
 
 
         //Templates options panel
@@ -167,22 +168,17 @@ public class CgenConfigPanel extends JPanel {
     }
 
     private void initTextFields() {
-        JTextField superPkgField = new JTextField();
-        this.superPkg = new TextAdapter(superPkgField) {
-            @Override
-            protected void updateModel(String text) throws ValidationException {
-                getCgenConfig().setSuperPkg(text);
-                checkConfigDirty();
-            }
-        };
+        this.superPkg = new CayenneUndoableTextField();
+        this.superPkg.addCommitListener(text -> {
+            getCgenConfig().setSuperPkg(text);
+            checkConfigDirty();
+        });
 
-        JTextField outputPatternField = new JTextField();
-        this.outputPattern = new TextAdapter(outputPatternField) {
-            protected void updateModel(String text) {
-                getCgenConfig().setOutputPattern(text);
-                checkConfigDirty();
-            }
-        };
+        this.outputPattern = new CayenneUndoableTextField();
+        this.outputPattern.addCommitListener(text -> {
+            getCgenConfig().setOutputPattern(text);
+            checkConfigDirty();
+        });
 
         this.outputFolder = new TextAdapter(new JTextField()) {
             @Override
@@ -246,11 +242,11 @@ public class CgenConfigPanel extends JPanel {
         return pkProperties;
     }
 
-    public TextAdapter getOutputPattern() {
+    public CayenneUndoableTextField getOutputPattern() {
         return outputPattern;
     }
 
-    public TextAdapter getSuperPkg() {
+    public CayenneUndoableTextField getSuperPkg() {
         return superPkg;
     }
 

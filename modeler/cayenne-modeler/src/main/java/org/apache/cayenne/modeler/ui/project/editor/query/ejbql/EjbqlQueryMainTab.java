@@ -26,6 +26,7 @@ import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MappingNamespace;
+import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.map.QueryDescriptor;
@@ -41,7 +42,7 @@ public class EjbqlQueryMainTab extends JPanel{
 
     protected ProjectController mediator;
     protected TextAdapter name;
-    protected TextAdapter comment;
+    protected CayenneUndoableTextField comment;
     protected EjbqlQueryPropertiesPanel properties;
     protected TextAdapter qualifier;
 
@@ -59,12 +60,8 @@ public class EjbqlQueryMainTab extends JPanel{
             }
         };
 
-        comment = new TextAdapter(new JTextField()) {
-            @Override
-            protected void updateModel(String text) {
-                setQueryComment(text);
-            }
-        };
+        comment = new CayenneUndoableTextField();
+        comment.addCommitListener(this::setQueryComment);
 
         properties = new EjbqlQueryPropertiesPanel(mediator);
         // assemble
@@ -78,7 +75,7 @@ public class EjbqlQueryMainTab extends JPanel{
         builder.addLabel("Query Name:", cc.xy(1, 3));
         builder.add(name.getComponent(), cc.xy(3, 3));
         builder.addLabel("Comment:", cc.xy(1, 5));
-        builder.add(comment.getComponent(), cc.xy(3, 5));
+        builder.add(comment, cc.xy(3, 5));
 
         this.setLayout(new BorderLayout());
         this.add(builder.getPanel(), BorderLayout.NORTH);

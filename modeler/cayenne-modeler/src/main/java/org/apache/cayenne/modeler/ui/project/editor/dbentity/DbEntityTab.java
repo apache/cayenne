@@ -37,6 +37,7 @@ import org.apache.cayenne.modeler.action.DbEntitySyncAction;
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ShowGraphEntityAction;
 import org.apache.cayenne.modeler.util.ExpressionConvertor;
 import org.apache.cayenne.modeler.util.TextAdapter;
@@ -59,10 +60,10 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
     private final ProjectController controller;
 
     private final TextAdapter name;
-    private final TextAdapter catalog;
-    private final TextAdapter schema;
+    private final CayenneUndoableTextField catalog;
+    private final CayenneUndoableTextField schema;
     private final TextAdapter qualifier;
-    private final TextAdapter comment;
+    private final CayenneUndoableTextField comment;
 
     private final JLabel catalogLabel;
     private final JLabel schemaLabel;
@@ -101,18 +102,12 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
         };
 
         catalogLabel = new JLabel("Catalog:");
-        catalog = new TextAdapter(new JTextField()) {
-            protected void updateModel(String text) throws ValidationException {
-                setCatalog(text);
-            }
-        };
+        catalog = new CayenneUndoableTextField();
+        catalog.addCommitListener(this::setCatalog);
 
         schemaLabel = new JLabel("Schema:");
-        schema = new TextAdapter(new JTextField()) {
-            protected void updateModel(String text) throws ValidationException {
-                setSchema(text);
-            }
-        };
+        schema = new CayenneUndoableTextField();
+        schema.addCommitListener(this::setSchema);
 
         qualifier = new TextAdapter(new JTextField()) {
             protected void updateModel(String qualifier) {
@@ -120,12 +115,8 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
             }
         };
 
-        comment = new TextAdapter(new JTextField()) {
-            @Override
-            protected void updateModel(String text) throws ValidationException {
-                setComment(text);
-            }
-        };
+        comment = new CayenneUndoableTextField();
+        comment.addCommitListener(this::setComment);
 
         pkGeneratorType = new JComboBox<>();
         pkGeneratorType.setEditable(false);
@@ -144,10 +135,10 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
 
         builder.appendSeparator("DbEntity Configuration");
         builder.append("DbEntity Name:", name.getComponent());
-        builder.append(catalogLabel, catalog.getComponent());
-        builder.append(schemaLabel, schema.getComponent());
+        builder.append(catalogLabel, catalog);
+        builder.append(schemaLabel, schema);
         builder.append("Qualifier:", qualifier.getComponent());
-        builder.append("Comment:", comment.getComponent());
+        builder.append("Comment:", comment);
 
         builder.appendSeparator("Primary Key");
         builder.append("PK Generation Strategy:", pkGeneratorType);
@@ -217,10 +208,10 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
         }
 
         catalogLabel.setEnabled(true);
-        catalog.getComponent().setEnabled(true);
+        catalog.setEnabled(true);
 
         schemaLabel.setEnabled(true);
-        schema.getComponent().setEnabled(true);
+        schema.setEnabled(true);
         pkGeneratorDetail.setVisible(true);
         pkGeneratorType.setVisible(true);
 

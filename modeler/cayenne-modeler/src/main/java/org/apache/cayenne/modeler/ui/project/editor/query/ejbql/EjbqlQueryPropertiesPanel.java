@@ -47,7 +47,7 @@ public class EjbqlQueryPropertiesPanel extends SelectPropertiesPanel {
         builder.addLabel("Result Caching:", cc.xy(1, 3));
         builder.add(cacheStrategy, cc.xywh(3, 3, 5, 1));
         cacheGroupsLabel = builder.addLabel("Cache Group:", cc.xy(1, 7));
-        builder.add(cacheGroups.getComponent(), cc.xywh(3, 7, 5, 1));
+        builder.add(cacheGroups, cc.xywh(3, 7, 5, 1));
         builder.addLabel("Fetch Offset, Rows:", cc.xy(1, 9));
         builder.add(fetchOffset.getComponent(), cc.xywh(3, 9, 3, 1));
         builder.addLabel("Fetch Limit, Rows:", cc.xy(1, 11));
