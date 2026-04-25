@@ -402,7 +402,7 @@ public class ObjRelationshipInfoController extends ChildController<ProjectContro
 
         if (dbTarget != null) {
             objectTargets.addAll(dbTarget.getDataMap().getMappedEntities(dbTarget));
-            objectTargets.sort(Comparators.getNamedObjectComparator());
+            objectTargets.sort(Comparators.forNamedObjects());
         }
         view.getTargetCombo().removeAllItems();
         for (ObjEntity s : objectTargets) {

@@ -16,49 +16,37 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.swing;
-
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.io.StringWriter;
-import java.util.List;
+package org.apache.cayenne.modeler.swing.copypaste;
 
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.EmptyConfigurationNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.util.List;
+
 /**
- * CayenneTransferable is a data holder of Cayenne object(s), like
- * Entities, Attributes, Relationships etc.
+ * CayenneTransferable is a data holder of Cayenne object(s), like Entities, Attributes, Relationships etc.
  */
 public class CayenneTransferable implements Transferable {
-    /**
-     * Flavor used for copy-paste between Cayenne Modeler applications
-     */
+
     public static final DataFlavor CAYENNE_FLAVOR = new DataFlavor(Serializable.class, "Cayenne Object");
-    
-    /**
-     * Supported flavors
-     */
-    private static final DataFlavor[] FLAVORS = new DataFlavor[] { CAYENNE_FLAVOR, DataFlavor.stringFlavor };
-    
-    /**
-     * Data in the buffer
-     */
-    private Object data;
-    
+    private static final DataFlavor[] FLAVORS = new DataFlavor[]{CAYENNE_FLAVOR, DataFlavor.stringFlavor};
+
+    private final Object data;
+
     public CayenneTransferable(Object data) {
         this.data = data;
     }
 
-    public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException,
-            IOException {
-        
+    @Override
+    public Object getTransferData(DataFlavor flavor) {
+
         if (flavor == CAYENNE_FLAVOR) {
             return data;
         } else {
@@ -67,26 +55,27 @@ public class CayenneTransferable implements Transferable {
             ConfigurationNodeVisitor visitor = new EmptyConfigurationNodeVisitor();
 
             encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-            
+
             if (data instanceof XMLSerializable) {
                 ((XMLSerializable) data).encodeAsXML(encoder, visitor);
             } else if (data instanceof List) {
-                for (Object o : (List) data) {
+                for (Object o : (List<?>) data) {
                     ((XMLSerializable) o).encodeAsXML(encoder, visitor);
                 }
             }
-            
+
             return out.toString();
         }
-        
+
     }
 
+    @Override
     public DataFlavor[] getTransferDataFlavors() {
         return FLAVORS;
     }
 
+    @Override
     public boolean isDataFlavorSupported(DataFlavor flavor) {
         return flavor == CAYENNE_FLAVOR || flavor == DataFlavor.stringFlavor;
     }
-
 }

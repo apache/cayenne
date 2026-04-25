@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util.state;
+package org.apache.cayenne.modeler.pref.project;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -25,17 +25,12 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
-import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 
-import java.util.ArrayList;
-import java.util.List;
+class EntityDisplayEventType extends DisplayEventType {
 
-class RelationshipDisplayEventType extends EntityDisplayEventType {
-
-    RelationshipDisplayEventType(ProjectController controller) {
+    EntityDisplayEventType(ProjectController controller) {
         super(controller);
     }
 
@@ -52,55 +47,52 @@ class RelationshipDisplayEventType extends EntityDisplayEventType {
             return;
         }
 
-        Entity<?,?,?> entity = getLastEntity(dataMap);
+        Entity<?, ?, ?> entity = getLastEntity(dataMap);
         if (entity == null) {
             return;
         }
 
-        Relationship<?,?,?>[] relationships = getLastEntityRelationships(entity);
-
         EntityDisplayEvent entityDisplayEvent = new EntityDisplayEvent(this, entity, dataMap, dataNode, dataChannel);
-        RelationshipDisplayEvent displayEvent = new RelationshipDisplayEvent(this, relationships, entity, dataMap, dataChannel);
-
         if (entity instanceof ObjEntity) {
             controller.displayObjEntity(entityDisplayEvent);
-            controller.displayObjRelationship(displayEvent);
         } else if (entity instanceof DbEntity) {
             controller.displayDbEntity(entityDisplayEvent);
-            controller.displayDbRelationship(displayEvent);
         }
     }
 
     @Override
     public void saveLastDisplayEvent() {
-        preferences.setEvent(RelationshipDisplayEvent.class.getSimpleName());
-        preferences.setDomain(controller.getSelectedDataDomain().getName());
-        preferences.setNode(controller.getSelectedDataNode() != null ? controller.getSelectedDataNode().getName() : "");
-        preferences.setDataMap(controller.getSelectedDataMap().getName());
 
-        if (controller.getSelectedObjEntity() != null) {
-            preferences.setObjEntity(controller.getSelectedObjEntity().getName());
-            preferences.setObjRels(parseToString(controller.getSelectedObjRelationships()));
-            preferences.setDbEntity(null);
-        } else if (controller.getSelectedDbEntity() != null) {
-            preferences.setDbEntity(controller.getSelectedDbEntity().getName());
-            preferences.setDbRels(parseToString(controller.getSelectedDbRelationships()));
-            preferences.setObjEntity(null);
-        }
-    }
+        preferences.setEvent(EntityDisplayEvent.class.getSimpleName());
 
-    private Relationship<?,?,?>[] getLastEntityRelationships(Entity<?,?,?> entity) {
-        List<Relationship<?,?,?>> relationshipList = new ArrayList<>();
+        DataChannelDescriptor domain = controller.getSelectedDataDomain();
+        DataNodeDescriptor node = controller.getSelectedDataNode();
+        DataMap dataMap = controller.getSelectedDataMap();
+        DbEntity dbEntity = controller.getSelectedDbEntity();
+        ObjEntity objEntity = controller.getSelectedObjEntity();
 
-        String rels = (entity instanceof ObjEntity) ? preferences.getObjRels() : preferences.getDbRels();
-        for (String objRelName : rels.split(",")) {
-            Relationship<?,?,?> rel = entity.getRelationship(objRelName);
-            if(rel != null) {
-                relationshipList.add(rel);
+        if (domain != null) {
+            preferences.setDomain(domain.getName());
+            preferences.setNode(node != null ? node.getName() : "");
+
+            if (dataMap != null) {
+
+                preferences.setDataMap(dataMap.getName());
+
+                if (objEntity != null) {
+                    preferences.setObjEntity(objEntity.getName());
+                    preferences.setDbEntity(null);
+                } else if (dbEntity != null) {
+                    preferences.setDbEntity(dbEntity.getName());
+                    preferences.setObjEntity(null);
+                }
             }
         }
-
-        return relationshipList.toArray(new Relationship[0]);
     }
 
+    Entity<?, ?, ?> getLastEntity(DataMap dataMap) {
+        return !preferences.getObjEntity().isEmpty()
+                ? dataMap.getObjEntity(preferences.getObjEntity())
+                : dataMap.getDbEntity(preferences.getDbEntity());
+    }
 }

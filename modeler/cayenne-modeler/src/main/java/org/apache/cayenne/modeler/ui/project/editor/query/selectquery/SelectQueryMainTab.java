@@ -31,7 +31,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
-import org.apache.cayenne.modeler.swing.JCayenneCheckBox;
+import org.apache.cayenne.modeler.swing.checkbox.CayenneCheckBox;
 import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.ExpressionConvertor;
@@ -78,7 +78,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
         comment = new CayenneUndoableTextField();
         comment.addCommitListener(this::setQueryComment);
 
-        distinct = new JCayenneCheckBox();
+        distinct = new CayenneCheckBox();
 
         properties = new ObjectQueryPropertiesPanel(controller);
 
@@ -150,7 +150,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
         ObjEntity[] roots = map.getObjEntities().toArray(new ObjEntity[0]);
 
         if (roots.length > 1) {
-            Arrays.sort(roots, Comparators.getDataMapChildrenComparator());
+            Arrays.sort(roots, Comparators.forDataMapChildren());
         }
 
         DefaultComboBoxModel<ObjEntity> model = new DefaultComboBoxModel<>(roots);

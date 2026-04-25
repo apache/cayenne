@@ -138,7 +138,7 @@ public class EmbeddableMainView extends JPanel implements EmbeddableDisplayListe
             while (it.hasNext()) {
                 DataMap dataMap = (DataMap) it.next();
                 Iterator<ObjEntity> ent = dataMap.getObjEntities().stream()
-                        .sorted(Comparators.getDataMapChildrenComparator())
+                        .sorted(Comparators.forDataMapChildren())
                         .iterator();
 
                 while (ent.hasNext()) {

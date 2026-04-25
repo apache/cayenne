@@ -37,7 +37,7 @@ import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.swing.CellRenderers;
-import org.apache.cayenne.modeler.swing.JCayenneCheckBox;
+import org.apache.cayenne.modeler.swing.checkbox.CayenneCheckBox;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
 import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
@@ -115,9 +115,9 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
         AutoCompletion.enable(dbEntityCombo);
         AutoCompletion.enable(superEntityCombo);
 
-        readOnly = new JCayenneCheckBox();
+        readOnly = new CayenneCheckBox();
 
-        optimisticLocking = new JCayenneCheckBox();
+        optimisticLocking = new CayenneCheckBox();
 
         // borderless clickable button used as a label
         JButton tableLabel = new JButton("Table/View:");
@@ -128,7 +128,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
         tableLabel.setBorder(null);
 
 
-        isAbstract = new JCayenneCheckBox();
+        isAbstract = new CayenneCheckBox();
 
         comment = new CayenneUndoableTextField();
         comment.addCommitListener(this::setComment);
@@ -291,7 +291,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
         EntityResolver resolver = controller.getEntityResolver();
         DataMap map = controller.getSelectedDataMap();
         DbEntity[] dbEntities = resolver.getDbEntities().toArray(new DbEntity[0]);
-        Arrays.sort(dbEntities, Comparators.getDataMapChildrenComparator());
+        Arrays.sort(dbEntities, Comparators.forDataMapChildren());
 
         DefaultComboBoxModel<DbEntity> dbModel = new DefaultComboBoxModel<>(dbEntities);
         dbModel.setSelectedItem(entity.getDbEntity());
@@ -307,7 +307,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
         // do not show this entity or any of the subentities
         List<ObjEntity> objEntities = map.getObjEntities().stream()
                 .filter(object -> entity != object && !object.isSubentityOf(entity))
-                .sorted(Comparators.getDataMapChildrenComparator())
+                .sorted(Comparators.forDataMapChildren())
                 .collect(Collectors.toList());
         objEntities.add(0, NO_INHERITANCE);
 

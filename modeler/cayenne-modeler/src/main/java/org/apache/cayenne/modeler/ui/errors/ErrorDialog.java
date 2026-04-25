@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.errors;
 
 import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.ui.ModelerFrame;
-import org.apache.cayenne.modeler.util.BrowserControl;
+import org.apache.cayenne.modeler.swing.UrlOpener;
 import org.apache.cayenne.modeler.swing.dialog.CayenneDialog;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.util.LocalizedStringsHandler;
@@ -74,7 +74,7 @@ class ErrorDialog extends CayenneDialog implements ActionListener {
         // popup hyperlinks
         infoText.addHyperlinkListener(e -> {
             if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-                BrowserControl.displayURL(e.getURL().toExternalForm());
+                UrlOpener.displayURL(e.getURL().toExternalForm());
             }
         });
 

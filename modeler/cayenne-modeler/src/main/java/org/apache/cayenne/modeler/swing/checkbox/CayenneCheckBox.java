@@ -17,33 +17,37 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util.state;
+package org.apache.cayenne.modeler.swing.checkbox;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
+import org.apache.cayenne.modeler.undo.JCheckBoxUndoListener;
 
-class DomainDisplayEventType extends DisplayEventType {
+import javax.swing.*;
+import java.awt.event.ItemListener;
 
-    public DomainDisplayEventType(ProjectController controller) {
-        super(controller);
+public class CayenneCheckBox extends JCheckBox {
+
+    private boolean modelUpdateDisabled;
+
+    public CayenneCheckBox() {
+        this.addActionListener(new JCheckBoxUndoListener());
     }
 
     @Override
-    public void fireLastDisplayEvent() {
-        DataChannelDescriptor dataChannel = (DataChannelDescriptor) controller.getProject().getRootNode();
-        if (!dataChannel.getName().equals(preferences.getDomain())) {
-            return;
+    public void setSelected(boolean b) {
+        modelUpdateDisabled = true;
+        try {
+            super.setSelected(b);
+        } finally {
+            modelUpdateDisabled = false;
         }
-
-        DomainDisplayEvent domainDisplayEvent = new DomainDisplayEvent(this, dataChannel);
-        controller.displayDomain(domainDisplayEvent);
     }
 
     @Override
-    public void saveLastDisplayEvent() {
-        preferences.setEvent(DomainDisplayEvent.class.getSimpleName());
-        preferences.setDomain(controller.getSelectedDataDomain().getName());
+    public void addItemListener(ItemListener l) {
+        super.addItemListener(e -> {
+            if(!modelUpdateDisabled) {
+                l.itemStateChanged(e);
+            }
+        });
     }
-
 }

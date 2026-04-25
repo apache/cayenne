@@ -161,7 +161,7 @@ public class ProcedureQueryView extends JPanel {
         Procedure[] roots = map.getProcedures().toArray(new Procedure[0]);
 
         if (roots.length > 1) {
-            Arrays.sort(roots, Comparators.getDataMapChildrenComparator());
+            Arrays.sort(roots, Comparators.forDataMapChildren());
         }
 
         DefaultComboBoxModel<Procedure> model = new DefaultComboBoxModel<>(roots);

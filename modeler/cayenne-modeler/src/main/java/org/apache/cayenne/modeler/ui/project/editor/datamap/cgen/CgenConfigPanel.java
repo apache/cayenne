@@ -25,7 +25,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
-import org.apache.cayenne.modeler.swing.JCayenneCheckBox;
+import org.apache.cayenne.modeler.swing.checkbox.CayenneCheckBox;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.BorderFactory;
@@ -71,11 +71,11 @@ public class CgenConfigPanel extends JPanel {
     public CgenConfigPanel(CgenController cgenController) {
         this.cgenController = cgenController;
         this.selectOutputFolder = new JButton("..");
-        this.pairs = new JCayenneCheckBox();
-        this.overwrite = new JCayenneCheckBox();
-        this.usePackagePath = new JCayenneCheckBox();
-        this.createPropertyNames = new JCayenneCheckBox();
-        this.pkProperties = new JCayenneCheckBox();
+        this.pairs = new CayenneCheckBox();
+        this.overwrite = new CayenneCheckBox();
+        this.usePackagePath = new CayenneCheckBox();
+        this.createPropertyNames = new CayenneCheckBox();
+        this.pkProperties = new CayenneCheckBox();
 
         initTextFields();
         initEditTemplateLabels();

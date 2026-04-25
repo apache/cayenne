@@ -66,8 +66,8 @@ import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.modeler.pref.ProjectStatePreferences;
 import org.apache.cayenne.modeler.ui.ModelerController;
 import org.apache.cayenne.modeler.util.Comparators;
-import org.apache.cayenne.modeler.util.state.DisplayEventTypes;
-import org.apache.cayenne.modeler.util.state.MultipleObjectsDisplayEventType;
+import org.apache.cayenne.modeler.pref.project.DisplayEventTypes;
+import org.apache.cayenne.modeler.pref.project.MultipleObjectsDisplayEventType;
 import org.apache.cayenne.project.ConfigurationNodeParentGetter;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.util.IDUtil;
@@ -235,8 +235,8 @@ public class ProjectController extends ChildController<ModelerController> {
              * would be set.
              */
             result.sort(parent instanceof DataMap
-                    ? Comparators.getDataMapChildrenComparator()
-                    : Comparators.getDataDomainChildrenComparator());
+                    ? Comparators.forDataMapChildren()
+                    : Comparators.forDataDomainChildren());
 
             return result;
         }

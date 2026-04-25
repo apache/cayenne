@@ -40,7 +40,7 @@ import org.apache.cayenne.modeler.swing.CellRenderers;
 import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
-import org.apache.cayenne.modeler.swing.JCayenneCheckBox;
+import org.apache.cayenne.modeler.swing.checkbox.CayenneCheckBox;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
@@ -94,7 +94,7 @@ public class DataMapMainView extends JPanel {
         defaultSchema = new CayenneUndoableTextField();
         defaultSchema.addCommitListener(this::setDefaultSchema);
 
-        quoteSQLIdentifiers = new JCayenneCheckBox();
+        quoteSQLIdentifiers = new CayenneCheckBox();
 
         comment = new CayenneUndoableTextField();
         comment.addCommitListener(this::updateComment);
@@ -108,7 +108,7 @@ public class DataMapMainView extends JPanel {
         defaultSuperclass.addCommitListener(this::setDefaultSuperclass);
 
         JButton updateDefaultLockType = new JButton("Update...");
-        defaultLockType = new JCayenneCheckBox();
+        defaultLockType = new CayenneCheckBox();
 
         // assemble
         FormLayout layout = new FormLayout(
@@ -181,7 +181,7 @@ public class DataMapMainView extends JPanel {
 
         // now add the entities
         if (nodes.length > 0) {
-            Arrays.sort(nodes, Comparators.getNamedObjectComparator());
+            Arrays.sort(nodes, Comparators.forNamedObjects());
             System.arraycopy(nodes, 0, objects, 1, nodes.length);
         }
 

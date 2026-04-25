@@ -78,7 +78,7 @@ public class EntityTreeModel implements TreeModel {
 
         // wonder if linear search will be faster, considering that
         // this comparator uses reflection?
-        return Arrays.binarySearch(sortedChildren(node), (ConfigurationNode)child, Comparators.getNamedObjectComparator());
+        return Arrays.binarySearch(sortedChildren(node), (ConfigurationNode)child, Comparators.forNamedObjects());
     }
 
     public void addTreeModelListener(TreeModelListener listener) {
@@ -121,7 +121,7 @@ public class EntityTreeModel implements TreeModel {
 
             sortedForNode = nodes.toArray(new ConfigurationNode[0]);
 
-            Arrays.sort(sortedForNode, Comparators.getEntityChildrenComparator());
+            Arrays.sort(sortedForNode, Comparators.forEntityChildren());
             sortedChildren.put(node, sortedForNode);
         }
 

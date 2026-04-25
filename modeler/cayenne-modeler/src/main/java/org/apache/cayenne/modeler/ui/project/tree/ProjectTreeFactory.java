@@ -133,23 +133,23 @@ class ProjectTreeFactory {
 
             //Should be sorted manually because dataMap don't provide sorted collection.
             dataMap.getObjEntities().stream()
-                    .sorted(Comparators.getDataMapChildrenComparator())
+                    .sorted(Comparators.forDataMapChildren())
                     .forEach(e -> makeNode(e));
 
             dataMap.getEmbeddables().stream()
-                    .sorted(Comparators.getDataMapChildrenComparator())
+                    .sorted(Comparators.forDataMapChildren())
                     .forEach(e -> makeNode(e));
 
             dataMap.getDbEntities().stream()
-                    .sorted(Comparators.getDataMapChildrenComparator())
+                    .sorted(Comparators.forDataMapChildren())
                     .forEach(e -> makeNode(e));
 
             dataMap.getProcedures().stream()
-                    .sorted(Comparators.getDataMapChildrenComparator())
+                    .sorted(Comparators.forDataMapChildren())
                     .forEach(e -> makeNode(e));
 
             dataMap.getQueryDescriptors().stream()
-                    .sorted(Comparators.getDataMapChildrenComparator())
+                    .sorted(Comparators.forDataMapChildren())
                     .forEach(e -> makeNode(e));
 
             return popNode();

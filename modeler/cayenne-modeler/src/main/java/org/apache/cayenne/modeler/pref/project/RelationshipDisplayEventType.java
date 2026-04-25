@@ -17,25 +17,25 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util.state;
+package org.apache.cayenne.modeler.pref.project;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 
-class AttributeDisplayEventType extends EntityDisplayEventType {
+class RelationshipDisplayEventType extends EntityDisplayEventType {
 
-    AttributeDisplayEventType(ProjectController controller) {
+    RelationshipDisplayEventType(ProjectController controller) {
         super(controller);
     }
 
@@ -57,50 +57,50 @@ class AttributeDisplayEventType extends EntityDisplayEventType {
             return;
         }
 
-        Attribute<?,?,?>[] attributes = getLastEntityAttributes(entity);
+        Relationship<?,?,?>[] relationships = getLastEntityRelationships(entity);
 
         EntityDisplayEvent entityDisplayEvent = new EntityDisplayEvent(this, entity, dataMap, dataNode, dataChannel);
-        AttributeDisplayEvent attributeDisplayEvent = new AttributeDisplayEvent(this, attributes, entity, dataMap, dataChannel);
+        RelationshipDisplayEvent displayEvent = new RelationshipDisplayEvent(this, relationships, entity, dataMap, dataChannel);
 
         if (entity instanceof ObjEntity) {
             controller.displayObjEntity(entityDisplayEvent);
-            controller.displayObjAttribute(attributeDisplayEvent);
+            controller.displayObjRelationship(displayEvent);
         } else if (entity instanceof DbEntity) {
             controller.displayDbEntity(entityDisplayEvent);
-            controller.displayDbAttribute(attributeDisplayEvent);
+            controller.displayDbRelationship(displayEvent);
         }
     }
 
     @Override
     public void saveLastDisplayEvent() {
-        preferences.setEvent(AttributeDisplayEvent.class.getSimpleName());
+        preferences.setEvent(RelationshipDisplayEvent.class.getSimpleName());
         preferences.setDomain(controller.getSelectedDataDomain().getName());
         preferences.setNode(controller.getSelectedDataNode() != null ? controller.getSelectedDataNode().getName() : "");
         preferences.setDataMap(controller.getSelectedDataMap().getName());
 
         if (controller.getSelectedObjEntity() != null) {
             preferences.setObjEntity(controller.getSelectedObjEntity().getName());
-            preferences.setObjAttrs(parseToString(controller.getSelectedObjAttributes()));
+            preferences.setObjRels(parseToString(controller.getSelectedObjRelationships()));
             preferences.setDbEntity(null);
         } else if (controller.getSelectedDbEntity() != null) {
             preferences.setDbEntity(controller.getSelectedDbEntity().getName());
-            preferences.setDbAttrs(parseToString(controller.getSelectedDbAttributes()));
+            preferences.setDbRels(parseToString(controller.getSelectedDbRelationships()));
             preferences.setObjEntity(null);
         }
     }
 
-    protected Attribute<?,?,?>[] getLastEntityAttributes(Entity<?,?,?> entity) {
-        List<Attribute<?,?,?>> attributeList = new ArrayList<>();
+    private Relationship<?,?,?>[] getLastEntityRelationships(Entity<?,?,?> entity) {
+        List<Relationship<?,?,?>> relationshipList = new ArrayList<>();
 
-        String attrs = (entity instanceof ObjEntity) ? preferences.getObjAttrs() : preferences.getDbAttrs();
-        for (String attrName : attrs.split(",")) {
-            Attribute<?,?,?> attr = entity.getAttribute(attrName);
-            if(attr != null) {
-                attributeList.add(attr);
+        String rels = (entity instanceof ObjEntity) ? preferences.getObjRels() : preferences.getDbRels();
+        for (String objRelName : rels.split(",")) {
+            Relationship<?,?,?> rel = entity.getRelationship(objRelName);
+            if(rel != null) {
+                relationshipList.add(rel);
             }
         }
 
-        return attributeList.toArray(new Attribute[0]);
+        return relationshipList.toArray(new Relationship[0]);
     }
 
 }

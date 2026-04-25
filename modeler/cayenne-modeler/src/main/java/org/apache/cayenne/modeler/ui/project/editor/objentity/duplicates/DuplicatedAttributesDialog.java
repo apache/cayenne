@@ -28,7 +28,7 @@ import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.ui.ModelerFrame;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.swing.dialog.CayenneDialog;
-import org.apache.cayenne.modeler.util.CayenneTableModel;
+import org.apache.cayenne.modeler.swing.table.CayenneTableModel;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;

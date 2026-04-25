@@ -43,7 +43,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JList;
-import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.Arrays;
@@ -133,7 +132,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
         ObjEntity[] roots = map.getObjEntities().toArray(new ObjEntity[0]);
 
         if (roots.length > 1) {
-            Arrays.sort(roots, Comparators.getDataMapChildrenComparator());
+            Arrays.sort(roots, Comparators.forDataMapChildren());
         }
 
         DefaultComboBoxModel<ObjEntity> model = new DefaultComboBoxModel<>(roots);

@@ -26,7 +26,7 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.util.CayenneTableModel;
+import org.apache.cayenne.modeler.swing.table.CayenneTableModel;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;

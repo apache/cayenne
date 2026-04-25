@@ -323,7 +323,7 @@ public class ProjectTreeController extends ChildController<ProjectController>
 
         Procedure procedure = e.getProcedure();
         DefaultMutableTreeNode currentNode = new DefaultMutableTreeNode(procedure, false);
-        positionNode(node, currentNode, Comparators.getDataMapChildrenComparator());
+        positionNode(node, currentNode, Comparators.forDataMapChildren());
         view.navigateTo(currentNode);
     }
 
@@ -336,7 +336,7 @@ public class ProjectTreeController extends ChildController<ProjectController>
             };
 
             updateNode(path);
-            positionNode(path, Comparators.getDataMapChildrenComparator());
+            positionNode(path, Comparators.forDataMapChildren());
             navigateTo(path);
         }
     }
@@ -367,7 +367,7 @@ public class ProjectTreeController extends ChildController<ProjectController>
 
         QueryDescriptor query = e.getQuery();
         DefaultMutableTreeNode currentNode = new DefaultMutableTreeNode(query, false);
-        positionNode(node, currentNode, Comparators.getDataMapChildrenComparator());
+        positionNode(node, currentNode, Comparators.forDataMapChildren());
         view.navigateTo(currentNode);
     }
 
@@ -383,7 +383,7 @@ public class ProjectTreeController extends ChildController<ProjectController>
             };
 
             updateNode(path);
-            positionNode(path, Comparators.getDataMapChildrenComparator());
+            positionNode(path, Comparators.forDataMapChildren());
             navigateTo(path);
         }
     }
@@ -407,7 +407,7 @@ public class ProjectTreeController extends ChildController<ProjectController>
         updateNode(path);
 
         if (e.isNameChange()) {
-            positionNode(path, Comparators.getNamedObjectComparator());
+            positionNode(path, Comparators.forNamedObjects());
             navigateTo(path);
         }
     }
@@ -428,7 +428,7 @@ public class ProjectTreeController extends ChildController<ProjectController>
 
             if (e.isNameChange()) {
                 positionNode((DefaultMutableTreeNode) node.getParent(), node,
-                        Comparators.getDataDomainChildrenComparator());
+                        Comparators.forDataDomainChildren());
                 view.navigateTo(node);
             } else {
 
@@ -456,7 +456,7 @@ public class ProjectTreeController extends ChildController<ProjectController>
                         if (!found) {
                             DefaultMutableTreeNode newMapNode =
                                     new DefaultMutableTreeNode(domain.getDataMap(aMapsName), false);
-                            positionNode(node, newMapNode, Comparators.getNamedObjectComparator());
+                            positionNode(node, newMapNode, Comparators.forNamedObjects());
                             break;
                         }
                     }
@@ -502,7 +502,7 @@ public class ProjectTreeController extends ChildController<ProjectController>
 
         DataNodeDescriptor dataNode = e.getDataNode();
         DefaultMutableTreeNode currentNode = ProjectTreeFactory.wrapProjectNode(dataNode);
-        positionNode(node, currentNode, Comparators.getDataDomainChildrenComparator());
+        positionNode(node, currentNode, Comparators.forDataDomainChildren());
         view.navigateTo(currentNode);
     }
 
@@ -532,7 +532,7 @@ public class ProjectTreeController extends ChildController<ProjectController>
 
         if (e.isNameChange()) {
             parent.updateEntityResolver();
-            positionNode(path, Comparators.getDataDomainChildrenComparator());
+            positionNode(path, Comparators.forDataDomainChildren());
             navigateTo(path);
         }
     }
@@ -551,7 +551,7 @@ public class ProjectTreeController extends ChildController<ProjectController>
 
         parent.getEntityResolver().addDataMap(e.getDataMap());
 
-        positionNode(domainNode, newMapNode, Comparators.getDataDomainChildrenComparator());
+        positionNode(domainNode, newMapNode, Comparators.forDataDomainChildren());
         if (Application.getInstance().getFrameController().getDbImportController().isGlobalImport()) {
             view.setSelected(newMapNode);
         } else {
@@ -636,7 +636,7 @@ public class ProjectTreeController extends ChildController<ProjectController>
             };
 
             updateNode(path);
-            positionNode(path, Comparators.getDataMapChildrenComparator());
+            positionNode(path, Comparators.forDataMapChildren());
             navigateTo(path);
         }
     }
@@ -663,7 +663,7 @@ public class ProjectTreeController extends ChildController<ProjectController>
         }
 
         DefaultMutableTreeNode currentNode = new DefaultMutableTreeNode(entity, false);
-        positionNode(mapNode, currentNode, Comparators.getDataMapChildrenComparator());
+        positionNode(mapNode, currentNode, Comparators.forDataMapChildren());
         view.navigateTo(currentNode);
     }
 
@@ -702,7 +702,7 @@ public class ProjectTreeController extends ChildController<ProjectController>
         }
 
         DefaultMutableTreeNode currentNode = new DefaultMutableTreeNode(embeddable, false);
-        positionNode(mapNode, currentNode, Comparators.getDataMapChildrenComparator());
+        positionNode(mapNode, currentNode, Comparators.forDataMapChildren());
         view.navigateTo(currentNode);
     }
 
@@ -717,7 +717,7 @@ public class ProjectTreeController extends ChildController<ProjectController>
             };
 
             updateNode(path);
-            positionNode(path, Comparators.getDataMapChildrenComparator());
+            positionNode(path, Comparators.forDataMapChildren());
             navigateTo(path);
         }
     }

@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.modeler.util;
 
-import java.util.Comparator;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.Attribute;
@@ -33,26 +31,25 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.query.Query;
 
+import java.util.Comparator;
+
 /**
  * A collection of useful Comparators used by the modeler.
  */
 public class Comparators {
 
-    private static final Comparator<ConfigurationNode> dataDomainChildrenComparator = new DataDomainChildrenComparator();
-
-    private static final Comparator<ConfigurationNode> dataMapChildrenComparator = new DataMapChildrenComparator();
-
-    private static final Comparator<ConfigurationNode> entityChildrenComparator = new EntityChildrenComparator();
-
-    private static final Comparator<ConfigurationNode> namedObjectComparator = new NamedObjectComparator();
+    private static final Comparator<ConfigurationNode> dataDomainChildren = new DataDomainChildrenComparator();
+    private static final Comparator<ConfigurationNode> dataMapChildren = new DataMapChildrenComparator();
+    private static final Comparator<ConfigurationNode> entityChildren = new EntityChildrenComparator();
+    private static final Comparator<ConfigurationNode> namedObjects = new NamedObjectComparator();
 
     /**
      * Returns a comparator to order DataMap objects of mixed types. Objects of the same
      * type are ordered based on "name" property. Objects of different types are ordered
      * based on the following precedence: DataMap, DataNode.
      */
-    public static Comparator<ConfigurationNode> getDataDomainChildrenComparator() {
-        return dataDomainChildrenComparator;
+    public static Comparator<ConfigurationNode> forDataDomainChildren() {
+        return dataDomainChildren;
     }
 
     /**
@@ -61,8 +58,8 @@ public class Comparators {
      * based on the following precedence: DataMap, ObjEntity, DbEntity, Procedure and
      * Query.
      */
-    public static Comparator<ConfigurationNode> getDataMapChildrenComparator() {
-        return dataMapChildrenComparator;
+    public static Comparator<ConfigurationNode> forDataMapChildren() {
+        return dataMapChildren;
     }
 
     /**
@@ -71,15 +68,15 @@ public class Comparators {
      * Objects of different types are ordered based on the following precedence:
      * Attribute, Relationship.
      */
-    public static Comparator<ConfigurationNode> getEntityChildrenComparator() {
-        return entityChildrenComparator;
+    public static Comparator<ConfigurationNode> forEntityChildren() {
+        return entityChildren;
     }
 
     /**
      * Returns a comparator to order java beans according to their "name" property.
      */
-    public static Comparator<ConfigurationNode> getNamedObjectComparator() {
-        return namedObjectComparator;
+    public static Comparator<ConfigurationNode> forNamedObjects() {
+        return namedObjects;
     }
 
     static class NamedObjectComparator implements Comparator<ConfigurationNode> {

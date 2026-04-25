@@ -17,7 +17,9 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util;
+package org.apache.cayenne.modeler.swing;
+
+import org.apache.cayenne.modeler.util.OperatingSystem;
 
 import java.awt.Desktop;
 import java.net.URI;
@@ -25,21 +27,14 @@ import java.net.URI;
 /**
  * Opens a URL in the system default browser.
  */
-public class BrowserControl {
-    /**
-     * Display a file in the system browser. If you want to display a file, you must
-     * include the absolute path name.
-     *
-     * @param url the file's url (the url must start with either "http://" or "file://").
-     */
-    // see public domain code at
-    // http://www.centerkey.com/java/browser/myapp/BareBonesBrowserLaunch.java
+public class UrlOpener {
+
     public static void displayURL(String url) {
         try {
             // use direct Java support for the Desktop if available
             if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
                 Desktop.getDesktop().browse(new URI(url));
-            // failover to a platform-specific hacks
+                // failover to a platform-specific hacks
             } else if (OperatingSystem.getOS() == OperatingSystem.WINDOWS) {
                 String cmd = "rundll32 url.dll,FileProtocolHandler " + url;
                 Runtime.getRuntime().exec(cmd);

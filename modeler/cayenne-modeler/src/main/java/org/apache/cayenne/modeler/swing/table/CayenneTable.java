@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.swing.table;
 
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
-import org.apache.cayenne.modeler.util.CayenneTableModel;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

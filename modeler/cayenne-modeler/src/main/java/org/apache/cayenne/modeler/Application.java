@@ -35,7 +35,6 @@ import org.apache.cayenne.modeler.ui.logconsole.LogConsoleController;
 import org.apache.cayenne.modeler.ui.preferences.classpath.ClasspathPreferencesController;
 import org.apache.cayenne.modeler.ui.preferences.general.GeneralPreferencesController;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
-import org.apache.cayenne.modeler.util.AdapterMapping;
 import org.apache.cayenne.modeler.pref.CayennePreference;
 import org.apache.cayenne.modeler.pref.CayenneProjectPreferences;
 import org.apache.cayenne.project.ConfigurationNodeParentGetter;
@@ -76,7 +75,6 @@ public class Application {
     protected LogConsoleController logConsoleController;
     protected ModelerController frameController;
     protected String name;
-    protected AdapterMapping adapterMapping;
     protected CayenneUndoManager undoManager;
     protected CayenneProjectPreferences cayenneProjectPreferences;
     protected CayennePreference cayennePreference;
@@ -131,11 +129,6 @@ public class Application {
     public ClassLoadingService getClassLoadingService() {
         return modelerClassLoader;
     }
-
-    public AdapterMapping getAdapterMapping() {
-        return adapterMapping;
-    }
-
 
     public ActionManager getActionManager() {
         return injector.getInstance(ActionManager.class);
@@ -196,7 +189,6 @@ public class Application {
         initPreferences();
         initClassLoader();
 
-        this.adapterMapping = new AdapterMapping();
         this.undoManager = new CayenneUndoManager(this);
         this.frameController = new ModelerController(this);
 

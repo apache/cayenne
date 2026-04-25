@@ -22,13 +22,11 @@ package org.apache.cayenne.modeler.ui.preferences.datasource.creator;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.ui.preferences.datasource.DataSourcePreferencesController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
-import org.apache.cayenne.modeler.util.AdapterMapping;
 import org.apache.cayenne.modeler.util.DbAdapterInfo;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Map;
-
 
 public class DataSourceCreatorController extends ChildController<DataSourcePreferencesController> {
 
@@ -139,9 +137,8 @@ public class DataSourceCreatorController extends ChildController<DataSourcePrefe
             dataSource.setDbAdapter(adapterString);
 
             // guess adapter defaults...
-            AdapterMapping defaultMap = getApplication().getAdapterMapping();
-            dataSource.setJdbcDriver(defaultMap.jdbcDriverForAdapter(adapterString));
-            dataSource.setUrl(defaultMap.jdbcURLForAdapter(adapterString));
+            dataSource.setJdbcDriver(Adapters.driver(adapterString));
+            dataSource.setUrl(Adapters.jdbcURL(adapterString));
         }
 
         return dataSource;

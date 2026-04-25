@@ -17,10 +17,9 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util;
+package org.apache.cayenne.modeler.swing.table;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.undo.CayenneTableModelUndoableEdit;
 import org.apache.cayenne.util.Util;
@@ -49,7 +48,7 @@ public abstract class CayenneTableModel<T> extends AbstractTableModel {
     protected Object eventSource;
     protected List<T> objectList;
 
-    public CayenneTableModel(ProjectController controller, Object eventSource, List<T> objectList) {
+    protected CayenneTableModel(ProjectController controller, Object eventSource, List<T> objectList) {
         this.eventSource = eventSource;
         this.controller = controller;
         this.objectList = objectList;

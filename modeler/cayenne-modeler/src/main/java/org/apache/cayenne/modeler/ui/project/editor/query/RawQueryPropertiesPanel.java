@@ -29,7 +29,7 @@ import javax.swing.JComboBox;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.swing.JCayenneCheckBox;
+import org.apache.cayenne.modeler.swing.checkbox.CayenneCheckBox;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.swing.CellRenderers;
@@ -96,7 +96,7 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
 
         // create widgets
 
-        persistentObjects = new JCayenneCheckBox();
+        persistentObjects = new CayenneCheckBox();
 
         entities = WidgetFactory.createUndoableComboBox();
         entities.setRenderer(CellRenderers.listRendererWithIcons());
@@ -123,7 +123,7 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
         List<ObjEntity> objEntities = new ArrayList<>(map.getObjEntities());
 
         if (objEntities.size() > 1) {
-            objEntities.sort(Comparators.getDataMapChildrenComparator());
+            objEntities.sort(Comparators.forDataMapChildren());
         }
 
         entities.setEnabled(fetchingDO && isEnabled());

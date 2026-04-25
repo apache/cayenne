@@ -68,7 +68,7 @@ public class SuperclassUpdateController extends DefaultsPreferencesController {
         String defaultSuperclass = dataMap.getDefaultSuperclass();
 
         dataMap.getObjEntities().stream()
-                .sorted(Comparators.getDataMapChildrenComparator()).forEach(entity -> {
+                .sorted(Comparators.forDataMapChildren()).forEach(entity -> {
                     if (doAll || Util.isEmptyString(getSuperClassName(entity))) {
                         if (!Util.nullSafeEquals(defaultSuperclass, getSuperClassName(entity))) {
                             setSuperClassName(entity, defaultSuperclass);

@@ -17,17 +17,22 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util.state;
+package org.apache.cayenne.modeler.pref.project;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.event.display.EmbeddableAttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 
-class EmbeddableDisplayEventType extends DisplayEventType {
+import java.util.ArrayList;
+import java.util.List;
 
-    public EmbeddableDisplayEventType(ProjectController controller) {
+class EmbeddableAttributeDisplayEventType extends EmbeddableDisplayEventType {
+
+    public EmbeddableAttributeDisplayEventType(ProjectController controller) {
         super(controller);
     }
 
@@ -50,13 +55,44 @@ class EmbeddableDisplayEventType extends DisplayEventType {
 
         EmbeddableDisplayEvent embeddableDisplayEvent = new EmbeddableDisplayEvent(this, embeddable, dataMap, dataChannel);
         controller.displayEmbeddable(embeddableDisplayEvent);
+
+        EmbeddableAttribute[] embeddableAttributes = getLastEmbeddableAttributes(embeddable);
+        EmbeddableAttributeDisplayEvent attributeDisplayEvent = new EmbeddableAttributeDisplayEvent(this, embeddable, embeddableAttributes, dataMap, dataChannel);
+        controller.displayEmbeddableAttribute(attributeDisplayEvent);
     }
 
     @Override
     public void saveLastDisplayEvent() {
-        preferences.setEvent(EmbeddableDisplayEvent.class.getSimpleName());
+        preferences.setEvent(EmbeddableAttributeDisplayEvent.class.getSimpleName());
         preferences.setDomain(controller.getSelectedDataDomain().getName());
         preferences.setDataMap(controller.getSelectedDataMap().getName());
         preferences.setEmbeddable(controller.getSelectedEmbeddable().getClassName());
+
+        EmbeddableAttribute[] currentEmbAttributes = controller.getSelectedEmbeddableAttributes();
+        if (currentEmbAttributes == null) {
+            preferences.setEmbAttrs("");
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (EmbeddableAttribute embeddableAttribute : currentEmbAttributes) {
+                sb.append(embeddableAttribute.getName()).append(",");
+            }
+            preferences.setEmbAttrs(sb.toString());
+        }
+    }
+
+    protected EmbeddableAttribute[] getLastEmbeddableAttributes(Embeddable embeddable) {
+        List<EmbeddableAttribute> embeddableAttributeList = new ArrayList<EmbeddableAttribute>();
+        EmbeddableAttribute[] attributes = new EmbeddableAttribute[0];
+
+        String embAttrs = preferences.getEmbAttrs();
+        if (embAttrs.isEmpty()) {
+            return embeddableAttributeList.toArray(attributes);
+        }
+
+        for (String embAttrName : embAttrs.split(",")) {
+            embeddableAttributeList.add(embeddable.getAttribute(embAttrName));
+        }
+
+        return embeddableAttributeList.toArray(attributes);
     }
 }

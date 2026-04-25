@@ -45,7 +45,7 @@ import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallb
 import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
 import org.apache.cayenne.modeler.undo.PasteCompoundUndoableEdit;
 import org.apache.cayenne.modeler.undo.PasteUndoableEdit;
-import org.apache.cayenne.modeler.swing.CayenneTransferable;
+import org.apache.cayenne.modeler.swing.copypaste.CayenneTransferable;
 import org.apache.cayenne.query.Query;
 
 import javax.swing.KeyStroke;

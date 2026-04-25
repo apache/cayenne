@@ -23,7 +23,7 @@ import java.awt.BorderLayout;
 
 import javax.swing.JCheckBox;
 
-import org.apache.cayenne.modeler.swing.JCayenneCheckBox;
+import org.apache.cayenne.modeler.swing.checkbox.CayenneCheckBox;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.query.QueryMetadata;
@@ -48,7 +48,7 @@ public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel {
         super.initView();
         // create widgets
 
-        dataRows = new JCayenneCheckBox();
+        dataRows = new CayenneCheckBox();
 
         // assemble
         CellConstraints cc = new CellConstraints();

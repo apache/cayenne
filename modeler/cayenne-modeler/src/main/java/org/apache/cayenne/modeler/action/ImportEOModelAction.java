@@ -23,11 +23,22 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
-import org.apache.cayenne.modeler.event.model.DataNodeEvent;
-import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.configuration.runtime.JNDIDataSourceFactory;
 import org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.db2.DB2Adapter;
+import org.apache.cayenne.dba.derby.DerbyAdapter;
+import org.apache.cayenne.dba.firebird.FirebirdAdapter;
+import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
+import org.apache.cayenne.dba.h2.H2Adapter;
+import org.apache.cayenne.dba.hsqldb.HSQLDBAdapter;
+import org.apache.cayenne.dba.ingres.IngresAdapter;
+import org.apache.cayenne.dba.mysql.MySQLAdapter;
+import org.apache.cayenne.dba.oracle.OracleAdapter;
+import org.apache.cayenne.dba.postgres.PostgresAdapter;
+import org.apache.cayenne.dba.sqlite.SQLiteAdapter;
+import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
+import org.apache.cayenne.dba.sybase.SybaseAdapter;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -36,27 +47,27 @@ import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.errors.ErrorsController;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
+import org.apache.cayenne.modeler.event.model.DataNodeEvent;
+import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.pref.FSPath;
-import org.apache.cayenne.modeler.util.AdapterMapping;
+import org.apache.cayenne.modeler.ui.errors.ErrorsController;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.FileFilters;
 import org.apache.cayenne.wocompat.EOModelProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
+import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
-import java.awt.Component;
-import java.awt.HeadlessException;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -67,14 +78,38 @@ public class ImportEOModelAction extends ModelerAbstractAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImportEOModelAction.class);
 
-    public static String getActionName() {
-        return "Import EOModel";
-    }
+    private final Map<String, String> adaptersByEofPlugin;
+    private final Map<String, String> adaptersByDriver;
 
-    protected JFileChooser eoModelChooser;
+    private JFileChooser eoModelChooser;
 
     public ImportEOModelAction(Application application) {
-        super(getActionName(), application);
+        super("Import EOModel", application);
+
+        this.adaptersByEofPlugin = new HashMap<>();
+        adaptersByEofPlugin.put("com.webobjects.jdbcadaptor.SybasePlugIn", SybaseAdapter.class.getName());
+        adaptersByEofPlugin.put("com.webobjects.jdbcadaptor.MerantPlugIn", SQLServerAdapter.class.getName());
+        adaptersByEofPlugin.put("com.webobjects.jdbcadaptor.MicrosoftPlugIn", SQLServerAdapter.class.getName());
+        adaptersByEofPlugin.put("com.webobjects.jdbcadaptor.MySQLPlugIn", MySQLAdapter.class.getName());
+        adaptersByEofPlugin.put("com.webobjects.jdbcadaptor.OraclePlugIn", OracleAdapter.class.getName());
+        adaptersByEofPlugin.put("com.webobjects.jdbcadaptor.FrontbasePlugIn", FrontBaseAdapter.class.getName());
+        adaptersByEofPlugin.put("PostgresqlPlugIn", PostgresAdapter.class.getName());
+
+        this.adaptersByDriver = new HashMap<>();
+        adaptersByDriver.put("oracle.jdbc.driver.OracleDriver", OracleAdapter.class.getName());
+        adaptersByDriver.put("com.sybase.jdbc2.jdbc.SybDriver", SybaseAdapter.class.getName());
+        adaptersByDriver.put("com.mysql.jdbc.Driver", MySQLAdapter.class.getName());
+        adaptersByDriver.put("com.mysql.cj.jdbc.Driver", MySQLAdapter.class.getName());
+        adaptersByDriver.put("com.ibm.db2.jcc.DB2Driver", DB2Adapter.class.getName());
+        adaptersByDriver.put("org.hsqldb.jdbcDriver", HSQLDBAdapter.class.getName());
+        adaptersByDriver.put("org.h2.Driver", H2Adapter.class.getName());
+        adaptersByDriver.put("org.postgresql.Driver", PostgresAdapter.class.getName());
+        adaptersByDriver.put("com.microsoft.sqlserver.jdbc.SQLServerDriver", SQLServerAdapter.class.getName());
+        adaptersByDriver.put("org.apache.derby.jdbc.EmbeddedDriver", DerbyAdapter.class.getName());
+        adaptersByDriver.put("jdbc.FrontBase.FBJDriver", FrontBaseAdapter.class.getName());
+        adaptersByDriver.put("com.ingres.jdbc.IngresDriver", IngresAdapter.class.getName());
+        adaptersByDriver.put("org.sqlite.JDBC", SQLiteAdapter.class.getName());
+        adaptersByDriver.put("org.firebirdsql.jdbc.FBDriver", FirebirdAdapter.class.getName());
     }
 
     public String getIconName() {
@@ -135,7 +170,7 @@ public class ImportEOModelAction extends ModelerAbstractAction {
         // node).
 
         String adapter = (String) eomodelIndex.get("adaptorName");
-        Map connection = (Map) eomodelIndex.get("connectionDictionary");
+        Map<?, ?> connection = (Map) eomodelIndex.get("connectionDictionary");
 
         if (adapter != null && connection != null) {
             CreateNodeAction nodeBuilder = application.getActionManager().getAction(CreateNodeAction.class);
@@ -149,11 +184,13 @@ public class ImportEOModelAction extends ModelerAbstractAction {
                 node.setDataSourceFactoryType(JNDIDataSourceFactory.class.getName());
                 node.setParameters((String) connection.get("serverUrl"));
             } else {
+
                 // guess adapter from plugin or driver
-                AdapterMapping adapterDefaults = application.getAdapterMapping();
-                String cayenneAdapter = adapterDefaults.adapterForEOFPluginOrDriver(
-                        (String) connection.get("plugin"),
-                        (String) connection.get("driver"));
+                String cayenneAdapter = adaptersByEofPlugin.get(connection.get("plugin"));
+                if (cayenneAdapter == null) {
+                    cayenneAdapter = adaptersByDriver.get(connection.get("driver"));
+                }
+
                 if (cayenneAdapter != null) {
                     try {
                         Class<DbAdapter> adapterClass = application

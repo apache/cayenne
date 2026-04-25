@@ -33,7 +33,7 @@ import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.modeler.event.model.ProcedureEvent;
 import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
-import org.apache.cayenne.modeler.swing.JCayenneCheckBox;
+import org.apache.cayenne.modeler.swing.checkbox.CayenneCheckBox;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -76,7 +76,7 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
         this.comment = new CayenneUndoableTextField();
         this.comment.addCommitListener(this::setComment);
 
-        this.returnsValue = new JCayenneCheckBox();
+        this.returnsValue = new CayenneCheckBox();
         this.returnsValue.setToolTipText("first parameter will be used as return value");
 
         FormLayout layout = new FormLayout("right:pref, 3dlu, fill:200dlu", "");

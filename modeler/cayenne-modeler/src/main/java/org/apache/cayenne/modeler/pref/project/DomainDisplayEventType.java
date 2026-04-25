@@ -17,17 +17,15 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util.state;
+package org.apache.cayenne.modeler.pref.project;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 
-class DataMapDisplayEventType extends DisplayEventType {
+class DomainDisplayEventType extends DisplayEventType {
 
-    public DataMapDisplayEventType(ProjectController controller) {
+    public DomainDisplayEventType(ProjectController controller) {
         super(controller);
     }
 
@@ -38,31 +36,14 @@ class DataMapDisplayEventType extends DisplayEventType {
             return;
         }
 
-        DataNodeDescriptor dataNode = dataChannel.getNodeDescriptor(preferences.getNode());
-        DataMap dataMap = dataChannel.getDataMap(preferences.getDataMap());
-        if (dataMap == null) {
-            return;
-        }
-
-        DataMapDisplayEvent dataMapDisplayEvent = new DataMapDisplayEvent(this, dataMap, dataChannel, dataNode);
-        controller.displayDataMap(dataMapDisplayEvent);
+        DomainDisplayEvent domainDisplayEvent = new DomainDisplayEvent(this, dataChannel);
+        controller.displayDomain(domainDisplayEvent);
     }
 
     @Override
     public void saveLastDisplayEvent() {
-        preferences.setEvent(DataMapDisplayEvent.class.getSimpleName());
-
-        DataChannelDescriptor domain = controller.getSelectedDataDomain();
-        DataNodeDescriptor node = controller.getSelectedDataNode();
-        DataMap dataMap = controller.getSelectedDataMap();
-
-        if (domain != null) {
-            preferences.setDomain(domain.getName());
-            preferences.setNode(node != null ? node.getName() : "");
-
-            if (dataMap != null) {
-                preferences.setDataMap(dataMap.getName());
-            }
-        }
+        preferences.setEvent(DomainDisplayEvent.class.getSimpleName());
+        preferences.setDomain(controller.getSelectedDataDomain().getName());
     }
+
 }

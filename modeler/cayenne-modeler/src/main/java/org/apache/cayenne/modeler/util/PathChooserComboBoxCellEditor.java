@@ -23,6 +23,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.modeler.swing.CellRenderers;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
+import org.apache.cayenne.modeler.swing.table.CayenneTableModel;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.AbstractCellEditor;

@@ -17,20 +17,17 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util.state;
+package org.apache.cayenne.modeler.pref.project;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 
-class EntityDisplayEventType extends DisplayEventType {
+class DataMapDisplayEventType extends DisplayEventType {
 
-    EntityDisplayEventType(ProjectController controller) {
+    public DataMapDisplayEventType(ProjectController controller) {
         super(controller);
     }
 
@@ -47,52 +44,25 @@ class EntityDisplayEventType extends DisplayEventType {
             return;
         }
 
-        Entity<?, ?, ?> entity = getLastEntity(dataMap);
-        if (entity == null) {
-            return;
-        }
-
-        EntityDisplayEvent entityDisplayEvent = new EntityDisplayEvent(this, entity, dataMap, dataNode, dataChannel);
-        if (entity instanceof ObjEntity) {
-            controller.displayObjEntity(entityDisplayEvent);
-        } else if (entity instanceof DbEntity) {
-            controller.displayDbEntity(entityDisplayEvent);
-        }
+        DataMapDisplayEvent dataMapDisplayEvent = new DataMapDisplayEvent(this, dataMap, dataChannel, dataNode);
+        controller.displayDataMap(dataMapDisplayEvent);
     }
 
     @Override
     public void saveLastDisplayEvent() {
-
-        preferences.setEvent(EntityDisplayEvent.class.getSimpleName());
+        preferences.setEvent(DataMapDisplayEvent.class.getSimpleName());
 
         DataChannelDescriptor domain = controller.getSelectedDataDomain();
         DataNodeDescriptor node = controller.getSelectedDataNode();
         DataMap dataMap = controller.getSelectedDataMap();
-        DbEntity dbEntity = controller.getSelectedDbEntity();
-        ObjEntity objEntity = controller.getSelectedObjEntity();
 
         if (domain != null) {
             preferences.setDomain(domain.getName());
             preferences.setNode(node != null ? node.getName() : "");
 
             if (dataMap != null) {
-
                 preferences.setDataMap(dataMap.getName());
-
-                if (objEntity != null) {
-                    preferences.setObjEntity(objEntity.getName());
-                    preferences.setDbEntity(null);
-                } else if (dbEntity != null) {
-                    preferences.setDbEntity(dbEntity.getName());
-                    preferences.setObjEntity(null);
-                }
             }
         }
-    }
-
-    Entity<?, ?, ?> getLastEntity(DataMap dataMap) {
-        return !preferences.getObjEntity().isEmpty()
-                ? dataMap.getObjEntity(preferences.getObjEntity())
-                : dataMap.getDbEntity(preferences.getDbEntity());
     }
 }

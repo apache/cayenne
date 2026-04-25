@@ -26,7 +26,7 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.event.model.DomainEvent;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.swing.JCayenneCheckBox;
+import org.apache.cayenne.modeler.swing.checkbox.CayenneCheckBox;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DomainDisplayListener;
@@ -68,8 +68,8 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
         this.name = new CayenneUndoableTextField();
         this.name.addCommitListener(this::setDomainName);
 
-        this.objectValidation = new JCayenneCheckBox();
-        this.sharedCache = new JCayenneCheckBox();
+        this.objectValidation = new CayenneCheckBox();
+        this.sharedCache = new CayenneCheckBox();
 
         // assemble
         CellConstraints cc = new CellConstraints();
