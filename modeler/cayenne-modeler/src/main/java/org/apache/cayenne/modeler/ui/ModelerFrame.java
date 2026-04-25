@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.ui;
 
 import org.apache.cayenne.modeler.ui.project.ProjectView;
-import org.apache.cayenne.modeler.ui.action.ActionManager;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.logconsole.LogConsoleController;
 import org.apache.cayenne.modeler.ui.welcome.WelcomeScreen;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
@@ -38,7 +38,7 @@ import java.awt.event.ComponentEvent;
  */
 public class ModelerFrame extends JFrame {
 
-    private final ActionManager actionManager;
+    private final GlobalActions globalActions;
 
     private final JSplitPane splitPane;
     private final JLabel status;
@@ -48,12 +48,12 @@ public class ModelerFrame extends JFrame {
     private ProjectView projectView;
     private Component dockComponent;
 
-    public ModelerFrame(ActionManager actionManager, LogConsoleController logConsoleController) {
-        this.actionManager = actionManager;
+    public ModelerFrame(GlobalActions globalActions, LogConsoleController logConsoleController) {
+        this.globalActions = globalActions;
 
         setIconImage(ModelerUtil.buildIcon("CayenneModeler.png").getImage());
         getContentPane().setLayout(new BorderLayout());
-        this.menuBar = new ModelerMenuBar(actionManager, logConsoleController);
+        this.menuBar = new ModelerMenuBar(globalActions, logConsoleController);
         setJMenuBar(menuBar);
         initToolbar();
 
@@ -123,7 +123,7 @@ public class ModelerFrame extends JFrame {
 
     protected void initToolbar() {
 
-        MainToolBar toolBar = new MainToolBar(actionManager);
+        MainToolBar toolBar = new MainToolBar(globalActions);
         getContentPane().add(toolBar, BorderLayout.NORTH);
 
         // Hide some buttons when frame is too small

@@ -17,44 +17,36 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.graph.extension;
+package org.apache.cayenne.modeler.service.graph;
 
-import java.awt.geom.Rectangle2D;
-import java.util.Hashtable;
-import java.util.Map;
-
+import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
-import org.jgraph.graph.GraphConstants;
 import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
-class EntityHandler extends NamespaceAwareNestedTagHandler {
+class GraphsRootHandler extends NamespaceAwareNestedTagHandler {
 
-    static final String ENTITY_TAG = "entity";
+    static final String GRAPHS_TAG = "graphs";
 
-    GraphHandler graphHandler;
+    private final DataChannelMetaData metaData;
 
-    public EntityHandler(GraphHandler parentHandler) {
+    public GraphsRootHandler(NamespaceAwareNestedTagHandler parentHandler, DataChannelMetaData metaData) {
         super(parentHandler);
-        this.graphHandler = parentHandler;
+        setTargetNamespace(GraphExtension.NAMESPACE);
+        this.metaData = metaData;
     }
 
     @Override
     protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException {
-        switch (localName) {
-            case ENTITY_TAG:
-                String name = attributes.getValue("name");
-                Map<String, Object> props = new Hashtable<>();
-                GraphConstants.setBounds(props,
-                        new Rectangle2D.Double(
-                                Double.valueOf(attributes.getValue("x")),
-                                Double.valueOf(attributes.getValue("y")),
-                                Double.valueOf(attributes.getValue("width")),
-                                Double.valueOf(attributes.getValue("height"))
-                        ));
-                graphHandler.propertiesMap.put(name, props);
-                return true;
+        return GRAPHS_TAG.equals(localName);
+    }
+
+    @Override
+    protected ContentHandler createChildTagHandler(String namespaceURI, String localName, String qName, Attributes attributes) {
+        if(GraphHandler.GRAPH_TAG.equals(localName)) {
+            return new GraphHandler(this, metaData);
         }
-        return false;
+        return super.createChildTagHandler(namespaceURI, localName, qName, attributes);
     }
 }

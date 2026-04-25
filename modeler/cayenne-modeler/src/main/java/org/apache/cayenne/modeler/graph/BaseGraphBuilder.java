@@ -49,7 +49,7 @@ import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.action.ActionManager;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.ui.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.EntityDisplayAction;
@@ -363,13 +363,13 @@ abstract class BaseGraphBuilder<E extends Entity<E, A, R>, A extends Attribute<E
      * Creates popup menu
      */
     protected JPopupMenu createPopupMenu() {
-        ActionManager actionManager = Application.getInstance().getActionManager();
+        GlobalActions globalActions = Application.getInstance().getActionManager();
 
         JPopupMenu menu = new JPopupMenu();
         menu.add(new EntityDisplayAction(this).buildMenu());
         menu.addSeparator();
-        menu.add(new EntityDisplayAction(this, actionManager.getAction(CreateAttributeAction.class)).buildMenu());
-        menu.add(new EntityDisplayAction(this, actionManager.getAction(CreateRelationshipAction.class)).buildMenu());
+        menu.add(new EntityDisplayAction(this, globalActions.getAction(CreateAttributeAction.class)).buildMenu());
+        menu.add(new EntityDisplayAction(this, globalActions.getAction(CreateRelationshipAction.class)).buildMenu());
         menu.addSeparator();
         menu.add(new RemoveEntityAction(this));
 

@@ -29,7 +29,7 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.action.ActionManager;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.ui.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.ObjEntityCounterpartAction;
@@ -87,15 +87,15 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
         JToolBar toolBar = new JToolBar();
         toolBar.setBorder(BorderFactory.createEmptyBorder());
         toolBar.setFloatable(false);
-        ActionManager actionManager = Application.getInstance().getActionManager();
+        GlobalActions globalActions = Application.getInstance().getActionManager();
 
-        toolBar.add(actionManager.getAction(CreateAttributeAction.class).buildButton(1));
-        toolBar.add(actionManager.getAction(CreateRelationshipAction.class).buildButton(3));
+        toolBar.add(globalActions.getAction(CreateAttributeAction.class).buildButton(1));
+        toolBar.add(globalActions.getAction(CreateRelationshipAction.class).buildButton(3));
         toolBar.addSeparator();
-        toolBar.add(actionManager.getAction(ObjEntitySyncAction.class).buildButton(1));
-        toolBar.add(actionManager.getAction(ObjEntityCounterpartAction.class).buildButton(3));
+        toolBar.add(globalActions.getAction(ObjEntitySyncAction.class).buildButton(1));
+        toolBar.add(globalActions.getAction(ObjEntityCounterpartAction.class).buildButton(3));
         toolBar.addSeparator();
-        toolBar.add(actionManager.getAction(ShowGraphEntityAction.class).buildButton());
+        toolBar.add(globalActions.getAction(ShowGraphEntityAction.class).buildButton());
 
         add(toolBar, BorderLayout.NORTH);
 

@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.ui.project.validator;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.action.ActionManager;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.DisableValidationInspectionAction;
 import org.apache.cayenne.modeler.ui.action.ShowValidationOptionAction;
 import org.apache.cayenne.modeler.ui.action.ValidateAction;
@@ -79,11 +79,11 @@ public class ProjectValidatorDialogController extends ChildController<ProjectCon
         Inspection inspection = failure instanceof ProjectValidationFailure
                 ? ((ProjectValidationFailure) failure).getInspection()
                 : null;
-        ActionManager actionManager = getApplication().getActionManager();
-        actionManager.getAction(DisableValidationInspectionAction.class)
+        GlobalActions globalActions = getApplication().getActionManager();
+        globalActions.getAction(DisableValidationInspectionAction.class)
                 .putInspection(inspection)
                 .setEnabled(inspection != null);
-        actionManager.getAction(ShowValidationOptionAction.class)
+        globalActions.getAction(ShowValidationOptionAction.class)
                 .putInspection(inspection);
     }
 }

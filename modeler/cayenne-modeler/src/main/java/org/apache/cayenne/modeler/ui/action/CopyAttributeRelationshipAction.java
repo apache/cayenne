@@ -31,7 +31,7 @@ public class CopyAttributeRelationshipAction extends CopyAction implements Multi
     private final CopyRelationshipAction copyRelationshipAction;
     private JComponent currentSelectedPanel;
 
-    protected CopyAttributeRelationshipAction(Application application) {
+    public CopyAttributeRelationshipAction(Application application) {
         super(application);
         copyAttributeAction = new CopyAttributeAction(application);
         copyRelationshipAction = new CopyRelationshipAction(application);

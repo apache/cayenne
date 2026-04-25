@@ -20,9 +20,9 @@
 package org.apache.cayenne.modeler.ui;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.action.*;
 import org.apache.cayenne.modeler.event.model.RecentFileListListener;
 import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.*;
 import org.apache.cayenne.modeler.ui.logconsole.LogConsoleController;
 
@@ -39,7 +39,7 @@ class ModelerMenuBar extends JMenuBar {
     private final JCheckBoxMenuItem logMenu;
     private final List<RecentFileListListener> recentFileListeners;
 
-    ModelerMenuBar(ActionManager actionManager, LogConsoleController logConsoleController) {
+    ModelerMenuBar(GlobalActions globalActions, LogConsoleController logConsoleController) {
         this.logConsoleController = logConsoleController;
         this.recentFileListeners = new ArrayList<>();
 
@@ -55,58 +55,58 @@ class ModelerMenuBar extends JMenuBar {
         toolMenu.setMnemonic(KeyEvent.VK_T);
         helpMenu.setMnemonic(KeyEvent.VK_H);
 
-        fileMenu.add(actionManager.getAction(NewProjectAction.class).buildMenu());
-        fileMenu.add(actionManager.getAction(OpenProjectAction.class).buildMenu());
-        fileMenu.add(actionManager.getAction(ProjectAction.class).buildMenu());
-        fileMenu.add(actionManager.getAction(ImportDataMapAction.class).buildMenu());
+        fileMenu.add(globalActions.getAction(NewProjectAction.class).buildMenu());
+        fileMenu.add(globalActions.getAction(OpenProjectAction.class).buildMenu());
+        fileMenu.add(globalActions.getAction(ProjectAction.class).buildMenu());
+        fileMenu.add(globalActions.getAction(ImportDataMapAction.class).buildMenu());
         fileMenu.addSeparator();
-        fileMenu.add(actionManager.getAction(SaveAction.class).buildMenu());
-        fileMenu.add(actionManager.getAction(SaveAsAction.class).buildMenu());
-        fileMenu.add(actionManager.getAction(RevertAction.class).buildMenu());
+        fileMenu.add(globalActions.getAction(SaveAction.class).buildMenu());
+        fileMenu.add(globalActions.getAction(SaveAsAction.class).buildMenu());
+        fileMenu.add(globalActions.getAction(RevertAction.class).buildMenu());
         fileMenu.addSeparator();
 
-        editMenu.add(actionManager.getAction(UndoAction.class).buildMenu());
-        editMenu.add(actionManager.getAction(RedoAction.class).buildMenu());
-        editMenu.add(actionManager.getAction(CutAction.class).buildMenu());
-        editMenu.add(actionManager.getAction(CopyAction.class).buildMenu());
-        editMenu.add(actionManager.getAction(PasteAction.class).buildMenu());
+        editMenu.add(globalActions.getAction(UndoAction.class).buildMenu());
+        editMenu.add(globalActions.getAction(RedoAction.class).buildMenu());
+        editMenu.add(globalActions.getAction(CutAction.class).buildMenu());
+        editMenu.add(globalActions.getAction(CopyAction.class).buildMenu());
+        editMenu.add(globalActions.getAction(PasteAction.class).buildMenu());
 
         RecentFileMenu recentFileMenu = new RecentFileMenu("Recent Projects");
         recentFileListeners.add(recentFileMenu);
         fileMenu.add(recentFileMenu);
 
         fileMenu.addSeparator();
-        fileMenu.add(actionManager.getAction(ExitAction.class).buildMenu());
+        fileMenu.add(globalActions.getAction(ExitAction.class).buildMenu());
 
-        projectMenu.add(actionManager.getAction(ValidateAction.class).buildMenu());
-        projectMenu.add(actionManager.getAction(ShowValidationConfigAction.class).buildMenu());
+        projectMenu.add(globalActions.getAction(ValidateAction.class).buildMenu());
+        projectMenu.add(globalActions.getAction(ShowValidationConfigAction.class).buildMenu());
         projectMenu.addSeparator();
-        projectMenu.add(actionManager.getAction(CreateNodeAction.class).buildMenu());
-        projectMenu.add(actionManager.getAction(CreateDataMapAction.class).buildMenu());
+        projectMenu.add(globalActions.getAction(CreateNodeAction.class).buildMenu());
+        projectMenu.add(globalActions.getAction(CreateDataMapAction.class).buildMenu());
 
-        projectMenu.add(actionManager.getAction(CreateObjEntityAction.class).buildMenu());
-        projectMenu.add(actionManager.getAction(CreateEmbeddableAction.class).buildMenu());
-        projectMenu.add(actionManager.getAction(CreateDbEntityAction.class).buildMenu());
+        projectMenu.add(globalActions.getAction(CreateObjEntityAction.class).buildMenu());
+        projectMenu.add(globalActions.getAction(CreateEmbeddableAction.class).buildMenu());
+        projectMenu.add(globalActions.getAction(CreateDbEntityAction.class).buildMenu());
 
-        projectMenu.add(actionManager.getAction(CreateProcedureAction.class).buildMenu());
-        projectMenu.add(actionManager.getAction(CreateQueryAction.class).buildMenu());
+        projectMenu.add(globalActions.getAction(CreateProcedureAction.class).buildMenu());
+        projectMenu.add(globalActions.getAction(CreateQueryAction.class).buildMenu());
 
         projectMenu.addSeparator();
-        projectMenu.add(actionManager.getAction(ObjEntitySyncAction.class).buildMenu());
-        projectMenu.add(actionManager.getAction(DbEntitySyncAction.class).buildMenu());
+        projectMenu.add(globalActions.getAction(ObjEntitySyncAction.class).buildMenu());
+        projectMenu.add(globalActions.getAction(DbEntitySyncAction.class).buildMenu());
         projectMenu.addSeparator();
-        projectMenu.add(actionManager.getAction(RemoveAction.class).buildMenu());
+        projectMenu.add(globalActions.getAction(RemoveAction.class).buildMenu());
 
-        toolMenu.add(actionManager.getAction(InferRelationshipsAction.class).buildMenu());
-        toolMenu.add(actionManager.getAction(ImportEOModelAction.class).buildMenu());
+        toolMenu.add(globalActions.getAction(InferRelationshipsAction.class).buildMenu());
+        toolMenu.add(globalActions.getAction(ImportEOModelAction.class).buildMenu());
         toolMenu.addSeparator();
-        toolMenu.add(actionManager.getAction(GenerateCodeAction.class).buildMenu());
-        toolMenu.add(actionManager.getAction(GenerateDBAction.class).buildMenu());
-        toolMenu.add(actionManager.getAction(MigrateAction.class).buildMenu());
+        toolMenu.add(globalActions.getAction(GenerateCodeAction.class).buildMenu());
+        toolMenu.add(globalActions.getAction(GenerateDBAction.class).buildMenu());
+        toolMenu.add(globalActions.getAction(MigrateAction.class).buildMenu());
 
         // Menu for opening Log console
         toolMenu.addSeparator();
-        logMenu = actionManager.getAction(ShowLogConsoleAction.class).buildCheckBoxMenu();
+        logMenu = globalActions.getAction(ShowLogConsoleAction.class).buildCheckBoxMenu();
 
         if (!logConsoleController.getConsoleProperty(LogConsoleController.DOCKED_PROPERTY)
                 && logConsoleController.getConsoleProperty(LogConsoleController.SHOW_CONSOLE_PROPERTY)) {
@@ -117,10 +117,10 @@ class ModelerMenuBar extends JMenuBar {
         toolMenu.add(logMenu);
 
         toolMenu.addSeparator();
-        toolMenu.add(actionManager.getAction(ConfigurePreferencesAction.class).buildMenu());
+        toolMenu.add(globalActions.getAction(ConfigurePreferencesAction.class).buildMenu());
 
-        helpMenu.add(actionManager.getAction(AboutAction.class).buildMenu());
-        helpMenu.add(actionManager.getAction(DocumentationAction.class).buildMenu());
+        helpMenu.add(globalActions.getAction(AboutAction.class).buildMenu());
+        helpMenu.add(globalActions.getAction(DocumentationAction.class).buildMenu());
 
         add(fileMenu);
         add(editMenu);

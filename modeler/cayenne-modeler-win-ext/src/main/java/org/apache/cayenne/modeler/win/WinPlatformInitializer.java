@@ -19,7 +19,7 @@
 package org.apache.cayenne.modeler.win;
 
 import com.jgoodies.looks.windows.WindowsLookAndFeel;
-import org.apache.cayenne.modeler.platform.PlatformInitializer;
+import org.apache.cayenne.modeler.service.platform.PlatformInitializer;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,9 +33,11 @@ public class WinPlatformInitializer implements PlatformInitializer {
 
     private static Logger logger = LoggerFactory.getLogger(WinPlatformInitializer.class);
 
+    @Override
     public void setupMenus(JFrame frame) {
     }
 
+    @Override
     public void initLookAndFeel() {
         try {
             UIManager.setLookAndFeel(WindowsLookAndFeel.class.getName());
@@ -49,33 +51,33 @@ public class WinPlatformInitializer implements PlatformInitializer {
     private void overrideUIDefaults() {
         Color darkGrey = new Color(203, 203, 203);
 
-        UIManager.put("TextFieldUI",            WinCustomTextFieldUI.class.getName());
-        UIManager.put("Tree.expandedIcon",      ModelerUtil.buildIcon("icon-arrow-open.png"));
-        UIManager.put("Tree.collapsedIcon",     ModelerUtil.buildIcon("icon-arrow-closed.png"));
-        UIManager.put("Tree.paintLines",        Boolean.FALSE);
-        UIManager.put("Tree.drawDashedFocusIndicator",  Boolean.FALSE);
-        UIManager.put("Tree.selectionBackground",       darkGrey);
-        UIManager.put("Tree.selectionForeground",       Color.BLACK);
-        UIManager.put("Tree.selectionBorderColor",      UIManager.get("Tree.selectionBackground"));
-        UIManager.put("Table.selectionForeground",      Color.BLACK);
-        UIManager.put("Table.selectionBackground",      darkGrey);
+        UIManager.put("TextFieldUI", WinCustomTextFieldUI.class.getName());
+        UIManager.put("Tree.expandedIcon", ModelerUtil.buildIcon("icon-arrow-open.png"));
+        UIManager.put("Tree.collapsedIcon", ModelerUtil.buildIcon("icon-arrow-closed.png"));
+        UIManager.put("Tree.paintLines", Boolean.FALSE);
+        UIManager.put("Tree.drawDashedFocusIndicator", Boolean.FALSE);
+        UIManager.put("Tree.selectionBackground", darkGrey);
+        UIManager.put("Tree.selectionForeground", Color.BLACK);
+        UIManager.put("Tree.selectionBorderColor", UIManager.get("Tree.selectionBackground"));
+        UIManager.put("Table.selectionForeground", Color.BLACK);
+        UIManager.put("Table.selectionBackground", darkGrey);
         UIManager.put("Table.focusCellHighlightBorder", BorderFactory.createEmptyBorder());
-        UIManager.put("ScrollPane.border",      BorderFactory.createEmptyBorder());
+        UIManager.put("ScrollPane.border", BorderFactory.createEmptyBorder());
         UIManager.put("Table.scrollPaneBorder", BorderFactory.createEmptyBorder());
-        UIManager.put("SplitPane.border",       BorderFactory.createEmptyBorder());
-        UIManager.put("CheckBoxHeader.border",  BorderFactory.createEmptyBorder(0, 15, 0, 0));
-        UIManager.put("SplitPane.background",   darkGrey);
-        UIManager.put("Separator.background",   darkGrey);
-        UIManager.put("Separator.foreground",   darkGrey);
-        UIManager.put("Separator.opaque",       Boolean.TRUE);
-        UIManager.put("MenuItem.selectionBackground",            darkGrey);
-        UIManager.put("CheckBoxMenuItem.selectionBackground",    darkGrey);
+        UIManager.put("SplitPane.border", BorderFactory.createEmptyBorder());
+        UIManager.put("CheckBoxHeader.border", BorderFactory.createEmptyBorder(0, 15, 0, 0));
+        UIManager.put("SplitPane.background", darkGrey);
+        UIManager.put("Separator.background", darkGrey);
+        UIManager.put("Separator.foreground", darkGrey);
+        UIManager.put("Separator.opaque", Boolean.TRUE);
+        UIManager.put("MenuItem.selectionBackground", darkGrey);
+        UIManager.put("CheckBoxMenuItem.selectionBackground", darkGrey);
         UIManager.put("RadioButtonMenuItem.selectionBackground", darkGrey);
-        UIManager.put("MenuItem.selectionForeground",            Color.BLACK);
-        UIManager.put("CheckBoxMenuItem.selectionForeground",    Color.BLACK);
+        UIManager.put("MenuItem.selectionForeground", Color.BLACK);
+        UIManager.put("CheckBoxMenuItem.selectionForeground", Color.BLACK);
         UIManager.put("RadioButtonMenuItem.selectionForeground", Color.BLACK);
-        UIManager.put("MenuItem.opaque",            Boolean.TRUE);
-        UIManager.put("CheckBoxMenuItem.opaque",    Boolean.TRUE);
+        UIManager.put("MenuItem.opaque", Boolean.TRUE);
+        UIManager.put("CheckBoxMenuItem.opaque", Boolean.TRUE);
         UIManager.put("RadioButtonMenuItem.opaque", Boolean.TRUE);
         UIManager.put("Button.border", BorderFactory.createEmptyBorder());
     }

@@ -54,7 +54,7 @@ public class CreateAttributeUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void redo() throws CannotRedoException {
-        CreateAttributeAction action = actionManager
+        CreateAttributeAction action = globalActions
                 .getAction(CreateAttributeAction.class);
 
         if (objEntity != null) {
@@ -68,7 +68,7 @@ public class CreateAttributeUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void undo() throws CannotUndoException {
-        RemoveAttributeAction action = actionManager
+        RemoveAttributeAction action = globalActions
                 .getAction(RemoveAttributeAction.class);
 
         if (objEntity != null) {

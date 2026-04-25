@@ -56,7 +56,7 @@ public class RemoveRelationshipUndoableEdit extends BaseRemovePropertyUndoableEd
 
     @Override
     public void redo() throws CannotRedoException {
-        RemoveRelationshipAction action = actionManager.getAction(RemoveRelationshipAction.class);
+        RemoveRelationshipAction action = globalActions.getAction(RemoveRelationshipAction.class);
         if (objEntity != null) {
             action.removeObjRelationships(objEntity, rels);
             focusObjEntity();
@@ -68,7 +68,7 @@ public class RemoveRelationshipUndoableEdit extends BaseRemovePropertyUndoableEd
 
     @Override
     public void undo() throws CannotUndoException {
-        CreateRelationshipAction action = actionManager.getAction(CreateRelationshipAction.class);
+        CreateRelationshipAction action = globalActions.getAction(CreateRelationshipAction.class);
         if (objEntity != null) {
             for (ObjRelationship r : rels) {
                 action.createObjRelationship(objEntity, r);

@@ -16,47 +16,23 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.modeler.service.platform;
 
-package org.apache.cayenne.modeler.ui.action;
+import javax.swing.JFrame;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
-
-import javax.swing.*;
-
-/**
- * Stores a map of modeler actions, and deals with activating/deactivating those actions on state changes.
- */
-public interface ActionManager {
-
-    <T extends Action> T getAction(Class<T> actionClass);
-
-    void projectOpened();
-
-    void projectClosed();
-
-    void domainSelected();
-
-    void dataNodeSelected();
-
-    void dataMapSelected();
-
-    void objEntitySelected();
-
-    void dbEntitySelected();
-
-    void procedureSelected();
-
-    void querySelected();
-
-    void embeddableSelected();
-
-    void multipleObjectsSelected(ConfigurationNode[] objects);
+public class DefaultPlatformInitializer implements PlatformInitializer {
 
     /**
-     * Replaces standard Cut, Copy and Paste action maps, so that accelerators like Ctrl+X, Ctrl+C, Ctrl+V would work.
+     * Does nothing, leaving unchanged the default platform Look and Feel.
      */
-    void setupCutCopyPaste(
-            JComponent comp,
-            Class<? extends Action> cutActionType,
-            Class<? extends Action> copyActionType);
+    public void initLookAndFeel() {
+        // noop
+    }
+
+    /**
+     * Does nothing, leaving unchanged the default frame menus.
+     */
+    public void setupMenus(JFrame frame) {
+        // noop - keep all the default menus...
+    }
 }

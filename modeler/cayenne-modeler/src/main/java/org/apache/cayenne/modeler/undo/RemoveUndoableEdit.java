@@ -170,7 +170,7 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void redo() throws CannotRedoException {
-        RemoveAction action = actionManager.getAction(RemoveAction.class);
+        RemoveAction action = globalActions.getAction(RemoveAction.class);
 
         switch (this.mode) {
             case OBJECT_ENTITY:
@@ -203,7 +203,7 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
     @Override
     public void undo() throws CannotUndoException {
 
-        CreateRelationshipAction relationshipAction = actionManager.getAction(CreateRelationshipAction.class);
+        CreateRelationshipAction relationshipAction = globalActions.getAction(CreateRelationshipAction.class);
 
         switch (this.mode) {
             case OBJECT_ENTITY: {
@@ -213,7 +213,7 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
                         relationshipAction.createObjRelationship(objEntity, rel);
                     }
                 }
-                CreateObjEntityAction action = actionManager.getAction(CreateObjEntityAction.class);
+                CreateObjEntityAction action = globalActions.getAction(CreateObjEntityAction.class);
                 action.createObjEntity(map, objEntity);
                 break;
             }
@@ -224,7 +224,7 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
                         relationshipAction.createDbRelationship(dbEntity, rel);
                     }
                 }
-                CreateDbEntityAction action = actionManager.getAction(CreateDbEntityAction.class);
+                CreateDbEntityAction action = globalActions.getAction(CreateDbEntityAction.class);
                 action.createEntity(map, dbEntity);
                 break;
             }
@@ -235,12 +235,12 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
                         .getProjectController()
                         .getProject()
                         .getRootNode();
-                CreateQueryAction action = actionManager.getAction(CreateQueryAction.class);
+                CreateQueryAction action = globalActions.getAction(CreateQueryAction.class);
                 action.createQuery(domain, map, query);
                 break;
             }
             case PROCEDURE: {
-                CreateProcedureAction action = actionManager.getAction(CreateProcedureAction.class);
+                CreateProcedureAction action = globalActions.getAction(CreateProcedureAction.class);
                 action.createProcedure(map, procedure);
                 break;
             }
@@ -261,7 +261,7 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
                 break;
             }
             case EMBEDDABLE: {
-                CreateEmbeddableAction action = actionManager.getAction(CreateEmbeddableAction.class);
+                CreateEmbeddableAction action = globalActions.getAction(CreateEmbeddableAction.class);
                 action.createEmbeddable(map, embeddable);
                 break;
             }

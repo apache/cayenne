@@ -48,13 +48,13 @@ public class CreateDbEntityUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void redo() throws CannotRedoException {
-        CreateDbEntityAction action = actionManager.getAction(CreateDbEntityAction.class);
+        CreateDbEntityAction action = globalActions.getAction(CreateDbEntityAction.class);
         action.createEntity(map, entity);
     }
 
     @Override
     public void undo() throws CannotUndoException {
-        RemoveAction action = actionManager.getAction(RemoveAction.class);
+        RemoveAction action = globalActions.getAction(RemoveAction.class);
         action.removeDbEntity(map, entity);
     }
 }

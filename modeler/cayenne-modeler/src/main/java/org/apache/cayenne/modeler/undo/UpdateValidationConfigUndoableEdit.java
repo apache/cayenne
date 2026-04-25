@@ -41,7 +41,7 @@ public class UpdateValidationConfigUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void redo() throws CannotRedoException {
-        actionManager.getAction(UpdateValidationConfigAction.class)
+        globalActions.getAction(UpdateValidationConfigAction.class)
                 .putConfig(newConfig)
                 .setUndoable(false)
                 .performAction(this);
@@ -49,7 +49,7 @@ public class UpdateValidationConfigUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void undo() throws CannotUndoException {
-        actionManager.getAction(UpdateValidationConfigAction.class)
+        globalActions.getAction(UpdateValidationConfigAction.class)
                 .putConfig(oldConfig)
                 .setUndoable(false)
                 .performAction(this);

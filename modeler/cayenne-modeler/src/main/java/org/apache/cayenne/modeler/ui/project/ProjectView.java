@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.project;
 
-import org.apache.cayenne.modeler.ui.action.ActionManager;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CollapseTreeAction;
 import org.apache.cayenne.modeler.ui.action.FilterAction;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
@@ -44,9 +44,9 @@ public class ProjectView extends JPanel {
 
     public ProjectView(ProjectController controller) {
 
-        ActionManager actionManager = controller.getApplication().getActionManager();
-        actionManager.getAction(CollapseTreeAction.class).setAlwaysOn(true);
-        actionManager.getAction(FilterAction.class).setAlwaysOn(true);
+        GlobalActions globalActions = controller.getApplication().getActionManager();
+        globalActions.getAction(CollapseTreeAction.class).setAlwaysOn(true);
+        globalActions.getAction(FilterAction.class).setAlwaysOn(true);
 
         setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 1));
 
@@ -56,8 +56,8 @@ public class ProjectView extends JPanel {
         barPanel.setBorder(BorderFactory.createEmptyBorder());
         barPanel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 
-        JButton collapseButton = actionManager.getAction(CollapseTreeAction.class).buildButton(1);
-        JButton filterButton = actionManager.getAction(FilterAction.class).buildButton(3);
+        JButton collapseButton = globalActions.getAction(CollapseTreeAction.class).buildButton(1);
+        JButton filterButton = globalActions.getAction(FilterAction.class).buildButton(3);
         filterButton.setPreferredSize(new Dimension(30, 30));
         collapseButton.setPreferredSize(new Dimension(30, 30));
         barPanel.add(filterButton);

@@ -16,23 +16,31 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.platform;
 
-import javax.swing.JFrame;
+package org.apache.cayenne.modeler.service.graph;
 
-public class DefaultPlatformInitializer implements PlatformInitializer {
+import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
+import org.apache.cayenne.project.extension.LoaderDelegate;
 
-    /**
-     * Does nothing, leaving unchanged the default platform Look and Feel.
-     */
-    public void initLookAndFeel() {
-        // noop
+class GraphLoaderDelegate implements LoaderDelegate {
+
+    private final DataChannelMetaData metaData;
+
+    GraphLoaderDelegate(DataChannelMetaData metaData) {
+        this.metaData = metaData;
     }
 
-    /**
-     * Does nothing, leaving unchanged the default frame menus.
-     */
-    public void setupMenus(JFrame frame) {
-        // noop - keep all the default menus...
+    @Override
+    public String getTargetNamespace() {
+        return GraphExtension.NAMESPACE;
+    }
+
+    @Override
+    public NamespaceAwareNestedTagHandler createHandler(NamespaceAwareNestedTagHandler parent, String tag) {
+        if(GraphsRootHandler.GRAPHS_TAG.equals(tag)) {
+            return new GraphsRootHandler(parent, metaData);
+        }
+        return null;
     }
 }

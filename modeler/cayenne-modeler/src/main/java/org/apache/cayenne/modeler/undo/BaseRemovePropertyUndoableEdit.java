@@ -33,11 +33,11 @@ public abstract class BaseRemovePropertyUndoableEdit extends CayenneUndoableEdit
     protected Embeddable embeddable;
 
     protected void focusObjEntity(){
-        actionManager.getAction(ObjEntityCounterpartAction.class).navigateToEntity(objEntity);
+        globalActions.getAction(ObjEntityCounterpartAction.class).navigateToEntity(objEntity);
     }
 
     protected void focusDBEntity(){
-        actionManager.getAction(ObjEntityCounterpartAction.class).navigateToEntity(dbEntity);
+        globalActions.getAction(ObjEntityCounterpartAction.class).navigateToEntity(dbEntity);
     }
 
     protected void focusEmbeddable() {

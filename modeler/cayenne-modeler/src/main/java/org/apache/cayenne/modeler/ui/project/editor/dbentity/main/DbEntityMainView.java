@@ -26,7 +26,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.action.ActionManager;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.ui.action.CreateObjEntityFromDbAction;
 import org.apache.cayenne.modeler.ui.action.CreateRelationshipAction;
@@ -79,18 +79,18 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
         toolBar = new JToolBar();
         toolBar.setBorder(BorderFactory.createEmptyBorder());
         toolBar.setFloatable(false);
-        ActionManager actionManager = Application.getInstance().getActionManager();
+        GlobalActions globalActions = Application.getInstance().getActionManager();
 
-        toolBar.add(actionManager.getAction(CreateAttributeAction.class).buildButton(1));
-        toolBar.add(actionManager.getAction(CreateRelationshipAction.class).buildButton(3));
+        toolBar.add(globalActions.getAction(CreateAttributeAction.class).buildButton(1));
+        toolBar.add(globalActions.getAction(CreateRelationshipAction.class).buildButton(3));
         toolBar.addSeparator();
 
-        toolBar.add(actionManager.getAction(CreateObjEntityFromDbAction.class).buildButton(1));
-        toolBar.add(actionManager.getAction(DbEntitySyncAction.class).buildButton(2));
-        toolBar.add(actionManager.getAction(DbEntityCounterpartAction.class).buildButton(3));
+        toolBar.add(globalActions.getAction(CreateObjEntityFromDbAction.class).buildButton(1));
+        toolBar.add(globalActions.getAction(DbEntitySyncAction.class).buildButton(2));
+        toolBar.add(globalActions.getAction(DbEntityCounterpartAction.class).buildButton(3));
         toolBar.addSeparator();
 
-        toolBar.add(actionManager.getAction(ShowGraphEntityAction.class).buildButton());
+        toolBar.add(globalActions.getAction(ShowGraphEntityAction.class).buildButton());
 
         // create widgets
         name = new CayenneUndoableTextField();

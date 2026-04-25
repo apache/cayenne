@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.osx;
 
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.modeler.platform.PlatformInitializer;
+import org.apache.cayenne.modeler.service.platform.PlatformInitializer;
 
 public class OSXCayenneModelerModule implements Module {
 

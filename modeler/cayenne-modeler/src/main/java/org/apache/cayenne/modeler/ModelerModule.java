@@ -26,13 +26,13 @@ import org.apache.cayenne.dbsync.xml.DbImportExtension;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.gen.xml.CgenExtension;
-import org.apache.cayenne.modeler.ui.action.ActionManager;
-import org.apache.cayenne.modeler.ui.action.DefaultActionManager;
-import org.apache.cayenne.modeler.graph.extension.GraphExtension;
-import org.apache.cayenne.modeler.platform.DefaultPlatformInitializer;
-import org.apache.cayenne.modeler.platform.PlatformInitializer;
-import org.apache.cayenne.modeler.validation.ConfigurableProjectValidator;
-import org.apache.cayenne.modeler.validation.extension.ValidationExtension;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
+import org.apache.cayenne.modeler.service.graph.GraphExtension;
+import org.apache.cayenne.modeler.service.platform.DefaultPlatformInitializer;
+import org.apache.cayenne.modeler.service.platform.PlatformInitializer;
+import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
+import org.apache.cayenne.modeler.service.validator.ConfigurableProjectValidator;
+import org.apache.cayenne.modeler.service.validator.extension.ValidationExtension;
 import org.apache.cayenne.project.ProjectModule;
 import org.apache.cayenne.project.extension.ExtensionAwareHandlerFactory;
 import org.apache.cayenne.project.extension.info.InfoExtension;
@@ -46,8 +46,9 @@ public class ModelerModule implements Module {
 
     public void configure(Binder binder) {
 
-        binder.bind(ActionManager.class).to(DefaultActionManager.class);
         binder.bind(Application.class).to(Application.class);
+        binder.bind(GlobalActions.class).to(GlobalActions.class);
+        binder.bind(ModelerClassLoader.class).to(ModelerClassLoader.class);
         binder.bind(PlatformInitializer.class).to(DefaultPlatformInitializer.class);
         binder.bind(HandlerFactory.class).to(ExtensionAwareHandlerFactory.class);
         binder.bind(DataChannelMetaData.class).to(DefaultDataChannelMetaData.class);

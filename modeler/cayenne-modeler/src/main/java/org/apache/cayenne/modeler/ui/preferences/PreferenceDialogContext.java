@@ -85,7 +85,7 @@ public class PreferenceDialogContext {
             }
         }
 
-        application.initClassLoader();
+        application.refreshClassLoader();
     }
 
     public void revert() {

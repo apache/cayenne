@@ -28,7 +28,7 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.action.ActionManager;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeAction;
 import org.apache.cayenne.modeler.ui.action.RemoveCallbackMethodAction;
 import org.apache.cayenne.modeler.ui.action.RemoveRelationshipAction;
@@ -92,11 +92,11 @@ public class ObjEntityView extends JTabbedPane {
     }
 
     private void resetRemoveButtons() {
-        ActionManager actionManager = Application.getInstance().getActionManager();
+        GlobalActions globalActions = Application.getInstance().getActionManager();
 
-        actionManager.getAction(RemoveAttributeAction.class).setEnabled(false);
-        actionManager.getAction(RemoveRelationshipAction.class).setEnabled(false);
-        actionManager.getAction(RemoveCallbackMethodAction.class).setEnabled(false);
+        globalActions.getAction(RemoveAttributeAction.class).setEnabled(false);
+        globalActions.getAction(RemoveRelationshipAction.class).setEnabled(false);
+        globalActions.getAction(RemoveCallbackMethodAction.class).setEnabled(false);
     }
 
     private void currentObjEntityChanged(EntityDisplayEvent e) {

@@ -89,7 +89,7 @@ public class ReverseEngineeringAction extends DBConnectionAwareAction {
         }
 
         try {
-            context.setConnection(connectionInfo.makeDataSource(application.getClassLoadingService()).getConnection());
+            context.setConnection(connectionInfo.makeDataSource(application.getClassLoader()).getConnection());
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(
                     application.getFrameController().getView(),

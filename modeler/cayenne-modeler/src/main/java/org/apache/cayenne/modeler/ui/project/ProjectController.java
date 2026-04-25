@@ -52,7 +52,7 @@ import org.apache.cayenne.map.event.ObjAttributeListener;
 import org.apache.cayenne.map.event.ObjEntityListener;
 import org.apache.cayenne.map.event.ObjRelationshipListener;
 import org.apache.cayenne.map.event.RelationshipEvent;
-import org.apache.cayenne.modeler.ui.action.ActionManager;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.RevertAction;
 import org.apache.cayenne.modeler.ui.action.SaveAction;
 import org.apache.cayenne.modeler.ui.action.SaveAsAction;
@@ -259,16 +259,16 @@ public class ProjectController extends ChildController<ModelerController> {
         this.entityResolver = new EntityResolver();
         updateEntityResolver();
 
-        ActionManager actionManager = application.getActionManager();
+        GlobalActions globalActions = application.getActionManager();
 
-        addDataNodeDisplayListener(e -> actionManager.dataNodeSelected());
-        addDataMapDisplayListener(e -> actionManager.dataMapSelected());
-        addObjEntityDisplayListener(e -> actionManager.objEntitySelected());
-        addDbEntityDisplayListener(e -> actionManager.dbEntitySelected());
-        addQueryDisplayListener(e -> actionManager.querySelected());
-        addProcedureDisplayListener(e -> actionManager.procedureSelected());
-        addMultipleObjectsDisplayListener(e -> actionManager.multipleObjectsSelected(e.getNodes()));
-        addEmbeddableDisplayListener(e -> actionManager.embeddableSelected());
+        addDataNodeDisplayListener(e -> globalActions.dataNodeSelected());
+        addDataMapDisplayListener(e -> globalActions.dataMapSelected());
+        addObjEntityDisplayListener(e -> globalActions.objEntitySelected());
+        addDbEntityDisplayListener(e -> globalActions.dbEntitySelected());
+        addQueryDisplayListener(e -> globalActions.querySelected());
+        addProcedureDisplayListener(e -> globalActions.procedureSelected());
+        addMultipleObjectsDisplayListener(e -> globalActions.objectsSelected(e.getNodes()));
+        addEmbeddableDisplayListener(e -> globalActions.embeddableSelected());
 
         this.projectView = new ProjectView(this);
     }

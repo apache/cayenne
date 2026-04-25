@@ -16,22 +16,31 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.platform;
+package org.apache.cayenne.modeler.service.validator.extension;
 
-import javax.swing.JFrame;
+import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.project.extension.LoaderDelegate;
 
-/**
- * An interface that provides methods for platform-specific Modeler initialization.
- */
-public interface PlatformInitializer {
+public class ValidationLoaderDelegate implements LoaderDelegate {
 
-    /**
-     * Initializes application look and feel.
-     */
-    void initLookAndFeel();
+    private final DataChannelMetaData metaData;
 
-    /**
-     * Updates default frame menus according to the platform specifics.
-     */
-    void setupMenus(JFrame frame);
+    ValidationLoaderDelegate(@Inject DataChannelMetaData metaData) {
+        this.metaData = metaData;
+    }
+
+    @Override
+    public String getTargetNamespace() {
+        return ValidationExtension.NAMESPACE;
+    }
+
+    @Override
+    public NamespaceAwareNestedTagHandler createHandler(NamespaceAwareNestedTagHandler parent, String tag) {
+        if (ValidationConfigHandler.CONFIG_TAG.equals(tag)) {
+            return new ValidationConfigHandler(parent, metaData);
+        }
+        return null;
+    }
 }

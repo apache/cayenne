@@ -48,7 +48,7 @@ public class CreateObjEntityUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void redo() throws CannotRedoException {
-        CreateObjEntityAction action = actionManager
+        CreateObjEntityAction action = globalActions
                 .getAction(CreateObjEntityAction.class);
 
         action.createObjEntity(map, objEntity);
@@ -56,7 +56,7 @@ public class CreateObjEntityUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void undo() throws CannotUndoException {
-        RemoveAction action = actionManager.getAction(RemoveAction.class);
+        RemoveAction action = globalActions.getAction(RemoveAction.class);
         action.removeObjEntity(map, objEntity);
     }
 }

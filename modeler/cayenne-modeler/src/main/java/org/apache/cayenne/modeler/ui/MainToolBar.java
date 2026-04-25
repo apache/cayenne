@@ -1,6 +1,6 @@
 package org.apache.cayenne.modeler.ui;
 
-import org.apache.cayenne.modeler.action.*;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.*;
 
 import javax.swing.*;
@@ -12,60 +12,60 @@ class MainToolBar extends JToolBar {
     private final JButton backButton;
     private final JButton removeButton;
 
-    public MainToolBar(ActionManager actionManager) {
+    public MainToolBar(GlobalActions globalActions) {
         setFloatable(false);
 
         Dimension smallBtnDim = new Dimension(30, 30);
-        backButton = actionManager.getAction(NavigateBackwardAction.class).buildButton(1);
+        backButton = globalActions.getAction(NavigateBackwardAction.class).buildButton(1);
         backButton.setMinimumSize(smallBtnDim);
         backButton.setPreferredSize(smallBtnDim);
         add(backButton);
 
-        JButton forwardButton = actionManager.getAction(NavigateForwardAction.class).buildButton(3);
+        JButton forwardButton = globalActions.getAction(NavigateForwardAction.class).buildButton(3);
         forwardButton.setMinimumSize(smallBtnDim);
         forwardButton.setPreferredSize(smallBtnDim);
         add(forwardButton);
 
         addSeparator(new Dimension(30, 0));
 
-        add(actionManager.getAction(NewProjectAction.class).buildButton(1));
-        add(actionManager.getAction(OpenProjectAction.class).buildButton(2));
-        add(actionManager.getAction(SaveAction.class).buildButton(3));
+        add(globalActions.getAction(NewProjectAction.class).buildButton(1));
+        add(globalActions.getAction(OpenProjectAction.class).buildButton(2));
+        add(globalActions.getAction(SaveAction.class).buildButton(3));
 
         addSeparator();
 
-        removeButton = actionManager.getAction(RemoveAction.class).buildButton();
+        removeButton = globalActions.getAction(RemoveAction.class).buildButton();
         add(removeButton);
 
         addSeparator();
 
-        add(actionManager.getAction(CutAction.class).buildButton(1));
-        add(actionManager.getAction(CopyAction.class).buildButton(2));
-        add(actionManager.getAction(PasteAction.class).buildButton(3));
+        add(globalActions.getAction(CutAction.class).buildButton(1));
+        add(globalActions.getAction(CopyAction.class).buildButton(2));
+        add(globalActions.getAction(PasteAction.class).buildButton(3));
 
         addSeparator();
 
-        add(actionManager.getAction(UndoAction.class).buildButton(1));
-        add(actionManager.getAction(RedoAction.class).buildButton(3));
+        add(globalActions.getAction(UndoAction.class).buildButton(1));
+        add(globalActions.getAction(RedoAction.class).buildButton(3));
 
         addSeparator();
 
-        add(actionManager.getAction(CreateNodeAction.class).buildButton(1));
-        add(actionManager.getAction(CreateDataMapAction.class).buildButton(3));
+        add(globalActions.getAction(CreateNodeAction.class).buildButton(1));
+        add(globalActions.getAction(CreateDataMapAction.class).buildButton(3));
 
         addSeparator();
 
-        add(actionManager.getAction(CreateDbEntityAction.class).buildButton(1));
-        add(actionManager.getAction(CreateProcedureAction.class).buildButton(3));
+        add(globalActions.getAction(CreateDbEntityAction.class).buildButton(1));
+        add(globalActions.getAction(CreateProcedureAction.class).buildButton(3));
 
         addSeparator();
 
-        add(actionManager.getAction(CreateObjEntityAction.class).buildButton(1));
-        add(actionManager.getAction(CreateEmbeddableAction.class).buildButton(2));
-        add(actionManager.getAction(CreateQueryAction.class).buildButton(3));
+        add(globalActions.getAction(CreateObjEntityAction.class).buildButton(1));
+        add(globalActions.getAction(CreateEmbeddableAction.class).buildButton(2));
+        add(globalActions.getAction(CreateQueryAction.class).buildButton(3));
 
         // is used to place search feature components the most right on a toolbar
-        add(new SearchPanel(actionManager.getAction(FindAction.class)));
+        add(new SearchPanel(globalActions.getAction(FindAction.class)));
     }
 
     int getDefaultButtonWidth() {

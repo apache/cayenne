@@ -19,17 +19,17 @@
 
 package org.apache.cayenne.modeler.ui.preferences.datasource;
 
+import org.apache.cayenne.datasource.DriverDataSource;
+import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.modeler.event.model.DataSourceEvent;
+import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.pref.ChildrenMapPreference;
+import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
 import org.apache.cayenne.modeler.ui.preferences.PreferenceDialogController;
 import org.apache.cayenne.modeler.ui.preferences.classpath.ClasspathPreferencesController;
 import org.apache.cayenne.modeler.ui.preferences.datasource.creator.DataSourceCreatorController;
 import org.apache.cayenne.modeler.ui.preferences.datasource.duplicator.DataSourceDuplicatorController;
-import org.apache.cayenne.datasource.DriverDataSource;
-import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.modeler.FileClassLoadingService;
-import org.apache.cayenne.modeler.event.model.DataSourceEvent;
-import org.apache.cayenne.modeler.mvc.ChildController;
-import org.apache.cayenne.modeler.pref.DBConnectionInfo;
-import org.apache.cayenne.modeler.pref.ChildrenMapPreference;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.*;
@@ -41,15 +41,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
 /**
  * Editor for the local DataSources configured in preferences.
- * 
  */
 public class DataSourcePreferencesController extends ChildController<PreferenceDialogController> {
 
@@ -217,10 +216,9 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 
 		try {
 
-			FileClassLoadingService classLoader = new FileClassLoadingService();
+			ModelerClassLoader classLoader = new ModelerClassLoader();
 
-			List<File> oldPathFiles = ((FileClassLoadingService) getApplication().getClassLoadingService())
-					.getPathFiles();
+			Set<File> oldPathFiles = getApplication().getClassLoader().getFiles();
 
 			Collection<String> details = new ArrayList<>();
 			for (File oldPathFile : oldPathFiles) {
@@ -249,7 +247,7 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 			}
 
 			if (!details.isEmpty()) {
-				classLoader.setPathFiles(details.stream().map(File::new).collect(Collectors.toList()));
+				classLoader.setFiles(details.stream().map(File::new).collect(Collectors.toList()));
 			}
 
 			Class<Driver> driverClass = classLoader.loadClass(Driver.class, currentDataSource.getJdbcDriver());

@@ -70,25 +70,25 @@ public class PasteUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void redo() throws CannotRedoException {
-        PasteAction action = actionManager.getAction(PasteAction.class);
+        PasteAction action = globalActions.getAction(PasteAction.class);
 
         action.paste(where, content, domain, map);
     }
 
     @Override
     public void undo() throws CannotUndoException {
-        RemoveAttributeAction rAttributeAction = actionManager
+        RemoveAttributeAction rAttributeAction = globalActions
                 .getAction(RemoveAttributeAction.class);
 
-        RemoveAction rAction = actionManager.getAction(RemoveAction.class);
+        RemoveAction rAction = globalActions.getAction(RemoveAction.class);
 
-        RemoveRelationshipAction rRelationShipAction = actionManager
+        RemoveRelationshipAction rRelationShipAction = globalActions
                 .getAction(RemoveRelationshipAction.class);
 
-        RemoveCallbackMethodAction rCallbackMethodAction = actionManager
+        RemoveCallbackMethodAction rCallbackMethodAction = globalActions
                 .getAction(RemoveCallbackMethodAction.class);
 
-        RemoveProcedureParameterAction rProcedureParamAction = actionManager
+        RemoveProcedureParameterAction rProcedureParamAction = globalActions
                 .getAction(RemoveProcedureParameterAction.class);
 
         if (content instanceof DataMap) {

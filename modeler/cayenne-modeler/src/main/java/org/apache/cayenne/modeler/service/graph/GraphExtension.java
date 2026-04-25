@@ -17,13 +17,13 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.graph.extension;
+package org.apache.cayenne.modeler.service.graph;
 
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.graph.GraphRegistry;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.extension.BaseNamingDelegate;
@@ -38,16 +38,16 @@ public class GraphExtension implements ProjectExtension {
     static final String GRAPH_SUFFIX = ".graph.xml";
 
     @Inject
-    protected Provider<Application> applicationProvider;
+    protected Provider<DataChannelMetaData> metaDataProvider;
 
     @Override
     public LoaderDelegate createLoaderDelegate() {
-        return new GraphLoaderDelegate(applicationProvider.get());
+        return new GraphLoaderDelegate(metaDataProvider.get());
     }
 
     @Override
     public SaverDelegate createSaverDelegate() {
-        return new GraphSaverDelegate(applicationProvider.get().getMetaData());
+        return new GraphSaverDelegate(metaDataProvider.get());
     }
 
     @Override
@@ -56,8 +56,7 @@ public class GraphExtension implements ProjectExtension {
             @Override
             public String visitDataChannelDescriptor(DataChannelDescriptor channelDescriptor) {
                 // if there is no registry, than there is no need to save anything
-                GraphRegistry registry = applicationProvider.get().getMetaData()
-                        .get(channelDescriptor, GraphRegistry.class);
+                GraphRegistry registry = metaDataProvider.get().get(channelDescriptor, GraphRegistry.class);
                 if (registry == null) {
                     return null;
                 }

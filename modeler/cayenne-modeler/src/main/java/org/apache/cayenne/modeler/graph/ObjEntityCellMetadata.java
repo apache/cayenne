@@ -30,12 +30,12 @@ class ObjEntityCellMetadata extends EntityCellMetadata<ObjEntity, ObjAttribute, 
     ObjEntityCellMetadata(ObjGraphBuilder builder, ObjEntity entity) {
         super(builder, entity);
     }
-    
+
     @Override
     public ObjEntity fetchEntity() {
         for (DataMap dm : builder.getDataDomain().getDataMaps()) {
-            ObjEntity objEntity =dm.getObjEntity(entityName) ;
-            if (objEntity!= null) {
+            ObjEntity objEntity = dm.getObjEntity(entityName);
+            if (objEntity != null) {
                 return objEntity;
             }
         }

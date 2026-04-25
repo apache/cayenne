@@ -26,8 +26,7 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ClassLoadingService;
+import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.mvc.RootController;
@@ -257,7 +256,7 @@ public class InferRelationshipsController extends ChildController<RootController
 
     public ObjectNameGenerator createNamingStrategy(String strategyClass) {
         try {
-            ClassLoadingService classLoader = application.getClassLoadingService();
+            ModelerClassLoader classLoader = application.getClassLoader();
 
             return classLoader.loadClass(ObjectNameGenerator.class, strategyClass).getDeclaredConstructor().newInstance();
         } catch (Throwable th) {

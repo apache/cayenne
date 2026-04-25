@@ -49,7 +49,7 @@ public class LinkDataMapUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void redo() throws CannotRedoException {
-        LinkDataMapAction action = actionManager.getAction(LinkDataMapAction.class);
+        LinkDataMapAction action = globalActions.getAction(LinkDataMapAction.class);
         action.linkDataMap(map, node);
     }
 

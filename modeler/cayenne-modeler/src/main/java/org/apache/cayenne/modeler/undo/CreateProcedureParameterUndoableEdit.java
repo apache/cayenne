@@ -48,7 +48,7 @@ public class CreateProcedureParameterUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void undo() throws CannotUndoException {
-        RemoveProcedureParameterAction action = actionManager.getAction(RemoveProcedureParameterAction.class);
+        RemoveProcedureParameterAction action = globalActions.getAction(RemoveProcedureParameterAction.class);
 
         if (procedure != null) {
             action.removeProcedureParameters(procedure, new ProcedureParameter[] {
@@ -61,7 +61,7 @@ public class CreateProcedureParameterUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void redo() throws CannotRedoException {
-        CreateProcedureParameterAction action = actionManager.getAction(CreateProcedureParameterAction.class);
+        CreateProcedureParameterAction action = globalActions.getAction(CreateProcedureParameterAction.class);
         if (procedure != null) {
             action.createProcedureParameter(procedure, parameter);
         }

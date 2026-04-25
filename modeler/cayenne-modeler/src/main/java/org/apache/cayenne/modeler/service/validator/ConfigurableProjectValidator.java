@@ -16,23 +16,22 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.modeler.service.validator;
 
-package org.apache.cayenne.modeler;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.project.validation.DefaultProjectValidator;
+import org.apache.cayenne.project.validation.ValidationConfig;
 
-/**
- * An interface defining a service for locating external Java resources.
- */
-public interface ClassLoadingService {
+public class ConfigurableProjectValidator extends DefaultProjectValidator {
 
-    /**
-     * Returns Java ClassLoader that knows how to load all classes configured for this
-     * service.
-     */
-    ClassLoader getClassLoader();
-
-    /**
-     * Returns a class for given class name.
-     */
-    <T> Class<T> loadClass(Class<T> interfaceType, String className)
-            throws ClassNotFoundException;
+    public ConfigurableProjectValidator(@Inject Application application) {
+        super(() -> {
+            DataChannelMetaData metaData = application.getMetaData();
+            DataChannelDescriptor dataChannel = (DataChannelDescriptor) application.getProject().getRootNode();
+            return ValidationConfig.fromMetadata(metaData, dataChannel);
+        });
+    }
 }

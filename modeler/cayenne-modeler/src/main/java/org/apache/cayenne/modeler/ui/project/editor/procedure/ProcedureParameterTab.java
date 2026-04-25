@@ -30,7 +30,7 @@ import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.action.ActionManager;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CopyProcedureParameterAction;
 import org.apache.cayenne.modeler.ui.action.CreateProcedureParameterAction;
 import org.apache.cayenne.modeler.ui.action.CutProcedureParameterAction;
@@ -117,9 +117,9 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        ActionManager actionManager = Application.getInstance().getActionManager();
-        toolBar.add(actionManager.getAction(CreateProcedureParameterAction.class).buildButton(1));
-        removeParameterButton = actionManager.getAction(RemoveProcedureParameterAction.class).buildButton(3);
+        GlobalActions globalActions = Application.getInstance().getActionManager();
+        toolBar.add(globalActions.getAction(CreateProcedureParameterAction.class).buildButton(1));
+        removeParameterButton = globalActions.getAction(RemoveProcedureParameterAction.class).buildButton(3);
         toolBar.add(removeParameterButton);
         toolBar.addSeparator();
 
@@ -139,9 +139,9 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
         toolBar.add(moveDown);
 
         toolBar.addSeparator();
-        toolBar.add(actionManager.getAction(CutProcedureParameterAction.class).buildButton(1));
-        toolBar.add(actionManager.getAction(CopyProcedureParameterAction.class).buildButton(2));
-        toolBar.add(actionManager.getAction(PasteAction.class).buildButton(3));
+        toolBar.add(globalActions.getAction(CutProcedureParameterAction.class).buildButton(1));
+        toolBar.add(globalActions.getAction(CopyProcedureParameterAction.class).buildButton(2));
+        toolBar.add(globalActions.getAction(PasteAction.class).buildButton(3));
 
         add(toolBar, BorderLayout.NORTH);
 
@@ -155,7 +155,7 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
         // Create and install a popup
         JPopupMenu popup = new JPopupMenu();
 
-        removeParameterMenu = actionManager.getAction(
+        removeParameterMenu = globalActions.getAction(
                 RemoveProcedureParameterAction.class).buildMenu();
 
         popup.add(removeParameterMenu);
@@ -168,18 +168,18 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
         popup.add(moveDownMenu);
 
         popup.addSeparator();
-        popup.add(actionManager.getAction(CutProcedureParameterAction.class).buildMenu());
+        popup.add(globalActions.getAction(CutProcedureParameterAction.class).buildMenu());
         popup
-                .add(actionManager
+                .add(globalActions
                         .getAction(CopyProcedureParameterAction.class)
                         .buildMenu());
-        popup.add(actionManager.getAction(PasteAction.class).buildMenu());
+        popup.add(globalActions.getAction(PasteAction.class).buildMenu());
 
         TablePopupHandler.install(table, popup);
 
         add(WidgetFactory.createTablePanel(table, null), BorderLayout.CENTER);
 
-        actionManager.setupCutCopyPaste(
+        globalActions.setupCutCopyPaste(
                 table,
                 CutProcedureParameterAction.class,
                 CopyProcedureParameterAction.class);

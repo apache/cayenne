@@ -25,7 +25,7 @@ import org.apache.cayenne.gen.internal.Utils;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.action.ActionManager;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.ui.action.MultipleObjectsAction;
 import org.apache.cayenne.modeler.pref.FSPath;
@@ -180,10 +180,10 @@ public final class ModelerUtil {
      * Updates MultipleObjectActions' state, depending on number of selected objects (attributes, rel etc.)
      */
     public static void updateActions(int numSelected, Class<? extends Action>... actions) {
-        ActionManager actionManager = Application.getInstance().getActionManager();
+        GlobalActions globalActions = Application.getInstance().getActionManager();
 
         for (Class<? extends Action> actionType : actions) {
-            Action action = actionManager.getAction(actionType);
+            Action action = globalActions.getAction(actionType);
 
             if (action instanceof MultipleObjectsAction) {
                 MultipleObjectsAction multiObjectAction = (MultipleObjectsAction) action;

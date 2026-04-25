@@ -29,7 +29,7 @@ import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.EmbeddableEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.action.ActionManager;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayListener;
@@ -66,8 +66,8 @@ public class EmbeddableMainView extends JPanel implements EmbeddableDisplayListe
         JToolBar toolBar = new JToolBar();
         toolBar.setBorder(BorderFactory.createEmptyBorder());
         toolBar.setFloatable(false);
-        ActionManager actionManager = Application.getInstance().getActionManager();
-        toolBar.add(actionManager.getAction(CreateAttributeAction.class).buildButton());
+        GlobalActions globalActions = Application.getInstance().getActionManager();
+        toolBar.add(globalActions.getAction(CreateAttributeAction.class).buildButton());
 
         add(toolBar, BorderLayout.NORTH);
 

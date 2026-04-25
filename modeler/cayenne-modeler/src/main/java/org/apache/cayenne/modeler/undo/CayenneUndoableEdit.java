@@ -22,15 +22,15 @@ import javax.swing.undo.AbstractUndoableEdit;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.action.ActionManager;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
 
 public abstract class CayenneUndoableEdit extends AbstractUndoableEdit {
     
-	protected ActionManager actionManager;
+	protected GlobalActions globalActions;
 	protected ProjectController controller;
 	
 	public CayenneUndoableEdit() {
-		this.actionManager = Application.getInstance().getActionManager();
+		this.globalActions = Application.getInstance().getActionManager();
 		this.controller = Application.getInstance().getFrameController().getProjectController();
 	}
 

@@ -22,7 +22,7 @@ import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.ObjEntityListener;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.action.ActionManager;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.ui.action.CreateRelationshipAction;
@@ -83,13 +83,13 @@ public class ObjEntityPropertiesView extends JPanel implements ObjEntityDisplayL
 
         toolBar = new JToolBar();
         toolBar.setFloatable(false);
-        ActionManager actionManager = Application.getInstance().getActionManager();
+        GlobalActions globalActions = Application.getInstance().getActionManager();
 
-        toolBar.add(actionManager.getAction(CreateAttributeAction.class).buildButton(1));
-        toolBar.add(actionManager.getAction(CreateRelationshipAction.class).buildButton(3));
+        toolBar.add(globalActions.getAction(CreateAttributeAction.class).buildButton(1));
+        toolBar.add(globalActions.getAction(CreateRelationshipAction.class).buildButton(3));
         toolBar.addSeparator();
-        toolBar.add(actionManager.getAction(ObjEntitySyncAction.class).buildButton(1));
-        toolBar.add(actionManager.getAction(ObjEntityCounterpartAction.class).buildButton(3));
+        toolBar.add(globalActions.getAction(ObjEntitySyncAction.class).buildButton(1));
+        toolBar.add(globalActions.getAction(ObjEntityCounterpartAction.class).buildButton(3));
         toolBar.addSeparator();
 
         Icon ico = ModelerUtil.buildIcon("icon-edit.png");
@@ -99,11 +99,11 @@ public class ObjEntityPropertiesView extends JPanel implements ObjEntityDisplayL
         toolBar.add(editButton).setEnabled(false);
 
         toolBar.addSeparator();
-        toolBar.add(actionManager.getAction(RemoveAttributeRelationshipAction.class).buildButton());
+        toolBar.add(globalActions.getAction(RemoveAttributeRelationshipAction.class).buildButton());
         toolBar.addSeparator();
-        toolBar.add(actionManager.getAction(CutAttributeRelationshipAction.class).buildButton(1));
-        toolBar.add(actionManager.getAction(CopyAttributeRelationshipAction.class).buildButton(2));
-        toolBar.add(actionManager.getAction(PasteAction.class).buildButton(3));
+        toolBar.add(globalActions.getAction(CutAttributeRelationshipAction.class).buildButton(1));
+        toolBar.add(globalActions.getAction(CopyAttributeRelationshipAction.class).buildButton(2));
+        toolBar.add(globalActions.getAction(PasteAction.class).buildButton(3));
 
         add(toolBar, BorderLayout.NORTH);
     }

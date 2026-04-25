@@ -18,36 +18,26 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.osx;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Desktop;
-import java.awt.Graphics;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.UIManager;
-import javax.swing.border.AbstractBorder;
-import javax.swing.border.Border;
-
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.modeler.service.platform.PlatformInitializer;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.AboutAction;
-import org.apache.cayenne.modeler.ui.action.ActionManager;
 import org.apache.cayenne.modeler.ui.action.ConfigurePreferencesAction;
 import org.apache.cayenne.modeler.ui.action.ExitAction;
-import org.apache.cayenne.modeler.platform.PlatformInitializer;
+
+import javax.swing.*;
+import javax.swing.border.AbstractBorder;
+import javax.swing.border.Border;
+import java.awt.*;
+import java.util.HashSet;
+import java.util.Set;
 
 public class OSXPlatformInitializer implements PlatformInitializer {
 
     @Inject
-    protected ActionManager actionManager;
+    protected GlobalActions globalActions;
 
+    @Override
     public void initLookAndFeel() {
 
         // override some default styles and colors, assuming that Aqua theme will be used
@@ -55,10 +45,10 @@ public class OSXPlatformInitializer implements PlatformInitializer {
 
         Desktop desktop = Desktop.getDesktop();
 
-        desktop.setAboutHandler(e -> actionManager.getAction(AboutAction.class).showAboutDialog());
-        desktop.setPreferencesHandler(e -> actionManager.getAction(ConfigurePreferencesAction.class).showPreferencesDialog());
+        desktop.setAboutHandler(e -> globalActions.getAction(AboutAction.class).showAboutDialog());
+        desktop.setPreferencesHandler(e -> globalActions.getAction(ConfigurePreferencesAction.class).showPreferencesDialog());
         desktop.setQuitHandler((e, r) -> {
-            if(!actionManager.getAction(ExitAction.class).exit()) {
+            if (!globalActions.getAction(ExitAction.class).exit()) {
                 r.cancelQuit();
             } else {
                 r.performQuit();
@@ -68,38 +58,38 @@ public class OSXPlatformInitializer implements PlatformInitializer {
 
     private void overrideUIDefaults() {
         Color lightGrey = new Color(0xEEEEEE);
-        Color darkGrey  = new Color(225, 225, 225);
+        Color darkGrey = new Color(225, 225, 225);
         Border darkBorder = BorderFactory.createLineBorder(darkGrey);
 
-        UIManager.put("ToolBarSeparatorUI",           OSXToolBarSeparatorUI.class.getName());
-        UIManager.put("PanelUI",                      OSXPanelUI.class.getName());
+        UIManager.put("ToolBarSeparatorUI", OSXToolBarSeparatorUI.class.getName());
+        UIManager.put("PanelUI", OSXPanelUI.class.getName());
         // next two is custom-made for Cayenne's MainToolBar
-        UIManager.put("ToolBar.background",           lightGrey);
-        UIManager.put("MainToolBar.background",       lightGrey);
-        UIManager.put("MainToolBar.border",           BorderFactory.createEmptyBorder(0, 7, 0, 7));
-        UIManager.put("ToolBar.border",               darkBorder);
-        UIManager.put("ScrollPane.border",            darkBorder);
-        UIManager.put("Table.scrollPaneBorder",       darkBorder);
-        UIManager.put("SplitPane.border",             BorderFactory.createEmptyBorder());
-        UIManager.put("SplitPane.background",         darkGrey);
-        UIManager.put("Tree.rendererFillBackground",  Boolean.TRUE);
-        UIManager.put("Tree.paintLines",              Boolean.FALSE);
-        UIManager.put("ComboBox.background",          Color.WHITE);
+        UIManager.put("ToolBar.background", lightGrey);
+        UIManager.put("MainToolBar.background", lightGrey);
+        UIManager.put("MainToolBar.border", BorderFactory.createEmptyBorder(0, 7, 0, 7));
+        UIManager.put("ToolBar.border", darkBorder);
+        UIManager.put("ScrollPane.border", darkBorder);
+        UIManager.put("Table.scrollPaneBorder", darkBorder);
+        UIManager.put("SplitPane.border", BorderFactory.createEmptyBorder());
+        UIManager.put("SplitPane.background", darkGrey);
+        UIManager.put("Tree.rendererFillBackground", Boolean.TRUE);
+        UIManager.put("Tree.paintLines", Boolean.FALSE);
+        UIManager.put("ComboBox.background", Color.WHITE);
         UIManager.put("ComboBox.selectionBackground", darkGrey);
         UIManager.put("ComboBox.selectionForeground", Color.BLACK);
-        UIManager.put("CheckBox.background",          Color.WHITE);
-        UIManager.put("Tree.background",              Color.WHITE);
-        UIManager.put("Tree.selectionForeground",     Color.BLACK);
-        UIManager.put("Tree.selectionBackground",     lightGrey);
-        UIManager.put("Tree.selectionBorderColor",    lightGrey);
-        UIManager.put("Table.selectionForeground",    Color.BLACK);
-        UIManager.put("Table.selectionBackground",    lightGrey);
+        UIManager.put("CheckBox.background", Color.WHITE);
+        UIManager.put("Tree.background", Color.WHITE);
+        UIManager.put("Tree.selectionForeground", Color.BLACK);
+        UIManager.put("Tree.selectionBackground", lightGrey);
+        UIManager.put("Tree.selectionBorderColor", lightGrey);
+        UIManager.put("Table.selectionForeground", Color.BLACK);
+        UIManager.put("Table.selectionBackground", lightGrey);
         UIManager.put("Table.focusCellHighlightBorder", BorderFactory.createEmptyBorder());
-        UIManager.put("CheckBoxHeader.border",          BorderFactory.createEmptyBorder(0, 9, 0, 0));
+        UIManager.put("CheckBoxHeader.border", BorderFactory.createEmptyBorder(0, 9, 0, 0));
 
         // MacOS BigSur needs additional style tweaking for the tabs active state
         OSXVersion version = OSXVersion.fromSystemProperties();
-        if(version.gt(OSXVersion.CATALINA)) {
+        if (version.gt(OSXVersion.CATALINA)) {
             UIManager.put("TabbedPane.selectedTabTitlePressedColor", Color.BLACK);
             UIManager.put("TabbedPane.selectedTabTitleNormalColor", Color.BLACK);
             UIManager.put("TabbedPane.selectedTabTitleShadowDisabledColor", new Color(0, 0, 0, 0));
@@ -114,17 +104,18 @@ public class OSXPlatformInitializer implements PlatformInitializer {
             }
         };
         UIManager.put("MenuItem.selectedBackgroundPainter", backgroundPainter);
-        UIManager.put("MenuItem.selectionForeground",       Color.BLACK);
+        UIManager.put("MenuItem.selectionForeground", Color.BLACK);
     }
 
+    @Override
     public void setupMenus(JFrame frame) {
         // set additional look and feel for the window
         frame.getRootPane().putClientProperty("apple.awt.brushMetalLook", Boolean.TRUE);
 
         Set<Action> removeActions = new HashSet<>();
-        removeActions.add(actionManager.getAction(ExitAction.class));
-        removeActions.add(actionManager.getAction(AboutAction.class));
-        removeActions.add(actionManager.getAction(ConfigurePreferencesAction.class));
+        removeActions.add(globalActions.getAction(ExitAction.class));
+        removeActions.add(globalActions.getAction(AboutAction.class));
+        removeActions.add(globalActions.getAction(ConfigurePreferencesAction.class));
 
         JMenuBar menuBar = frame.getJMenuBar();
         for (Component menu : menuBar.getComponents()) {

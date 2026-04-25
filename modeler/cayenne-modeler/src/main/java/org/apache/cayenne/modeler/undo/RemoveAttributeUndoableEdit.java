@@ -54,7 +54,7 @@ public class RemoveAttributeUndoableEdit extends BaseRemovePropertyUndoableEdit 
 
     @Override
     public void redo() throws CannotRedoException {
-        RemoveAttributeAction action = actionManager.getAction(RemoveAttributeAction.class);
+        RemoveAttributeAction action = globalActions.getAction(RemoveAttributeAction.class);
 
         if (objEntity != null) {
             action.removeObjAttributes(objEntity, objAttributes);
@@ -74,7 +74,7 @@ public class RemoveAttributeUndoableEdit extends BaseRemovePropertyUndoableEdit 
 
     @Override
     public void undo() throws CannotUndoException {
-        CreateAttributeAction action = actionManager.getAction(CreateAttributeAction.class);
+        CreateAttributeAction action = globalActions.getAction(CreateAttributeAction.class);
 
         if (objEntity != null) {
             for (ObjAttribute attr : objAttributes) {

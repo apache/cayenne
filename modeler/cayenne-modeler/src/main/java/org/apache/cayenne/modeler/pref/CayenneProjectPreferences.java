@@ -23,7 +23,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 public class CayenneProjectPreferences {
@@ -62,15 +61,5 @@ public class CayenneProjectPreferences {
         }
 
         return preference;
-    }
-
-    // delete property
-    public void removeProjectDetailObject(Preferences preference) {
-        try {
-            preference.removeNode();
-            modelerProjectPreferences.remove(preference);
-        } catch (BackingStoreException e) {
-            throw new CayenneRuntimeException("Error delete preferences", e);
-        }
     }
 }

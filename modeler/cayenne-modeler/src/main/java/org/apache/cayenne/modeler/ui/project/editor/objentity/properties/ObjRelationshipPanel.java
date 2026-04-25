@@ -28,7 +28,7 @@ import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.action.ActionManager;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.CutAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.ObjEntityToSuperEntityAction;
@@ -83,7 +83,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
 
         this.setLayout(new BorderLayout());
 
-        ActionManager actionManager = Application.getInstance().getActionManager();
+        GlobalActions globalActions = Application.getInstance().getActionManager();
 
         table = new CayenneTable();
         table.setDefaultRenderer(String.class, new StringRenderer());
@@ -114,12 +114,12 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
 
         JPopupMenu popup = new JPopupMenu();
         popup.add(editMenu);
-        popup.add(actionManager.getAction(RemoveAttributeRelationshipAction.class).buildMenu());
+        popup.add(globalActions.getAction(RemoveAttributeRelationshipAction.class).buildMenu());
 
         popup.addSeparator();
-        popup.add(actionManager.getAction(CutAttributeRelationshipAction.class).buildMenu());
-        popup.add(actionManager.getAction(CopyAttributeRelationshipAction.class).buildMenu());
-        popup.add(actionManager.getAction(PasteAction.class).buildMenu());
+        popup.add(globalActions.getAction(CutAttributeRelationshipAction.class).buildMenu());
+        popup.add(globalActions.getAction(CopyAttributeRelationshipAction.class).buildMenu());
+        popup.add(globalActions.getAction(PasteAction.class).buildMenu());
 
         TablePopupHandler.install(table, popup);
         add(WidgetFactory.createTablePanel(table, null), BorderLayout.CENTER);
@@ -373,8 +373,8 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
         public void mouseClicked(MouseEvent event, int x) {
             Point point = event.getPoint();
             if (point.x - x <= INHERITANCE_ICON.getIconWidth()) {
-                ActionManager actionManager = Application.getInstance().getActionManager();
-                actionManager.getAction(ObjEntityToSuperEntityAction.class).performAction(null);
+                GlobalActions globalActions = Application.getInstance().getActionManager();
+                globalActions.getAction(ObjEntityToSuperEntityAction.class).performAction(null);
             }
         }
     }
@@ -413,10 +413,10 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
                 parentPanel.getAttributePanel().getTable().getCellEditor().stopCellEditing();
             }
 
-            ActionManager actionManager = Application.getInstance().getActionManager();
-            actionManager.getAction(RemoveAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
-            actionManager.getAction(CutAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
-            actionManager.getAction(CopyAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
+            GlobalActions globalActions = Application.getInstance().getActionManager();
+            globalActions.getAction(RemoveAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
+            globalActions.getAction(CutAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
+            globalActions.getAction(CopyAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
 
             boolean editEnabled = table.getSelectedRow() >= 0;
             parentPanel.rebindEditButton(editEnabled, "Edit Relationship", this::edit);

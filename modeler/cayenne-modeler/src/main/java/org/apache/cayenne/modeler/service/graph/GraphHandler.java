@@ -16,15 +16,10 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.graph.extension;
+package org.apache.cayenne.modeler.service.graph;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.swing.undo.UndoableEdit;
-
+import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.graph.GraphBuilder;
 import org.apache.cayenne.modeler.graph.GraphMap;
 import org.apache.cayenne.modeler.graph.GraphRegistry;
@@ -34,6 +29,10 @@ import org.jgraph.graph.DefaultGraphCell;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
+
+import javax.swing.undo.UndoableEdit;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class to load graph from XML
@@ -49,14 +48,14 @@ class GraphHandler extends NamespaceAwareNestedTagHandler {
     GraphType graphType;
 
     double scale;
-            
-    public GraphHandler(NamespaceAwareNestedTagHandler parent, final Application application) {
+
+    public GraphHandler(NamespaceAwareNestedTagHandler parent, DataChannelMetaData metaData) {
         super(parent);
         loaderContext.addDataChannelListener(dataChannelDescriptor -> {
-            GraphRegistry registry = application.getMetaData().get(dataChannelDescriptor, GraphRegistry.class);
-            if(registry == null) {
+            GraphRegistry registry = metaData.get(dataChannelDescriptor, GraphRegistry.class);
+            if (registry == null) {
                 registry = new GraphRegistry();
-                application.getMetaData().add(dataChannelDescriptor, registry);
+                metaData.add(dataChannelDescriptor, registry);
             }
 
             GraphMap map = registry.getGraphMap(dataChannelDescriptor);
@@ -66,7 +65,7 @@ class GraphHandler extends NamespaceAwareNestedTagHandler {
 
             // lookup
             Map<DefaultGraphCell, Map<String, ?>> propertiesMap = new HashMap<>();
-            for(Map.Entry<String, Map<String, ?>> entry : GraphHandler.this.propertiesMap.entrySet()) {
+            for (Map.Entry<String, Map<String, ?>> entry : GraphHandler.this.propertiesMap.entrySet()) {
                 DefaultGraphCell cell = builder.getEntityCell(entry.getKey());
                 propertiesMap.put(cell, entry.getValue());
             }
@@ -87,7 +86,7 @@ class GraphHandler extends NamespaceAwareNestedTagHandler {
                 }
 
                 graphType = GraphType.valueOf(type);
-                scale = Double.valueOf(attributes.getValue("scale"));
+                scale = Double.parseDouble(attributes.getValue("scale"));
                 propertiesMap = new HashMap<>();
                 return true;
         }

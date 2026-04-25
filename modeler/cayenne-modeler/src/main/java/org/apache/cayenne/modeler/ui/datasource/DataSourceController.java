@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.ui.datasource;
 
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.modeler.ClassLoadingService;
+import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.preferences.general.GeneralPreferencesController;
 import org.apache.cayenne.modeler.ui.preferences.PreferenceDialogController;
@@ -177,7 +177,7 @@ public class DataSourceController extends ChildController<ProjectController> {
      */
     public void okAction() {
         DBConnectionInfo info = getConnectionInfo();
-        ClassLoadingService classLoader = getApplication().getClassLoadingService();
+        ModelerClassLoader classLoader = getApplication().getClassLoader();
 
         // doing connection testing...
         try {

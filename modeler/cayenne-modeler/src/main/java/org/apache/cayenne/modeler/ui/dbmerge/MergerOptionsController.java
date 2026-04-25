@@ -43,7 +43,6 @@ import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
@@ -135,7 +134,7 @@ public class MergerOptionsController extends ChildController<ProjectController> 
      */
     protected void prepareMigrator() {
         try {
-            adapter = connectionInfo.makeAdapter(getApplication().getClassLoadingService());
+            adapter = connectionInfo.makeAdapter(getApplication().getClassLoader());
 
             MergerTokenFactory mergerTokenFactory = mergerTokenFactoryProvider.get(adapter);
             tokens.setMergerTokenFactory(mergerTokenFactory);
@@ -151,7 +150,7 @@ public class MergerOptionsController extends ChildController<ProjectController> 
             DbLoaderConfiguration config = new DbLoaderConfiguration();
             config.setFiltersConfig(filters);
 
-            DataSource dataSource = connectionInfo.makeDataSource(getApplication().getClassLoadingService());
+            DataSource dataSource = connectionInfo.makeDataSource(getApplication().getClassLoader());
 
             DataMap dbImport;
             try (Connection conn = dataSource.getConnection()) {
@@ -244,7 +243,7 @@ public class MergerOptionsController extends ChildController<ProjectController> 
         DataSource dataSource;
         try {
             dataSource = connectionInfo.makeDataSource(getApplication()
-                    .getClassLoadingService());
+                    .getClassLoader());
         } catch (SQLException ex) {
             reportError("Migration Error", ex);
             return;

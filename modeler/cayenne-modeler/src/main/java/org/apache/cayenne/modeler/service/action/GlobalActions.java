@@ -16,12 +16,13 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.ui.action;
+package org.apache.cayenne.modeler.service.action;
 
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ui.action.*;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ShowGraphEntityAction;
 import org.apache.cayenne.project.ConfigurationNodeParentGetter;
 
@@ -37,7 +38,7 @@ import java.util.Set;
 /**
  * Stores a map of modeler actions, and deals with activating/deactivating those actions on state changes.
  */
-public class DefaultActionManager implements ActionManager {
+public class GlobalActions {
 
     private final Set<String> specialActions;
     private final Set<String> projectActions;
@@ -53,7 +54,7 @@ public class DefaultActionManager implements ActionManager {
     private final Map<String, Action> actionMap;
     private final ConfigurationNodeParentGetter nodeParentGetter;
 
-    public DefaultActionManager(
+    public GlobalActions(
             @Inject Application application,
             @Inject ConfigurationNameMapper nameMapper,
             @Inject ConfigurationNodeParentGetter nodeParentGetter) {
@@ -241,66 +242,55 @@ public class DefaultActionManager implements ActionManager {
         return action;
     }
 
-    @Override
     public <T extends Action> T getAction(Class<T> actionClass) {
         return (T) actionMap.get(actionClass.getName());
     }
 
-    @Override
     public void projectOpened() {
         processActionsState(projectActions);
         updateActions("");
     }
 
-    @Override
     public void projectClosed() {
         processActionsState(Collections.emptySet());
         updateActions("");
     }
 
-    @Override
     public void domainSelected() {
         processActionsState(domainActions);
         updateActions("DataDomain");
     }
 
-    @Override
     public void dataNodeSelected() {
         processActionsState(dataNodeActions);
         updateActions("DataNode");
     }
 
-    @Override
     public void dataMapSelected() {
         processActionsState(dataMapActions);
         updateActions("DataMap");
     }
 
-    @Override
     public void objEntitySelected() {
         processActionsState(objEntityActions);
         updateActions("ObjEntity");
     }
 
-    @Override
     public void dbEntitySelected() {
         processActionsState(dbEntityActions);
         updateActions("DbEntity");
     }
 
-    @Override
     public void procedureSelected() {
         processActionsState(procedureActions);
         updateActions("Procedure");
     }
 
-    @Override
     public void querySelected() {
         processActionsState(dataMapActions);
         updateActions("Query");
     }
 
-    @Override
     public void embeddableSelected() {
         processActionsState(embeddableActions);
         updateActions("Embeddable");
@@ -309,8 +299,7 @@ public class DefaultActionManager implements ActionManager {
     /**
      * Invoked when several objects were selected in ProjectTree at time
      */
-    @Override
-    public void multipleObjectsSelected(ConfigurationNode[] objects) {
+    public void objectsSelected(ConfigurationNode[] objects) {
         processActionsState(multipleObjectsActions);
 
         updateActions("Selected Objects");
@@ -364,7 +353,6 @@ public class DefaultActionManager implements ActionManager {
         }
     }
 
-    @Override
     public void setupCutCopyPaste(
             JComponent comp,
             Class<? extends Action> cutActionType,

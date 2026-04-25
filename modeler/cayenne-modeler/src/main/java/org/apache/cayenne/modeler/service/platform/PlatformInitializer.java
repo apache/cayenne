@@ -16,31 +16,22 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.modeler.service.platform;
 
-package org.apache.cayenne.modeler.graph.extension;
+import javax.swing.JFrame;
 
-import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.project.extension.LoaderDelegate;
+/**
+ * An interface that provides methods for platform-specific Modeler initialization.
+ */
+public interface PlatformInitializer {
 
-class GraphLoaderDelegate implements LoaderDelegate {
+    /**
+     * Initializes application look and feel.
+     */
+    void initLookAndFeel();
 
-    Application application;
-
-    GraphLoaderDelegate(Application application) {
-        this.application = application;
-    }
-
-    @Override
-    public String getTargetNamespace() {
-        return GraphExtension.NAMESPACE;
-    }
-
-    @Override
-    public NamespaceAwareNestedTagHandler createHandler(NamespaceAwareNestedTagHandler parent, String tag) {
-        if(GraphsRootHandler.GRAPHS_TAG.equals(tag)) {
-            return new GraphsRootHandler(parent, application);
-        }
-        return null;
-    }
+    /**
+     * Updates default frame menus according to the platform specifics.
+     */
+    void setupMenus(JFrame frame);
 }

@@ -25,7 +25,7 @@ import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.DbAttributeListener;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.action.ActionManager;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.CutAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.PasteAction;
@@ -65,7 +65,7 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
 
         this.setLayout(new BorderLayout());
 
-        ActionManager actionManager = Application.getInstance().getActionManager();
+        GlobalActions globalActions = Application.getInstance().getActionManager();
 
         // Create table with two columns and no rows.
         table = new CayenneTable();
@@ -77,12 +77,12 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
         // TODO: There is no edit panel for DbAttributes, so for now no edit contextual menu and the edit button is disabled
 
         JPopupMenu popup = new JPopupMenu();
-        popup.add(actionManager.getAction(RemoveAttributeRelationshipAction.class).buildMenu());
+        popup.add(globalActions.getAction(RemoveAttributeRelationshipAction.class).buildMenu());
 
         popup.addSeparator();
-        popup.add(actionManager.getAction(CutAttributeRelationshipAction.class).buildMenu());
-        popup.add(actionManager.getAction(CopyAttributeRelationshipAction.class).buildMenu());
-        popup.add(actionManager.getAction(PasteAction.class).buildMenu());
+        popup.add(globalActions.getAction(CutAttributeRelationshipAction.class).buildMenu());
+        popup.add(globalActions.getAction(CopyAttributeRelationshipAction.class).buildMenu());
+        popup.add(globalActions.getAction(PasteAction.class).buildMenu());
 
         TablePopupHandler.install(table, popup);
         add(WidgetFactory.createTablePanel(table, null), BorderLayout.CENTER);
@@ -92,7 +92,7 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
 
         table.getSelectionModel().addListSelectionListener(this::valueChanged);
 
-        actionManager.setupCutCopyPaste(
+        globalActions.setupCutCopyPaste(
                 table,
                 CutAttributeRelationshipAction.class,
                 CopyAttributeRelationshipAction.class);
@@ -208,11 +208,11 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
                 parentPanel.getRelationshipPanel().getTable().getCellEditor().stopCellEditing();
             }
 
-            ActionManager actionManager = Application.getInstance().getActionManager();
+            GlobalActions globalActions = Application.getInstance().getActionManager();
 
-            actionManager.getAction(RemoveAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
-            actionManager.getAction(CutAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
-            actionManager.getAction(CopyAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
+            globalActions.getAction(RemoveAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
+            globalActions.getAction(CutAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
+            globalActions.getAction(CopyAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
 
             if (table.getSelectedRow() >= 0) {
                 DbAttributeTableModel model = (DbAttributeTableModel) table.getModel();

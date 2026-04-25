@@ -37,14 +37,14 @@ public class CreateCallbackMethodUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void redo() throws CannotRedoException {
-        CreateCallbackMethodAction action = actionManager
+        CreateCallbackMethodAction action = globalActions
                 .getAction(CreateCallbackMethodAction.class);
         action.createCallbackMethod(callbackType, methodName);
     }
 
     @Override
     public void undo() throws CannotUndoException {
-        RemoveCallbackMethodAction action = actionManager
+        RemoveCallbackMethodAction action = globalActions
                 .getAction(RemoveCallbackMethodAction.class);
         action.removeCallbackMethod(callbackType, methodName);
     }

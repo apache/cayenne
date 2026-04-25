@@ -55,7 +55,7 @@ public class CreateRelationshipUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void redo() throws CannotRedoException {
-        CreateRelationshipAction action = actionManager
+        CreateRelationshipAction action = globalActions
                 .getAction(CreateRelationshipAction.class);
 
         if (objEnt != null) {
@@ -73,7 +73,7 @@ public class CreateRelationshipUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void undo() throws CannotUndoException {
-        RemoveRelationshipAction action = actionManager
+        RemoveRelationshipAction action = globalActions
                 .getAction(RemoveRelationshipAction.class);
 
         if (objEnt != null) {

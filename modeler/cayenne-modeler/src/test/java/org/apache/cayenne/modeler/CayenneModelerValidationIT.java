@@ -22,7 +22,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.modeler.validation.ConfigurableProjectValidator;
+import org.apache.cayenne.modeler.service.validator.ConfigurableProjectValidator;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectLoader;
 import org.apache.cayenne.project.ProjectModule;

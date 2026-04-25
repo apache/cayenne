@@ -24,7 +24,7 @@ import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ClassLoadingService;
+import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
 import org.apache.cayenne.util.Util;
 
 import javax.sql.DataSource;
@@ -163,7 +163,7 @@ public class DBConnectionInfo extends CayennePreference {
 	/**
 	 * Creates a DbAdapter based on configured values.
 	 */
-	public DbAdapter makeAdapter(final ClassLoadingService classLoader) throws Exception {
+	public DbAdapter makeAdapter(final ModelerClassLoader classLoader) throws Exception {
 		DataNodeDescriptor descriptor = new DataNodeDescriptor();
 		descriptor.setAdapterType(getDbAdapter());
 		DataSource dataSource = makeDataSource(classLoader);
@@ -175,7 +175,7 @@ public class DBConnectionInfo extends CayennePreference {
 	 * Returned DataSource is not pooling its connections. It can be wrapped in
 	 * PoolManager if pooling is needed.
 	 */
-	public DataSource makeDataSource(final ClassLoadingService classLoader) throws SQLException {
+	public DataSource makeDataSource(final ModelerClassLoader classLoader) throws SQLException {
 
 		// validate...
 		if (getJdbcDriver() == null) {
@@ -304,9 +304,9 @@ public class DBConnectionInfo extends CayennePreference {
 
 	private class DeferredDataSource implements DataSource {
 
-		private final ClassLoadingService classLoader;
+		private final ModelerClassLoader classLoader;
 
-		public DeferredDataSource(ClassLoadingService classLoader) {
+		public DeferredDataSource(ModelerClassLoader classLoader) {
 			this.classLoader = classLoader;
 		}
 

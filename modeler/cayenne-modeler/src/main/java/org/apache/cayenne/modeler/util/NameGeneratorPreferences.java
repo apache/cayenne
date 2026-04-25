@@ -93,7 +93,7 @@ public class NameGeneratorPreferences {
 
     public ObjectNameGenerator createNamingStrategy(Application application) throws Exception {
 
-        return application.getClassLoadingService()
+        return application.getClassLoader()
                 .loadClass(ObjectNameGenerator.class, getLastUsedStrategies().get(0)).getDeclaredConstructor().newInstance();
     }
 

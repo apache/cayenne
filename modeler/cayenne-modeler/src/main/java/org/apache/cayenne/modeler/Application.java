@@ -26,17 +26,18 @@ import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.modeler.ui.action.ActionManager;
-import org.apache.cayenne.modeler.ui.action.OpenProjectAction;
-import org.apache.cayenne.modeler.platform.PlatformInitializer;
+import org.apache.cayenne.modeler.pref.CayennePreference;
+import org.apache.cayenne.modeler.pref.CayenneProjectPreferences;
 import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
+import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
+import org.apache.cayenne.modeler.service.platform.PlatformInitializer;
 import org.apache.cayenne.modeler.ui.ModelerController;
+import org.apache.cayenne.modeler.ui.action.OpenProjectAction;
 import org.apache.cayenne.modeler.ui.logconsole.LogConsoleController;
 import org.apache.cayenne.modeler.ui.preferences.classpath.ClasspathPreferencesController;
 import org.apache.cayenne.modeler.ui.preferences.general.GeneralPreferencesController;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
-import org.apache.cayenne.modeler.pref.CayennePreference;
-import org.apache.cayenne.modeler.pref.CayenneProjectPreferences;
 import org.apache.cayenne.project.ConfigurationNodeParentGetter;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectLoader;
@@ -48,7 +49,6 @@ import org.apache.cayenne.util.IDUtil;
 import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -71,7 +71,6 @@ public class Application {
 
     private static Application instance;
 
-    protected FileClassLoadingService modelerClassLoader;
     protected LogConsoleController logConsoleController;
     protected ModelerController frameController;
     protected String name;
@@ -82,8 +81,6 @@ public class Application {
     @Inject
     protected Injector injector;
 
-    @Inject
-    protected DataChannelMetaData metaData;
     private String newProjectTemporaryName;
 
     public static Application getInstance() {
@@ -126,12 +123,12 @@ public class Application {
         return name;
     }
 
-    public ClassLoadingService getClassLoadingService() {
-        return modelerClassLoader;
+    public ModelerClassLoader getClassLoader() {
+        return injector.getInstance(ModelerClassLoader.class);
     }
 
-    public ActionManager getActionManager() {
-        return injector.getInstance(ActionManager.class);
+    public GlobalActions getActionManager() {
+        return injector.getInstance(GlobalActions.class);
     }
 
     public ProjectValidator getProjectValidator() {
@@ -166,6 +163,10 @@ public class Application {
         return injector.getInstance(DbAdapterFactory.class);
     }
 
+    public DataChannelMetaData getMetaData() {
+        return injector.getInstance(DataChannelMetaData.class);
+    }
+
     public MergerTokenFactoryProvider getMergerTokenFactoryProvider() {
         return injector.getInstance(MergerTokenFactoryProvider.class);
     }
@@ -185,9 +186,19 @@ public class Application {
     public void startup(File initialProject) {
         this.logConsoleController = new LogConsoleController(this);
 
-        // init subsystems
-        initPreferences();
-        initClassLoader();
+        // TODO: should "project" preferences reside in ProjectController?
+        this.cayenneProjectPreferences = new CayenneProjectPreferences();
+
+        refreshClassLoader();
+
+        // TODO: is this used by DB Import and CGen? If so, the corresponding actions must set it in a proper scope.
+        //  Or a better idea - get rid of thread-bound classloaders everywhere
+        ModelerClassLoader classLoader = getClassLoader();
+        if (SwingUtilities.isEventDispatchThread()) {
+            Thread.currentThread().setContextClassLoader(classLoader.getClassLoader());
+        } else {
+            SwingUtilities.invokeLater(() -> Thread.currentThread().setContextClassLoader(classLoader.getClassLoader()));
+        }
 
         this.undoManager = new CayenneUndoManager(this);
         this.frameController = new ModelerController(this);
@@ -236,49 +247,28 @@ public class Application {
         return pref.node(pref.absolutePath() + path);
     }
 
-
     /**
      * Reinitializes ModelerClassLoader from preferences.
      */
-    public void initClassLoader() {
-        FileClassLoadingService classLoader = new FileClassLoadingService();
+    public void refreshClassLoader() {
 
         // init from preferences...
-        Preferences classLoaderPreference = Application.getInstance().getPreferencesNode(
-                ClasspathPreferencesController.class,
-                "");
+        Preferences classLoaderPref = getPreferencesNode(ClasspathPreferencesController.class, "");
 
         String[] keys;
-        Collection<String> values = new ArrayList<>();
+        List<String> values = new ArrayList<>();
 
         try {
-            keys = classLoaderPreference.keys();
+            keys = classLoaderPref.keys();
             for (String cpKey : keys) {
-                values.add(classLoaderPreference.get(cpKey, ""));
+                values.add(classLoaderPref.get(cpKey, ""));
             }
         } catch (BackingStoreException ignored) {
         }
 
         if (!values.isEmpty()) {
-            classLoader.setPathFiles(values.stream().map(File::new).collect(Collectors.toList()));
+            getClassLoader().setFiles(values.stream().map(File::new).collect(Collectors.toList()));
         }
-
-        this.modelerClassLoader = classLoader;
-
-        // set as EventDispatch thread default class loader
-        if (SwingUtilities.isEventDispatchThread()) {
-            Thread.currentThread().setContextClassLoader(classLoader.getClassLoader());
-        } else {
-            SwingUtilities.invokeLater(() -> Thread.currentThread().setContextClassLoader(classLoader.getClassLoader()));
-        }
-    }
-
-    public DataChannelMetaData getMetaData() {
-        return metaData;
-    }
-
-    protected void initPreferences() {
-        this.cayenneProjectPreferences = new CayenneProjectPreferences();
     }
 
     private File initialProjectFromPreferences() {

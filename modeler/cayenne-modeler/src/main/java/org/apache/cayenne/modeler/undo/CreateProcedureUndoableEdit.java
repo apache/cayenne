@@ -43,14 +43,14 @@ public class CreateProcedureUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void redo() throws CannotRedoException {
-        CreateProcedureAction action = actionManager
+        CreateProcedureAction action = globalActions
                 .getAction(CreateProcedureAction.class);
         action.createProcedure(map, procedure);
     }
 
     @Override
     public void undo() throws CannotUndoException {
-        RemoveAction action = actionManager.getAction(RemoveAction.class);
+        RemoveAction action = globalActions.getAction(RemoveAction.class);
         action.removeProcedure(map, procedure);
     }
 }

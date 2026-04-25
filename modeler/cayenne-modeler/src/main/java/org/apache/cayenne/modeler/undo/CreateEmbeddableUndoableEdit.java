@@ -43,7 +43,7 @@ public class CreateEmbeddableUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void redo() throws CannotRedoException {
-        CreateEmbeddableAction action = actionManager
+        CreateEmbeddableAction action = globalActions
                 .getAction(CreateEmbeddableAction.class);
 
         action.createEmbeddable(dataMap, embeddable);
@@ -51,7 +51,7 @@ public class CreateEmbeddableUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void undo() throws CannotUndoException {
-        RemoveAction action = actionManager.getAction(RemoveAction.class);
+        RemoveAction action = globalActions.getAction(RemoveAction.class);
         action.removeEmbeddable(dataMap, embeddable);
     }
 

@@ -29,7 +29,7 @@ import org.apache.cayenne.map.event.EmbeddableEvent;
 import org.apache.cayenne.map.event.EmbeddableListener;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.action.ActionManager;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CopyAttributeAction;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.ui.action.CutAttributeAction;
@@ -72,17 +72,17 @@ public class EmbeddableAttributesView extends JPanel implements
 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
-        ActionManager actionManager = Application.getInstance().getActionManager();
+        GlobalActions globalActions = Application.getInstance().getActionManager();
 
-        toolBar.add(actionManager.getAction(CreateAttributeAction.class).buildButton());
+        toolBar.add(globalActions.getAction(CreateAttributeAction.class).buildButton());
         toolBar.addSeparator();
 
-        toolBar.add(actionManager.getAction(RemoveAttributeAction.class).buildButton());
+        toolBar.add(globalActions.getAction(RemoveAttributeAction.class).buildButton());
         toolBar.addSeparator();
 
-        toolBar.add(actionManager.getAction(CutAttributeAction.class).buildButton(1));
-        toolBar.add(actionManager.getAction(CopyAttributeAction.class).buildButton(2));
-        toolBar.add(actionManager.getAction(PasteAction.class).buildButton(3));
+        toolBar.add(globalActions.getAction(CutAttributeAction.class).buildButton(1));
+        toolBar.add(globalActions.getAction(CopyAttributeAction.class).buildButton(2));
+        toolBar.add(globalActions.getAction(PasteAction.class).buildButton(3));
 
         add(toolBar, BorderLayout.NORTH);
 
@@ -94,13 +94,13 @@ public class EmbeddableAttributesView extends JPanel implements
 
         // Create and install a popup
         JPopupMenu popup = new JPopupMenu();
-        popup.add(actionManager.getAction(RemoveAttributeAction.class).buildMenu());
+        popup.add(globalActions.getAction(RemoveAttributeAction.class).buildMenu());
 
         popup.addSeparator();
 
-        popup.add(actionManager.getAction(CutAttributeAction.class).buildMenu());
-        popup.add(actionManager.getAction(CopyAttributeAction.class).buildMenu());
-        popup.add(actionManager.getAction(PasteAction.class).buildMenu());
+        popup.add(globalActions.getAction(CutAttributeAction.class).buildMenu());
+        popup.add(globalActions.getAction(CopyAttributeAction.class).buildMenu());
+        popup.add(globalActions.getAction(PasteAction.class).buildMenu());
 
         TablePopupHandler.install(table, popup);
         add(WidgetFactory.createTablePanel(table, null), BorderLayout.CENTER);

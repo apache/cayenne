@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.generic;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticTheme;
 import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
-import org.apache.cayenne.modeler.platform.PlatformInitializer;
+import org.apache.cayenne.modeler.service.platform.PlatformInitializer;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

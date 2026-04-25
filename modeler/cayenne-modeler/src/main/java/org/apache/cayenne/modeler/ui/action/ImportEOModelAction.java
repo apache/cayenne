@@ -194,7 +194,7 @@ public class ImportEOModelAction extends ModelerAbstractAction {
                 if (cayenneAdapter != null) {
                     try {
                         Class<DbAdapter> adapterClass = application
-                                .getClassLoadingService()
+                                .getClassLoader()
                                 .loadClass(DbAdapter.class, cayenneAdapter);
                         node.setAdapterType(adapterClass.toString());
                     } catch (Throwable ex) {

@@ -38,7 +38,7 @@ import org.apache.cayenne.dbsync.reverse.dbimport.PatternParam;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.dbsync.reverse.dbimport.SchemaContainer;
-import org.apache.cayenne.modeler.ClassLoadingService;
+import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 
@@ -53,7 +53,7 @@ public class DatabaseSchemaLoader {
     }
 
     public ReverseEngineering load(DBConnectionInfo connectionInfo,
-                                   ClassLoadingService loadingService) throws Exception {
+                                   ModelerClassLoader loadingService) throws Exception {
         DbAdapter dbAdapter = connectionInfo.makeAdapter(loadingService);
         try (Connection connection = connectionInfo.makeDataSource(loadingService).getConnection()) {
             processCatalogs(connection, dbAdapter);
@@ -123,7 +123,7 @@ public class DatabaseSchemaLoader {
     }
 
     public ReverseEngineering loadTables(DBConnectionInfo connectionInfo,
-                                         ClassLoadingService loadingService,
+                                         ModelerClassLoader loadingService,
                                          TreePath path,
                                          String[] tableTypesFromConfig) throws Exception {
         int pathIndex = 1;
@@ -174,7 +174,7 @@ public class DatabaseSchemaLoader {
     }
 
     public ReverseEngineering loadColumns(DBConnectionInfo connectionInfo,
-                                          ClassLoadingService loadingService,
+                                          ModelerClassLoader loadingService,
                                           TreePath path) throws SQLException {
         int pathIndex = 1;
         String catalogName = null, schemaName = null;
