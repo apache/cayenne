@@ -18,13 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.swing.table;
 
+import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.util.EventObject;
-
-import javax.swing.DefaultCellEditor;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JTextField;
 
 /**
  * Overrides CellEditor to allow multiple selection in table
@@ -32,14 +28,11 @@ import javax.swing.JTextField;
  * 
  */
 public class CayenneCellEditor extends DefaultCellEditor {
+
     public CayenneCellEditor(final JTextField textField) {
         super(textField);
     }
-    
-    public CayenneCellEditor(final JCheckBox checkBox) {
-        super(checkBox);
-    }
-    
+
     public CayenneCellEditor(final JComboBox comboBox) {
         super(comboBox);
     }

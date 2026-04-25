@@ -24,14 +24,9 @@ import org.apache.cayenne.modeler.swing.combo.ComboBoxCellEditor;
 import org.apache.cayenne.modeler.swing.table.CayenneCellEditor;
 import org.apache.cayenne.modeler.undo.JComboBoxUndoListener;
 
-import javax.swing.BorderFactory;
-import javax.swing.DefaultCellEditor;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.table.TableCellEditor;
-import java.awt.Color;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -95,7 +90,6 @@ public final class WidgetFactory {
      * Creates cell editor for text field
      */
     public static DefaultCellEditor createCellEditor(JTextField textField) {
-        textField.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
         return new CayenneCellEditor(textField);
     }
 
@@ -106,7 +100,6 @@ public final class WidgetFactory {
      * @param combo JComboBox to be used as editor component
      */
     public static TableCellEditor createCellEditor(JComboBox<?> combo) {
-        combo.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
         if (Boolean.TRUE.equals(combo.getClientProperty(AutoCompletion.AUTOCOMPLETION_PROPERTY))) {
             return new ComboBoxCellEditor(combo);
         }

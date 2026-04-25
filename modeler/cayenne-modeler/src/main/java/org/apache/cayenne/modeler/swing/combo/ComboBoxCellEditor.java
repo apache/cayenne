@@ -19,17 +19,14 @@
 
 package org.apache.cayenne.modeler.swing.combo;
 
-import java.awt.Component;
+import javax.swing.*;
+import javax.swing.table.TableCellEditor;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.Serializable;
 import java.util.EventObject;
-
-import javax.swing.AbstractCellEditor;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.table.TableCellEditor;
 
 /**
  * ComboBoxCellEditor class is a workaround of collision between DefaultCellEditor and 
@@ -56,9 +53,6 @@ public class ComboBoxCellEditor extends AbstractCellEditor
         //  LATER: this turned out to be the wrong fix, so I commented 
         //  out the code in focusLost to fix CAY-1719 and fixed CAY-1104 differently.
         // this.comboBox.getEditor().getEditorComponent().addFocusListener(this);
-
-        // remove the editor's border - the cell itself already has one
-        ((JComponent) comboBox.getEditor().getEditorComponent()).setBorder(null);
     }
     
     // Implementing ActionListener

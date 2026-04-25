@@ -26,6 +26,7 @@ CAY-2917 Add Qualifier Joins Before Depenent Table Joins
 CAY-2918 Remove OGNL Binding Architecture from CayenneModeler
 CAY-2920 Remove "Reengineer Database Schema" menu
 CAY-2922 Modeler: remove support for upgrading from file-based preferences
+CAY-2923 Modeler: Restore table cell editor borders
 
 Bug Fixes:
 
