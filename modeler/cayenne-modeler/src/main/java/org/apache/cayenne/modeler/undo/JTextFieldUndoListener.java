@@ -19,7 +19,6 @@
 package org.apache.cayenne.modeler.undo;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.util.TextAdapter;
 
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
@@ -35,17 +34,11 @@ public class JTextFieldUndoListener implements UndoableEditListener {
 
     private final JTextComponent editor;
     private CompoundEdit compoundEdit;
-    private TextAdapter adapter;
 
     private int lastOffset;
     private int lastLength;
 
     private boolean isKeyEdit;
-
-    public JTextFieldUndoListener(TextAdapter adapter) {
-        this(adapter.getComponent());
-        this.adapter = adapter;
-    }
 
     public JTextFieldUndoListener(JTextComponent editor) {
         this.editor = editor;
@@ -98,9 +91,7 @@ public class JTextFieldUndoListener implements UndoableEditListener {
         lastOffset = editor.getCaretPosition();
         lastLength = editor.getDocument().getLength();
 
-        compoundEdit = (this.adapter != null)
-                ? new TextCompoundEdit(adapter, this)
-                : new TextCompoundEdit(editor, this);
+        compoundEdit = new TextCompoundEdit(editor, this);
 
         if (isKeyEdit) {
             compoundEdit.addEdit(anEdit);

@@ -28,7 +28,6 @@ import java.util.Iterator;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
-import javax.swing.JTextField;
 
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.exp.Expression;
@@ -44,8 +43,6 @@ import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.ExpressionConvertor;
-import org.apache.cayenne.modeler.util.TextAdapter;
-import org.apache.cayenne.modeler.swing.text.ValidatorTextAdapter;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
@@ -62,7 +59,7 @@ import com.jgoodies.forms.layout.FormLayout;
 public class SelectQueryMainTab extends BaseQueryMainTab {
 
     protected CayenneUndoableTextField comment;
-    protected TextAdapter qualifier;
+    protected CayenneUndoableTextField qualifier;
     protected JCheckBox distinct;
     protected ObjectQueryPropertiesPanel properties;
 
@@ -76,26 +73,11 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
 
     private void initView() {
         // create widgets
-        name = new TextAdapter(new JTextField()) {
+        name = new CayenneUndoableTextField();
+        name.addCommitListener(this::setQueryName);
 
-            @Override
-            protected void updateModel(String text) {
-                setQueryName(text);
-            }
-        };
-
-        qualifier = new ValidatorTextAdapter(new JTextField()) {
-
-            @Override
-            protected void updateModel(String text) {
-                setQueryQualifier(text);
-            }
-
-            @Override
-            protected void validate(String text) throws ValidationException {
-                createQualifier(text);
-            }
-        };
+        qualifier = new CayenneUndoableTextField();
+        qualifier.addCommitListener(this::setQueryQualifier);
 
         comment = new CayenneUndoableTextField();
         comment.addCommitListener(this::setQueryComment);
@@ -114,11 +96,11 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
 
         builder.addSeparator("SelectQuery Settings", cc.xywh(1, 1, 3, 1));
         builder.addLabel("Query Name:", cc.xy(1, 3));
-        builder.add(name.getComponent(), cc.xy(3, 3));
+        builder.add(name, cc.xy(3, 3));
         builder.addLabel("Query Root:", cc.xy(1, 5));
         builder.add(queryRoot, cc.xy(3, 5));
         builder.addLabel("Qualifier:", cc.xy(1, 7));
-        builder.add(qualifier.getComponent(), cc.xy(3, 7));
+        builder.add(qualifier, cc.xy(3, 7));
         builder.addLabel("Distinct:", cc.xy(1, 9));
         builder.add(distinct, cc.xy(3, 9));
         builder.addLabel("Comment:", cc.xy(1, 11));

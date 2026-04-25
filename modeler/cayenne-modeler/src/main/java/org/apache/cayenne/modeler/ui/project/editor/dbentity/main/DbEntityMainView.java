@@ -40,7 +40,6 @@ import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ShowGraphEntityAction;
 import org.apache.cayenne.modeler.util.ExpressionConvertor;
-import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
@@ -59,10 +58,10 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
 
     private final ProjectController controller;
 
-    private final TextAdapter name;
+    private final CayenneUndoableTextField name;
     private final CayenneUndoableTextField catalog;
     private final CayenneUndoableTextField schema;
-    private final TextAdapter qualifier;
+    private final CayenneUndoableTextField qualifier;
     private final CayenneUndoableTextField comment;
 
     private final JLabel catalogLabel;
@@ -95,11 +94,8 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
         toolBar.add(actionManager.getAction(ShowGraphEntityAction.class).buildButton());
 
         // create widgets
-        name = new TextAdapter(new JTextField()) {
-            protected void updateModel(String text) {
-                setEntityName(text);
-            }
-        };
+        name = new CayenneUndoableTextField();
+        name.addCommitListener(this::setEntityName);
 
         catalogLabel = new JLabel("Catalog:");
         catalog = new CayenneUndoableTextField();
@@ -109,11 +105,8 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
         schema = new CayenneUndoableTextField();
         schema.addCommitListener(this::setSchema);
 
-        qualifier = new TextAdapter(new JTextField()) {
-            protected void updateModel(String qualifier) {
-                setQualifier(qualifier);
-            }
-        };
+        qualifier = new CayenneUndoableTextField();
+        qualifier.addCommitListener(this::setQualifier);
 
         comment = new CayenneUndoableTextField();
         comment.addCommitListener(this::setComment);
@@ -134,10 +127,10 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
         builder.setDefaultDialogBorder();
 
         builder.appendSeparator("DbEntity Configuration");
-        builder.append("DbEntity Name:", name.getComponent());
+        builder.append("DbEntity Name:", name);
         builder.append(catalogLabel, catalog);
         builder.append(schemaLabel, schema);
-        builder.append("Qualifier:", qualifier.getComponent());
+        builder.append("Qualifier:", qualifier);
         builder.append("Comment:", comment);
 
         builder.appendSeparator("Primary Key");

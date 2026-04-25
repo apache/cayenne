@@ -26,7 +26,7 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.pref.FSPath;
-import org.apache.cayenne.modeler.util.TextAdapter;
+import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.*;
@@ -147,7 +147,7 @@ public class CgenConfigController extends ChildController<CgenController> {
             parent.setCurrentClass(cgenConfiguration.getDataMap());
             parent.setSelected(true);
         }
-        view.getOutputFolder().updateModel();
+        view.applyOutputFolder(view.getOutputFolder().getText());
         view.getOutputPattern().setText(cgenConfiguration.getOutputPattern());
         view.getPairs().setSelected(cgenConfiguration.isMakePairs());
         view.getUsePackagePath().setSelected(cgenConfiguration.isUsePkgPath());
@@ -224,8 +224,8 @@ public class CgenConfigController extends ChildController<CgenController> {
      */
     public void selectOutputFolderAction() {
 
-        TextAdapter outputFolder = view.getOutputFolder();
-        String currentDir = outputFolder.getComponent().getText();
+        CayenneUndoableTextField outputFolder = view.getOutputFolder();
+        String currentDir = outputFolder.getText();
 
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -246,7 +246,7 @@ public class CgenConfigController extends ChildController<CgenController> {
             // update model
             String path = selected.getAbsolutePath();
             view.getOutputFolder().setText(path);
-            view.getOutputFolder().updateModel();
+            view.applyOutputFolder(path);
         }
     }
 

@@ -32,7 +32,6 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.modeler.event.model.ProcedureEvent;
 import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
-import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.modeler.swing.JCayenneCheckBox;
 import org.apache.cayenne.util.Util;
@@ -48,7 +47,7 @@ import java.util.EventObject;
 public class ProcedureTab extends JPanel implements ProcedureDisplayListener, ExistingSelectionProcessor {
 
     protected ProjectController eventController;
-    protected TextAdapter name;
+    protected CayenneUndoableTextField name;
     protected CayenneUndoableTextField schema;
     protected CayenneUndoableTextField catalog;
     protected CayenneUndoableTextField comment;
@@ -65,12 +64,8 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
     private void initView() {
         // create widgets
 
-        this.name = new TextAdapter(new JTextField()) {
-            @Override
-            protected void updateModel(String text) {
-                setProcedureName(text);
-            }
-        };
+        this.name = new CayenneUndoableTextField();
+        this.name.addCommitListener(this::setProcedureName);
 
         this.schema = new CayenneUndoableTextField();
         this.schema.addCommitListener(this::setSchema);
@@ -89,7 +84,7 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
         builder.setDefaultDialogBorder();
 
         builder.appendSeparator("Stored Procedure Configuration");
-        builder.append("Procedure Name:", name.getComponent());
+        builder.append("Procedure Name:", name);
         builder.append("Catalog:", catalog);
         builder.append("Schema:", schema);
         builder.append("Returns Value:", returnsValue);

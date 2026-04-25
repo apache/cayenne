@@ -49,11 +49,11 @@ public class EjbqlQueryPropertiesPanel extends SelectPropertiesPanel {
         cacheGroupsLabel = builder.addLabel("Cache Group:", cc.xy(1, 7));
         builder.add(cacheGroups, cc.xywh(3, 7, 5, 1));
         builder.addLabel("Fetch Offset, Rows:", cc.xy(1, 9));
-        builder.add(fetchOffset.getComponent(), cc.xywh(3, 9, 3, 1));
+        builder.add(fetchOffset, cc.xywh(3, 9, 3, 1));
         builder.addLabel("Fetch Limit, Rows:", cc.xy(1, 11));
-        builder.add(fetchLimit.getComponent(), cc.xywh(3, 11, 3, 1));
+        builder.add(fetchLimit, cc.xywh(3, 11, 3, 1));
         builder.addLabel("Page Size:", cc.xy(1, 13));
-        builder.add(pageSize.getComponent(), cc.xywh(3, 13, 3, 1));
+        builder.add(pageSize, cc.xywh(3, 13, 3, 1));
         return builder;
     }
 

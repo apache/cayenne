@@ -46,7 +46,6 @@ import org.apache.cayenne.modeler.swing.CellRenderers;
 import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.ExpressionConvertor;
-import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
@@ -67,12 +66,12 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
     private static final ObjEntity NO_INHERITANCE = new ObjEntity("Direct Mapping to Table/View");
 
     private final ProjectController controller;
-    private final TextAdapter name;
+    private final CayenneUndoableTextField name;
     private final CayenneUndoableTextField className;
 
     private final JLabel superclassLabel;
     private final CayenneUndoableTextField superClassName;
-    private final TextAdapter qualifier;
+    private final CayenneUndoableTextField qualifier;
     private final JComboBox<DbEntity> dbEntityCombo;
     private final JComboBox<ObjEntity> superEntityCombo;
     private final JCheckBox readOnly;
@@ -102,22 +101,14 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
         add(toolBar, BorderLayout.NORTH);
 
         // create widgets
-        name = new TextAdapter(new JTextField()) {
-            @Override
-            protected void updateModel(String text) {
-                setEntityName(text);
-            }
-        };
+        name = new CayenneUndoableTextField();
+        name.addCommitListener(this::setEntityName);
         superClassName = new CayenneUndoableTextField();
         superClassName.addCommitListener(this::setSuperClassName);
         className = new CayenneUndoableTextField();
         className.addCommitListener(this::setClassName);
-        qualifier = new TextAdapter(new JTextField()) {
-            @Override
-            protected void updateModel(String text) {
-                setQualifier(text);
-            }
-        };
+        qualifier = new CayenneUndoableTextField();
+        qualifier.addCommitListener(this::setQualifier);
 
         dbEntityCombo = WidgetFactory.createComboBox();
         superEntityCombo = WidgetFactory.createComboBox();
@@ -149,7 +140,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
         builder.setDefaultDialogBorder();
 
         builder.appendSeparator("ObjEntity Configuration");
-        builder.append("ObjEntity Name:", name.getComponent());
+        builder.append("ObjEntity Name:", name);
         builder.append("Inheritance:", superEntityCombo);
         builder.append(tableLabel, dbEntityCombo);
         builder.append("Comment:", comment);
@@ -158,7 +149,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
         builder.append("Java Class:", className);
 
         superclassLabel = builder.append("Superclass:", superClassName);
-        builder.append("Qualifier:", qualifier.getComponent());
+        builder.append("Qualifier:", qualifier);
         builder.append("Read-Only:", readOnly);
         builder.append("Optimistic Locking:", optimisticLocking);
 
@@ -282,9 +273,6 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
      * @param entity current entity
      */
     private void initFromModel(final ObjEntity entity) {
-        // TODO: this is a hack until we implement a real MVC
-        qualifier.getComponent().setBackground(Color.WHITE);
-
         name.setText(entity.getName());
         superClassName.setText(entity.getSuperClassName());
         className.setText(entity.getClassName());

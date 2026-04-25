@@ -38,7 +38,6 @@ import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.swing.CellRenderers;
 import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.util.Comparators;
-import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ProcedureQuery;
@@ -73,7 +72,7 @@ public class ProcedureQueryView extends JPanel {
     }
 
     protected ProjectController mediator;
-    protected TextAdapter name;
+    protected CayenneUndoableTextField name;
     protected CayenneUndoableTextField comment;
     protected JComboBox<Procedure> queryRoot;
     protected SelectPropertiesPanel properties;
@@ -87,12 +86,8 @@ public class ProcedureQueryView extends JPanel {
 
     private void initView() {
         // create widgets
-        name = new TextAdapter(new JTextField()) {
-            @Override
-            protected void updateModel(String text) {
-                setQueryName(text);
-            }
-        };
+        name = new CayenneUndoableTextField();
+        name.addCommitListener(this::setQueryName);
 
         comment = new CayenneUndoableTextField();
         comment.addCommitListener(this::setQueryComment);
@@ -111,7 +106,7 @@ public class ProcedureQueryView extends JPanel {
 
         builder.addSeparator("ProcedureQuery Settings", cc.xywh(1, 1, 3, 1));
         builder.addLabel("Query Name:", cc.xy(1, 3));
-        builder.add(name.getComponent(), cc.xy(3, 3));
+        builder.add(name, cc.xy(3, 3));
         builder.addLabel("Procedure:", cc.xy(1, 5));
         builder.add(queryRoot, cc.xy(3, 5));
         builder.addLabel("Comment:", cc.xy(1, 7));

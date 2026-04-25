@@ -28,7 +28,6 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
@@ -41,10 +40,9 @@ import com.jgoodies.forms.layout.FormLayout;
 public class EjbqlQueryMainTab extends JPanel{
 
     protected ProjectController mediator;
-    protected TextAdapter name;
+    protected CayenneUndoableTextField name;
     protected CayenneUndoableTextField comment;
     protected EjbqlQueryPropertiesPanel properties;
-    protected TextAdapter qualifier;
 
     public EjbqlQueryMainTab(ProjectController mediator) {
         this.mediator = mediator;
@@ -53,12 +51,8 @@ public class EjbqlQueryMainTab extends JPanel{
 
     private void initView() {
         // create widgets
-        name = new TextAdapter(new JTextField()) {
-            @Override
-            protected void updateModel(String text) {
-                setQueryName(text);
-            }
-        };
+        name = new CayenneUndoableTextField();
+        name.addCommitListener(this::setQueryName);
 
         comment = new CayenneUndoableTextField();
         comment.addCommitListener(this::setQueryComment);
@@ -73,7 +67,7 @@ public class EjbqlQueryMainTab extends JPanel{
         builder.setDefaultDialogBorder();
         builder.addSeparator("EJBQL Query Settings", cc.xywh(1, 1, 3, 1));
         builder.addLabel("Query Name:", cc.xy(1, 3));
-        builder.add(name.getComponent(), cc.xy(3, 3));
+        builder.add(name, cc.xy(3, 3));
         builder.addLabel("Comment:", cc.xy(1, 5));
         builder.add(comment, cc.xy(3, 5));
 

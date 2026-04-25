@@ -30,14 +30,12 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.query.QueryMetadata;
@@ -77,9 +75,9 @@ public abstract class SelectPropertiesPanel extends JPanel {
         cachePolicyLabels.put(QueryCacheStrategy.SHARED_CACHE,  SHARED_CACHE_LABEL);
     }
 
-    protected TextAdapter fetchOffset;
-    protected TextAdapter fetchLimit;
-    protected TextAdapter pageSize;
+    protected CayenneUndoableTextField fetchOffset;
+    protected CayenneUndoableTextField fetchLimit;
+    protected CayenneUndoableTextField pageSize;
     protected JComboBox<QueryCacheStrategy> cacheStrategy;
     protected CayenneUndoableTextField cacheGroups;
     protected JComponent cacheGroupsLabel;
@@ -93,23 +91,14 @@ public abstract class SelectPropertiesPanel extends JPanel {
     }
 
     protected void initView() {
-        fetchOffset = new TextAdapter(new JTextField(7)) {
-            protected void updateModel(String text) {
-                setFetchOffset(text);
-            }
-        };
+        fetchOffset = new CayenneUndoableTextField(7);
+        fetchOffset.addCommitListener(this::setFetchOffset);
 
-        fetchLimit = new TextAdapter(new JTextField(7)) {
-            protected void updateModel(String text) {
-                setFetchLimit(text);
-            }
-        };
+        fetchLimit = new CayenneUndoableTextField(7);
+        fetchLimit.addCommitListener(this::setFetchLimit);
 
-        pageSize = new TextAdapter(new JTextField(7)) {
-            protected void updateModel(String text) {
-                setPageSize(text);
-            }
-        };
+        pageSize = new CayenneUndoableTextField(7);
+        pageSize.addCommitListener(this::setPageSize);
 
         cacheStrategy = WidgetFactory.createUndoableComboBox();
         cacheStrategy.setRenderer(new CacheStrategyRenderer());

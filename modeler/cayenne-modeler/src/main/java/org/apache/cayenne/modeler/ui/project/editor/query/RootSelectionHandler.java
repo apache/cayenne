@@ -101,6 +101,6 @@ class RootSelectionHandler implements FocusListener, ActionListener {
         String prefix = query.getRoot() == null ? "UntitledQuery" :
                 CellRenderers.asString(query.getRoot(), queryTab.getController().getSelectedDataMap()) + "Query";
 
-        return queryTab.getNameField().getComponent().getText().startsWith(prefix);
+        return queryTab.getNameField().getText().startsWith(prefix);
     }
 }

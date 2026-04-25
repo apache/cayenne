@@ -19,21 +19,28 @@
 
 package org.apache.cayenne.modeler.swing.text;
 
+import org.apache.cayenne.validation.ValidationException;
+
 import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * A {@link JTextArea} that fires registered commit listeners on every text-content change
  * (insert / remove). Empty strings are normalized to {@code null} before listeners are
  * notified.
+ * <p>
+ * A listener may declare {@link ValidationException} for API symmetry with the other
+ * Cayenne text widgets, but unlike them this area fires per keystroke — there is no prior
+ * committed value to revert to and surfacing a dialog mid-typing would be hostile, so any
+ * thrown {@code ValidationException} is silently dropped here. Validation that reverts and
+ * prompts belongs on a commit-on-focus-lost widget such as {@link CayenneTextField}.
  */
 public class CayenneTextArea extends JTextArea {
 
-    private final List<Consumer<String>> commitListeners;
+    private final List<CayenneTextCommitListener> commitListeners;
 
     public CayenneTextArea() {
         commitListeners = new ArrayList<>(2);
@@ -54,15 +61,19 @@ public class CayenneTextArea extends JTextArea {
         });
     }
 
-    public void addCommitListener(Consumer<String> listener) {
+    public void addCommitListener(CayenneTextCommitListener listener) {
         commitListeners.add(listener);
     }
 
     private void fireCommit() {
         String text = getText();
         String value = (text != null && text.isEmpty()) ? null : text;
-        for (Consumer<String> listener : commitListeners) {
-            listener.accept(value);
+        for (CayenneTextCommitListener listener : commitListeners) {
+            try {
+                listener.onCommit(value);
+            } catch (ValidationException ignored) {
+                // see class javadoc — per-keystroke fire makes revert/dialog unsuitable
+            }
         }
     }
 }

@@ -19,13 +19,16 @@
 
 package org.apache.cayenne.modeler.swing.text;
 
+import org.apache.cayenne.validation.ValidationException;
+
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 /**
  * A {@link JTextField} that fires registered commit listeners whenever the field value
@@ -34,10 +37,14 @@ import java.util.function.Consumer;
  * When the {@code trim} property is enabled, leading and trailing whitespace is stripped
  * from the field on commit. Listeners are not notified when the committed value matches
  * the previous committed value (or the value most recently assigned via {@link #setText}).
+ * <p>
+ * Listeners may throw {@link ValidationException} to reject the input. The field then
+ * reverts to the previously committed value and shows the exception message in an error
+ * dialog.
  */
 public class CayenneTextField extends JTextField {
 
-    private final List<Consumer<String>> commitListeners;
+    private final List<CayenneTextCommitListener> commitListeners;
     private boolean trim;
     private String lastCommittedValue;
 
@@ -51,7 +58,7 @@ public class CayenneTextField extends JTextField {
         setColumns(columns);
     }
 
-    public void addCommitListener(Consumer<String> listener) {
+    public void addCommitListener(CayenneTextCommitListener listener) {
         commitListeners.add(listener);
     }
 
@@ -92,11 +99,23 @@ public class CayenneTextField extends JTextField {
             }
         }
 
-        if (!Objects.equals(normalized, previous)) {
-            this.lastCommittedValue = normalized;
-            for (Consumer<String> listener : commitListeners) {
-                listener.accept(normalized);
+        if (Objects.equals(normalized, previous)) {
+            return;
+        }
+
+        try {
+            for (CayenneTextCommitListener listener : commitListeners) {
+                listener.onCommit(normalized);
             }
+            this.lastCommittedValue = normalized;
+        } catch (ValidationException ex) {
+            // revert visible value to last committed; setText also resets lastCommittedValue
+            setText(previous == null ? "" : previous);
+            JOptionPane.showMessageDialog(
+                    SwingUtilities.getWindowAncestor(this),
+                    ex.getUnlabeledMessage(),
+                    "Invalid value",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 

@@ -35,7 +35,6 @@ import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.Comparators;
-import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
@@ -85,12 +84,8 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
 
     private void initView() {
         // create widgets
-        name = new TextAdapter(new JTextField()) {
-            @Override
-            protected void updateModel(String text) {
-                setQueryName(text);
-            }
-        };
+        name = new CayenneUndoableTextField();
+        name.addCommitListener(this::setQueryName);
 
         comment = new CayenneUndoableTextField();
         comment.addCommitListener(this::setQueryComment);
@@ -107,7 +102,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
 
         builder.addSeparator("SQLTemplate Settings", cc.xywh(1, 1, 3, 1));
         builder.addLabel("Query Name:", cc.xy(1, 3));
-        builder.add(name.getComponent(), cc.xy(3, 3));
+        builder.add(name, cc.xy(3, 3));
         builder.addLabel("Comment:", cc.xy(1, 5));
         builder.add(comment, cc.xy(3, 5));
         builder.addLabel("Query Root:", cc.xy(1, 7));

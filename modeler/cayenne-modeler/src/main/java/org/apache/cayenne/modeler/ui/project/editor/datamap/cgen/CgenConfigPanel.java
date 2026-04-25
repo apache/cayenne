@@ -25,7 +25,6 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
-import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.modeler.swing.JCayenneCheckBox;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -34,7 +33,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.border.Border;
 import java.awt.BorderLayout;
 import java.nio.file.InvalidPathException;
@@ -43,7 +41,7 @@ import java.nio.file.Paths;
 
 public class CgenConfigPanel extends JPanel {
 
-    protected TextAdapter outputFolder;
+    protected CayenneUndoableTextField outputFolder;
     protected JButton selectOutputFolder;
     protected CgenController cgenController;
     private boolean isDataValid;
@@ -114,7 +112,7 @@ public class CgenConfigPanel extends JPanel {
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
         builder.addLabel("Output Directory", cc.xyw(1, 1, 3));
-        builder.add(outputFolder.getComponent(), cc.xyw(1, 3, 7));
+        builder.add(outputFolder, cc.xyw(1, 3, 7));
         builder.add(selectOutputFolder, cc.xy(9, 3));
 
         // Advanced options panel
@@ -180,40 +178,41 @@ public class CgenConfigPanel extends JPanel {
             checkConfigDirty();
         });
 
-        this.outputFolder = new TextAdapter(new JTextField()) {
-            @Override
-            protected void updateModel(String text) throws ValidationException {
-                CgenConfiguration cgenByDataMap = getCgenConfig();
-                if (cgenByDataMap != null) {
-                    Path path;
-                    try {
-                        path = Paths.get(text);
-                    } catch (InvalidPathException e) {
-                        updateGenerateButton(false);
-                        throw new ValidationException(INVALID_PATH_MSG);
-                    }
-                    if (cgenByDataMap.getRootPath() == null && !path.isAbsolute()) {
-                        updateGenerateButton(false);
-                        throw new ValidationException(NEED_TO_SAVE_PROJECT_MSG);
-                    }
-                    cgenByDataMap.updateOutputPath(path);
-                    updateGenerateButton(true);
-                    checkConfigDirty();
-                }
-            }
-
+        this.outputFolder = new CayenneUndoableTextField() {
             @Override
             public void setText(String text) {
                 super.setText(text);
+                boolean valid = true;
                 try {
-                    Paths.get(text);
+                    Paths.get(text == null ? "" : text);
                 } catch (InvalidPathException e) {
-                    updateGenerateButton(false);
-                    throw new ValidationException(INVALID_PATH_MSG);
+                    valid = false;
                 }
-                updateGenerateButton(true);
+                updateGenerateButton(valid);
             }
         };
+        this.outputFolder.addCommitListener(this::applyOutputFolder);
+    }
+
+    void applyOutputFolder(String text) {
+        CgenConfiguration cgenByDataMap = getCgenConfig();
+        if (cgenByDataMap == null) {
+            return;
+        }
+        Path path;
+        try {
+            path = Paths.get(text == null ? "" : text);
+        } catch (InvalidPathException e) {
+            updateGenerateButton(false);
+            throw new ValidationException(INVALID_PATH_MSG);
+        }
+        if (cgenByDataMap.getRootPath() == null && !path.isAbsolute()) {
+            updateGenerateButton(false);
+            throw new ValidationException(NEED_TO_SAVE_PROJECT_MSG);
+        }
+        cgenByDataMap.updateOutputPath(path);
+        updateGenerateButton(true);
+        checkConfigDirty();
     }
 
     private void updateGenerateButton(boolean isDataValid){
@@ -299,7 +298,7 @@ public class CgenConfigPanel extends JPanel {
     }
 
 
-    public TextAdapter getOutputFolder() {
+    public CayenneUndoableTextField getOutputFolder() {
         return outputFolder;
     }
 

@@ -35,7 +35,6 @@ import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayListener;
 import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.util.Comparators;
-import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
@@ -48,7 +47,7 @@ import java.util.Iterator;
 public class EmbeddableMainView extends JPanel implements EmbeddableDisplayListener {
 
     protected ProjectController mediator;
-    protected TextAdapter className;
+    protected CayenneUndoableTextField className;
     protected CayenneUndoableTextField comment;
 
     public EmbeddableMainView(ProjectController mediator) {
@@ -72,12 +71,8 @@ public class EmbeddableMainView extends JPanel implements EmbeddableDisplayListe
 
         add(toolBar, BorderLayout.NORTH);
 
-        className = new TextAdapter(new JTextField()) {
-            @Override
-            protected void updateModel(String text) {
-                setClassName(text);
-            }
-        };
+        className = new CayenneUndoableTextField();
+        className.addCommitListener(this::setClassName);
 
         comment = new CayenneUndoableTextField();
         comment.addCommitListener(this::setComment);
@@ -87,7 +82,7 @@ public class EmbeddableMainView extends JPanel implements EmbeddableDisplayListe
                 "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
-        builder.append("Class Name:", className.getComponent(), 3);
+        builder.append("Class Name:", className, 3);
         builder.append("Comment:", comment, 3);
 
         add(builder.getPanel(), BorderLayout.CENTER);

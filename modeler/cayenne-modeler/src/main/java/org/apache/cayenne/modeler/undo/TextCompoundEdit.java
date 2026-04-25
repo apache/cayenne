@@ -28,7 +28,6 @@ import org.apache.cayenne.modeler.ui.ModelerFrame;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
 import org.apache.cayenne.modeler.ui.project.editor.EditorPanelView;
 import org.apache.cayenne.modeler.ui.project.editor.query.sqltemplate.SQLTemplateTabbedView;
-import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.SQLTemplate;
 
@@ -44,7 +43,6 @@ import javax.swing.undo.CompoundEdit;
 
 public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
 
-    private TextAdapter adapter;
     private final JTextComponent editor;
 
     private final TreePath treePath;
@@ -55,11 +53,6 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
     private Object targetObject;
 
     private final JTextFieldUndoListener listener;
-
-    public TextCompoundEdit(TextAdapter adapter, JTextFieldUndoListener listener) {
-        this(adapter.getComponent(), listener);
-        this.adapter = adapter;
-    }
 
     public TextCompoundEdit(JTextComponent editor, JTextFieldUndoListener listener) {
 
@@ -177,10 +170,6 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
             super.undo();
         } else {
             die();
-        }
-
-        if (adapter != null) {
-            adapter.updateModel();
         }
 
         editor.requestFocusInWindow();

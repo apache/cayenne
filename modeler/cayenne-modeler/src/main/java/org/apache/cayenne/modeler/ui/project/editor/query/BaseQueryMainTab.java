@@ -27,7 +27,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.swing.CellRenderers;
-import org.apache.cayenne.modeler.util.TextAdapter;
+import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
 import org.apache.cayenne.util.Util;
@@ -38,7 +38,7 @@ import javax.swing.*;
 public abstract class BaseQueryMainTab extends JPanel {
 
     protected final ProjectController controller;
-    protected TextAdapter name;
+    protected CayenneUndoableTextField name;
     protected JComboBox<ObjEntity> queryRoot;
 
     protected BaseQueryMainTab(ProjectController controller) {
@@ -57,7 +57,7 @@ public abstract class BaseQueryMainTab extends JPanel {
         queryRoot.getEditor().getEditorComponent().addFocusListener(rootHandler);
     }
 
-    public TextAdapter getNameField() {
+    public CayenneUndoableTextField getNameField() {
         return name;
     }
 

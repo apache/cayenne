@@ -30,14 +30,13 @@ import org.apache.cayenne.modeler.swing.JCayenneCheckBox;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DomainDisplayListener;
-import org.apache.cayenne.modeler.util.TextAdapter;
+import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.pref.RenamedPreferences;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import java.util.Map;
 import java.util.prefs.Preferences;
@@ -49,7 +48,7 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
 
     private final ProjectController controller;
 
-    protected TextAdapter name;
+    protected CayenneUndoableTextField name;
     protected JCheckBox objectValidation;
     protected JCheckBox sharedCache;
 
@@ -66,12 +65,8 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
     protected void initView() {
 
         // create widgets
-        this.name = new TextAdapter(new JTextField()) {
-
-            protected void updateModel(String text) {
-                setDomainName(text);
-            }
-        };
+        this.name = new CayenneUndoableTextField();
+        this.name.addCommitListener(this::setDomainName);
 
         this.objectValidation = new JCayenneCheckBox();
         this.sharedCache = new JCayenneCheckBox();
@@ -87,7 +82,7 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
 
         builder.addSeparator("DataDomain Configuration", cc.xywh(1, 1, 7, 1));
         builder.addLabel("DataDomain Name:", cc.xy(1, 3));
-        builder.add(name.getComponent(), cc.xywh(3, 3, 5, 1));
+        builder.add(name, cc.xywh(3, 3, 5, 1));
 
         builder.addLabel("Object Validation:", cc.xy(1, 5));
         builder.add(objectValidation, cc.xy(3, 5));

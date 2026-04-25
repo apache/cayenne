@@ -39,7 +39,6 @@ import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.swing.CellRenderers;
 import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.util.Comparators;
-import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.modeler.swing.JCayenneCheckBox;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
@@ -52,7 +51,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,7 +63,7 @@ public class DataMapMainView extends JPanel {
 
     private final ProjectController controller;
 
-    private final TextAdapter name;
+    private final CayenneUndoableTextField name;
     private final JLabel location;
     private final JComboBox<DataNodeDescriptor> nodeSelector;
     private final JCheckBox defaultLockType;
@@ -81,12 +79,8 @@ public class DataMapMainView extends JPanel {
         this.controller = controller;
 
         // create widgets
-        name = new TextAdapter(new JTextField()) {
-
-            protected void updateModel(String text) {
-                setDataMapName(text);
-            }
-        };
+        name = new CayenneUndoableTextField();
+        name.addCommitListener(this::setDataMapName);
 
         location = new JLabel();
         nodeSelector = WidgetFactory.createUndoableComboBox();
@@ -124,7 +118,7 @@ public class DataMapMainView extends JPanel {
         builder.setDefaultDialogBorder();
 
         builder.appendSeparator("DataMap Configuration");
-        builder.append("DataMap Name:", name.getComponent(), 2);
+        builder.append("DataMap Name:", name, 2);
         builder.append("File:", location, 3);
         builder.append("DataNode:", nodeSelector, 2);
         builder.append("Quote SQL Identifiers:", quoteSQLIdentifiers, 3);

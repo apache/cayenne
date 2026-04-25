@@ -19,24 +19,29 @@
 
 package org.apache.cayenne.modeler.swing.text;
 
+import org.apache.cayenne.validation.ValidationException;
+
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
+import javax.swing.SwingUtilities;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 /**
  * A {@link JPasswordField} that fires registered commit listeners whenever the field value
  * changes and is committed — either by pressing Enter (action) or by losing focus (input
  * verifier). Empty strings are normalized to {@code null} before listeners are notified.
  * Listeners are not notified when the committed value matches the previous committed value
- * (or the value most recently assigned via {@link #setText}).
+ * (or the value most recently assigned via {@link #setText}). Listeners may throw
+ * {@link ValidationException} to reject the input — the field reverts to the previously
+ * committed value and surfaces the message in an error dialog.
  */
 public class CayennePasswordField extends JPasswordField {
 
-    private final List<Consumer<String>> commitListeners;
+    private final List<CayenneTextCommitListener> commitListeners;
     private String lastCommittedValue;
 
     public CayennePasswordField() {
@@ -51,7 +56,7 @@ public class CayennePasswordField extends JPasswordField {
         });
     }
 
-    public void addCommitListener(Consumer<String> listener) {
+    public void addCommitListener(CayenneTextCommitListener listener) {
         commitListeners.add(listener);
     }
 
@@ -66,11 +71,22 @@ public class CayennePasswordField extends JPasswordField {
         String previous = this.lastCommittedValue;
         String normalized = normalize(getText());
 
-        if (!Objects.equals(normalized, previous)) {
-            this.lastCommittedValue = normalized;
-            for (Consumer<String> listener : commitListeners) {
-                listener.accept(normalized);
+        if (Objects.equals(normalized, previous)) {
+            return;
+        }
+
+        try {
+            for (CayenneTextCommitListener listener : commitListeners) {
+                listener.onCommit(normalized);
             }
+            this.lastCommittedValue = normalized;
+        } catch (ValidationException ex) {
+            setText(previous == null ? "" : previous);
+            JOptionPane.showMessageDialog(
+                    SwingUtilities.getWindowAncestor(this),
+                    ex.getUnlabeledMessage(),
+                    "Invalid value",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
