@@ -19,30 +19,30 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datadomain.cgen;
 
-import java.nio.file.Paths;
-import java.util.Set;
-import java.util.prefs.Preferences;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
-import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.CgenConfigList;
+import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.preferences.general.GeneralPreferencesController;
-import org.apache.cayenne.modeler.ui.project.editor.datadomain.GeneratorsTabController;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
+import org.apache.cayenne.modeler.ui.preferences.general.GeneralPreferencesController;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.DataDomainGeneratorsViewController;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.tools.ToolsInjectorBuilder;
 
-public class CgenTabController extends GeneratorsTabController<CgenConfiguration> {
+import java.nio.file.Paths;
+import java.util.Set;
+import java.util.prefs.Preferences;
 
-    public CgenTabController(ProjectController projectController) {
+public class DataDomainCgenController extends DataDomainGeneratorsViewController<CgenConfiguration> {
+
+    public DataDomainCgenController(ProjectController projectController) {
         super(projectController, CgenConfiguration.class, true);
-        this.view = new CgenTab(projectController, this);
+        this.view = new DataDomainCgenView(projectController, this);
     }
 
     public void runGenerators(Set<DataMap> dataMaps) {
@@ -74,15 +74,15 @@ public class CgenTabController extends GeneratorsTabController<CgenConfiguration
             } catch (CayenneRuntimeException e) {
                 LOGGER.error("Error generating classes", e);
                 generationFail = true;
-                ((CgenTab) view).showErrorMessage(e.getUnlabeledMessage());
+                ((DataDomainCgenView) view).showErrorMessage(e.getUnlabeledMessage());
             } catch (Exception e) {
                 LOGGER.error("Error generating classes", e);
                 generationFail = true;
-                ((CgenTab) view).showErrorMessage(e.getMessage());
+                ((DataDomainCgenView) view).showErrorMessage(e.getMessage());
             }
         }
         if (!generationFail) {
-            ((CgenTab) view).showSuccessMessage();
+            ((DataDomainCgenView) view).showSuccessMessage();
         }
     }
 

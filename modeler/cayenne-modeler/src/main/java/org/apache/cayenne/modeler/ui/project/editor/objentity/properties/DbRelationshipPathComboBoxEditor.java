@@ -17,13 +17,16 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util;
+package org.apache.cayenne.modeler.ui.project.editor.objentity.properties;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.editor.objentity.properties.ObjRelationshipTableModel;
+import org.apache.cayenne.modeler.util.EntityTreeModel;
+import org.apache.cayenne.modeler.util.EntityTreeRelationshipFilter;
+import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.modeler.util.PathChooserComboBoxCellEditor;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -35,7 +38,7 @@ import java.awt.event.FocusListener;
 import java.util.Collection;
 import java.util.regex.Pattern;
 
-public class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEditor<ObjRelationshipTableModel> implements  FocusListener {
+class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEditor<ObjRelationshipTableModel> implements FocusListener {
 
     private static final int REL_TARGET_PATH_COLUMN = 2;
     private static int enterPressedCount = 0;
@@ -100,7 +103,7 @@ public class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEdi
 
                     //we need object target to save it in model
                     DbEntity lastEntity = ((DbRelationship) currentNode).getTargetEntity();
-                    if(lastEntity != null) {
+                    if (lastEntity != null) {
                         Collection<ObjEntity> objEntities = ((DbRelationship) currentNode).getTargetEntity().
                                 getDataMap().getMappedEntities(lastEntity);
                         ObjEntity objectTarget = objEntities.isEmpty() ? null : objEntities.iterator().next();
@@ -158,13 +161,13 @@ public class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEdi
         return pathString.replaceAll(lastStringInPath + '$', "");
     }
 
-    private boolean changeObjEntity(String path){
+    private boolean changeObjEntity(String path) {
         Object currentNode = getCurrentNode(path);
-        if (currentNode instanceof DbEntity){
+        if (currentNode instanceof DbEntity) {
             return false;
         }
         DbEntity lastEntity = ((DbRelationship) currentNode).getTargetEntity();
-        if(lastEntity == null) {
+        if (lastEntity == null) {
             return false;
         }
         Collection<ObjEntity> objEntities = ((DbRelationship) currentNode).getTargetEntity().
@@ -182,7 +185,7 @@ public class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEdi
     @Override
     public void focusLost(FocusEvent focusEvent) {
         String path = model.getRelationship(row).getDbRelationshipPath().value();
-        if(!changeObjEntity(path)) {
+        if (!changeObjEntity(path)) {
             JOptionPane.showMessageDialog(
                     Application.getInstance().getFrameController().getView(),
                     "Can't set dbAttribute path. At first set target entity in dbEntity.",

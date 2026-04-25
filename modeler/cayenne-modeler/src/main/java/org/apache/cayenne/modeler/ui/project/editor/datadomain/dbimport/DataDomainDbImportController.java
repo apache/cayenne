@@ -18,21 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.datadomain.dbimport;
 
-import java.util.Set;
-
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.action.ReverseEngineeringAction;
-import org.apache.cayenne.modeler.ui.project.editor.datadomain.GeneratorsTabController;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
+import org.apache.cayenne.modeler.ui.action.ReverseEngineeringAction;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.DataDomainGeneratorsViewController;
 
-public class DbImportTabController extends GeneratorsTabController<ReverseEngineering> {
+import java.util.Set;
 
-    public DbImportTabController(ProjectController projectController) {
+public class DataDomainDbImportController extends DataDomainGeneratorsViewController<ReverseEngineering> {
+
+    public DataDomainDbImportController(ProjectController projectController) {
         super(projectController, ReverseEngineering.class, false);
-        this.view = new DbImportTab(projectController, this);
+        this.view = new DataDomainDbImportView(projectController, this);
     }
 
     @Override

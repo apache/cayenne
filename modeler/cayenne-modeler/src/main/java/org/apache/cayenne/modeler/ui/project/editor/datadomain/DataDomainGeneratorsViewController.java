@@ -18,6 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.datadomain;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.modeler.event.model.DataMapEvent;
+import org.apache.cayenne.modeler.event.model.DataMapListener;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.project.Project;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.event.ItemEvent;
 import java.util.Collection;
 import java.util.HashSet;
@@ -26,28 +35,19 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.modeler.event.model.DataMapEvent;
-import org.apache.cayenne.modeler.event.model.DataMapListener;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.project.Project;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public abstract class DataDomainGeneratorsViewController<T> implements DataMapListener {
 
-public abstract class GeneratorsTabController<T> implements DataMapListener {
-
-    protected final static Logger LOGGER = LoggerFactory.getLogger(GeneratorsTabController.class);
+    protected final static Logger LOGGER = LoggerFactory.getLogger(DataDomainGeneratorsViewController.class);
 
     private final ProjectController projectController;
-    private final ConcurrentMap<DataMap, GeneratorsPanel> generatorsPanels;
+    private final ConcurrentMap<DataMap, DataDomainGeneratorsPanel> generatorsPanels;
     private final Set<DataMap> selectedDataMaps;
     private final Class<T> type;
     private final boolean selectAllByDefault;
 
-    protected GeneratorsTab view;
+    protected DataDomainGeneratorsView view;
 
-    public GeneratorsTabController(ProjectController projectController, Class<T> type, boolean selectAllByDefault) {
+    public DataDomainGeneratorsViewController(ProjectController projectController, Class<T> type, boolean selectAllByDefault) {
         this.generatorsPanels = new ConcurrentHashMap<>();
         this.selectedDataMaps = new HashSet<>();
         this.type = type;
@@ -67,27 +67,27 @@ public abstract class GeneratorsTabController<T> implements DataMapListener {
         refreshSelectedMaps(dataMaps);
         generatorsPanels.clear();
         for(DataMap dataMap : dataMaps) {
-            GeneratorsPanel generatorPanel = new GeneratorsPanel(dataMap, "icon-datamap.png", type);
+            DataDomainGeneratorsPanel generatorPanel = new DataDomainGeneratorsPanel(dataMap, "icon-datamap.png", type);
             initListenersForPanel(generatorPanel);
             generatorsPanels.put(dataMap, generatorPanel);
         }
         selectedDataMaps.forEach(dataMap -> {
             if(generatorsPanels.get(dataMap) != null) {
-                GeneratorsPanel currPanel = generatorsPanels.get(dataMap);
+                DataDomainGeneratorsPanel currPanel = generatorsPanels.get(dataMap);
                 currPanel.getCheckConfig().setSelected(true);
             }
         });
         if(selectedDataMaps.isEmpty() && selectAllByDefault) {
-            GeneratorsTab.TopGeneratorPanel topGeneratorPanel = view.getGenerationPanel();
+            DataDomainGeneratorsView.TopGeneratorPanel topGeneratorPanel = view.getGenerationPanel();
             topGeneratorPanel.getSelectAll().setSelected(true);
             topGeneratorPanel.getGenerateAll().setEnabled(true);
-            for (Map.Entry<DataMap, GeneratorsPanel> entry : generatorsPanels.entrySet()) {
+            for (Map.Entry<DataMap, DataDomainGeneratorsPanel> entry : generatorsPanels.entrySet()) {
                 entry.getValue().getCheckConfig().setSelected(true);
             }
         }
     }
 
-    private void initListenersForPanel(GeneratorsPanel panel) {
+    private void initListenersForPanel(DataDomainGeneratorsPanel panel) {
         panel.getCheckConfig().addItemListener(e -> {
             if(e.getStateChange() == ItemEvent.SELECTED) {
                 selectedDataMaps.add(panel.getDataMap());
@@ -137,7 +137,7 @@ public abstract class GeneratorsTabController<T> implements DataMapListener {
         return  ((DataChannelDescriptor) project.getRootNode()).getDataMaps();
     }
 
-    public GeneratorsTab getView() {
+    public DataDomainGeneratorsView getView() {
         return view;
     }
 
@@ -145,7 +145,7 @@ public abstract class GeneratorsTabController<T> implements DataMapListener {
         return projectController;
     }
 
-    ConcurrentMap<DataMap, GeneratorsPanel> getGeneratorsPanels() {
+    ConcurrentMap<DataMap, DataDomainGeneratorsPanel> getGeneratorsPanels() {
         return generatorsPanels;
     }
 
@@ -159,7 +159,7 @@ public abstract class GeneratorsTabController<T> implements DataMapListener {
 
     @Override
     public void dataMapAdded(DataMapEvent e) {
-        GeneratorsPanel generatorPanel = new GeneratorsPanel(e.getDataMap(), "icon-datamap.png", type);
+        DataDomainGeneratorsPanel generatorPanel = new DataDomainGeneratorsPanel(e.getDataMap(), "icon-datamap.png", type);
         initListenersForPanel(generatorPanel);
         generatorsPanels.put(e.getDataMap(), generatorPanel);
         if(isSelectAllChecked()) {

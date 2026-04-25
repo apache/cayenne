@@ -80,7 +80,7 @@ public class ReverseEngineeringAction extends DBConnectionAwareAction {
     private void startImport(DataMap dataMap) {
         ModelerDbLoaderContext context = new ModelerDbLoaderContext(
                 getProjectController(),
-                application.getMetaData(),
+                application,
                 dataMap);
 
         DBConnectionInfo connectionInfo = getConnectionInfo(DIALOG_TITLE, dataMap);

@@ -31,6 +31,7 @@ import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportController;
 import org.apache.cayenne.modeler.ui.project.validator.ProjectValidatorDialogController;
 import org.apache.cayenne.modeler.util.FileFilters;
+import org.apache.cayenne.modeler.service.os.OperatingSystem;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.validation.ProjectValidator;
 import org.apache.cayenne.validation.ValidationFailure;
@@ -128,7 +129,7 @@ public class ModelerController extends RootController {
 
         // Register a hook to save the window position when quit via the app menu.
         // This is in Mac OSX only.
-        if (System.getProperty("os.name").startsWith("Mac OS")) {
+        if (OperatingSystem.getOS() == OperatingSystem.MAC_OS_X) {
             Runnable runner = projectController::saveSelectionToPrefs;
             Runtime.getRuntime().addShutdownHook(new Thread(runner, "Window Prefs Hook"));
         }

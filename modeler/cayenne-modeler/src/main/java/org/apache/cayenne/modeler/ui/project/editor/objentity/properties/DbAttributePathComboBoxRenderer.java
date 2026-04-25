@@ -17,33 +17,33 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util;
+package org.apache.cayenne.modeler.ui.project.editor.objentity.properties;
 
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.modeler.util.ModelerUtil;
 
 import javax.swing.BorderFactory;
 import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.Component;
-import java.awt.Font;
 
-public class DbAttributePathComboBoxRenderer extends DefaultTableCellRenderer {
+class DbAttributePathComboBoxRenderer extends DefaultTableCellRenderer {
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
                                                    boolean hasFocus, int row, int column) {
-        super.getTableCellRendererComponent(table, value, isSelected,  hasFocus,  row, column);
+        super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
         setText("");
         setFont(UIManager.getFont("Label.font"));
 
         if (value instanceof DbAttribute) {
-           setText(ModelerUtil.getObjectName(value));
+            setText(ModelerUtil.getObjectName(value));
         } else if (value != null) {
             setText(value.toString());
         }
-        setBorder(BorderFactory.createEmptyBorder(0,5,0,0));
+        setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
         return this;
     }
 }

@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util;
+package org.apache.cayenne.modeler.ui.project.editor.objentity.properties;
 
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbAttribute;
@@ -25,7 +25,10 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.ui.project.editor.objentity.properties.ObjAttributeTableModel;
+import org.apache.cayenne.modeler.util.EntityTreeAttributeRelationshipFilter;
+import org.apache.cayenne.modeler.util.EntityTreeModel;
+import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.modeler.util.PathChooserComboBoxCellEditor;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 
@@ -40,7 +43,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor<ObjAttributeTableModel> {
+class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor<ObjAttributeTableModel> {
 
     private static final int DB_ATTRIBUTE_PATH_COLUMN = ObjAttributeTableModel.DB_ATTRIBUTE;
 
@@ -91,8 +94,8 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
     }
 
     @Override
-    protected void enterPressed(JTable table){
-        String dbAttributePath =((JTextComponent) comboBoxPathChooser.
+    protected void enterPressed(JTable table) {
+        String dbAttributePath = ((JTextComponent) comboBoxPathChooser.
                 getEditor().getEditorComponent()).getText();
         Object currentNode = getCurrentNode(dbAttributePath);
         String[] pathStrings = dbAttributePath.split(Pattern.quote("."));
@@ -109,13 +112,13 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
                 model.setUpdatedValueAt(dbAttributePath, row, DB_ATTRIBUTE_PATH_COLUMN);
                 model.getAttribute(row).setDbAttributePath(dbAttributePath);
             }
-        }else if (ModelerUtil.getObjectName(currentNode).equals(lastStringInPath) &&
+        } else if (ModelerUtil.getObjectName(currentNode).equals(lastStringInPath) &&
                 currentNode instanceof DbRelationship) {
             // in this case we add dot  to pathString (if it is missing) and show variants for currentNode
 
-            if (dbAttributePath.charAt(dbAttributePath.length()-1) != '.') {
+            if (dbAttributePath.charAt(dbAttributePath.length() - 1) != '.') {
                 dbAttributePath = dbAttributePath + '.';
-                previousEmbeddedLevel =  Util.countMatches(dbAttributePath,".");
+                previousEmbeddedLevel = Util.countMatches(dbAttributePath, ".");
                 ((JTextComponent) (comboBoxPathChooser).
                         getEditor().getEditorComponent()).setText(dbAttributePath);
             }

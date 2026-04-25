@@ -19,13 +19,6 @@
 
 package org.apache.cayenne.modeler.dbimport;
 
-import org.apache.cayenne.modeler.ui.dbloadresult.DbLoadResultDialog;
-
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
@@ -39,9 +32,15 @@ import org.apache.cayenne.dbsync.reverse.dbimport.DefaultDbImportAction;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ui.dbloadresult.DbLoadResultDialog;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportController;
 import org.apache.cayenne.project.ProjectSaver;
 import org.slf4j.Logger;
+
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.util.Collection;
+import java.util.List;
 
 public class ModelerDbImportAction extends DefaultDbImportAction {
 
@@ -53,18 +52,20 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
 
     private DbLoadResultDialog resultDialog;
 
-    private DbImportController dbImportController;
+    private final DbImportController dbImportController;
 
-    public ModelerDbImportAction(@Inject Logger logger,
-                                 @Inject ProjectSaver projectSaver,
-                                 @Inject DataSourceFactory dataSourceFactory,
-                                 @Inject DbAdapterFactory adapterFactory,
-                                 @Inject DataMapLoader mapLoader,
-                                 @Inject MergerTokenFactoryProvider mergerTokenFactoryProvider,
-                                 @Inject DataChannelMetaData metaData,
-                                 @Inject DataChannelDescriptorLoader dataChannelDescriptorLoader) {
+    public ModelerDbImportAction(
+            @Inject Application application,
+            @Inject Logger logger,
+            @Inject ProjectSaver projectSaver,
+            @Inject DataSourceFactory dataSourceFactory,
+            @Inject DbAdapterFactory adapterFactory,
+            @Inject DataMapLoader mapLoader,
+            @Inject MergerTokenFactoryProvider mergerTokenFactoryProvider,
+            @Inject DataChannelMetaData metaData,
+            @Inject DataChannelDescriptorLoader dataChannelDescriptorLoader) {
         super(logger, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider, dataChannelDescriptorLoader, metaData);
-        dbImportController = Application.getInstance().getFrameController().getDbImportController();
+        this.dbImportController = application.getFrameController().getDbImportController();
     }
 
     @Override
@@ -84,7 +85,7 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
         resultDialog.refreshElements();
         resultDialog.getOkButton().addActionListener(e -> {
             try {
-                if(resultDialog.getTableForMap().containsKey(targetMap)) {
+                if (resultDialog.getTableForMap().containsKey(targetMap)) {
                     commit();
                     checkForUnusedImports();
                 }

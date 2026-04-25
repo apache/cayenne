@@ -18,14 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.swing.text.style;
 
+import org.apache.cayenne.modeler.service.os.OperatingSystem;
+
 import java.awt.Color;
 import java.awt.Font;
 
 public interface TextSyntax {
 
-    Font DEFAULT_FONT = new Font(System.getProperty("os.name").toLowerCase().contains("win")
-            ? "Courier New" : "Courier", Font.PLAIN, 14);
-
+    Font DEFAULT_FONT = new Font(OperatingSystem.getOS() == OperatingSystem.WINDOWS
+            ? "Courier New"
+            : "Courier", Font.PLAIN, 14);
 
     Color DEFAULT_COLOR = Color.black;
     String COMMENT_TEXT = "(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)";

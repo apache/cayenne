@@ -45,8 +45,6 @@ import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.swing.table.CayenneTable;
 import org.apache.cayenne.modeler.swing.table.CayenneTableModel;
-import org.apache.cayenne.modeler.util.DbAttributePathComboBoxEditor;
-import org.apache.cayenne.modeler.util.DbAttributePathComboBoxRenderer;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.UIUtil;

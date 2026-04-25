@@ -21,14 +21,14 @@ package org.apache.cayenne.modeler.ui.project.editor.datadomain.cgen;
 
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.project.editor.datadomain.GeneratorsTab;
-import org.apache.cayenne.modeler.ui.project.editor.datadomain.GeneratorsTabController;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.DataDomainGeneratorsView;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.DataDomainGeneratorsViewController;
 
 import javax.swing.JOptionPane;
 
-public class CgenTab extends GeneratorsTab {
+public class DataDomainCgenView extends DataDomainGeneratorsView {
 
-    public CgenTab(ProjectController projectController, GeneratorsTabController<CgenConfiguration> additionalTabController) {
+    public DataDomainCgenView(ProjectController projectController, DataDomainGeneratorsViewController<CgenConfiguration> additionalTabController) {
         super(projectController, additionalTabController, "icon-gen_java.png", "Run class generation on selected datamaps.");
     }
 

@@ -34,14 +34,14 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentMap;
 
-public class GeneratorsTab extends JPanel {
+public abstract class DataDomainGeneratorsView extends JPanel {
 
     protected ProjectController projectController;
-    private GeneratorsTabController<?> additionalTabController;
+    private DataDomainGeneratorsViewController<?> additionalTabController;
 
     private TopGeneratorPanel generationPanel;
 
-    public GeneratorsTab(ProjectController projectController, GeneratorsTabController<?> additionalTabController, String icon, String text) {
+    protected DataDomainGeneratorsView(ProjectController projectController, DataDomainGeneratorsViewController<?> additionalTabController, String icon, String text) {
         this.projectController = projectController;
         this.additionalTabController = additionalTabController;
         this.generationPanel = new TopGeneratorPanel(icon);
@@ -57,7 +57,7 @@ public class GeneratorsTab extends JPanel {
                 "left:pref, 4dlu", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
-        ConcurrentMap<DataMap, GeneratorsPanel> panels = additionalTabController.getGeneratorsPanels();
+        ConcurrentMap<DataMap, DataDomainGeneratorsPanel> panels = additionalTabController.getGeneratorsPanels();
 
         if(panels.isEmpty()) {
             this.add(new JLabel("There are no datamaps."), BorderLayout.NORTH);

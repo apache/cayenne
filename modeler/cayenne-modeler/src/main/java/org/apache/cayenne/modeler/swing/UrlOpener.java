@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.swing;
 
-import org.apache.cayenne.modeler.util.OperatingSystem;
+import org.apache.cayenne.modeler.service.os.OperatingSystem;
 
 import java.awt.Desktop;
 import java.net.URI;

@@ -19,17 +19,16 @@
 
 package org.apache.cayenne.modeler.dbimport;
 
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportView;
-import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +43,7 @@ public class ModelerDbLoaderContext {
 
     private final ProjectController projectController;
     private final DataMap dataMap;
-    private final DataChannelMetaData dataChannelMetaData;
+    private final Application application;
 
     private DbImportConfiguration config;
     private Connection connection;
@@ -52,9 +51,9 @@ public class ModelerDbLoaderContext {
     private String loadStatusNote;
     private volatile boolean isInterrupted;
 
-    public ModelerDbLoaderContext(ProjectController projectController, DataChannelMetaData dataChannelMetaData, DataMap dataMap) {
+    public ModelerDbLoaderContext(ProjectController projectController, Application application, DataMap dataMap) {
         this.projectController = projectController;
-        this.dataChannelMetaData = dataChannelMetaData;
+        this.application = application;
         this.dataMap = dataMap;
     }
 
@@ -114,7 +113,7 @@ public class ModelerDbLoaderContext {
             return false;
         }
         // Build reverse engineering from metadata and dialog values
-        ReverseEngineering metaReverseEngineering = dataChannelMetaData.get(dataMap, ReverseEngineering.class);
+        ReverseEngineering metaReverseEngineering = application.getMetaData().get(dataMap, ReverseEngineering.class);
         if(metaReverseEngineering == null) {
             return false;
         }
@@ -149,7 +148,7 @@ public class ModelerDbLoaderContext {
         config.setUrl(connectionInfo.getUrl());
 
         try {
-            ModelerClassLoader classLoader = Application.getInstance().getClassLoader();
+            ModelerClassLoader classLoader = application.getClassLoader();
             config.getDbLoaderConfig().setFiltersConfig(new FiltersConfigBuilder(reverseEngineering)
                     .dataSource(connectionInfo.makeDataSource(classLoader))
                     .dbAdapter(connectionInfo.makeAdapter(classLoader))

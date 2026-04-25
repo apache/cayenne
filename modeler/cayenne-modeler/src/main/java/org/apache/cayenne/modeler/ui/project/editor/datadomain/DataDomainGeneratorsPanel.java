@@ -32,7 +32,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 
-class GeneratorsPanel extends JPanel {
+class DataDomainGeneratorsPanel extends JPanel {
 
     private final DataMap dataMap;
     private final Class<?> type;
@@ -41,7 +41,7 @@ class GeneratorsPanel extends JPanel {
     private JCheckBox checkConfig;
     private JButton toConfigButton;
 
-    GeneratorsPanel(DataMap dataMap, String icon, Class<?> type) {
+    DataDomainGeneratorsPanel(DataMap dataMap, String icon, Class<?> type) {
         this.type = type;
         this.icon = icon;
         this.dataMap = dataMap;

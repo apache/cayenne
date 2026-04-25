@@ -16,204 +16,89 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.modeler.ui.project.editor.datadomain;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.modeler.event.model.DomainEvent;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.swing.checkbox.CayenneCheckBox;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.ui.action.GenerateCodeAction;
+import org.apache.cayenne.modeler.ui.action.ShowValidationConfigAction;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.cgen.DataDomainCgenController;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.dbimport.DataDomainDbImportController;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.main.DataDomainMainView;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.validation.ValidationTabController;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
-import org.apache.cayenne.modeler.event.display.DomainDisplayListener;
-import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
-import org.apache.cayenne.modeler.pref.RenamedPreferences;
-import org.apache.cayenne.util.Util;
-import org.apache.cayenne.validation.ValidationException;
+import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.DataDomainGraphTab;
 
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.util.Map;
-import java.util.prefs.Preferences;
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
 
-/**
- * Panel for editing DataDomain.
- */
-public class DataDomainView extends JPanel implements DomainDisplayListener {
+public class DataDomainView extends JTabbedPane {
 
-    private final ProjectController controller;
-
-    protected CayenneUndoableTextField name;
-    protected JCheckBox objectValidation;
-    protected JCheckBox sharedCache;
+    private final DataDomainGraphTab graphTab;
+    private final JComponent cgenView;
+    private final DataDomainCgenController cgenController;
+    private final JComponent dbImportView;
+    private final DataDomainDbImportController dbImportController;
+    private final JComponent validationTabView;
+    private final ValidationTabController validationTabController;
 
     public DataDomainView(ProjectController controller) {
-        this.controller = controller;
 
-        // Create and layout components
-        initView();
+        setTabPlacement(JTabbedPane.TOP);
 
-        // hook up listeners to widgets
-        initController();
+        // add panels to tabs
+        // note that those panels that have no internal scrollable tables
+        // must be wrapped in a scroll pane
+        JScrollPane domainView = new JScrollPane(new DataDomainMainView(controller));
+        addTab("Main", domainView);
+
+        dbImportController = new DataDomainDbImportController(controller);
+        dbImportView = new JScrollPane(dbImportController.getView());
+        addTab("Db Import", dbImportView);
+
+        cgenController = new DataDomainCgenController(controller);
+        cgenView = new JScrollPane(cgenController.getView());
+        addTab("Class Generation", cgenView);
+
+        graphTab = new DataDomainGraphTab(controller);
+        addTab("Graph", graphTab);
+
+        validationTabController = new ValidationTabController(controller);
+        validationTabView = validationTabController.getView();
+        addTab("Validation", validationTabView);
+
+        addChangeListener(this::stateChanged);
+        controller.addDomainDisplayListener(this::currentDomainChanged);
     }
 
-    protected void initView() {
-
-        // create widgets
-        this.name = new CayenneUndoableTextField();
-        this.name.addCommitListener(this::setDomainName);
-
-        this.objectValidation = new CayenneCheckBox();
-        this.sharedCache = new CayenneCheckBox();
-
-        // assemble
-        CellConstraints cc = new CellConstraints();
-        FormLayout layout = new FormLayout(
-                "right:pref, 3dlu, fill:50dlu, 3dlu, fill:47dlu, 3dlu, fill:100",
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p");
-
-        PanelBuilder builder = new PanelBuilder(layout);
-        builder.setDefaultDialogBorder();
-
-        builder.addSeparator("DataDomain Configuration", cc.xywh(1, 1, 7, 1));
-        builder.addLabel("DataDomain Name:", cc.xy(1, 3));
-        builder.add(name, cc.xywh(3, 3, 5, 1));
-
-        builder.addLabel("Object Validation:", cc.xy(1, 5));
-        builder.add(objectValidation, cc.xy(3, 5));
-
-        builder.addLabel("Use Shared Cache:", cc.xy(1, 7));
-        builder.add(sharedCache, cc.xy(3, 7));
-
-        this.setLayout(new BorderLayout());
-        this.add(builder.getPanel(), BorderLayout.CENTER);
-    }
-
-    protected void initController() {
-        controller.addDomainDisplayListener(this);
-
-        // add item listener to checkboxes
-        objectValidation.addItemListener(e -> {
-            String value = objectValidation.isSelected() ? "true" : "false";
-            setDomainProperty(
-                    DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY,
-                    value,
-                    Boolean.toString(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_DEFAULT));
-        });
-
-        sharedCache.addItemListener(e -> {
-            String value = sharedCache.isSelected() ? "true" : "false";
-            setDomainProperty(
-                    DataDomain.SHARED_CACHE_ENABLED_PROPERTY,
-                    value,
-                    Boolean.toString(DataDomain.SHARED_CACHE_ENABLED_DEFAULT));
-        });
-
-    }
-
-    /**
-     * Helper method that updates domain properties. If a value equals to default, null
-     * value is used instead.
-     */
-    protected void setDomainProperty(String property, String value, String defaultValue) {
-
-        DataChannelDescriptor domain = (DataChannelDescriptor) controller
-                .getProject()
-                .getRootNode();
-
-        if (domain == null) {
-            return;
-        }
-
-        // no empty strings
-        if ("".equals(value)) {
-            value = null;
-        }
-
-        // use NULL for defaults
-        if (value != null && value.equals(defaultValue)) {
-            value = null;
-        }
-
-        Map<String, String> properties = domain.getProperties();
-        String oldValue = properties.get(property);
-        if (!Util.nullSafeEquals(value, oldValue)) {
-            properties.put(property, value);
-
-            DomainEvent e = new DomainEvent(this, domain);
-            controller.fireDomainEvent(e);
+    private void stateChanged(ChangeEvent e) {
+        if (getSelectedComponent() == graphTab) {
+            graphTab.refresh();
+        } else if (getSelectedComponent() == cgenView) {
+            cgenController.getView().initView();
+        } else if (getSelectedComponent() == dbImportView) {
+            dbImportController.getView().initView();
+        } else if (getSelectedComponent() == validationTabView) {
+            validationTabController.getView().initView();
         }
     }
 
-    public String getDomainProperty(String property, String defaultValue) {
-
-        DataChannelDescriptor domain = (DataChannelDescriptor) controller
-                .getProject()
-                .getRootNode();
-
-        if (domain == null) {
-            return null;
+    private void currentDomainChanged(DomainDisplayEvent e) {
+        if (e instanceof EntityDisplayEvent) {
+            //need select an entity
+            setSelectedComponent(graphTab);
         }
-
-        String value = domain.getProperties().get(property);
-        return value != null ? value : defaultValue;
-    }
-
-    public boolean getDomainBooleanProperty(String property, String defaultValue) {
-        return "true".equalsIgnoreCase(getDomainProperty(property, defaultValue));
-    }
-
-    /**
-     * Invoked on domain selection event. Updates view with the values from the currently
-     * selected domain.
-     */
-    public void domainSelected(DomainDisplayEvent e) {
-        DataChannelDescriptor domain = e.getDomain();
-        if (null == domain) {
-            return;
+        if (getSelectedComponent() == cgenView) {
+            fireStateChanged();
         }
-
-        // extract values from the new domain object
-        name.setText(domain.getName());
-
-        objectValidation.setSelected(getDomainBooleanProperty(
-                DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY,
-                Boolean.toString(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_DEFAULT)));
-
-        sharedCache.setSelected(getDomainBooleanProperty(
-                DataDomain.SHARED_CACHE_ENABLED_PROPERTY,
-                Boolean.toString(DataDomain.SHARED_CACHE_ENABLED_DEFAULT)));
-    }
-
-    void setDomainName(String newName) {
-
-        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) Application
-                .getInstance()
-                .getProject()
-                .getRootNode();
-
-        if (Util.nullSafeEquals(dataChannelDescriptor.getName(), newName)) {
-            return;
+        if (e.getSource() instanceof GenerateCodeAction) {
+            setSelectedComponent(cgenView);
         }
-
-        if (newName == null || newName.trim().isEmpty()) {
-            throw new ValidationException("Enter name for DataDomain");
+        if (getSelectedComponent() == dbImportView) {
+            fireStateChanged();
         }
-
-        Preferences prefs = controller.getDataDomainPreferences();
-
-        DomainEvent e = new DomainEvent(
-                this,
-                dataChannelDescriptor,
-                dataChannelDescriptor.getName());
-        dataChannelDescriptor.setName(newName);
-
-        RenamedPreferences.copyPreferences(newName, prefs);
-        controller.fireDomainEvent(e);
+        if (e.getSource() instanceof ShowValidationConfigAction) {
+            setSelectedComponent(validationTabView);
+        }
     }
 }
