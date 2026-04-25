@@ -72,7 +72,7 @@ public class ImportDataMapAction extends ModelerAbstractAction {
 
         try {
             URL url = dataMapFile.toURI().toURL();
-            DataMapLoader loader = application.getInjector().getInstance(DataMapLoader.class);
+            DataMapLoader loader = application.getDataMapLoader();
             newMap = loader.load(new URLResource(url));
 
             ConfigurationNode root = getProjectController().getProject().getRootNode();

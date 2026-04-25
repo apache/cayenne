@@ -136,7 +136,7 @@ public class TableSelectorController extends ChildController<ProjectController> 
         validationMessages.clear();
 
         Project project = getApplication().getProject();
-        ProjectValidator projectValidator = getApplication().getInjector().getInstance(ProjectValidator.class);
+        ProjectValidator projectValidator = getApplication().getProjectValidator();
         ValidationResult validationResult = projectValidator.validate(project.getRootNode());
 
         if (validationResult.getFailures().size() > 0) {

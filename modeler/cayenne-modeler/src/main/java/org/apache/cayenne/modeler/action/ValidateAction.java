@@ -50,8 +50,7 @@ public class ValidateAction extends ModelerAbstractAction {
     @Override
     public void performAction(ActionEvent e) {
 
-        ProjectValidator projectValidator = application.getInjector().getInstance(
-                ProjectValidator.class);
+        ProjectValidator projectValidator = application.getProjectValidator();
         ValidationResult validationResult = projectValidator.validate(getCurrentProject()
                 .getRootNode());
 

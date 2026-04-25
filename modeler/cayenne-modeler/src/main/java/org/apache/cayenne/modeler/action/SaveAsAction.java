@@ -90,7 +90,7 @@ public class SaveAsAction extends ModelerAbstractAction {
 
         URLResource res = new URLResource(projectDir.toURI().toURL());
 
-        ProjectSaver saver = application.getInjector().getInstance(ProjectSaver.class);
+        ProjectSaver saver = application.getProjectSaver();
 
         boolean isNewProject = p.getConfigurationResource() == null;
         Preferences tempOldPref = null;
@@ -151,7 +151,7 @@ public class SaveAsAction extends ModelerAbstractAction {
 
     public void performAction() {
 
-        ProjectValidator projectValidator = application.getInjector().getInstance(ProjectValidator.class);
+        ProjectValidator projectValidator = application.getProjectValidator();
         ValidationResult validationResult = projectValidator.validate(getCurrentProject().getRootNode());
         
         getProjectController().fireProjectOnSaveEvent(new ProjectOnSaveEvent(SaveAsAction.class));

@@ -24,7 +24,6 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.action.ExitAction;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.cayenne.modeler.mvc.RootController;
-import org.apache.cayenne.modeler.platform.PlatformInitializer;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
@@ -69,7 +68,7 @@ public class ModelerController extends RootController {
         super(application);
 
         this.view = new ModelerFrame(application.getActionManager(), application.getLogConsoleController());
-        application.getInjector().getInstance(PlatformInitializer.class).setupMenus(view);
+        application.getPlatformInitializer().setupMenus(view);
         this.projectController = new ProjectController(this);
         this.dbImportController = new DbImportController();
     }
@@ -214,7 +213,7 @@ public class ModelerController extends RootController {
             allFailures.addAll(loadFailures);
         }
 
-        ProjectValidator projectValidator = getApplication().getInjector().getInstance(ProjectValidator.class);
+        ProjectValidator projectValidator = getApplication().getProjectValidator();
         ValidationResult validationResult = projectValidator.validate(project.getRootNode());
         allFailures.addAll(validationResult.getFailures());
 

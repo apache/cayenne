@@ -23,7 +23,6 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.ModelerController;
 import org.apache.cayenne.modeler.ui.errors.ErrorsController;
 import org.apache.cayenne.project.Project;
-import org.apache.cayenne.project.ProjectLoader;
 import org.apache.cayenne.project.upgrade.UpgradeMetaData;
 import org.apache.cayenne.project.upgrade.UpgradeService;
 import org.apache.cayenne.resource.Resource;
@@ -145,7 +144,7 @@ public class OpenProjectAction extends ProjectAction {
             URL url = file.toURI().toURL();
             Resource rootSource = new URLResource(url);
 
-            UpgradeService upgradeService = application.getInjector().getInstance(UpgradeService.class);
+            UpgradeService upgradeService = application.getUpgradeService();
             UpgradeMetaData metaData = upgradeService.getUpgradeType(rootSource);
             switch (metaData.getUpgradeType()) {
                 case INTERMEDIATE_UPGRADE_NEEDED:
@@ -185,7 +184,7 @@ public class OpenProjectAction extends ProjectAction {
     }
 
     private Project openProjectResourse(Resource resource, ModelerController controller) {
-        Project project = application.getInjector().getInstance(ProjectLoader.class).loadProject(resource);
+        Project project = application.getProjectLoader().loadProject(resource);
         controller.onProjectOpened(project);
         return project;
     }

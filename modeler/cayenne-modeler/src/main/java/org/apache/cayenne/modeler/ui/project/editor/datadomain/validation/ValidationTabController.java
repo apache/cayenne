@@ -46,7 +46,7 @@ public class ValidationTabController implements DomainListener, ValidationConfig
 
     public ValidationTabController(ProjectController projectController) {
         this.projectController = projectController;
-        this.metaData = projectController.getApplication().getInjector().getInstance(DataChannelMetaData.class);
+        this.metaData = projectController.getApplication().getMetaData();
         this.view = new ValidationTab(this);
     }
 

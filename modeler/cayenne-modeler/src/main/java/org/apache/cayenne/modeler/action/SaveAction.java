@@ -60,7 +60,7 @@ public class SaveAction extends SaveAsAction {
         File oldProjectFile = new File(p.getConfigurationResource().getURL().toURI());
 
         getProjectController().pauseFileChangeTracking();
-        ProjectSaver saver = application.getInjector().getInstance(ProjectSaver.class);
+        ProjectSaver saver = application.getProjectSaver();
         saver.save(p);
 
         RenamedPreferences.removeOldPreferences();

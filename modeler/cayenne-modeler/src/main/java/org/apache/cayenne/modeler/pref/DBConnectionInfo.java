@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.pref;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
-import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
 import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.modeler.Application;
@@ -168,9 +167,7 @@ public class DBConnectionInfo extends CayennePreference {
 		DataNodeDescriptor descriptor = new DataNodeDescriptor();
 		descriptor.setAdapterType(getDbAdapter());
 		DataSource dataSource = makeDataSource(classLoader);
-		return Application.getInstance().getInjector()
-				.getInstance(DbAdapterFactory.class)
-				.createAdapter(descriptor, dataSource);
+		return Application.getInstance().getDbAdapterFactory().createAdapter(descriptor, dataSource);
 	}
 
 	/**

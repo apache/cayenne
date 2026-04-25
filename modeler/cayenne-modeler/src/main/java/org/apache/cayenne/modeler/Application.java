@@ -20,11 +20,15 @@
 package org.apache.cayenne.modeler;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataMapLoader;
+import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
+import org.apache.cayenne.modeler.platform.PlatformInitializer;
 import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
 import org.apache.cayenne.modeler.ui.ModelerController;
 import org.apache.cayenne.modeler.ui.logconsole.LogConsoleController;
@@ -34,7 +38,12 @@ import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 import org.apache.cayenne.modeler.util.AdapterMapping;
 import org.apache.cayenne.modeler.pref.CayennePreference;
 import org.apache.cayenne.modeler.pref.CayenneProjectPreferences;
+import org.apache.cayenne.project.ConfigurationNodeParentGetter;
 import org.apache.cayenne.project.Project;
+import org.apache.cayenne.project.ProjectLoader;
+import org.apache.cayenne.project.ProjectSaver;
+import org.apache.cayenne.project.upgrade.UpgradeService;
+import org.apache.cayenne.project.validation.ProjectValidator;
 import org.apache.cayenne.util.IDUtil;
 
 import javax.swing.*;
@@ -107,10 +116,6 @@ public class Application {
         return newProjectTemporaryName;
     }
 
-    public Injector getInjector() {
-        return injector;
-    }
-
     public Project getProject() {
         return getFrameController().getProjectController().getProject();
     }
@@ -134,6 +139,42 @@ public class Application {
 
     public ActionManager getActionManager() {
         return injector.getInstance(ActionManager.class);
+    }
+
+    public ProjectValidator getProjectValidator() {
+        return injector.getInstance(ProjectValidator.class);
+    }
+
+    public ProjectSaver getProjectSaver() {
+        return injector.getInstance(ProjectSaver.class);
+    }
+
+    public ProjectLoader getProjectLoader() {
+        return injector.getInstance(ProjectLoader.class);
+    }
+
+    public DataMapLoader getDataMapLoader() {
+        return injector.getInstance(DataMapLoader.class);
+    }
+
+    public UpgradeService getUpgradeService() {
+        return injector.getInstance(UpgradeService.class);
+    }
+
+    public PlatformInitializer getPlatformInitializer() {
+        return injector.getInstance(PlatformInitializer.class);
+    }
+
+    public ConfigurationNodeParentGetter getConfigurationNodeParentGetter() {
+        return injector.getInstance(ConfigurationNodeParentGetter.class);
+    }
+
+    public DbAdapterFactory getDbAdapterFactory() {
+        return injector.getInstance(DbAdapterFactory.class);
+    }
+
+    public MergerTokenFactoryProvider getMergerTokenFactoryProvider() {
+        return injector.getInstance(MergerTokenFactoryProvider.class);
     }
 
     public CayenneUndoManager getUndoManager() {

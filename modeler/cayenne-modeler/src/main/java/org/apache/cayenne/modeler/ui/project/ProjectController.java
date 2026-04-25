@@ -223,8 +223,7 @@ public class ProjectController extends ChildController<ModelerController> {
         } else if (getSelectedPaths() != null) { // multiple objects
             ConfigurationNode[] paths = getSelectedPaths();
 
-            ConfigurationNodeParentGetter parentGetter = getApplication().getInjector()
-                    .getInstance(ConfigurationNodeParentGetter.class);
+            ConfigurationNodeParentGetter parentGetter = getApplication().getConfigurationNodeParentGetter();
             Object parent = parentGetter.getParent(paths[0]);
 
             List<ConfigurationNode> result = new ArrayList<>(Arrays.asList(paths));

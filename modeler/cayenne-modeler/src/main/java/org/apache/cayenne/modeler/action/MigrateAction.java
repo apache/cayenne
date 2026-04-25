@@ -74,8 +74,7 @@ public class MigrateAction extends DBConnectionAwareAction {
         String selectedCatalog = optionsDialog == null ? null : optionsDialog.getSelectedCatalog();
         String selectedSchema = optionsDialog == null ? null : optionsDialog.getSelectedSchema();
 
-        MergerTokenFactoryProvider mergerTokenFactoryProvider =
-                application.getInjector().getInstance(MergerTokenFactoryProvider.class);
+        MergerTokenFactoryProvider mergerTokenFactoryProvider = application.getMergerTokenFactoryProvider();
 
         // ... show dialog...
         new MergerOptionsController(
