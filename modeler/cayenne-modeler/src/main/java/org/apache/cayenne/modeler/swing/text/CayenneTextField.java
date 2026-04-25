@@ -24,14 +24,16 @@ import javax.swing.JComponent;
 import javax.swing.JTextField;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
- * A {@link JTextField} that fires registered commit listeners whenever the field value is
- * committed — either by pressing Enter (action) or by losing focus (input verifier). Empty
- * strings are normalized to {@code null} before listeners are notified. When the
- * {@code trim} property is enabled, leading and trailing whitespace is stripped from the
- * field on commit.
+ * A {@link JTextField} that fires registered commit listeners whenever the field value
+ * changes and is committed — either by pressing Enter (action) or by losing focus (input
+ * verifier). Empty strings are normalized to {@code null} before listeners are notified.
+ * When the {@code trim} property is enabled, leading and trailing whitespace is stripped
+ * from the field on commit. Listeners are not notified when the committed value matches
+ * the previous committed value (or the value most recently assigned via {@link #setText}).
  *
  * @since 5.0
  */
@@ -39,6 +41,7 @@ public class CayenneTextField extends JTextField {
 
     private final List<Consumer<String>> commitListeners;
     private boolean trim;
+    private String lastCommittedValue;
 
     public CayenneTextField() {
         commitListeners = new ArrayList<>();
@@ -62,6 +65,12 @@ public class CayenneTextField extends JTextField {
         this.trim = trim;
     }
 
+    @Override
+    public void setText(String t) {
+        super.setText(t);
+        lastCommittedValue = normalize(t);
+    }
+
     private void installCommitTriggers() {
         addActionListener(e -> fireCommit());
         setInputVerifier(new InputVerifier() {
@@ -74,17 +83,30 @@ public class CayenneTextField extends JTextField {
     }
 
     private void fireCommit() {
-        String text = getText();
-        if (trim && text != null) {
-            String trimmed = text.trim();
-            if (!trimmed.equals(text)) {
-                setText(trimmed);
-                text = trimmed;
+
+        String previous = this.lastCommittedValue;
+        String normalized = normalize(getText());
+
+        if (trim) {
+            String display = normalized == null ? "" : normalized;
+            if (!display.equals(getText())) {
+                super.setText(normalized == null ? "" : normalized);
             }
         }
-        String value = (text != null && text.isEmpty()) ? null : text;
-        for (Consumer<String> listener : commitListeners) {
-            listener.accept(value);
+
+        if (!Objects.equals(normalized, previous)) {
+            this.lastCommittedValue = normalized;
+            for (Consumer<String> listener : commitListeners) {
+                listener.accept(normalized);
+            }
         }
+    }
+
+    private String normalize(String text) {
+        if (text == null) {
+            return null;
+        }
+        String t = trim ? text.trim() : text;
+        return t.isEmpty() ? null : t;
     }
 }

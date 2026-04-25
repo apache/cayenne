@@ -24,18 +24,22 @@ import javax.swing.JComponent;
 import javax.swing.JPasswordField;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
- * A {@link JPasswordField} that fires registered commit listeners on Enter (action) or
- * focus loss (input verifier). Empty strings are normalized to {@code null} before listeners
- * are notified.
+ * A {@link JPasswordField} that fires registered commit listeners whenever the field value
+ * changes and is committed — either by pressing Enter (action) or by losing focus (input
+ * verifier). Empty strings are normalized to {@code null} before listeners are notified.
+ * Listeners are not notified when the committed value matches the previous committed value
+ * (or the value most recently assigned via {@link #setText}).
  *
  * @since 5.0
  */
 public class CayennePasswordField extends JPasswordField {
 
     private final List<Consumer<String>> commitListeners;
+    private String lastCommittedValue;
 
     public CayennePasswordField() {
         commitListeners = new ArrayList<>(2);
@@ -53,11 +57,26 @@ public class CayennePasswordField extends JPasswordField {
         commitListeners.add(listener);
     }
 
+    @Override
+    public void setText(String t) {
+        super.setText(t);
+        this.lastCommittedValue = normalize(t);
+    }
+
     private void fireCommit() {
-        String text = getText();
-        String value = (text != null && text.isEmpty()) ? null : text;
-        for (Consumer<String> listener : commitListeners) {
-            listener.accept(value);
+
+        String previous = this.lastCommittedValue;
+        String normalized = normalize(getText());
+
+        if (!Objects.equals(normalized, previous)) {
+            this.lastCommittedValue = normalized;
+            for (Consumer<String> listener : commitListeners) {
+                listener.accept(normalized);
+            }
         }
+    }
+
+    private String normalize(String text) {
+        return (text == null || text.isEmpty()) ? null : text;
     }
 }
