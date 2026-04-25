@@ -23,9 +23,7 @@ import java.awt.event.MouseEvent;
 import java.util.EventObject;
 
 /**
- * Overrides CellEditor to allow multiple selection in table
- * without bothering the editor.
- * 
+ * Overrides CellEditor to allow multiple selection in table without bothering the editor.
  */
 public class CayenneCellEditor extends DefaultCellEditor {
 
@@ -36,18 +34,18 @@ public class CayenneCellEditor extends DefaultCellEditor {
     public CayenneCellEditor(final JComboBox comboBox) {
         super(comboBox);
     }
-    
+
     @Override
     public boolean isCellEditable(EventObject e) {
         if (e instanceof MouseEvent) {
             //allow multiple selection without 
-            
+
             MouseEvent me = (MouseEvent) e;
             if (me.isControlDown() || me.isShiftDown()) {
                 return false;
             }
         }
-        
+
         return super.isCellEditable(e);
     }
 }

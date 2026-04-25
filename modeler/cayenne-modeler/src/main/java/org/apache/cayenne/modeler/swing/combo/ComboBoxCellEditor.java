@@ -32,7 +32,6 @@ import java.util.EventObject;
  * ComboBoxCellEditor class is a workaround of collision between DefaultCellEditor and 
  * AutoCompletion behavior. Using DefaultCellEditor will cause combo popup to close
  * out of time.
- *
  */
 public class ComboBoxCellEditor extends AbstractCellEditor 
     implements ActionListener, TableCellEditor, Serializable {
@@ -55,7 +54,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor
         // this.comboBox.getEditor().getEditorComponent().addFocusListener(this);
     }
     
-    // Implementing ActionListener
+    @Override
     public void actionPerformed(ActionEvent e) {
         // Selecting an item results in an actioncommand "comboBoxChanged".
         // We should ignore these ones.
@@ -65,7 +64,8 @@ public class ComboBoxCellEditor extends AbstractCellEditor
             stopCellEditing();
         }
     }
-    
+
+    @Override
     public Object getCellEditorValue() {
         return comboBox.getSelectedItem();
     }
