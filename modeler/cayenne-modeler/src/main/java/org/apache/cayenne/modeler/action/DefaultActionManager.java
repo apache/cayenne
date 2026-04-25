@@ -87,7 +87,9 @@ public class DefaultActionManager implements ActionManager {
                 ProjectAction.class.getName(),
                 ValidateAction.class.getName(),
                 SaveAsAction.class.getName(),
-                FindAction.class.getName()));
+                FindAction.class.getName(),
+                NavigateBackwardAction.class.getName(),
+                NavigateForwardAction.class.getName()));
 
         domainActions = new HashSet<>(projectActions);
         domainActions.addAll(Arrays.asList(
@@ -220,8 +222,8 @@ public class DefaultActionManager implements ActionManager {
         registerAction(new DocumentationAction(application)).setAlwaysOn(true);
         registerAction(new ConfigurePreferencesAction(application)).setAlwaysOn(true);
         registerAction(new ExitAction(application)).setAlwaysOn(true);
-        registerAction(new NavigateBackwardAction(application)).setAlwaysOn(true);
-        registerAction(new NavigateForwardAction(application)).setAlwaysOn(true);
+        registerAction(new NavigateBackwardAction(application));
+        registerAction(new NavigateForwardAction(application));
         // search action registered
         registerAction(new FindAction(application));
 

@@ -16,15 +16,15 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler;
+package org.apache.cayenne.modeler.ui.project;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.cayenne.modeler.action.SaveAction;
 import org.apache.cayenne.modeler.ui.filedeleted.FileDeletedDialog;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.project.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,45 +38,37 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * ProjectWatchdog class is responsible for tracking changes in cayenne.xml and
- * other Cayenne project files
- * 
+ * Tracks changes in cayenne.xml and other Cayenne project files
  */
-public class ProjectFileChangeTracker extends Thread {
+class ProjectFileChangeTracker extends Thread {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProjectFileChangeTracker.class);
 
-    /**
-     * The default delay between every file modification check
-     */
+    // The default delay between every file modification check
     private static final long DEFAULT_DELAY = 4000;
 
-    /**
-     * The names of the files to observe for changes.
-     */
-    protected final Map<URI, FileInfo> files;
-    protected final ProjectController projectController;
+    private final Map<URI, TrackedFile> files;
+    private final ProjectController controller;
 
-    protected boolean paused;
-    protected boolean isShownChangeDialog;
-    protected boolean isShownRemoveDialog;
+    private boolean paused;
+    private boolean isShownChangeDialog;
+    private boolean isShownRemoveDialog;
 
-    public ProjectFileChangeTracker(ProjectController projectController) {
+    public ProjectFileChangeTracker(ProjectController controller) {
         this.files = new ConcurrentHashMap<>();
-        this.projectController = projectController;
+        this.controller = controller;
         setName("cayenne-modeler-file-change-tracker");
     }
 
     /**
-     * Reloads files to watch from the project. Useful when project's structure
-     * has changed
+     * Reloads files to watch from the project. Useful when project's structure has changed
      */
-    public void reconfigure() {
-        pauseWatching();
+    public void reset() {
+        pauseTracking();
 
-        removeAllFiles();
+        files.clear();
 
-        Project project = projectController.getProject();
+        Project project = controller.getProject();
 
         // check if project exists and has been saved at least once.
         if (project != null && project.getConfigurationResource() != null) {
@@ -94,10 +86,10 @@ public class ProjectFileChangeTracker extends Thread {
             }
         }
 
-        resumeWatching();
+        resumeTracking();
     }
 
-    protected void doOnChange() {
+    private void doOnChange() {
 
         SwingUtilities.invokeLater(() -> {
             isShownChangeDialog = true;
@@ -105,27 +97,27 @@ public class ProjectFileChangeTracker extends Thread {
                     + "Do you want to load the changes?")) {
 
                 // Currently we are reloading all project
-                if (projectController.getProject() != null) {
+                if (controller.getProject() != null) {
                     File fileDirectory;
                     try {
-                        fileDirectory = new File(projectController.getProject().getConfigurationResource().getURL().toURI());
+                        fileDirectory = new File(controller.getProject().getConfigurationResource().getURL().toURI());
                     } catch (URISyntaxException e) {
                         throw new CayenneRuntimeException("Unable to open project %s",
-                                e, projectController.getProject().getConfigurationResource().getURL());
+                                e, controller.getProject().getConfigurationResource().getURL());
                     }
                     Application.getInstance().getActionManager()
                             .getAction(OpenProjectAction.class)
                             .openProject(fileDirectory);
                 }
             } else {
-                projectController.setDirty(true);
+                controller.setDirty(true);
             }
             isShownChangeDialog = false;
         });
     }
 
-    protected void doOnRemove() {
-        if (projectController.getProject() != null) {
+    private void doOnRemove() {
+        if (controller.getProject() != null) {
 
             SwingUtilities.invokeLater(() -> {
                 isShownRemoveDialog = true;
@@ -137,53 +129,32 @@ public class ProjectFileChangeTracker extends Thread {
                 } else if (dialog.shouldClose()) {
                     Application.getInstance().getFrameController().onProjectClosed();
                 } else {
-                    projectController.setDirty(true);
+                    controller.setDirty(true);
                 }
                 isShownRemoveDialog = false;
             });
         }
     }
 
-    /**
-     * Shows confirmation dialog
-     */
     private boolean showConfirmation(String message) {
-        return JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(Application.getFrame(), message, "File changed",
-                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        int outcome = JOptionPane.showConfirmDialog(Application.getFrame(), message, "File changed", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        return outcome == JOptionPane.YES_OPTION;
     }
 
     /**
      * Adds a new file to watch
-     * 
-     * @param location
-     *            path of file
+     *
+     * @param location path of file
      */
     public void addFile(URI location) {
         try {
-            files.put(location, new FileInfo(location));
+            files.put(location, new TrackedFile(location));
         } catch (SecurityException e) {
             LOGGER.error("SecurityException adding file " + location, e);
         }
     }
 
-    /**
-     * Turns off watching for a specified file
-     * 
-     * @param location
-     *            path of file
-     */
-    public void removeFile(String location) {
-        files.remove(URI.create(location));
-    }
-
-    /**
-     * Turns off watching for all files
-     */
-    public void removeAllFiles() {
-        files.clear();
-    }
-
-    protected void check() {
+    private void check() {
         if (paused) {
             return;
         }
@@ -191,8 +162,8 @@ public class ProjectFileChangeTracker extends Thread {
         boolean hasChanges = false;
         boolean hasDeletions = false;
 
-        for (Iterator<FileInfo> it = files.values().iterator(); it.hasNext();) {
-            FileInfo fi = it.next();
+        for (Iterator<TrackedFile> it = files.values().iterator(); it.hasNext(); ) {
+            TrackedFile fi = it.next();
 
             boolean fileExists;
             try {
@@ -226,11 +197,12 @@ public class ProjectFileChangeTracker extends Thread {
         }
     }
 
+    @Override
     public void run() {
         while (true) {
             try {
-                Thread.sleep(DEFAULT_DELAY);
                 check();
+                Thread.sleep(DEFAULT_DELAY);
             } catch (InterruptedException e) {
                 // someone asked to stop
                 return;
@@ -239,17 +211,16 @@ public class ProjectFileChangeTracker extends Thread {
     }
 
     /**
-     * Tells watcher to pause watching for some time. Useful before changing
-     * files
+     * Tells watcher to pause watching for some time. Useful before changing files
      */
-    public void pauseWatching() {
+    public void pauseTracking() {
         paused = true;
     }
 
     /**
      * Resumes watching for files
      */
-    public void resumeWatching() {
+    public void resumeTracking() {
         paused = false;
     }
 
@@ -257,25 +228,12 @@ public class ProjectFileChangeTracker extends Thread {
      * Class to store information about files (last modification time & File
      * pointer)
      */
-    protected static class FileInfo {
+    private static class TrackedFile {
 
-        /**
-         * Exact java.io.File object, may not be null
-         */
         private final File file;
-
-        /**
-         * Time the file was modified
-         */
         private long lastModified;
 
-        /**
-         * Creates new object
-         * 
-         * @param location
-         *            the file path
-         */
-        protected FileInfo(URI location) {
+        protected TrackedFile(URI location) {
             file = new File(location);
             lastModified = file.exists() ? file.lastModified() : -1;
         }

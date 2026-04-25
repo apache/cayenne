@@ -52,8 +52,6 @@ import org.apache.cayenne.map.event.ObjAttributeListener;
 import org.apache.cayenne.map.event.ObjEntityListener;
 import org.apache.cayenne.map.event.ObjRelationshipListener;
 import org.apache.cayenne.map.event.RelationshipEvent;
-import org.apache.cayenne.modeler.NavigationHistory;
-import org.apache.cayenne.modeler.ProjectFileChangeTracker;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.RevertAction;
 import org.apache.cayenne.modeler.action.SaveAction;
@@ -96,21 +94,18 @@ public class ProjectController extends ChildController<ModelerController> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProjectController.class);
 
-    private NavigationHistory history;
+    private ProjectNavigationHistory navigationHistory;
     private EventListenerList listeners;
     private boolean dirty;
     private Project project;
     private ProjectView projectView;
-    private Preferences projectControllerPreferences;
+    private Preferences preferences;
     private ControllerState state;
     private EntityResolver entityResolver;
     private ProjectFileChangeTracker fileChangeTracker;
 
     public ProjectController(ModelerController parent) {
         super(parent);
-        this.listeners = new EventListenerList();
-        this.state = new ControllerState();
-        this.history = new NavigationHistory();
     }
 
     @Override
@@ -136,15 +131,12 @@ public class ProjectController extends ChildController<ModelerController> {
         }
     }
 
-    public Preferences getProjectPreferences() {
-        if (getProject() == null) {
-            throw new CayenneRuntimeException("No Project selected");
-        }
-        if (projectControllerPreferences == null) {
-            updateProjectControllerPreferences();
+    public Preferences getPreferences() {
+        if (preferences == null) {
+            this.preferences = buildPreferences();
         }
 
-        return projectControllerPreferences;
+        return preferences;
     }
 
     public ProjectStatePreferences getProjectStatePreferences() {
@@ -162,7 +154,7 @@ public class ProjectController extends ChildController<ModelerController> {
             throw new CayenneRuntimeException("No DataDomain selected");
         }
 
-        return getProjectPreferences().node(dataDomain.getName());
+        return getPreferences().node(dataDomain.getName());
     }
 
     /**
@@ -256,7 +248,10 @@ public class ProjectController extends ChildController<ModelerController> {
     public void projectOpened(Project project) {
 
         this.project = project;
-        this.projectControllerPreferences = null;
+
+        this.navigationHistory = new ProjectNavigationHistory();
+        this.state = new ControllerState();
+        this.listeners = new EventListenerList();
 
         if (fileChangeTracker != null) {
             fileChangeTracker.interrupt();
@@ -265,7 +260,7 @@ public class ProjectController extends ChildController<ModelerController> {
         fileChangeTracker = new ProjectFileChangeTracker(this);
         fileChangeTracker.setDaemon(true);
         fileChangeTracker.start();
-        fileChangeTracker.reconfigure();
+        fileChangeTracker.reset();
 
         this.entityResolver = new EntityResolver();
         updateEntityResolver();
@@ -290,7 +285,7 @@ public class ProjectController extends ChildController<ModelerController> {
 
         this.project = null;
         this.projectView = null;
-        this.projectControllerPreferences = null;
+        this.preferences = null;
         this.entityResolver = null;
 
         if (fileChangeTracker != null) {
@@ -298,12 +293,17 @@ public class ProjectController extends ChildController<ModelerController> {
             fileChangeTracker = null;
         }
 
-        this.state = new ControllerState();
-        this.listeners = new EventListenerList();
-        this.history = new NavigationHistory();
+        this.state = null;
+        this.listeners = null;
+        this.navigationHistory = null;
     }
 
     public void saveSelectionToPrefs() {
+
+        if (project == null) {
+            return;
+        }
+
         EventObject displayEvent = getLastDisplayEvent();
         ConfigurationNode[] multiplyObjects = getSelectedPaths();
 
@@ -411,7 +411,7 @@ public class ProjectController extends ChildController<ModelerController> {
     }
 
     public DisplayEvent getLastDisplayEvent() {
-        return history.getLastEvent();
+        return navigationHistory.getLastEvent();
     }
 
     public void addDomainDisplayListener(DomainDisplayListener listener) {
@@ -579,7 +579,7 @@ public class ProjectController extends ChildController<ModelerController> {
         if (changed) {
             state = new ControllerState();
             state.dataDomain = e.getDomain();
-            history.recordEvent(e);
+            navigationHistory.recordEvent(e);
 
             for (DomainDisplayListener listener : listeners.getListeners(DomainDisplayListener.class)) {
                 listener.domainSelected(e);
@@ -603,7 +603,7 @@ public class ProjectController extends ChildController<ModelerController> {
         setDirty(true);
 
         if (e.getId() == MapEvent.REMOVE) {
-            history.forgetObject(e);
+            navigationHistory.forgetObject(e);
         }
 
         for (DomainListener listener : listeners.getListeners(DomainListener.class)) {
@@ -627,7 +627,7 @@ public class ProjectController extends ChildController<ModelerController> {
             state = new ControllerState();
             state.dataDomain = e.getDomain();
             state.dataNode = e.getDataNode();
-            history.recordEvent(e);
+            navigationHistory.recordEvent(e);
 
             for (DataNodeDisplayListener listener : listeners.getListeners(DataNodeDisplayListener.class)) {
                 listener.dataNodeSlected(e);
@@ -640,7 +640,7 @@ public class ProjectController extends ChildController<ModelerController> {
         setDirty(true);
 
         if (e.getId() == MapEvent.REMOVE) {
-            history.forgetObject(e);
+            navigationHistory.forgetObject(e);
         }
 
         for (DataNodeListener listener : listeners.getListeners(DataNodeListener.class)) {
@@ -672,7 +672,7 @@ public class ProjectController extends ChildController<ModelerController> {
             state.dataNode = e.getDataNode();
             state.dataMap = e.getDataMap();
 
-            history.recordEvent(e);
+            navigationHistory.recordEvent(e);
         }
 
         // Always deliver events that explicitly request main tab focus (e.g. "Create DataMap"),
@@ -684,7 +684,14 @@ public class ProjectController extends ChildController<ModelerController> {
         }
     }
 
+    public void pauseFileChangeTracking() {
+        fileChangeTracker.pauseTracking();
+    }
+
     public void fireProjectSavedEvent(ProjectSavedEvent e) {
+
+        fileChangeTracker.reset();
+
         LOGGER.debug("fireProjectSavedEvent");
         for (ProjectSavedListener eventListener : listeners.getListeners(ProjectSavedListener.class)) {
             eventListener.onProjectSaved(e);
@@ -700,7 +707,7 @@ public class ProjectController extends ChildController<ModelerController> {
         setDirty(true);
 
         if (e.getId() == MapEvent.REMOVE) {
-            history.forgetObject(e);
+            navigationHistory.forgetObject(e);
         }
 
         for (DataMapListener eventListener : listeners.getListeners(DataMapListener.class)) {
@@ -729,7 +736,7 @@ public class ProjectController extends ChildController<ModelerController> {
         }
 
         if (e.getId() == MapEvent.REMOVE) {
-            history.forgetObject(e);
+            navigationHistory.forgetObject(e);
         }
 
         for (ObjEntityListener listener : listeners.getListeners(ObjEntityListener.class)) {
@@ -758,7 +765,7 @@ public class ProjectController extends ChildController<ModelerController> {
         }
 
         if (e.getId() == MapEvent.REMOVE) {
-            history.forgetObject(e);
+            navigationHistory.forgetObject(e);
         }
 
         for (DbEntityListener listener : listeners.getListeners(DbEntityListener.class)) {
@@ -783,7 +790,7 @@ public class ProjectController extends ChildController<ModelerController> {
         setDirty(true);
 
         if (e.getId() == MapEvent.REMOVE) {
-            history.forgetObject(e);
+            navigationHistory.forgetObject(e);
         }
 
         for (QueryListener eventListener : listeners.getListeners(QueryListener.class)) {
@@ -808,7 +815,7 @@ public class ProjectController extends ChildController<ModelerController> {
         setDirty(true);
 
         if (e.getId() == MapEvent.REMOVE) {
-            history.forgetObject(e);
+            navigationHistory.forgetObject(e);
         }
 
         for (ProcedureListener eventListener : listeners.getListeners(ProcedureListener.class)) {
@@ -857,11 +864,11 @@ public class ProjectController extends ChildController<ModelerController> {
 
 
     public void rewindBackwards() {
-        history.replayLastEvent(this);
+        navigationHistory.replayLastEvent(this);
     }
 
     public void rewindForward() {
-        history.replayNextEvent(this);
+        navigationHistory.replayNextEvent(this);
     }
 
     public void displayObjEntity(EntityDisplayEvent e) {
@@ -876,7 +883,7 @@ public class ProjectController extends ChildController<ModelerController> {
             state.dataMap = e.getDataMap();
             state.objEntity = (ObjEntity) e.getEntity();
 
-            history.recordEvent(e);
+            navigationHistory.recordEvent(e);
         }
 
         // Always deliver events that explicitly request main tab focus (e.g. "Create ObjEntity"),
@@ -898,7 +905,7 @@ public class ProjectController extends ChildController<ModelerController> {
             state.dataNode = e.getDataNode();
             state.dataMap = e.getDataMap();
             state.embeddable = e.getEmbeddable();
-            history.recordEvent(e);
+            navigationHistory.recordEvent(e);
         }
 
         // Always deliver events that explicitly request main tab focus (e.g. "Create Embeddable"),
@@ -919,7 +926,7 @@ public class ProjectController extends ChildController<ModelerController> {
             state.dataDomain = e.getDomain();
             state.dataMap = e.getDataMap();
             state.query = e.getQuery();
-            history.recordEvent(e);
+            navigationHistory.recordEvent(e);
 
             for (QueryDisplayListener l : listeners.getListeners(QueryDisplayListener.class)) {
                 l.querySelected(e);
@@ -936,7 +943,7 @@ public class ProjectController extends ChildController<ModelerController> {
             state.dataDomain = e.getDomain();
             state.dataMap = e.getDataMap();
             state.procedure = e.getProcedure();
-            history.recordEvent(e);
+            navigationHistory.recordEvent(e);
         }
 
         // Always deliver events that explicitly request a tab reset (e.g. validator error click),
@@ -977,7 +984,7 @@ public class ProjectController extends ChildController<ModelerController> {
             state.dataNode = e.getDataNode();
             state.dataMap = e.getDataMap();
             state.dbEntity = (DbEntity) e.getEntity();
-            history.recordEvent(e);
+            navigationHistory.recordEvent(e);
         }
 
         // Always deliver events that explicitly request main tab focus (e.g. "Create DbEntity"),
@@ -1217,6 +1224,8 @@ public class ProjectController extends ChildController<ModelerController> {
 
             if (dirty) {
                 parent.onProjectModified();
+            } else {
+                this.preferences = buildPreferences();
             }
         }
     }
@@ -1276,10 +1285,6 @@ public class ProjectController extends ChildController<ModelerController> {
                     throw new IllegalArgumentException("Invalid CallbackEvent type: " + e.getId());
             }
         }
-    }
-
-    public ProjectFileChangeTracker getFileChangeTracker() {
-        return fileChangeTracker;
     }
 
     public void addEmbeddableAttributeListener(EmbeddableAttributeListener listener) {
@@ -1388,22 +1393,23 @@ public class ProjectController extends ChildController<ModelerController> {
         return embNames;
     }
 
-    public void updateProjectControllerPreferences() {
-        String key = getProject().getConfigurationResource() == null ? new String(IDUtil.pseudoUniqueByteSequence16())
+    private Preferences buildPreferences() {
+
+        if (preferences == null) {
+            return Preferences.userNodeForPackage(Project.class);
+        }
+
+        String key = getProject().getConfigurationResource() == null
+                ? new String(IDUtil.pseudoUniqueByteSequence16())
                 : project.getConfigurationResource().getURL().getPath();
 
-        projectControllerPreferences = Preferences.userNodeForPackage(Project.class);
-
-        if (!key.trim().isEmpty()) {
-            if (key.contains(".xml")) {
-                projectControllerPreferences = projectControllerPreferences.node(projectControllerPreferences
-                        .absolutePath() + key.replace(".xml", ""));
-            } else {
-                projectControllerPreferences = projectControllerPreferences.node(
-                                projectControllerPreferences.absolutePath())
-                        .node(getApplication().getNewProjectTemporaryName());
-            }
+        if (key.isEmpty()) {
+            return Preferences.userNodeForPackage(Project.class);
         }
+
+        return key.contains(".xml")
+                ? preferences.node(preferences.absolutePath() + key.replace(".xml", ""))
+                : preferences.node(preferences.absolutePath()).node(getApplication().getNewProjectTemporaryName());
     }
 
 

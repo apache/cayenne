@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler;
+package org.apache.cayenne.modeler.ui.project;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
@@ -36,7 +36,6 @@ import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.modeler.event.model.DomainEvent;
 import org.apache.cayenne.modeler.event.model.ProcedureEvent;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
 
 import java.util.ArrayList;
 import java.util.EventObject;
@@ -44,14 +43,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class NavigationHistory {
+public class ProjectNavigationHistory {
     private final static int MAX_HISTORY_SIZE = 20;
 
     private final List<DisplayEvent> history;
     private final List<DisplayEvent> replayHistory;
     private DisplayEvent currentEvent;
 
-    public NavigationHistory() {
+    public ProjectNavigationHistory() {
         this.history = new ArrayList<>(MAX_HISTORY_SIZE);
         this.replayHistory = new ArrayList<>(MAX_HISTORY_SIZE);
     }

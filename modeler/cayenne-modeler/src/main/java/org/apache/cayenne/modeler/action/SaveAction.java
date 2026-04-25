@@ -59,7 +59,7 @@ public class SaveAction extends SaveAsAction {
         String oldPath = p.getConfigurationResource().getURL().getPath();
         File oldProjectFile = new File(p.getConfigurationResource().getURL().toURI());
 
-        getProjectController().getFileChangeTracker().pauseWatching();
+        getProjectController().pauseFileChangeTracking();
         ProjectSaver saver = getApplication().getInjector().getInstance(ProjectSaver.class);
         saver.save(p);
 
@@ -72,7 +72,7 @@ public class SaveAction extends SaveAsAction {
 
         if (!path[path.length - 1].equals(newPath[newPath.length - 1])) {
             String newName = newPath[newPath.length - 1].replace(".xml", "");
-            RenamedPreferences.copyPreferences(newName, getProjectController().getProjectPreferences());
+            RenamedPreferences.copyPreferences(newName, getProjectController().getPreferences());
             RenamedPreferences.removeOldPreferences();
         }
 
@@ -80,8 +80,6 @@ public class SaveAction extends SaveAsAction {
         getApplication().getFrameController().changePathInLastProjListAction(oldProjectFile, newProjectFile);
         Application.getFrame().fireRecentFileListChanged();
 
-        // Reset the watcher now
-        getProjectController().getFileChangeTracker().reconfigure();
         getProjectController().fireProjectSavedEvent(new ProjectSavedEvent(getProjectController()));
 
         return true;

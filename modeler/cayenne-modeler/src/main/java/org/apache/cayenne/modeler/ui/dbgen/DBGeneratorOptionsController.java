@@ -66,7 +66,7 @@ public class DBGeneratorOptionsController extends ChildController<ProjectControl
         // DataSource may not be initialized, so warn connection wizard
         this.connectionInfo.setAllowDataSourceFailure(true);
         this.generatorDefaults = new DBGeneratorDefaults(parent
-                .getProjectPreferences()
+                .getPreferences()
                 .node("DbGenerator"));
 
         this.view.setTitle(title);

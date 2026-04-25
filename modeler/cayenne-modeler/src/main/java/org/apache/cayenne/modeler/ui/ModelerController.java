@@ -155,7 +155,6 @@ public class ModelerController extends RootController {
 
     public void onProjectSaved() {
         projectController.setDirty(false);
-        projectController.updateProjectControllerPreferences();
         updateStatus("Project saved...");
         view.setTitle(getProjectLocationString());
     }

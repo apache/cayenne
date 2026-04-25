@@ -87,7 +87,7 @@ public class SaveAsAction extends CayenneAction {
             return false;
         }
 
-        getProjectController().getFileChangeTracker().pauseWatching();
+        getProjectController().pauseFileChangeTracking();
 
         URLResource res = new URLResource(projectDir.toURI().toURL());
 
@@ -107,10 +107,10 @@ public class SaveAsAction extends CayenneAction {
             String newName = p.getConfigurationResource().getURL().getPath().replace(".xml", "");
             String oldName = oldPath.replace(".xml", "");
 
-            Preferences oldPref = getProjectController().getProjectPreferences();
+            Preferences oldPref = getProjectController().getPreferences();
             String projPath = oldPref.absolutePath().replace(oldName, "");
-            Preferences newPref = getProjectController().getProjectPreferences().node(projPath + newName);
-            RenamedPreferences.copyPreferences(newPref, getProjectController().getProjectPreferences(), false);
+            Preferences newPref = getProjectController().getPreferences().node(projPath + newName);
+            RenamedPreferences.copyPreferences(newPref, getProjectController().getPreferences(), false);
         } else if (isNewProject) {
             if (tempOldPref != null) {
 
@@ -136,8 +136,6 @@ public class SaveAsAction extends CayenneAction {
         getApplication().getFrameController().addToLastProjListAction(file);
         Application.getFrame().fireRecentFileListChanged();
 
-        // Reset the watcher now
-        getProjectController().getFileChangeTracker().reconfigure();
         getProjectController().fireProjectSavedEvent(new ProjectSavedEvent(getProjectController()));
 
         return true;
