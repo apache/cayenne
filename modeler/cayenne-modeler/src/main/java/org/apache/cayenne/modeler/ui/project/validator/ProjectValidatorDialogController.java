@@ -20,10 +20,10 @@
 package org.apache.cayenne.modeler.ui.project.validator;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.action.ActionManager;
-import org.apache.cayenne.modeler.action.DisableValidationInspectionAction;
-import org.apache.cayenne.modeler.action.ShowValidationOptionAction;
-import org.apache.cayenne.modeler.action.ValidateAction;
+import org.apache.cayenne.modeler.ui.action.ActionManager;
+import org.apache.cayenne.modeler.ui.action.DisableValidationInspectionAction;
+import org.apache.cayenne.modeler.ui.action.ShowValidationOptionAction;
+import org.apache.cayenne.modeler.ui.action.ValidateAction;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.project.validation.Inspection;

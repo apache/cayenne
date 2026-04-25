@@ -1,0 +1,99 @@
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
+package org.apache.cayenne.modeler.ui.action;
+
+import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.dbsync.naming.NameBuilder;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.event.EmbeddableEvent;
+import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
+import org.apache.cayenne.modeler.undo.CreateEmbeddableUndoableEdit;
+
+import java.awt.event.ActionEvent;
+
+public class CreateEmbeddableAction extends ModelerAbstractAction {
+
+    static void fireEmbeddableEvent(
+            Object src,
+            ProjectController controller,
+            DataMap dataMap,
+            Embeddable embeddable) {
+
+        controller.fireEmbeddableEvent(
+                new EmbeddableEvent(src, embeddable, MapEvent.ADD),
+                dataMap);
+        EmbeddableDisplayEvent displayEvent = new EmbeddableDisplayEvent(
+                src,
+                embeddable,
+                dataMap,
+                (DataChannelDescriptor) controller.getProject().getRootNode());
+        displayEvent.setMainTabFocus(true);
+        controller.displayEmbeddable(displayEvent);
+
+    }
+
+    public CreateEmbeddableAction(Application application) {
+        super("Create Embeddable", application);
+    }
+
+    @Override
+    public String getIconName() {
+        return "icon-new_embeddable.png";
+    }
+
+    @Override
+    public void performAction(ActionEvent e) {
+        DataMap dataMap = getProjectController().getSelectedDataMap();
+
+        Embeddable embeddable = new Embeddable();
+        String baseName = NameBuilder.builder(embeddable, dataMap).name();
+        String nameWithPackage = dataMap.getNameWithDefaultPackage(baseName);
+        embeddable.setClassName(nameWithPackage);
+        createEmbeddable(dataMap, embeddable);
+
+        application.getUndoManager().addEdit(new CreateEmbeddableUndoableEdit(dataMap, embeddable));
+    }
+
+    public void createEmbeddable(DataMap dataMap, Embeddable embeddable) {
+        dataMap.addEmbeddable(embeddable);
+        fireEmbeddableEvent(this, getProjectController(), dataMap, embeddable);
+    }
+
+    /**
+     * Returns <code>true</code> if path contains a DataMap object.
+     */
+    @Override
+    public boolean enableForPath(ConfigurationNode object) {
+        if (object == null) {
+            return false;
+        }
+
+        if (object instanceof ObjEntity) {
+            return ((ObjEntity) object).getParent() != null && ((ObjEntity) object).getParent() instanceof DataMap;
+        }
+
+        return false;
+    }
+}

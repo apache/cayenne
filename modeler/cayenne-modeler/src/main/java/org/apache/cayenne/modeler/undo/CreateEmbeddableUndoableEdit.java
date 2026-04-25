@@ -23,8 +23,8 @@ import javax.swing.undo.CannotUndoException;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
-import org.apache.cayenne.modeler.action.CreateEmbeddableAction;
-import org.apache.cayenne.modeler.action.RemoveAction;
+import org.apache.cayenne.modeler.ui.action.CreateEmbeddableAction;
+import org.apache.cayenne.modeler.ui.action.RemoveAction;
 
 public class CreateEmbeddableUndoableEdit extends CayenneUndoableEdit {
 

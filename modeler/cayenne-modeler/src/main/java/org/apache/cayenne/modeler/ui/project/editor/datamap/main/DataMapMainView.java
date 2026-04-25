@@ -28,7 +28,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.action.LinkDataMapAction;
+import org.apache.cayenne.modeler.ui.action.LinkDataMapAction;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.catalog.CatalogUpdateController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.locking.LockingUpdateController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.pkg.PackageUpdateController;

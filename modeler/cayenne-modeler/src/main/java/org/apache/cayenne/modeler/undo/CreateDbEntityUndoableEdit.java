@@ -23,8 +23,8 @@ import javax.swing.undo.CannotUndoException;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.modeler.action.CreateDbEntityAction;
-import org.apache.cayenne.modeler.action.RemoveAction;
+import org.apache.cayenne.modeler.ui.action.CreateDbEntityAction;
+import org.apache.cayenne.modeler.ui.action.RemoveAction;
 
 public class CreateDbEntityUndoableEdit extends CayenneUndoableEdit {
 

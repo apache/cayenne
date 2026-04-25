@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.undo;
 
-import org.apache.cayenne.modeler.action.UpdateValidationConfigAction;
+import org.apache.cayenne.modeler.ui.action.UpdateValidationConfigAction;
 import org.apache.cayenne.project.validation.ValidationConfig;
 
 import javax.swing.undo.CannotRedoException;

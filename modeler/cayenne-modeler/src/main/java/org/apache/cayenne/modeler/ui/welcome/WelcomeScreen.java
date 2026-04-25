@@ -21,8 +21,8 @@ package org.apache.cayenne.modeler.ui.welcome;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
-import org.apache.cayenne.modeler.action.NewProjectAction;
-import org.apache.cayenne.modeler.action.OpenProjectAction;
+import org.apache.cayenne.modeler.ui.action.NewProjectAction;
+import org.apache.cayenne.modeler.ui.action.OpenProjectAction;
 import org.apache.cayenne.modeler.event.model.RecentFileListListener;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 

@@ -19,8 +19,8 @@
 package org.apache.cayenne.modeler.ui.project.editor.datadomain;
 
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.action.GenerateCodeAction;
-import org.apache.cayenne.modeler.action.ShowValidationConfigAction;
+import org.apache.cayenne.modeler.ui.action.GenerateCodeAction;
+import org.apache.cayenne.modeler.ui.action.ShowValidationConfigAction;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.cgen.CgenTabController;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.dbimport.DbImportTabController;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.validation.ValidationTabController;

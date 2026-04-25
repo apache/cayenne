@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.ui;
 
 import org.apache.cayenne.modeler.ui.project.ProjectView;
-import org.apache.cayenne.modeler.action.ActionManager;
+import org.apache.cayenne.modeler.ui.action.ActionManager;
 import org.apache.cayenne.modeler.ui.logconsole.LogConsoleController;
 import org.apache.cayenne.modeler.ui.welcome.WelcomeScreen;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;

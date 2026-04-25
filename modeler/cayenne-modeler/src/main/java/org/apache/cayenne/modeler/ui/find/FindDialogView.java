@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.find;
 
-import org.apache.cayenne.modeler.action.FindAction;
+import org.apache.cayenne.modeler.ui.action.FindAction;
 import org.apache.cayenne.modeler.swing.CellRenderers;
 import org.apache.cayenne.modeler.swing.table.ImageRendererColumn;
 import org.apache.cayenne.modeler.swing.border.TopBorder;

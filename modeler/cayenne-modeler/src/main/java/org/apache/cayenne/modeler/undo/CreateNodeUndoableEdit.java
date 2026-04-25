@@ -19,8 +19,8 @@
 package org.apache.cayenne.modeler.undo;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.modeler.action.CreateNodeAction;
-import org.apache.cayenne.modeler.action.RemoveAction;
+import org.apache.cayenne.modeler.ui.action.CreateNodeAction;
+import org.apache.cayenne.modeler.ui.action.RemoveAction;
 
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;

@@ -23,8 +23,8 @@ import javax.swing.undo.CannotUndoException;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.action.CreateQueryAction;
-import org.apache.cayenne.modeler.action.RemoveAction;
+import org.apache.cayenne.modeler.ui.action.CreateQueryAction;
+import org.apache.cayenne.modeler.ui.action.RemoveAction;
 import org.apache.cayenne.map.QueryDescriptor;
 
 public class CreateQueryUndoableEdit extends CayenneUndoableEdit {

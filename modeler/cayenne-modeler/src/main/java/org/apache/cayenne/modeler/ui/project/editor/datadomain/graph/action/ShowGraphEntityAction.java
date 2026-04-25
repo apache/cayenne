@@ -29,7 +29,7 @@ import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
-import org.apache.cayenne.modeler.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
 
 /**
  * Action that shows entity on the graph

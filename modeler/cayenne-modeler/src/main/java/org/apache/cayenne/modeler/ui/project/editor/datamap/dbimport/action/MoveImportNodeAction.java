@@ -35,7 +35,7 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportTre
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportView;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DraggableTreePanel;
 import org.apache.cayenne.modeler.undo.DbImportTreeUndoableEdit;
-import org.apache.cayenne.modeler.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
 
 import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;

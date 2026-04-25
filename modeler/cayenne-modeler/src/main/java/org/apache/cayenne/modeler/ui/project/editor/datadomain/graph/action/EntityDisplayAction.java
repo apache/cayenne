@@ -26,9 +26,9 @@ import javax.swing.Icon;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.action.FindAction;
+import org.apache.cayenne.modeler.ui.action.FindAction;
 import org.apache.cayenne.modeler.graph.GraphBuilder;
-import org.apache.cayenne.modeler.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
 
 /**
  * Action that displays one of the objects in main tree, and then fires another action (if specified)

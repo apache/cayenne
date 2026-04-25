@@ -30,7 +30,7 @@ import javax.swing.JComponent;
 import javax.swing.border.Border;
 import javax.swing.plaf.ComponentUI;
 
-import org.apache.cayenne.modeler.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
 
 /**
  * @since 4.0

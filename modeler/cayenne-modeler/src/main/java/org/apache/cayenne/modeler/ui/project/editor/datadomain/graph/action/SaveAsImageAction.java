@@ -19,7 +19,7 @@
 package org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.DataDomainGraphTab;
 import org.apache.cayenne.modeler.util.FileFilters;

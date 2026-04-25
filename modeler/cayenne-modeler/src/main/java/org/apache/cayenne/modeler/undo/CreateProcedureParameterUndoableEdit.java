@@ -23,8 +23,8 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.modeler.action.CreateProcedureParameterAction;
-import org.apache.cayenne.modeler.action.RemoveProcedureParameterAction;
+import org.apache.cayenne.modeler.ui.action.CreateProcedureParameterAction;
+import org.apache.cayenne.modeler.ui.action.RemoveProcedureParameterAction;
 import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
 
 import javax.swing.undo.CannotRedoException;

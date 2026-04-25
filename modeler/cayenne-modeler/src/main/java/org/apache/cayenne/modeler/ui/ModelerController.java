@@ -21,8 +21,8 @@ package org.apache.cayenne.modeler.ui;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.action.ExitAction;
-import org.apache.cayenne.modeler.action.OpenProjectAction;
+import org.apache.cayenne.modeler.ui.action.ExitAction;
+import org.apache.cayenne.modeler.ui.action.OpenProjectAction;
 import org.apache.cayenne.modeler.mvc.RootController;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.pref.FSPath;

@@ -25,8 +25,8 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.modeler.action.CreateRelationshipAction;
-import org.apache.cayenne.modeler.action.RemoveRelationshipAction;
+import org.apache.cayenne.modeler.ui.action.CreateRelationshipAction;
+import org.apache.cayenne.modeler.ui.action.RemoveRelationshipAction;
 
 public class RemoveRelationshipUndoableEdit extends BaseRemovePropertyUndoableEdit {
 

@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.logconsole;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 
-import org.apache.cayenne.modeler.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.swing.border.TopBorder;
 

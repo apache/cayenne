@@ -20,8 +20,8 @@ package org.apache.cayenne.modeler.undo;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.action.CreateDataMapAction;
-import org.apache.cayenne.modeler.action.RemoveAction;
+import org.apache.cayenne.modeler.ui.action.CreateDataMapAction;
+import org.apache.cayenne.modeler.ui.action.RemoveAction;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 
 import javax.swing.undo.CannotRedoException;

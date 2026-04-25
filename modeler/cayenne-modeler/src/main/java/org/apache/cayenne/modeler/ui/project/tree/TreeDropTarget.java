@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.ui.project.tree;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.action.LinkDataMapAction;
+import org.apache.cayenne.modeler.ui.action.LinkDataMapAction;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 
 import javax.swing.*;

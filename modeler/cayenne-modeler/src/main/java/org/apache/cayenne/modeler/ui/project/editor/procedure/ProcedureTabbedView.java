@@ -23,7 +23,7 @@ import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProce
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.action.RemoveProcedureParameterAction;
+import org.apache.cayenne.modeler.ui.action.RemoveProcedureParameterAction;
 import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ProcedureParameterDisplayEvent;
 

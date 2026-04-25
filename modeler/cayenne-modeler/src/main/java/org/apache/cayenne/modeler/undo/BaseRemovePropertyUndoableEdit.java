@@ -23,7 +23,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.action.ObjEntityCounterpartAction;
+import org.apache.cayenne.modeler.ui.action.ObjEntityCounterpartAction;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 
 public abstract class BaseRemovePropertyUndoableEdit extends CayenneUndoableEdit {

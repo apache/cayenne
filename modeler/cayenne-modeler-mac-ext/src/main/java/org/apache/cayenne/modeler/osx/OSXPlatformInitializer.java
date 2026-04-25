@@ -37,10 +37,10 @@ import javax.swing.border.AbstractBorder;
 import javax.swing.border.Border;
 
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.modeler.action.AboutAction;
-import org.apache.cayenne.modeler.action.ActionManager;
-import org.apache.cayenne.modeler.action.ConfigurePreferencesAction;
-import org.apache.cayenne.modeler.action.ExitAction;
+import org.apache.cayenne.modeler.ui.action.AboutAction;
+import org.apache.cayenne.modeler.ui.action.ActionManager;
+import org.apache.cayenne.modeler.ui.action.ConfigurePreferencesAction;
+import org.apache.cayenne.modeler.ui.action.ExitAction;
 import org.apache.cayenne.modeler.platform.PlatformInitializer;
 
 public class OSXPlatformInitializer implements PlatformInitializer {

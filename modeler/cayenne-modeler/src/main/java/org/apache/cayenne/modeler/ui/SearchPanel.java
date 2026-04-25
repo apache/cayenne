@@ -1,6 +1,6 @@
 package org.apache.cayenne.modeler.ui;
 
-import org.apache.cayenne.modeler.action.FindAction;
+import org.apache.cayenne.modeler.ui.action.FindAction;
 
 import javax.swing.*;
 import java.awt.*;

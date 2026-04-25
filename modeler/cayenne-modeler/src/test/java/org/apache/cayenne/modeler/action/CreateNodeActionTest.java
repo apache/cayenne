@@ -22,6 +22,7 @@ package org.apache.cayenne.modeler.action;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
+import org.apache.cayenne.modeler.ui.action.CreateNodeAction;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;

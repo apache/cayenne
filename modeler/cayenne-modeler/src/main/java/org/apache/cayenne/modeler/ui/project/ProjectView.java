@@ -19,9 +19,9 @@
 
 package org.apache.cayenne.modeler.ui.project;
 
-import org.apache.cayenne.modeler.action.ActionManager;
-import org.apache.cayenne.modeler.action.CollapseTreeAction;
-import org.apache.cayenne.modeler.action.FilterAction;
+import org.apache.cayenne.modeler.ui.action.ActionManager;
+import org.apache.cayenne.modeler.ui.action.CollapseTreeAction;
+import org.apache.cayenne.modeler.ui.action.FilterAction;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.ui.project.editor.EditorPanelView;
 import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeController;

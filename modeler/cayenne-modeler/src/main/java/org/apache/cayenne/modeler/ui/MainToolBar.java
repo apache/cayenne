@@ -1,6 +1,7 @@
 package org.apache.cayenne.modeler.ui;
 
 import org.apache.cayenne.modeler.action.*;
+import org.apache.cayenne.modeler.ui.action.*;
 
 import javax.swing.*;
 import javax.swing.border.Border;
