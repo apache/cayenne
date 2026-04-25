@@ -39,7 +39,6 @@ import org.apache.cayenne.project.validation.EJBQLStatementValidator.PositionExc
 import org.apache.cayenne.map.EJBQLQueryDescriptor;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.swing.components.textpane.JCayenneTextPane;
-import org.apache.cayenne.swing.components.textpane.syntax.EJBQLSyntaxConstant;
 import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +64,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
 
     private void initView() {
 
-        scriptArea = new JUndoableCayenneTextPane(new EJBQLSyntaxConstant());
+        scriptArea = new JUndoableCayenneTextPane(new EjbqlSyntax());
         scriptArea.getDocument().addDocumentListener(this);
         scriptArea.getDocument().addDocumentListener(new DocumentListener() {
 

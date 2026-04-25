@@ -29,7 +29,6 @@ import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.DbAdapterInfo;
 import org.apache.cayenne.modeler.util.JUndoableCayenneTextPane;
 import org.apache.cayenne.swing.components.textpane.JCayenneTextPane;
-import org.apache.cayenne.swing.components.textpane.syntax.SQLSyntaxConstants;
 import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +81,7 @@ public class SQLTemplateScriptsTab extends JPanel {
 
     private void prepareScriptAreas() {
         for(String key : DbAdapterInfo.getStandardAdapters()) {
-            JCayenneTextPane currPane = new JUndoableCayenneTextPane(new SQLSyntaxConstants());
+            JCayenneTextPane currPane = new JUndoableCayenneTextPane(new SQLSyntax());
             currPane.setName(key);
             currPane.getDocument().addDocumentListener(new CustomListener(currPane.getName()));
             builder.add(currPane.getScrollPane(), cc.xy(3, 2));
@@ -115,7 +114,7 @@ public class SQLTemplateScriptsTab extends JPanel {
         // assemble
         cc = new CellConstraints();
 
-        textPane = new JUndoableCayenneTextPane(new SQLSyntaxConstants());
+        textPane = new JUndoableCayenneTextPane(new SQLSyntax());
         textPane.setName(DEFAULT_LABEL);
         textPane.getDocument().addDocumentListener(new CustomListener(textPane.getName()));
 

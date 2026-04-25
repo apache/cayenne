@@ -21,8 +21,7 @@ package org.apache.cayenne.swing.components.textpane;
 import org.apache.cayenne.swing.components.textpane.style.SyntaxStyle;
 import org.apache.cayenne.swing.components.textpane.style.TextPaneStyleMap;
 import org.apache.cayenne.swing.components.textpane.style.TextPaneStyleTypes;
-import org.apache.cayenne.swing.components.textpane.syntax.SQLSyntaxConstants;
-import org.apache.cayenne.swing.components.textpane.syntax.SyntaxConstant;
+import org.apache.cayenne.swing.components.textpane.syntax.TextSyntax;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
@@ -31,7 +30,7 @@ import javax.swing.text.PlainView;
 import javax.swing.text.Segment;
 import javax.swing.text.StyledDocument;
 import javax.swing.text.Utilities;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
@@ -52,27 +51,27 @@ public class TextPaneView extends PlainView {
     static {
         patternSyntaxStyle = new HashMap<>();
         patternValue = new HashMap<>();
-        patternComment = Pattern.compile(SQLSyntaxConstants.COMMENT_TEXT,
+        patternComment = Pattern.compile(TextSyntax.COMMENT_TEXT,
                                          Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE);
-        patternCommentStart = Pattern.compile(SQLSyntaxConstants.COMMENT_TEXT_START,
+        patternCommentStart = Pattern.compile(TextSyntax.COMMENT_TEXT_START,
                                               Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE);
         syntaxStyleComment = style.syntaxStyleMap.get(TextPaneStyleTypes.COMMENT);
     }
 
-    public TextPaneView(Element elem, SyntaxConstant syntaxConstants) {
+    public TextPaneView(Element elem, TextSyntax syntax) {
         super(elem);
         getDocument().putProperty(PlainDocument.tabSizeAttribute, 4);
 
         if (patternSyntaxStyle.isEmpty()) {
-            addConstants(syntaxConstants.getKEYWORDS(), TextPaneStyleTypes.KEYWORDS);
-            addConstants(syntaxConstants.getKEYWORDS2(), TextPaneStyleTypes.KEYWORDS2);
-            addConstants(syntaxConstants.getOPERATORS(), TextPaneStyleTypes.KEYWORDS);
-            addConstants(syntaxConstants.getTYPES(), TextPaneStyleTypes.TYPE);
+            addConstants(syntax.keywords(), TextPaneStyleTypes.KEYWORDS);
+            addConstants(syntax.keywords2(), TextPaneStyleTypes.KEYWORDS2);
+            addConstants(syntax.operators(), TextPaneStyleTypes.KEYWORDS);
+            addConstants(syntax.types(), TextPaneStyleTypes.TYPE);
         }
 
         if (patternValue.isEmpty()) {
             patternValue.put(
-                Pattern.compile(SQLSyntaxConstants.NUMBER_TEXT),
+                Pattern.compile(TextSyntax.NUMBER_TEXT),
                 style.syntaxStyleMap.get(TextPaneStyleTypes.NUMBER));
         }
     }
@@ -204,8 +203,8 @@ public class TextPaneView extends PlainView {
             int end = entry.getValue();
 
             if (i < start) {
-                graphics.setColor(SQLSyntaxConstants.DEFAULT_COLOR);
-                graphics.setFont(SQLSyntaxConstants.DEFAULT_FONT);
+                graphics.setColor(TextSyntax.DEFAULT_COLOR);
+                graphics.setFont(TextSyntax.DEFAULT_FONT);
                 doc.getText(p0 + i, start - i, segment);
                 x = Utilities.drawTabbedText(segment, x, y, graphics, this, i);
             }
@@ -220,8 +219,8 @@ public class TextPaneView extends PlainView {
 
         // Paint possible remaining text black
         if (i < text.length()) {
-            graphics.setColor(SQLSyntaxConstants.DEFAULT_COLOR);
-            graphics.setFont(SQLSyntaxConstants.DEFAULT_FONT);
+            graphics.setColor(TextSyntax.DEFAULT_COLOR);
+            graphics.setFont(TextSyntax.DEFAULT_FONT);
             doc.getText(p0 + i, text.length() - i, segment);
             x = Utilities.drawTabbedText(segment, x, y, graphics, this, i);
         }

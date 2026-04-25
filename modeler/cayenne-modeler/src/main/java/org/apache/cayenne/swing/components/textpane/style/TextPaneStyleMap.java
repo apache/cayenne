@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.swing.components.textpane.style;
 
-import org.apache.cayenne.swing.components.textpane.syntax.SQLSyntaxConstants;
+import org.apache.cayenne.swing.components.textpane.syntax.TextSyntax;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -30,7 +30,7 @@ public class TextPaneStyleMap {
 	public Map<TextPaneStyleTypes, SyntaxStyle> syntaxStyleMap = new HashMap<>();
 	
 	public TextPaneStyleMap() {
-		Font plainFont = SQLSyntaxConstants.DEFAULT_FONT;
+		Font plainFont = TextSyntax.DEFAULT_FONT;
 		Font boldFont = new Font(plainFont.getFamily(), Font.BOLD , plainFont.getSize());
 		Font italicFont = new Font(plainFont.getFamily(), Font.ITALIC, plainFont.getSize());
 		

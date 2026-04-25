@@ -20,16 +20,16 @@ package org.apache.cayenne.swing.components.textpane;
 
 import javax.swing.text.StyledEditorKit;
 import javax.swing.text.ViewFactory;
-import org.apache.cayenne.swing.components.textpane.syntax.SyntaxConstant;
+import org.apache.cayenne.swing.components.textpane.syntax.TextSyntax;
 
 public class EditorKit extends StyledEditorKit {
 
     private ViewFactory xmlViewFactory;
     private String contentType;
 
-    public EditorKit(SyntaxConstant syntaxConstant) {
-        contentType = syntaxConstant.getContentType();
-        xmlViewFactory = new TextPaneViewFactory(syntaxConstant);
+    public EditorKit(TextSyntax syntax) {
+        contentType = syntax.contentType();
+        xmlViewFactory = new TextPaneViewFactory(syntax);
     }
 
     @Override

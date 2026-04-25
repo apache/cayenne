@@ -22,16 +22,16 @@ import javax.swing.text.Element;
 import javax.swing.text.View;
 import javax.swing.text.ViewFactory;
 
-import org.apache.cayenne.swing.components.textpane.syntax.SyntaxConstant;
+import org.apache.cayenne.swing.components.textpane.syntax.TextSyntax;
 
 public class TextPaneViewFactory extends Object implements ViewFactory {
 
-    SyntaxConstant syntaxConstant;
-    public TextPaneViewFactory(SyntaxConstant syntaxConstant) {
-        this.syntaxConstant = syntaxConstant;
+    TextSyntax syntax;
+    public TextPaneViewFactory(TextSyntax syntax) {
+        this.syntax = syntax;
     }
 
     public View create(Element elem) {
-        return new TextPaneView(elem, syntaxConstant);
+        return new TextPaneView(elem, syntax);
     }
 }

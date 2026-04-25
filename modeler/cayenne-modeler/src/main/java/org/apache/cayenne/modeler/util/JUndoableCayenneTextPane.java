@@ -22,14 +22,14 @@ import javax.swing.event.UndoableEditListener;
 
 import org.apache.cayenne.modeler.undo.JTextFieldUndoListener;
 import org.apache.cayenne.swing.components.textpane.JCayenneTextPane;
-import org.apache.cayenne.swing.components.textpane.syntax.SyntaxConstant;
+import org.apache.cayenne.swing.components.textpane.syntax.TextSyntax;
 
 public class JUndoableCayenneTextPane extends JCayenneTextPane {
 
     private UndoableEditListener undoListener;
 
-    public JUndoableCayenneTextPane(SyntaxConstant syntaxConstant) {
-        super(syntaxConstant);
+    public JUndoableCayenneTextPane(TextSyntax syntax) {
+        super(syntax);
 
         this.undoListener = new JTextFieldUndoListener(this.getPane());
         getDocument().addUndoableEditListener(this.undoListener);
