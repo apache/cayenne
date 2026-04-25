@@ -24,9 +24,6 @@ import org.apache.cayenne.map.DataMap;
 
 import java.util.List;
 
-/**
- * @since 5.0
- */
 public interface ArtefactsConfigurator {
     /**
      * adds selected artefact to action for generating class preview.

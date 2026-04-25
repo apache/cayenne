@@ -28,9 +28,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
-/**
- * @since 4.1
- */
 public class CgenArtefactSelectorPanel extends JPanel {
 
     protected JTable table;

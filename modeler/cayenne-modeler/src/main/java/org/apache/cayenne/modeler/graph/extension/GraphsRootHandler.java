@@ -25,9 +25,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
-/**
- * @since 4.1
- */
 class GraphsRootHandler extends NamespaceAwareNestedTagHandler {
 
     static final String GRAPHS_TAG = "graphs";

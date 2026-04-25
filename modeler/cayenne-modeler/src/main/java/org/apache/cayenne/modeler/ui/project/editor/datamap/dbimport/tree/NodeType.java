@@ -19,9 +19,6 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree;
 
-/**
- * @since 5.0
- */
 public enum NodeType {
     UNKNOWN,
     CATALOG,

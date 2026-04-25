@@ -39,9 +39,6 @@ import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
 import org.apache.cayenne.validation.ValidationException;
 
-/**
- * @since 4.1
- */
 public class ReverseEngineeringConfigPanel extends JPanel {
 
     private static final String DATA_FIELDS_LAYOUT = "right:pref, 3dlu, fill:235dlu";

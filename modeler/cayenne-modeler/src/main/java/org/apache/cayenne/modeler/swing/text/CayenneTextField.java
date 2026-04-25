@@ -34,8 +34,6 @@ import java.util.function.Consumer;
  * When the {@code trim} property is enabled, leading and trailing whitespace is stripped
  * from the field on commit. Listeners are not notified when the committed value matches
  * the previous committed value (or the value most recently assigned via {@link #setText}).
- *
- * @since 5.0
  */
 public class CayenneTextField extends JTextField {
 

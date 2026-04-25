@@ -27,9 +27,6 @@ import org.apache.cayenne.project.validation.ValidationConfig;
 import java.util.EnumSet;
 import java.util.Set;
 
-/**
- * @since 5.0
- */
 public class ValidationSaverDelegate extends BaseSaverDelegate {
 
     private final DataChannelMetaData metaData;

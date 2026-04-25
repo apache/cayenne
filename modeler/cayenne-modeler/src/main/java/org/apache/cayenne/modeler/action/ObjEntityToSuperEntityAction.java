@@ -22,9 +22,6 @@ package org.apache.cayenne.modeler.action;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 
-/**
- * @since 4.0
- */
 public class ObjEntityToSuperEntityAction extends BaseViewEntityAction {
 
     public static String getActionName() {

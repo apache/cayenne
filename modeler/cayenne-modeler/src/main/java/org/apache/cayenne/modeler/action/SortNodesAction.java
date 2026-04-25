@@ -28,9 +28,6 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportSor
 import java.awt.event.ActionEvent;
 import java.util.List;
 
-/**
- * @since 5.0
- */
 public class SortNodesAction extends TreeManipulationAction {
 
     private static final String ACTION_NAME = "Sort";

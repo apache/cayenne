@@ -32,9 +32,6 @@ import org.apache.cayenne.util.Util;
 import javax.swing.*;
 import java.io.File;
 
-/**
- * @since 4.1
- */
 public class CgenConfigController extends ChildController<CgenController> {
 
     private CgenConfiguration cgenConfiguration;

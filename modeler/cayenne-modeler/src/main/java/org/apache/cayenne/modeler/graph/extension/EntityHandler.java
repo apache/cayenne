@@ -28,9 +28,6 @@ import org.jgraph.graph.GraphConstants;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-/**
- * @since 4.1
- */
 class EntityHandler extends NamespaceAwareNestedTagHandler {
 
     static final String ENTITY_TAG = "entity";

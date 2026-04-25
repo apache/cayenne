@@ -28,9 +28,6 @@ import org.apache.cayenne.modeler.action.ReverseEngineeringAction;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.GeneratorsTabController;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 
-/**
- * @since 4.1
- */
 public class DbImportTabController extends GeneratorsTabController<ReverseEngineering> {
 
     public DbImportTabController(ProjectController projectController) {

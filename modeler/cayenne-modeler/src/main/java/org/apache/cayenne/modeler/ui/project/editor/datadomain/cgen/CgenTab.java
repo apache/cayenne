@@ -26,9 +26,6 @@ import org.apache.cayenne.modeler.ui.project.editor.datadomain.GeneratorsTabCont
 
 import javax.swing.JOptionPane;
 
-/**
- * @since 4.1
- */
 public class CgenTab extends GeneratorsTab {
 
     public CgenTab(ProjectController projectController, GeneratorsTabController<CgenConfiguration> additionalTabController) {

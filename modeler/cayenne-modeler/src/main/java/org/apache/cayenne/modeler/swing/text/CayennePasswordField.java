@@ -33,8 +33,6 @@ import java.util.function.Consumer;
  * verifier). Empty strings are normalized to {@code null} before listeners are notified.
  * Listeners are not notified when the committed value matches the previous committed value
  * (or the value most recently assigned via {@link #setText}).
- *
- * @since 5.0
  */
 public class CayennePasswordField extends JPasswordField {
 

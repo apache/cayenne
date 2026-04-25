@@ -36,9 +36,6 @@ import java.awt.Component;
 import java.util.EventObject;
 import java.util.regex.Pattern;
 
-/**
- * @since 4.1
- */
 public class DbImportTreeCellEditor extends DefaultTreeCellEditor {
 
     private ProjectController projectController;

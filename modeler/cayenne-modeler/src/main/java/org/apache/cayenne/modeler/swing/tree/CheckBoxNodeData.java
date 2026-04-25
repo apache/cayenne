@@ -20,9 +20,6 @@ package org.apache.cayenne.modeler.swing.tree;
 
 import java.util.Objects;
 
-/**
- * @since 5.0
- */
 public class CheckBoxNodeData {
 
     protected final Object value;

@@ -26,9 +26,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.action.ObjEntityCounterpartAction;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 
-/**
- * @since 4.1
- */
 public abstract class BaseRemovePropertyUndoableEdit extends CayenneUndoableEdit {
 
     protected ObjEntity objEntity;

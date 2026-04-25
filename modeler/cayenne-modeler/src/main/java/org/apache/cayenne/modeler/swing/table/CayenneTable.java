@@ -255,9 +255,6 @@ public class CayenneTable extends JTable {
         isColumnWidthChanged = widthChanged;
     }
 
-    /**
-     * @since 4.0
-     */
     public void setSortable(boolean sortable) {
         renderer.setSortingEnabled(sortable);
     }

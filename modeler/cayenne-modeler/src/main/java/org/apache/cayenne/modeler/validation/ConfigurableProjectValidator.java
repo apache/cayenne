@@ -25,9 +25,6 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.project.validation.DefaultProjectValidator;
 import org.apache.cayenne.project.validation.ValidationConfig;
 
-/**
- * @since 5.0
- */
 public class ConfigurableProjectValidator extends DefaultProjectValidator {
 
     public ConfigurableProjectValidator(@Inject Application application) {

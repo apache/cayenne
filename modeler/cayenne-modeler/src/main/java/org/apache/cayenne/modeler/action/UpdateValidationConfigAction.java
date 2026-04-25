@@ -31,8 +31,6 @@ import java.awt.event.ActionEvent;
 
 /**
  * Requires config provided with {@link UpdateValidationConfigAction#putConfig(ValidationConfig)}.
- *
- * @since 5.0
  */
 public class UpdateValidationConfigAction extends ModelerAbstractAction {
 

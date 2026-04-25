@@ -19,9 +19,6 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport;
 
-/**
- * @since 4.1
- */
 public class IncludeTablePopUpMenu extends RootPopUpMenu {
 
     public IncludeTablePopUpMenu() {

@@ -31,9 +31,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-/**
- * @since 5.0
- */
 public class EditorTemplateLoader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EditorTemplateLoader.class);

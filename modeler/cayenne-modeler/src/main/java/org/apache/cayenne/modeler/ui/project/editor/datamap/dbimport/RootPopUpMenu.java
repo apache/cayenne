@@ -31,9 +31,6 @@ import org.apache.cayenne.modeler.action.dbimport.AddSchemaAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-/**
- * @since 4.1
- */
 public class RootPopUpMenu extends DefaultPopUpMenu {
 
     private static final int FIRST_POSITION = 0;

@@ -31,9 +31,6 @@ import org.apache.cayenne.project.extension.LoaderDelegate;
 import org.apache.cayenne.project.extension.ProjectExtension;
 import org.apache.cayenne.project.extension.SaverDelegate;
 
-/**
- * @since 4.1
- */
 public class GraphExtension implements ProjectExtension {
 
     static final String NAMESPACE = "http://cayenne.apache.org/schema/" + Project.VERSION + "/graph";

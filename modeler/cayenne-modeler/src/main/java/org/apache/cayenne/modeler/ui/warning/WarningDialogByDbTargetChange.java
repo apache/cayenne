@@ -30,9 +30,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Collection;
 
-/**
- * @since 4.0
- */
 public class WarningDialogByDbTargetChange {
 
     /*

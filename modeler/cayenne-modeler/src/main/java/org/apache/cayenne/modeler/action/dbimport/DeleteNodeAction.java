@@ -40,9 +40,6 @@ import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
 import java.util.List;
 
-/**
- * @since 4.1
- */
 public class DeleteNodeAction extends TreeManipulationAction {
 
     private static final String ACTION_NAME = "Delete";

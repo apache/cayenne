@@ -32,9 +32,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 
-/**
- * @since 4.1
- */
 class GeneratorsPanel extends JPanel {
 
     private final DataMap dataMap;

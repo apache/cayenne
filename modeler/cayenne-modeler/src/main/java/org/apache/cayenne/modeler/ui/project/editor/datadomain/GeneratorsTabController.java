@@ -35,9 +35,6 @@ import org.apache.cayenne.project.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * @since 4.1
- */
 public abstract class GeneratorsTabController<T> implements DataMapListener {
 
     protected final static Logger LOGGER = LoggerFactory.getLogger(GeneratorsTabController.class);

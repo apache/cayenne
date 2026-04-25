@@ -25,9 +25,6 @@ import org.apache.cayenne.modeler.graph.GraphMap;
 import org.apache.cayenne.modeler.graph.GraphRegistry;
 import org.apache.cayenne.project.extension.BaseSaverDelegate;
 
-/**
- * @since 4.1
- */
 class GraphSaverDelegate extends BaseSaverDelegate {
 
     DataChannelMetaData metaData;

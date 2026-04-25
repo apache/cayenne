@@ -47,9 +47,6 @@ import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @since 4.1
- */
 class ReverseEngineeringTreePanel extends JScrollPane {
 
     private DbImportTree reverseEngineeringTree;

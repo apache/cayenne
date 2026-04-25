@@ -32,9 +32,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * @since 5.0
- */
 public class DbImportSorter {
     public static final Comparator<DbImportTreeNode> NODE_COMPARATOR_BY_TYPE = Comparator
             .comparing(DbImportTreeNode::getNodeType);

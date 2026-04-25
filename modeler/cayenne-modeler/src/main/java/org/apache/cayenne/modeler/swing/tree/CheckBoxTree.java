@@ -34,9 +34,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-/**
- * @since 5.0
- */
 public class CheckBoxTree extends JPanel {
 
     private static final String TOGGLE_ROW_ACTION_KEY = "toggleRow";

@@ -29,9 +29,6 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import java.util.List;
 
-/**
- * @since 4.1
- */
 public class DbImportTreeUndoableEdit extends AbstractUndoableEdit {
 
     private ReverseEngineering previousReverseEngineering;

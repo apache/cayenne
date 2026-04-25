@@ -36,9 +36,6 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
-/**
- * @since 4.1
- */
 public class DbImportView extends JPanel {
 
     private static final String MAIN_LAYOUT = "fill:160dlu:grow, 5dlu, fill:50dlu, 5dlu, fill:160dlu:grow";

@@ -41,9 +41,6 @@ import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.dialog.CayenneDialog;
 import org.apache.cayenne.modeler.swing.table.CayenneTable;
 
-/**
- * @since 4.2
- */
 public class DbRelationshipDialogView extends CayenneDialog {
 
     private JTextField name;

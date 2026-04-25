@@ -62,8 +62,6 @@ import java.util.stream.Collectors;
 
 /**
  * Main controller for the code generation UI.
- *
- * @since 4.1
  */
 public class CgenController extends ChildController<ProjectController> implements ObjEntityListener, EmbeddableListener, DataMapListener {
 

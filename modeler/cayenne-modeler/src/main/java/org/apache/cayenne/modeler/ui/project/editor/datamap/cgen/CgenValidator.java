@@ -36,8 +36,6 @@ import java.util.Collection;
 
 /**
  * Validator that checks classes and embeddables for code-generation specific problems.
- *
- * @since 4.2
  */
 class CgenValidator {
 

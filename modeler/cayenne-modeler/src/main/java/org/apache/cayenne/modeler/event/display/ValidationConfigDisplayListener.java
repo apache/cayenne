@@ -20,9 +20,6 @@ package org.apache.cayenne.modeler.event.display;
 
 import java.util.EventListener;
 
-/**
- * @since 5.0
- */
 public interface ValidationConfigDisplayListener extends EventListener {
 
     void validationOptionChanged(ValidationConfigDisplayEvent event);

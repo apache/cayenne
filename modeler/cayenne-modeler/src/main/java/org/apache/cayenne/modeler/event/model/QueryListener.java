@@ -23,8 +23,6 @@ import java.util.EventListener;
 
 /**
  * Listener for QueryEvents.
- *
- * @since 1.1
  */
 public interface QueryListener extends EventListener {
 

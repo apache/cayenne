@@ -38,9 +38,6 @@ import javax.swing.*;
 import java.io.File;
 import java.sql.Connection;
 
-/**
- * @since 4.0
- */
 public class ModelerDbLoaderContext {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelerDbLoaderContext.class);

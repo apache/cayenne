@@ -40,9 +40,6 @@ import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 
-/**
- * @since 4.1
- */
 public class LoadDbSchemaAction extends DBConnectionAwareAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LoadDbSchemaAction.class);

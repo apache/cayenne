@@ -27,8 +27,6 @@ import java.awt.*;
 
 /**
  * Utility for sizing JTable columns based on sample values.
- *
- * @since 5.0
  */
 public final class TableSizer {
 

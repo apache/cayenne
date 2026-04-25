@@ -29,9 +29,6 @@ import org.apache.cayenne.gen.ToolsUtilsFactory;
 import java.io.StringWriter;
 
 
-/**
- * @since 5.0
- */
 public class PreviewClassGenerationFactory implements ClassGenerationActionFactory {
 
     @Inject

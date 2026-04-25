@@ -30,10 +30,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 
-/**
- *
- * @since 4.2
- */
 public class CheckBoxHeader extends JCheckBox implements TableCellRenderer, MouseListener  {
         protected int column;
         protected boolean mousePressed = false;

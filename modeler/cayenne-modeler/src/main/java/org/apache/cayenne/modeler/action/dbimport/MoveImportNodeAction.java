@@ -44,9 +44,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
-/**
- * @since 4.1
- */
 public class MoveImportNodeAction extends ModelerAbstractAction {
 
     private static final String ICON_NAME = "icon-backward.png";

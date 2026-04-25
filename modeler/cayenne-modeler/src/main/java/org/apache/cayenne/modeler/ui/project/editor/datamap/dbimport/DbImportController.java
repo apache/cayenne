@@ -27,9 +27,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.dbloadresult.DbLoadResultDialog;
 
-/**
- * @since 4.1
- */
 public class DbImportController {
 
     private static final String DIALOG_TITLE = "Db Import Result";

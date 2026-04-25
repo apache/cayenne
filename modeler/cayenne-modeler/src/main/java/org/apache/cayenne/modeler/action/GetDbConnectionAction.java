@@ -24,9 +24,6 @@ import org.apache.cayenne.modeler.ui.datasource.DataSourceController;
 
 import java.awt.event.ActionEvent;
 
-/**
- * @since 4.1
- */
 public class GetDbConnectionAction extends DBConnectionAwareAction {
 
     private static final String DIALOG_TITLE = "Configure Connection to Database";

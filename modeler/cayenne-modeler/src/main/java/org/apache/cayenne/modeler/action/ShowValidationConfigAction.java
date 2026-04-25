@@ -25,9 +25,6 @@ import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 
 import java.awt.event.ActionEvent;
 
-/**
- * @since 5.0
- */
 public class ShowValidationConfigAction extends ModelerAbstractAction {
 
     public ShowValidationConfigAction(Application application) {

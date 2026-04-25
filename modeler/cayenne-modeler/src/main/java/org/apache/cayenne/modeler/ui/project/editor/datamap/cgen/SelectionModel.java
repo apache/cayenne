@@ -33,9 +33,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 
-/**
- * @since 4.2
- */
 class SelectionModel {
     private Set<String> selectedEntities;
     private Set<String> selectedEmbeddables;

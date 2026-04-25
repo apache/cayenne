@@ -30,8 +30,6 @@ import static org.apache.cayenne.modeler.pref.DBConnectionInfo.*;
 /**
  * Base action that provides DBConnectionInfo for the current DataMap or calls {@link DataSourceController} dialog to
  * create one.
- *
- * @since 4.2
  */
 public abstract class DBConnectionAwareAction extends ModelerAbstractAction {
 

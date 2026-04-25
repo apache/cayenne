@@ -35,9 +35,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.EnumSet;
 import java.util.Set;
 
-/**
- * @since 5.0
- */
 public class ValidationTabController implements DomainListener, ValidationConfigDisplayListener {
 
     private final ProjectController projectController;

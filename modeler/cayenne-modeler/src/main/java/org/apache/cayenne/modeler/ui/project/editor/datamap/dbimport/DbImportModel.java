@@ -25,9 +25,6 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImpo
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 
-/**
- * @since 4.1
- */
 public class DbImportModel extends DefaultTreeModel {
 
     private DbImportTree dbSchemaTree;

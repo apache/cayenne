@@ -24,9 +24,6 @@ import org.apache.cayenne.project.validation.ValidationConfig;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
-/**
- * @since 5.0
- */
 public class UpdateValidationConfigUndoableEdit extends CayenneUndoableEdit {
 
     private final ValidationConfig oldConfig;

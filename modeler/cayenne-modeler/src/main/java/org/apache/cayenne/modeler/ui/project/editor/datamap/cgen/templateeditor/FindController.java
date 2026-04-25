@@ -28,9 +28,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
-/**
- * @since 5.0
- */
 public class FindController extends ChildController<TemplateEditorController> {
 
     private FindView view;

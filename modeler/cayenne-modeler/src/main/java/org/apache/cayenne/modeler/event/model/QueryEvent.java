@@ -26,8 +26,6 @@ import org.apache.cayenne.map.QueryDescriptor;
 /**
  * An event generated when a Query object is added to a DataMap, 
  * removed from a DataMap, or changed within a DataMap.
- * 
- * @since 1.1
  */
 public class QueryEvent extends MapEvent {
     protected QueryDescriptor query;

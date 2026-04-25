@@ -24,9 +24,6 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
 
-/**
- * @since 5.0
- */
 public class CheckBoxTreeCellRenderer extends JCheckBox implements TreeCellRenderer {
 
     private static final String TREE_SELECTION_BACKGROUND = "Tree.selectionBackground";

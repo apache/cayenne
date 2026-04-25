@@ -31,9 +31,6 @@ import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
 
 import java.awt.event.ActionEvent;
 
-/**
- * @since 1.1
- */
 public class CreateQueryAction extends ModelerAbstractAction {
 
     public CreateQueryAction(Application application) {

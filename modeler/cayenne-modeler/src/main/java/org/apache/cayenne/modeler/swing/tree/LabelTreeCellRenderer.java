@@ -24,9 +24,6 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
 
-/**
- * @since 5.0
- */
 public class LabelTreeCellRenderer extends JLabel implements TreeCellRenderer {
 
     protected final TreeCellRenderer defaultRenderer;

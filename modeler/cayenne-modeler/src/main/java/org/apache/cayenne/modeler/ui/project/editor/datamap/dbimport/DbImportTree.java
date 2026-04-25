@@ -45,9 +45,6 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 
-/**
- * @since 4.1
- */
 public class DbImportTree extends JTree {
 
     private boolean isTransferable;

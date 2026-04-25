@@ -116,8 +116,6 @@ public final class ModelerUtil {
 
     /**
      * Returns the "name" property of the object.
-     * 
-     * @since 1.1
      */
     public static String getObjectName(Object object) {
         if (object == null) {
@@ -229,7 +227,6 @@ public final class ModelerUtil {
      * if current project is inside Maven-like {@code resource} directory to return corresponding {@code src} directory.
      *
      * @return best guess for the cgen output
-     * @since 4.1
      */
     public static String initOutputFolder() {
         if (System.getProperty("cayenne.cgen.destdir") != null) {

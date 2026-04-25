@@ -28,9 +28,6 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImpo
 
 import java.awt.event.ActionEvent;
 
-/**
- * @since 4.1
- */
 public class AddSchemaAction extends TreeManipulationAction {
 
     private static final String ACTION_NAME = "Add Schema";

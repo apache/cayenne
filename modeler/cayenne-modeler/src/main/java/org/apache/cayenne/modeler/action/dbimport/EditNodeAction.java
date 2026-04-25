@@ -29,9 +29,6 @@ import org.apache.cayenne.util.Util;
 import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
 
-/**
- * @since 4.1
- */
 public class EditNodeAction extends TreeManipulationAction {
 
     private static final String ACTION_NAME = "Rename";

@@ -27,9 +27,6 @@ import org.xml.sax.Attributes;
 import java.util.EnumSet;
 import java.util.Set;
 
-/**
- * @since 5.0
- */
 public class ValidationConfigHandler extends NamespaceAwareNestedTagHandler {
 
     static final String CONFIG_TAG = "validation";

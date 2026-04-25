@@ -34,8 +34,6 @@ public class CayenneUserDir {
     /**
      * A property name for the property that allows to define an alternative location of
      * Cayenne User Directory (instead of default "$HOME/.cayenne").
-     * 
-     * @since 1.1
      */
     public static final String ALT_USER_DIR_PROPERTY = "cayenne.userdir";
 

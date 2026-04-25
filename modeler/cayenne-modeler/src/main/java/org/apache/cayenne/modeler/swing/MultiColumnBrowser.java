@@ -62,8 +62,6 @@ import java.util.List;
  * <p>
  * Users are notified of selection changes via a TreeSelectionEvents.
  * </p>
- * 
- * @since 1.1
  */
 public class MultiColumnBrowser extends JPanel {
 

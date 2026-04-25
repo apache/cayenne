@@ -31,9 +31,6 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 
 
-/**
- * @since 4.0
- */
 public class FilteredIconFactory {
 
     private static final JComponent DUMMY = new JPanel();

@@ -34,9 +34,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentMap;
 
-/**
- * @since 4.1
- */
 public class GeneratorsTab extends JPanel {
 
     protected ProjectController projectController;

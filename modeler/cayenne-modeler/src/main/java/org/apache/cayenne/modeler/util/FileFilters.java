@@ -24,8 +24,6 @@ import javax.swing.filechooser.FileFilter;
 
 /**
  * A collection of common file filters used by CayenneModeler JFileChoosers.
- * 
- * @since 1.1
  */
 public class FileFilters {
 

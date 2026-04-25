@@ -40,9 +40,6 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-/**
- * @since 4.1
- */
 public class CgenConfigPanel extends JPanel {
 
     protected TextAdapter outputFolder;

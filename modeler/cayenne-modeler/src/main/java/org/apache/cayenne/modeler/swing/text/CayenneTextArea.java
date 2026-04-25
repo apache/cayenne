@@ -30,8 +30,6 @@ import java.util.function.Consumer;
  * A {@link JTextArea} that fires registered commit listeners on every text-content change
  * (insert / remove). Empty strings are normalized to {@code null} before listeners are
  * notified.
- *
- * @since 5.0
  */
 public class CayenneTextArea extends JTextArea {
 

@@ -44,9 +44,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.util.List;
 
-/**
- * @since 5.0
- */
 public class TemplateEditorView extends JFrame {
 
     protected RSyntaxTextArea editingTemplatePane;

@@ -23,9 +23,6 @@ import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.GeneratorsTab;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.GeneratorsTabController;
 
-/**
- * @since 4.1
- */
 public class DbImportTab extends GeneratorsTab {
 
     public DbImportTab(ProjectController projectController, GeneratorsTabController<ReverseEngineering> additionalTabController) {

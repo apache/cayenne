@@ -40,9 +40,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 
-/**
- * @since 4.1
- */
 public class DbImportTreeNode extends DefaultMutableTreeNode {
 
     private boolean isLoaded;

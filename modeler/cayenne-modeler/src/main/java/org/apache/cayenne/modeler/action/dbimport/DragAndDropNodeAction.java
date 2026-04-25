@@ -33,9 +33,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * @since 5.0
- */
 public class DragAndDropNodeAction extends TreeManipulationAction {
 
     private static final String ACTION_NAME = "DragAndDrop";

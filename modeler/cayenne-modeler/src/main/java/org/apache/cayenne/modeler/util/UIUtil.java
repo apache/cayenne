@@ -23,9 +23,6 @@ package org.apache.cayenne.modeler.util;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * @since 1.1
- */
 public class UIUtil {
 
     /**

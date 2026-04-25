@@ -34,9 +34,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 
-/**
- * @since 4.1
- */
 public class CgenPane extends JPanel {
 
     private JButton generateButton;

@@ -53,9 +53,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @since 4.1
- */
 class TreeToolbarPanel extends JToolBar {
 
     private JButton schemaButton;

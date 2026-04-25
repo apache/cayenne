@@ -21,9 +21,6 @@ package org.apache.cayenne.modeler.event.display;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.project.validation.Inspection;
 
-/**
- * @since 5.0
- */
 public class ValidationConfigDisplayEvent extends DomainDisplayEvent {
 
     private final Inspection inspection;

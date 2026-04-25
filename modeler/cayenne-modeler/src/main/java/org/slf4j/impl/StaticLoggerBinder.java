@@ -26,8 +26,6 @@ import org.slf4j.spi.LoggerFactoryBinder;
  * StaticLoggerBinder bind and replace standard SLF4J LoggerFactory to ModelerLogFactory.
  * This is used because in Cayenne Modeler we use custom logger implementation (ModelerLogger)
  * for logging in System.err and modeler logger.
- *
- * @since 4.0
  */
 public class StaticLoggerBinder implements LoggerFactoryBinder {
 

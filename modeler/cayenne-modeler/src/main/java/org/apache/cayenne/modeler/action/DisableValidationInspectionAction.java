@@ -26,9 +26,6 @@ import org.apache.cayenne.project.validation.ValidationConfig;
 import java.awt.event.ActionEvent;
 import java.util.EnumSet;
 
-/**
- * @since 5.0
- */
 public class DisableValidationInspectionAction extends UpdateValidationConfigAction {
 
     private static final String ACTION_NAME = "Disable inspection";

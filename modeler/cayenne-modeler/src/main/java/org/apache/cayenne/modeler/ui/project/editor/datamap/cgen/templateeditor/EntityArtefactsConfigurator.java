@@ -27,9 +27,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * @since 5.0
- */
 public class EntityArtefactsConfigurator implements ArtefactsConfigurator {
 
     @Override

@@ -21,9 +21,6 @@ package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.modeler.Application;
 
-/**
- * @since 4.1
- */
 public class CreateObjEntityFromDbAction extends CreateObjEntityAction {
 
     public CreateObjEntityFromDbAction(Application application) {

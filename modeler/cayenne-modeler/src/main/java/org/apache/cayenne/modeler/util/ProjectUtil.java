@@ -19,11 +19,6 @@
 
 package org.apache.cayenne.modeler.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -34,6 +29,11 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Provides utility methods to perform various manipulations with project objects.
@@ -152,10 +152,7 @@ public class ProjectUtil {
         entity.setDbEntity(null);
     }
 
-    /**
-     * Returns true if one of relationship joins uses a given attribute as a source.
-     */
-    public static boolean containsSourceAttribute(
+    private static boolean containsSourceAttribute(
             DbRelationship relationship,
             DbAttribute attribute) {
         if (attribute.getEntity() != relationship.getSourceEntity()) {

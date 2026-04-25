@@ -24,9 +24,6 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.util.Objects;
 
-/**
- * @since 5.0
- */
 public class ChangeOptimizingTreeModel extends DefaultTreeModel {
 
     public ChangeOptimizingTreeModel(TreeNode root) {

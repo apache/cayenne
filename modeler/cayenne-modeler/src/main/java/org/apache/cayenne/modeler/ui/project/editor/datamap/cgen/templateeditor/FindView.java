@@ -29,9 +29,6 @@ import javax.swing.JDialog;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
 
-/**
- * @since 5.0
- */
 public class FindView extends JDialog {
 
     protected JTextField searchField;

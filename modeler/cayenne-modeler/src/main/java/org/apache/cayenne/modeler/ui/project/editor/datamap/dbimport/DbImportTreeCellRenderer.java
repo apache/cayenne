@@ -40,9 +40,6 @@ import java.awt.Dimension;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @since 4.1
- */
 public class DbImportTreeCellRenderer extends DefaultTreeCellRenderer {
 
     protected DbImportTreeNode node;

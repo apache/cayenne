@@ -42,9 +42,6 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImpo
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportTree;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportTreeCellRenderer;
 
-/**
- * @since 4.1
- */
 public class ColorTreeRenderer extends DbImportTreeCellRenderer {
 
     private DbImportTree reverseEngineeringTree;

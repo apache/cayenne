@@ -22,9 +22,6 @@ package org.apache.cayenne.modeler.action.dbimport;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
 import org.apache.cayenne.modeler.Application;
 
-/**
- * @since 4.1
- */
 public class AddExcludeColumnAction extends AddPatternParamAction {
 
     private static final String ACTION_NAME = "Exclude Column";

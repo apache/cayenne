@@ -27,9 +27,6 @@ import javax.swing.JButton;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
 
-/**
- * @since 5.0
- */
 public class FindAndReplaceView extends FindView {
 
     private JTextField replaceWithField;

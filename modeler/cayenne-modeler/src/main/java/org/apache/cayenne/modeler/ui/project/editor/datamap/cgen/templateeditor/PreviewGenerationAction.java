@@ -29,7 +29,6 @@ import java.io.Writer;
 
 /**
  * Used for generating class preview in template editor
- * @since 5.0
  */
 public class PreviewGenerationAction extends ClassGenerationAction {
 

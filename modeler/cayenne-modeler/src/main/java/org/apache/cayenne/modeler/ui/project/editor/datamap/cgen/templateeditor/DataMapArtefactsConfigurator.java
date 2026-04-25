@@ -25,9 +25,6 @@ import org.apache.cayenne.map.DataMap;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * @since 5.0
- */
 public class DataMapArtefactsConfigurator implements ArtefactsConfigurator {
 
     @Override

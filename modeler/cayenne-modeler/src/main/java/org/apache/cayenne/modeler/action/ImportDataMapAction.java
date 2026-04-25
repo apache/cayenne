@@ -42,8 +42,6 @@ import java.net.URL;
 /**
  * Modeler action that imports a DataMap into a project from an arbitrary
  * location.
- *
- * @since 1.1
  */
 public class ImportDataMapAction extends ModelerAbstractAction {
 

@@ -35,9 +35,6 @@ import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.util.Collection;
 
-/**
- * @since 4.0
- */
 public class DbActionOptionsDialog extends CayenneDialog {
 
     public static final int CANCEL = 0;

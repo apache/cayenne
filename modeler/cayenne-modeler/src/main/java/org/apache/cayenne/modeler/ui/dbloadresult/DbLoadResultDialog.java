@@ -39,9 +39,6 @@ import java.util.concurrent.ConcurrentMap;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 
-/**
- * @since 4.1
- */
 public class DbLoadResultDialog extends JDialog {
 
     private static final int TABLE_ROW_HIGH = 24;

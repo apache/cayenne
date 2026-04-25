@@ -36,8 +36,6 @@ import java.util.Map;
 
 /**
  * Swing TreeModel for Entity attributes and relationships
- * 
- * @since 1.1
  */
 public class EntityTreeModel implements TreeModel {
     protected Entity<?,?,?> root;

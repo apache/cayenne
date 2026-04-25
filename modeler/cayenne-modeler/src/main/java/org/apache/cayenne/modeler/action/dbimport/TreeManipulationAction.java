@@ -45,9 +45,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @since 4.1
- */
 public abstract class TreeManipulationAction extends ModelerAbstractAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TreeManipulationAction.class);

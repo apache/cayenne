@@ -21,9 +21,6 @@ package org.apache.cayenne.modeler.ui.project.editor.datadomain.validation;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * @since 5.0
- */
 public class ValidationTab extends JPanel {
 
     final ValidationTabController controller;

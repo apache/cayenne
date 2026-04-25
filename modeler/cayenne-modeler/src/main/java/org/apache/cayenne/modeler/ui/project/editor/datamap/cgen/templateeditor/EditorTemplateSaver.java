@@ -23,9 +23,6 @@ import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.CgenTemplate;
 import org.apache.cayenne.gen.TemplateType;
 
-/**
- * @since 5.0
- */
 public class EditorTemplateSaver {
 
     private final CgenConfiguration configuration;

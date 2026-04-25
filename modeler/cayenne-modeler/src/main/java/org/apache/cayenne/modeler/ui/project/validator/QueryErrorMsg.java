@@ -28,9 +28,6 @@ import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.validation.ValidationFailure;
 
-/**
- * @since 1.1
- */
 public class QueryErrorMsg extends ValidationDisplayHandler {
 
     public QueryErrorMsg(ValidationFailure result) {

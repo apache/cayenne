@@ -35,9 +35,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.Writer;
 
-/**
- * @since 5.0
- */
 public class TemplateEditorController extends ChildController<CgenConfigController> {
 
     private final DataMap currentDataMap;

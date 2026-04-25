@@ -29,9 +29,6 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
-/**
- * @since 4.1
- */
 public class TransferableNode extends DbImportTreeNode implements Transferable {
 
     private static final DataFlavor catalogFlavor = new DataFlavor(Catalog.class, Catalog.class.getSimpleName());

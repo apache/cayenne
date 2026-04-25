@@ -30,9 +30,6 @@ import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
 
-/**
- * @since 4.0
- */
 public abstract class BaseViewEntityAction extends ModelerAbstractAction {
 
     abstract protected Entity<?, ?, ?> getEntity();

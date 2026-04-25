@@ -29,8 +29,6 @@ import javax.swing.border.Border;
 
 /**
  * Line border only on top side of the component
- *
- * @since 4.0
  */
 public class TopBorder extends AbstractBorder {
 

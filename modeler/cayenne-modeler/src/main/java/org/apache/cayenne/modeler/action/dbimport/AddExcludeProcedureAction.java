@@ -22,9 +22,6 @@ package org.apache.cayenne.modeler.action.dbimport;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeProcedure;
 import org.apache.cayenne.modeler.Application;
 
-/**
- * @since 4.1
- */
 public class AddExcludeProcedureAction extends AddPatternParamAction {
 
     private static final String ACTION_NAME = "Exclude Procedure";

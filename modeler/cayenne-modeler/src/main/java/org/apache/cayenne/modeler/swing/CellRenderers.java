@@ -45,8 +45,6 @@ import java.awt.*;
 
 /**
  * Utility class that serves as a factory for various project renderers.
- *
- * @since 1.1
  */
 public final class CellRenderers {
 

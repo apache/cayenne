@@ -38,9 +38,6 @@ import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.tools.ToolsInjectorBuilder;
 
-/**
- * @since 4.1
- */
 public class CgenTabController extends GeneratorsTabController<CgenConfiguration> {
 
     public CgenTabController(ProjectController projectController) {

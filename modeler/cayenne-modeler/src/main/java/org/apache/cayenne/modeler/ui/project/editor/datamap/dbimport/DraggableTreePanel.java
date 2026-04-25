@@ -69,9 +69,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @since 4.1
- */
 public class DraggableTreePanel extends JScrollPane {
 
     private static final int ROOT_LEVEL = 14;
