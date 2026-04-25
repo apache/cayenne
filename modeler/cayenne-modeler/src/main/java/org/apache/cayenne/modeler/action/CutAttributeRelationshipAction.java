@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.editor.objentity.ObjEntityAttributePanel;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.ObjAttributePanel;
 import org.apache.cayenne.modeler.ui.project.editor.dbentity.DbAttributePanel;
 
 import javax.swing.JComponent;
@@ -44,7 +44,7 @@ public class CutAttributeRelationshipAction extends CutAction implements Multipl
     }
 
     public String getActionName(boolean multiple) {
-        if (currentSelectedPanel instanceof ObjEntityAttributePanel || currentSelectedPanel instanceof DbAttributePanel) {
+        if (currentSelectedPanel instanceof ObjAttributePanel || currentSelectedPanel instanceof DbAttributePanel) {
             return cutAttributeAction.getActionName(multiple);
         } else {
             return cutRelationshipAction.getActionName(multiple);
@@ -52,7 +52,7 @@ public class CutAttributeRelationshipAction extends CutAction implements Multipl
     }
 
     public boolean enableForPath(ConfigurationNode object) {
-        if (currentSelectedPanel instanceof ObjEntityAttributePanel || currentSelectedPanel instanceof DbAttributePanel) {
+        if (currentSelectedPanel instanceof ObjAttributePanel || currentSelectedPanel instanceof DbAttributePanel) {
             return cutAttributeAction.enableForPath(object);
         } else {
             return cutRelationshipAction.enableForPath(object);
@@ -60,7 +60,7 @@ public class CutAttributeRelationshipAction extends CutAction implements Multipl
     }
 
     public void performAction(ActionEvent e) {
-        if (currentSelectedPanel instanceof ObjEntityAttributePanel || currentSelectedPanel instanceof DbAttributePanel) {
+        if (currentSelectedPanel instanceof ObjAttributePanel || currentSelectedPanel instanceof DbAttributePanel) {
             cutAttributeAction.performAction(e);
         } else {
             cutRelationshipAction.performAction(e);

@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.modeler.ui.unsavedchanges;
 
-import java.awt.Component;
-import javax.swing.JOptionPane;
+import javax.swing.*;
+import java.awt.*;
 
 public class UnsavedChangesDialog {
 
@@ -54,10 +54,6 @@ public class UnsavedChangesDialog {
 
     public boolean shouldSave() {
         return SAVE_AND_CLOSE.equals(result);
-    }
-
-    public boolean shouldNotSave() {
-        return CLOSE_WITHOUT_SAVE.equals(result);
     }
 
     public boolean shouldCancel() {

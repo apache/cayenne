@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.action;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportAction;
@@ -30,10 +31,10 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dbimport.ModelerDbImportModule;
 import org.apache.cayenne.modeler.dbimport.ModelerDbLoaderContext;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+import org.apache.cayenne.modeler.swing.ProgressDialog;
 import org.apache.cayenne.modeler.ui.dbloadresult.DbLoadResultDialog;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportView;
-import org.apache.cayenne.modeler.util.LongRunningTask;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -141,8 +142,7 @@ public class ReverseEngineeringAction extends DBConnectionAwareAction {
 
     private void runLoaderInThread(final ModelerDbLoaderContext context, final Runnable callback) {
         Thread th = new Thread(() -> {
-            LoadDataMapTask task = new LoadDataMapTask(Application.getFrame(), "Reengineering DB", context);
-            task.startAndWait();
+            new DbImportTask(Application.getFrame(), "Reengineering DB", context).startAndWait();
             SwingUtilities.invokeLater(callback);
         });
         th.start();
@@ -152,63 +152,135 @@ public class ReverseEngineeringAction extends DBConnectionAwareAction {
         this.view = view;
     }
 
-    static class LoadDataMapTask extends LongRunningTask<Object> {
+    static class DbImportTask {
+
+        private static final int DEFAULT_MS_TO_DECIDE_TO_POPUP = 500;
 
         private final ModelerDbLoaderContext context;
+        private final JFrame frame;
+        private final String title;
+        private ProgressDialog dialog;
+        private Timer taskPollingTimer;
+        private boolean finished;
 
-        public LoadDataMapTask(JFrame frame, String title, ModelerDbLoaderContext context) {
-            super(frame, title);
-            setMinValue(0);
-            setMaxValue(10);
+        public DbImportTask(JFrame frame, String title, ModelerDbLoaderContext context) {
+            this.frame = frame;
+            this.title = title;
             this.context = context;
         }
 
-        @Override
-        protected void execute() {
-            context.setStatusNote("Preparing...");
+        /**
+         * Starts the task and blocks the calling thread until it is done. Must not be invoked
+         * on the Swing EventDispatchThread, since blocking the EDT would prevent the progress
+         * dialog from rendering.
+         */
+        public synchronized void startAndWait() {
+            if (SwingUtilities.isEventDispatchThread()) {
+                throw new CayenneRuntimeException("Can't block EventDispatchThread. Call 'startAndWait' from another thread.");
+            }
+
+            setCanceled(false);
+            this.finished = false;
+
+            Thread task = new Thread(this::exec);
+
+            Timer progressDisplay = new Timer(DEFAULT_MS_TO_DECIDE_TO_POPUP, e -> showProgress());
+            progressDisplay.setRepeats(false);
+            progressDisplay.start();
+            task.start();
+
+            if (finished) {
+                return;
+            }
+
             try {
-                createAction().execute(context.getConfig());
+                wait();
+            } catch (InterruptedException e) {
+                setCanceled(true);
+            }
+
+            notifyAll();
+        }
+
+        private synchronized void showProgress() {
+            LOGGER.debug("will show progress...");
+
+            if (finished || isCanceled()) {
+                return;
+            }
+
+            LOGGER.debug("task still in progress, will show progress dialog...");
+            this.dialog = new ProgressDialog(frame, "Progress...", title);
+            this.dialog.getCancelButton().addActionListener(e -> setCanceled(true));
+            updateProgress();
+
+            this.taskPollingTimer = new Timer(500, e -> updateProgress());
+            this.taskPollingTimer.start();
+            this.dialog.setVisible(true);
+        }
+
+        private void updateProgress() {
+            if (isCanceled()) {
+                stop();
+                return;
+            }
+
+            dialog.getStatusLabel().setText(context.getStatusNote());
+            dialog.getProgressBar().setIndeterminate(true);
+        }
+
+        private synchronized void stop() {
+            if (taskPollingTimer != null) {
+                taskPollingTimer.stop();
+            }
+
+            if (dialog != null) {
+                dialog.dispose();
+            }
+
+            finished = true;
+            notifyAll();
+        }
+
+        private boolean isCanceled() {
+            return context.isStopping();
+        }
+
+        private void setCanceled(boolean canceled) {
+            if (canceled) {
+                LOGGER.debug("task canceled");
+                context.setStatusNote("Canceling..");
+            }
+            context.setStopping(canceled);
+        }
+
+        private void exec() {
+            try {
+                doExec();
+            } catch (Throwable th) {
+                setCanceled(true);
+                LOGGER.warn("task error", th);
+            } finally {
+                stop();
+            }
+        }
+
+        private void doExec() {
+            context.setStatusNote("Preparing...");
+
+            Injector injector = DIBootstrap.createInjector(new DbSyncModule(),
+                    new ToolsModule(LOGGER),
+                    new DbImportModule(),
+                    new ModelerDbImportModule(context));
+
+            DbImportAction importer = injector.getInstance(DbImportAction.class);
+
+            try {
+                importer.execute(context.getConfig());
             } catch (Exception e) {
                 context.processException(e, "Error importing database schema.");
             }
             ProjectUtil.cleanObjMappings(context.getDataMap());
         }
-
-        private DbImportAction createAction() {
-            Injector injector = DIBootstrap.createInjector(new DbSyncModule(),
-                    new ToolsModule(LOGGER),
-                    new DbImportModule(),
-                    new ModelerDbImportModule(context));
-            return injector.getInstance(DbImportAction.class);
-        }
-
-        @Override
-        protected String getCurrentNote() {
-            return context.getStatusNote();
-        }
-
-        @Override
-        protected int getCurrentValue() {
-            return getMinValue();
-        }
-
-        @Override
-        protected boolean isIndeterminate() {
-            return true;
-        }
-
-        @Override
-        public boolean isCanceled() {
-            return context.isStopping();
-        }
-
-        @Override
-        public void setCanceled(boolean canceled) {
-            if (canceled) {
-                context.setStatusNote("Canceling..");
-            }
-            context.setStopping(canceled);
-        }
     }
-
 }

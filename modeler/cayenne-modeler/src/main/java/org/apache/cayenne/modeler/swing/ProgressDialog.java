@@ -37,9 +37,7 @@ import java.awt.Container;
 import java.awt.FlowLayout;
 
 /**
- * A dialog rendering a progress bar. It is normally controlled by a subclass of
- * LongRunningTask.
- * 
+ * A dialog rendering a progress bar.
  */
 public class ProgressDialog extends JDialog {
 

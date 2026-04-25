@@ -44,12 +44,11 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.validation.ValidationController;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
-import org.apache.cayenne.modeler.util.TextBinder;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.ui.validation.ValidationController;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.validation.ValidationResult;
@@ -59,6 +58,8 @@ import javax.sql.DataSource;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.io.File;
 import java.io.FileWriter;
@@ -117,7 +118,27 @@ public class MergerOptionsController extends ChildController<ProjectController> 
 
     protected void initController() {
 
-        TextBinder.bind(view.getSql(), v -> textForSQL = v);
+        view.getSql().getDocument().addDocumentListener(new DocumentListener() {
+
+            private void update() {
+                String s = view.getSql().getText();
+                textForSQL = s != null && s.isEmpty() ? null : s;
+            }
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                update();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                update();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+            }
+        });
 
         view.getGenerateButton().addActionListener(e -> generateSchemaAction());
         view.getSaveSqlButton().addActionListener(e -> storeSQLAction());

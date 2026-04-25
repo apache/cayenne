@@ -27,6 +27,8 @@ import org.apache.cayenne.modeler.undo.JComboBoxUndoListener;
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -108,5 +110,51 @@ public final class WidgetFactory {
         editor.setClickCountToStart(1);
 
         return editor;
+    }
+
+    /**
+     * Creates and returns a panel with right-centered buttons.
+     */
+    public static JPanel createButtonPanel(JButton[] buttons) {
+        JPanel panel = new JPanel();
+        panel.setBorder(BorderFactory.createEmptyBorder(3, 20, 3, 7));
+        panel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+
+        for (JButton button : buttons) {
+            panel.add(button);
+        }
+
+        return panel;
+    }
+
+    /**
+     * Creates panel with table within scroll panel and buttons in the bottom.
+     * Also sets the resizing and selection policies of the table to
+     * AUTO_RESIZE_OFF and SINGLE_SELECTION respectively.
+     */
+    public static JPanel createTablePanel(final JTable table, JButton[] buttons) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout(5, 5));
+        // Create table with two columns and no rows.
+        table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(table.isEditing()) {
+                    table.getCellEditor().stopCellEditing();
+                }
+            }
+        });
+
+        // Panel to add space between table and EAST/WEST borders
+        panel.add(scrollPane, BorderLayout.CENTER);
+
+        // Add Add and Remove buttons
+        if (buttons != null) {
+            panel.add(createButtonPanel(buttons), BorderLayout.SOUTH);
+        }
+        return panel;
     }
 }

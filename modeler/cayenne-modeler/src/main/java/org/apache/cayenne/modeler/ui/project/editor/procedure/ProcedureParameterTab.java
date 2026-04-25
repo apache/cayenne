@@ -46,7 +46,6 @@ import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.table.CayenneCellEditor;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
 import org.apache.cayenne.modeler.swing.text.LimitedTextField;
@@ -178,7 +177,7 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
 
         TablePopupHandler.install(table, popup);
 
-        add(PanelFactory.createTablePanel(table, null), BorderLayout.CENTER);
+        add(WidgetFactory.createTablePanel(table, null), BorderLayout.CENTER);
 
         actionManager.setupCutCopyPaste(
                 table,

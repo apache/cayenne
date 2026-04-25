@@ -43,7 +43,6 @@ import org.apache.cayenne.modeler.swing.table.BoardTableCellRenderer;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
 
@@ -95,7 +94,7 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
         popup.add(actionManager.getAction(PasteAction.class).buildMenu());
 
         TablePopupHandler.install(table, popup);
-        add(PanelFactory.createTablePanel(table, null), BorderLayout.CENTER);
+        add(WidgetFactory.createTablePanel(table, null), BorderLayout.CENTER);
 
         this.controller.addDbEntityDisplayListener(this);
         this.controller.addDbEntityListener(this);

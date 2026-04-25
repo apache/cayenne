@@ -19,12 +19,7 @@
 
 package org.apache.cayenne.modeler.util;
 
-import javax.swing.InputVerifier;
-import javax.swing.JComponent;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+import javax.swing.*;
 import java.util.function.Consumer;
 
 /**
@@ -51,24 +46,6 @@ public final class TextBinder {
             public boolean verify(JComponent c) {
                 onCommit.accept(nullIfEmpty(field.getText()));
                 return true;
-            }
-        });
-    }
-
-    public static void bind(JTextArea area, Consumer<String> onCommit) {
-        area.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                onCommit.accept(nullIfEmpty(area.getText()));
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                onCommit.accept(nullIfEmpty(area.getText()));
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
             }
         });
     }

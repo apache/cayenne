@@ -22,12 +22,10 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.swing.MultiColumnBrowser;
-import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
 
@@ -199,7 +197,7 @@ public class ObjAttributeInfoDialogView extends JDialog {
         });
 
         JButton[] buttons = {cancelButton, saveButton};
-        add(PanelFactory.createButtonPanel(buttons), BorderLayout.SOUTH);
+        add(WidgetFactory.createButtonPanel(buttons), BorderLayout.SOUTH);
     }
 
     public CayenneTable getOverrideAttributeTable() {

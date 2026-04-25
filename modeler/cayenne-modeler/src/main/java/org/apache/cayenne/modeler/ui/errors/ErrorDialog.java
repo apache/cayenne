@@ -20,10 +20,10 @@
 
 package org.apache.cayenne.modeler.ui.errors;
 
+import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.ui.ModelerFrame;
 import org.apache.cayenne.modeler.util.CayenneDialog;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.util.LocalizedStringsHandler;
 import org.apache.cayenne.util.Util;
 
@@ -111,7 +111,7 @@ class ErrorDialog extends CayenneDialog implements ActionListener {
 
         JButton[] buttons = (showHide != null) ? new JButton[]{close, showHide}
                 : new JButton[]{close};
-        pane.add(PanelFactory.createButtonPanel(buttons), BorderLayout.SOUTH);
+        pane.add(WidgetFactory.createButtonPanel(buttons), BorderLayout.SOUTH);
 
         // prepare to display
         this.pack();

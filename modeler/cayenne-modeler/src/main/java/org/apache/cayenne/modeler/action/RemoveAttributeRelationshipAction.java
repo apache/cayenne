@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.editor.objentity.ObjEntityAttributePanel;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.ObjAttributePanel;
 import org.apache.cayenne.modeler.ui.project.editor.dbentity.DbAttributePanel;
 
 import javax.swing.JComponent;
@@ -45,7 +45,7 @@ public class RemoveAttributeRelationshipAction extends RemoveAction implements M
 
     @Override
     public String getActionName(boolean multiple) {
-        if (currentSelectedPanel instanceof ObjEntityAttributePanel || currentSelectedPanel instanceof DbAttributePanel) {
+        if (currentSelectedPanel instanceof ObjAttributePanel || currentSelectedPanel instanceof DbAttributePanel) {
             return removeAttributeAction.getActionName(multiple);
         } else {
             return removeRelationshipAction.getActionName(multiple);
@@ -54,7 +54,7 @@ public class RemoveAttributeRelationshipAction extends RemoveAction implements M
 
     @Override
     public boolean enableForPath(ConfigurationNode object) {
-        if (currentSelectedPanel instanceof ObjEntityAttributePanel || currentSelectedPanel instanceof DbAttributePanel) {
+        if (currentSelectedPanel instanceof ObjAttributePanel || currentSelectedPanel instanceof DbAttributePanel) {
             return removeAttributeAction.enableForPath(object);
         } else {
             return removeRelationshipAction.enableForPath(object);
@@ -63,7 +63,7 @@ public class RemoveAttributeRelationshipAction extends RemoveAction implements M
 
     @Override
     public void performAction(ActionEvent e, boolean allowAsking) {
-        if (currentSelectedPanel instanceof ObjEntityAttributePanel || currentSelectedPanel instanceof DbAttributePanel) {
+        if (currentSelectedPanel instanceof ObjAttributePanel || currentSelectedPanel instanceof DbAttributePanel) {
             removeAttributeAction.performAction(e, allowAsking);
         } else {
             removeRelationshipAction.performAction(e, allowAsking);

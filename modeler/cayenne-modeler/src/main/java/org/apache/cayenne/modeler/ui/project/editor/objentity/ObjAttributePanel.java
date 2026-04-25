@@ -48,7 +48,6 @@ import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.modeler.util.DbAttributePathComboBoxEditor;
 import org.apache.cayenne.modeler.util.DbAttributePathComboBoxRenderer;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
@@ -75,7 +74,7 @@ import java.util.Map;
 /**
  * Detail view of the ObjEntity attributes.
  */
-public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayListener, ObjEntityListener, ObjAttributeListener, ProjectOnSaveListener {
+public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListener, ObjEntityListener, ObjAttributeListener, ProjectOnSaveListener {
 
     private static final ImageIcon INHERITANCE_ICON = ModelerUtil.buildIcon("icon-inheritance.png");
 
@@ -86,7 +85,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
     private final TableColumnPreferences tablePreferences;
     private final JMenuItem editMenu;
 
-    public ObjEntityAttributePanel(ProjectController controller, ObjEntityAttributeRelationshipTab parentPanel) {
+    public ObjAttributePanel(ProjectController controller, ObjEntityAttributeRelationshipTab parentPanel) {
         this.controller = controller;
         this.parentPanel = parentPanel;
 
@@ -131,7 +130,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
         popup.add(actionManager.getAction(PasteAction.class).buildMenu());
 
         TablePopupHandler.install(table, popup);
-        add(PanelFactory.createTablePanel(table, null), BorderLayout.CENTER);
+        add(WidgetFactory.createTablePanel(table, null), BorderLayout.CENTER);
 
         controller.addObjEntityDisplayListener(this);
         controller.addObjEntityListener(this);

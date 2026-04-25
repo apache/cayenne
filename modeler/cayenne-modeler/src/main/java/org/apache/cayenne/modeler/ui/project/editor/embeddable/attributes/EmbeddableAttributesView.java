@@ -42,7 +42,6 @@ import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
@@ -104,7 +103,7 @@ public class EmbeddableAttributesView extends JPanel implements
         popup.add(actionManager.getAction(PasteAction.class).buildMenu());
 
         TablePopupHandler.install(table, popup);
-        add(PanelFactory.createTablePanel(table, null), BorderLayout.CENTER);
+        add(WidgetFactory.createTablePanel(table, null), BorderLayout.CENTER);
     }
 
     private void initController() {

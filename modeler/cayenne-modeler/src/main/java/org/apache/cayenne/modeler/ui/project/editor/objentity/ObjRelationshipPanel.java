@@ -44,7 +44,6 @@ import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.DbRelationshipPathComboBoxEditor;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
 
 import javax.swing.*;
@@ -61,7 +60,7 @@ import java.util.List;
 /**
  * Displays ObjRelationships for the edited ObjEntity.
  */
-public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDisplayListener, ObjEntityListener, ObjRelationshipListener {
+public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayListener, ObjEntityListener, ObjRelationshipListener {
 
     private static final ImageIcon INHERITANCE_ICON = ModelerUtil.buildIcon("icon-inheritance.png");
 
@@ -78,7 +77,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
     private final ObjEntityAttributeRelationshipTab parentPanel;
     private final JMenuItem editMenu;
 
-    public ObjEntityRelationshipPanel(ProjectController controller, ObjEntityAttributeRelationshipTab parentPanel) {
+    public ObjRelationshipPanel(ProjectController controller, ObjEntityAttributeRelationshipTab parentPanel) {
         this.controller = controller;
         this.parentPanel = parentPanel;
 
@@ -123,7 +122,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
         popup.add(actionManager.getAction(PasteAction.class).buildMenu());
 
         TablePopupHandler.install(table, popup);
-        add(PanelFactory.createTablePanel(table, null), BorderLayout.CENTER);
+        add(WidgetFactory.createTablePanel(table, null), BorderLayout.CENTER);
 
         controller.addObjEntityDisplayListener(this);
         controller.addObjEntityListener(this);

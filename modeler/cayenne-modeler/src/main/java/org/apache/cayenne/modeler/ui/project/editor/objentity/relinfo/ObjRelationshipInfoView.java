@@ -25,7 +25,6 @@ import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.swing.MultiColumnBrowser;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
-import org.apache.cayenne.modeler.util.PanelFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -143,7 +142,7 @@ public class ObjRelationshipInfoView extends JDialog{
 
         add(builder.getPanel(), BorderLayout.CENTER);
         JButton[] buttons = {cancelButton, saveButton};
-        add(PanelFactory.createButtonPanel(buttons), BorderLayout.SOUTH);
+        add(WidgetFactory.createButtonPanel(buttons), BorderLayout.SOUTH);
     }
 
     public JButton getSaveButton()

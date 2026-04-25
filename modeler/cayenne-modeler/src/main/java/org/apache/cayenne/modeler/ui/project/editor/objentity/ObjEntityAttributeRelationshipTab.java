@@ -52,8 +52,8 @@ import java.awt.event.ActionListener;
  */
 public class ObjEntityAttributeRelationshipTab extends JPanel implements ObjEntityDisplayListener, ObjEntityListener {
 
-    private final ObjEntityAttributePanel attributePanel;
-    private final ObjEntityRelationshipPanel relationshipPanel;
+    private final ObjAttributePanel attributePanel;
+    private final ObjRelationshipPanel relationshipPanel;
     private final JSplitPane splitPane;
     private final JToolBar toolBar;
     private final JButton editButton;
@@ -62,8 +62,8 @@ public class ObjEntityAttributeRelationshipTab extends JPanel implements ObjEnti
         this.setLayout(new BorderLayout());
 
         this.editButton = new CayenneAction.CayenneToolbarButton(null, 0);
-        attributePanel = new ObjEntityAttributePanel(controller, this);
-        relationshipPanel = new ObjEntityRelationshipPanel(controller, this);
+        attributePanel = new ObjAttributePanel(controller, this);
+        relationshipPanel = new ObjRelationshipPanel(controller, this);
 
         splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, attributePanel, relationshipPanel);
         splitPane.setOneTouchExpandable(true);
@@ -130,11 +130,11 @@ public class ObjEntityAttributeRelationshipTab extends JPanel implements ObjEnti
         return splitPane;
     }
 
-    public ObjEntityAttributePanel getAttributePanel() {
+    public ObjAttributePanel getAttributePanel() {
         return attributePanel;
     }
 
-    public ObjEntityRelationshipPanel getRelationshipPanel() {
+    public ObjRelationshipPanel getRelationshipPanel() {
         return relationshipPanel;
     }
 

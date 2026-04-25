@@ -38,7 +38,6 @@ import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.table.BoardTableCellRenderer;
 import org.apache.cayenne.modeler.util.CayenneTable;
-import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
 import org.apache.cayenne.modeler.swing.text.LimitedTextField;
@@ -86,7 +85,7 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
         popup.add(actionManager.getAction(PasteAction.class).buildMenu());
 
         TablePopupHandler.install(table, popup);
-        add(PanelFactory.createTablePanel(table, null), BorderLayout.CENTER);
+        add(WidgetFactory.createTablePanel(table, null), BorderLayout.CENTER);
 
         controller.addDbEntityDisplayListener(this);
         controller.addDbAttributeListener(this);

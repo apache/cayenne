@@ -131,7 +131,7 @@ public class ObjEntityTabbedView extends JTabbedPane {
             attributeRelationshipTab.getSplitPane().getComponent(1).setVisible(true);
         }
 
-        ((ObjEntityRelationshipPanel) attributeRelationshipTab.getSplitPane().getComponent(1)).selectRelationships(objRels);
+        ((ObjRelationshipPanel) attributeRelationshipTab.getSplitPane().getComponent(1)).selectRelationships(objRels);
         attributeRelationshipTab.updateActions(objRels);
     }
 
@@ -150,7 +150,7 @@ public class ObjEntityTabbedView extends JTabbedPane {
             attributeRelationshipTab.getSplitPane().getComponent(0).setVisible(true);
         }
 
-        ((ObjEntityAttributePanel) attributeRelationshipTab.getSplitPane().getComponent(0)).selectAttributes(objAttrs);
+        ((ObjAttributePanel) attributeRelationshipTab.getSplitPane().getComponent(0)).selectAttributes(objAttrs);
         attributeRelationshipTab.updateActions(objAttrs);
     }
 }
