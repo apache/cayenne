@@ -17,13 +17,14 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.action.dbimport;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportModel;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportSorter;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportTree;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
@@ -41,8 +42,8 @@ public class DragAndDropNodeAction extends TreeManipulationAction {
     private DbImportTreeNode sourceParentNode;
     private JTree.DropLocation dropLocation;
 
-    public DragAndDropNodeAction(Application application) {
-        super(ACTION_NAME, application);
+    public DragAndDropNodeAction(Application application, DbImportTree tree) {
+        super(ACTION_NAME, application, tree);
     }
 
     @Override

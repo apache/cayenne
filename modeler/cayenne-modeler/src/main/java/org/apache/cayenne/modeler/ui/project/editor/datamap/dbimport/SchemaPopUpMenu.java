@@ -19,9 +19,12 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport;
 
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.DbImportActions;
+
 public class SchemaPopUpMenu extends RootPopUpMenu {
 
-    public SchemaPopUpMenu() {
+    public SchemaPopUpMenu(DbImportActions actions) {
+        super(actions);
         rename.setVisible(true);
         delete.setVisible(true);
         addSchema.setVisible(false);

@@ -19,10 +19,8 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport;
 
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.DbImportActions;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.action.dbimport.DeleteNodeAction;
-import org.apache.cayenne.modeler.action.dbimport.EditNodeAction;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -35,9 +33,10 @@ public class DefaultPopUpMenu extends JPopupMenu {
     protected DbImportTreeNode selectedElement;
     protected DbImportTreeNode parentElement;
     protected JTree tree;
-    protected ProjectController projectController;
+    protected final DbImportActions actions;
 
-    public DefaultPopUpMenu() {
+    public DefaultPopUpMenu(DbImportActions actions) {
+        this.actions = actions;
         rename = new JMenuItem("Rename");
         delete = new JMenuItem("Delete");
         this.add(rename);
@@ -48,12 +47,12 @@ public class DefaultPopUpMenu extends JPopupMenu {
     private void initListeners() {
         rename.addActionListener(e -> {
             if ((selectedElement != null) && (parentElement != null)) {
-                projectController.getApplication().getActionManager().getAction(EditNodeAction.class).actionPerformed(e);
+                actions.getEditNodeAction().actionPerformed(e);
             }
         });
         delete.addActionListener(e -> {
             if ((selectedElement != null) && (parentElement != null)) {
-                projectController.getApplication().getActionManager().getAction(DeleteNodeAction.class).actionPerformed(e);
+                actions.getDeleteNodeAction().actionPerformed(e);
             }
         });
     }
@@ -68,9 +67,5 @@ public class DefaultPopUpMenu extends JPopupMenu {
 
     public void setTree(JTree tree) {
         this.tree = tree;
-    }
-
-    public void setProjectController(ProjectController projectController) {
-        this.projectController = projectController;
     }
 }

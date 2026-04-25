@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.action.dbimport;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeProcedure;
@@ -29,19 +29,21 @@ import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.PatternParam;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportTree;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 
 import java.awt.event.ActionEvent;
 
 public abstract class AddPatternParamAction extends TreeManipulationAction {
 
-    private Class paramClass;
+    private final Class<?> paramClass;
 
-    AddPatternParamAction(String name, Application application) {
-        super(name, application);
+    AddPatternParamAction(String name, Application application, DbImportTree tree, Class<?> paramClass) {
+        super(name, application, tree);
+        this.paramClass = paramClass;
     }
 
-    private void addPatternParamToContainer(Class paramClass, Object selectedObject, String name, DbImportTreeNode node) {
+    private void addPatternParamToContainer(Class<?> paramClass, Object selectedObject, String name, DbImportTreeNode node) {
         FilterContainer container = (FilterContainer) selectedObject;
         PatternParam element = null;
         if (paramClass == ExcludeTable.class) {
@@ -63,7 +65,7 @@ public abstract class AddPatternParamAction extends TreeManipulationAction {
         node.add(new DbImportTreeNode(element));
     }
 
-    private void addPatternParamToIncludeTable(Class paramClass, Object selectedObject, String name, DbImportTreeNode node) {
+    private void addPatternParamToIncludeTable(Class<?> paramClass, Object selectedObject, String name, DbImportTreeNode node) {
         IncludeTable includeTable = (IncludeTable) selectedObject;
         PatternParam element = null;
         if (paramClass == IncludeColumn.class) {
@@ -105,9 +107,5 @@ public abstract class AddPatternParamAction extends TreeManipulationAction {
             updateSelected = false;
         }
         completeInserting(reverseEngineeringOldCopy);
-    }
-
-    public void setParamClass(Class paramClass) {
-        this.paramClass = paramClass;
     }
 }

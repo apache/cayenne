@@ -19,14 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport;
 
-import org.apache.cayenne.modeler.action.dbimport.AddCatalogAction;
-import org.apache.cayenne.modeler.action.dbimport.AddExcludeColumnAction;
-import org.apache.cayenne.modeler.action.dbimport.AddExcludeProcedureAction;
-import org.apache.cayenne.modeler.action.dbimport.AddExcludeTableAction;
-import org.apache.cayenne.modeler.action.dbimport.AddIncludeColumnAction;
-import org.apache.cayenne.modeler.action.dbimport.AddIncludeProcedureAction;
-import org.apache.cayenne.modeler.action.dbimport.AddIncludeTableAction;
-import org.apache.cayenne.modeler.action.dbimport.AddSchemaAction;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.DbImportActions;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -46,7 +39,8 @@ public class RootPopUpMenu extends DefaultPopUpMenu {
     protected JMenuItem addExcludeProcedure;
 
 
-    public RootPopUpMenu() {
+    public RootPopUpMenu(DbImportActions actions) {
+        super(actions);
         initPopUpMenuElements();
         initListeners();
         this.add(addItem, FIRST_POSITION);
@@ -55,22 +49,14 @@ public class RootPopUpMenu extends DefaultPopUpMenu {
     }
 
     private void initListeners() {
-        addCatalog.addActionListener(e -> projectController.getApplication().getActionManager()
-                .getAction(AddCatalogAction.class).actionPerformed(e));
-        addSchema.addActionListener(e -> projectController.getApplication().getActionManager()
-                .getAction(AddSchemaAction.class).actionPerformed(e));
-        addIncludeTable.addActionListener(e -> projectController.getApplication().getActionManager()
-                .getAction(AddIncludeTableAction.class).actionPerformed(e));
-        addExcludeTable.addActionListener(e -> projectController.getApplication().getActionManager()
-                .getAction(AddExcludeTableAction.class).actionPerformed(e));
-        addIncludeColumn.addActionListener(e -> projectController.getApplication().getActionManager()
-                .getAction(AddIncludeColumnAction.class).actionPerformed(e));
-        addExcludeColumn.addActionListener(e -> projectController.getApplication().getActionManager()
-                .getAction(AddExcludeColumnAction.class).actionPerformed(e));
-        addIncludeProcedure.addActionListener(e -> projectController.getApplication().getActionManager()
-                .getAction(AddIncludeProcedureAction.class).actionPerformed(e));
-        addExcludeProcedure.addActionListener(e -> projectController.getApplication().getActionManager()
-                .getAction(AddExcludeProcedureAction.class).actionPerformed(e));
+        addCatalog.addActionListener(e -> actions.getAddCatalogAction().actionPerformed(e));
+        addSchema.addActionListener(e -> actions.getAddSchemaAction().actionPerformed(e));
+        addIncludeTable.addActionListener(e -> actions.getAddIncludeTableAction().actionPerformed(e));
+        addExcludeTable.addActionListener(e -> actions.getAddExcludeTableAction().actionPerformed(e));
+        addIncludeColumn.addActionListener(e -> actions.getAddIncludeColumnAction().actionPerformed(e));
+        addExcludeColumn.addActionListener(e -> actions.getAddExcludeColumnAction().actionPerformed(e));
+        addIncludeProcedure.addActionListener(e -> actions.getAddIncludeProcedureAction().actionPerformed(e));
+        addExcludeProcedure.addActionListener(e -> actions.getAddExcludeProcedureAction().actionPerformed(e));
     }
 
     private void initPopUpMenuElements() {

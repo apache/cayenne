@@ -17,19 +17,20 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.action.dbimport;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action;
 
-import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeTable;
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportTree;
 
-public class AddExcludeTableAction extends AddPatternParamAction {
+public class AddIncludeColumnAction extends AddPatternParamAction {
 
-    private static final String ACTION_NAME = "Exclude Table";
-    private static final String ICON_NAME = "icon-dbi-excludeTable.png";
+    private static final String ACTION_NAME = "Include Column";
+    private static final String ICON_NAME = "icon-dbi-includeColumn.png";
 
-    public AddExcludeTableAction(Application application) {
-        super(ACTION_NAME, application);
-        insertableNodeClass = ExcludeTable.class;
+    public AddIncludeColumnAction(Application application, DbImportTree tree) {
+        super(ACTION_NAME, application, tree, IncludeColumn.class);
+        insertableNodeClass = IncludeColumn.class;
     }
 
     public String getIconName() {

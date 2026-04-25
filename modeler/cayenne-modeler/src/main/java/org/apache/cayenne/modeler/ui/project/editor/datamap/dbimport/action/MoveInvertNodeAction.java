@@ -17,22 +17,19 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.action.dbimport;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action;
 
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportTree;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportView;
 
-public class AddIncludeColumnAction extends AddPatternParamAction {
+public class MoveInvertNodeAction extends MoveImportNodeAction {
 
-    private static final String ACTION_NAME = "Include Column";
-    private static final String ICON_NAME = "icon-dbi-includeColumn.png";
+    private static final String ACTION_NAME = "Exclude";
 
-    public AddIncludeColumnAction(Application application) {
-        super(ACTION_NAME, application);
-        insertableNodeClass = IncludeColumn.class;
-    }
-
-    public String getIconName() {
-        return ICON_NAME;
+    public MoveInvertNodeAction(Application application, DbImportView view,
+                                DbImportTree sourceTree, DbImportTree targetTree) {
+        super(ACTION_NAME, application, view, sourceTree, targetTree);
+        moveInverted = true;
     }
 }

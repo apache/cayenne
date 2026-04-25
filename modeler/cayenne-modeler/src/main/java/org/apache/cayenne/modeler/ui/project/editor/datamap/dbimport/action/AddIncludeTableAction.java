@@ -17,23 +17,25 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.action.dbimport;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action;
 
-import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
+import org.apache.cayenne.dbsync.reverse.dbimport.FilterContainer;
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportTree;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 
 import java.awt.event.ActionEvent;
 
-public class AddCatalogAction extends TreeManipulationAction {
+public class AddIncludeTableAction extends TreeManipulationAction {
 
-    private static final String ACTION_NAME = "Add Catalog";
-    private static final String ICON_NAME = "icon-dbi-catalog.png";
+    private static final String ACTION_NAME = "Include Table";
+    private static final String ICON_NAME = "icon-dbi-includeTable.png";
 
-    public AddCatalogAction(Application application) {
-        super(ACTION_NAME, application);
-        insertableNodeClass = Catalog.class;
+    public AddIncludeTableAction(Application application, DbImportTree tree) {
+        super(ACTION_NAME, application, tree);
+        insertableNodeClass = IncludeTable.class;
     }
 
     public String getIconName() {
@@ -42,17 +44,23 @@ public class AddCatalogAction extends TreeManipulationAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        ReverseEngineering reverseEngineeringOld = prepareElements();
-        Catalog newCatalog = new Catalog(name);
+        ReverseEngineering reverseEngineeringOldCopy = prepareElements();
+        if (reverseEngineeringIsEmpty()) {
+            tree.getRootNode().removeAllChildren();
+        }
+        IncludeTable newTable = new IncludeTable(name);
         if (canBeInserted(selectedElement)) {
-            ((ReverseEngineering) selectedElement.getUserObject()).addCatalog(newCatalog);
-            selectedElement.add(new DbImportTreeNode(newCatalog));
+            ((FilterContainer) selectedElement.getUserObject()).addIncludeTable(newTable);
+            selectedElement.add(new DbImportTreeNode(newTable));
             updateSelected = true;
-        } else if (canInsert()) {
-            ((ReverseEngineering) parentElement.getUserObject()).addCatalog(newCatalog);
-            parentElement.add(new DbImportTreeNode(newCatalog));
+        } else {
+            if (parentElement == null) {
+                parentElement = tree.getRootNode();
+            }
+            ((FilterContainer) parentElement.getUserObject()).addIncludeTable(newTable);
+            parentElement.add(new DbImportTreeNode(newTable));
             updateSelected = false;
         }
-        completeInserting(reverseEngineeringOld);
+        completeInserting(reverseEngineeringOldCopy);
     }
 }

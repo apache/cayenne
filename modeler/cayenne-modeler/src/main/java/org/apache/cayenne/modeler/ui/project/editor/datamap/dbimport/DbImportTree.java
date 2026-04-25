@@ -27,8 +27,7 @@ import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.PatternParam;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.action.LoadDbSchemaAction;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.LoadDbSchemaAction;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.TransferableNode;
 
@@ -49,12 +48,17 @@ public class DbImportTree extends JTree {
 
     private boolean isTransferable;
     private ReverseEngineering reverseEngineering;
+    private LoadDbSchemaAction loadDbSchemaAction;
 
     public DbImportTree(TreeNode node) {
         super(node);
         setRowHeight(0);
         setUI(new TreeUI());
         createTreeExpandListener();
+    }
+
+    public void setLoadDbSchemaAction(LoadDbSchemaAction loadDbSchemaAction) {
+        this.loadDbSchemaAction = loadDbSchemaAction;
     }
 
     public void translateReverseEngineeringToTree(ReverseEngineering reverseEngineering, boolean isTransferable) {
@@ -341,9 +345,9 @@ public class DbImportTree extends JTree {
                 DbImportTreeNode node = (DbImportTreeNode) lastPathComponent;
                 if ((node.isIncludeTable() || node.isSchema() || node.isCatalog()) && !node.isLoaded()) {
                     //reload tables and columns action.
-
-                    LoadDbSchemaAction action = Application.getInstance().getActionManager().getAction(LoadDbSchemaAction.class);
-                    action.loadDbSchema(path);
+                    if (loadDbSchemaAction != null) {
+                        loadDbSchemaAction.loadDbSchema(path);
+                    }
                 }
             }
 

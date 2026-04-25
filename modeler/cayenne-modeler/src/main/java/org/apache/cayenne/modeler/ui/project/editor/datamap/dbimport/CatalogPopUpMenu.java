@@ -19,9 +19,12 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport;
 
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.DbImportActions;
+
 public class CatalogPopUpMenu extends RootPopUpMenu {
 
-    public CatalogPopUpMenu() {
+    public CatalogPopUpMenu(DbImportActions actions) {
+        super(actions);
         delete.setVisible(true);
         rename.setVisible(true);
         addCatalog.setVisible(false);

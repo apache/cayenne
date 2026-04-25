@@ -17,13 +17,13 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.action;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.action.dbimport.TreeManipulationAction;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportSorter;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportTree;
 
 import java.awt.event.ActionEvent;
 import java.util.List;
@@ -33,8 +33,8 @@ public class SortNodesAction extends TreeManipulationAction {
     private static final String ACTION_NAME = "Sort";
     private static final String ICON_NAME = "icon-dbi-sort.png";
 
-    public SortNodesAction(Application application) {
-        super(ACTION_NAME, application);
+    public SortNodesAction(Application application, DbImportTree tree) {
+        super(ACTION_NAME, application, tree);
     }
 
     @Override

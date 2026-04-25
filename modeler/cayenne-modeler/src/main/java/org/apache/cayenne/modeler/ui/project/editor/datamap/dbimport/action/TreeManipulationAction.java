@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.action.dbimport;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
@@ -49,9 +49,7 @@ public abstract class TreeManipulationAction extends ModelerAbstractAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TreeManipulationAction.class);
 
-    static final String EMPTY_NAME = "";
-
-    protected DbImportTree tree;
+    protected final DbImportTree tree;
     protected DbImportTreeNode selectedElement;
     DbImportTreeNode parentElement;
     DbImportTreeNode foundNode;
@@ -59,26 +57,27 @@ public abstract class TreeManipulationAction extends ModelerAbstractAction {
     Class<?> insertableNodeClass;
     boolean isMultipleAction;
     private boolean movedFromDbSchema;
-    private Map<Class<?>, List<Class<?>>> levels;
+    private final Map<Class<?>, List<Class<?>>> levels;
     protected String name;
     protected boolean updateSelected;
 
-    public TreeManipulationAction(String name, Application application) {
+    public TreeManipulationAction(String name, Application application, DbImportTree tree) {
         super(name, application);
-        initLevels();
+        this.tree = tree;
+        this.levels = initLevels();
     }
 
     void completeInserting(ReverseEngineering reverseEngineeringOldCopy) {
         if (!isMultipleAction) {
             updateAfterInsert();
         }
-        if ((!isMultipleAction) && (!insertableNodeName.equals(EMPTY_NAME))) {
+        if ((!isMultipleAction) && (!insertableNodeName.equals(""))) {
             putReverseEngineeringToUndoManager(reverseEngineeringOldCopy);
         }
     }
 
     private String getNodeName() {
-        return insertableNodeName != null ? insertableNodeName : EMPTY_NAME;
+        return insertableNodeName != null ? insertableNodeName : "";
     }
 
     protected ReverseEngineering prepareElements() {
@@ -113,14 +112,14 @@ public abstract class TreeManipulationAction extends ModelerAbstractAction {
 
     boolean reverseEngineeringIsEmpty() {
         ReverseEngineering reverseEngineering = tree.getReverseEngineering();
-        return ((reverseEngineering.getCatalogs().size() == 0) && (reverseEngineering.getSchemas().size() == 0)
-                && (reverseEngineering.getIncludeTables().size() == 0) && (reverseEngineering.getExcludeTables().size() == 0)
-                && (reverseEngineering.getIncludeColumns().size() == 0) && (reverseEngineering.getExcludeColumns().size() == 0)
-                && (reverseEngineering.getIncludeProcedures().size() == 0) && (reverseEngineering.getExcludeProcedures().size() == 0));
+        return ((reverseEngineering.getCatalogs().isEmpty()) && (reverseEngineering.getSchemas().isEmpty())
+                && (reverseEngineering.getIncludeTables().isEmpty()) && (reverseEngineering.getExcludeTables().isEmpty())
+                && (reverseEngineering.getIncludeColumns().isEmpty()) && (reverseEngineering.getExcludeColumns().isEmpty())
+                && (reverseEngineering.getIncludeProcedures().isEmpty()) && (reverseEngineering.getExcludeProcedures().isEmpty()));
     }
 
-    private void initLevels() {
-        levels = new HashMap<>();
+    private static Map<Class<?>, List<Class<?>>> initLevels() {
+        Map<Class<?>, List<Class<?>>> levels = new HashMap<>();
 
         List<Class<?>> schemaChildren = Arrays.asList(
                 IncludeTable.class, ExcludeTable.class,
@@ -139,10 +138,7 @@ public abstract class TreeManipulationAction extends ModelerAbstractAction {
         levels.put(ExcludeColumn.class, Collections.emptyList());
         levels.put(IncludeProcedure.class, Collections.emptyList());
         levels.put(ExcludeProcedure.class, Collections.emptyList());
-    }
-
-    public void setTree(DbImportTree tree) {
-        this.tree = tree;
+        return levels;
     }
 
     public JTree getTree() {
@@ -156,7 +152,7 @@ public abstract class TreeManipulationAction extends ModelerAbstractAction {
         Class<?> selectedObjectClass = node.getUserObject().getClass();
         List<Class<?>> classes = levels.get(selectedObjectClass);
         if(classes == null) {
-            LOGGER.warn("Trying to insert node of the unknown class '" + selectedObjectClass.getName() + "' to the dbimport tree.");
+            LOGGER.warn("Trying to insert node of the unknown class '{}' to the dbimport tree.", selectedObjectClass.getName());
             return false;
         }
         return classes.contains(insertableNodeClass);
@@ -195,9 +191,9 @@ public abstract class TreeManipulationAction extends ModelerAbstractAction {
         updateModel(updateSelected);
         if (!movedFromDbSchema) {
             if (updateSelected) {
-                tree.startEditingAtPath(new TreePath(((DbImportTreeNode) selectedElement.getLastChild()).getPath()));
+                tree.startEditingAtPath(new TreePath(selectedElement.getLastChild().getPath()));
             } else {
-                tree.startEditingAtPath(new TreePath(((DbImportTreeNode) parentElement.getLastChild()).getPath()));
+                tree.startEditingAtPath(new TreePath(parentElement.getLastChild().getPath()));
             }
         }
         resetActionFlags();
@@ -209,19 +205,19 @@ public abstract class TreeManipulationAction extends ModelerAbstractAction {
         insertableNodeName = "";
     }
 
-    void setInsertableNodeName(String nodeName) {
+    public void setInsertableNodeName(String nodeName) {
         this.insertableNodeName = nodeName;
     }
 
-    void setMultipleAction(boolean multipleAction) {
+    public void setMultipleAction(boolean multipleAction) {
         isMultipleAction = multipleAction;
     }
 
-    void setMovedFromDbSchema(boolean movedFromDbSchema) {
+    public void setMovedFromDbSchema(boolean movedFromDbSchema) {
         this.movedFromDbSchema = movedFromDbSchema;
     }
 
-    void setFoundNode(DbImportTreeNode node) {
+    public void setFoundNode(DbImportTreeNode node) {
         this.foundNode = node;
     }
 }

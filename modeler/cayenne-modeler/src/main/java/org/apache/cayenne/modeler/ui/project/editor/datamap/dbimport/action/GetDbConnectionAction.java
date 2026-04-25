@@ -17,9 +17,10 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.action;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action;
 
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.action.DBConnectionAwareAction;
 import org.apache.cayenne.modeler.ui.datasource.DataSourceController;
 
 import java.awt.event.ActionEvent;

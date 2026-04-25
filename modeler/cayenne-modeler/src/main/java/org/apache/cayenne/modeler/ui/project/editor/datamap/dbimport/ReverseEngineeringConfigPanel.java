@@ -19,23 +19,19 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import java.util.Vector;
-
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.swing.WidgetFactory;
+import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
 import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
-import org.apache.cayenne.modeler.swing.WidgetFactory;
-import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
+
+import javax.swing.*;
+import java.util.Vector;
 
 public class ReverseEngineeringConfigPanel extends JPanel {
 
@@ -52,9 +48,8 @@ public class ReverseEngineeringConfigPanel extends JPanel {
 
     private CayenneUndoableTextField tableTypes;
 
-    private ProjectController projectController;
-
-    private DbImportView dbImportView;
+    private final ProjectController projectController;
+    private final DbImportView dbImportView;
 
     ReverseEngineeringConfigPanel(ProjectController projectController, DbImportView dbImportView) {
         this.projectController = projectController;

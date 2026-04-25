@@ -19,9 +19,9 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport;
 
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.action.dbimport.DeleteNodeAction;
-import org.apache.cayenne.modeler.action.dbimport.EditNodeAction;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.DbImportActions;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.DeleteNodeAction;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.EditNodeAction;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 import org.apache.cayenne.util.Util;
 
@@ -38,10 +38,11 @@ import java.util.regex.Pattern;
 
 public class DbImportTreeCellEditor extends DefaultTreeCellEditor {
 
-    private ProjectController projectController;
+    private final DbImportActions actions;
 
-    public DbImportTreeCellEditor(JTree tree, DefaultTreeCellRenderer renderer) {
+    public DbImportTreeCellEditor(JTree tree, DefaultTreeCellRenderer renderer, DbImportActions actions) {
         super(tree, renderer);
+        this.actions = actions;
         setFont(UIManager.getFont("Tree.font"));
         this.addCellEditorListener(new CellEditorListener() {
             @Override
@@ -104,13 +105,13 @@ public class DbImportTreeCellEditor extends DefaultTreeCellEditor {
             return;
         }
         if (!Util.isEmptyString(super.getCellEditorValue().toString()) && !insertableNodeExist() && (isValidReverseEngineering())) {
-            EditNodeAction action = projectController.getApplication().getActionManager().getAction(EditNodeAction.class);
+            EditNodeAction action = actions.getEditNodeAction();
             action.setActionName(super.getCellEditorValue().toString());
             action.actionPerformed(null);
         } else {
             DbImportTreeNode selectedNode = (DbImportTreeNode) tree.getSelectionPath().getLastPathComponent();
             if (Util.isEmptyString(selectedNode.getSimpleNodeName()) || (insertableNodeExist())) {
-                DeleteNodeAction action = projectController.getApplication().getActionManager().getAction(DeleteNodeAction.class);
+                DeleteNodeAction action = actions.getDeleteNodeAction();
                 TreePath parentPath = tree.getSelectionPath().getParentPath();
                 action.actionPerformed(null);
                 tree.setSelectionPath(parentPath);
@@ -146,9 +147,5 @@ public class DbImportTreeCellEditor extends DefaultTreeCellEditor {
 
         }
         return false;
-    }
-
-    public void setProjectController(ProjectController projectController) {
-        this.projectController = projectController;
     }
 }

@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.action.dbimport;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
@@ -50,28 +50,33 @@ public class MoveImportNodeAction extends ModelerAbstractAction {
     private static final String ACTION_NAME = "Include";
     private static final String EMPTY_NAME = "";
 
-    private DbImportTree sourceTree;
-    private DbImportTree targetTree;
-    private DraggableTreePanel panel;
+    private final DbImportView view;
+    private final DbImportTree sourceTree;
+    private final DbImportTree targetTree;
     protected boolean moveInverted;
-    private Map<Class, Class> classMap;
+    private final Map<Class<?>, Class<?>> classMap;
 
-    public MoveImportNodeAction(Application application) {
-        super(ACTION_NAME, application);
+    public MoveImportNodeAction(Application application, DbImportView view, DbImportTree sourceTree, DbImportTree targetTree) {
+        this(ACTION_NAME, application, view, sourceTree, targetTree);
     }
 
-    MoveImportNodeAction(String actionName, Application application) {
+    MoveImportNodeAction(String actionName, Application application, DbImportView view,
+                         DbImportTree sourceTree, DbImportTree targetTree) {
         super(actionName, application);
-        initMap();
+        this.view = view;
+        this.sourceTree = sourceTree;
+        this.targetTree = targetTree;
+        this.classMap = initMap();
     }
 
-    private void initMap() {
-        classMap = new HashMap<>();
+    private static Map<Class<?>, Class<?>> initMap() {
+        Map<Class<?>, Class<?>> classMap = new HashMap<>();
         classMap.put(IncludeTable.class, ExcludeTable.class);
         classMap.put(IncludeColumn.class, ExcludeColumn.class);
         classMap.put(IncludeProcedure.class, ExcludeProcedure.class);
         classMap.put(Schema.class, Schema.class);
         classMap.put(Catalog.class, Catalog.class);
+        return classMap;
     }
 
     public String getIconName() {
@@ -119,8 +124,8 @@ public class MoveImportNodeAction extends ModelerAbstractAction {
         TreeManipulationAction action = null;
         DbImportTreeNode foundNode = null;
         String insertableName = EMPTY_NAME;
-        DbImportView rootParent = (DbImportView) panel.getParent().getParent();
-        rootParent.getReverseEngineeringProgress().setVisible(true);
+        DraggableTreePanel panel = view.getDraggableTreePanel();
+        view.getReverseEngineeringProgress().setVisible(true);
         if (paths != null) {
             boolean isChanged = false;
             ReverseEngineering reverseEngineeringOldCopy = new ReverseEngineering(targetTree.getReverseEngineering());
@@ -145,7 +150,6 @@ public class MoveImportNodeAction extends ModelerAbstractAction {
                             if (canInsert(new TreePath(insertedNode.getPath()), previousNode)) {
                                 manipulationAction.setFoundNode(previousNode);
                                 manipulationAction.setInsertableNodeName(insertedNode.getSimpleNodeName());
-                                manipulationAction.setTree(targetTree);
                                 manipulationAction.setMovedFromDbSchema(true);
                                 manipulationAction.actionPerformed(e);
                                 manipulationAction.setFoundNode(null);
@@ -170,7 +174,6 @@ public class MoveImportNodeAction extends ModelerAbstractAction {
                             insertableName = selectedElement.getSimpleNodeName();
                             action.setFoundNode(foundNode);
                             action.setInsertableNodeName(Matcher.quoteReplacement(insertableName));
-                            action.setTree(targetTree);
                             action.setMovedFromDbSchema(true);
                             action.actionPerformed(e);
                             action.setFoundNode(null);
@@ -201,7 +204,7 @@ public class MoveImportNodeAction extends ModelerAbstractAction {
                     targetTree.setSelectionPath(new TreePath(foundNode.getLastChild().getPath()));
                 }
             } finally {
-                rootParent.getReverseEngineeringProgress().setVisible(false);
+                view.getReverseEngineeringProgress().setVisible(false);
                 if (action != null) {
                     action.resetActionFlags();
                 }
@@ -228,15 +231,4 @@ public class MoveImportNodeAction extends ModelerAbstractAction {
         return false;
     }
 
-    public void setSourceTree(DbImportTree sourceTree) {
-        this.sourceTree = sourceTree;
-    }
-
-    public void setTargetTree(DbImportTree targetTree) {
-        this.targetTree = targetTree;
-    }
-
-    public void setPanel(DraggableTreePanel panel) {
-        this.panel = panel;
-    }
 }

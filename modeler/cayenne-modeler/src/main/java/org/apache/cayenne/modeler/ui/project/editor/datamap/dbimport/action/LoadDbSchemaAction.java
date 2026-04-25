@@ -17,13 +17,14 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.action;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.action.DBConnectionAwareAction;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DatabaseSchemaLoader;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportModel;
@@ -46,10 +47,12 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
 
     private static final String ICON_NAME = "icon-dbi-refresh.png";
     private static final String ACTION_NAME = "Refresh Db Schema";
-    private DraggableTreePanel draggableTreePanel;
 
-    LoadDbSchemaAction(Application application) {
+    private final DbImportView view;
+
+    public LoadDbSchemaAction(Application application, DbImportView view) {
         super(ACTION_NAME, application);
+        this.view = view;
     }
 
     public String getIconName() {
@@ -62,12 +65,12 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
     }
 
     public void loadDbSchema(TreePath tablePath) {
-        DbImportView rootParent = ((DbImportView) draggableTreePanel.getParent().getParent());
-        rootParent.getLoadDbSchemaProgress().setVisible(true);
-        rootParent.getLoadDbSchemaButton().setEnabled(false);
+        DraggableTreePanel draggableTreePanel = view.getDraggableTreePanel();
+        view.getLoadDbSchemaProgress().setVisible(true);
+        view.getLoadDbSchemaButton().setEnabled(false);
         Thread thread = new Thread(() -> {
             LoadDbSchemaAction.this.setEnabled(false);
-            rootParent.lockToolbarButtons();
+            view.lockToolbarButtons();
             draggableTreePanel.getMoveButton().setEnabled(false);
             draggableTreePanel.getMoveInvertButton().setEnabled(false);
             try {
@@ -85,14 +88,14 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
                     if (userObject instanceof Catalog) {
                         Catalog catalog = (Catalog) userObject;
                         if (catalog.getSchemas().isEmpty()) {
-                            loadTables(connectionInfo, tablePath, rootParent);
+                            loadTables(connectionInfo, tablePath);
                         }
                     } else if (userObject instanceof Schema) {
-                        loadTables(connectionInfo, tablePath, rootParent);
+                        loadTables(connectionInfo, tablePath);
                     } else if (userObject instanceof IncludeTable) {
                         loadColumns(connectionInfo, tablePath);
                     } else {
-                        loadTables(connectionInfo, tablePath, rootParent);
+                        loadTables(connectionInfo, tablePath);
                     }
                 } else {
                     loadDataBase(connectionInfo);
@@ -105,15 +108,16 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
                         JOptionPane.ERROR_MESSAGE);
                 LOGGER.warn("Error loading db schema", ex);
             } finally {
-                rootParent.getLoadDbSchemaButton().setEnabled(true);
-                rootParent.getLoadDbSchemaProgress().setVisible(false);
-                rootParent.unlockToolbarButtons();
+                view.getLoadDbSchemaButton().setEnabled(true);
+                view.getLoadDbSchemaProgress().setVisible(false);
+                view.unlockToolbarButtons();
             }
         });
         thread.start();
     }
 
     private void loadDataBase(DBConnectionInfo connectionInfo) throws Exception {
+        DraggableTreePanel draggableTreePanel = view.getDraggableTreePanel();
         ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader()
                 .load(connectionInfo, application.getClassLoadingService());
         draggableTreePanel.getSourceTree()
@@ -125,28 +129,24 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
         ((DbImportModel) draggableTreePanel.getSourceTree().getModel()).reload();
     }
 
-    private void loadTables(DBConnectionInfo connectionInfo,
-                            TreePath tablePath,
-                            DbImportView rootParent) throws Exception {
+    private void loadTables(DBConnectionInfo connectionInfo, TreePath tablePath) throws Exception {
+        DraggableTreePanel draggableTreePanel = view.getDraggableTreePanel();
         ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader()
                 .loadTables(connectionInfo,
                         application.getClassLoadingService(),
                         tablePath,
-                        rootParent.getTableTypes());
+                        view.getTableTypes());
         draggableTreePanel.getSourceTree()
                 .update(databaseReverseEngineering,
                         new PrintTablesBiFunction(draggableTreePanel.getSourceTree()));
     }
 
     private void loadColumns(DBConnectionInfo connectionInfo, TreePath tablePath) throws SQLException {
+        DraggableTreePanel draggableTreePanel = view.getDraggableTreePanel();
         ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader()
                 .loadColumns(connectionInfo, application.getClassLoadingService(), tablePath);
         draggableTreePanel.getSourceTree()
                 .update(databaseReverseEngineering,
                         new PrintColumnsBiFunction(draggableTreePanel.getSourceTree()));
-    }
-
-    public void setDraggableTreePanel(DraggableTreePanel draggableTreePanel) {
-        this.draggableTreePanel = draggableTreePanel;
     }
 }

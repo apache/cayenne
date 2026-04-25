@@ -29,30 +29,15 @@ import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.action.dbimport.AddCatalogAction;
-import org.apache.cayenne.modeler.action.dbimport.AddExcludeColumnAction;
-import org.apache.cayenne.modeler.action.dbimport.AddExcludeProcedureAction;
-import org.apache.cayenne.modeler.action.dbimport.AddExcludeTableAction;
-import org.apache.cayenne.modeler.action.dbimport.AddIncludeColumnAction;
-import org.apache.cayenne.modeler.action.dbimport.AddIncludeProcedureAction;
-import org.apache.cayenne.modeler.action.dbimport.AddIncludeTableAction;
-import org.apache.cayenne.modeler.action.dbimport.AddSchemaAction;
-import org.apache.cayenne.modeler.action.dbimport.DragAndDropNodeAction;
-import org.apache.cayenne.modeler.action.dbimport.MoveImportNodeAction;
-import org.apache.cayenne.modeler.action.dbimport.MoveInvertNodeAction;
-import org.apache.cayenne.modeler.action.dbimport.TreeManipulationAction;
+import org.apache.cayenne.modeler.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.DbImportActions;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.DragAndDropNodeAction;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.TreeManipulationAction;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.ColorTreeRenderer;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.TransferableNode;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.ColorTreeRenderer;
-import org.apache.cayenne.modeler.action.ModelerAbstractAction;
 
-import javax.swing.DropMode;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
-import javax.swing.TransferHandler;
+import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
@@ -80,43 +65,29 @@ public class DraggableTreePanel extends JScrollPane {
     private static final String MOVE_BUTTON_LABEL = "Include";
     private static final String MOVE_INV_BUTTON_LABEL = "Exclude";
 
-    private final ProjectController projectController;
     private final DbImportTree sourceTree;
     private final DbImportTree targetTree;
+    private final DbImportActions actions;
     private final Map<DataMap, ReverseEngineering> databaseStructures;
     private final Map<Class<?>, Integer> levels;
     private final Map<Class<?>, List<Class<?>>> insertableLevels;
-    private final Map<Class<?>, Class<? extends TreeManipulationAction>> actions;
 
     private ModelerAbstractAction.CayenneToolbarButton moveButton;
     private ModelerAbstractAction.CayenneToolbarButton moveInvertButton;
     private ImportSourceTree importSourceTree;
 
-    public DraggableTreePanel(ProjectController projectController, DbImportTree sourceTree, DbImportTree targetTree) {
+    public DraggableTreePanel(DbImportTree sourceTree, DbImportTree targetTree, DbImportActions actions) {
         super(sourceTree);
         this.targetTree = targetTree;
         this.sourceTree = sourceTree;
-        this.projectController = projectController;
+        this.actions = actions;
         this.databaseStructures = new HashMap<>();
         this.levels = new HashMap<>();
         this.insertableLevels = new HashMap<>();
-        this.actions = new HashMap<>();
 
         initLevels();
         initElement();
-        initActions();
         initListeners();
-    }
-
-    private void initActions() {
-        actions.put(Catalog.class, AddCatalogAction.class);
-        actions.put(Schema.class, AddSchemaAction.class);
-        actions.put(IncludeTable.class, AddIncludeTableAction.class);
-        actions.put(ExcludeTable.class, AddExcludeTableAction.class);
-        actions.put(IncludeColumn.class, AddIncludeColumnAction.class);
-        actions.put(ExcludeColumn.class, AddExcludeColumnAction.class);
-        actions.put(IncludeProcedure.class, AddIncludeProcedureAction.class);
-        actions.put(ExcludeProcedure.class, AddExcludeProcedureAction.class);
     }
 
     public void updateTree(DataMap dataMap) {
@@ -157,20 +128,10 @@ public class DraggableTreePanel extends JScrollPane {
         sourceTree.setCellRenderer(new ColorTreeRenderer());
         sourceTree.setDropMode(DropMode.INSERT);
 
-        MoveImportNodeAction action = projectController.getApplication().getActionManager()
-                .getAction(MoveImportNodeAction.class);
-        action.setPanel(this);
-        action.setSourceTree(sourceTree);
-        action.setTargetTree(targetTree);
-        moveButton = (ModelerAbstractAction.CayenneToolbarButton) action.buildButton();
+        moveButton = (ModelerAbstractAction.CayenneToolbarButton) actions.getMoveImportNodeAction().buildButton();
         moveButton.setShowingText(true);
         moveButton.setText(MOVE_BUTTON_LABEL);
-        MoveInvertNodeAction actionInv = projectController.getApplication().getActionManager()
-                .getAction(MoveInvertNodeAction.class);
-        actionInv.setPanel(this);
-        actionInv.setSourceTree(sourceTree);
-        actionInv.setTargetTree(targetTree);
-        moveInvertButton = (ModelerAbstractAction.CayenneToolbarButton) actionInv.buildButton();
+        moveInvertButton = (ModelerAbstractAction.CayenneToolbarButton) actions.getMoveInvertNodeAction().buildButton();
         moveInvertButton.setShowingText(true);
         moveInvertButton.setText(MOVE_INV_BUTTON_LABEL);
     }
@@ -251,11 +212,7 @@ public class DraggableTreePanel extends JScrollPane {
     }
 
     public TreeManipulationAction getActionByNodeType(Class<?> nodeType) {
-        Class<? extends TreeManipulationAction> actionClass = actions.get(nodeType);
-        if (actionClass == null) {
-            return null;
-        }
-        return projectController.getApplication().getActionManager().getAction(actionClass);
+        return actions.getAction(nodeType);
     }
 
     public void bindReverseEngineeringToDatamap(DataMap dataMap, ReverseEngineering reverseEngineering) {
@@ -426,12 +383,7 @@ public class DraggableTreePanel extends JScrollPane {
             }
             DbImportTreeNode[] nodes = getNodesFromSupport(support);
             if (nodes != null) {
-                MoveImportNodeAction action = projectController.getApplication().getActionManager()
-                        .getAction(MoveImportNodeAction.class);
-                action.setSourceTree(sourceTree);
-                action.setTargetTree(targetTree);
-                action.setPanel(DraggableTreePanel.this);
-                action.performAction(null);
+                actions.getMoveImportNodeAction().performAction(null);
                 return true;
             }
             return false;
@@ -443,13 +395,11 @@ public class DraggableTreePanel extends JScrollPane {
 
             DbImportTreeNode[] nodes = getNodesFromSupport(support);
             if (nodes != null) {
-                DragAndDropNodeAction action = projectController.getApplication().getActionManager()
-                        .getAction(DragAndDropNodeAction.class);
+                DragAndDropNodeAction action = actions.getDragAndDropNodeAction();
                 action.setDropLocationParentNode(dropLocationParentNode);
                 action.setSourceParentNode(sourceParentNode);
                 action.setDropLocation(dropLocation);
                 action.setNodes(nodes);
-                action.setTree(targetTree);
                 action.performAction(null);
                 return true;
             }

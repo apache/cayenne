@@ -17,13 +17,14 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.action.dbimport;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.FilterContainer;
 import org.apache.cayenne.dbsync.reverse.dbimport.PatternParam;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportSorter;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportTree;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.tree.TreePath;
@@ -36,8 +37,8 @@ public class EditNodeAction extends TreeManipulationAction {
 
     private String actionName;
 
-    public EditNodeAction(Application application) {
-        super(ACTION_NAME, application);
+    public EditNodeAction(Application application, DbImportTree tree) {
+        super(ACTION_NAME, application, tree);
     }
 
     public String getIconName() {
@@ -71,7 +72,7 @@ public class EditNodeAction extends TreeManipulationAction {
                     }
                     updateModel(true);
                 }
-                if (!actionName.equals(EMPTY_NAME)) {
+                if (!actionName.equals("")) {
                     putReverseEngineeringToUndoManager(reverseEngineeringOldCopy);
                 }
             }

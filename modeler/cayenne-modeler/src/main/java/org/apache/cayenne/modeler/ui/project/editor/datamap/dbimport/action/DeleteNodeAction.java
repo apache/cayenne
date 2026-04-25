@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.action.dbimport;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
@@ -31,10 +31,10 @@ import org.apache.cayenne.dbsync.reverse.dbimport.PatternParam;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportModel;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportTree;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportView;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DraggableTreePanel;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 
 import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
@@ -45,10 +45,11 @@ public class DeleteNodeAction extends TreeManipulationAction {
     private static final String ACTION_NAME = "Delete";
     private static final String ICON_NAME = "icon-trash.png";
 
-    private DraggableTreePanel panel;
+    private final DbImportView view;
 
-    public DeleteNodeAction(Application application) {
-        super(ACTION_NAME, application);
+    public DeleteNodeAction(Application application, DbImportView view, DbImportTree tree) {
+        super(ACTION_NAME, application, tree);
+        this.view = view;
     }
 
     public String getIconName() {
@@ -120,13 +121,14 @@ public class DeleteNodeAction extends TreeManipulationAction {
     @Override
     public void performAction(ActionEvent e) {
         tree.stopEditing();
-        final TreePath[] paths = tree.getSelectionPaths();
-        final DbImportView rootParent = ((DbImportView) panel.getParent().getParent());
-        rootParent.getLoadDbSchemaButton().setEnabled(false);
-        rootParent.getReverseEngineeringProgress().setVisible(true);
+        TreePath[] paths = tree.getSelectionPaths();
+
+        view.getLoadDbSchemaButton().setEnabled(false);
+        view.getReverseEngineeringProgress().setVisible(true);
+
         if (paths != null) {
             ReverseEngineering reverseEngineeringOldCopy = new ReverseEngineering(tree.getReverseEngineering());
-            rootParent.lockToolbarButtons();
+            view.lockToolbarButtons();
             for (TreePath path : paths) {
                 selectedElement = (DbImportTreeNode) path.getLastPathComponent();
                 parentElement = selectedElement.getParent();
@@ -156,12 +158,8 @@ public class DeleteNodeAction extends TreeManipulationAction {
                 updateParentChilds();
             }
             putReverseEngineeringToUndoManager(reverseEngineeringOldCopy);
-            rootParent.getLoadDbSchemaButton().setEnabled(true);
-            rootParent.getReverseEngineeringProgress().setVisible(false);
+            view.getLoadDbSchemaButton().setEnabled(true);
+            view.getReverseEngineeringProgress().setVisible(false);
         }
-    }
-
-    public void setPanel(DraggableTreePanel panel) {
-        this.panel = panel;
     }
 }
