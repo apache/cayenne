@@ -39,7 +39,7 @@ public abstract class DataDomainGeneratorsViewController<T> implements DataMapLi
 
     protected final static Logger LOGGER = LoggerFactory.getLogger(DataDomainGeneratorsViewController.class);
 
-    private final ProjectController projectController;
+    protected final ProjectController projectController;
     private final ConcurrentMap<DataMap, DataDomainGeneratorsPanel> generatorsPanels;
     private final Set<DataMap> selectedDataMaps;
     private final Class<T> type;

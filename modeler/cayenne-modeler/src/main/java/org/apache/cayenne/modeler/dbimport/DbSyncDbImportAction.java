@@ -42,19 +42,17 @@ import java.awt.event.ComponentEvent;
 import java.util.Collection;
 import java.util.List;
 
-public class ModelerDbImportAction extends DefaultDbImportAction {
+public class DbSyncDbImportAction extends DefaultDbImportAction {
 
-    @Inject
-    private DataMap targetMap;
+    private final DataMap targetMap;
+    private final DbImportController dbImportController;
 
     private DataMap sourceDataMap;
     private DbImportConfiguration config;
-
     private DbLoadResultDialog resultDialog;
 
-    private final DbImportController dbImportController;
-
-    public ModelerDbImportAction(
+    public DbSyncDbImportAction(
+            @Inject DataMap targetMap,
             @Inject Application application,
             @Inject Logger logger,
             @Inject ProjectSaver projectSaver,
@@ -64,7 +62,18 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
             @Inject MergerTokenFactoryProvider mergerTokenFactoryProvider,
             @Inject DataChannelMetaData metaData,
             @Inject DataChannelDescriptorLoader dataChannelDescriptorLoader) {
-        super(logger, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider, dataChannelDescriptorLoader, metaData);
+
+        super(
+                logger,
+                projectSaver,
+                dataSourceFactory,
+                adapterFactory,
+                mapLoader,
+                mergerTokenFactoryProvider,
+                dataChannelDescriptorLoader,
+                metaData);
+
+        this.targetMap = targetMap;
         this.dbImportController = application.getFrameController().getDbImportController();
     }
 

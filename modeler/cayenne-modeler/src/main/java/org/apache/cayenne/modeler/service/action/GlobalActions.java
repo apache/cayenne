@@ -83,7 +83,6 @@ public class GlobalActions {
                 ImportDataMapAction.class.getName(),
                 CreateDataMapAction.class.getName(),
                 CreateNodeAction.class.getName(),
-                ReverseEngineeringAction.class.getName(),
                 ImportEOModelAction.class.getName(),
                 GenerateCodeAction.class.getName(),
                 GenerateDBAction.class.getName(),
@@ -184,7 +183,6 @@ public class GlobalActions {
         registerAction(new DbEntityCounterpartAction(application));
         registerAction(new ObjEntityCounterpartAction(application));
         registerAction(new ObjEntityToSuperEntityAction(application));
-        registerAction(new ReverseEngineeringAction(application));
         registerAction(new InferRelationshipsAction(application));
         registerAction(new ImportEOModelAction(application));
         registerAction(new GenerateDBAction(application));

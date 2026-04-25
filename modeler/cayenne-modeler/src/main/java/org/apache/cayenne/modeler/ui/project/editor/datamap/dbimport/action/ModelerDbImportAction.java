@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.action;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dbsync.DbSyncModule;
@@ -32,9 +32,9 @@ import org.apache.cayenne.modeler.dbimport.ModelerDbImportModule;
 import org.apache.cayenne.modeler.dbimport.ModelerDbLoaderContext;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.swing.ProgressDialog;
+import org.apache.cayenne.modeler.ui.action.DBConnectionAwareAction;
 import org.apache.cayenne.modeler.ui.dbloadresult.DbLoadResultDialog;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportController;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportView;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,26 +42,21 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Action that imports database structure into a DataMap.
  */
-public class ReverseEngineeringAction extends DBConnectionAwareAction {
+public class ModelerDbImportAction extends DBConnectionAwareAction {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ReverseEngineeringAction.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelerDbImportAction.class);
 
     private static final String ACTION_NAME = "Reengineer Database Schema";
     private static final String ICON_NAME = "icon-dbi-runImport.png";
     private static final String DIALOG_TITLE = "Reengineer DB Schema: Connect to Database";
 
-    private DbImportView view;
-    private AtomicInteger dataMapCount;
-    protected Set<DataMap> dataMaps;
-
-    public ReverseEngineeringAction(Application application) {
+    public ModelerDbImportAction(Application application) {
         super(ACTION_NAME, application);
     }
 
@@ -71,13 +66,11 @@ public class ReverseEngineeringAction extends DBConnectionAwareAction {
     }
 
     public void performAction(Set<DataMap> dataMapSet) {
-        resetParams();
-        dataMaps.addAll(dataMapSet);
-        dataMapCount.set(dataMaps.size());
-        dataMapSet.forEach(this::startImport);
+        AtomicInteger dataMapCount = new AtomicInteger(dataMapSet.size());
+        dataMapSet.forEach(dm -> startImport(dm, dataMapCount));
     }
 
-    private void startImport(DataMap dataMap) {
+    private void startImport(DataMap dataMap, AtomicInteger dataMapCount) {
         ModelerDbLoaderContext context = new ModelerDbLoaderContext(
                 getProjectController(),
                 application,
@@ -99,7 +92,7 @@ public class ReverseEngineeringAction extends DBConnectionAwareAction {
             return;
         }
 
-        if (!context.buildConfig(connectionInfo, view, true)) {
+        if (!context.buildConfig(connectionInfo)) {
             try {
                 context.getConnection().close();
             } catch (SQLException ignored) {
@@ -114,6 +107,9 @@ public class ReverseEngineeringAction extends DBConnectionAwareAction {
             application.getUndoManager().discardAllEdits();
             try {
                 context.getConnection().close();
+
+                // TODO: this whole thing with "dataMapCount" seems like a code smell. Loader thread should simply
+                //  return when it does, and then the dialog should be shown
                 if (dataMapCount.decrementAndGet() <= 0 && !context.isInterrupted()) {
                     if (!dbLoadResultDialog.isVisible() && !dbLoadResultDialog.getTableForMap().isEmpty()) {
                         dbImportController.showDialog();
@@ -129,27 +125,15 @@ public class ReverseEngineeringAction extends DBConnectionAwareAction {
      */
     @Override
     public void performAction(ActionEvent event) {
-        resetParams();
-        dataMaps.add(application.getFrameController().getProjectController().getSelectedDataMap());
-        dataMapCount.set(dataMaps.size());
-        startImport(application.getFrameController().getProjectController().getSelectedDataMap());
+        startImport(application.getFrameController().getProjectController().getSelectedDataMap(), new AtomicInteger(1));
     }
 
-    private void resetParams() {
-        dataMapCount = new AtomicInteger();
-        this.dataMaps = new HashSet<>();
-    }
-
-    private void runLoaderInThread(final ModelerDbLoaderContext context, final Runnable callback) {
+    private void runLoaderInThread(ModelerDbLoaderContext context, Runnable callback) {
         Thread th = new Thread(() -> {
             new DbImportTask(application.getFrameController().getView(), "Reengineering DB", context).startAndWait();
             SwingUtilities.invokeLater(callback);
         });
         th.start();
-    }
-
-    public void setView(DbImportView view) {
-        this.view = view;
     }
 
     static class DbImportTask {

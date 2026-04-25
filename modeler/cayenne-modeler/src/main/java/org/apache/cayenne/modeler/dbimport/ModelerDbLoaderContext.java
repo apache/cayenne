@@ -28,7 +28,6 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportView;
 import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +64,10 @@ public class ModelerDbLoaderContext {
         return projectController;
     }
 
+    public Application getApplication() {
+        return application;
+    }
+
     void setConfig(DbImportConfiguration config) {
         this.config = config;
     }
@@ -97,29 +100,13 @@ public class ModelerDbLoaderContext {
         this.loadStatusNote = loadStatusNote;
     }
 
-    private void fillReverseEngineeringFromView(ReverseEngineering reverseEngineering, DbImportView view) {
-        reverseEngineering.setUseJava7Types(view.isUseJava7Typed());
-        reverseEngineering.setForceDataMapCatalog(view.isForceDataMapCatalog());
-        reverseEngineering.setForceDataMapSchema(view.isForceDataMapSchema());
-        reverseEngineering.setSkipRelationshipsLoading(view.isSkipRelationshipsLoading());
-        reverseEngineering.setSkipPrimaryKeyLoading(view.isSkipPrimaryKeyLoading());
-        reverseEngineering.setMeaningfulPkTables(view.getMeaningfulPk());
-        reverseEngineering.setNamingStrategy(view.getNamingStrategy());
-        reverseEngineering.setStripFromTableNames(view.getStripFromTableNames());
-    }
-
-    public boolean buildConfig(DBConnectionInfo connectionInfo, DbImportView view, boolean headless) {
+    public boolean buildConfig(DBConnectionInfo connectionInfo) {
         if (connectionInfo == null) {
             return false;
         }
-        // Build reverse engineering from metadata and dialog values
         ReverseEngineering metaReverseEngineering = application.getMetaData().get(dataMap, ReverseEngineering.class);
         if(metaReverseEngineering == null) {
             return false;
-        }
-        // skip this step for batch run from domain tab
-        if(!headless){
-            fillReverseEngineeringFromView(metaReverseEngineering, view);
         }
         // Create copy of metaReverseEngineering
         ReverseEngineering reverseEngineering = new ReverseEngineering(metaReverseEngineering);

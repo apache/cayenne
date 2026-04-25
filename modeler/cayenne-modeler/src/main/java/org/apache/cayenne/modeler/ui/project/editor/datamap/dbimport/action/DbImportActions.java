@@ -58,6 +58,7 @@ public class DbImportActions {
     private final MoveImportNodeAction moveImportNode;
     private final MoveInvertNodeAction moveInvertNode;
     private final DragAndDropNodeAction dragAndDropNode;
+    private final ModelerDbImportAction reverseEngineering;
 
     private final Map<Class<?>, TreeManipulationAction> actionsByNodeType;
 
@@ -81,6 +82,7 @@ public class DbImportActions {
         this.moveImportNode = enabled(new MoveImportNodeAction(application, view, sourceTree, targetTree));
         this.moveInvertNode = enabled(new MoveInvertNodeAction(application, view, sourceTree, targetTree));
         this.dragAndDropNode = enabled(new DragAndDropNodeAction(application, targetTree));
+        this.reverseEngineering = enabled(new ModelerDbImportAction(application));
 
         this.actionsByNodeType = new HashMap<>();
         actionsByNodeType.put(Catalog.class, addCatalog);
@@ -164,5 +166,9 @@ public class DbImportActions {
 
     public DragAndDropNodeAction getDragAndDropNodeAction() {
         return dragAndDropNode;
+    }
+
+    public ModelerDbImportAction getReverseEngineeringAction() {
+        return reverseEngineering;
     }
 }

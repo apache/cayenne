@@ -20,19 +20,21 @@ package org.apache.cayenne.modeler.ui.project.editor.datadomain.dbimport;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
-import org.apache.cayenne.modeler.ui.action.ReverseEngineeringAction;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.DataDomainGeneratorsViewController;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.ModelerDbImportAction;
 
 import java.util.Set;
 
 public class DataDomainDbImportController extends DataDomainGeneratorsViewController<ReverseEngineering> {
 
+    private final ModelerDbImportAction dbImportAction;
+
     public DataDomainDbImportController(ProjectController projectController) {
         super(projectController, ReverseEngineering.class, false);
         this.view = new DataDomainDbImportView(projectController, this);
+        this.dbImportAction = new ModelerDbImportAction(projectController.getApplication());
     }
 
     @Override
@@ -41,9 +43,8 @@ public class DataDomainDbImportController extends DataDomainGeneratorsViewContro
             view.showEmptyMessage();
             return;
         }
-        Application.getInstance().getFrameController().getDbImportController().setGlobalImport(true);
-        ReverseEngineeringAction reverseEngineeringAction = Application.getInstance().getActionManager().getAction(ReverseEngineeringAction.class);
-        reverseEngineeringAction.performAction(dataMaps);
+        projectController.getApplication().getFrameController().getDbImportController().setGlobalImport(true);
+        dbImportAction.performAction(dataMaps);
     }
 
     @Override

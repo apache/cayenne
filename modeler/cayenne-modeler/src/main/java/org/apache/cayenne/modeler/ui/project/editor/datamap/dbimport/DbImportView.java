@@ -22,10 +22,10 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.ui.action.ReverseEngineeringAction;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.DbImportActions;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.LoadDbSchemaAction;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.ModelerDbImportAction;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.ColorTreeRenderer;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.TransferableNode;
@@ -118,11 +118,9 @@ public class DbImportView extends JPanel {
         loadDbSchemaButton.setText("Refresh DB Schema");
         treeToolbar.add(loadDbSchemaButton);
 
-        ReverseEngineeringAction reverseEngineeringAction = controller.getApplication().getActionManager().
-                getAction(ReverseEngineeringAction.class);
-        reverseEngineeringAction.setView(this);
+        ModelerDbImportAction dbImportAction = actions.getReverseEngineeringAction();
         ModelerAbstractAction.CayenneToolbarButton reverseEngineeringButton = (ModelerAbstractAction.CayenneToolbarButton)
-                reverseEngineeringAction.buildButton(0);
+                dbImportAction.buildButton(0);
         reverseEngineeringButton.setShowingText(true);
         reverseEngineeringButton.setText("Run Import");
         JPanel reverseEngineeringButtonPanel = new JPanel();
@@ -213,39 +211,6 @@ public class DbImportView extends JPanel {
             draggableTreePanel.getMoveInvertButton().setEnabled(false);
         }
         initFromModel = false;
-    }
-
-    public boolean isSkipRelationshipsLoading() {
-        return configPanel.getSkipRelationshipsLoading().isSelected();
-    }
-
-    public boolean isSkipPrimaryKeyLoading() {
-        return configPanel.getSkipPrimaryKeyLoading().isSelected();
-    }
-
-    public boolean isForceDataMapCatalog() {
-        return configPanel.getForceDataMapCatalog().isSelected();
-    }
-
-    public boolean isForceDataMapSchema() {
-        return configPanel.getForceDataMapSchema().isSelected();
-    }
-
-    public boolean isUseJava7Typed() {
-        return configPanel.getUseJava7Types().isSelected();
-    }
-
-    public String getMeaningfulPk() {
-        return "".equals(configPanel.getMeaningfulPk().getText())
-                ? null : configPanel.getMeaningfulPk().getText();
-    }
-
-    public String getNamingStrategy() {
-        return (String) configPanel.getStrategyCombo().getSelectedItem();
-    }
-
-    public String getStripFromTableNames() {
-        return configPanel.getStripFromTableNames().getText();
     }
 
     public JProgressBar getLoadDbSchemaProgress() {

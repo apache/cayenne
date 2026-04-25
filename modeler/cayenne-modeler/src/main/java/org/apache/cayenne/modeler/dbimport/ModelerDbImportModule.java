@@ -22,6 +22,8 @@ package org.apache.cayenne.modeler.dbimport;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportAction;
@@ -30,15 +32,17 @@ public class ModelerDbImportModule implements Module {
 
     private final ModelerDbLoaderContext loaderContext;
 
-    public ModelerDbImportModule(ModelerDbLoaderContext dbLoaderHelper) {
-        this.loaderContext = dbLoaderHelper;
+    public ModelerDbImportModule(ModelerDbLoaderContext loaderContext) {
+        this.loaderContext = loaderContext;
     }
 
     @Override
     public void configure(Binder binder) {
+        binder.bind(Application.class).toInstance(loaderContext.getApplication());
         binder.bind(ProjectController.class).toInstance(loaderContext.getProjectController());
+        binder.bind(GlobalActions.class).toInstance(loaderContext.getApplication().getActionManager());
         binder.bind(ProjectSaver.class).to(DbImportProjectSaver.class);
-        binder.bind(DbImportAction.class).to(ModelerDbImportAction.class);
+        binder.bind(DbImportAction.class).to(DbSyncDbImportAction.class);
         binder.bind(DataMap.class).toInstance(loaderContext.getDataMap());
     }
 }
