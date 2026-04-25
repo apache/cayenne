@@ -23,10 +23,9 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.swing.DefaultWidgetFactory;
 import org.apache.cayenne.modeler.swing.MultiColumnBrowser;
-import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
+import org.apache.cayenne.modeler.util.PanelFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -65,25 +64,23 @@ public class ObjRelationshipInfoView extends JDialog{
     public ObjRelationshipInfoView() {
         super(Application.getFrame());
 
-        WidgetFactory widgetFactory = new DefaultWidgetFactory();
-        
         this.cancelButton = new JButton("Cancel");
         this.saveButton = new JButton("Done");
         this.newRelButton = new JButton("New DbRelationship");
         this.relationshipName = new JTextField(25);
         this.semanticsLabel = new JLabel();
         this.sourceEntityLabel = new JLabel();
-        
+
         cancelButton.setEnabled(true);
         getRootPane().setDefaultButton(saveButton);
         saveButton.setEnabled(true);
         newRelButton.setEnabled(true);
-        collectionTypeCombo = widgetFactory.createComboBox();
+        collectionTypeCombo = WidgetFactory.createComboBox();
         collectionTypeCombo.setVisible(true);
-        this.targetCombo = widgetFactory.createComboBox();
+        this.targetCombo = WidgetFactory.createComboBox();
         targetCombo.setVisible(true);
-        
-        this.mapKeysCombo = widgetFactory.createComboBox();
+
+        this.mapKeysCombo = WidgetFactory.createComboBox();
         mapKeysCombo.setVisible(true);
       
         
@@ -91,7 +88,7 @@ public class ObjRelationshipInfoView extends JDialog{
         pathBrowser.setPreferredColumnSize(BROWSER_CELL_DIM);
         pathBrowser.setDefaultRenderer();
 
-        this.deleteRule = Application.getWidgetFactory().createComboBox(DELETE_RULES, false);
+        this.deleteRule = WidgetFactory.createComboBox(DELETE_RULES, false);
         this.usedForLocking = new JCheckBox();
         this.comment = new JTextField();
         

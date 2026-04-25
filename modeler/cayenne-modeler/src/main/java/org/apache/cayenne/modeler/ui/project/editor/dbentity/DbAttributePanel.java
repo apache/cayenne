@@ -35,6 +35,7 @@ import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
+import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.table.BoardTableCellRenderer;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.PanelFactory;
@@ -52,14 +53,14 @@ import java.util.List;
 /**
  * Detail view of the DbEntity attributes.
  */
-public class DbEntityAttributePanel extends JPanel implements DbEntityDisplayListener, DbAttributeListener {
+public class DbAttributePanel extends JPanel implements DbEntityDisplayListener, DbAttributeListener {
 
     private final ProjectController controller;
     private final CayenneTable table;
     private final TableColumnPreferences tablePreferences;
     private final DbEntityAttributeRelationshipTab parentPanel;
 
-    public DbEntityAttributePanel(ProjectController controller, DbEntityAttributeRelationshipTab parentPanel) {
+    public DbAttributePanel(ProjectController controller, DbEntityAttributeRelationshipTab parentPanel) {
         this.controller = controller;
         this.parentPanel = parentPanel;
 
@@ -163,6 +164,7 @@ public class DbEntityAttributePanel extends JPanel implements DbEntityDisplayLis
     }
 
     protected void rebuildTable(DbEntity ent) {
+
         if (table.getEditingRow() != -1 && table.getEditingColumn() != -1) {
             TableCellEditor cellEditor = table.getCellEditor(table.getEditingRow(), table.getEditingColumn());
             cellEditor.stopCellEditing();
@@ -173,27 +175,23 @@ public class DbEntityAttributePanel extends JPanel implements DbEntityDisplayLis
         table.setRowHeight(25);
         table.setRowMargin(3);
 
-        TableColumn col = table.getColumnModel().getColumn(model.typeColumnInd());
-
         String[] types = TypesMapping.getDatabaseTypes();
-        JComboBox comboBox = Application.getWidgetFactory().createComboBox(types, true);
+        JComboBox comboBox = WidgetFactory.createComboBox(types, true);
 
         // Types.NULL makes no sense as a column type
         comboBox.removeItem("NULL");
-
         AutoCompletion.enable(comboBox);
 
-        col.setCellEditor(Application.getWidgetFactory().createCellEditor(comboBox));
+        TableColumn typeColumn = table.getColumnModel().getColumn(DbAttributeTableModel.DB_ATTRIBUTE_TYPE);
+        typeColumn.setCellEditor(WidgetFactory.createCellEditor(comboBox));
 
-        TableColumn lengthColumn = table.getColumnModel().getColumn(model.lengthColumnId());
-        LimitedTextField limitedLengthField = new LimitedTextField(10);
-        lengthColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(limitedLengthField));
+        TableColumn lengthColumn = table.getColumnModel().getColumn(DbAttributeTableModel.DB_ATTRIBUTE_MAX);
+        lengthColumn.setCellEditor(WidgetFactory.createCellEditor(new LimitedTextField(10)));
 
-        TableColumn scaleColumn = table.getColumnModel().getColumn(model.scaleColumnId());
-        LimitedTextField limitedScaleField = new LimitedTextField(10);
-        scaleColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(limitedScaleField));
+        TableColumn scaleColumn = table.getColumnModel().getColumn(DbAttributeTableModel.DB_ATTRIBUTE_SCALE);
+        scaleColumn.setCellEditor(WidgetFactory.createCellEditor(new LimitedTextField(10)));
 
-        tablePreferences.bind(table, null, null, null, model.nameColumnInd(), true);
+        tablePreferences.bind(table, null, null, null, DbAttributeTableModel.DB_ATTRIBUTE_NAME, true);
     }
 
     private void valueChanged(ListSelectionEvent e) {

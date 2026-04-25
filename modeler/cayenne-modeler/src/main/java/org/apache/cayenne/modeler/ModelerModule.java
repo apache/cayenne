@@ -31,8 +31,6 @@ import org.apache.cayenne.modeler.action.DefaultActionManager;
 import org.apache.cayenne.modeler.graph.extension.GraphExtension;
 import org.apache.cayenne.modeler.platform.DefaultPlatformInitializer;
 import org.apache.cayenne.modeler.platform.PlatformInitializer;
-import org.apache.cayenne.modeler.swing.DefaultWidgetFactory;
-import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.validation.ConfigurableProjectValidator;
 import org.apache.cayenne.modeler.validation.extension.ValidationExtension;
 import org.apache.cayenne.project.ProjectModule;
@@ -51,7 +49,6 @@ public class ModelerModule implements Module {
         binder.bind(ActionManager.class).to(DefaultActionManager.class);
         binder.bind(Application.class).to(Application.class);
         binder.bind(PlatformInitializer.class).to(DefaultPlatformInitializer.class);
-        binder.bind(WidgetFactory.class).to(DefaultWidgetFactory.class);
         binder.bind(HandlerFactory.class).to(ExtensionAwareHandlerFactory.class);
         binder.bind(DataChannelMetaData.class).to(DefaultDataChannelMetaData.class);
         binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(true)).withoutScope();

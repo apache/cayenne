@@ -55,8 +55,8 @@ import java.awt.event.ActionListener;
  */
 public class DbEntityAttributeRelationshipTab extends JPanel implements DbEntityDisplayListener, DbEntityListener {
 
-    private final DbEntityAttributePanel attributePanel;
-    private final DbEntityRelationshipPanel relationshipPanel;
+    private final DbAttributePanel attributePanel;
+    private final DbRelationshipPanel relationshipPanel;
     private final JButton editButton;
     private final JSplitPane splitPane;
     private final JToolBar toolBar;
@@ -67,8 +67,8 @@ public class DbEntityAttributeRelationshipTab extends JPanel implements DbEntity
 
         editButton = new CayenneAction.CayenneToolbarButton(null, 0);
 
-        attributePanel = new DbEntityAttributePanel(controller, this);
-        relationshipPanel = new DbEntityRelationshipPanel(controller, this);
+        attributePanel = new DbAttributePanel(controller, this);
+        relationshipPanel = new DbRelationshipPanel(controller, this);
 
         splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, attributePanel, relationshipPanel);
         splitPane.setOneTouchExpandable(true);
@@ -139,11 +139,11 @@ public class DbEntityAttributeRelationshipTab extends JPanel implements DbEntity
         return splitPane;
     }
 
-    public DbEntityAttributePanel getAttributePanel() {
+    public DbAttributePanel getAttributePanel() {
         return attributePanel;
     }
 
-    public DbEntityRelationshipPanel getRelationshipPanel() {
+    public DbRelationshipPanel getRelationshipPanel() {
         return relationshipPanel;
     }
 

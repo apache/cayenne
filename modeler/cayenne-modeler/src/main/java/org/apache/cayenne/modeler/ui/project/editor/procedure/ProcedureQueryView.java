@@ -34,6 +34,7 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureQueryDescriptor;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
@@ -100,7 +101,7 @@ public class ProcedureQueryView extends JPanel {
             }
         };
 
-        queryRoot = Application.getWidgetFactory().createUndoableComboBox();
+        queryRoot = WidgetFactory.createUndoableComboBox();
         queryRoot.setRenderer(CellRenderers.listRendererWithIcons());
         properties = new ProcedureQueryPropertiesPanel(mediator);
 
@@ -282,7 +283,7 @@ public class ProcedureQueryView extends JPanel {
         }
 
         protected PanelBuilder createPanelBuilder() {
-            labelCase = Application.getWidgetFactory().createUndoableComboBox();
+            labelCase = WidgetFactory.createUndoableComboBox();
             labelCase.setRenderer(new LabelCapsRenderer());
             labelCase.addActionListener(event -> {
                 String value = labelCase.getModel().getSelectedItem().toString();

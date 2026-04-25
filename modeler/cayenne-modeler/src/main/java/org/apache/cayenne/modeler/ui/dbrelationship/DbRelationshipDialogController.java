@@ -36,6 +36,7 @@ import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.RelationshipUndoableEdit;
 import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
@@ -234,18 +235,18 @@ public class DbRelationshipDialogController extends ChildController<ProjectContr
         });
 
         TableColumn sourceColumn = view.getTable().getColumnModel().getColumn(DbJoinTableModel.SOURCE);
-        JComboBox comboBox = Application.getWidgetFactory().createComboBox(
+        JComboBox comboBox = WidgetFactory.createComboBox(
                 ModelerUtil.getDbAttributeNames(relationship.getSourceEntity()), true);
 
         AutoCompletion.enable(comboBox);
-        sourceColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(comboBox));
+        sourceColumn.setCellEditor(WidgetFactory.createCellEditor(comboBox));
 
         TableColumn targetColumn = view.getTable().getColumnModel().getColumn(DbJoinTableModel.TARGET);
-        comboBox = Application.getWidgetFactory().createComboBox(
+        comboBox = WidgetFactory.createComboBox(
                 ModelerUtil.getDbAttributeNames(relationship.getTargetEntity()), true);
         AutoCompletion.enable(comboBox);
 
-        targetColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(comboBox));
+        targetColumn.setCellEditor(WidgetFactory.createCellEditor(comboBox));
 
         view.getTablePreferences().bind(view.getTable(), null, null, null, DbJoinTableModel.SOURCE, true);
     }

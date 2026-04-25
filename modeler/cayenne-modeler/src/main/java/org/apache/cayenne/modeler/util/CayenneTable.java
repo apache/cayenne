@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.util;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
+import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.table.SortButtonRenderer;
 
 import javax.swing.*;
@@ -75,7 +76,7 @@ public class CayenneTable extends JTable {
         super.createDefaultEditors();
 
         JTextField textField = new JTextField(20);
-        DefaultCellEditor textEditor = Application.getWidgetFactory().createCellEditor(textField);
+        DefaultCellEditor textEditor = WidgetFactory.createCellEditor(textField);
         textEditor.setClickCountToStart(1);
 
         setDefaultEditor(Object.class, textEditor);

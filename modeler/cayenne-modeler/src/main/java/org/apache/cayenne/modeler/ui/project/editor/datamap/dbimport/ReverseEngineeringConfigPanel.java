@@ -35,6 +35,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
 import org.apache.cayenne.modeler.util.TextAdapter;
+import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -113,7 +114,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
     }
 
     private void initFormElements() {
-        strategyCombo = Application.getWidgetFactory().createComboBox();
+        strategyCombo = WidgetFactory.createComboBox();
         AutoCompletion.enable(strategyCombo, false, true);
         strategyCombo.setToolTipText("Naming strategy to use");
 

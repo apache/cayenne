@@ -25,6 +25,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
+import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.table.CellEditorForAttributeTable;
 import org.apache.cayenne.util.Util;
 
@@ -136,8 +137,7 @@ public class EmbeddableAttributeTableModel extends CayenneTableModel {
     public CellEditorForAttributeTable setCellEditor(
             Collection<String> nameAttr,
             CayenneTable table) {
-        this.cellEditor = new CellEditorForAttributeTable(table, Application
-                .getWidgetFactory()
+        this.cellEditor = new CellEditorForAttributeTable(table, WidgetFactory
                 .createComboBox(nameAttr, true));
         return cellEditor;
     }

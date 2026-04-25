@@ -28,6 +28,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
+import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.table.CellEditorForAttributeTable;
 
 import javax.swing.*;
@@ -130,8 +131,7 @@ public class OverrideEmbeddableAttributeTableModel extends CayenneTableModel {
             Collection<String> nameAttr,
             CayenneTable table) {
         this.table = table;
-        this.cellEditor = new CellEditorForAttributeTable(table, Application
-                .getWidgetFactory()
+        this.cellEditor = new CellEditorForAttributeTable(table, WidgetFactory
                 .createComboBox(nameAttr, true));
         return cellEditor;
     }
@@ -216,7 +216,7 @@ public class OverrideEmbeddableAttributeTableModel extends CayenneTableModel {
                 Collection<String> attributeComboForRow = new ArrayList<String>();
                 attributeComboForRow.addAll(nameAttr);
                 attributeComboForRow.add(embAt.getDbAttributeName());
-                JComboBox comboBoxForRow = Application.getWidgetFactory().createComboBox(
+                JComboBox comboBoxForRow = WidgetFactory.createComboBox(
                         attributeComboForRow,
                         true);
 

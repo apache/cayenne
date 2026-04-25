@@ -32,6 +32,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.TextAdapter;
@@ -212,7 +213,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
 
         @Override
         protected PanelBuilder createPanelBuilder() {
-            labelCase = Application.getWidgetFactory().createUndoableComboBox();
+            labelCase = WidgetFactory.createUndoableComboBox();
             labelCase.setRenderer(new LabelCapsRenderer());
 
             labelCase.addActionListener(event -> {

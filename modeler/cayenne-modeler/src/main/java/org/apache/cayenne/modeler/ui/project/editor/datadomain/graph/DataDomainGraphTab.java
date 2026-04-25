@@ -35,6 +35,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DomainDisplayListener;
@@ -106,7 +107,7 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
             names[i] = types[i].getName();
         }
 
-        diagramCombo = Application.getWidgetFactory().createComboBox(names, false);
+        diagramCombo = WidgetFactory.createComboBox(names, false);
         diagramCombo.addItemListener(this);
 
         toolbar.add(new RebuildGraphAction(this, Application.getInstance()).buildButton(1));

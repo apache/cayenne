@@ -26,6 +26,7 @@ import org.apache.cayenne.map.event.ObjEntityListener;
 import org.apache.cayenne.map.event.ObjRelationshipListener;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CopyAttributeRelationshipAction;
@@ -269,7 +270,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
         });
 
         col = table.getColumnModel().getColumn(ObjRelationshipTableModel.REL_DELETE_RULE);
-        JComboBox deleteRulesCombo = Application.getWidgetFactory().createComboBox(
+        JComboBox deleteRulesCombo = WidgetFactory.createComboBox(
                 DELETE_RULES,
                 false);
         deleteRulesCombo.setFocusable(false);
@@ -277,7 +278,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
         ((JComponent) deleteRulesCombo.getEditor().getEditorComponent()).setBorder(null);
         deleteRulesCombo.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
         deleteRulesCombo.setSelectedIndex(0); // Default to the first value
-        col.setCellEditor(Application.getWidgetFactory().createCellEditor(
+        col.setCellEditor(WidgetFactory.createCellEditor(
                 deleteRulesCombo));
 
         tablePreferences.bind(

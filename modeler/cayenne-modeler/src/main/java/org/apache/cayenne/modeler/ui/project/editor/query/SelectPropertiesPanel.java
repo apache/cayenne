@@ -34,6 +34,7 @@ import javax.swing.JTextField;
 
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.query.QueryCacheStrategy;
@@ -109,7 +110,7 @@ public abstract class SelectPropertiesPanel extends JPanel {
             }
         };
 
-        cacheStrategy = Application.getWidgetFactory().createUndoableComboBox();
+        cacheStrategy = WidgetFactory.createUndoableComboBox();
         cacheStrategy.setRenderer(new CacheStrategyRenderer());
         cacheGroups = new TextAdapter(new JTextField()) {
             protected void updateModel(String text) {

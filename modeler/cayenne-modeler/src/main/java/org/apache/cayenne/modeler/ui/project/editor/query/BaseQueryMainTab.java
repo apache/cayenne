@@ -29,6 +29,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.TextAdapter;
+import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
@@ -45,7 +46,7 @@ public abstract class BaseQueryMainTab extends JPanel {
     }
 
     protected void initQueryRoot() {
-        queryRoot = Application.getWidgetFactory().createComboBox();
+        queryRoot = WidgetFactory.createComboBox();
         AutoCompletion.enable(queryRoot);
         queryRoot.setRenderer(CellRenderers.listRendererWithIcons());
 

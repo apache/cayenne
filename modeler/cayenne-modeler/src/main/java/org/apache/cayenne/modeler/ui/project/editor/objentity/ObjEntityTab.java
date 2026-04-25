@@ -46,6 +46,7 @@ import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.ExpressionConvertor;
 import org.apache.cayenne.modeler.util.TextAdapter;
+import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.modeler.swing.JCayenneCheckBox;
@@ -125,8 +126,8 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
             }
         };
 
-        dbEntityCombo = Application.getWidgetFactory().createComboBox();
-        superEntityCombo = Application.getWidgetFactory().createComboBox();
+        dbEntityCombo = WidgetFactory.createComboBox();
+        superEntityCombo = WidgetFactory.createComboBox();
 
         AutoCompletion.enable(dbEntityCombo);
         AutoCompletion.enable(superEntityCombo);

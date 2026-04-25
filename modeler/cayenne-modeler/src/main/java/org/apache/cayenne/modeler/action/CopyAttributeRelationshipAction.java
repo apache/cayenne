@@ -22,7 +22,7 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.ObjEntityAttributePanel;
-import org.apache.cayenne.modeler.ui.project.editor.dbentity.DbEntityAttributePanel;
+import org.apache.cayenne.modeler.ui.project.editor.dbentity.DbAttributePanel;
 import javax.swing.JComponent;
 
 public class CopyAttributeRelationshipAction extends CopyAction implements MultipleObjectsAction {
@@ -42,7 +42,7 @@ public class CopyAttributeRelationshipAction extends CopyAction implements Multi
     }
 
     public String getActionName(boolean multiple) {
-        if (currentSelectedPanel instanceof ObjEntityAttributePanel || currentSelectedPanel instanceof DbEntityAttributePanel) {
+        if (currentSelectedPanel instanceof ObjEntityAttributePanel || currentSelectedPanel instanceof DbAttributePanel) {
             return copyAttributeAction.getActionName(multiple);
         } else {
             return copyRelationshipAction.getActionName(multiple);
@@ -50,7 +50,7 @@ public class CopyAttributeRelationshipAction extends CopyAction implements Multi
     }
 
     public boolean enableForPath(ConfigurationNode object) {
-        if (currentSelectedPanel instanceof ObjEntityAttributePanel || currentSelectedPanel instanceof DbEntityAttributePanel) {
+        if (currentSelectedPanel instanceof ObjEntityAttributePanel || currentSelectedPanel instanceof DbAttributePanel) {
             return copyAttributeAction.enableForPath(object);
         } else {
             return copyRelationshipAction.enableForPath(object);
@@ -58,7 +58,7 @@ public class CopyAttributeRelationshipAction extends CopyAction implements Multi
     }
 
     public Object copy(ProjectController controller) {
-        if (currentSelectedPanel instanceof ObjEntityAttributePanel || currentSelectedPanel instanceof DbEntityAttributePanel) {
+        if (currentSelectedPanel instanceof ObjEntityAttributePanel || currentSelectedPanel instanceof DbAttributePanel) {
             return copyAttributeAction.copy(controller);
         } else {
             return copyRelationshipAction.copy(controller);

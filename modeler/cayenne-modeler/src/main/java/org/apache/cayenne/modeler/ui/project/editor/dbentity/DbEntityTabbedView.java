@@ -108,7 +108,7 @@ public class DbEntityTabbedView extends JTabbedPane {
             attributeRelationshipTab.getSplitPane().getComponent(1).setVisible(true);
         }
 
-        ((DbEntityRelationshipPanel) attributeRelationshipTab.getSplitPane().getComponent(1)).selectRelationships(dbRels);
+        ((DbRelationshipPanel) attributeRelationshipTab.getSplitPane().getComponent(1)).selectRelationships(dbRels);
         attributeRelationshipTab.updateActions(dbRels);
     }
 
@@ -127,7 +127,7 @@ public class DbEntityTabbedView extends JTabbedPane {
             attributeRelationshipTab.getSplitPane().getComponent(0).setVisible(true);
         }
 
-        ((DbEntityAttributePanel) attributeRelationshipTab.getSplitPane().getComponent(0)).selectAttributes(dbAttrs);
+        ((DbAttributePanel) attributeRelationshipTab.getSplitPane().getComponent(0)).selectAttributes(dbAttrs);
         attributeRelationshipTab.updateActions(dbAttrs);
     }
 }

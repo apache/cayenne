@@ -31,70 +31,37 @@ import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Model for DbEntity attributes. Allows adding/removing attributes, modifying types and names.
  */
 public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
 
-    // Columns
-    private static final int DB_ATTRIBUTE_NAME = 0;
-    private static final int DB_ATTRIBUTE_TYPE = 1;
-    private static final int DB_ATTRIBUTE_PRIMARY_KEY = 2;
-    private static final int DB_ATTRIBUTE_MANDATORY = 3;
-    private static final int DB_ATTRIBUTE_MAX = 4;
-    private static final int DB_ATTRIBUTE_SCALE = 5;
-    private static final int DB_ATTRIBUTE_COMMENT = 6;
+    static final int DB_ATTRIBUTE_NAME = 0;
+    static final int DB_ATTRIBUTE_TYPE = 1;
+    static final int DB_ATTRIBUTE_PRIMARY_KEY = 2;
+    static final int DB_ATTRIBUTE_MANDATORY = 3;
+    static final int DB_ATTRIBUTE_MAX = 4;
+    static final int DB_ATTRIBUTE_SCALE = 5;
+    static final int DB_ATTRIBUTE_COMMENT = 6;
 
-    protected DbEntity entity;
+    private final DbEntity entity;
 
-    public DbAttributeTableModel(DbEntity entity, ProjectController mediator,
-            Object eventSource) {
-        this(entity, mediator, eventSource, new ArrayList<>(entity.getAttributes()));
-    }
-
-    public DbAttributeTableModel(DbEntity entity, ProjectController mediator,
-            Object eventSource, List<DbAttribute> objectList) {
-        super(mediator, eventSource, objectList);
+    public DbAttributeTableModel(DbEntity entity, ProjectController controller, Object eventSource) {
+        super(controller, eventSource, new ArrayList<>(entity.getAttributes()));
         this.entity = entity;
     }
 
-    public int nameColumnInd() {
-        return DB_ATTRIBUTE_NAME;
-    }
-
-    public int typeColumnInd() {
-        return DB_ATTRIBUTE_TYPE;
-    }
-
-    public int lengthColumnId(){
-        return DB_ATTRIBUTE_MAX;
-    }
-
-    public int scaleColumnId(){
-        return DB_ATTRIBUTE_SCALE;
-    }
-
-    public int mandatoryColumnInd() {
-        return DB_ATTRIBUTE_MANDATORY;
-    }
-
-    /**
-     * Returns DbAttribute class.
-     */
     @Override
     public Class<?> getElementsClass() {
         return DbAttribute.class;
     }
 
-    /**
-     * Returns the number of columns in the table.
-     */
+    @Override
     public int getColumnCount() {
         return 7;
     }
@@ -297,15 +264,15 @@ public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
             relationships
                     .addAll(ProjectUtil.getRelationshipsUsingAttributeAsSource(attr));
 
-            if (relationships.size() > 0) {
+            if (!relationships.isEmpty()) {
                 relationships.removeIf(relationship -> !relationship.isToDependentPK());
 
                 // filtered only those that are to dep PK
-                if (relationships.size() > 0) {
+                if (!relationships.isEmpty()) {
                     String message = (relationships.size() == 1)
                             ? "Fix \"To Dep PK\" relationship using this attribute?"
                             : "Fix " + relationships.size()
-                                     + " \"To Dep PK\" relationships using this attribute?";
+                            + " \"To Dep PK\" relationships using this attribute?";
 
                     int answer = JOptionPane.showConfirmDialog(
                             Application.getFrame(),
@@ -335,10 +302,6 @@ public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
         attr.setMandatory(newVal);
     }
 
-    public void setGenerated(Boolean newVal, DbAttribute attr) {
-        attr.setGenerated(newVal);
-    }
-
     public void setComment(String newVal, DbAttribute attr) {
         ObjectInfo.putToMetaData(controller.getApplication().getMetaData(), attr, ObjectInfo.COMMENT, newVal);
     }
@@ -347,7 +310,7 @@ public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
         DbAttribute attrib = getAttribute(row);
         if (null == attrib) {
             return false;
-        } else if (col == mandatoryColumnInd()) {
+        } else if (col == DB_ATTRIBUTE_MANDATORY) {
             return !attrib.isPrimaryKey();
         }
         return true;
@@ -360,7 +323,7 @@ public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
 
     @Override
     public void sortByColumn(int sortCol, boolean isAscent) {
-        switch(sortCol){
+        switch (sortCol) {
             case DB_ATTRIBUTE_NAME:
                 sortByElementProperty("name", isAscent);
                 break;

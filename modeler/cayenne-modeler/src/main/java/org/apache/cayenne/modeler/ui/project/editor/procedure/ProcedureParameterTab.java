@@ -42,6 +42,7 @@ import org.apache.cayenne.modeler.event.display.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.table.CayenneCellEditor;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.ModelerUtil;
@@ -290,27 +291,27 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
 
         TableColumn typesColumn = table.getColumnModel()
                 .getColumn(ProcedureParameterTableModel.PARAMETER_TYPE);
-        JComboBox typesEditor = Application.getWidgetFactory()
+        JComboBox typesEditor = WidgetFactory
                 .createComboBox(TypesMapping.getDatabaseTypes(), true);
         AutoCompletion.enable(typesEditor);
-        typesColumn.setCellEditor(Application.getWidgetFactory()
+        typesColumn.setCellEditor(WidgetFactory
                 .createCellEditor(typesEditor));
 
         // direction column tweaking
         TableColumn directionColumn = table.getColumnModel()
                 .getColumn(ProcedureParameterTableModel.PARAMETER_DIRECTION);
-        JComboBox directionEditor = Application.getWidgetFactory()
+        JComboBox directionEditor = WidgetFactory
                 .createComboBox(ProcedureParameterTableModel.PARAMETER_DIRECTION_NAMES, false);
         directionEditor.setEditable(false);
         directionColumn.setCellEditor(new CayenneCellEditor(directionEditor));
 
         TableColumn precisionColumn = table.getColumnModel().getColumn(ProcedureParameterTableModel.PARAMETER_PRECISION);
         LimitedTextField limitedPrecisionField = new LimitedTextField(10);
-        precisionColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(limitedPrecisionField));
+        precisionColumn.setCellEditor(WidgetFactory.createCellEditor(limitedPrecisionField));
 
         TableColumn lengthColumn = table.getColumnModel().getColumn(ProcedureParameterTableModel.PARAMETER_LENGTH);
         LimitedTextField limitedLengthField = new LimitedTextField(10);
-        lengthColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(limitedLengthField));
+        lengthColumn.setCellEditor(WidgetFactory.createCellEditor(limitedLengthField));
 
         moveUp.setEnabled(false);
         moveDown.setEnabled(false);

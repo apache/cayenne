@@ -51,6 +51,7 @@ import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.UIUtil;
+import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
 
 import javax.swing.*;
@@ -165,9 +166,9 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
 
         TableColumn typeColumn = table.getColumnModel().getColumn(ObjAttributeTableModel.OBJ_ATTRIBUTE_TYPE);
 
-        JComboBox<String> javaTypesCombo = Application.getWidgetFactory().createComboBox(typeNames.toArray(new String[0]), false);
+        JComboBox<String> javaTypesCombo = WidgetFactory.createComboBox(typeNames.toArray(new String[0]), false);
         AutoCompletion.enable(javaTypesCombo, false, true);
-        typeColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(javaTypesCombo));
+        typeColumn.setCellEditor(WidgetFactory.createCellEditor(javaTypesCombo));
     }
 
     /**

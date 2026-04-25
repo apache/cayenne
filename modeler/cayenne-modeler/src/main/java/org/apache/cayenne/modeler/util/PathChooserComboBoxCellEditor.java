@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.util;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
 import org.apache.cayenne.util.Util;
 
@@ -75,7 +76,7 @@ public abstract class PathChooserComboBoxCellEditor<T extends CayenneTableModel<
         String dbAttributePath = getPathToInitializeCombo(model, row);
         List<String> nodeChildren = getChildren(currentNode, dbAttributePath);
         this.table = table;
-        comboBoxPathChooser = Application.getWidgetFactory().createComboBox(
+        comboBoxPathChooser = WidgetFactory.createComboBox(
                 nodeChildren,
                 false);
         comboBoxPathChooser.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {

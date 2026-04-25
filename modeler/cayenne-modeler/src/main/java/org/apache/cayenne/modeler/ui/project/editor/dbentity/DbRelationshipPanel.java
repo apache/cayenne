@@ -38,6 +38,7 @@ import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
+import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.table.BoardTableCellRenderer;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CellRenderers;
@@ -59,7 +60,7 @@ import java.util.List;
 /**
  * Displays DbRelationships for the current DbEntity.
  */
-public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplayListener,
+public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListener,
         DbEntityListener, DbRelationshipListener, TableModelListener {
 
     private final ProjectController controller;
@@ -69,7 +70,7 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
     private final JMenuItem editMenu;
     private JComboBox<DbEntity> targetCombo;
 
-    public DbEntityRelationshipPanel(ProjectController controller, DbEntityAttributeRelationshipTab parentPanel) {
+    public DbRelationshipPanel(ProjectController controller, DbEntityAttributeRelationshipTab parentPanel) {
         this.controller = controller;
         this.parentPanel = parentPanel;
 
@@ -177,18 +178,17 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
         table.setRowHeight(25);
         table.setRowMargin(3);
 
-        TableColumn col = table.getColumnModel().getColumn(
-                DbRelationshipTableModel.TARGET);
-
-        targetCombo = Application.getWidgetFactory().createComboBox();
+        targetCombo = WidgetFactory.createComboBox();
         AutoCompletion.enable(targetCombo);
-
-        table.getColumnModel().getColumn(DbRelationshipTableModel.TO_DEPENDENT_KEY)
-                .setCellRenderer(new CheckBoxCellRenderer());
 
         targetCombo.setRenderer(CellRenderers.entityListRendererWithIcons(entity.getDataMap()));
         targetCombo.setModel(createComboModel());
-        col.setCellEditor(Application.getWidgetFactory().createCellEditor(targetCombo));
+
+        TableColumn targetColumn = table.getColumnModel().getColumn(DbRelationshipTableModel.TARGET);
+        targetColumn.setCellEditor(WidgetFactory.createCellEditor(targetCombo));
+
+        TableColumn toDepPkColumn = table.getColumnModel().getColumn(DbRelationshipTableModel.TO_DEPENDENT_KEY);
+        toDepPkColumn.setCellRenderer(new CheckBoxCellRenderer());
 
         tablePreferences.bind(
                 table,

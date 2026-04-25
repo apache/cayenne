@@ -38,6 +38,7 @@ import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
+import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.table.CellEditorForAttributeTable;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.ProjectUtil;
@@ -237,8 +238,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttribute> {
     public CellEditorForAttributeTable setCellEditor(
             Collection<String> nameAttr,
             CayenneTable table) {
-        this.cellEditor = new CellEditorForAttributeTable(table, Application
-                .getWidgetFactory()
+        this.cellEditor = new CellEditorForAttributeTable(table, WidgetFactory
                 .createComboBox(nameAttr, true));
         this.table = table;
         return cellEditor;

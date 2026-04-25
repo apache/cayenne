@@ -19,50 +19,101 @@
 
 package org.apache.cayenne.modeler.swing;
 
-import java.util.Collection;
+import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
+import org.apache.cayenne.modeler.swing.combo.ComboBoxCellEditor;
+import org.apache.cayenne.modeler.swing.table.CayenneCellEditor;
+import org.apache.cayenne.modeler.undo.JComboBoxUndoListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.swing.table.TableCellEditor;
+import java.awt.Color;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
- * Utility class to create standard Swing widgets following default look-and-feel of
- * CayenneModeler.
+ * Utility class to create modeler-flavored Swing widgets.
  */
-public interface WidgetFactory {
+public final class WidgetFactory {
+
+    /**
+     * Number of items in combobox visible without scrolling
+     */
+    private static final int COMBOBOX_MAX_VISIBLE_SIZE = 12;
+
+    private WidgetFactory() {
+    }
 
     /**
      * Creates a new JComboBox with a collection of model objects.
      */
-    JComboBox<String> createComboBox(Collection<String> model, boolean sort);
+    public static JComboBox<String> createComboBox(Collection<String> model, boolean sort) {
+        return createComboBox(model.toArray(new String[0]), sort);
+    }
 
     /**
      * Creates a new JComboBox with an array of model objects.
      */
-    <E> JComboBox<E> createComboBox(E[] model, boolean sort);
+    public static <T> JComboBox<T> createComboBox(T[] model, boolean sort) {
+        JComboBox<T> comboBox = createComboBox();
+
+        if (sort) {
+            Arrays.sort(model);
+        }
+
+        comboBox.setModel(new DefaultComboBoxModel<>(model));
+        return comboBox;
+    }
 
     /**
      * Creates a new JComboBox.
      */
-    <E> JComboBox<E> createComboBox();
+    public static <T> JComboBox<T> createComboBox() {
+        JComboBox<T> comboBox = new JComboBox<>();
+        comboBox.setFont(UIManager.getFont("Label.font"));
+        comboBox.setBackground(Color.WHITE);
+        comboBox.setMaximumRowCount(COMBOBOX_MAX_VISIBLE_SIZE);
+        return comboBox;
+    }
 
     /**
      * Creates undoable JComboBox.
      */
-    <E> JComboBox<E> createUndoableComboBox();
+    public static <T> JComboBox<T> createUndoableComboBox() {
+        JComboBox<T> comboBox = new JComboBox<>();
+        comboBox.addItemListener(new JComboBoxUndoListener());
+        comboBox.setBackground(Color.WHITE);
+        comboBox.setMaximumRowCount(COMBOBOX_MAX_VISIBLE_SIZE);
+        return comboBox;
+    }
 
     /**
      * Creates cell editor for text field
      */
-    DefaultCellEditor createCellEditor(JTextField textField);
+    public static DefaultCellEditor createCellEditor(JTextField textField) {
+        textField.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
+        return new CayenneCellEditor(textField);
+    }
 
     /**
      * Creates cell editor for a table with combo as editor component. Type of this editor
      * depends on auto-completion behavior of JComboBox
-     * 
+     *
      * @param combo JComboBox to be used as editor component
      */
-    TableCellEditor createCellEditor(JComboBox<?> combo);
+    public static TableCellEditor createCellEditor(JComboBox<?> combo) {
+        combo.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
+        if (Boolean.TRUE.equals(combo.getClientProperty(AutoCompletion.AUTOCOMPLETION_PROPERTY))) {
+            return new ComboBoxCellEditor(combo);
+        }
 
+        DefaultCellEditor editor = new DefaultCellEditor(combo);
+        editor.setClickCountToStart(1);
+
+        return editor;
+    }
 }

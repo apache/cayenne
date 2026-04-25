@@ -44,6 +44,7 @@ import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
+import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
 
 import javax.swing.*;
@@ -166,11 +167,11 @@ public class EmbeddableAttributesView extends JPanel implements
     private void setUpTableStructure() {
 
         TableColumn typeColumn = table.getColumnModel().getColumn(EmbeddableAttributeTableModel.OBJ_ATTRIBUTE_TYPE);
-        JComboBox javaTypesCombo = Application.getWidgetFactory().createComboBox(
+        JComboBox javaTypesCombo = WidgetFactory.createComboBox(
                 ModelerUtil.getRegisteredTypeNames(),
                 false);
         AutoCompletion.enable(javaTypesCombo, false, true);
-        typeColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(
+        typeColumn.setCellEditor(WidgetFactory.createCellEditor(
                 javaTypesCombo));
 
         tablePreferences.bind(

@@ -28,6 +28,7 @@ import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.swing.MultiColumnBrowser;
 import org.apache.cayenne.modeler.util.PanelFactory;
+import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
 
 import javax.swing.JButton;
@@ -83,7 +84,7 @@ public class ObjAttributeInfoDialogView extends JDialog {
         this.currentPathLabel = new JLabel();
         this.sourceEntityLabel = new JLabel();
 
-        this.typeComboBox = Application.getWidgetFactory().createComboBox(ModelerUtil.getRegisteredTypeNames(), false);
+        this.typeComboBox = WidgetFactory.createComboBox(ModelerUtil.getRegisteredTypeNames(), false);
         AutoCompletion.enable(typeComboBox, false, true);
         typeComboBox.getRenderer();
 

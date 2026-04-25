@@ -41,6 +41,7 @@ import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.modeler.swing.JCayenneCheckBox;
+import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -87,7 +88,7 @@ public class DataMapMainView extends JPanel {
         };
 
         location = new JLabel();
-        nodeSelector = Application.getWidgetFactory().createUndoableComboBox();
+        nodeSelector = WidgetFactory.createUndoableComboBox();
         nodeSelector.setRenderer(CellRenderers.listRendererWithIcons());
 
         JButton updateDefaultCatalog = new JButton("Update...");
