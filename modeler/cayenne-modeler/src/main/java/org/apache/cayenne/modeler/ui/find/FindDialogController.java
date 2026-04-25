@@ -38,14 +38,14 @@ import java.util.List;
  */
 public class FindDialogController extends ChildController<RootController> {
 
-    private FindDialogView view;
+    private final FindDialogView view;
     private List<FindAction.SearchResultEntry> searchResults;
 
     public FindDialogController(RootController parent, List<FindAction.SearchResultEntry> searchResults) {
         super(parent);
 
         this.searchResults = searchResults;
-        view = new FindDialogView(searchResults);
+        this.view = new FindDialogView(searchResults);
         initBindings();
     }
 
@@ -93,7 +93,7 @@ public class FindDialogController extends ChildController<RootController> {
         private void openResult(InputEvent e) {
             JTable table = (JTable) e.getSource();
             Integer selectedLine = table.getSelectionModel().getLeadSelectionIndex();
-            FindAction.jumpToResult(searchResults.get(selectedLine));
+            FindAction.jumpToResult(searchResults.get(selectedLine), application);
         }
 
         @Override public void keyReleased(KeyEvent e) {}

@@ -18,83 +18,46 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.datadomain.graph;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JToolBar;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.swing.WidgetFactory;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DomainDisplayListener;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.graph.GraphBuilder;
-import org.apache.cayenne.modeler.graph.GraphMap;
 import org.apache.cayenne.modeler.graph.GraphRegistry;
 import org.apache.cayenne.modeler.graph.GraphType;
+import org.apache.cayenne.modeler.swing.WidgetFactory;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.RebuildGraphAction;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.SaveAsImageAction;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ZoomInAction;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ZoomOutAction;
 import org.jgraph.JGraph;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+
 /**
  * Tab for editing graphical representation of a dataDomain
  */
 public class DataDomainGraphTab extends JPanel implements DomainDisplayListener, ItemListener {
 
-    /**
-     * mediator instance
-     */
-    ProjectController mediator;
-
-    /**
-     * Diagram selection combo
-     */
+    private final ProjectController controller;
     JComboBox<String> diagramCombo;
-
-    /**
-     * Scrollpane that the graph will be added to
-     */
     JScrollPane scrollPane;
-
-    /**
-     * Current graph
-     */
     JGraph graph;
-
-    /**
-     * Current domain
-     */
     DataChannelDescriptor domain;
-
-    /**
-     * True to invoke rebuild next time component becomes visible
-     */
     boolean needRebuild;
-
     GraphRegistry graphRegistry;
 
-    public DataDomainGraphTab(ProjectController mediator) {
-        this.mediator = mediator;
-        initView();
-    }
+    public DataDomainGraphTab(ProjectController controller) {
+        this.controller = controller;
 
-    private void initView() {
         needRebuild = true;
-        mediator.addDomainDisplayListener(this);
+        controller.addDomainDisplayListener(this);
 
         setLayout(new BorderLayout());
         JToolBar toolbar = new JToolBar();
@@ -110,11 +73,11 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
         diagramCombo = WidgetFactory.createComboBox(names, false);
         diagramCombo.addItemListener(this);
 
-        toolbar.add(new RebuildGraphAction(this, Application.getInstance()).buildButton(1));
-        toolbar.add(new SaveAsImageAction(this, Application.getInstance()).buildButton(3));
+        toolbar.add(new RebuildGraphAction(this,controller.getApplication()).buildButton(1));
+        toolbar.add(new SaveAsImageAction(this, controller.getApplication()).buildButton(3));
         toolbar.addSeparator();
-        toolbar.add(new ZoomInAction(this, Application.getInstance()).buildButton(1));
-        toolbar.add(new ZoomOutAction(this, Application.getInstance()).buildButton(3));
+        toolbar.add(new ZoomInAction(this, controller.getApplication()).buildButton(1));
+        toolbar.add(new ZoomOutAction(this, controller.getApplication()).buildButton(3));
 
         toolbar.addSeparator();
         toolbar.add(new JLabel("Diagram: "));
@@ -158,7 +121,7 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
      */
     public void refresh() {
         if (needRebuild && domain != null) {
-            graph = getGraphRegistry().loadGraph(mediator, domain, getSelectedType());
+            graph = getGraphRegistry().loadGraph(controller, domain, getSelectedType());
             scrollPane.setViewportView(graph);
 
             needRebuild = false;
@@ -177,7 +140,7 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
             JOptionPane pane = new JOptionPane("Rebuilding graph from domain will cause all user"
                     + " changes to be lost. Continue?", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
 
-            JDialog dialog = pane.createDialog(Application.getInstance().getFrameController().getView(), "Confirm Rebuild");
+            JDialog dialog = pane.createDialog(controller.getApplication().getFrameController().getView(), "Confirm Rebuild");
             dialog.setVisible(true);
 
             if (pane.getValue().equals(JOptionPane.YES_OPTION)) {
@@ -197,10 +160,10 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
     }
 
     GraphRegistry getGraphRegistry() {
-        graphRegistry = mediator.getApplication().getMetaData().get(domain, GraphRegistry.class);
+        graphRegistry = controller.getApplication().getMetaData().get(domain, GraphRegistry.class);
         if (graphRegistry == null) {
             graphRegistry = new GraphRegistry();
-            mediator.getApplication().getMetaData().add(domain, graphRegistry);
+            controller.getApplication().getMetaData().add(domain, graphRegistry);
         }
 
         return graphRegistry;

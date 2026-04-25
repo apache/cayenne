@@ -43,7 +43,7 @@ public class DataDomainDbImportController extends DataDomainGeneratorsViewContro
             view.showEmptyMessage();
             return;
         }
-        projectController.getApplication().getFrameController().getDbImportController().setGlobalImport(true);
+        controller.getApplication().getFrameController().getDbImportController().setGlobalImport(true);
         dbImportAction.performAction(dataMaps);
     }
 
@@ -51,7 +51,7 @@ public class DataDomainDbImportController extends DataDomainGeneratorsViewContro
     public void showConfig(DataMap dataMap) {
         if (dataMap != null) {
             DataMapDisplayEvent event = new DataMapDisplayEvent(getView(), dataMap, dataMap.getDataChannelDescriptor());
-            getProjectController().displayDataMap(event);
+            getController().displayDataMap(event);
         }
     }
 }

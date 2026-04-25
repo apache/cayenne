@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.modeler.ui;
 
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.model.RecentFileListListener;
 import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
@@ -71,7 +70,9 @@ class ModelerMenuBar extends JMenuBar {
         editMenu.add(globalActions.getAction(CopyAction.class).buildMenu());
         editMenu.add(globalActions.getAction(PasteAction.class).buildMenu());
 
-        RecentFileMenu recentFileMenu = new RecentFileMenu("Recent Projects");
+        RecentFileMenu recentFileMenu = new RecentFileMenu(
+                "Recent Projects",
+                globalActions.getAction(OpenProjectAction.class));
         recentFileListeners.add(recentFileMenu);
         fileMenu.add(recentFileMenu);
 
@@ -148,8 +149,11 @@ class ModelerMenuBar extends JMenuBar {
 
     static class RecentFileMenu extends JMenu implements RecentFileListListener {
 
-        public RecentFileMenu(String s) {
+        private final OpenProjectAction action;
+
+        public RecentFileMenu(String s, OpenProjectAction action) {
             super(s);
+            this.action = action;
         }
 
         /**
@@ -163,8 +167,6 @@ class ModelerMenuBar extends JMenuBar {
             Component[] comps = getMenuComponents();
             int curSize = comps.length;
             int prefSize = files.size();
-
-            OpenProjectAction action = Application.getInstance().getActionManager().getAction(OpenProjectAction.class);
 
             for (int i = 0; i < prefSize; i++) {
                 String name = files.get(i).getAbsolutePath();

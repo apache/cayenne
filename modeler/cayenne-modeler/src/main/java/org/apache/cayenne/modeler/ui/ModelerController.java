@@ -108,7 +108,7 @@ public class ModelerController extends RootController {
         if (transferFile.isFile()) {
             FileFilter filter = FileFilters.getApplicationFilter();
             if (filter.accept(transferFile)) {
-                Application.getInstance().getActionManager().getAction(OpenProjectAction.class).openProject(transferFile);
+                application.getActionManager().getAction(OpenProjectAction.class).openProject(transferFile);
                 return true;
             }
         }

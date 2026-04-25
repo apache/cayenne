@@ -18,29 +18,28 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.logconsole;
 
+import org.apache.cayenne.modeler.swing.dialog.CayenneDialog;
+
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.swing.dialog.CayenneDialog;
-
 /**
- * LogConsoleWindow is used to show log in a separate dialog 
+ * LogConsoleWindow is used to show log in a separate dialog
  */
 public class LogConsoleWindow extends CayenneDialog {
 
     /**
      * Constructs a new log console window
      */
-    public LogConsoleWindow(final LogConsoleController controller) {
-        super(Application.getInstance().getFrameController().getView());
-        
+    public LogConsoleWindow(LogConsoleController controller) {
+        super(controller.getApplication().getFrameController().getView());
+
         setTitle("Cayenne Modeler Console");
-        
+
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 controller.setConsoleProperty(LogConsoleController.SHOW_CONSOLE_PROPERTY, false);
-                Application.getInstance().getFrameController().getView().updateLogConsoleMenu();
+                controller.getApplication().getFrameController().getView().updateLogConsoleMenu();
             }
         });
     }

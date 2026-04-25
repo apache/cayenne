@@ -25,43 +25,32 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.map.CallbackDescriptor;
 import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.LifecycleEvent;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.event.display.CallbackMethodDisplayEvent;
+import org.apache.cayenne.modeler.event.display.CallbackTypeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.TablePopupHandler;
+import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
+import org.apache.cayenne.modeler.event.model.CallbackMethodListener;
+import org.apache.cayenne.modeler.pref.TableColumnPreferences;
+import org.apache.cayenne.modeler.swing.table.CayenneTable;
 import org.apache.cayenne.modeler.ui.action.CopyCallbackMethodAction;
 import org.apache.cayenne.modeler.ui.action.CreateCallbackMethodAction;
 import org.apache.cayenne.modeler.ui.action.CutCallbackMethodAction;
+import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.ui.action.PasteAction;
 import org.apache.cayenne.modeler.ui.action.RemoveCallbackMethodAction;
-import org.apache.cayenne.modeler.event.display.CallbackMethodDisplayEvent;
-import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
-import org.apache.cayenne.modeler.event.model.CallbackMethodListener;
-import org.apache.cayenne.modeler.event.display.CallbackTypeDisplayEvent;
-import org.apache.cayenne.modeler.event.display.TablePopupHandler;
-import org.apache.cayenne.modeler.pref.TableColumnPreferences;
-import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
-import org.apache.cayenne.modeler.swing.table.CayenneTable;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JToolBar;
-import javax.swing.ListSelectionModel;
-import javax.swing.TransferHandler;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.JTableHeader;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
@@ -189,23 +178,23 @@ public class ObjEntityCallbacksView extends JPanel {
     }
 
     private ModelerAbstractAction getCreateCallbackMethodAction() {
-        return Application.getInstance().getActionManager().getAction(CreateCallbackMethodAction.class);
+        return controller.getApplication().getActionManager().getAction(CreateCallbackMethodAction.class);
     }
 
     private RemoveCallbackMethodAction getRemoveCallbackMethodAction() {
-        return Application.getInstance().getActionManager().getAction(RemoveCallbackMethodAction.class);
+        return controller.getApplication().getActionManager().getAction(RemoveCallbackMethodAction.class);
     }
 
     private CopyCallbackMethodAction getCopyCallbackMethodAction() {
-        return Application.getInstance().getActionManager().getAction(CopyCallbackMethodAction.class);
+        return controller.getApplication().getActionManager().getAction(CopyCallbackMethodAction.class);
     }
 
     private CutCallbackMethodAction getCutCallbackMethodAction() {
-        return Application.getInstance().getActionManager().getAction(CutCallbackMethodAction.class);
+        return controller.getApplication().getActionManager().getAction(CutCallbackMethodAction.class);
     }
 
     private PasteAction getPasteCallbackMethodAction() {
-        return Application.getInstance().getActionManager().getAction(PasteAction.class);
+        return controller.getApplication().getActionManager().getAction(PasteAction.class);
     }
 
     private void rebuildTables() {

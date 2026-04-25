@@ -23,7 +23,6 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
 import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
@@ -48,11 +47,11 @@ public class ReverseEngineeringConfigPanel extends JPanel {
 
     private CayenneUndoableTextField tableTypes;
 
-    private final ProjectController projectController;
+    private final ProjectController controller;
     private final DbImportView dbImportView;
 
-    ReverseEngineeringConfigPanel(ProjectController projectController, DbImportView dbImportView) {
-        this.projectController = projectController;
+    ReverseEngineeringConfigPanel(ProjectController controller, DbImportView dbImportView) {
+        this.controller = controller;
         this.dbImportView = dbImportView;
         initFormElements();
         initListeners();
@@ -91,8 +90,8 @@ public class ReverseEngineeringConfigPanel extends JPanel {
     }
 
     ReverseEngineering getReverseEngineeringBySelectedMap() {
-        DataMap dataMap = projectController.getSelectedDataMap();
-        return projectController.getApplication().getMetaData().get(dataMap, ReverseEngineering.class);
+        DataMap dataMap = controller.getSelectedDataMap();
+        return controller.getApplication().getMetaData().get(dataMap, ReverseEngineering.class);
     }
 
     void initStrategy(ReverseEngineering reverseEngineering) {
@@ -115,7 +114,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
         meaningfulPk.addCommitListener(text -> {
             getReverseEngineeringBySelectedMap().setMeaningfulPkTables(text);
             if (!dbImportView.isInitFromModel()) {
-                projectController.setDirty(true);
+                controller.setDirty(true);
             }
         });
 
@@ -125,7 +124,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
         stripFromTableNames.addCommitListener(text -> {
             getReverseEngineeringBySelectedMap().setStripFromTableNames(text);
             if (!dbImportView.isInitFromModel()) {
-                projectController.setDirty(true);
+                controller.setDirty(true);
             }
         });
 
@@ -153,32 +152,32 @@ public class ReverseEngineeringConfigPanel extends JPanel {
     private void initListeners() {
         skipRelationshipsLoading.addActionListener(e -> {
             getReverseEngineeringBySelectedMap().setSkipRelationshipsLoading(skipRelationshipsLoading.isSelected());
-            if(!dbImportView.isInitFromModel()) {
-                projectController.setDirty(true);
+            if (!dbImportView.isInitFromModel()) {
+                controller.setDirty(true);
             }
         });
         skipPrimaryKeyLoading.addActionListener(e -> {
             getReverseEngineeringBySelectedMap().setSkipPrimaryKeyLoading(skipPrimaryKeyLoading.isSelected());
-            if(!dbImportView.isInitFromModel()) {
-                projectController.setDirty(true);
+            if (!dbImportView.isInitFromModel()) {
+                controller.setDirty(true);
             }
         });
         forceDataMapCatalog.addActionListener(e -> {
             getReverseEngineeringBySelectedMap().setForceDataMapCatalog(forceDataMapCatalog.isSelected());
-            if(!dbImportView.isInitFromModel()) {
-                projectController.setDirty(true);
+            if (!dbImportView.isInitFromModel()) {
+                controller.setDirty(true);
             }
         });
         forceDataMapSchema.addActionListener(e -> {
             getReverseEngineeringBySelectedMap().setForceDataMapSchema(forceDataMapSchema.isSelected());
-            if(!dbImportView.isInitFromModel()) {
-                projectController.setDirty(true);
+            if (!dbImportView.isInitFromModel()) {
+                controller.setDirty(true);
             }
         });
         useJava7Types.addActionListener(e -> {
             getReverseEngineeringBySelectedMap().setUseJava7Types(useJava7Types.isSelected());
-            if(!dbImportView.isInitFromModel()) {
-                projectController.setDirty(true);
+            if (!dbImportView.isInitFromModel()) {
+                controller.setDirty(true);
             }
         });
         strategyCombo.addActionListener(e -> {
@@ -186,16 +185,16 @@ public class ReverseEngineeringConfigPanel extends JPanel {
             checkStrategy(strategy);
             getReverseEngineeringBySelectedMap().setNamingStrategy(strategy);
             NameGeneratorPreferences.getInstance().addToLastUsedStrategies(strategy);
-            if(!dbImportView.isInitFromModel()) {
-                projectController.setDirty(true);
+            if (!dbImportView.isInitFromModel()) {
+                controller.setDirty(true);
             }
         });
     }
 
     private void checkStrategy(String strategy) {
-        try{
+        try {
             Thread.currentThread().getContextClassLoader().loadClass(strategy);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             JOptionPane.showMessageDialog(
                     this,
                     strategy + " not found. Please, add naming strategy to classpath.",
@@ -210,7 +209,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
             String[] tableTypesFromReverseEngineering = reverseEngineering.getTableTypes();
             tableTypes.setText(String.join(",", tableTypesFromReverseEngineering));
             JOptionPane.showMessageDialog(
-                    Application.getInstance().getFrameController().getView(),
+                    controller.getApplication().getFrameController().getView(),
                     "Table types field can't be empty.",
                     "Error setting table types",
                     JOptionPane.ERROR_MESSAGE);
@@ -223,7 +222,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
                 }
             }
             if (!dbImportView.isInitFromModel()) {
-                projectController.setDirty(true);
+                controller.setDirty(true);
             }
         }
     }

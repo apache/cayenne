@@ -19,27 +19,17 @@
 
 package org.apache.cayenne.modeler.ui.dbrelationship;
 
-import org.apache.cayenne.modeler.Application;
-
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.swing.dialog.CayenneDialog;
 import org.apache.cayenne.modeler.swing.table.CayenneTable;
+
+import javax.swing.*;
+import java.awt.*;
 
 public class DbRelationshipDialogView extends CayenneDialog {
 
@@ -54,7 +44,7 @@ public class DbRelationshipDialogView extends CayenneDialog {
     private TableColumnPreferences tablePreferences;
     private JButton addButton;
     private JButton removeButton;
-    private  JButton saveButton;
+    private JButton saveButton;
     private JButton cancelButton;
 
     private boolean cancelPressed;
@@ -150,7 +140,7 @@ public class DbRelationshipDialogView extends CayenneDialog {
 
     @Override
     public void setVisible(boolean b) {
-        if(b && cancelPressed) {
+        if (b && cancelPressed) {
             return;
         }
         super.setVisible(b);

@@ -37,7 +37,7 @@ import java.awt.event.KeyEvent;
 /**
  * Action that synchronizes a given ObjEntity with the current state of the underlying
  * DbEntity.
- * 
+ *
  */
 public class ObjEntitySyncAction extends ModelerAbstractAction {
 
@@ -69,9 +69,7 @@ public class ObjEntitySyncAction extends ModelerAbstractAction {
         ObjEntity entity = mediator.getSelectedObjEntity();
 
         if (entity != null && entity.getDbEntity() != null) {
-            EntityMergeSupport merger = new EntitySyncController(Application
-                    .getInstance()
-                    .getFrameController(), entity).createMerger();
+            EntityMergeSupport merger = new EntitySyncController(application.getFrameController(), entity).createMerger();
 
             if (merger == null) {
                 return;
@@ -86,7 +84,7 @@ public class ObjEntitySyncAction extends ModelerAbstractAction {
                         this,
                         entity,
                         entity.getDataMap(),
-                        (DataChannelDescriptor)mediator.getProject().getRootNode()));
+                        (DataChannelDescriptor) mediator.getProject().getRootNode()));
             }
         }
     }

@@ -106,7 +106,7 @@ public class OpenProjectAction extends ProjectAction {
         if (f == null) {
             try {
                 // Get the project file name (always cayenne.xml)
-                f = fileChooser.openProjectFile(application.getFrameController().getView());
+                f = fileChooser.openProjectFile(application);
             } catch (Exception ex) {
                 LOGGER.warn("Error loading project file.", ex);
             }
@@ -138,7 +138,7 @@ public class OpenProjectAction extends ProjectAction {
                 return;
             }
 
-            ModelerController controller = Application.getInstance().getFrameController();
+            ModelerController controller = application.getFrameController();
             controller.addToLastProjListAction(file);
 
             URL url = file.toURI().toURL();

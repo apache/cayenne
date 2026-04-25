@@ -19,12 +19,6 @@
 
 package org.apache.cayenne.modeler.ui.action;
 
-import java.awt.Frame;
-import java.io.File;
-
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
@@ -34,10 +28,14 @@ import org.apache.cayenne.project.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import java.io.File;
+
 
 /**
  * File chooser panel used to select a directory to store project files.
- * 
+ *
  */
 class ProjectOpener extends JFileChooser {
 
@@ -46,25 +44,25 @@ class ProjectOpener extends JFileChooser {
     /**
      * Selects a directory to store the project.
      */
-    File newProjectDir(Frame f, Project p) {
+    public File newProjectDir(Application application, Project p) {
         if (p != null) {
             StringBuilder nameProject = new StringBuilder("cayenne");
-            if(((DataChannelDescriptor)p.getRootNode()).getName()!=null){
-                nameProject.append("-").append(((DataChannelDescriptor)p.getRootNode()).getName());
+            if (((DataChannelDescriptor) p.getRootNode()).getName() != null) {
+                nameProject.append("-").append(((DataChannelDescriptor) p.getRootNode()).getName());
             }
             nameProject.append(".xml");
             // configure for application project
-            return newProjectDir(f, nameProject.toString(), FileFilters.getApplicationFilter());
+            return newProjectDir(nameProject.toString(), FileFilters.getApplicationFilter(), application);
         } else {
             throw new CayenneRuntimeException("Null project.");
         }
     }
 
-    File newProjectDir(Frame f, String location, FileFilter filter) {
+    private File newProjectDir(String location, FileFilter filter, Application application) {
         // configure dialog
         setDialogTitle("Select Project Directory");
         setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-        setCurrentDirectory(getDefaultStartDir());
+        setCurrentDirectory(getDefaultStartDir(application));
 
         // preselect current directory
         if (getCurrentDirectory() != null) {
@@ -79,7 +77,7 @@ class ProjectOpener extends JFileChooser {
         File selectedDir;
 
         while (true) {
-            int status = showDialog(f, "Select");
+            int status = showDialog(application.getFrameController().getView(), "Select");
             selectedDir = getSelectedFile();
             if (status != JFileChooser.APPROVE_OPTION || selectedDir == null) {
                 LOGGER.info("Save canceled.");
@@ -95,7 +93,7 @@ class ProjectOpener extends JFileChooser {
             // check for overwrite
             File projectFile = new File(selectedDir, location);
             if (projectFile.exists()) {
-                OverwriteDialog dialog = new OverwriteDialog(projectFile, f);
+                OverwriteDialog dialog = new OverwriteDialog(projectFile, application.getFrameController().getView());
                 dialog.show();
 
                 if (dialog.shouldOverwrite()) {
@@ -115,12 +113,12 @@ class ProjectOpener extends JFileChooser {
     /**
      * Runs a dialog to open Cayenne project.
      */
-    File openProjectFile(Frame f) {
+    public File openProjectFile(Application application) {
 
         // configure dialog
         setDialogTitle("Select Project File");
         setFileSelectionMode(JFileChooser.FILES_ONLY);
-        setCurrentDirectory(getDefaultStartDir());
+        setCurrentDirectory(getDefaultStartDir(application));
 
         // configure filters
         resetChoosableFileFilters();
@@ -129,7 +127,7 @@ class ProjectOpener extends JFileChooser {
         // default to App projects
         setFileFilter(FileFilters.getApplicationFilter());
 
-        int status = showOpenDialog(f);
+        int status = showOpenDialog(application.getFrameController().getView());
         if (status != JFileChooser.APPROVE_OPTION) {
             return null;
         }
@@ -137,14 +135,8 @@ class ProjectOpener extends JFileChooser {
         return getSelectedFile();
     }
 
-    /**
-     * Returns directory where file search should start. This is either coming from saved
-     * preferences, or a current directory is used.
-     */
-    File getDefaultStartDir() {
-        // find start directory in preferences
-        File existingDir = Application
-                .getInstance()
+    private File getDefaultStartDir(Application application) {
+        File existingDir = application
                 .getFrameController()
                 .getLastDirectory()
                 .getExistingDirectory(false);

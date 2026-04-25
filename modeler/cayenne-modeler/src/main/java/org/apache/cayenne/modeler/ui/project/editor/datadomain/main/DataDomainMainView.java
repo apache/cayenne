@@ -24,20 +24,18 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.modeler.event.model.DomainEvent;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.swing.checkbox.CayenneCheckBox;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DomainDisplayListener;
-import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.event.model.DomainEvent;
 import org.apache.cayenne.modeler.pref.RenamedPreferences;
+import org.apache.cayenne.modeler.swing.checkbox.CayenneCheckBox;
+import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
@@ -192,8 +190,8 @@ public class DataDomainMainView extends JPanel implements DomainDisplayListener 
 
     void setDomainName(String newName) {
 
-        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) Application
-                .getInstance()
+        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) controller
+                .getApplication()
                 .getProject()
                 .getRootNode();
 

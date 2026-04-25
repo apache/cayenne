@@ -76,8 +76,7 @@ public class DbEntitySyncAction extends ModelerAbstractAction {
                 return;
             }
 
-            final EntityMergeSupport merger = new EntitySyncController(Application.getInstance().getFrameController(), dbEntity)
-                    .createMerger();
+            EntityMergeSupport merger = new EntitySyncController(application.getFrameController(), dbEntity).createMerger();
 
             if (merger == null) {
                 return;

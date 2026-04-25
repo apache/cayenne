@@ -18,17 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.Action;
-import javax.swing.Icon;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.action.FindAction;
 import org.apache.cayenne.modeler.graph.GraphBuilder;
+import org.apache.cayenne.modeler.ui.action.FindAction;
 import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 /**
  * Action that displays one of the objects in main tree, and then fires another action (if specified)
@@ -81,7 +79,7 @@ public class EntityDisplayAction extends ModelerAbstractAction {
         }
 
         // reusing logic from FindAction
-        FindAction.jumpToResult(new FindAction.SearchResultEntry(entity, entity.getName()));
+        FindAction.jumpToResult(new FindAction.SearchResultEntry(entity, entity.getName()), application);
         return true;
     }
 

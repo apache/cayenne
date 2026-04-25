@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.modeler.ui.dbrelationship;
 
-import org.apache.cayenne.modeler.ui.warning.WarningDialogByDbTargetChange;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
@@ -28,16 +27,15 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.dbrelationship.DbRelationshipDialogView;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.swing.WidgetFactory;
+import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.ui.warning.WarningDialogByDbTargetChange;
 import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.RelationshipUndoableEdit;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.swing.WidgetFactory;
-import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 
@@ -374,7 +372,7 @@ public class DbRelationshipDialogController extends ChildController<ProjectContr
                     .fireDbRelationshipEvent(
                             new RelationshipEvent(this, relationship, relationship.getSourceEntity(), MapEvent.CHANGE));
 
-            Application.getInstance().getUndoManager().addEdit(undo);
+            application.getUndoManager().addEdit(undo);
         } else {
             DbEntity dbEntity = relationship.getSourceEntity();
             if (dbEntity.getRelationship(relationship.getName()) == null) {
@@ -387,8 +385,7 @@ public class DbRelationshipDialogController extends ChildController<ProjectContr
                     (DataChannelDescriptor) projectController.getProject().getRootNode());
 
             projectController.displayDbRelationship(rde);
-
-            Application.getInstance().getUndoManager().addEdit(
+            application.getUndoManager().addEdit(
                     new CreateRelationshipUndoableEdit(relationship.getSourceEntity(), new DbRelationship[]{relationship}));
         }
     }

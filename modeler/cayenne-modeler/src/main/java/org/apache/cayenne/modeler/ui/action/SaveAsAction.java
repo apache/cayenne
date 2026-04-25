@@ -75,7 +75,7 @@ public class SaveAsAction extends ModelerAbstractAction {
             oldPath = p.getConfigurationResource().getURL().getPath();
         }
 
-        File projectDir = fileChooser.newProjectDir(application.getFrameController().getView(), p);
+        File projectDir = fileChooser.newProjectDir(application, p);
         if (projectDir == null) {
             return false;
         }
@@ -124,7 +124,7 @@ public class SaveAsAction extends ModelerAbstractAction {
 
                     RenamedPreferences.copyPreferences(newPref, tempOldPref, false);
                     tempOldPref.removeNode();
-                    Application.getInstance().getFrameController().getLastDirectory().setDirectory(projectDir);
+                    application.getFrameController().getLastDirectory().setDirectory(projectDir);
                 }
             }
         }

@@ -39,7 +39,7 @@ public abstract class DataDomainGeneratorsViewController<T> implements DataMapLi
 
     protected final static Logger LOGGER = LoggerFactory.getLogger(DataDomainGeneratorsViewController.class);
 
-    protected final ProjectController projectController;
+    protected final ProjectController controller;
     private final ConcurrentMap<DataMap, DataDomainGeneratorsPanel> generatorsPanels;
     private final Set<DataMap> selectedDataMaps;
     private final Class<T> type;
@@ -47,13 +47,13 @@ public abstract class DataDomainGeneratorsViewController<T> implements DataMapLi
 
     protected DataDomainGeneratorsView view;
 
-    public DataDomainGeneratorsViewController(ProjectController projectController, Class<T> type, boolean selectAllByDefault) {
+    public DataDomainGeneratorsViewController(ProjectController controller, Class<T> type, boolean selectAllByDefault) {
         this.generatorsPanels = new ConcurrentHashMap<>();
         this.selectedDataMaps = new HashSet<>();
         this.type = type;
         this.selectAllByDefault = selectAllByDefault;
-        this.projectController = projectController;
-        this.projectController.addDataMapListener(this);
+        this.controller = controller;
+        this.controller.addDataMapListener(this);
     }
 
     private boolean isSelectAllChecked() {
@@ -133,7 +133,7 @@ public abstract class DataDomainGeneratorsViewController<T> implements DataMapLi
     }
 
     private Collection<DataMap> getDataMaps() {
-        Project project = projectController.getProject();
+        Project project = controller.getProject();
         return  ((DataChannelDescriptor) project.getRootNode()).getDataMaps();
     }
 
@@ -141,8 +141,8 @@ public abstract class DataDomainGeneratorsViewController<T> implements DataMapLi
         return view;
     }
 
-    public ProjectController getProjectController() {
-        return projectController;
+    public ProjectController getController() {
+        return controller;
     }
 
     ConcurrentMap<DataMap, DataDomainGeneratorsPanel> getGeneratorsPanels() {

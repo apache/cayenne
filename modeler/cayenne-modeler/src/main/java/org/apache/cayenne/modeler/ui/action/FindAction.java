@@ -19,13 +19,13 @@
 package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.dbsync.model.DetectedDbEntity;
 import org.apache.cayenne.dbsync.reverse.dbload.DbRelationshipDetected;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.dbsync.model.DetectedDbEntity;
 import org.apache.cayenne.map.EJBQLQueryDescriptor;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
@@ -36,16 +36,11 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.ProcedureQueryDescriptor;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.SQLTemplateDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.ModelerFrame;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeModel;
-import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeView;
-import org.apache.cayenne.modeler.ui.find.FindDialogController;
-import org.apache.cayenne.modeler.ui.project.ProjectView;
 import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableAttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
@@ -54,12 +49,16 @@ import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.modeler.ui.find.FindDialogController;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.ui.project.ProjectView;
+import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeModel;
+import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeView;
 
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-import java.awt.Color;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -96,12 +95,8 @@ public class FindAction extends ModelerAbstractAction {
         PRIORITY_BY_TYPE.put(ProcedureParameter.class, 17);
     }
 
-    public static String getActionName() {
-        return "Find";
-    }
-
     public FindAction(Application application) {
-        super(getActionName(), application);
+        super("Find", application);
     }
 
     /**
@@ -123,7 +118,7 @@ public class FindAction extends ModelerAbstractAction {
         if (searchResults.isEmpty()) {
             markEmptySearch(source);
         } else if (searchResults.size() == 1) {
-            jumpToResult(searchResults.iterator().next());
+            jumpToResult(searchResults.iterator().next(), application);
         } else {
             new FindDialogController(application.getFrameController(), searchResults).startupAction();
         }
@@ -136,10 +131,10 @@ public class FindAction extends ModelerAbstractAction {
     /**
      * Navigate to search result
      */
-    public static void jumpToResult(FindAction.SearchResultEntry searchResultEntry) {
-        ProjectView projectView = ((ModelerFrame) Application.getInstance().getFrameController().getView()).getProjectView();
-        DataChannelDescriptor domain = (DataChannelDescriptor) Application.getInstance().getProject().getRootNode();
-        ProjectController controller = Application.getInstance().getFrameController().getProjectController();
+    public static void jumpToResult(FindAction.SearchResultEntry searchResultEntry, Application application) {
+        DataChannelDescriptor domain = (DataChannelDescriptor) application.getProject().getRootNode();
+        ProjectController controller = application.getFrameController().getProjectController();
+        ProjectView projectView = controller.getView();
 
         if (searchResultEntry.getObject() instanceof Entity) {
             jumpToEntityResult((Entity<?, ?, ?>) searchResultEntry.getObject(), projectView, domain, controller);

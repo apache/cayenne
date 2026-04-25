@@ -19,12 +19,11 @@
 
 package org.apache.cayenne.modeler.ui.action;
 
-import java.awt.event.ActionEvent;
-
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.ModelerController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.unsavedchanges.UnsavedChangesDialog;
+
+import java.awt.event.ActionEvent;
 
 
 public class ProjectAction extends ModelerAbstractAction {
@@ -39,7 +38,7 @@ public class ProjectAction extends ModelerAbstractAction {
 
     /**
      * Constructor for ProjectAction.
-     * 
+     *
      * @param name
      */
     public ProjectAction(String name, Application application) {
@@ -53,7 +52,9 @@ public class ProjectAction extends ModelerAbstractAction {
         closeProject(true);
     }
 
-    /** Returns true if successfully closed project, false otherwise. */
+    /**
+     * Returns true if successfully closed project, false otherwise.
+     */
     public boolean closeProject(boolean checkUnsaved) {
         // check if there is a project...
         if (getProjectController() == null || getProjectController().getProject() == null) {
@@ -64,13 +65,8 @@ public class ProjectAction extends ModelerAbstractAction {
             return false;
         }
 
-        ModelerController controller = Application
-                .getInstance()
-                .getFrameController();
-
         application.getUndoManager().discardAllEdits();
-
-        controller.onProjectClosed();
+        application.getFrameController().onProjectClosed();
 
         return true;
     }
@@ -87,15 +83,13 @@ public class ProjectAction extends ModelerAbstractAction {
             if (dialog.shouldCancel()) {
                 // discard changes and DO NOT close
                 return false;
-            }
-            else if (dialog.shouldSave()) {
+            } else if (dialog.shouldSave()) {
                 // save changes and close
                 ActionEvent e = new ActionEvent(
                         this,
                         ActionEvent.ACTION_PERFORMED,
                         "SaveAll");
-                Application
-                        .getInstance()
+                application
                         .getActionManager()
                         .getAction(SaveAction.class)
                         .actionPerformed(e);

@@ -26,7 +26,6 @@ import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.ui.preferences.general.GeneralPreferencesController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
@@ -46,7 +45,7 @@ public class DataDomainCgenController extends DataDomainGeneratorsViewController
     }
 
     public void runGenerators(Set<DataMap> dataMaps) {
-        DataChannelMetaData metaData = Application.getInstance().getMetaData();
+        DataChannelMetaData metaData = controller.getApplication().getMetaData();
         if (dataMaps.isEmpty()) {
             view.showEmptyMessage();
             return;
@@ -90,7 +89,7 @@ public class DataDomainCgenController extends DataDomainGeneratorsViewController
         CgenConfiguration cgenConfiguration = new CgenConfiguration();
         cgenConfiguration.setDataMap(dataMap);
         cgenConfiguration.updateOutputPath(Paths.get(ModelerUtil.initOutputFolder()));
-        Preferences preferences = Application.getInstance().getPreferencesNode(GeneralPreferencesController.class, "");
+        Preferences preferences = controller.getApplication().getPreferencesNode(GeneralPreferencesController.class, "");
         if (preferences != null) {
             cgenConfiguration.setEncoding(preferences.get(GeneralPreferencesController.ENCODING_PREFERENCE, null));
         }
@@ -103,7 +102,7 @@ public class DataDomainCgenController extends DataDomainGeneratorsViewController
     public void showConfig(DataMap dataMap) {
         if (dataMap != null) {
             DataMapDisplayEvent event = new DataMapDisplayEvent(getView(), dataMap, dataMap.getDataChannelDescriptor());
-            getProjectController().displayDataMap(event);
+            getController().displayDataMap(event);
         }
     }
 }

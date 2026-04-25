@@ -298,7 +298,7 @@ public class RemoveAction extends ModelerAbstractAction {
 				}
 
 				ProjectUtil.cleanObjMappings(controller.getSelectedDataMap());
-				Application.getInstance().getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(entity, dbRels));
+				application.getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(entity, dbRels));
 			}
 		}
 	}
@@ -312,7 +312,7 @@ public class RemoveAction extends ModelerAbstractAction {
 				RelationshipEvent e = new RelationshipEvent(application.getFrameController().getView(), rel, entity, MapEvent.REMOVE);
 				controller.fireObjRelationshipEvent(e);
 			}
-			Application.getInstance().getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(entity, rels));
+			application.getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(entity, rels));
 		}		
 	}
 
@@ -332,8 +332,7 @@ public class RemoveAction extends ModelerAbstractAction {
                 mediator.fireCallbackMethodEvent(ce);
             }
             
-            Application.getInstance().getUndoManager()
-                    .addEdit(new RemoveCallbackMethodUndoableEdit(callbackType, methods));
+            application.getUndoManager().addEdit(new RemoveCallbackMethodUndoableEdit(callbackType, methods));
         }		
 	}
 

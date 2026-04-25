@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.modeler.ui.preferences.classpath.maven;
 
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.ui.preferences.classpath.ClasspathPreferencesController;
 import org.slf4j.Logger;
@@ -53,7 +52,7 @@ public class MavenDependencyDialogController extends ChildController<ClasspathPr
         Window parentView = preferencesController.getView() instanceof Window
                 ? (Window) preferencesController.getView()
                 : SwingUtilities.getWindowAncestor(preferencesController.getView());
-        if(parentView instanceof Dialog) {
+        if (parentView instanceof Dialog) {
             view = new MavenDependencyDialogView((Dialog) parentView);
         } else {
             view = new MavenDependencyDialogView((Frame) parentView);
@@ -72,17 +71,17 @@ public class MavenDependencyDialogController extends ChildController<ClasspathPr
         String artifactIdText = view.getArtifactId().getText().trim();
         String versionText = view.getVersion().getText().trim();
 
-        if(groupPath.isEmpty()) {
+        if (groupPath.isEmpty()) {
             JOptionPane.showMessageDialog(view, "Empty group Id", "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        if(artifactIdText.isEmpty()) {
+        if (artifactIdText.isEmpty()) {
             JOptionPane.showMessageDialog(view, "Empty artifact Id", "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        if(versionText.isEmpty()) {
+        if (versionText.isEmpty()) {
             JOptionPane.showMessageDialog(view, "Empty version", "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -91,9 +90,9 @@ public class MavenDependencyDialogController extends ChildController<ClasspathPr
                 + artifactIdText + "/" + versionText + "/"
                 + artifactIdText + "-" + versionText + ".jar";
 
-        Application.getInstance().getFrameController().updateStatus("Loading " + urlText);
+        application.getFrameController().updateStatus("Loading " + urlText);
 
-        String localPath = System.getProperty( "user.home" ) + "/.cayenne/modeler/"
+        String localPath = System.getProperty("user.home") + "/.cayenne/modeler/"
                 + groupPath + "/" + artifactIdText + "-" + versionText + ".jar";
         File targetFile = new File(localPath);
 
@@ -107,7 +106,7 @@ public class MavenDependencyDialogController extends ChildController<ClasspathPr
     }
 
     public void download(String srcUrl, File dstFile) {
-        if(!dstFile.getParentFile().exists()
+        if (!dstFile.getParentFile().exists()
                 && !dstFile.getParentFile().mkdirs()) {
             finalizeDownload(dstFile, "Unable to create file " + dstFile, false, false);
             return;
@@ -130,16 +129,16 @@ public class MavenDependencyDialogController extends ChildController<ClasspathPr
 
     private void finalizeDownload(File dstFile, String status, boolean success, boolean shouldClose) {
         SwingUtilities.invokeLater(() -> {
-            if(success) {
+            if (success) {
                 parent.addClasspathEntry(dstFile);
             } else {
                 JOptionPane.showMessageDialog(view, status, "Error", JOptionPane.ERROR_MESSAGE);
             }
 
             view.getDownloadButton().setEnabled(true);
-            Application.getInstance().getFrameController().updateStatus(status);
+            application.getFrameController().updateStatus(status);
 
-            if(shouldClose) {
+            if (shouldClose) {
                 close();
             }
         });
@@ -152,7 +151,7 @@ public class MavenDependencyDialogController extends ChildController<ClasspathPr
         int read;
         while ((read = in.read(buffer, 0, DEFAULT_BUFFER_SIZE)) >= 0) {
             out.write(buffer, 0, read);
-            if(closing) {
+            if (closing) {
                 break;
             }
         }

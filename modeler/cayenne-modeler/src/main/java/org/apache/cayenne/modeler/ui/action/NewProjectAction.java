@@ -51,9 +51,7 @@ public class NewProjectAction extends ProjectAction {
     @Override
     public void performAction(ActionEvent e) {
 
-        ModelerController controller = Application
-                .getInstance()
-                .getFrameController();
+        ModelerController controller = application.getFrameController();
         // Save and close (if needed) currently open project.
         if (getCurrentProject() != null && !closeProject(true)) {
             return;

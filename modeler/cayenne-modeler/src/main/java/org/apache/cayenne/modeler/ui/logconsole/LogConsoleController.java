@@ -208,14 +208,14 @@ public class LogConsoleController extends RootController {
      * Sets the property, depending on last user's choice
      */
     public void setConsoleProperty(String prop, boolean b) {
-        Application.getInstance().getPreferencesNode(getClass(), null).putBoolean(prop, b);
+        application.getPreferencesNode(getClass(), null).putBoolean(prop, b);
     }
 
     /**
      * @return a boolean property
      */
     public boolean getConsoleProperty(String prop) {
-        return Application.getInstance().getPreferencesNode(getClass(), null).getBoolean(prop, false);
+        return application.getPreferencesNode(getClass(), null).getBoolean(prop, false);
     }
 
     /**

@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.ui.project;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.action.OpenProjectAction;
 import org.apache.cayenne.modeler.ui.action.SaveAction;
 import org.apache.cayenne.modeler.ui.filedeleted.FileDeletedDialog;
@@ -105,7 +104,8 @@ class ProjectFileChangeTracker extends Thread {
                         throw new CayenneRuntimeException("Unable to open project %s",
                                 e, controller.getProject().getConfigurationResource().getURL());
                     }
-                    Application.getInstance().getActionManager()
+                    controller.getApplication()
+                            .getActionManager()
                             .getAction(OpenProjectAction.class)
                             .openProject(fileDirectory);
                 }
@@ -125,9 +125,9 @@ class ProjectFileChangeTracker extends Thread {
                 dialog.show();
 
                 if (dialog.shouldSave()) {
-                    Application.getInstance().getActionManager().getAction(SaveAction.class).performAction(null);
+                    controller.getApplication().getActionManager().getAction(SaveAction.class).performAction(null);
                 } else if (dialog.shouldClose()) {
-                    Application.getInstance().getFrameController().onProjectClosed();
+                    controller.getApplication().getFrameController().onProjectClosed();
                 } else {
                     controller.setDirty(true);
                 }

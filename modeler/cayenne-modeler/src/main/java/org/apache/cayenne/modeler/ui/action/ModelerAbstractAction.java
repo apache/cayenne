@@ -22,13 +22,11 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.ModelerFrame;
+import org.apache.cayenne.modeler.swing.image.FilteredIconFactory;
 import org.apache.cayenne.modeler.ui.errors.ErrorsController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.project.ProjectView;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.project.Project;
-import org.apache.cayenne.modeler.swing.image.FilteredIconFactory;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.*;
@@ -43,11 +41,11 @@ public abstract class ModelerAbstractAction extends AbstractAction {
     protected boolean alwaysOn;
     protected Application application;
 
-    public ModelerAbstractAction(String name, Application application) {
+    protected ModelerAbstractAction(String name, Application application) {
         this(name, application, name);
     }
 
-    public ModelerAbstractAction(String name, Application application, String shortDescription) {
+    protected ModelerAbstractAction(String name, Application application, String shortDescription) {
         super(name);
         super.putValue(Action.DEFAULT, name);
 
@@ -249,12 +247,5 @@ public abstract class ModelerAbstractAction extends AbstractAction {
                 super.setToolTipText(text);
             }
         }
-    }
-    
-    protected static ProjectView editor() {
-        return ((ModelerFrame) Application
-                .getInstance()
-                .getFrameController()
-                .getView()).getProjectView();
     }
 }
