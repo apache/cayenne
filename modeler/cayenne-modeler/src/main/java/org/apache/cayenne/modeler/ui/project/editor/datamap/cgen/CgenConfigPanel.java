@@ -25,7 +25,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.modeler.util.TextAdapter;
-import org.apache.cayenne.swing.components.JCayenneCheckBox;
+import org.apache.cayenne.modeler.swing.JCayenneCheckBox;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.BorderFactory;

@@ -24,7 +24,7 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.apache.cayenne.modeler.util.JTextFieldUndoable;
+import org.apache.cayenne.modeler.swing.text.JTextFieldUndoable;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;

@@ -27,7 +27,7 @@ import org.apache.cayenne.modeler.event.model.RecentFileListListener;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.RecentFileMenu;
-import org.apache.cayenne.swing.components.TopBorder;
+import org.apache.cayenne.modeler.swing.border.TopBorder;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;

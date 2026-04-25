@@ -21,8 +21,8 @@ package org.apache.cayenne.modeler.util;
 import javax.swing.event.UndoableEditListener;
 
 import org.apache.cayenne.modeler.undo.JTextFieldUndoListener;
-import org.apache.cayenne.swing.components.textpane.JCayenneTextPane;
-import org.apache.cayenne.swing.components.textpane.syntax.TextSyntax;
+import org.apache.cayenne.modeler.swing.text.JCayenneTextPane;
+import org.apache.cayenne.modeler.swing.text.syntax.TextSyntax;
 
 public class JUndoableCayenneTextPane extends JCayenneTextPane {
 

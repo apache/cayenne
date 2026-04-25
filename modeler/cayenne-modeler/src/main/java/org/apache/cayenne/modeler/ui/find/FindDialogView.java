@@ -20,8 +20,8 @@ package org.apache.cayenne.modeler.ui.find;
 
 import org.apache.cayenne.modeler.action.FindAction;
 import org.apache.cayenne.modeler.util.CellRenderers;
-import org.apache.cayenne.modeler.util.ImageRendererColumn;
-import org.apache.cayenne.swing.components.TopBorder;
+import org.apache.cayenne.modeler.swing.table.ImageRendererColumn;
+import org.apache.cayenne.modeler.swing.border.TopBorder;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

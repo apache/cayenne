@@ -24,7 +24,7 @@ import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.reflect.PropertyUtils;
 import org.apache.cayenne.resource.Resource;
-import org.apache.cayenne.swing.components.TopBorder;
+import org.apache.cayenne.modeler.swing.border.TopBorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

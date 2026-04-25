@@ -36,7 +36,7 @@ import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.RelationshipUndoableEdit;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.util.combo.AutoCompletion;
+import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 

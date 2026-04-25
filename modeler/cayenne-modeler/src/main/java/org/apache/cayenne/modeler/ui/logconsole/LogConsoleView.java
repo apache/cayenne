@@ -23,7 +23,7 @@ import javax.swing.text.JTextComponent;
 
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.swing.components.TopBorder;
+import org.apache.cayenne.modeler.swing.border.TopBorder;
 
 import java.awt.*;
 

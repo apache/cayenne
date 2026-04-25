@@ -24,7 +24,7 @@ import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.swing.components.TopBorder;
+import org.apache.cayenne.modeler.swing.border.TopBorder;
 
 import javax.swing.Box;
 import javax.swing.JButton;

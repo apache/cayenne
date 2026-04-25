@@ -33,7 +33,7 @@ import org.apache.cayenne.modeler.ui.preferences.classpath.ClasspathPreferencesC
 import org.apache.cayenne.modeler.ui.preferences.general.GeneralPreferencesController;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 import org.apache.cayenne.modeler.util.AdapterMapping;
-import org.apache.cayenne.modeler.util.WidgetFactory;
+import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.pref.CayennePreference;
 import org.apache.cayenne.modeler.pref.CayenneProjectPreferences;
 import org.apache.cayenne.project.Project;

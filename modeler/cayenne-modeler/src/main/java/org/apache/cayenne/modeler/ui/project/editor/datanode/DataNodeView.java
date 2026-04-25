@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.project.editor.datanode;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.util.JTextFieldUndoable;
+import org.apache.cayenne.modeler.swing.text.JTextFieldUndoable;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;

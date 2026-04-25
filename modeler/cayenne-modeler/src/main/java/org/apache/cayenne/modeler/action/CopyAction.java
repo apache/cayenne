@@ -35,7 +35,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.ObjCallbackMethod;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.modeler.util.CayenneTransferable;
+import org.apache.cayenne.modeler.swing.CayenneTransferable;
 
 import javax.swing.*;
 import java.awt.*;

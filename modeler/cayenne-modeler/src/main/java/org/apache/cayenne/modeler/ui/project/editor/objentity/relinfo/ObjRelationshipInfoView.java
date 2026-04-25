@@ -23,10 +23,10 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.util.DefaultWidgetFactory;
-import org.apache.cayenne.modeler.util.MultiColumnBrowser;
+import org.apache.cayenne.modeler.swing.DefaultWidgetFactory;
+import org.apache.cayenne.modeler.swing.MultiColumnBrowser;
 import org.apache.cayenne.modeler.util.PanelFactory;
-import org.apache.cayenne.modeler.util.WidgetFactory;
+import org.apache.cayenne.modeler.swing.WidgetFactory;
 
 import javax.swing.*;
 import java.awt.*;

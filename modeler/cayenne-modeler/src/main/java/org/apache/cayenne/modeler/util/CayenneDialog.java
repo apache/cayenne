@@ -27,7 +27,6 @@ import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
@@ -57,10 +56,6 @@ public class CayenneDialog extends JDialog implements HyperlinkListener {
         super(owner, title, modal);
     }
 
-    public CayenneDialog(ModelerFrame frame, String title, boolean modal) {
-        super(frame, title, modal);
-    }
-
     /**
      * Makes dialog closeable when ESC button is clicked.
      */
@@ -74,14 +69,12 @@ public class CayenneDialog extends JDialog implements HyperlinkListener {
         //   http://www.eos.dk/pipermail/swing/2001-June/000789.html
 
         KeyStroke escReleased = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, true);
-        ActionListener closeAction = new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (CayenneDialog.this.isVisible()) {
-                    // dispatch window closing event
-                    WindowEvent windowClosing =
-                        new WindowEvent(CayenneDialog.this, WindowEvent.WINDOW_CLOSING);
-                    CayenneDialog.super.processWindowEvent(windowClosing);
-                }
+        ActionListener closeAction = e -> {
+            if (CayenneDialog.this.isVisible()) {
+                // dispatch window closing event
+                WindowEvent windowClosing =
+                    new WindowEvent(CayenneDialog.this, WindowEvent.WINDOW_CLOSING);
+                CayenneDialog.super.processWindowEvent(windowClosing);
             }
         };
         getRootPane().registerKeyboardAction(

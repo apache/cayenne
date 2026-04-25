@@ -27,7 +27,7 @@ import org.apache.cayenne.modeler.ui.errors.ErrorsController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
 import org.apache.cayenne.project.Project;
-import org.apache.cayenne.swing.components.image.FilteredIconFactory;
+import org.apache.cayenne.modeler.swing.image.FilteredIconFactory;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.*;

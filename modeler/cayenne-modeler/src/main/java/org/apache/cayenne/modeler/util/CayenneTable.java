@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.util;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
+import org.apache.cayenne.modeler.swing.table.SortButtonRenderer;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -41,14 +42,15 @@ import java.util.EventObject;
  */
 public class CayenneTable extends JTable {
 
-    private SortButtonRenderer renderer = new SortButtonRenderer();
+    private final SortButtonRenderer renderer;
     protected TableHeaderListener tableHeaderListener;
     private boolean isColumnWidthChanged;
 
     public CayenneTable() {
-        super();
-        this.setRowHeight(25);
-        this.setRowMargin(3);
+        setRowHeight(25);
+        setRowMargin(3);
+
+        renderer = new SortButtonRenderer();
         JTableHeader header = getTableHeader();
         tableHeaderListener = new TableHeaderListener(header, renderer);
         header.addMouseListener(tableHeaderListener);
@@ -73,7 +75,7 @@ public class CayenneTable extends JTable {
         super.createDefaultEditors();
 
         JTextField textField = new JTextField(20);
-        final DefaultCellEditor textEditor = Application.getWidgetFactory().createCellEditor(textField);
+        DefaultCellEditor textEditor = Application.getWidgetFactory().createCellEditor(textField);
         textEditor.setClickCountToStart(1);
 
         setDefaultEditor(Object.class, textEditor);
@@ -85,7 +87,7 @@ public class CayenneTable extends JTable {
      */
     public CayenneTableModel getCayenneModel() {
         TableModel model = getModel();
-        if(model instanceof CayenneTableModel) {
+        if (model instanceof CayenneTableModel) {
             return (CayenneTableModel) model;
         }
         return null;
@@ -244,7 +246,7 @@ public class CayenneTable extends JTable {
     public void setSortPreferenceSaver(TableColumnPreferences tableColumnPreferences) {
         tableHeaderListener.setPreferences(tableColumnPreferences);
     }
-    
+
     public boolean getColumnWidthChanged() {
         return isColumnWidthChanged;
     }

@@ -38,7 +38,7 @@ import org.apache.cayenne.project.validation.EJBQLStatementValidator;
 import org.apache.cayenne.project.validation.EJBQLStatementValidator.PositionException;
 import org.apache.cayenne.map.EJBQLQueryDescriptor;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.swing.components.textpane.JCayenneTextPane;
+import org.apache.cayenne.modeler.swing.text.JCayenneTextPane;
 import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

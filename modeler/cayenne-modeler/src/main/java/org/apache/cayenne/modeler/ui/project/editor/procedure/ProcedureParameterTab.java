@@ -42,14 +42,14 @@ import org.apache.cayenne.modeler.event.display.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.modeler.util.CayenneCellEditor;
+import org.apache.cayenne.modeler.swing.table.CayenneCellEditor;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
-import org.apache.cayenne.modeler.util.combo.AutoCompletion;
-import org.apache.cayenne.swing.components.LimitedTextField;
-import org.apache.cayenne.swing.components.image.FilteredIconFactory;
+import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
+import org.apache.cayenne.modeler.swing.text.LimitedTextField;
+import org.apache.cayenne.modeler.swing.image.FilteredIconFactory;
 
 import javax.swing.Icon;
 import javax.swing.JButton;

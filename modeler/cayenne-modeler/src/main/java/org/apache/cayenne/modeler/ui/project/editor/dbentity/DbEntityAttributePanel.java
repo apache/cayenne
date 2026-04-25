@@ -35,12 +35,12 @@ import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
-import org.apache.cayenne.modeler.util.BoardTableCellRenderer;
+import org.apache.cayenne.modeler.swing.table.BoardTableCellRenderer;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
-import org.apache.cayenne.modeler.util.combo.AutoCompletion;
-import org.apache.cayenne.swing.components.LimitedTextField;
+import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
+import org.apache.cayenne.modeler.swing.text.LimitedTextField;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;

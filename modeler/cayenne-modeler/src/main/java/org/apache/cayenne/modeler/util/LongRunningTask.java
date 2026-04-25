@@ -22,6 +22,7 @@ package org.apache.cayenne.modeler.util;
 import javax.swing.*;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.modeler.swing.ProgressDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

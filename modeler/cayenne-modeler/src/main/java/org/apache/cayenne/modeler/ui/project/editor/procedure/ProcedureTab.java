@@ -33,7 +33,7 @@ import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.modeler.event.model.ProcedureEvent;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
-import org.apache.cayenne.swing.components.JCayenneCheckBox;
+import org.apache.cayenne.modeler.swing.JCayenneCheckBox;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 

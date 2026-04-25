@@ -19,7 +19,7 @@
 package org.apache.cayenne.modeler.ui.project.editor.query.sqltemplate;
 
 
-import org.apache.cayenne.swing.components.textpane.syntax.TextSyntax;
+import org.apache.cayenne.modeler.swing.text.syntax.TextSyntax;
 
 class SQLSyntax implements TextSyntax {
 

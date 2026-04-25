@@ -38,7 +38,7 @@ import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
-import org.apache.cayenne.modeler.util.CellEditorForAttributeTable;
+import org.apache.cayenne.modeler.swing.table.CellEditorForAttributeTable;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.project.extension.info.ObjectInfo;

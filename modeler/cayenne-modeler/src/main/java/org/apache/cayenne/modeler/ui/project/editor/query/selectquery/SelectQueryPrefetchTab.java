@@ -31,7 +31,7 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.EntityTreeFilter;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.swing.components.image.FilteredIconFactory;
+import org.apache.cayenne.modeler.swing.image.FilteredIconFactory;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;

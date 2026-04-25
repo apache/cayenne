@@ -34,9 +34,9 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.EntityTreeFilter;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.util.MultiColumnBrowser;
+import org.apache.cayenne.modeler.swing.MultiColumnBrowser;
 import org.apache.cayenne.modeler.util.UIUtil;
-import org.apache.cayenne.swing.components.image.FilteredIconFactory;
+import org.apache.cayenne.modeler.swing.image.FilteredIconFactory;
 import org.apache.cayenne.util.CayenneMapEntry;
 
 import javax.swing.BorderFactory;

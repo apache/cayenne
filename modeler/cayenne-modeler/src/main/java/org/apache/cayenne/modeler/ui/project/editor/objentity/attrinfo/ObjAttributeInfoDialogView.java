@@ -26,9 +26,9 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.util.MultiColumnBrowser;
+import org.apache.cayenne.modeler.swing.MultiColumnBrowser;
 import org.apache.cayenne.modeler.util.PanelFactory;
-import org.apache.cayenne.modeler.util.combo.AutoCompletion;
+import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;

@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.util;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.util.combo.AutoCompletion;
+import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.AbstractCellEditor;

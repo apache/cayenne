@@ -19,9 +19,9 @@
 package org.apache.cayenne.modeler.ui.project.editor.datadomain.validation;
 
 import org.apache.cayenne.project.validation.Inspection;
-import org.apache.cayenne.swing.components.tree.ChangeOptimizingTreeModel;
-import org.apache.cayenne.swing.components.tree.CheckBoxNodeData;
-import org.apache.cayenne.swing.components.tree.CheckBoxTree;
+import org.apache.cayenne.modeler.swing.tree.ChangeOptimizingTreeModel;
+import org.apache.cayenne.modeler.swing.tree.CheckBoxNodeData;
+import org.apache.cayenne.modeler.swing.tree.CheckBoxTree;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;

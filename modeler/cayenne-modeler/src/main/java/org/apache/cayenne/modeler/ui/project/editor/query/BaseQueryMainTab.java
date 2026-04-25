@@ -29,7 +29,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.TextAdapter;
-import org.apache.cayenne.modeler.util.combo.AutoCompletion;
+import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 

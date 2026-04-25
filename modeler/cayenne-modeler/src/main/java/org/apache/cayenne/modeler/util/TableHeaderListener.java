@@ -19,6 +19,7 @@
 package org.apache.cayenne.modeler.util;
 
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
+import org.apache.cayenne.modeler.swing.table.SortButtonRenderer;
 
 import javax.swing.JTable;
 import javax.swing.table.JTableHeader;

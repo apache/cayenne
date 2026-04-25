@@ -28,7 +28,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
-import org.apache.cayenne.modeler.util.CellEditorForAttributeTable;
+import org.apache.cayenne.modeler.swing.table.CellEditorForAttributeTable;
 
 import javax.swing.*;
 import java.awt.*;

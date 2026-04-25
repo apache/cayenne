@@ -39,7 +39,7 @@ import org.apache.cayenne.modeler.undo.RelationshipUndoableEdit;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.EntityTreeRelationshipFilter;
-import org.apache.cayenne.modeler.util.MultiColumnBrowser;
+import org.apache.cayenne.modeler.swing.MultiColumnBrowser;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.Util;

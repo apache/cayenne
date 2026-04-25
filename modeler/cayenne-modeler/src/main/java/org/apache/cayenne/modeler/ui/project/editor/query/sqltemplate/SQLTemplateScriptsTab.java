@@ -28,7 +28,7 @@ import org.apache.cayenne.map.SQLTemplateDescriptor;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.DbAdapterInfo;
 import org.apache.cayenne.modeler.util.JUndoableCayenneTextPane;
-import org.apache.cayenne.swing.components.textpane.JCayenneTextPane;
+import org.apache.cayenne.modeler.swing.text.JCayenneTextPane;
 import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

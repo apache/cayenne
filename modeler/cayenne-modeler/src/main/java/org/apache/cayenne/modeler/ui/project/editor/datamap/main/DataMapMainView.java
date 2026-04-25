@@ -40,7 +40,7 @@ import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
-import org.apache.cayenne.swing.components.JCayenneCheckBox;
+import org.apache.cayenne.modeler.swing.JCayenneCheckBox;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 

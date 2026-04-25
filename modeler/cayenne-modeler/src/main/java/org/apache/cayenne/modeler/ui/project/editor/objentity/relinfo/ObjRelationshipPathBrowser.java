@@ -28,7 +28,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.tree.TreePath;
 
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.modeler.util.MultiColumnBrowser;
+import org.apache.cayenne.modeler.swing.MultiColumnBrowser;
 
 /**
  * Multi-column browser for obj relationships
