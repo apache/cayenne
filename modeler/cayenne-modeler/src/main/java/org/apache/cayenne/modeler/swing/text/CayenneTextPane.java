@@ -19,7 +19,7 @@
 package org.apache.cayenne.modeler.swing.text;
 
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.swing.text.syntax.TextSyntax;
+import org.apache.cayenne.modeler.swing.text.style.TextSyntax;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

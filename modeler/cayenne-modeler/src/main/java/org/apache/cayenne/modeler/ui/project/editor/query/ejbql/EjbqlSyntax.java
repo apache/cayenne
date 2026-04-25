@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.query.ejbql;
 
-import org.apache.cayenne.modeler.swing.text.syntax.TextSyntax;
+import org.apache.cayenne.modeler.swing.text.style.TextSyntax;
 
 class EjbqlSyntax implements TextSyntax {
     private static final String[] KEYWORDS = {"AS", "ABS", "ASC", "AVG", "BETWEEN",

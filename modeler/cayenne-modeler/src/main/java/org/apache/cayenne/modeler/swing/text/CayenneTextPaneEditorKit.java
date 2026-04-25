@@ -1,9 +1,8 @@
 package org.apache.cayenne.modeler.swing.text;
 
 import org.apache.cayenne.modeler.swing.text.style.SyntaxStyle;
-import org.apache.cayenne.modeler.swing.text.style.TextPaneStyleMap;
 import org.apache.cayenne.modeler.swing.text.style.TextPaneStyleTypes;
-import org.apache.cayenne.modeler.swing.text.syntax.TextSyntax;
+import org.apache.cayenne.modeler.swing.text.style.TextSyntax;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
@@ -44,39 +43,59 @@ class CayenneTextPaneEditorKit extends StyledEditorKit {
 
     static class TextPaneView extends PlainView {
 
-        private static final HashMap<Pattern, SyntaxStyle> patternSyntaxStyle;
         private static final Pattern patternComment;
         private static final Pattern patternCommentStart;
 
         private static final SyntaxStyle syntaxStyleComment;
         private static final HashMap<Pattern, SyntaxStyle> patternValue;
-        private static final TextPaneStyleMap style = new TextPaneStyleMap();
+        private static final Map<TextPaneStyleTypes, SyntaxStyle> syntaxStyleMap;
 
         static {
-            patternSyntaxStyle = new HashMap<>();
+            syntaxStyleMap = new HashMap<>();
+            Font plainFont = TextSyntax.DEFAULT_FONT;
+            Font boldFont = new Font(plainFont.getFamily(), Font.BOLD, plainFont.getSize());
+            Font italicFont = new Font(plainFont.getFamily(), Font.ITALIC, plainFont.getSize());
+
+            SyntaxStyle keywordsStyle = new SyntaxStyle(Color.blue, boldFont);
+            SyntaxStyle numberStyle = new SyntaxStyle(Color.ORANGE, italicFont);
+            SyntaxStyle typeStyle = new SyntaxStyle(Color.BLUE, boldFont);
+            SyntaxStyle stringStyle = new SyntaxStyle(Color.blue, italicFont);
+            SyntaxStyle commentStyle = new SyntaxStyle(Color.LIGHT_GRAY, italicFont);
+            SyntaxStyle keywords2Style = new SyntaxStyle(Color.MAGENTA, plainFont);
+
+            syntaxStyleMap.put(TextPaneStyleTypes.KEYWORDS, keywordsStyle);
+            syntaxStyleMap.put(TextPaneStyleTypes.KEYWORDS2, keywords2Style);
+            syntaxStyleMap.put(TextPaneStyleTypes.OPERATORS, keywordsStyle);
+            syntaxStyleMap.put(TextPaneStyleTypes.NUMBER, numberStyle);
+            syntaxStyleMap.put(TextPaneStyleTypes.TYPE, typeStyle);
+            syntaxStyleMap.put(TextPaneStyleTypes.STRING, stringStyle);
+            syntaxStyleMap.put(TextPaneStyleTypes.COMMENT, commentStyle);
+
             patternValue = new HashMap<>();
             patternComment = Pattern.compile(TextSyntax.COMMENT_TEXT,
                     Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE);
             patternCommentStart = Pattern.compile(TextSyntax.COMMENT_TEXT_START,
                     Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE);
-            syntaxStyleComment = style.syntaxStyleMap.get(TextPaneStyleTypes.COMMENT);
+            syntaxStyleComment = syntaxStyleMap.get(TextPaneStyleTypes.COMMENT);
         }
+
+        private final HashMap<Pattern, SyntaxStyle> patternSyntaxStyle;
 
         public TextPaneView(Element elem, TextSyntax syntax) {
             super(elem);
             getDocument().putProperty(PlainDocument.tabSizeAttribute, 4);
 
-            if (patternSyntaxStyle.isEmpty()) {
-                addConstants(syntax.keywords(), TextPaneStyleTypes.KEYWORDS);
-                addConstants(syntax.keywords2(), TextPaneStyleTypes.KEYWORDS2);
-                addConstants(syntax.operators(), TextPaneStyleTypes.KEYWORDS);
-                addConstants(syntax.types(), TextPaneStyleTypes.TYPE);
-            }
+            patternSyntaxStyle = new HashMap<>();
+
+            addConstants(syntax.keywords(), TextPaneStyleTypes.KEYWORDS);
+            addConstants(syntax.keywords2(), TextPaneStyleTypes.KEYWORDS2);
+            addConstants(syntax.operators(), TextPaneStyleTypes.KEYWORDS);
+            addConstants(syntax.types(), TextPaneStyleTypes.TYPE);
 
             if (patternValue.isEmpty()) {
                 patternValue.put(
                         Pattern.compile(TextSyntax.NUMBER_TEXT),
-                        style.syntaxStyleMap.get(TextPaneStyleTypes.NUMBER));
+                        syntaxStyleMap.get(TextPaneStyleTypes.NUMBER));
             }
         }
 
@@ -85,7 +104,7 @@ class CayenneTextPaneEditorKit extends StyledEditorKit {
                 String pattern = "(" + keyword + ")";
                 patternSyntaxStyle.put(
                         Pattern.compile(pattern, Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE),
-                        style.syntaxStyleMap.get(type));
+                        syntaxStyleMap.get(type));
             }
         }
 

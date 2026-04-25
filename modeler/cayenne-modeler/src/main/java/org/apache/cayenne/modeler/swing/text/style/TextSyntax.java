@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.swing.text.syntax;
+package org.apache.cayenne.modeler.swing.text.style;
 
 import java.awt.Color;
 import java.awt.Font;
