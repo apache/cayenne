@@ -68,7 +68,6 @@ import org.apache.cayenne.modeler.ui.ModelerController;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.project.ConfigurationNodeParentGetter;
 import org.apache.cayenne.project.Project;
-import org.apache.cayenne.util.IDUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1359,21 +1358,20 @@ public class ProjectController extends ChildController<ModelerController> {
 
     private Preferences buildPreferences() {
 
-        if (preferences == null) {
-            return Preferences.userNodeForPackage(Project.class);
+        Preferences root = Preferences.userNodeForPackage(Project.class);
+        if (project == null) {
+            return root;
         }
 
-        String key = getProject().getConfigurationResource() == null
-                ? new String(IDUtil.pseudoUniqueByteSequence16())
+        String resourcePath = project.getConfigurationResource() == null
+                ? null
                 : project.getConfigurationResource().getURL().getPath();
 
-        if (key.isEmpty()) {
-            return Preferences.userNodeForPackage(Project.class);
+        if (resourcePath == null || resourcePath.isEmpty() || !resourcePath.contains(".xml")) {
+            return root.node(getApplication().getNewProjectTemporaryName());
         }
 
-        return key.contains(".xml")
-                ? preferences.node(preferences.absolutePath() + key.replace(".xml", ""))
-                : preferences.node(preferences.absolutePath()).node(getApplication().getNewProjectTemporaryName());
+        return root.node(root.absolutePath() + resourcePath.replace(".xml", ""));
     }
 
 
