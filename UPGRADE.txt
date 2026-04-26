@@ -13,6 +13,20 @@ so you should update your calls accordingly.
 * Per CAY-2917 joins are generated in a different order in the Select SQL, this should not affect any logic,
 except if your code relies on the generated SQL in any way.
 
+* Per CAY-2924 the `org.apache.cayenne.map.event` package (mapping events and listener interfaces) was moved
+from the core to the CayenneModeler module — these events are not used at runtime. As part of this:
+ - `DbEntity`, `ObjEntity` and `DataMap` no longer implement the `*Listener` interfaces and no longer expose
+the internal event-consumer methods (`dbEntityChanged`, `objEntityChanged`, `dbAttributeAdded`,
+`handleAttributeUpdate`, etc.).
+ - New public rename APIs replace the previous "set name + fire change event" pattern:
+`DataMap.renameDbEntity(DbEntity, String)`, `DataMap.renameObjEntity(ObjEntity, String)`,
+`DbEntity.renameAttribute(DbAttribute, String)` and `DbEntity.renameRelationship(DbRelationship, String)`.
+Prefer these over `setName(...)` for renames, as they re-key the parent maps and update dependent references.
+ - `DbAttribute.setPrimaryKey(boolean)` and `DbAttribute.setGenerated(boolean)` no longer fire events; they
+update their parent `DbEntity`'s cached collections via direct method calls, behavior-equivalent to before.
+If your application code subscribed to these mapping events at runtime, migrate to direct calls or to the
+modeler.
+
 UPGRADING TO 5.0.M1
 
 * Per CAY-2737 All code deprecated in Cayenne 4.1 and 4.2 was deleted, please review your code before upgrading.

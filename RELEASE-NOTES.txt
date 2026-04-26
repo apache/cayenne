@@ -27,6 +27,7 @@ CAY-2918 Remove OGNL Binding Architecture from CayenneModeler
 CAY-2920 Remove "Reengineer Database Schema" menu
 CAY-2922 Modeler: remove support for upgrading from file-based preferences
 CAY-2923 Modeler: Restore table cell editor borders
+CAY-2924 Move MapEvent and subclasses from the core to the Modeler
 
 Bug Fixes:
 
