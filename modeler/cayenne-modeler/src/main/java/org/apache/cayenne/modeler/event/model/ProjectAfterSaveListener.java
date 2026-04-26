@@ -19,26 +19,9 @@
 
 package org.apache.cayenne.modeler.event.model;
 
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import java.util.EventListener;
 
-import java.util.EventObject;
+public interface ProjectAfterSaveListener extends EventListener {
 
-/**
- * Triggered when project is saved completely.
- */
-public class ProjectSavedEvent extends EventObject {
-    /**
-     * Constructs a prototypical Event.
-     *
-     * @param source the object on which the Event initially occurred
-     * @throws IllegalArgumentException if source is null
-     */
-    public ProjectSavedEvent(ProjectController source) {
-        super(source);
-    }
-
-    @Override
-    public ProjectController getSource() {
-        return (ProjectController)super.getSource();
-    }
+    void projectSaved(ProjectAfterSaveEvent e);
 }

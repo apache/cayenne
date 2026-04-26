@@ -16,14 +16,13 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.modeler.event.model;
 
-import java.util.EventListener;
+import org.apache.cayenne.event.CayenneEvent;
 
-/**
- * Interface for classes that are interested in ProjectSaved events.
- */
-public interface ProjectSavedListener extends EventListener {
-    void onProjectSaved(ProjectSavedEvent e);
+public class ProjectBeforeSaveEvent extends CayenneEvent {
+
+    public ProjectBeforeSaveEvent(Object source) {
+        super(source);
+    }
 }

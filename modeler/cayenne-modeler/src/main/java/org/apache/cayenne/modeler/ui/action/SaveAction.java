@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.event.model.ProjectSavedEvent;
+import org.apache.cayenne.modeler.event.model.ProjectAfterSaveEvent;
 import org.apache.cayenne.modeler.pref.RenamedPreferences;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
@@ -80,7 +80,7 @@ public class SaveAction extends SaveAsAction {
         application.getFrameController().changePathInLastProjListAction(oldProjectFile, newProjectFile);
         application.getFrameController().getView().fireRecentFileListChanged();
 
-        getProjectController().fireProjectSavedEvent(new ProjectSavedEvent(getProjectController()));
+        getProjectController().fireProjectAfterSaveEvent(new ProjectAfterSaveEvent(getProjectController()));
 
         return true;
     }

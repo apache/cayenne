@@ -34,7 +34,7 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.main.locking.Locking
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.pkg.PackageUpdateController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.schema.SchemaUpdateController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.superclass.SuperclassUpdateController;
-import org.apache.cayenne.modeler.event.model.ProjectSavedEvent;
+import org.apache.cayenne.modeler.event.model.ProjectAfterSaveEvent;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.swing.CellRenderers;
 import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
@@ -456,7 +456,7 @@ public class DataMapMainView extends JPanel {
         return ObjectInfo.getFromMetaData(controller.getApplication().getMetaData(), dataMap, ObjectInfo.COMMENT);
     }
 
-    public void updateNamesAfterSaving(ProjectSavedEvent e) {
+    public void updateNamesAfterSaving(ProjectAfterSaveEvent e) {
         DataMap currentDataMap = controller.getSelectedDataMap();
         if (currentDataMap != null && !currentDataMap.getLocation().equals(location.getText())) {
             location.setText(currentDataMap.getLocation());

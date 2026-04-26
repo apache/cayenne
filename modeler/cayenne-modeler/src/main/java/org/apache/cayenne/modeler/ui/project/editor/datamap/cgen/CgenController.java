@@ -39,7 +39,7 @@ import org.apache.cayenne.modeler.event.model.EmbeddableListener;
 import org.apache.cayenne.modeler.event.model.ObjEntityListener;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.modeler.event.model.DataMapListener;
-import org.apache.cayenne.modeler.event.model.ProjectSavedEvent;
+import org.apache.cayenne.modeler.event.model.ProjectAfterSaveEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.ui.preferences.general.GeneralPreferencesController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
@@ -558,7 +558,7 @@ public class CgenController extends ChildController<ProjectController> implement
      *
      * @param e event we are processing
      */
-    public void onProjectSaved(ProjectSavedEvent e) {
+    public void onProjectSaved(ProjectAfterSaveEvent e) {
         // update path input
         if (getStandardModeController() != null
                 && getStandardModeController().getView() != null

@@ -22,8 +22,8 @@ package org.apache.cayenne.modeler.ui.action;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.event.model.ProjectOnSaveEvent;
-import org.apache.cayenne.modeler.event.model.ProjectSavedEvent;
+import org.apache.cayenne.modeler.event.model.ProjectBeforeSaveEvent;
+import org.apache.cayenne.modeler.event.model.ProjectAfterSaveEvent;
 import org.apache.cayenne.modeler.pref.RenamedPreferences;
 import org.apache.cayenne.modeler.ui.project.validator.ProjectValidatorDialogController;
 import org.apache.cayenne.project.Project;
@@ -135,7 +135,7 @@ public class SaveAsAction extends ModelerAbstractAction {
         application.getFrameController().addToLastProjListAction(file);
         application.getFrameController().getView().fireRecentFileListChanged();
 
-        getProjectController().fireProjectSavedEvent(new ProjectSavedEvent(getProjectController()));
+        getProjectController().fireProjectAfterSaveEvent(new ProjectAfterSaveEvent(getProjectController()));
 
         return true;
     }
@@ -154,7 +154,7 @@ public class SaveAsAction extends ModelerAbstractAction {
         ProjectValidator projectValidator = application.getProjectValidator();
         ValidationResult validationResult = projectValidator.validate(getCurrentProject().getRootNode());
         
-        getProjectController().fireProjectOnSaveEvent(new ProjectOnSaveEvent(SaveAsAction.class));
+        getProjectController().fireProjectBeforeSaveEvent(new ProjectBeforeSaveEvent(SaveAsAction.class));
         
         try {
             if (!saveAll()) {

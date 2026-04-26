@@ -22,10 +22,6 @@ package org.apache.cayenne.modeler.event.model;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.QueryDescriptor;
 
-/**
- * An event generated when a Query object is added to a DataMap,
- * removed from a DataMap, or changed within a DataMap.
- */
 public class QueryEvent extends ModelEvent {
 
     private final QueryDescriptor query;

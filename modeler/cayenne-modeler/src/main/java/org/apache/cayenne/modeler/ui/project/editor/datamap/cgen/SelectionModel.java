@@ -19,6 +19,11 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.cgen;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.ObjEntity;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,19 +33,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Embeddable;
-import org.apache.cayenne.map.ObjEntity;
-
 class SelectionModel {
     private Set<String> selectedEntities;
     private Set<String> selectedEmbeddables;
     private Set<String> selectedDataMaps;
 
-    private Map<DataMap, Set<String>> selectedEntitiesForDataMap;
-    private Map<DataMap, Set<String>> selectedEmbeddablesForDataMap;
-    private Map<DataMap, Set<String>> selectedDataMapsForDataMap;
+    private final Map<DataMap, Set<String>> selectedEntitiesForDataMap;
+    private final Map<DataMap, Set<String>> selectedEmbeddablesForDataMap;
+    private final Map<DataMap, Set<String>> selectedDataMapsForDataMap;
 
     SelectionModel() {
         selectedEntitiesForDataMap = new HashMap<>();
@@ -145,27 +145,26 @@ class SelectionModel {
         return false;
     }
 
-    boolean setSelected(Object currentClass, boolean selectedFlag) {
+    void setSelected(Object currentClass, boolean selectedFlag) {
         if (currentClass instanceof ObjEntity) {
             if (selectedFlag) {
-                return selectedEntities.add(((ObjEntity) currentClass).getName());
+                selectedEntities.add(((ObjEntity) currentClass).getName());
             } else {
-                return selectedEntities.remove(((ObjEntity) currentClass).getName());
+                selectedEntities.remove(((ObjEntity) currentClass).getName());
             }
         } else if (currentClass instanceof Embeddable) {
             if (selectedFlag) {
-                return selectedEmbeddables.add(((Embeddable) currentClass).getClassName());
+                selectedEmbeddables.add(((Embeddable) currentClass).getClassName());
             } else {
-                return selectedEmbeddables.remove(((Embeddable) currentClass).getClassName());
+                selectedEmbeddables.remove(((Embeddable) currentClass).getClassName());
             }
         } else if (currentClass instanceof DataMap) {
             if (selectedFlag) {
-                return selectedDataMaps.add(((DataMap) currentClass).getName());
+                selectedDataMaps.add(((DataMap) currentClass).getName());
             } else {
-                return selectedDataMaps.remove(((DataMap) currentClass).getName());
+                selectedDataMaps.remove(((DataMap) currentClass).getName());
             }
         }
-        return false;
     }
 
     void removeFromSelectedEntities(ObjEntity objEntity) {

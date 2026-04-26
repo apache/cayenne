@@ -39,8 +39,8 @@ import org.apache.cayenne.modeler.ui.project.editor.objentity.attrinfo.ObjAttrib
 import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
-import org.apache.cayenne.modeler.event.model.ProjectOnSaveEvent;
-import org.apache.cayenne.modeler.event.model.ProjectOnSaveListener;
+import org.apache.cayenne.modeler.event.model.ProjectBeforeSaveEvent;
+import org.apache.cayenne.modeler.event.model.ProjectBeforeSaveListener;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.swing.table.CayenneTable;
@@ -72,7 +72,7 @@ import java.util.Map;
 /**
  * Detail view of the ObjEntity attributes.
  */
-public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListener, ObjEntityListener, ObjAttributeListener, ProjectOnSaveListener {
+public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListener, ObjEntityListener, ObjAttributeListener, ProjectBeforeSaveListener {
 
     private static final ImageIcon INHERITANCE_ICON = ModelerUtil.buildIcon("icon-inheritance.png");
 
@@ -416,7 +416,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
     }
 
     @Override
-    public void beforeSaveChanges(ProjectOnSaveEvent e) {
+    public void projectWillBeSaved(ProjectBeforeSaveEvent e) {
         resetTableModel();
     }
 

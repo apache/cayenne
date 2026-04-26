@@ -424,12 +424,12 @@ public class ProjectController extends ChildController<ModelerController> {
         listeners.remove(DbEntityListener.class, listener);
     }
 
-    public void addProjectSavedListener(ProjectSavedListener listener) {
-        listeners.add(ProjectSavedListener.class, listener);
+    public void addProjectSavedListener(ProjectAfterSaveListener listener) {
+        listeners.add(ProjectAfterSaveListener.class, listener);
     }
 
-    public void removeProjectSavedListener(ProjectSavedListener listener) {
-        listeners.remove(ProjectSavedListener.class, listener);
+    public void removeProjectSavedListener(ProjectAfterSaveListener listener) {
+        listeners.remove(ProjectAfterSaveListener.class, listener);
     }
 
     public void addObjEntityListener(ObjEntityListener listener) {
@@ -650,13 +650,11 @@ public class ProjectController extends ChildController<ModelerController> {
         fileChangeTracker.pauseTracking();
     }
 
-    public void fireProjectSavedEvent(ProjectSavedEvent e) {
-
+    public void fireProjectAfterSaveEvent(ProjectAfterSaveEvent e) {
+        LOGGER.debug("fireProjectAfterSaveEvent");
         fileChangeTracker.reset();
-
-        LOGGER.debug("fireProjectSavedEvent");
-        for (ProjectSavedListener eventListener : listeners.getListeners(ProjectSavedListener.class)) {
-            eventListener.onProjectSaved(e);
+        for (ProjectAfterSaveListener eventListener : listeners.getListeners(ProjectAfterSaveListener.class)) {
+            eventListener.projectSaved(e);
         }
     }
 
@@ -1287,10 +1285,10 @@ public class ProjectController extends ChildController<ModelerController> {
         }
     }
 
-    public void fireProjectOnSaveEvent(ProjectOnSaveEvent e) {
-        LOGGER.debug("fireProjectOnSaveEvent");
-        for (ProjectOnSaveListener listener : listeners.getListeners(ProjectOnSaveListener.class)) {
-            listener.beforeSaveChanges(e);
+    public void fireProjectBeforeSaveEvent(ProjectBeforeSaveEvent e) {
+        LOGGER.debug("fireProjectBeforeSaveEvent");
+        for (ProjectBeforeSaveListener listener : listeners.getListeners(ProjectBeforeSaveListener.class)) {
+            listener.projectWillBeSaved(e);
         }
     }
 
@@ -1354,7 +1352,7 @@ public class ProjectController extends ChildController<ModelerController> {
                 ? null
                 : project.getConfigurationResource().getURL().getPath();
 
-        if (resourcePath == null || resourcePath.isEmpty() || !resourcePath.contains(".xml")) {
+        if (resourcePath == null || !resourcePath.contains(".xml")) {
             return root.node(getApplication().getNewProjectTemporaryName());
         }
 

@@ -16,16 +16,21 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.modeler.event.model;
 
-import org.apache.cayenne.event.CayenneEvent;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 
-/**
- * Triggered while project is saved.
- */
-public class ProjectOnSaveEvent extends CayenneEvent {
+import java.util.EventObject;
 
-    public ProjectOnSaveEvent(Object source) {
+public class ProjectAfterSaveEvent extends EventObject {
+
+    public ProjectAfterSaveEvent(ProjectController source) {
         super(source);
+    }
+
+    @Override
+    public ProjectController getSource() {
+        return (ProjectController) super.getSource();
     }
 }

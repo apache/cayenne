@@ -20,13 +20,7 @@ package org.apache.cayenne.modeler.event.model;
 
 import java.util.EventListener;
 
-/**
- * Interface for classes that are interested in ProjectOnSave events.
- */
-public interface ProjectOnSaveListener extends EventListener {
+public interface ProjectBeforeSaveListener extends EventListener {
 
-    /**
-     * Changes made before saving project
-     */
-    void beforeSaveChanges(ProjectOnSaveEvent e);
+    void projectWillBeSaved(ProjectBeforeSaveEvent e);
 }

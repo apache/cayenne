@@ -21,9 +21,6 @@ package org.apache.cayenne.modeler.event.model;
 
 import java.util.EventListener;
 
-/**
- * Listener for QueryEvents.
- */
 public interface QueryListener extends EventListener {
 
     void queryChanged(QueryEvent e);
