@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.ui.project.editor.embeddable.attributes;
 
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
-import org.apache.cayenne.map.event.EmbeddableAttributeEvent;
+import org.apache.cayenne.modeler.event.model.EmbeddableAttributeEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.swing.table.CayenneTable;
 import org.apache.cayenne.modeler.swing.table.CayenneTableModel;

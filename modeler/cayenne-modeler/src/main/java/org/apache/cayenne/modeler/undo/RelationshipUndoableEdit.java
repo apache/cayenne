@@ -23,8 +23,8 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.map.event.RelationshipEvent;
+import org.apache.cayenne.modeler.event.model.MapEvent;
+import org.apache.cayenne.modeler.event.model.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 

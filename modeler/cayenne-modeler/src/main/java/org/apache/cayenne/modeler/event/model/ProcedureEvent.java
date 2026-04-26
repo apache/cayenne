@@ -20,7 +20,6 @@
 package org.apache.cayenne.modeler.event.model;
 
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.event.MapEvent;
 
 /** 
  * An event generated when a Procedure object is added to a DataMap, 

@@ -27,7 +27,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.event.EntityEvent;
+import org.apache.cayenne.modeler.event.model.EntityEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
@@ -384,7 +384,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
         } else if (entity.getDataMap().getObjEntity(newName) == null) {
             // completely new name, set new name for entity
             EntityEvent e = new EntityEvent(this, entity, entity.getName());
-            entity.setName(newName);
+            entity.getDataMap().renameObjEntity(entity, newName);
 
             controller.fireObjEntityEvent(e);
 

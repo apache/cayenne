@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.ui.preferences.datasource;
 
 import org.apache.cayenne.datasource.DriverDataSource;
-import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.modeler.event.model.MapEvent;
 import org.apache.cayenne.modeler.event.model.DataSourceEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.ChildrenMapPreference;

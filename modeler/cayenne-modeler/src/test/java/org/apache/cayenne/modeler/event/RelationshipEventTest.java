@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.event;
 
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.event.RelationshipEvent;
+import org.apache.cayenne.modeler.event.model.RelationshipEvent;
 import org.junit.Test;
 
 import static org.junit.Assert.assertSame;

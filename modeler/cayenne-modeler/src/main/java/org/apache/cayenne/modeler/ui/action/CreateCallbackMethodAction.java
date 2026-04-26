@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.action;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.LifecycleEvent;
-import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.modeler.event.model.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.CallbackType;
 import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;

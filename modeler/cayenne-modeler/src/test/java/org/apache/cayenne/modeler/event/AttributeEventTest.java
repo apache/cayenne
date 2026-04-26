@@ -19,9 +19,8 @@
 
 package org.apache.cayenne.modeler.event;
 
-import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.event.AttributeEvent;
+import org.apache.cayenne.modeler.event.model.AttributeEvent;
 import org.junit.Test;
 
 import static org.junit.Assert.assertSame;

@@ -16,24 +16,31 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.map.event;
+
+package org.apache.cayenne.modeler.event.model;
 
 import java.util.EventListener;
 
-public interface EmbeddableAttributeListener extends EventListener {
+/**
+ * Defines a listener for DbEntity modification events.
+ */
+public interface DbEntityListener extends EventListener {
 
     /**
-     * EmbeddableAttribute property changed.
+     * Entity property changed. May be name, attribute or relationship added or removed,
+     * etc. Attribute and relationship property changes are handled in respective
+     * listeners.
      */
-    void embeddableAttributeChanged(EmbeddableAttributeEvent e);
+    void dbEntityChanged(EntityEvent e);
 
     /**
-     * New EmbeddableAttribute has been created/added.
+     * New entity has been created/added.
      */
-    void embeddableAttributeAdded(EmbeddableAttributeEvent e);
+    void dbEntityAdded(EntityEvent e);
 
     /**
-     * EmbeddableAttribute has been removed.
+     * Entity has been removed.
      */
-    void embeddableAttributeRemoved(EmbeddableAttributeEvent e);
+    void dbEntityRemoved(EntityEvent e);
 }
+

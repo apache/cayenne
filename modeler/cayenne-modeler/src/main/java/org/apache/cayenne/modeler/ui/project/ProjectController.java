@@ -38,20 +38,20 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.map.event.AttributeEvent;
-import org.apache.cayenne.map.event.DbAttributeListener;
-import org.apache.cayenne.map.event.DbEntityListener;
-import org.apache.cayenne.map.event.DbRelationshipListener;
-import org.apache.cayenne.map.event.EmbeddableAttributeEvent;
-import org.apache.cayenne.map.event.EmbeddableAttributeListener;
-import org.apache.cayenne.map.event.EmbeddableEvent;
-import org.apache.cayenne.map.event.EmbeddableListener;
-import org.apache.cayenne.map.event.EntityEvent;
-import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.map.event.ObjAttributeListener;
-import org.apache.cayenne.map.event.ObjEntityListener;
-import org.apache.cayenne.map.event.ObjRelationshipListener;
-import org.apache.cayenne.map.event.RelationshipEvent;
+import org.apache.cayenne.modeler.event.model.AttributeEvent;
+import org.apache.cayenne.modeler.event.model.DbAttributeListener;
+import org.apache.cayenne.modeler.event.model.DbEntityListener;
+import org.apache.cayenne.modeler.event.model.DbRelationshipListener;
+import org.apache.cayenne.modeler.event.model.EmbeddableAttributeEvent;
+import org.apache.cayenne.modeler.event.model.EmbeddableAttributeListener;
+import org.apache.cayenne.modeler.event.model.EmbeddableEvent;
+import org.apache.cayenne.modeler.event.model.EmbeddableListener;
+import org.apache.cayenne.modeler.event.model.EntityEvent;
+import org.apache.cayenne.modeler.event.model.MapEvent;
+import org.apache.cayenne.modeler.event.model.ObjAttributeListener;
+import org.apache.cayenne.modeler.event.model.ObjEntityListener;
+import org.apache.cayenne.modeler.event.model.ObjRelationshipListener;
+import org.apache.cayenne.modeler.event.model.RelationshipEvent;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.RevertAction;
 import org.apache.cayenne.modeler.ui.action.SaveAction;
@@ -694,10 +694,6 @@ public class ProjectController extends ChildController<ModelerController> {
         LOGGER.debug("fireObjEntityEvent: {}", e.getEntity().getName());
         setDirty(true);
 
-        if (e.getEntity().getDataMap() != null && e.getId() == MapEvent.CHANGE) {
-            e.getEntity().getDataMap().objEntityChanged(e);
-        }
-
         if (e.getId() == MapEvent.REMOVE) {
             navigationHistory.forgetObject(e);
         }
@@ -722,10 +718,6 @@ public class ProjectController extends ChildController<ModelerController> {
     public void fireDbEntityEvent(EntityEvent e) {
         LOGGER.debug("fireDbEntityEvent: {}", e.getEntity().getName());
         setDirty(true);
-
-        if (e.getEntity().getDataMap() != null && e.getId() == MapEvent.CHANGE) {
-            e.getEntity().getDataMap().dbEntityChanged(e);
-        }
 
         if (e.getId() == MapEvent.REMOVE) {
             navigationHistory.forgetObject(e);
@@ -1073,10 +1065,6 @@ public class ProjectController extends ChildController<ModelerController> {
     public void fireDbRelationshipEvent(RelationshipEvent e) {
         LOGGER.debug("fireDbRelationshipEvent: {}", e.getRelationship().getName());
         setDirty(true);
-
-        if (e.getId() == MapEvent.CHANGE && e.getEntity() instanceof DbEntity) {
-            ((DbEntity) e.getEntity()).dbRelationshipChanged(e);
-        }
 
         for (DbRelationshipListener listener : listeners.getListeners(DbRelationshipListener.class)) {
             switch (e.getId()) {

@@ -24,7 +24,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.event.EntityEvent;
+import org.apache.cayenne.modeler.event.model.EntityEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
@@ -235,7 +235,7 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
         } else if (entity.getDataMap().getDbEntity(newName) == null) {
             // completely new name, set new name for entity
             EntityEvent e = new EntityEvent(this, entity, entity.getName());
-            entity.setName(newName);
+            entity.getDataMap().renameDbEntity(entity, newName);
             controller.fireDbEntityEvent(e);
         } else {
             // there is an entity with the same name

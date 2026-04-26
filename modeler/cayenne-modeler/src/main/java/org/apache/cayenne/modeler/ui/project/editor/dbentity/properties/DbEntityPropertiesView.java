@@ -20,8 +20,8 @@ package org.apache.cayenne.modeler.ui.project.editor.dbentity.properties;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.event.DbEntityListener;
-import org.apache.cayenne.map.event.EntityEvent;
+import org.apache.cayenne.modeler.event.model.DbEntityListener;
+import org.apache.cayenne.modeler.event.model.EntityEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.service.action.GlobalActions;

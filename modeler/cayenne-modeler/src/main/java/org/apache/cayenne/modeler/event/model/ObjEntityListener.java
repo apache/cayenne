@@ -16,28 +16,31 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.map.event;
 
-import org.apache.cayenne.map.DataMap;
+package org.apache.cayenne.modeler.event.model;
 
 import java.util.EventListener;
 
-
-public interface EmbeddableListener extends EventListener {
-
-    /**
-     * EmbeddableAttribute property changed.
-     */
-    void embeddableChanged(EmbeddableEvent e, DataMap map);
+/**
+ * For managing the changes in the ObjEntity
+ */
+public interface ObjEntityListener extends EventListener {
 
     /**
-     * New EmbeddableAttribute has been created/added.
+     * Entity property changed. May be name, attribute or relationship added or removed, etc.
+     * Attribute and relationship property changes are handled in respective listeners.
      */
-    void embeddableAdded(EmbeddableEvent e, DataMap map);
+    void objEntityChanged(EntityEvent e);
 
     /**
-     * EmbeddableAttribute has been removed.
+     * New entity has been created/added.
      */
-    void embeddableRemoved(EmbeddableEvent e, DataMap map);
+    void objEntityAdded(EntityEvent e);
+
+    /**
+     * Entity has been removed.
+     */
+    void objEntityRemoved(EntityEvent e);
 
 }
+

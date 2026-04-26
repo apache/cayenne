@@ -26,7 +26,7 @@ import javax.swing.JLabel;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
-import org.apache.cayenne.map.event.EntityEvent;
+import org.apache.cayenne.modeler.event.model.EntityEvent;
 import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.util.Util;

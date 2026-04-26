@@ -24,9 +24,6 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.map.event.DbEntityListener;
-import org.apache.cayenne.map.event.EntityEvent;
-import org.apache.cayenne.map.event.ObjEntityListener;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.Util;
@@ -50,8 +47,7 @@ import static java.util.Collections.emptyList;
  * tables, ObjEntities - mapping persistent Java classes, Procedures - mapping
  * database stored procedures.
  */
-public class DataMap implements Serializable, ConfigurationNode, XMLSerializable, MappingNamespace, DbEntityListener,
-		ObjEntityListener, Comparable<DataMap> {
+public class DataMap implements Serializable, ConfigurationNode, XMLSerializable, MappingNamespace, Comparable<DataMap> {
 
 	private static final long serialVersionUID = 4851901426473991657L;
 
@@ -583,6 +579,64 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	}
 
 	/**
+	 * Renames a {@link DbEntity} that belongs to this DataMap, re-keying the entity map and
+	 * fixing up dependent references (incoming DbRelationship targets, ObjEntity dbEntityNames)
+	 * and refreshing the parent namespace cache.
+	 *
+	 * @since 5.0
+	 */
+	public void renameDbEntity(DbEntity entity, String newName) {
+		if (entity == null || newName == null) {
+			throw new NullPointerException("Null entity or name");
+		}
+		String oldName = entity.getName();
+		if (Util.nullSafeEquals(oldName, newName)) {
+			return;
+		}
+		if (dbEntityMap.get(oldName) != entity) {
+			throw new IllegalArgumentException("Entity does not belong to this DataMap: " + oldName);
+		}
+
+		entity.renameSelf(newName);
+		dbEntityMap.remove(oldName);
+		dbEntityMap.put(newName, entity);
+
+		MappingNamespace ns = getNamespace();
+		if (ns instanceof EntityResolver) {
+			((EntityResolver) ns).refreshMappingCache();
+		}
+	}
+
+	/**
+	 * Renames an {@link ObjEntity} that belongs to this DataMap, re-keying the entity map and
+	 * fixing up dependent references (reverse ObjRelationship targets) and refreshing the parent
+	 * namespace cache.
+	 *
+	 * @since 5.0
+	 */
+	public void renameObjEntity(ObjEntity entity, String newName) {
+		if (entity == null || newName == null) {
+			throw new NullPointerException("Null entity or name");
+		}
+		String oldName = entity.getName();
+		if (Util.nullSafeEquals(oldName, newName)) {
+			return;
+		}
+		if (objEntityMap.get(oldName) != entity) {
+			throw new IllegalArgumentException("Entity does not belong to this DataMap: " + oldName);
+		}
+
+		entity.renameSelf(newName);
+		objEntityMap.remove(oldName);
+		objEntityMap.put(newName, entity);
+
+		MappingNamespace ns = getNamespace();
+		if (ns instanceof EntityResolver) {
+			((EntityResolver) ns).refreshMappingCache();
+		}
+	}
+
+	/**
 	 * Returns an unmodifiable collection of ObjEntities stored in this DataMap.
 	 */
 	public Collection<ObjEntity> getObjEntities() {
@@ -960,91 +1014,6 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	 */
 	public void setDefaultSuperclass(String defaultSuperclass) {
 		this.defaultSuperclass = defaultSuperclass;
-	}
-
-	/**
-	 * DbEntity property changed. May be name, attribute or relationship added
-	 * or removed, etc. Attribute and relationship property changes are handled
-	 * in respective listeners.
-	 * 
-	 * @since 1.2
-	 */
-	public void dbEntityChanged(EntityEvent e) {
-		Entity<?,?,?> entity = e.getEntity();
-		if (entity instanceof DbEntity) {
-
-			DbEntity dbEntity = (DbEntity) entity;
-
-			dbEntity.dbEntityChanged(e);
-
-			// finish up the name change here because we
-			// do not have direct access to the dbEntityMap
-			if (e.isNameChange()) {
-				// remove the entity from the map with the old name
-				dbEntityMap.remove(e.getOldName());
-
-				// add the entity back in with the new name
-				dbEntityMap.put(e.getNewName(), dbEntity);
-
-				// important - clear parent namespace:
-				MappingNamespace ns = getNamespace();
-				if (ns instanceof EntityResolver) {
-					((EntityResolver) ns).refreshMappingCache();
-				}
-			}
-		}
-	}
-
-	/** New entity has been created/added. */
-	public void dbEntityAdded(EntityEvent e) {
-		// does nothing currently
-	}
-
-	/** Entity has been removed. */
-	public void dbEntityRemoved(EntityEvent e) {
-		// does nothing currently
-	}
-
-	/**
-	 * ObjEntity property changed. May be name, attribute or relationship added
-	 * or removed, etc. Attribute and relationship property changes are handled
-	 * in respective listeners.
-	 * 
-	 * @since 1.2
-	 */
-	public void objEntityChanged(EntityEvent e) {
-		Entity<?,?,?> entity = e.getEntity();
-		if (entity instanceof ObjEntity) {
-
-			ObjEntity objEntity = (ObjEntity) entity;
-			objEntity.objEntityChanged(e);
-
-			// finish up the name change here because we
-			// do not have direct access to the objEntityMap
-			if (e.isNameChange()) {
-				// remove the entity from the map with the old name
-				objEntityMap.remove(e.getOldName());
-
-				// add the entity back in with the new name
-				objEntityMap.put(e.getNewName(), objEntity);
-
-				// important - clear parent namespace:
-				MappingNamespace ns = getNamespace();
-				if (ns instanceof EntityResolver) {
-					((EntityResolver) ns).refreshMappingCache();
-				}
-			}
-		}
-	}
-
-	/** New entity has been created/added. */
-	public void objEntityAdded(EntityEvent e) {
-		// does nothing currently
-	}
-
-	/** Entity has been removed. */
-	public void objEntityRemoved(EntityEvent e) {
-		// does nothing currently
 	}
 
 	/**

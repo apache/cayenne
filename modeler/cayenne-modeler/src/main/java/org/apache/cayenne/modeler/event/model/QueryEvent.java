@@ -20,7 +20,6 @@
 package org.apache.cayenne.modeler.event.model;
 
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.QueryDescriptor;
 
 /**

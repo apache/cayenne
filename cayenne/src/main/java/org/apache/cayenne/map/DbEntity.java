@@ -38,13 +38,6 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.map.event.AttributeEvent;
-import org.apache.cayenne.map.event.DbAttributeListener;
-import org.apache.cayenne.map.event.DbEntityListener;
-import org.apache.cayenne.map.event.DbRelationshipListener;
-import org.apache.cayenne.map.event.EntityEvent;
-import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
@@ -54,7 +47,7 @@ import org.apache.cayenne.util.XMLEncoder;
  * table.
  */
 public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
-        implements ConfigurationNode, DbEntityListener, DbAttributeListener, DbRelationshipListener {
+        implements ConfigurationNode {
 
     protected String catalog;
     protected String schema;
@@ -199,7 +192,12 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
      */
     public void addAttribute(DbAttribute attr) {
         super.addAttribute(attr);
-        this.dbAttributeAdded(new AttributeEvent(this, attr, this, MapEvent.ADD));
+        if (attr.isPrimaryKey() && !primaryKey.contains(attr)) {
+            primaryKey.add(attr);
+        }
+        if (attr.isGenerated() && !generatedAttributes.contains(attr)) {
+            generatedAttributes.add(attr);
+        }
     }
 
     /**
@@ -226,14 +224,160 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
         }
 
         super.removeAttribute(attrName);
-        this.dbAttributeRemoved(new AttributeEvent(this, attr, this, MapEvent.REMOVE));
+        boolean wasPrimaryKey = primaryKey.remove(attr);
+        generatedAttributes.remove(attr);
+        if (wasPrimaryKey) {
+            invalidateToDepPkRelationships();
+        }
     }
 
     @Override
     public void clearAttributes() {
         super.clearAttributes();
-        // post dummy event for no specific attribute
-        this.dbAttributeRemoved(new AttributeEvent(this, null, this, MapEvent.REMOVE));
+        primaryKey.clear();
+        generatedAttributes.clear();
+    }
+
+    /**
+     * Notification from a child {@link DbAttribute} that its primary-key flag has changed.
+     * Updates the cached primaryKey collection and enforces the {@code toDependentPK}
+     * relationship invariant.
+     */
+    void attributePrimaryKeyChanged(DbAttribute attr) {
+        if (attr.isPrimaryKey()) {
+            if (!primaryKey.contains(attr)) {
+                primaryKey.add(attr);
+            }
+        } else {
+            primaryKey.remove(attr);
+        }
+        invalidateToDepPkRelationships();
+    }
+
+    /**
+     * Notification from a child {@link DbAttribute} that its generated flag has changed.
+     */
+    void attributeGeneratedChanged(DbAttribute attr) {
+        if (attr.isGenerated()) {
+            if (!generatedAttributes.contains(attr)) {
+                generatedAttributes.add(attr);
+            }
+        } else {
+            generatedAttributes.remove(attr);
+        }
+    }
+
+    private void invalidateToDepPkRelationships() {
+        for (DbRelationship rel : getRelationships()) {
+            DbRelationship reverse = rel.getReverseRelationship();
+            if (reverse != null && reverse.isToDependentPK() && !reverse.isValidForDepPk()) {
+                reverse.setToDependentPK(false);
+            }
+        }
+    }
+
+    /**
+     * Renames an attribute owned by this entity, re-keying the attribute map and updating all
+     * dependent references across the parent {@link DataMap}: ObjAttribute paths and DbJoin
+     * source/target names.
+     *
+     * @since 5.0
+     */
+    public void renameAttribute(DbAttribute attr, String newName) {
+        if (attr == null || newName == null) {
+            throw new NullPointerException("Null attribute or name");
+        }
+        if (attr.getEntity() != this) {
+            throw new IllegalArgumentException("Attribute does not belong to this entity: " + attr.getName());
+        }
+
+        String oldName = attr.getName();
+        if (Util.nullSafeEquals(oldName, newName)) {
+            return;
+        }
+
+        DataMap map = getDataMap();
+        if (map != null) {
+            for (ObjEntity oe : map.getMappedEntities(this)) {
+                for (ObjAttribute oa : oe.getAttributes()) {
+                    if (oa.getDbAttribute() == attr) {
+                        oa.setDbAttributePath(newName);
+                    }
+                }
+            }
+            for (DbEntity ent : map.getDbEntities()) {
+                for (DbRelationship rel : ent.getRelationships()) {
+                    for (DbJoin join : rel.getJoins()) {
+                        if (join.getSource() == attr) {
+                            join.setSourceName(newName);
+                        }
+                        if (join.getTarget() == attr) {
+                            join.setTargetName(newName);
+                        }
+                    }
+                }
+            }
+        }
+
+        attributes.remove(oldName);
+        attr.setName(newName);
+        super.addAttribute(attr);
+    }
+
+    /**
+     * Renames a relationship owned by this entity, re-keying the relationship map and refreshing
+     * dependent ObjAttribute db-paths across the parent {@link DataMap}.
+     *
+     * @since 5.0
+     */
+    public void renameRelationship(DbRelationship rel, String newName) {
+        if (rel == null || newName == null) {
+            throw new NullPointerException("Null relationship or name");
+        }
+        if (rel.getSourceEntity() != this) {
+            throw new IllegalArgumentException("Relationship does not belong to this entity: " + rel.getName());
+        }
+
+        String oldName = rel.getName();
+        if (Util.nullSafeEquals(oldName, newName)) {
+            return;
+        }
+
+        relationships.remove(oldName);
+        rel.setName(newName);
+        super.addRelationship(rel);
+
+        DataMap map = getDataMap();
+        if (map != null) {
+            for (ObjEntity objEntity : map.getObjEntities()) {
+                for (ObjAttribute attribute : objEntity.getAttributes()) {
+                    attribute.updateDbAttributePath();
+                }
+            }
+        }
+    }
+
+    /**
+     * Updates dependent references in the parent {@link DataMap} prior to a name change of this
+     * entity. Called by {@link DataMap#renameDbEntity(DbEntity, String)}.
+     */
+    void renameSelf(String newName) {
+        DataMap map = getDataMap();
+        if (map != null) {
+            for (DbEntity dbe : map.getDbEntities()) {
+                for (DbRelationship relationship : dbe.getRelationships()) {
+                    if (relationship.getTargetEntity() == this) {
+                        relationship.setTargetEntityName(newName);
+                    }
+                }
+            }
+            for (ObjEntity oe : map.getMappedEntities(this)) {
+                if (oe.getDbEntity() == this) {
+                    oe.setDbEntityName(newName);
+                }
+            }
+        }
+        setName(newName);
     }
 
     /**
@@ -277,238 +421,6 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
      */
     public DbKeyGenerator getPrimaryKeyGenerator() {
         return primaryKeyGenerator;
-    }
-
-    /**
-     * DbEntity property changed event. May be name, attribute or relationship
-     * added or removed, etc. Attribute and relationship property changes are
-     * handled in respective listeners.
-     *
-     * @since 1.2
-     */
-    public void dbEntityChanged(EntityEvent e) {
-        if (e == null || e.getEntity() != this) {
-            // not our concern
-            return;
-        }
-
-        // handle entity name changes
-        if (e.getId() == EntityEvent.CHANGE && e.isNameChange()) {
-            String newName = e.getNewName();
-            DataMap map = getDataMap();
-            if (map != null) {
-                // handle all of the relationship target names that need to be
-                // changed
-                for (DbEntity dbe : map.getDbEntities()) {
-                    for (DbRelationship relationship : dbe.getRelationships()) {
-                        if (relationship.getTargetEntity() == this) {
-                            relationship.setTargetEntityName(newName);
-                        }
-                    }
-                }
-                // get all of the related object entities
-                for (ObjEntity oe : map.getMappedEntities(this)) {
-                    if (oe.getDbEntity() == this) {
-                        oe.setDbEntityName(newName);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * New entity has been created/added.
-     */
-    public void dbEntityAdded(EntityEvent e) {
-        // does nothing currently
-    }
-
-    /**
-     * Entity has been removed.
-     */
-    public void dbEntityRemoved(EntityEvent e) {
-        // does nothing currently
-    }
-
-    public void dbAttributeAdded(AttributeEvent e) {
-        this.handleAttributeUpdate(e);
-    }
-
-    public void dbAttributeChanged(AttributeEvent e) {
-        this.handleAttributeUpdate(e);
-    }
-
-    public void dbAttributeRemoved(AttributeEvent e) {
-        this.handleAttributeUpdate(e);
-    }
-
-    private void handleAttributeUpdate(AttributeEvent e) {
-        if (e == null || e.getEntity() != this) {
-            // not our concern
-            return;
-        }
-
-        // catch clearing (event with null ('any') DbAttribute)
-        Attribute<?,?,?> attribute = e.getAttribute();
-        if (attribute == null && this.attributes.isEmpty()) {
-            this.primaryKey.clear();
-            this.generatedAttributes.clear();
-            return;
-        }
-
-        // make sure we handle a DbAttribute
-        if (!(attribute instanceof DbAttribute)) {
-            return;
-        }
-
-        DbAttribute dbAttribute = (DbAttribute) attribute;
-
-        // handle attribute name changes
-        if (e.getId() == AttributeEvent.CHANGE && e.isNameChange()) {
-            String oldName = e.getOldName();
-            String newName = e.getNewName();
-
-            DataMap map = getDataMap();
-            if (map != null) {
-                for (DbEntity ent : map.getDbEntities()) {
-
-                    // handle all of the dependent object entity attribute changes
-                    for (ObjEntity oe : map.getMappedEntities(ent)) {
-                        for (ObjAttribute attr : oe.getAttributes()) {
-                            if (attr.getDbAttribute() == dbAttribute) {
-                                attr.setDbAttributePath(newName);
-                            }
-                        }
-                    }
-
-                    // handle all of the relationships / joins that use the
-                    // changed attribute
-                    for (DbRelationship rel : ent.getRelationships()) {
-                        for (DbJoin join : rel.getJoins()) {
-                            if (join.getSource() == dbAttribute) {
-                                join.setSourceName(newName);
-                            }
-                            if (join.getTarget() == dbAttribute) {
-                                join.setTargetName(newName);
-                            }
-                        }
-                    }
-                }
-            }
-
-            // clear the attribute out of the collection
-            attributes.remove(oldName);
-
-            // add the attribute back in with the new name
-            super.addAttribute(dbAttribute);
-        }
-
-        // handle PK refresh
-        if (primaryKey.contains(dbAttribute) || dbAttribute.isPrimaryKey()) {
-            switch (e.getId()) {
-                case MapEvent.ADD:
-                    this.primaryKey.add(dbAttribute);
-                    break;
-
-                case MapEvent.REMOVE:
-                    this.primaryKey.remove(dbAttribute);
-                    break;
-
-                default:
-                    // generic update
-                    this.primaryKey.clear();
-                    for (DbAttribute next : getAttributes()) {
-                        if (next.isPrimaryKey()) {
-                            this.primaryKey.add(next);
-                        }
-                    }
-            }
-
-            // check toDep PK for reverse relationships
-            for (DbRelationship rel : getRelationships()) {
-                DbRelationship reverse = rel.getReverseRelationship();
-                if(reverse != null && reverse.isToDependentPK() && !reverse.isValidForDepPk()) {
-                    reverse.setToDependentPK(false);
-                }
-            }
-        }
-
-        // handle generated key refresh
-        if (generatedAttributes.contains(dbAttribute) || dbAttribute.isGenerated()) {
-            switch (e.getId()) {
-                case MapEvent.ADD:
-                    this.generatedAttributes.add(dbAttribute);
-                    break;
-
-                case MapEvent.REMOVE:
-                    this.generatedAttributes.remove(dbAttribute);
-                    break;
-
-                default:
-                    // generic update
-                    this.generatedAttributes.clear();
-                    for (DbAttribute next : getAttributes()) {
-                        if (next.isGenerated()) {
-                            this.generatedAttributes.add(next);
-                        }
-                    }
-            }
-        }
-    }
-
-    /**
-     * Relationship property changed.
-     */
-    public void dbRelationshipChanged(RelationshipEvent e) {
-        if (e == null || e.getEntity() != this) {
-            // not our concern
-            return;
-        }
-
-        Relationship<?,?,?> rel = e.getRelationship();
-        // make sure we handle a DbRelationship
-        if (!(rel instanceof DbRelationship)) {
-            return;
-        }
-
-        DbRelationship dbRel = (DbRelationship) rel;
-
-        // handle relationship name changes
-        if (e.getId() == RelationshipEvent.CHANGE && e.isNameChange()) {
-            String oldName = e.getOldName();
-
-            DataMap map = getDataMap();
-            if (map != null) {
-
-                // updating dbAttributePaths for attributes of all ObjEntities
-                for (ObjEntity objEntity : map.getObjEntities()) {
-
-                    for (ObjAttribute attribute : objEntity.getAttributes()) {
-                        attribute.updateDbAttributePath();
-                    }
-                }
-            }
-
-            // clear the relationship out of the collection
-            relationships.remove(oldName);
-
-            // add the relationship back in with the new name
-            super.addRelationship(dbRel);
-        }
-    }
-
-    /**
-     * Relationship has been created/added.
-     */
-    public void dbRelationshipAdded(RelationshipEvent e) {
-        // does nothing currently
-    }
-
-    /**
-     * Relationship has been removed.
-     */
-    public void dbRelationshipRemoved(RelationshipEvent e) {
-        // does nothing currently
     }
 
     /**

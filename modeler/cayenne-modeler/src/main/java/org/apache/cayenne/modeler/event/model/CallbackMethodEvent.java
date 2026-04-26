@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.event.model;
 
-import org.apache.cayenne.map.event.MapEvent;
-
 public class CallbackMethodEvent extends MapEvent {
 
     private final String callbackMethod;

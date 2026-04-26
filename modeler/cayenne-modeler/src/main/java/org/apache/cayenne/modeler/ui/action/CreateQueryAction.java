@@ -23,7 +23,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.modeler.event.model.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.querytype.QueryTypeController;

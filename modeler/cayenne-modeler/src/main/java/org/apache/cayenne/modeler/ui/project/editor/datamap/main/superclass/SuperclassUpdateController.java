@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.project.editor.datamap.main.superclass;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.event.EntityEvent;
+import org.apache.cayenne.modeler.event.model.EntityEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.defaults.DefaultsPreferencesController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.defaults.DefaultsPreferencesView;

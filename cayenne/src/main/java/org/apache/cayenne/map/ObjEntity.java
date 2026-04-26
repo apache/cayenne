@@ -28,8 +28,6 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.map.event.EntityEvent;
-import org.apache.cayenne.map.event.ObjEntityListener;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
@@ -54,7 +52,7 @@ import java.util.function.Function;
  * DbEntity layer.
  */
 public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
-        implements ObjEntityListener, ConfigurationNode {
+        implements ConfigurationNode {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ObjEntity.class);
 
@@ -960,44 +958,21 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
     }
 
     /**
-     * ObjEntity property changed. May be name, attribute or relationship added
-     * or removed, etc. Attribute and relationship property changes are handled
-     * in respective listeners.
-     * 
-     * @since 1.2
+     * Updates dependent references in the parent {@link DataMap} prior to a name change of this
+     * entity. Called by {@link DataMap#renameObjEntity(ObjEntity, String)}.
      */
-    public void objEntityChanged(EntityEvent e) {
-        if ((e == null) || (e.getEntity() != this)) {
-            // not our concern
-            return;
-        }
-
-        // handle entity name changes
-        if (e.getId() == EntityEvent.CHANGE && e.isNameChange()) {
-            String oldName = e.getOldName();
-            String newName = e.getNewName();
-
-            DataMap map = getDataMap();
-            if (map != null) {
-                ObjEntity oe = (ObjEntity) e.getEntity();
-                for (ObjRelationship relationship : oe.getRelationships()) {
-                    relationship = relationship.getReverseRelationship();
-                    if (null != relationship && relationship.targetEntityName.equals(oldName)) {
-                        relationship.targetEntityName = newName;
-                    }
+    void renameSelf(String newName) {
+        String oldName = getName();
+        DataMap map = getDataMap();
+        if (map != null) {
+            for (ObjRelationship relationship : getRelationships()) {
+                ObjRelationship reverse = relationship.getReverseRelationship();
+                if (reverse != null && reverse.targetEntityName.equals(oldName)) {
+                    reverse.targetEntityName = newName;
                 }
             }
         }
-    }
-
-    /** New entity has been created/added. */
-    public void objEntityAdded(EntityEvent e) {
-        // does nothing currently
-    }
-
-    /** Entity has been removed. */
-    public void objEntityRemoved(EntityEvent e) {
-        // does nothing currently
+        setName(newName);
     }
 
 }

@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.map.event;
+package org.apache.cayenne.modeler.event.model;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.event.CayenneEvent;

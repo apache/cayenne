@@ -24,7 +24,6 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.event.AttributeEvent;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -73,7 +72,6 @@ public class SetPrimaryKeyToModel extends AbstractToModelToken.Entity {
 
             if (wasPrimaryKey != willBePrimaryKey) {
                 attr.setPrimaryKey(willBePrimaryKey);
-                e.dbAttributeChanged(new AttributeEvent(this, attr, e));
                 mergerContext.getDelegate().dbAttributeModified(attr);
             }
         }

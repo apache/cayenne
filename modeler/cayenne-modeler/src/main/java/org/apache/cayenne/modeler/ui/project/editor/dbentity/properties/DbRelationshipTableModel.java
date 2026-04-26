@@ -26,7 +26,7 @@ import java.util.Collection;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.event.RelationshipEvent;
+import org.apache.cayenne.modeler.event.model.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.swing.table.CayenneTableModel;
@@ -145,9 +145,7 @@ public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> 
                 throw new IllegalArgumentException("Duplicate relationship name: " + newName);
             }
             RelationshipEvent e = new RelationshipEvent(eventSource, rel, entity, oldName);
-            entity.removeRelationship(oldName);
-            rel.setName(newName);
-            entity.addRelationship(rel);
+            entity.renameRelationship(rel, newName);
             controller.fireDbRelationshipEvent(e);
             fireTableCellUpdated(row, column);
         } else if (column == TO_DEPENDENT_KEY) {

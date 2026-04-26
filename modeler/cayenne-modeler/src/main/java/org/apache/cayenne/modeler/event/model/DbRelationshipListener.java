@@ -17,30 +17,27 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.map.event;
+package org.apache.cayenne.modeler.event.model;
 
 import java.util.EventListener;
 
 /**
- * Defines a listener for DbEntity modification events.
+ * For managing the changes in the DbRelationship.
  */
-public interface DbEntityListener extends EventListener {
+public interface DbRelationshipListener extends EventListener {
+    /**
+     * Relationship property changed.
+     */
+    void dbRelationshipChanged(RelationshipEvent e);
 
     /**
-     * Entity property changed. May be name, attribute or relationship added or removed,
-     * etc. Attribute and relationship property changes are handled in respective
-     * listeners.
+     * Relationship has been created/added.
      */
-    void dbEntityChanged(EntityEvent e);
+    void dbRelationshipAdded(RelationshipEvent e);
 
     /**
-     * New entity has been created/added.
+     * Relationship has been removed.
      */
-    void dbEntityAdded(EntityEvent e);
-
-    /**
-     * Entity has been removed.
-     */
-    void dbEntityRemoved(EntityEvent e);
+    void dbRelationshipRemoved(RelationshipEvent e);
 }
 

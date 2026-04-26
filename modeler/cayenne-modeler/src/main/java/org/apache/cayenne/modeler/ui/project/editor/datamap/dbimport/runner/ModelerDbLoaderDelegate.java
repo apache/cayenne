@@ -23,8 +23,8 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dbsync.reverse.dbload.DefaultDbLoaderDelegate;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.event.EntityEvent;
-import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.modeler.event.model.EntityEvent;
+import org.apache.cayenne.modeler.event.model.MapEvent;
 
 final class ModelerDbLoaderDelegate extends DefaultDbLoaderDelegate {
 

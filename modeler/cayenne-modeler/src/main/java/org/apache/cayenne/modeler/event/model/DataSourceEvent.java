@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.modeler.event.model;
 
-import org.apache.cayenne.map.event.MapEvent;
-
 public class DataSourceEvent extends MapEvent {
 
     private final String dataSourceName;

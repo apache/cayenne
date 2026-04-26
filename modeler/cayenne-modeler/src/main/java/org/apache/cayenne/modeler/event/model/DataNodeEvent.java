@@ -20,7 +20,6 @@
 package org.apache.cayenne.modeler.event.model;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.map.event.MapEvent;
 
 /** 
  * Represents events resulted from DataNode changes 

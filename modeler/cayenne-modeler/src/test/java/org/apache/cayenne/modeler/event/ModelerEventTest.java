@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.event;
 
-import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.modeler.event.model.MapEvent;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

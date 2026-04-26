@@ -23,7 +23,7 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.event.AttributeEvent;
+import org.apache.cayenne.modeler.event.model.AttributeEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.swing.table.CayenneTableModel;
@@ -180,10 +180,7 @@ public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
             throw new IllegalArgumentException("Duplicate attribute name: " + newName);
         }
         e.setOldName(oldName);
-        attr.setName(newName);
-        parent.removeAttribute(oldName);
-        parent.addAttribute(attr);
-        parent.dbAttributeChanged(e);
+        parent.renameAttribute(attr, newName);
     }
 
     public String getMaxLength(DbAttribute attr) {

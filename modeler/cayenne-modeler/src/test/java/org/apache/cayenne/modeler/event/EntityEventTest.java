@@ -20,8 +20,7 @@
 package org.apache.cayenne.modeler.event;
 
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.event.EntityEvent;
+import org.apache.cayenne.modeler.event.model.EntityEvent;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

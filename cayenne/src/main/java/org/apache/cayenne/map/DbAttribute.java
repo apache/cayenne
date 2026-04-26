@@ -22,7 +22,6 @@ package org.apache.cayenne.map;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.util.XMLEncoder;
 
 /**
@@ -194,7 +193,7 @@ public class DbAttribute extends Attribute<DbEntity, DbAttribute, DbRelationship
 
             DbEntity e = this.getEntity();
             if (e != null) {
-                e.dbAttributeChanged(new AttributeEvent(this, this, e));
+                e.attributePrimaryKeyChanged(this);
             }
         }
     }
@@ -234,7 +233,7 @@ public class DbAttribute extends Attribute<DbEntity, DbAttribute, DbRelationship
 
     /**
      * Updates attribute "generated" property.
-     * 
+     *
      * @since 1.2
      */
     public void setGenerated(boolean generated) {
@@ -243,7 +242,7 @@ public class DbAttribute extends Attribute<DbEntity, DbAttribute, DbRelationship
 
             DbEntity e = this.getEntity();
             if (e != null) {
-                e.dbAttributeChanged(new AttributeEvent(this, this, e));
+                e.attributeGeneratedChanged(this);
             }
         }
     }

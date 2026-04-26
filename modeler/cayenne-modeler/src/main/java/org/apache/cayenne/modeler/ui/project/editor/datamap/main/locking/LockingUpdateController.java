@@ -23,9 +23,9 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.event.AttributeEvent;
-import org.apache.cayenne.map.event.EntityEvent;
-import org.apache.cayenne.map.event.RelationshipEvent;
+import org.apache.cayenne.modeler.event.model.AttributeEvent;
+import org.apache.cayenne.modeler.event.model.EntityEvent;
+import org.apache.cayenne.modeler.event.model.RelationshipEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.mvc.ChildController;
 

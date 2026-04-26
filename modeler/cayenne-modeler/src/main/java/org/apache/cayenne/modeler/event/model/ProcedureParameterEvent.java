@@ -20,7 +20,6 @@
 package org.apache.cayenne.modeler.event.model;
 
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.map.event.MapEvent;
 
 
 public class ProcedureParameterEvent extends MapEvent {

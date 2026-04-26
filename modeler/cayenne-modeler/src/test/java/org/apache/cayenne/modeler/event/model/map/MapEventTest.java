@@ -17,8 +17,9 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.map.event;
+package org.apache.cayenne.modeler.event.model.map;
 
+import org.apache.cayenne.modeler.event.model.MapEvent;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

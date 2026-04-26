@@ -21,8 +21,8 @@ package org.apache.cayenne.modeler.ui.project;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.event.EmbeddableEvent;
-import org.apache.cayenne.map.event.EntityEvent;
+import org.apache.cayenne.modeler.event.model.EmbeddableEvent;
+import org.apache.cayenne.modeler.event.model.EntityEvent;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DisplayEvent;

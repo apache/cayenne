@@ -28,7 +28,7 @@ import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
-import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.modeler.event.model.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateNodeUndoableEdit;

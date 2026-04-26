@@ -16,29 +16,42 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.modeler.event.model;
 
-package org.apache.cayenne.map.event;
+import org.apache.cayenne.map.Embeddable;
 
-import java.util.EventListener;
 
-/**
- * For managing the changes in the DbAttribute.
- */
-public interface DbAttributeListener extends EventListener {
+public class EmbeddableEvent extends MapEvent {
 
-    /**
-     * Attribute property changed.
-     */
-    void dbAttributeChanged(AttributeEvent e);
+    protected Embeddable embeddable;
+    
+    public EmbeddableEvent(Object source, Embeddable embeddable) {
+        super(source);
+        setEmbeddable(embeddable);
+    }
 
-    /**
-     * New attribute has been created/added.
-     */
-    void dbAttributeAdded(AttributeEvent e);
+     public EmbeddableEvent(Object src, Embeddable embeddable2, int id) {
+         this(src, embeddable2);
+         setId(id);
+    }
 
-    /**
-     * Attribute has been removed.
-     */
-    void dbAttributeRemoved(AttributeEvent e);
+     public EmbeddableEvent(Object src, Embeddable embeddable2, String oldClassName) {
+         this(src, embeddable2);
+         setOldName(oldClassName);
+    }
+
+     
+    public void setEmbeddable(Embeddable embeddable) {
+        this.embeddable = embeddable;
+    }
+
+    
+    public Embeddable getEmbeddable() {
+        return embeddable;
+    }
+
+    @Override
+    public String getNewName() {
+        return (embeddable != null) ? embeddable.getClassName() : null;
+    }
 }
-

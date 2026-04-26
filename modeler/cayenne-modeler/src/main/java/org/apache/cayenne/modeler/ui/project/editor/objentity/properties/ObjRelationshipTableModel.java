@@ -24,7 +24,7 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.event.RelationshipEvent;
+import org.apache.cayenne.modeler.event.model.RelationshipEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.swing.table.CayenneTableModel;
 import org.apache.cayenne.project.extension.info.ObjectInfo;

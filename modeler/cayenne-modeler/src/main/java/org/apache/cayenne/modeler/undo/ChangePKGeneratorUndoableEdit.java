@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.undo;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
-import org.apache.cayenne.map.event.EntityEvent;
+import org.apache.cayenne.modeler.event.model.EntityEvent;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 
 import javax.swing.undo.CannotRedoException;
