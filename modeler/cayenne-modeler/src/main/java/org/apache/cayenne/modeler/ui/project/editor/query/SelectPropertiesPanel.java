@@ -216,7 +216,7 @@ public abstract class SelectPropertiesPanel extends JPanel {
                     return;
                 }
                 query.setProperty(property, value);
-                mediator.fireQueryEvent(new QueryEvent(this, query));
+                mediator.fireQueryEvent(QueryEvent.ofChange(this, query));
             }
             catch (Exception ex) {
                 LOGGER.warn("Error setting property: " + property, ex);

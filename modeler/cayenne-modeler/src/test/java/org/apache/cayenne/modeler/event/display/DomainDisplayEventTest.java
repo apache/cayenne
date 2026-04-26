@@ -17,47 +17,22 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.event;
+package org.apache.cayenne.modeler.event.display;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.modeler.event.model.DomainEvent;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
 
-public class DomainEventTest {
+public class DomainDisplayEventTest {
 
     @Test
-    public void testConstructor1() throws Exception {
-    	Object src = new Object();
-    	DataChannelDescriptor d = new DataChannelDescriptor();
-    	DomainEvent e = new DomainEvent(src, d);
-    	
-    	assertSame(src, e.getSource());
-    	assertSame(d, e.getDomain());
-    }
+	public void testDomain() throws Exception {
+		DataChannelDescriptor d = new DataChannelDescriptor();
+		DomainDisplayEvent e = new DomainDisplayEvent(new Object(), d);
+		assertSame(d, e.getDomain());
+	}
 
-    @Test
-    public void testConstructor2() throws Exception  {
-    	Object src = new Object();
-    	DataChannelDescriptor d = new DataChannelDescriptor();
-    	DomainEvent e = new DomainEvent(src, d, "oldname");
-    	
-    	assertSame(src, e.getSource());
-    	assertSame(d, e.getDomain());
-    	assertEquals("oldname", e.getOldName());
-    }
-
-    @Test
-    public void testDomain() throws Exception  {
-    	Object src = new Object();
-   	    DataChannelDescriptor d = new DataChannelDescriptor();
-    	DomainEvent e = new DomainEvent(src, null);
-    	
-    	e.setDomain(d);
-    	assertSame(d, e.getDomain());
-    }
 }
 

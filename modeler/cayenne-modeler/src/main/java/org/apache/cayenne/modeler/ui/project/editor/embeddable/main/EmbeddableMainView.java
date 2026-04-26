@@ -25,7 +25,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.event.model.AttributeEvent;
+import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
 import org.apache.cayenne.modeler.event.model.EmbeddableEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
@@ -127,7 +127,7 @@ public class EmbeddableMainView extends JPanel implements EmbeddableDisplayListe
             }
             
             // completely new name, set new name for embeddable
-            EmbeddableEvent e = new EmbeddableEvent(this, embeddable, embeddable
+            EmbeddableEvent e = EmbeddableEvent.ofChange(this, embeddable, embeddable
                     .getClassName());
             String oldName = embeddable.getClassName();
             embeddable.setClassName(newClassName);
@@ -150,7 +150,7 @@ public class EmbeddableMainView extends JPanel implements EmbeddableDisplayListe
                         ObjAttribute atribute = attrIt.next();
                         if (atribute.getType()==null || atribute.getType().equals(oldName)) {
                             atribute.setType(newClassName);
-                            AttributeEvent ev = new AttributeEvent(this, atribute, atribute
+                            ObjAttributeEvent ev = ObjAttributeEvent.ofChange(this, atribute, atribute
                                     .getEntity());
                             mediator.fireObjAttributeEvent(ev);
                         }
@@ -190,7 +190,7 @@ public class EmbeddableMainView extends JPanel implements EmbeddableDisplayListe
         }
 
         ObjectInfo.putToMetaData(mediator.getApplication().getMetaData(), embeddable, ObjectInfo.COMMENT, comment);
-        mediator.fireEmbeddableEvent(new EmbeddableEvent(this, embeddable), mediator.getSelectedDataMap());
+        mediator.fireEmbeddableEvent(EmbeddableEvent.ofChange(this, embeddable), mediator.getSelectedDataMap());
     }
 
     String getComment(Embeddable embeddable) {

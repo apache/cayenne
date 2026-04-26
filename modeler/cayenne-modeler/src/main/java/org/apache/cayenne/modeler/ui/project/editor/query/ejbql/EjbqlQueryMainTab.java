@@ -126,7 +126,7 @@ public class EjbqlQueryMainTab extends JPanel{
         if (map.getQueryDescriptor(newName) == null) {
             // completely new name, set new name for entity
             String oldName = query.getName();
-            QueryEvent e = new QueryEvent(this, query, oldName);
+            QueryEvent e = QueryEvent.ofChange(this, query, oldName);
             query.setName(newName);
             query.setDataMap(map);
             map.removeQueryDescriptor(oldName);
@@ -151,7 +151,7 @@ public class EjbqlQueryMainTab extends JPanel{
             return;
         }
         ObjectInfo.putToMetaData(mediator.getApplication().getMetaData(), query, ObjectInfo.COMMENT, text);
-        mediator.fireQueryEvent(new QueryEvent(this, query));
+        mediator.fireQueryEvent(QueryEvent.ofChange(this, query));
     }
 
     private String getQueryComment(QueryDescriptor queryDescriptor) {

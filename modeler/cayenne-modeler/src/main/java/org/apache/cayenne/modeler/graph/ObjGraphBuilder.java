@@ -25,12 +25,12 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.modeler.event.model.AttributeEvent;
-import org.apache.cayenne.modeler.event.model.EntityEvent;
+import org.apache.cayenne.modeler.event.model.ObjRelationshipEvent;
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
+import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
 import org.apache.cayenne.modeler.event.model.ObjAttributeListener;
 import org.apache.cayenne.modeler.event.model.ObjEntityListener;
 import org.apache.cayenne.modeler.event.model.ObjRelationshipListener;
-import org.apache.cayenne.modeler.event.model.RelationshipEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.jgraph.graph.AttributeMap;
 import org.jgraph.graph.DefaultEdge;
@@ -136,11 +136,11 @@ class ObjGraphBuilder extends BaseGraphBuilder<ObjEntity, ObjAttribute, ObjRelat
         mediator.removeObjRelationshipListener(this);
     }
 
-    public void objEntityAdded(EntityEvent e) {
+    public void objEntityAdded(ObjEntityEvent e) {
         insertEntityCell((ObjEntity) e.getEntity());
     }
 
-    public void objEntityChanged(EntityEvent e) {
+    public void objEntityChanged(ObjEntityEvent e) {
         remapEntity(e);
 
         updateEntityCell((ObjEntity)e.getEntity());
@@ -170,32 +170,32 @@ class ObjGraphBuilder extends BaseGraphBuilder<ObjEntity, ObjAttribute, ObjRelat
         }
     }
 
-    public void objEntityRemoved(EntityEvent e) {
+    public void objEntityRemoved(ObjEntityEvent e) {
         removeEntityCell((ObjEntity)e.getEntity());
     }
 
-    public void objAttributeAdded(AttributeEvent e) {
+    public void objAttributeAdded(ObjAttributeEvent e) {
         updateEntityCell((ObjEntity)e.getEntity());
     }
 
-    public void objAttributeChanged(AttributeEvent e) {
+    public void objAttributeChanged(ObjAttributeEvent e) {
         updateEntityCell((ObjEntity)e.getEntity());
     }
 
-    public void objAttributeRemoved(AttributeEvent e) {
+    public void objAttributeRemoved(ObjAttributeEvent e) {
         updateEntityCell((ObjEntity)e.getEntity());
     }
 
-    public void objRelationshipAdded(RelationshipEvent e) {
+    public void objRelationshipAdded(ObjRelationshipEvent e) {
         // nothing because relationship does not have target yet
     }
 
-    public void objRelationshipChanged(RelationshipEvent e) {
-        remapRelationship(e);
-        updateRelationshipCell((ObjRelationship) e.getRelationship());
+    public void objRelationshipChanged(ObjRelationshipEvent e) {
+        remapRelationship(e.getRelationship(), e, e.getEntity().getName());
+        updateRelationshipCell(e.getRelationship());
     }
 
-    public void objRelationshipRemoved(RelationshipEvent e) {
+    public void objRelationshipRemoved(ObjRelationshipEvent e) {
         removeRelationshipCell((ObjRelationship)e.getRelationship());
     }
 

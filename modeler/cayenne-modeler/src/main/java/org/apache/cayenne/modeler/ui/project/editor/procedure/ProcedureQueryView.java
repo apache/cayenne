@@ -125,7 +125,7 @@ public class ProcedureQueryView extends JPanel {
                 QueryDescriptor query = mediator.getSelectedQuery();
                 if (query != null) {
                     query.setRoot(queryRoot.getModel().getSelectedItem());
-                    mediator.fireQueryEvent(new QueryEvent(this, query));
+                    mediator.fireQueryEvent(QueryEvent.ofChange(this, query));
                 }
             }
         });
@@ -198,7 +198,7 @@ public class ProcedureQueryView extends JPanel {
         if (map.getQueryDescriptor(newName) == null) {
             // completely new name, set new name for entity
             String oldName = query.getName();
-            QueryEvent e = new QueryEvent(this, query, oldName, map);
+            QueryEvent e = QueryEvent.ofChange(this, query, oldName, map);
             query.setName(newName);
             query.setDataMap(map);
             map.removeQueryDescriptor(oldName);
@@ -235,7 +235,7 @@ public class ProcedureQueryView extends JPanel {
         QueryDescriptor query = mediator.getSelectedQuery();
         if (query != null && QueryDescriptor.PROCEDURE_QUERY.equals(query.getType())) {
             ((ProcedureQueryDescriptor) query).setResultEntityName(entity != null ? entity.getName() : null);
-            mediator.fireQueryEvent(new QueryEvent(this, query));
+            mediator.fireQueryEvent(QueryEvent.ofChange(this, query));
         }
     }
 
@@ -245,7 +245,7 @@ public class ProcedureQueryView extends JPanel {
             return;
         }
         ObjectInfo.putToMetaData(mediator.getApplication().getMetaData(), query, ObjectInfo.COMMENT, text);
-        mediator.fireQueryEvent(new QueryEvent(this, query));
+        mediator.fireQueryEvent(QueryEvent.ofChange(this, query));
     }
 
     private String getQueryComment(QueryDescriptor queryDescriptor) {

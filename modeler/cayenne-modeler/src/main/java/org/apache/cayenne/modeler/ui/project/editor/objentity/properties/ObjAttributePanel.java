@@ -23,8 +23,8 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.event.model.AttributeEvent;
-import org.apache.cayenne.modeler.event.model.EntityEvent;
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
+import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
 import org.apache.cayenne.modeler.event.model.ObjAttributeListener;
 import org.apache.cayenne.modeler.event.model.ObjEntityListener;
 import org.apache.cayenne.modeler.Application;
@@ -194,7 +194,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
         parentPanel.rebindEditButton(attrs.length > 0, "Edit Attribute", this::edit);
     }
 
-    public void objAttributeChanged(AttributeEvent e) {
+    public void objAttributeChanged(ObjAttributeEvent e) {
         ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
 
         model.fireTableDataChanged();
@@ -213,7 +213,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
         }
     }
 
-    public void objAttributeAdded(AttributeEvent e) {
+    public void objAttributeAdded(ObjAttributeEvent e) {
         ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
 
         model.addRow((ObjAttribute) e.getAttribute());
@@ -230,7 +230,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
         table.select(ind);
     }
 
-    public void objAttributeRemoved(AttributeEvent e) {
+    public void objAttributeRemoved(ObjAttributeEvent e) {
         ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
         int ind = -1;
         List<ObjAttribute> list = model.getObjectList();
@@ -248,8 +248,8 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
         }
     }
 
-    public void removeDuplicateAttribute(AttributeEvent e) {
-        Collection<ObjEntity> objEntities = ProjectUtil.getCollectionOfChildren((ObjEntity) e.getEntity());
+    public void removeDuplicateAttribute(ObjAttributeEvent e) {
+        Collection<ObjEntity> objEntities = ProjectUtil.getCollectionOfChildren(e.getEntity());
 
 
         for (ObjEntity objEntity : objEntities) {
@@ -329,7 +329,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
     /**
      * Refreshes attributes view for the updated entity
      */
-    public void objEntityChanged(EntityEvent e) {
+    public void objEntityChanged(ObjEntityEvent e) {
         if (e.getSource() == this) {
             return;
         }
@@ -346,7 +346,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
         }
     }
 
-    public void objEntityAdded(EntityEvent e) {
+    public void objEntityAdded(ObjEntityEvent e) {
         if (e.getSource() == this) {
             return;
         }
@@ -354,7 +354,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
         this.rebuildTable((ObjEntity) e.getEntity());
     }
 
-    public void objEntityRemoved(EntityEvent e) {
+    public void objEntityRemoved(ObjEntityEvent e) {
     }
 
     // custom renderer used for inherited attributes highlighting

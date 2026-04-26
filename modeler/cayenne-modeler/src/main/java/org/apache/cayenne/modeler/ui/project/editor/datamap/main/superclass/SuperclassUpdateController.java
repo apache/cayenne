@@ -19,9 +19,10 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.main.superclass;
 
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
+import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.event.model.EntityEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.defaults.DefaultsPreferencesController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.defaults.DefaultsPreferencesView;
@@ -75,7 +76,7 @@ public class SuperclassUpdateController extends DefaultsPreferencesController {
 
                             // any way to batch events, a big change will flood the app with
                             // entity events..?
-                            parent.fireDbEntityEvent(new EntityEvent(this, entity));
+                            parent.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
                         }
                     }
                 });

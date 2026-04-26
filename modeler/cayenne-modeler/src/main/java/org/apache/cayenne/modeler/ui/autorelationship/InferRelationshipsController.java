@@ -24,8 +24,8 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.modeler.event.model.MapEvent;
-import org.apache.cayenne.modeler.event.model.RelationshipEvent;
+import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.mvc.ChildController;
@@ -351,8 +351,8 @@ public class InferRelationshipsController extends ChildController<RootController
             DbRelationship rel = new DbRelationship(uniqueRelName(temp.getSource(), temp
                     .getName()));
 
-            RelationshipEvent e = new RelationshipEvent(application.getFrameController().getView(), rel, temp
-                    .getSource(), MapEvent.ADD);
+            DbRelationshipEvent e = DbRelationshipEvent.ofAdd(application.getFrameController().getView(), rel, temp
+                    .getSource());
             mediator.fireDbRelationshipEvent(e);
 
             rel.setSourceEntity(temp.getSource());

@@ -26,12 +26,12 @@ import org.apache.cayenne.dbsync.model.DetectedDbEntity;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.modeler.event.model.AttributeEvent;
+import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
+import org.apache.cayenne.modeler.event.model.DbEntityEvent;
+import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
 import org.apache.cayenne.modeler.event.model.DbAttributeListener;
 import org.apache.cayenne.modeler.event.model.DbEntityListener;
 import org.apache.cayenne.modeler.event.model.DbRelationshipListener;
-import org.apache.cayenne.modeler.event.model.EntityEvent;
-import org.apache.cayenne.modeler.event.model.RelationshipEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.jgraph.graph.DefaultEdge;
 import org.jgraph.graph.DefaultGraphCell;
@@ -88,7 +88,7 @@ class DbGraphBuilder extends BaseGraphBuilder<DbEntity, DbAttribute, DbRelations
         mediator.removeDbRelationshipListener(this);
     }
 
-    public void dbEntityAdded(EntityEvent e) {
+    public void dbEntityAdded(DbEntityEvent e) {
         // skip new entities from DbLoader
         if(e.getEntity() instanceof DetectedDbEntity) {
             return;
@@ -96,39 +96,39 @@ class DbGraphBuilder extends BaseGraphBuilder<DbEntity, DbAttribute, DbRelations
         insertEntityCell((DbEntity) e.getEntity());
     }
 
-    public void dbEntityChanged(EntityEvent e) {
+    public void dbEntityChanged(DbEntityEvent e) {
         remapEntity(e);
 
         updateEntityCell((DbEntity)e.getEntity());
     }
 
-    public void dbEntityRemoved(EntityEvent e) {
+    public void dbEntityRemoved(DbEntityEvent e) {
         removeEntityCell((DbEntity) e.getEntity());
     }
 
-    public void dbAttributeAdded(AttributeEvent e) {
+    public void dbAttributeAdded(DbAttributeEvent e) {
         updateEntityCell((DbEntity)e.getEntity());
     }
 
-    public void dbAttributeChanged(AttributeEvent e) {
+    public void dbAttributeChanged(DbAttributeEvent e) {
         updateEntityCell((DbEntity)e.getEntity());
     }
 
-    public void dbAttributeRemoved(AttributeEvent e) {
+    public void dbAttributeRemoved(DbAttributeEvent e) {
         updateEntityCell((DbEntity)e.getEntity());
     }
 
-    public void dbRelationshipAdded(RelationshipEvent e) {
+    public void dbRelationshipAdded(DbRelationshipEvent e) {
         // nothing because relationship does not have target yet
     }
 
-    public void dbRelationshipChanged(RelationshipEvent e) {
+    public void dbRelationshipChanged(DbRelationshipEvent e) {
         updateRelationshipCell((DbRelationship) e.getRelationship());
     }
 
-    public void dbRelationshipRemoved(RelationshipEvent e) {
-        remapRelationship(e);
-        removeRelationshipCell((DbRelationship) e.getRelationship());
+    public void dbRelationshipRemoved(DbRelationshipEvent e) {
+        remapRelationship(e.getRelationship(), e, e.getEntity().getName());
+        removeRelationshipCell(e.getRelationship());
     }
 
     public GraphType getType() {

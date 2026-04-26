@@ -57,13 +57,13 @@ public class LinkDataMapUndoableEdit extends CayenneUndoableEdit {
     public void undo() throws CannotUndoException {
         if (node != null) {
             node.getDataMapNames().remove(map.getName());
-            mediator.fireDataNodeEvent(new DataNodeEvent(this, node));
+            mediator.fireDataNodeEvent(DataNodeEvent.ofChange(this, node));
         }
 
         if (!unlinkedNodes.isEmpty()) {
             for (DataNodeDescriptor unlinkedNode : unlinkedNodes) {
                 unlinkedNode.getDataMapNames().add(map.getName());
-                mediator.fireDataNodeEvent(new DataNodeEvent(this, unlinkedNode));
+                mediator.fireDataNodeEvent(DataNodeEvent.ofChange(this, unlinkedNode));
             }
         }
     }

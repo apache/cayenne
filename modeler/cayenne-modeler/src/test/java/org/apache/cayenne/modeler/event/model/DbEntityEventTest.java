@@ -17,37 +17,53 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.event;
+package org.apache.cayenne.modeler.event.model;
 
-import org.apache.cayenne.modeler.event.model.DataMapEvent;
-import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 
-public class DataMapEventTest {
+public class DbEntityEventTest {
 
     @Test
-    public void testConstructor1() throws Exception {
+    public void testConstructor1() {
         Object src = new Object();
-        DataMap d = new DataMap("abc");
-        DataMapEvent e = new DataMapEvent(src, d);
+        DbEntity d = new DbEntity("abc");
+        DbEntityEvent e = DbEntityEvent.ofChange(src, d);
 
         assertSame(src, e.getSource());
-        assertSame(d, e.getDataMap());
+        assertSame(d, e.getEntity());
     }
 
     @Test
-    public void testConstructor2() throws Exception {
+    public void testConstructor2() {
         Object src = new Object();
-        DataMap d = new DataMap("abc");
-        DataMapEvent e = new DataMapEvent(src, d, "oldname");
+        DbEntity d = new DbEntity("abc");
+        DbEntityEvent e = DbEntityEvent.ofChange(src, d, "oldname");
 
         assertSame(src, e.getSource());
-        assertSame(d, e.getDataMap());
+        assertSame(d, e.getEntity());
         assertEquals("oldname", e.getOldName());
     }
-}
 
+    @Test
+    public void testNameChange1() {
+        DbEntity d = new DbEntity("abc");
+        DbEntityEvent e = DbEntityEvent.ofChange(new Object(), d, "xyz");
+        assertEquals(d.getName(), e.getNewName());
+        assertTrue(e.isNameChange());
+    }
+
+    @Test
+	public void testNameChange2() {
+        DbEntity d = new DbEntity("abc");
+		DbEntityEvent e = DbEntityEvent.ofChange(new Object(), d, "abc");
+		assertEquals(d.getName(), e.getNewName());
+		assertFalse(e.isNameChange());
+	}
+}

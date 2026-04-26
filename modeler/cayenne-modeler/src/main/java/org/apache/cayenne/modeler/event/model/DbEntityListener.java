@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.event.model;
 
+import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import java.util.EventListener;
 
 /**
@@ -31,16 +32,16 @@ public interface DbEntityListener extends EventListener {
      * etc. Attribute and relationship property changes are handled in respective
      * listeners.
      */
-    void dbEntityChanged(EntityEvent e);
+    void dbEntityChanged(DbEntityEvent e);
 
     /**
      * New entity has been created/added.
      */
-    void dbEntityAdded(EntityEvent e);
+    void dbEntityAdded(DbEntityEvent e);
 
     /**
      * Entity has been removed.
      */
-    void dbEntityRemoved(EntityEvent e);
+    void dbEntityRemoved(DbEntityEvent e);
 }
 

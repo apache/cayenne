@@ -19,42 +19,43 @@
 
 package org.apache.cayenne.modeler.event.model;
 
-import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
+import org.apache.cayenne.map.ObjEntity;
 
 /**
- * An event describing a DataMap change.
+ * Represents events resulted from ObjEntity changes in CayenneModeler.
  */
-public class DataMapEvent extends ModelEvent {
+public class ObjEntityEvent extends ModelEvent {
 
-    private final DataMap dataMap;
+    private final ObjEntity entity;
 
-    public static DataMapEvent ofAdd(Object src, DataMap dataMap) {
-        return new DataMapEvent(src, dataMap, Type.ADD, null);
+    public static ObjEntityEvent ofAdd(Object src, ObjEntity entity) {
+        return new ObjEntityEvent(src, entity, Type.ADD, null);
     }
 
-    public static DataMapEvent ofChange(Object src, DataMap dataMap) {
-        return new DataMapEvent(src, dataMap, Type.CHANGE, null);
+    public static ObjEntityEvent ofChange(Object src, ObjEntity entity) {
+        return new ObjEntityEvent(src, entity, Type.CHANGE, null);
     }
 
-    public static DataMapEvent ofChange(Object src, DataMap dataMap, String oldName) {
-        return new DataMapEvent(src, dataMap, Type.CHANGE, oldName);
+    public static ObjEntityEvent ofChange(Object src, ObjEntity entity, String oldName) {
+        return new ObjEntityEvent(src, entity, Type.CHANGE, oldName);
     }
 
-    public static DataMapEvent ofRemove(Object src, DataMap dataMap) {
-        return new DataMapEvent(src, dataMap, Type.REMOVE, null);
+    public static ObjEntityEvent ofRemove(Object src, ObjEntity entity) {
+        return new ObjEntityEvent(src, entity, Type.REMOVE, null);
     }
 
-    private DataMapEvent(Object src, DataMap dataMap, Type type, String oldName) {
+    private ObjEntityEvent(Object src, ObjEntity entity, Type type, String oldName) {
         super(src, type, oldName);
-        this.dataMap = dataMap;
+        this.entity = entity;
     }
 
-    public DataMap getDataMap() {
-        return dataMap;
+    public ObjEntity getEntity() {
+        return entity;
     }
 
     @Override
     public String getNewName() {
-        return (dataMap != null) ? dataMap.getName() : null;
+        return (entity != null) ? entity.getName() : null;
     }
 }

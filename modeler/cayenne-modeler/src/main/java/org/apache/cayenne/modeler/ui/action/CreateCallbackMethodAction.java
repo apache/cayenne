@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.action;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.LifecycleEvent;
-import org.apache.cayenne.modeler.event.model.MapEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.CallbackType;
 import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
@@ -72,11 +72,7 @@ public class CreateCallbackMethodAction extends ModelerAbstractAction {
             String methodName) {
         getCallbackMap().getCallbackDescriptor(callbackType.getType()).addCallbackMethod(methodName);
 
-        CallbackMethodEvent ce = new CallbackMethodEvent(
-                this,
-                null,
-                methodName,
-                MapEvent.ADD);
+        CallbackMethodEvent ce = CallbackMethodEvent.ofAdd(this, methodName);
 
         getProjectController().fireCallbackMethodEvent(ce);
     }

@@ -42,7 +42,7 @@ import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.event.model.MapEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
@@ -334,10 +334,10 @@ public class MergerOptionsController extends ChildController<ProjectController> 
         ProjectController projectController = getProjectController();
         projectController.setDirty(true);
 
-        projectController.fireDataMapEvent(new DataMapEvent(application.getFrameController().getView(),
-                dataMap, MapEvent.REMOVE));
-        projectController.fireDataMapEvent(new DataMapEvent(application.getFrameController().getView(),
-                dataMap, MapEvent.ADD));
+        projectController.fireDataMapEvent(DataMapEvent.ofRemove(application.getFrameController().getView(),
+                dataMap));
+        projectController.fireDataMapEvent(DataMapEvent.ofAdd(application.getFrameController().getView(),
+                dataMap));
     }
 
     /**

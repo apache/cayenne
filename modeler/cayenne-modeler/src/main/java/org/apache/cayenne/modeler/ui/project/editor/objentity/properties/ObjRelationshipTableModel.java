@@ -19,12 +19,12 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.objentity.properties;
 
+import org.apache.cayenne.modeler.event.model.ObjRelationshipEvent;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.modeler.event.model.RelationshipEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.swing.table.CayenneTableModel;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
@@ -161,7 +161,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel<ObjRelationship
     @Override
     public void setUpdatedValueAt(Object value, int row, int column) {
         ObjRelationship relationship = getRelationship(row);
-        RelationshipEvent event = new RelationshipEvent(eventSource, relationship, entity);
+        String renamedFrom = null;
 
         switch (column) {
             case REL_NAME:
@@ -171,7 +171,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel<ObjRelationship
                 if (clash != null && clash != relationship) {
                     throw new IllegalArgumentException("An attempt to override relationship '" + oldName + "'");
                 }
-                event.setOldName(oldName);
+                renamedFrom = oldName;
                 entity.removeRelationship(oldName);
                 relationship.setName(text);
                 entity.addRelationship(relationship);
@@ -216,7 +216,8 @@ public class ObjRelationshipTableModel extends CayenneTableModel<ObjRelationship
                 break;
         }
 
-        controller.fireObjRelationshipEvent(event);
+        controller.fireObjRelationshipEvent(
+                ObjRelationshipEvent.ofChange(eventSource, relationship, entity, renamedFrom));
     }
 
     public void removeRow(int row) {
@@ -224,9 +225,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel<ObjRelationship
             return;
         }
         ObjRelationship rel = getRelationship(row);
-        RelationshipEvent e;
-        e = new RelationshipEvent(eventSource, rel, entity, RelationshipEvent.REMOVE);
-        controller.fireObjRelationshipEvent(e);
+        controller.fireObjRelationshipEvent(ObjRelationshipEvent.ofRemove(eventSource, rel, entity));
         objectList.remove(row);
         entity.removeRelationship(rel.getName());
         fireTableRowsDeleted(row, row);

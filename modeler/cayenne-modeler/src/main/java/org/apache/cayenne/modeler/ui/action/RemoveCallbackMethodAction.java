@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.modeler.event.model.MapEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.confirmremove.ConfirmRemoveDialog;
@@ -80,11 +80,7 @@ public class RemoveCallbackMethodAction extends RemoveAction implements Multiple
                 .getCallbackDescriptor(callbackType.getType())
                 .removeCallbackMethod(method);
 
-        CallbackMethodEvent e = new CallbackMethodEvent(
-                this,
-                null,
-                method,
-                MapEvent.REMOVE);
+        CallbackMethodEvent e = CallbackMethodEvent.ofRemove(this, method);
 
         controller.fireCallbackMethodEvent(e);
     }

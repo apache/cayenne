@@ -27,7 +27,7 @@ import org.apache.cayenne.modeler.event.model.ProcedureParameterListener;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.modeler.event.model.MapEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
@@ -352,7 +352,7 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
             // note that 'setCallParameters' is donw by copy internally
             parameter.getProcedure().setCallParameters(model.getObjectList());
             eventController.fireProcedureEvent(
-                    new ProcedureEvent(this, parameter.getProcedure(), MapEvent.CHANGE)
+                    ProcedureEvent.ofChange(this, parameter.getProcedure())
             );
         }
     }

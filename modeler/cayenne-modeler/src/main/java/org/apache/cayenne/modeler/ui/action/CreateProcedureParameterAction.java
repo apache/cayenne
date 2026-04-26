@@ -25,7 +25,7 @@ import org.apache.cayenne.modeler.event.model.ProcedureParameterEvent;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.modeler.event.model.MapEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.ProcedureParameterDisplayEvent;
@@ -47,7 +47,7 @@ public class CreateProcedureParameterAction extends ModelerAbstractAction {
             ProjectController controller,
             Procedure procedure,
             ProcedureParameter parameter) {
-        controller.fireProcedureParameterEvent(new ProcedureParameterEvent(src, parameter, MapEvent.ADD));
+        controller.fireProcedureParameterEvent(ProcedureParameterEvent.ofAdd(src, parameter));
 
         controller.displayProcedureParameter(new ProcedureParameterDisplayEvent(src, parameter, procedure,
                 controller.getSelectedDataMap(), (DataChannelDescriptor) controller.getProject().getRootNode()));

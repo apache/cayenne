@@ -28,8 +28,8 @@ import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.event.model.EntityEvent;
-import org.apache.cayenne.modeler.event.model.MapEvent;
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
@@ -45,7 +45,7 @@ public class CreateObjEntityAction extends ModelerAbstractAction {
             ProjectController controller,
             DataMap dataMap,
             ObjEntity entity) {
-        controller.fireObjEntityEvent(new EntityEvent(src, entity, MapEvent.ADD));
+        controller.fireObjEntityEvent(ObjEntityEvent.ofAdd(src, entity));
         EntityDisplayEvent displayEvent = new EntityDisplayEvent(
                 src,
                 entity,

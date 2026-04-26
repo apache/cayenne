@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.objentity.main;
 
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -27,7 +28,6 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.event.model.EntityEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
@@ -166,7 +166,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
 
             if (dbEntity != entity.getDbEntity()) {
                 entity.setDbEntity(dbEntity);
-                controller.fireObjEntityEvent(new EntityEvent(ObjEntityMainView.this, entity));
+                controller.fireObjEntityEvent(ObjEntityEvent.ofChange(ObjEntityMainView.this, entity));
             }
         });
 
@@ -224,7 +224,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
                 DataChannelDescriptor domain = (DataChannelDescriptor) controller.getProject().getRootNode();
                 DataMap map = controller.getSelectedDataMap();
 
-                controller.fireObjEntityEvent(new EntityEvent(this, entity));
+                controller.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
                 controller.displayObjEntity(new EntityDisplayEvent(this, entity, map, domain));
             }
         });
@@ -242,7 +242,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
             ObjEntity entity = controller.getSelectedObjEntity();
             if (entity != null) {
                 entity.setReadOnly(readOnly.isSelected());
-                controller.fireObjEntityEvent(new EntityEvent(this, entity));
+                controller.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
             }
         });
 
@@ -252,7 +252,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
                 entity.setDeclaredLockType(optimisticLocking.isSelected()
                         ? ObjEntity.LOCK_TYPE_OPTIMISTIC
                         : ObjEntity.LOCK_TYPE_NONE);
-                controller.fireObjEntityEvent(new EntityEvent(this, entity));
+                controller.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
             }
         });
 
@@ -260,7 +260,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
             ObjEntity entity = controller.getSelectedObjEntity();
             if (entity != null) {
                 entity.setAbstract(isAbstract.isSelected());
-                controller.fireObjEntityEvent(new EntityEvent(this, entity));
+                controller.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
             }
         });
     }
@@ -327,7 +327,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
         // "ent" may be null if we quit editing by changing tree selection
         if (entity != null && !Util.nullSafeEquals(entity.getClassName(), className)) {
             entity.setClassName(className);
-            controller.fireObjEntityEvent(new EntityEvent(this, entity));
+            controller.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
         }
     }
 
@@ -341,7 +341,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
 
         if (ent != null && !Util.nullSafeEquals(ent.getSuperClassName(), text)) {
             ent.setSuperClassName(text);
-            controller.fireObjEntityEvent(new EntityEvent(this, ent));
+            controller.fireObjEntityEvent(ObjEntityEvent.ofChange(this, ent));
         }
     }
 
@@ -356,7 +356,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
                 String oldQualifier = ExpressionConvertor.asString(entity.getDeclaredQualifier());
                 if (!Util.nullSafeEquals(oldQualifier, text)) {
                     entity.setDeclaredQualifier(ExpressionConvertor.fromString(text));
-                    controller.fireObjEntityEvent(new EntityEvent(this, entity));
+                    controller.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
                 }
             } catch (IllegalArgumentException ex) {
                 // unparsable qualifier
@@ -383,7 +383,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
             throw new ValidationException("Entity name is required.");
         } else if (entity.getDataMap().getObjEntity(newName) == null) {
             // completely new name, set new name for entity
-            EntityEvent e = new EntityEvent(this, entity, entity.getName());
+            ObjEntityEvent e = ObjEntityEvent.ofChange(this, entity, entity.getName());
             entity.getDataMap().renameObjEntity(entity, newName);
 
             controller.fireObjEntityEvent(e);
@@ -445,7 +445,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
         }
 
         ObjectInfo.putToMetaData(controller.getApplication().getMetaData(), entity, ObjectInfo.COMMENT, value);
-        controller.fireObjEntityEvent(new EntityEvent(this, entity));
+        controller.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
     }
 
     private String getComment(ObjEntity entity) {

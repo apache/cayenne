@@ -75,7 +75,7 @@ public class DataNodeController extends ChildController<ProjectController> {
 
         this.view = new DataNodeView();
         this.datasourceEditors = new HashMap<>();
-        this.nodeChangeProcessor = () -> parent.fireDataNodeEvent(new DataNodeEvent(DataNodeController.this, node));
+        this.nodeChangeProcessor = () -> parent.fireDataNodeEvent(DataNodeEvent.ofChange(DataNodeController.this, node));
         this.defaultSubeditor = new CustomDataSourceEditorController(parent, nodeChangeProcessor);
 
         initController();
@@ -180,27 +180,25 @@ public class DataNodeController extends ChildController<ProjectController> {
             } catch (ValidationException ignored) {
                 return;
             }
-            DataNodeEvent e = new DataNodeEvent(DataNodeController.this, node);
-            e.setOldName(oldName);
-            parent.fireDataNodeEvent(e);
+            parent.fireDataNodeEvent(DataNodeEvent.ofChange(DataNodeController.this, node, oldName));
         });
 
         view.getCustomAdapter().addCommitListener(v -> {
             if (node == null) return;
             setAdapterName(v);
-            parent.fireDataNodeEvent(new DataNodeEvent(DataNodeController.this, node));
+            parent.fireDataNodeEvent(DataNodeEvent.ofChange(DataNodeController.this, node));
         });
 
         view.getFactories().addActionListener(e -> {
             if (refreshing) return;
             setFactoryName((String) view.getFactories().getSelectedItem());
-            parent.fireDataNodeEvent(new DataNodeEvent(DataNodeController.this, node));
+            parent.fireDataNodeEvent(DataNodeEvent.ofChange(DataNodeController.this, node));
         });
 
         view.getSchemaUpdateStrategy().addActionListener(e -> {
             if (refreshing) return;
             setSchemaUpdateStrategy((String) view.getSchemaUpdateStrategy().getSelectedItem());
-            parent.fireDataNodeEvent(new DataNodeEvent(DataNodeController.this, node));
+            parent.fireDataNodeEvent(DataNodeEvent.ofChange(DataNodeController.this, node));
         });
 
         // one way bindings

@@ -17,26 +17,37 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.event;
+package org.apache.cayenne.modeler.event.model;
 
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.modeler.event.model.RelationshipEvent;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
 
-public class RelationshipEventTest {
+public class DomainEventTest {
 
     @Test
-	public void testRelationship() {
-		Object src = new Object();
-		DbRelationship r = new DbRelationship();
-		r.setName("xyz");
-		RelationshipEvent e = new RelationshipEvent(src, null, null);
+    public void testConstructor1() throws Exception {
+    	Object src = new Object();
+    	DataChannelDescriptor d = new DataChannelDescriptor();
+    	DomainEvent e = DomainEvent.ofChange(src, d);
+    	
+    	assertSame(src, e.getSource());
+    	assertSame(d, e.getDomain());
+    }
 
-		e.setRelationship(r);
-		assertSame(r, e.getRelationship());
-	}
+    @Test
+    public void testConstructor2() throws Exception  {
+    	Object src = new Object();
+    	DataChannelDescriptor d = new DataChannelDescriptor();
+    	DomainEvent e = DomainEvent.ofChange(src, d, "oldname");
+    	
+    	assertSame(src, e.getSource());
+    	assertSame(d, e.getDomain());
+    	assertEquals("oldname", e.getOldName());
+    }
+
 }
 

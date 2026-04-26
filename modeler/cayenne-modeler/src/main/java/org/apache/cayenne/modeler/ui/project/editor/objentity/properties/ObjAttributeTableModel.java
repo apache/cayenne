@@ -29,9 +29,9 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.event.model.AttributeEvent;
-import org.apache.cayenne.modeler.event.model.EntityEvent;
-import org.apache.cayenne.modeler.event.model.MapEvent;
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
+import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
@@ -289,7 +289,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttribute> {
 
         entity.updateAttribute(attributeNew);
 
-        controller.fireObjEntityEvent(new EntityEvent(this, entity, MapEvent.CHANGE));
+        controller.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
 
         controller.displayObjEntity(new EntityDisplayEvent(
                 this,
@@ -297,11 +297,10 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttribute> {
                 controller.getSelectedDataMap(),
                 (DataChannelDescriptor) controller.getProject().getRootNode()));
 
-        controller.fireObjAttributeEvent(new AttributeEvent(
+        controller.fireObjAttributeEvent(ObjAttributeEvent.ofChange(
                 this,
                 attributeNew,
-                entity,
-                MapEvent.CHANGE));
+                entity));
 
         controller.displayObjAttribute(new AttributeDisplayEvent(
                 this,
@@ -339,11 +338,11 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttribute> {
     @Override
     public void setUpdatedValueAt(Object value, int row, int column) {
         ObjAttribute attribute = getAttribute(row);
-        AttributeEvent event = new AttributeEvent(eventSource, attribute, entity);
+        String oldName = null;
 
         switch (column) {
             case OBJ_ATTRIBUTE:
-                event.setOldName(attribute.getName());
+                oldName = attribute.getName();
                 setObjAttribute(attribute, value);
                 fireTableCellUpdated(row, column);
                 break;
@@ -369,7 +368,8 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttribute> {
                 fireTableRowsUpdated(row, row);
                 break;
         }
-        controller.fireObjAttributeEvent(event);
+
+        controller.fireObjAttributeEvent(ObjAttributeEvent.ofChange(eventSource, attribute, entity, oldName));
     }
 
     public boolean isCellEditable(int row, int col) {

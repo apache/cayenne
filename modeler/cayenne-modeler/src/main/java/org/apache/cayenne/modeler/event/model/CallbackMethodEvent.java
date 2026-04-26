@@ -18,24 +18,29 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.event.model;
 
-public class CallbackMethodEvent extends MapEvent {
+public class CallbackMethodEvent extends ModelEvent {
 
     private final String callbackMethod;
 
-    public CallbackMethodEvent(
-                Object source,
-                String prevCallbackMethod,
-                String callbackMethod,
-                int id) {
-        super(source, prevCallbackMethod);
-        this.callbackMethod = callbackMethod;
-        setId(id);
+    public static CallbackMethodEvent ofAdd(Object source, String callbackMethod) {
+        return new CallbackMethodEvent(source, callbackMethod, Type.ADD, null);
     }
 
+    public static CallbackMethodEvent ofChange(Object source, String callbackMethod, String oldCallbackMethod) {
+        return new CallbackMethodEvent(source, callbackMethod, Type.CHANGE, oldCallbackMethod);
+    }
+
+    public static CallbackMethodEvent ofRemove(Object source, String callbackMethod) {
+        return new CallbackMethodEvent(source, callbackMethod, Type.REMOVE, null);
+    }
+
+    private CallbackMethodEvent(Object source, String callbackMethod, Type type, String oldName) {
+        super(source, type, oldName);
+        this.callbackMethod = callbackMethod;
+    }
 
     @Override
     public String getNewName() {
         return callbackMethod;
     }
 }
-

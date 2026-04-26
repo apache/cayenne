@@ -21,8 +21,6 @@ package org.apache.cayenne.modeler.ui.project;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.event.model.EmbeddableEvent;
-import org.apache.cayenne.modeler.event.model.EntityEvent;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DisplayEvent;
@@ -31,9 +29,12 @@ import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
+import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.modeler.event.model.DomainEvent;
+import org.apache.cayenne.modeler.event.model.EmbeddableEvent;
 import org.apache.cayenne.modeler.event.model.ProcedureEvent;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 
@@ -53,10 +54,6 @@ public class ProjectNavigationHistory {
     public ProjectNavigationHistory() {
         this.history = new ArrayList<>(MAX_HISTORY_SIZE);
         this.replayHistory = new ArrayList<>(MAX_HISTORY_SIZE);
-    }
-
-    public DisplayEvent getLastEvent() {
-        return currentEvent;
     }
 
     public void recordEvent(DisplayEvent e) {
@@ -128,8 +125,12 @@ public class ProjectNavigationHistory {
             Iterator<DisplayEvent> it = list.iterator();
             while (it.hasNext()) {
                 DisplayEvent de = it.next();
-                if (e instanceof EntityEvent && de instanceof EntityDisplayEvent) {
-                    if (((EntityEvent) e).getEntity() == ((EntityDisplayEvent) de).getEntity()) {
+                if (e instanceof DbEntityEvent && de instanceof EntityDisplayEvent) {
+                    if (((DbEntityEvent) e).getEntity() == ((EntityDisplayEvent) de).getEntity()) {
+                        it.remove();
+                    }
+                } else if (e instanceof ObjEntityEvent && de instanceof EntityDisplayEvent) {
+                    if (((ObjEntityEvent) e).getEntity() == ((EntityDisplayEvent) de).getEntity()) {
                         it.remove();
                     }
                 } else if (e instanceof EmbeddableEvent && de instanceof EmbeddableDisplayEvent) {

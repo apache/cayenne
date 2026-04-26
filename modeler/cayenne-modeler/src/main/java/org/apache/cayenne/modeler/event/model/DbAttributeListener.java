@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.event.model;
 
+import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
 import java.util.EventListener;
 
 /**
@@ -29,16 +30,16 @@ public interface DbAttributeListener extends EventListener {
     /**
      * Attribute property changed.
      */
-    void dbAttributeChanged(AttributeEvent e);
+    void dbAttributeChanged(DbAttributeEvent e);
 
     /**
      * New attribute has been created/added.
      */
-    void dbAttributeAdded(AttributeEvent e);
+    void dbAttributeAdded(DbAttributeEvent e);
 
     /**
      * Attribute has been removed.
      */
-    void dbAttributeRemoved(AttributeEvent e);
+    void dbAttributeRemoved(DbAttributeEvent e);
 }
 

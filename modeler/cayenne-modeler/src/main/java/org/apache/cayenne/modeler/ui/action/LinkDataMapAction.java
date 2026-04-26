@@ -56,7 +56,7 @@ public class LinkDataMapAction extends ModelerAbstractAction {
         for (DataNodeDescriptor nextNode : dataChannelDescriptor.getNodeDescriptors()) {
             if (nextNode.getDataMapNames().contains(map.getName())) {
                 nextNode.getDataMapNames().remove(map.getName());
-                mediator.fireDataNodeEvent(new DataNodeEvent(this, nextNode));
+                mediator.fireDataNodeEvent(DataNodeEvent.ofChange(this, nextNode));
                 unlinkedNodes.add(nextNode);
             }
         }
@@ -66,7 +66,7 @@ public class LinkDataMapAction extends ModelerAbstractAction {
             node.getDataMapNames().add(map.getName());
 
             // announce DataNode change
-            mediator.fireDataNodeEvent(new DataNodeEvent(this, node));
+            mediator.fireDataNodeEvent(DataNodeEvent.ofChange(this, node));
         }
 
         application.getUndoManager().addEdit(

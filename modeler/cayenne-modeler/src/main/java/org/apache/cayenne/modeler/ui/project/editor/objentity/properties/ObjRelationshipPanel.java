@@ -21,10 +21,10 @@ package org.apache.cayenne.modeler.ui.project.editor.objentity.properties;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.modeler.event.model.EntityEvent;
+import org.apache.cayenne.modeler.event.model.ObjRelationshipEvent;
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityListener;
 import org.apache.cayenne.modeler.event.model.ObjRelationshipListener;
-import org.apache.cayenne.modeler.event.model.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
@@ -186,27 +186,27 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
         parentPanel.getToolBar().getComponentAtIndex(2).setEnabled(objEntity.getSuperEntity() == null);
     }
 
-    public void objEntityChanged(EntityEvent e) {
+    public void objEntityChanged(ObjEntityEvent e) {
     }
 
-    public void objEntityAdded(EntityEvent e) {
+    public void objEntityAdded(ObjEntityEvent e) {
         reloadEntityList(e);
     }
 
-    public void objEntityRemoved(EntityEvent e) {
+    public void objEntityRemoved(ObjEntityEvent e) {
         reloadEntityList(e);
     }
 
-    public void objRelationshipChanged(RelationshipEvent e) {
+    public void objRelationshipChanged(ObjRelationshipEvent e) {
         table.select(e.getRelationship());
     }
 
-    public void objRelationshipAdded(RelationshipEvent e) {
+    public void objRelationshipAdded(ObjRelationshipEvent e) {
         rebuildTable((ObjEntity) e.getEntity());
         table.select(e.getRelationship());
     }
 
-    public void objRelationshipRemoved(RelationshipEvent e) {
+    public void objRelationshipRemoved(ObjRelationshipEvent e) {
         ObjRelationshipTableModel model = (ObjRelationshipTableModel) table.getModel();
         int ind = model.getObjectList().indexOf(e.getRelationship());
         model.removeRow((ObjRelationship) e.getRelationship());
@@ -217,7 +217,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
      * Refresh the list of ObjEntity targets. Also refresh the table in case some
      * ObjRelationships were deleted.
      */
-    private void reloadEntityList(EntityEvent e) {
+    private void reloadEntityList(ObjEntityEvent e) {
         if (e.getSource() != this) {
             return;
         }

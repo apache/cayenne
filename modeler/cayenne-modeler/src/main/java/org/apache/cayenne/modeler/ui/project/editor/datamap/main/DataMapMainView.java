@@ -218,7 +218,7 @@ public class DataMapMainView extends JPanel {
         }
 
         dataMap.setDefaultLockType(lockType);
-        controller.fireDataMapEvent(new DataMapEvent(this, dataMap));
+        controller.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
     }
 
     void setQuoteSQLIdentifiers(boolean flag) {
@@ -231,7 +231,7 @@ public class DataMapMainView extends JPanel {
         if (dataMap.isQuotingSQLIdentifiers() != flag) {
             dataMap.setQuotingSQLIdentifiers(flag);
 
-            controller.fireDataMapEvent(new DataMapEvent(this, dataMap));
+            controller.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
         }
     }
 
@@ -258,7 +258,7 @@ public class DataMapMainView extends JPanel {
                 newDefaultPackage,
                 DataMapDefaults.DEFAULT_SUPERCLASS_PACKAGE_SUFFIX);
 
-        controller.fireDataMapEvent(new DataMapEvent(this, dataMap));
+        controller.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
     }
 
     void setDefaultCatalog(String newCatalog) {
@@ -278,7 +278,7 @@ public class DataMapMainView extends JPanel {
         }
 
         dataMap.setDefaultCatalog(newCatalog);
-        controller.fireDataMapEvent(new DataMapEvent(this, dataMap));
+        controller.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
     }
 
     void setDefaultSchema(String newSchema) {
@@ -298,7 +298,7 @@ public class DataMapMainView extends JPanel {
         }
 
         dataMap.setDefaultSchema(newSchema);
-        controller.fireDataMapEvent(new DataMapEvent(this, dataMap));
+        controller.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
     }
 
     void setDefaultSuperclass(String newSuperclass) {
@@ -318,7 +318,7 @@ public class DataMapMainView extends JPanel {
         }
 
         dataMap.setDefaultSuperclass(newSuperclass);
-        controller.fireDataMapEvent(new DataMapEvent(this, dataMap));
+        controller.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
     }
 
     void setDataMapName(String newName) {
@@ -350,7 +350,7 @@ public class DataMapMainView extends JPanel {
         }
         // completely new name, set new name for domain
         DataMapDefaults pref = controller.getSelectedDataMapPreferences("");
-        DataMapEvent e = new DataMapEvent(this, map, oldName);
+        DataMapEvent e = DataMapEvent.ofChange(this, map, oldName);
         DataChannelDescriptor domain = (DataChannelDescriptor) controller.getProject().getRootNode();
 
         // must fully relink renamed map across node descriptors
@@ -448,7 +448,7 @@ public class DataMapMainView extends JPanel {
         }
         if (!currentComment.equals(comment)) {
             ObjectInfo.putToMetaData(controller.getApplication().getMetaData(), dataMap, ObjectInfo.COMMENT, comment);
-            controller.fireDataMapEvent(new DataMapEvent(this, dataMap));
+            controller.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
         }
     }
 

@@ -27,8 +27,8 @@ import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.modeler.event.model.MapEvent;
-import org.apache.cayenne.modeler.event.model.RelationshipEvent;
+import org.apache.cayenne.modeler.event.model.ObjRelationshipEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.dbrelationship.DbRelationshipDialogController;
@@ -254,8 +254,8 @@ public class ObjRelationshipInfoController extends ChildController<ProjectContro
             Application.getInstance().getUndoManager().addEdit(
                     new CreateRelationshipUndoableEdit(relationship.getSourceEntity(), new ObjRelationship[]{relationship}));
         } else {
-            parent.fireObjRelationshipEvent(new RelationshipEvent(this, relationship,
-                    relationship.getSourceEntity(), MapEvent.CHANGE));
+            parent.fireObjRelationshipEvent(ObjRelationshipEvent.ofChange(this, relationship,
+                    relationship.getSourceEntity()));
             Application.getInstance().getUndoManager().addEdit(undo);
         }
 
@@ -264,7 +264,7 @@ public class ObjRelationshipInfoController extends ChildController<ProjectContro
     }
 
     private void fireObjRelationshipEvent(Object src) {
-        parent.fireObjRelationshipEvent(new RelationshipEvent(src, relationship, relationship.getSourceEntity(), MapEvent.ADD));
+        parent.fireObjRelationshipEvent(ObjRelationshipEvent.ofAdd(src, relationship, relationship.getSourceEntity()));
 
         RelationshipDisplayEvent rde = new RelationshipDisplayEvent(
                 src,

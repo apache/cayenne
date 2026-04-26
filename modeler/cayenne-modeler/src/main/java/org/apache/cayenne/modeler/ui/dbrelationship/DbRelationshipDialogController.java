@@ -25,8 +25,8 @@ import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.modeler.event.model.MapEvent;
-import org.apache.cayenne.modeler.event.model.RelationshipEvent;
+import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.swing.WidgetFactory;
@@ -153,7 +153,7 @@ public class DbRelationshipDialogController extends ChildController<ProjectContr
                 }
                 relationship.setToDependentPK(false);
                 view.getToDepPk().setSelected(relationship.isValidForDepPk());
-                projectController.fireDbRelationshipEvent(new RelationshipEvent(this, relationship, relationship.getSourceEntity()));
+                projectController.fireDbRelationshipEvent(DbRelationshipEvent.ofChange(this, relationship, relationship.getSourceEntity()));
             }
             enableInfo();
         });
@@ -300,11 +300,10 @@ public class DbRelationshipDialogController extends ChildController<ProjectContr
                 if (relationship.getSourceEntity() == relationship.getTargetEntity()) {
                     projectController
                             .fireDbRelationshipEvent(
-                                    new RelationshipEvent(
+                                    DbRelationshipEvent.ofAdd(
                                             this,
                                             reverseRelationship,
-                                            reverseRelationship.getSourceEntity(),
-                                            MapEvent.ADD));
+                                            reverseRelationship.getSourceEntity()));
                 }
             } else {
                 handleNameUpdate(reverseRelationship, view.getReverseName().getText().trim());
@@ -340,7 +339,7 @@ public class DbRelationshipDialogController extends ChildController<ProjectContr
 
         projectController
                 .fireDbRelationshipEvent(
-                        new RelationshipEvent(this, relationship, relationship.getSourceEntity(), oldName));
+                        DbRelationshipEvent.ofChange(this, relationship, relationship.getSourceEntity(), oldName));
     }
 
     private Collection<DbJoin> getReverseJoins() {
@@ -370,7 +369,7 @@ public class DbRelationshipDialogController extends ChildController<ProjectContr
         if (!isCreate) {
             projectController
                     .fireDbRelationshipEvent(
-                            new RelationshipEvent(this, relationship, relationship.getSourceEntity(), MapEvent.CHANGE));
+                            DbRelationshipEvent.ofChange(this, relationship, relationship.getSourceEntity()));
 
             application.getUndoManager().addEdit(undo);
         } else {
@@ -379,7 +378,7 @@ public class DbRelationshipDialogController extends ChildController<ProjectContr
                 dbEntity.addRelationship(relationship);
             }
 
-            projectController.fireDbRelationshipEvent(new RelationshipEvent(this, relationship, dbEntity, MapEvent.ADD));
+            projectController.fireDbRelationshipEvent(DbRelationshipEvent.ofAdd(this, relationship, dbEntity));
 
             RelationshipDisplayEvent rde = new RelationshipDisplayEvent(this, relationship, dbEntity, projectController.getSelectedDataMap(),
                     (DataChannelDescriptor) projectController.getProject().getRootNode());

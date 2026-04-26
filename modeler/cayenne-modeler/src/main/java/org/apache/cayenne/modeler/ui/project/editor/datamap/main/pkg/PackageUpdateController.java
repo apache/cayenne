@@ -24,9 +24,9 @@ import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.event.model.AttributeEvent;
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
+import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
 import org.apache.cayenne.modeler.event.model.EmbeddableEvent;
-import org.apache.cayenne.modeler.event.model.EntityEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.defaults.DefaultsPreferencesController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.defaults.DefaultsPreferencesView;
@@ -87,7 +87,7 @@ public class PackageUpdateController extends DefaultsPreferencesController {
             String className = tokens[tokens.length-1];
 
             if (doAll || Util.isEmptyString(oldName) || oldName.indexOf('.') < 0) {
-                EmbeddableEvent e = new EmbeddableEvent(this, embeddable, embeddable.getClassName());
+                EmbeddableEvent e = EmbeddableEvent.ofChange(this, embeddable, embeddable.getClassName());
                 String newClassName = getNameWithDefaultPackage(className);
                 oldNameEmbeddableToNewName.put(oldName, newClassName);
                 embeddable.setClassName(newClassName);
@@ -107,7 +107,7 @@ public class PackageUpdateController extends DefaultsPreferencesController {
                 if(attribute instanceof EmbeddedAttribute){
                     if(!oldNameEmbeddableToNewName.isEmpty() && oldNameEmbeddableToNewName.containsKey(attribute.getType())){
                         attribute.setType(oldNameEmbeddableToNewName.get(attribute.getType()));
-                        AttributeEvent ev = new AttributeEvent(this, attribute, entity);
+                        ObjAttributeEvent ev = ObjAttributeEvent.ofChange(this, attribute, entity);
                         parent.fireObjAttributeEvent(ev);
                     }
                 }
@@ -139,7 +139,7 @@ public class PackageUpdateController extends DefaultsPreferencesController {
     protected void setClassName(ObjEntity entity, String newName) {
         if (!Util.nullSafeEquals(newName, getClassName(entity))) {
             entity.setClassName(newName);
-            parent.fireObjEntityEvent(new EntityEvent(this, entity));
+            parent.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
         }
     }
 }

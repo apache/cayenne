@@ -19,14 +19,25 @@
 
 package org.apache.cayenne.modeler.event.model;
 
-public class DataSourceEvent extends MapEvent {
+public class DataSourceEvent extends ModelEvent {
 
     private final String dataSourceName;
 
-    public DataSourceEvent(Object source, String dataSourceName, int id) {
-        super(source);
+    public static DataSourceEvent ofAdd(Object source, String dataSourceName) {
+        return new DataSourceEvent(source, dataSourceName, Type.ADD, null);
+    }
+
+    public static DataSourceEvent ofChange(Object source, String dataSourceName) {
+        return new DataSourceEvent(source, dataSourceName, Type.CHANGE, null);
+    }
+
+    public static DataSourceEvent ofRemove(Object source, String dataSourceName) {
+        return new DataSourceEvent(source, dataSourceName, Type.REMOVE, null);
+    }
+
+    private DataSourceEvent(Object source, String dataSourceName, Type type, String oldName) {
+        super(source, type, oldName);
         this.dataSourceName = dataSourceName;
-        setId(id);
     }
 
     public String getDataSourceName() {

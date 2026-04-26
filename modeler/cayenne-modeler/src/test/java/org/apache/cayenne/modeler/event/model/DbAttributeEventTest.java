@@ -17,47 +17,25 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.event;
+package org.apache.cayenne.modeler.event.model;
 
-import org.apache.cayenne.modeler.event.model.MapEvent;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
 
-public class ModelerEventTest {
+public class DbAttributeEventTest {
 
     @Test
-    public void testConstructor1() throws Exception {
-    	Object src = new Object();
-    	MapEvent e = new TestMapEvent(src);
-    	assertSame(src, e.getSource());
-    }
+    public void testAttribute() {
+        Object src = new Object();
+        DbEntity entity = new DbEntity("e");
+        DbAttribute a = new DbAttribute("xyz");
+        DbAttributeEvent e = DbAttributeEvent.ofChange(src, a, entity);
 
-    @Test
-    public void testId() throws Exception  {
-    	MapEvent e = new TestMapEvent(new Object());
-    	assertEquals(MapEvent.CHANGE, e.getId());
-    	
-    	e.setId(MapEvent.ADD);
-    	assertEquals(MapEvent.ADD, e.getId());
-    }
-    
-    class TestMapEvent extends MapEvent {
-        public TestMapEvent(Object source) {
-            super(source);
-            // TODO Auto-generated constructor stub
-        }
-
-        public TestMapEvent(Object source, String oldName) {
-            super(source, oldName);
-            // TODO Auto-generated constructor stub
-        }
-
-    	public String getNewName() {
-    		return "";
-    	}
+        assertSame(a, e.getAttribute());
+        assertSame(entity, e.getEntity());
     }
 }
-

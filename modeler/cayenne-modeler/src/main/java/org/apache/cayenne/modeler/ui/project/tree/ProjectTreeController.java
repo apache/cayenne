@@ -29,10 +29,11 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
+import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.event.model.DbEntityListener;
 import org.apache.cayenne.modeler.event.model.EmbeddableEvent;
 import org.apache.cayenne.modeler.event.model.EmbeddableListener;
-import org.apache.cayenne.modeler.event.model.EntityEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityListener;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.action.CopyAction;
@@ -354,11 +355,8 @@ public class ProjectTreeController extends ChildController<ProjectController>
 
         DefaultMutableTreeNode node = view.getProjectModel().getNodeForObjectPath(
                 new Object[]{
-                        e.getDomain() != null
-                                ? e.getDomain()
-                                : (DataChannelDescriptor) parent
-                                .getProject()
-                                .getRootNode(), e.getDataMap()
+                        (DataChannelDescriptor) parent.getProject().getRootNode(),
+                        e.getDataMap()
                 });
 
         if (node == null) {
@@ -376,9 +374,7 @@ public class ProjectTreeController extends ChildController<ProjectController>
 
         if (e.isNameChange()) {
             Object[] path = new Object[]{
-                    e.getDomain() != null
-                            ? e.getDomain()
-                            : (DataChannelDescriptor) parent.getProject().getRootNode(),
+                    (DataChannelDescriptor) parent.getProject().getRootNode(),
                     e.getQuery().getDataMap(), e.getQuery()
             };
 
@@ -391,9 +387,8 @@ public class ProjectTreeController extends ChildController<ProjectController>
     @Override
     public void queryRemoved(QueryEvent e) {
         removeNode(new Object[]{
-                e.getDomain() != null ? e.getDomain() : (DataChannelDescriptor) parent
-                        .getProject()
-                        .getRootNode(), e.getDataMap(), e.getQuery()
+                (DataChannelDescriptor) parent.getProject().getRootNode(),
+                e.getDataMap(), e.getQuery()
         });
     }
 
@@ -417,11 +412,8 @@ public class ProjectTreeController extends ChildController<ProjectController>
 
         DefaultMutableTreeNode node = view.getProjectModel().getNodeForObjectPath(
                 new Object[]{
-                        e.getDomain() != null
-                                ? e.getDomain()
-                                : (DataChannelDescriptor) parent
-                                .getProject()
-                                .getRootNode(), e.getDataNode()
+                        (DataChannelDescriptor) parent.getProject().getRootNode(),
+                        e.getDataNode()
                 });
 
         if (node != null) {
@@ -491,9 +483,7 @@ public class ProjectTreeController extends ChildController<ProjectController>
 
         DefaultMutableTreeNode node = view.getProjectModel().getNodeForObjectPath(
                 new Object[]{
-                        e.getDomain() != null
-                                ? e.getDomain()
-                                : (DataChannelDescriptor) parent.getProject().getRootNode()
+                        (DataChannelDescriptor) parent.getProject().getRootNode()
                 });
 
         if (node == null) {
@@ -513,9 +503,8 @@ public class ProjectTreeController extends ChildController<ProjectController>
         }
 
         removeNode(new Object[]{
-                e.getDomain() != null ? e.getDomain() : (DataChannelDescriptor) parent
-                        .getProject()
-                        .getRootNode(), e.getDataNode()
+                (DataChannelDescriptor) parent.getProject().getRootNode(),
+                e.getDataNode()
         });
     }
 
@@ -523,9 +512,8 @@ public class ProjectTreeController extends ChildController<ProjectController>
     public void dataMapChanged(DataMapEvent e) {
 
         Object[] path = new Object[]{
-                e.getDomain() != null ? e.getDomain() : (DataChannelDescriptor) parent
-                        .getProject()
-                        .getRootNode(), e.getDataMap()
+                (DataChannelDescriptor) parent.getProject().getRootNode(),
+                e.getDataMap()
         };
 
         updateNode(path);
@@ -539,7 +527,7 @@ public class ProjectTreeController extends ChildController<ProjectController>
 
     @Override
     public void dataMapAdded(DataMapEvent e) {
-        DataChannelDescriptor dataChannelDescriptor = e.getDomain() != null ? e.getDomain() :
+        DataChannelDescriptor dataChannelDescriptor =
                 (DataChannelDescriptor) parent.getProject().getRootNode();
         DefaultMutableTreeNode domainNode = view.getProjectModel().getNodeForObjectPath(
                 new Object[]{
@@ -561,7 +549,7 @@ public class ProjectTreeController extends ChildController<ProjectController>
         for (DataNodeDescriptor dataNode : new ArrayList<>(dataChannelDescriptor.getNodeDescriptors())) {
             for (String dataMapName : dataNode.getDataMapNames()) {
                 if (e.getDataMap().getName().equals(dataMapName)) {
-                    parent.fireDataNodeEvent(new DataNodeEvent(this, dataNode));
+                    parent.fireDataNodeEvent(DataNodeEvent.ofChange(this, dataNode));
                 }
             }
         }
@@ -589,33 +577,33 @@ public class ProjectTreeController extends ChildController<ProjectController>
     }
 
     @Override
-    public void objEntityChanged(EntityEvent e) {
-        entityChanged(e);
+    public void objEntityChanged(ObjEntityEvent e) {
+        entityChanged(e.getEntity(), e.isNameChange());
     }
 
     @Override
-    public void objEntityAdded(EntityEvent e) {
-        entityAdded(e);
+    public void objEntityAdded(ObjEntityEvent e) {
+        entityAdded(e.getEntity());
     }
 
     @Override
-    public void objEntityRemoved(EntityEvent e) {
-        entityRemoved(e);
+    public void objEntityRemoved(ObjEntityEvent e) {
+        entityRemoved(e.getEntity(), e.getSource());
     }
 
     @Override
-    public void dbEntityChanged(EntityEvent e) {
-        entityChanged(e);
+    public void dbEntityChanged(DbEntityEvent e) {
+        entityChanged(e.getEntity(), e.isNameChange());
     }
 
     @Override
-    public void dbEntityAdded(EntityEvent e) {
-        entityAdded(e);
+    public void dbEntityAdded(DbEntityEvent e) {
+        entityAdded(e.getEntity());
     }
 
     @Override
-    public void dbEntityRemoved(EntityEvent e) {
-        entityRemoved(e);
+    public void dbEntityRemoved(DbEntityEvent e) {
+        entityRemoved(e.getEntity(), e.getSource());
     }
 
     /**
@@ -626,13 +614,11 @@ public class ProjectTreeController extends ChildController<ProjectController>
      * <li>If entity is in a different node, makes that node visible and selected.</li>
      * </ul>
      */
-    private void entityChanged(EntityEvent e) {
-        if (e.isNameChange()) {
+    private void entityChanged(Entity<?, ?, ?> entity, boolean nameChange) {
+        if (nameChange) {
             Object[] path = new Object[]{
-                    e.getDomain() != null
-                            ? e.getDomain()
-                            : (DataChannelDescriptor) parent.getProject().getRootNode(),
-                    e.getEntity().getDataMap(), e.getEntity()
+                    (DataChannelDescriptor) parent.getProject().getRootNode(),
+                    entity.getDataMap(), entity
             };
 
             updateNode(path);
@@ -645,17 +631,12 @@ public class ProjectTreeController extends ChildController<ProjectController>
      * Event handler for ObjEntity and DbEntity additions. Adds a tree node for the entity
      * and make it selected.
      */
-    private void entityAdded(EntityEvent e) {
-
-        Entity<?, ?, ?> entity = e.getEntity();
+    private void entityAdded(Entity<?, ?, ?> entity) {
 
         DefaultMutableTreeNode mapNode = view.getProjectModel().getNodeForObjectPath(
                 new Object[]{
-                        e.getDomain() != null
-                                ? e.getDomain()
-                                : (DataChannelDescriptor) parent
-                                .getProject()
-                                .getRootNode(), e.getEntity().getDataMap()
+                        (DataChannelDescriptor) parent.getProject().getRootNode(),
+                        entity.getDataMap()
                 });
 
         if (mapNode == null) {
@@ -671,16 +652,15 @@ public class ProjectTreeController extends ChildController<ProjectController>
      * Event handler for ObjEntity and DbEntity removals. Removes a tree node for the
      * entity and selects its sibling.
      */
-    private void entityRemoved(EntityEvent e) {
-        if (e.getSource() == this) {
+    private void entityRemoved(Entity<?, ?, ?> entity, Object source) {
+        if (source == this) {
             return;
         }
 
         // remove from DataMap tree
         removeNode(new Object[]{
-                e.getDomain() != null ? e.getDomain() : (DataChannelDescriptor) parent
-                        .getProject()
-                        .getRootNode(), e.getEntity().getDataMap(), e.getEntity()
+                (DataChannelDescriptor) parent.getProject().getRootNode(),
+                entity.getDataMap(), entity
         });
     }
 
@@ -690,11 +670,8 @@ public class ProjectTreeController extends ChildController<ProjectController>
 
         DefaultMutableTreeNode mapNode = view.getProjectModel().getNodeForObjectPath(
                 new Object[]{
-                        e.getDomain() != null
-                                ? e.getDomain()
-                                : (DataChannelDescriptor) parent
-                                .getProject()
-                                .getRootNode(), map
+                        (DataChannelDescriptor) parent.getProject().getRootNode(),
+                        map
                 });
 
         if (mapNode == null) {
@@ -710,9 +687,7 @@ public class ProjectTreeController extends ChildController<ProjectController>
     public void embeddableChanged(EmbeddableEvent e, DataMap map) {
         if (e.isNameChange()) {
             Object[] path = new Object[]{
-                    e.getDomain() != null
-                            ? e.getDomain()
-                            : (DataChannelDescriptor) parent.getProject().getRootNode(),
+                    (DataChannelDescriptor) parent.getProject().getRootNode(),
                     map, e.getEmbeddable()
             };
 
@@ -730,9 +705,8 @@ public class ProjectTreeController extends ChildController<ProjectController>
 
         // remove from DataMap tree
         removeNode(new Object[]{
-                e.getDomain() != null ? e.getDomain() : (DataChannelDescriptor) parent
-                        .getProject()
-                        .getRootNode(), map, e.getEmbeddable()
+                (DataChannelDescriptor) parent.getProject().getRootNode(),
+                map, e.getEmbeddable()
         });
     }
 

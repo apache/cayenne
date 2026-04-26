@@ -38,7 +38,12 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.modeler.event.model.AttributeEvent;
+import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
+import org.apache.cayenne.modeler.event.model.DbEntityEvent;
+import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
+import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
+import org.apache.cayenne.modeler.event.model.ObjRelationshipEvent;
 import org.apache.cayenne.modeler.event.model.DbAttributeListener;
 import org.apache.cayenne.modeler.event.model.DbEntityListener;
 import org.apache.cayenne.modeler.event.model.DbRelationshipListener;
@@ -46,12 +51,10 @@ import org.apache.cayenne.modeler.event.model.EmbeddableAttributeEvent;
 import org.apache.cayenne.modeler.event.model.EmbeddableAttributeListener;
 import org.apache.cayenne.modeler.event.model.EmbeddableEvent;
 import org.apache.cayenne.modeler.event.model.EmbeddableListener;
-import org.apache.cayenne.modeler.event.model.EntityEvent;
-import org.apache.cayenne.modeler.event.model.MapEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.event.model.ObjAttributeListener;
 import org.apache.cayenne.modeler.event.model.ObjEntityListener;
 import org.apache.cayenne.modeler.event.model.ObjRelationshipListener;
-import org.apache.cayenne.modeler.event.model.RelationshipEvent;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.RevertAction;
 import org.apache.cayenne.modeler.ui.action.SaveAction;
@@ -373,10 +376,6 @@ public class ProjectController extends ChildController<ModelerController> {
         return state.parentPath;
     }
 
-    public DisplayEvent getLastDisplayEvent() {
-        return navigationHistory.getLastEvent();
-    }
-
     public void addDomainDisplayListener(DomainDisplayListener listener) {
         listeners.add(DomainDisplayListener.class, listener);
     }
@@ -565,17 +564,17 @@ public class ProjectController extends ChildController<ModelerController> {
         LOGGER.debug("fireDomainEvent: {}", e.getDomain().getName());
         setDirty(true);
 
-        if (e.getId() == MapEvent.REMOVE) {
+        if (e.getType() == ModelEvent.Type.REMOVE) {
             navigationHistory.forgetObject(e);
         }
 
         for (DomainListener listener : listeners.getListeners(DomainListener.class)) {
-            switch (e.getId()) {
-                case MapEvent.CHANGE:
+            switch (e.getType()) {
+                case CHANGE:
                     listener.domainChanged(e);
                     break;
                 default:
-                    throw new IllegalArgumentException("Invalid DomainEvent type: " + e.getId());
+                    throw new IllegalArgumentException("Invalid DomainEvent type: " + e.getType());
             }
         }
     }
@@ -602,23 +601,23 @@ public class ProjectController extends ChildController<ModelerController> {
         LOGGER.debug("fireDataNodeEvent: {}", e.getDataNode().getName());
         setDirty(true);
 
-        if (e.getId() == MapEvent.REMOVE) {
+        if (e.getType() == ModelEvent.Type.REMOVE) {
             navigationHistory.forgetObject(e);
         }
 
         for (DataNodeListener listener : listeners.getListeners(DataNodeListener.class)) {
-            switch (e.getId()) {
-                case MapEvent.ADD:
+            switch (e.getType()) {
+                case ADD:
                     listener.dataNodeAdded(e);
                     break;
-                case MapEvent.CHANGE:
+                case CHANGE:
                     listener.dataNodeChanged(e);
                     break;
-                case MapEvent.REMOVE:
+                case REMOVE:
                     listener.dataNodeRemoved(e);
                     break;
                 default:
-                    throw new IllegalArgumentException("Invalid DataNodeEvent type: " + e.getId());
+                    throw new IllegalArgumentException("Invalid DataNodeEvent type: " + e.getType());
             }
         }
     }
@@ -669,73 +668,73 @@ public class ProjectController extends ChildController<ModelerController> {
         LOGGER.debug("fireDataMapEvent: {}", e.getDataMap().getName());
         setDirty(true);
 
-        if (e.getId() == MapEvent.REMOVE) {
+        if (e.getType() == ModelEvent.Type.REMOVE) {
             navigationHistory.forgetObject(e);
         }
 
         for (DataMapListener eventListener : listeners.getListeners(DataMapListener.class)) {
-            switch (e.getId()) {
-                case MapEvent.ADD:
+            switch (e.getType()) {
+                case ADD:
                     eventListener.dataMapAdded(e);
                     break;
-                case MapEvent.CHANGE:
+                case CHANGE:
                     eventListener.dataMapChanged(e);
                     break;
-                case MapEvent.REMOVE:
+                case REMOVE:
                     eventListener.dataMapRemoved(e);
                     break;
                 default:
-                    throw new IllegalArgumentException("Invalid DataMapEvent type: " + e.getId());
+                    throw new IllegalArgumentException("Invalid DataMapEvent type: " + e.getType());
             }
         }
     }
 
-    public void fireObjEntityEvent(EntityEvent e) {
+    public void fireObjEntityEvent(ObjEntityEvent e) {
         LOGGER.debug("fireObjEntityEvent: {}", e.getEntity().getName());
         setDirty(true);
 
-        if (e.getId() == MapEvent.REMOVE) {
+        if (e.getType() == ModelEvent.Type.REMOVE) {
             navigationHistory.forgetObject(e);
         }
 
         for (ObjEntityListener listener : listeners.getListeners(ObjEntityListener.class)) {
-            switch (e.getId()) {
-                case MapEvent.ADD:
+            switch (e.getType()) {
+                case ADD:
                     listener.objEntityAdded(e);
                     break;
-                case MapEvent.CHANGE:
+                case CHANGE:
                     listener.objEntityChanged(e);
                     break;
-                case MapEvent.REMOVE:
+                case REMOVE:
                     listener.objEntityRemoved(e);
                     break;
                 default:
-                    throw new IllegalArgumentException("Invalid EntityEvent type: " + e.getId());
+                    throw new IllegalArgumentException("Invalid ObjEntityEvent type: " + e.getType());
             }
         }
     }
 
-    public void fireDbEntityEvent(EntityEvent e) {
+    public void fireDbEntityEvent(DbEntityEvent e) {
         LOGGER.debug("fireDbEntityEvent: {}", e.getEntity().getName());
         setDirty(true);
 
-        if (e.getId() == MapEvent.REMOVE) {
+        if (e.getType() == ModelEvent.Type.REMOVE) {
             navigationHistory.forgetObject(e);
         }
 
         for (DbEntityListener listener : listeners.getListeners(DbEntityListener.class)) {
-            switch (e.getId()) {
-                case MapEvent.ADD:
+            switch (e.getType()) {
+                case ADD:
                     listener.dbEntityAdded(e);
                     break;
-                case MapEvent.CHANGE:
+                case CHANGE:
                     listener.dbEntityChanged(e);
                     break;
-                case MapEvent.REMOVE:
+                case REMOVE:
                     listener.dbEntityRemoved(e);
                     break;
                 default:
-                    throw new IllegalArgumentException("Invalid EntityEvent type: " + e.getId());
+                    throw new IllegalArgumentException("Invalid DbEntityEvent type: " + e.getType());
             }
         }
     }
@@ -744,23 +743,23 @@ public class ProjectController extends ChildController<ModelerController> {
         LOGGER.debug("fireQueryEvent: {}", e.getQuery().getName());
         setDirty(true);
 
-        if (e.getId() == MapEvent.REMOVE) {
+        if (e.getType() == ModelEvent.Type.REMOVE) {
             navigationHistory.forgetObject(e);
         }
 
         for (QueryListener eventListener : listeners.getListeners(QueryListener.class)) {
-            switch (e.getId()) {
-                case MapEvent.ADD:
+            switch (e.getType()) {
+                case ADD:
                     eventListener.queryAdded(e);
                     break;
-                case MapEvent.CHANGE:
+                case CHANGE:
                     eventListener.queryChanged(e);
                     break;
-                case MapEvent.REMOVE:
+                case REMOVE:
                     eventListener.queryRemoved(e);
                     break;
                 default:
-                    throw new IllegalArgumentException("Invalid ProcedureEvent type: " + e.getId());
+                    throw new IllegalArgumentException("Invalid ProcedureEvent type: " + e.getType());
             }
         }
     }
@@ -769,23 +768,23 @@ public class ProjectController extends ChildController<ModelerController> {
         LOGGER.debug("fireProcedureEvent: {}", e.getProcedure().getName());
         setDirty(true);
 
-        if (e.getId() == MapEvent.REMOVE) {
+        if (e.getType() == ModelEvent.Type.REMOVE) {
             navigationHistory.forgetObject(e);
         }
 
         for (ProcedureListener eventListener : listeners.getListeners(ProcedureListener.class)) {
-            switch (e.getId()) {
-                case MapEvent.ADD:
+            switch (e.getType()) {
+                case ADD:
                     eventListener.procedureAdded(e);
                     break;
-                case MapEvent.CHANGE:
+                case CHANGE:
                     eventListener.procedureChanged(e);
                     break;
-                case MapEvent.REMOVE:
+                case REMOVE:
                     eventListener.procedureRemoved(e);
                     break;
                 default:
-                    throw new IllegalArgumentException("Invalid ProcedureEvent type: " + e.getId());
+                    throw new IllegalArgumentException("Invalid ProcedureEvent type: " + e.getType());
             }
         }
     }
@@ -801,18 +800,18 @@ public class ProjectController extends ChildController<ModelerController> {
         EventListener[] list = listeners.getListeners(ProcedureParameterListener.class);
         for (EventListener eventListener : list) {
             ProcedureParameterListener listener = (ProcedureParameterListener) eventListener;
-            switch (e.getId()) {
-                case MapEvent.ADD:
+            switch (e.getType()) {
+                case ADD:
                     listener.procedureParameterAdded(e);
                     break;
-                case MapEvent.CHANGE:
+                case CHANGE:
                     listener.procedureParameterChanged(e);
                     break;
-                case MapEvent.REMOVE:
+                case REMOVE:
                     listener.procedureParameterRemoved(e);
                     break;
                 default:
-                    throw new IllegalArgumentException("Invalid ProcedureParameterEvent type: " + e.getId());
+                    throw new IllegalArgumentException("Invalid ProcedureParameterEvent type: " + e.getType());
             }
         }
     }
@@ -954,23 +953,23 @@ public class ProjectController extends ChildController<ModelerController> {
     /**
      * Notifies all listeners of the change(add, remove) and does the change.
      */
-    public void fireDbAttributeEvent(AttributeEvent e) {
+    public void fireDbAttributeEvent(DbAttributeEvent e) {
         LOGGER.debug("fireDbAttributeEvent: {}", e.getAttribute().getName());
         setDirty(true);
 
         for (DbAttributeListener l : listeners.getListeners(DbAttributeListener.class)) {
-            switch (e.getId()) {
-                case MapEvent.ADD:
+            switch (e.getType()) {
+                case ADD:
                     l.dbAttributeAdded(e);
                     break;
-                case MapEvent.CHANGE:
+                case CHANGE:
                     l.dbAttributeChanged(e);
                     break;
-                case MapEvent.REMOVE:
+                case REMOVE:
                     l.dbAttributeRemoved(e);
                     break;
                 default:
-                    throw new IllegalArgumentException("Invalid AttributeEvent type: " + e.getId());
+                    throw new IllegalArgumentException("Invalid DbAttributeEvent type: " + e.getType());
             }
         }
     }
@@ -998,23 +997,23 @@ public class ProjectController extends ChildController<ModelerController> {
     /**
      * Notifies all listeners of the change (add, remove) and does the change.
      */
-    public void fireObjAttributeEvent(AttributeEvent e) {
+    public void fireObjAttributeEvent(ObjAttributeEvent e) {
         LOGGER.debug("fireObjAttributeEvent: {}", e.getAttribute().getName());
         setDirty(true);
 
         for (ObjAttributeListener listener : listeners.getListeners(ObjAttributeListener.class)) {
-            switch (e.getId()) {
-                case MapEvent.ADD:
+            switch (e.getType()) {
+                case ADD:
                     listener.objAttributeAdded(e);
                     break;
-                case MapEvent.CHANGE:
+                case CHANGE:
                     listener.objAttributeChanged(e);
                     break;
-                case MapEvent.REMOVE:
+                case REMOVE:
                     listener.objAttributeRemoved(e);
                     break;
                 default:
-                    throw new IllegalArgumentException("Invalid AttributeEvent type: " + e.getId());
+                    throw new IllegalArgumentException("Invalid ObjAttributeEvent type: " + e.getType());
             }
         }
     }
@@ -1062,23 +1061,23 @@ public class ProjectController extends ChildController<ModelerController> {
     /**
      * Notifies all listeners of the change(add, remove) and does the change.
      */
-    public void fireDbRelationshipEvent(RelationshipEvent e) {
+    public void fireDbRelationshipEvent(DbRelationshipEvent e) {
         LOGGER.debug("fireDbRelationshipEvent: {}", e.getRelationship().getName());
         setDirty(true);
 
         for (DbRelationshipListener listener : listeners.getListeners(DbRelationshipListener.class)) {
-            switch (e.getId()) {
-                case MapEvent.ADD:
+            switch (e.getType()) {
+                case ADD:
                     listener.dbRelationshipAdded(e);
                     break;
-                case MapEvent.CHANGE:
+                case CHANGE:
                     listener.dbRelationshipChanged(e);
                     break;
-                case MapEvent.REMOVE:
+                case REMOVE:
                     listener.dbRelationshipRemoved(e);
                     break;
                 default:
-                    throw new IllegalArgumentException("Invalid RelationshipEvent type: " + e.getId());
+                    throw new IllegalArgumentException("Invalid DbRelationshipEvent type: " + e.getType());
             }
         }
     }
@@ -1106,23 +1105,23 @@ public class ProjectController extends ChildController<ModelerController> {
     /**
      * Notifies all listeners of the change(add, remove) and does the change.
      */
-    public void fireObjRelationshipEvent(RelationshipEvent e) {
+    public void fireObjRelationshipEvent(ObjRelationshipEvent e) {
         LOGGER.debug("fireObjRelationshipEvent: {}", e.getRelationship().getName());
         setDirty(true);
 
         for (ObjRelationshipListener listener : listeners.getListeners(ObjRelationshipListener.class)) {
-            switch (e.getId()) {
-                case MapEvent.ADD:
+            switch (e.getType()) {
+                case ADD:
                     listener.objRelationshipAdded(e);
                     break;
-                case MapEvent.CHANGE:
+                case CHANGE:
                     listener.objRelationshipChanged(e);
                     break;
-                case MapEvent.REMOVE:
+                case REMOVE:
                     listener.objRelationshipRemoved(e);
                     break;
                 default:
-                    throw new IllegalArgumentException("Invalid RelationshipEvent type: " + e.getId());
+                    throw new IllegalArgumentException("Invalid ObjRelationshipEvent type: " + e.getType());
             }
         }
     }
@@ -1222,18 +1221,18 @@ public class ProjectController extends ChildController<ModelerController> {
         setDirty(true);
 
         for (CallbackMethodListener listener : listeners.getListeners(CallbackMethodListener.class)) {
-            switch (e.getId()) {
-                case MapEvent.ADD:
+            switch (e.getType()) {
+                case ADD:
                     listener.callbackMethodAdded(e);
                     break;
-                case MapEvent.CHANGE:
+                case CHANGE:
                     listener.callbackMethodChanged(e);
                     break;
-                case MapEvent.REMOVE:
+                case REMOVE:
                     listener.callbackMethodRemoved(e);
                     break;
                 default:
-                    throw new IllegalArgumentException("Invalid CallbackEvent type: " + e.getId());
+                    throw new IllegalArgumentException("Invalid CallbackEvent type: " + e.getType());
             }
         }
     }
@@ -1251,18 +1250,18 @@ public class ProjectController extends ChildController<ModelerController> {
         setDirty(true);
         for (EmbeddableListener listener : listeners.getListeners(EmbeddableListener.class)) {
 
-            switch (e.getId()) {
-                case MapEvent.ADD:
+            switch (e.getType()) {
+                case ADD:
                     listener.embeddableAdded(e, map);
                     break;
-                case MapEvent.CHANGE:
+                case CHANGE:
                     listener.embeddableChanged(e, map);
                     break;
-                case MapEvent.REMOVE:
+                case REMOVE:
                     listener.embeddableRemoved(e, map);
                     break;
                 default:
-                    throw new IllegalArgumentException("Invalid RelationshipEvent type: " + e.getId());
+                    throw new IllegalArgumentException("Invalid RelationshipEvent type: " + e.getType());
             }
         }
     }
@@ -1272,18 +1271,18 @@ public class ProjectController extends ChildController<ModelerController> {
         setDirty(true);
         for (EmbeddableAttributeListener listener : listeners.getListeners(EmbeddableAttributeListener.class)) {
 
-            switch (e.getId()) {
-                case MapEvent.ADD:
+            switch (e.getType()) {
+                case ADD:
                     listener.embeddableAttributeAdded(e);
                     break;
-                case MapEvent.CHANGE:
+                case CHANGE:
                     listener.embeddableAttributeChanged(e);
                     break;
-                case MapEvent.REMOVE:
+                case REMOVE:
                     listener.embeddableAttributeRemoved(e);
                     break;
                 default:
-                    throw new IllegalArgumentException("Invalid RelationshipEvent type: " + e.getId());
+                    throw new IllegalArgumentException("Invalid RelationshipEvent type: " + e.getType());
             }
         }
     }
@@ -1306,8 +1305,8 @@ public class ProjectController extends ChildController<ModelerController> {
     public void fireDataSourceEvent(DataSourceEvent e) {
         LOGGER.debug("fireDataSourceEvent: {}", e.getDataSourceName());
         for (DataSourceListener listener : listeners.getListeners(DataSourceListener.class)) {
-            switch (e.getId()) {
-                case MapEvent.ADD:
+            switch (e.getType()) {
+                case ADD:
                     listener.callbackDataSourceAdded(e);
                     break;
                 // Change event not supported for now
@@ -1315,11 +1314,11 @@ public class ProjectController extends ChildController<ModelerController> {
                 /*case MapEvent.CHANGE:
                     listener.callbackDataSourceChanged(e);
                     break;*/
-                case MapEvent.REMOVE:
+                case REMOVE:
                     listener.callbackDataSourceRemoved(e);
                     break;
                 default:
-                    throw new IllegalArgumentException("Invalid RelationshipEvent type: " + e.getId());
+                    throw new IllegalArgumentException("Invalid RelationshipEvent type: " + e.getType());
             }
         }
     }

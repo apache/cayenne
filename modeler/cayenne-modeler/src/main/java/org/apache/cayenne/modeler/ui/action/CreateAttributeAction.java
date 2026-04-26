@@ -32,9 +32,10 @@ import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.event.model.AttributeEvent;
+import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
+import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
 import org.apache.cayenne.modeler.event.model.EmbeddableAttributeEvent;
-import org.apache.cayenne.modeler.event.model.MapEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
@@ -49,7 +50,7 @@ public class CreateAttributeAction extends ModelerAbstractAction {
 
     static void fireEmbeddableAttributeEvent(Object src, ProjectController controller, Embeddable embeddable, EmbeddableAttribute attr) {
 
-        controller.fireEmbeddableAttributeEvent(new EmbeddableAttributeEvent(src, attr, embeddable, MapEvent.ADD));
+        controller.fireEmbeddableAttributeEvent(EmbeddableAttributeEvent.ofAdd(src, attr, embeddable));
 
         EmbeddableAttributeDisplayEvent e = new EmbeddableAttributeDisplayEvent(src, embeddable, attr,
                 controller.getSelectedDataMap(), (DataChannelDescriptor) controller.getProject().getRootNode());
@@ -63,7 +64,7 @@ public class CreateAttributeAction extends ModelerAbstractAction {
     static void fireObjAttributeEvent(Object src, ProjectController controller, DataMap map, ObjEntity objEntity,
                                       ObjAttribute attr) {
 
-        controller.fireObjAttributeEvent(new AttributeEvent(src, attr, objEntity, MapEvent.ADD));
+        controller.fireObjAttributeEvent(ObjAttributeEvent.ofAdd(src, attr, objEntity));
 
         DataChannelDescriptor domain = (DataChannelDescriptor) controller.getProject().getRootNode();
 
@@ -77,7 +78,7 @@ public class CreateAttributeAction extends ModelerAbstractAction {
      */
     static void fireDbAttributeEvent(Object src, ProjectController controller, DataMap map, DbEntity dbEntity,
                                      DbAttribute attr) {
-        controller.fireDbAttributeEvent(new AttributeEvent(src, attr, dbEntity, MapEvent.ADD));
+        controller.fireDbAttributeEvent(DbAttributeEvent.ofAdd(src, attr, dbEntity));
 
         AttributeDisplayEvent ade = new AttributeDisplayEvent(src, attr, dbEntity, map,
                 (DataChannelDescriptor) controller.getProject().getRootNode());

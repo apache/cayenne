@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.ui.preferences.datasource;
 
 import org.apache.cayenne.datasource.DriverDataSource;
-import org.apache.cayenne.modeler.event.model.MapEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.event.model.DataSourceEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.ChildrenMapPreference;
@@ -130,7 +130,7 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 			view.getDataSources().setModel(new DefaultComboBoxModel<>(keys));
 			view.getDataSources().setSelectedItem(creatorWizard.getName());
 			editDataSourceAction();
-			fireEvent(creatorWizard.getName(), MapEvent.ADD);
+			fireEvent(DataSourceEvent.ofAdd(this, creatorWizard.getName()));
 		}
 	}
 
@@ -152,7 +152,7 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 				view.getDataSources().setModel(new DefaultComboBoxModel<>(keys));
 				view.getDataSources().setSelectedItem(wizard.getName());
 				editDataSourceAction();
-				fireEvent(wizard.getName(), MapEvent.ADD);
+				fireEvent(DataSourceEvent.ofAdd(this, wizard.getName()));
 			}
 		}
 	}
@@ -170,12 +170,11 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 			Arrays.sort(keys);
 			view.getDataSources().setModel(new DefaultComboBoxModel<>(keys));
 			editDataSourceAction(keys.length > 0 ? keys[0] : null);
-			fireEvent(key, MapEvent.REMOVE);
+			fireEvent(DataSourceEvent.ofRemove(this, key));
 		}
 	}
 
-	private void fireEvent(String dataSourceKey, int eventId) {
-		DataSourceEvent event = new DataSourceEvent(this, dataSourceKey, eventId);
+	private void fireEvent(DataSourceEvent event) {
 		getApplication().getFrameController().getProjectController().fireDataSourceEvent(event);
 	}
 

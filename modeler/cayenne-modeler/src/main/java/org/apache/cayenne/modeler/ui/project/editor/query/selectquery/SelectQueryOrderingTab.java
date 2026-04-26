@@ -264,7 +264,7 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
 
         OrderingModel model = (OrderingModel) table.getModel();
         model.fireTableRowsInserted(index, index);
-        mediator.fireQueryEvent(new QueryEvent(SelectQueryOrderingTab.this, selectQuery));
+        mediator.fireQueryEvent(QueryEvent.ofChange(SelectQueryOrderingTab.this, selectQuery));
     }
 
     void removeOrdering() {
@@ -278,7 +278,7 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
         selectQuery.removeOrdering(ordering);
 
         model.fireTableRowsDeleted(selection, selection);
-        mediator.fireQueryEvent(new QueryEvent(SelectQueryOrderingTab.this, selectQuery));
+        mediator.fireQueryEvent(QueryEvent.ofChange(SelectQueryOrderingTab.this, selectQuery));
     }
 
     /**
@@ -368,7 +368,7 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
                     throw new IndexOutOfBoundsException("Invalid editable column: " + column);
             }
 
-            mediator.fireQueryEvent(new QueryEvent(SelectQueryOrderingTab.this, selectQuery));
+            mediator.fireQueryEvent(QueryEvent.ofChange(SelectQueryOrderingTab.this, selectQuery));
         }
     }
 

@@ -33,9 +33,9 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.event.model.EmbeddableEvent;
 import org.apache.cayenne.modeler.event.model.EmbeddableListener;
-import org.apache.cayenne.modeler.event.model.EntityEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityListener;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.modeler.event.model.DataMapListener;
@@ -460,16 +460,16 @@ public class CgenController extends ChildController<ProjectController> implement
     }
 
     @Override
-    public void objEntityChanged(EntityEvent e) {
+    public void objEntityChanged(ObjEntityEvent e) {
     }
 
     @Override
-    public void objEntityAdded(EntityEvent e) {
+    public void objEntityAdded(ObjEntityEvent e) {
         addEntity(e.getEntity().getDataMap(), (ObjEntity) e.getEntity());
     }
 
     @Override
-    public void objEntityRemoved(EntityEvent e) {
+    public void objEntityRemoved(ObjEntityEvent e) {
         selectionModel.removeFromSelectedEntities((ObjEntity) e.getEntity());
         if (cgenConfiguration != null) {
             cgenConfiguration.getEntities().remove(e.getEntity().getName());

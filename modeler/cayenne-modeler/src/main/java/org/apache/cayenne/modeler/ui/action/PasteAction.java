@@ -36,7 +36,7 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.modeler.event.model.MapEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.errors.ErrorsController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
@@ -413,11 +413,7 @@ public class PasteAction extends ModelerAbstractAction implements FlavorListener
                         .getCallbackDescriptor(controller.getSelectedCallbackType().getType())
                         .addCallbackMethod(method.getName());
 
-                CallbackMethodEvent ce = new CallbackMethodEvent(
-                        this,
-                        null,
-                        method.getName(),
-                        MapEvent.ADD);
+                CallbackMethodEvent ce = CallbackMethodEvent.ofAdd(this, method.getName());
 
                 getProjectController().fireCallbackMethodEvent(ce);
             }

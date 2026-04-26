@@ -180,7 +180,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
         // will call "verify" even if no changes have occured....
         if (!Util.nullSafeEquals(text, query.getEjbql())) {
             query.setEjbql(text);
-            mediator.fireQueryEvent(new QueryEvent(this, query));
+            mediator.fireQueryEvent(QueryEvent.ofChange(this, query));
         }
 
     }

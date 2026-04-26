@@ -19,13 +19,13 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.main.locking;
 
+import org.apache.cayenne.modeler.event.model.ObjRelationshipEvent;
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
+import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.modeler.event.model.AttributeEvent;
-import org.apache.cayenne.modeler.event.model.EntityEvent;
-import org.apache.cayenne.modeler.event.model.RelationshipEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.mvc.ChildController;
 
@@ -74,14 +74,14 @@ public class LockingUpdateController extends ChildController<ProjectController> 
         for (ObjEntity entity : dataMap.getObjEntities()) {
             if (updateEntities && defaultLockType != entity.getDeclaredLockType()) {
                 entity.setDeclaredLockType(defaultLockType);
-                parent.fireObjEntityEvent(new EntityEvent(this, entity));
+                parent.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
             }
 
             if (updateAttributes) {
                 for (ObjAttribute a : entity.getAttributes()) {
                     if (a.isUsedForLocking() != on) {
                         a.setUsedForLocking(on);
-                        parent.fireObjAttributeEvent(new AttributeEvent(this, a, entity));
+                        parent.fireObjAttributeEvent(ObjAttributeEvent.ofChange(this, a, entity));
                     }
                 }
             }
@@ -90,7 +90,7 @@ public class LockingUpdateController extends ChildController<ProjectController> 
                 for (ObjRelationship r : entity.getRelationships()) {
                     if (r.isUsedForLocking() != on) {
                         r.setUsedForLocking(on);
-                        parent.fireObjRelationshipEvent(new RelationshipEvent(
+                        parent.fireObjRelationshipEvent(ObjRelationshipEvent.ofChange(
                                 this,
                                 r,
                                 entity));

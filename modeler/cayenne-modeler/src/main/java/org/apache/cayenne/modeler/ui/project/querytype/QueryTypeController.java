@@ -22,7 +22,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.modeler.event.model.MapEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
@@ -101,8 +101,7 @@ public class QueryTypeController extends ChildController<ProjectController> {
      */
     public static void fireQueryEvent(Object src, ProjectController controller,
                                       DataMap dataMap, QueryDescriptor query) {
-        controller.fireQueryEvent(new QueryEvent(src, query, MapEvent.ADD,
-                dataMap));
+        controller.fireQueryEvent(QueryEvent.ofAdd(src, query, dataMap));
         controller.displayQuery(new QueryDisplayEvent(src, query,
                 dataMap, (DataChannelDescriptor) controller.getProject().getRootNode()));
     }

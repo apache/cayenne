@@ -55,7 +55,7 @@ public class LinkDataMapsAction extends ModelerAbstractAction {
         for (DataMap dataMap : dataChannelDescriptor.getDataMaps()) {
             if (!linkedDataMaps.contains(dataMap.getName())) {
                 dataNodeDescriptor.getDataMapNames().add(dataMap.getName());
-                mediator.fireDataNodeEvent(new DataNodeEvent(this, dataNodeDescriptor));
+                mediator.fireDataNodeEvent(DataNodeEvent.ofChange(this, dataNodeDescriptor));
             }
         }
 

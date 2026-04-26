@@ -99,7 +99,7 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
             Procedure procedure = eventController.getSelectedProcedure();
             if (procedure != null && !ignoreChange) {
                 procedure.setReturningValue(returnsValue.isSelected());
-                eventController.fireProcedureEvent(new ProcedureEvent(ProcedureTab.this, procedure));
+                eventController.fireProcedureEvent(ProcedureEvent.ofChange(ProcedureTab.this, procedure));
             }
         });
 
@@ -147,7 +147,7 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
         } else if (procedure.getDataMap().getProcedure(newName) == null) {
             // completely new name, set new name for entity
             String oldName = procedure.getName();
-            ProcedureEvent e = new ProcedureEvent(this, procedure, oldName);
+            ProcedureEvent e = ProcedureEvent.ofChange(this, procedure, oldName);
             DataMap map = procedure.getDataMap();
             procedure.setName(newName);
             map.removeProcedure(oldName);
@@ -172,7 +172,7 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
 
         if (procedure != null && !Util.nullSafeEquals(procedure.getSchema(), text)) {
             procedure.setSchema(text);
-            eventController.fireProcedureEvent(new ProcedureEvent(this, procedure));
+            eventController.fireProcedureEvent(ProcedureEvent.ofChange(this, procedure));
         }
     }
 
@@ -185,7 +185,7 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
 
         if (procedure != null && !Util.nullSafeEquals(procedure.getCatalog(), text)) {
             procedure.setCatalog(text);
-            eventController.fireProcedureEvent(new ProcedureEvent(this, procedure));
+            eventController.fireProcedureEvent(ProcedureEvent.ofChange(this, procedure));
         }
     }
 
@@ -197,7 +197,7 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
         }
 
         ObjectInfo.putToMetaData(eventController.getApplication().getMetaData(), procedure, ObjectInfo.COMMENT, comment);
-        eventController.fireProcedureEvent(new ProcedureEvent(this, procedure));
+        eventController.fireProcedureEvent(ProcedureEvent.ofChange(this, procedure));
     }
 
     String getComment(Procedure procedure) {

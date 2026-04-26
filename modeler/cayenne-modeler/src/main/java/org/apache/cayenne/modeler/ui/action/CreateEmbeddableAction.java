@@ -25,7 +25,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.event.model.EmbeddableEvent;
-import org.apache.cayenne.modeler.event.model.MapEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
@@ -42,7 +42,7 @@ public class CreateEmbeddableAction extends ModelerAbstractAction {
             Embeddable embeddable) {
 
         controller.fireEmbeddableEvent(
-                new EmbeddableEvent(src, embeddable, MapEvent.ADD),
+                EmbeddableEvent.ofAdd(src, embeddable),
                 dataMap);
         EmbeddableDisplayEvent displayEvent = new EmbeddableDisplayEvent(
                 src,

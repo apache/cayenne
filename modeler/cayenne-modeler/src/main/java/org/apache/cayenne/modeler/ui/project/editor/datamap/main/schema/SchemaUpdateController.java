@@ -19,11 +19,11 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.main.schema;
 
+import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.event.model.ProcedureEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.modeler.event.model.EntityEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.defaults.DefaultsPreferencesController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.defaults.DefaultsPreferencesView;
@@ -79,7 +79,7 @@ public class SchemaUpdateController extends DefaultsPreferencesController {
                     entity.setSchema(defaultSchema);
 
                     // any way to batch events, a big change will flood the app with entity events?
-                    parent.fireDbEntityEvent(new EntityEvent(this, entity));
+                    parent.fireDbEntityEvent(DbEntityEvent.ofChange(this, entity));
                 }
             }
         }
@@ -91,7 +91,7 @@ public class SchemaUpdateController extends DefaultsPreferencesController {
                     procedure.setSchema(defaultSchema);
 
                     // any way to batch events, a big change will flood the app with procedure events?
-                    parent.fireProcedureEvent(new ProcedureEvent(this, procedure));
+                    parent.fireProcedureEvent(ProcedureEvent.ofChange(this, procedure));
                 }
             }
         }

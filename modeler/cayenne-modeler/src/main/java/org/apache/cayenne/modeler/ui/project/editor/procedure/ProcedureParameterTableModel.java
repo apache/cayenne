@@ -79,10 +79,10 @@ public class ProcedureParameterTableModel extends CayenneTableModel<ProcedurePar
         }
 
         String value = (String)newVal;
-        ProcedureParameterEvent event = new ProcedureParameterEvent(eventSource, parameter);
+        String renamedFrom = null;
         switch (columnIndex) {
             case PARAMETER_NAME :
-                event.setOldName(parameter.getName());
+                renamedFrom = parameter.getName();
                 setParameterName(value, parameter);
                 fireTableCellUpdated(rowIndex, columnIndex);
                 break;
@@ -99,7 +99,8 @@ public class ProcedureParameterTableModel extends CayenneTableModel<ProcedurePar
                 setPrecision(value, parameter);
                 break;
         }
-        controller.fireProcedureParameterEvent(event);
+        controller.fireProcedureParameterEvent(
+                ProcedureParameterEvent.ofChange(eventSource, parameter, renamedFrom));
     }
 
     protected void setPrecision(String newVal, ProcedureParameter parameter) {

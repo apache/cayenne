@@ -25,7 +25,7 @@ import org.apache.cayenne.modeler.event.model.ProcedureEvent;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.modeler.event.model.MapEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
@@ -42,7 +42,7 @@ public class CreateProcedureAction extends ModelerAbstractAction {
      * Fires events when a procedure was added
      */
     static void fireProcedureEvent(Object src, ProjectController controller, DataMap dataMap, Procedure procedure) {
-        controller.fireProcedureEvent(new ProcedureEvent(src, procedure, MapEvent.ADD));
+        controller.fireProcedureEvent(ProcedureEvent.ofAdd(src, procedure));
         ProcedureDisplayEvent displayEvent = new ProcedureDisplayEvent(src, procedure, controller.getSelectedDataMap(),
                 (DataChannelDescriptor) controller.getProject().getRootNode());
         displayEvent.setTabReset(true);

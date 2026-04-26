@@ -20,8 +20,8 @@ package org.apache.cayenne.modeler.ui.project.editor.dbentity.properties;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.event.model.DbEntityListener;
-import org.apache.cayenne.modeler.event.model.EntityEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
@@ -144,15 +144,15 @@ public class DbEntityPropertiesView extends JPanel implements DbEntityDisplayLis
         return relationshipPanel;
     }
 
-    public void dbEntityChanged(EntityEvent e) {
+    public void dbEntityChanged(DbEntityEvent e) {
         relationshipPanel.dbEntityChanged(e);
     }
 
-    public void dbEntityAdded(EntityEvent e) {
+    public void dbEntityAdded(DbEntityEvent e) {
         relationshipPanel.dbEntityAdded(e);
     }
 
-    public void dbEntityRemoved(EntityEvent e) {
+    public void dbEntityRemoved(DbEntityEvent e) {
         relationshipPanel.dbEntityRemoved(e);
     }
 

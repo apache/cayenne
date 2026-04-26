@@ -17,64 +17,36 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.event;
+package org.apache.cayenne.modeler.event.model;
 
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.modeler.event.model.EntityEvent;
+import org.apache.cayenne.map.DataMap;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 
 
-public class EntityEventTest {
+public class DataMapEventTest {
 
     @Test
     public void testConstructor1() {
         Object src = new Object();
-        DbEntity d = new DbEntity("abc");
-        EntityEvent e = new EntityEvent(src, d);
+        DataMap d = new DataMap("abc");
+        DataMapEvent e = DataMapEvent.ofChange(src, d);
 
         assertSame(src, e.getSource());
-        assertSame(d, e.getEntity());
+        assertSame(d, e.getDataMap());
     }
 
     @Test
     public void testConstructor2() {
         Object src = new Object();
-        DbEntity d = new DbEntity("abc");
-        EntityEvent e = new EntityEvent(src, d, "oldname");
+        DataMap d = new DataMap("abc");
+        DataMapEvent e = DataMapEvent.ofChange(src, d, "oldname");
 
         assertSame(src, e.getSource());
-        assertSame(d, e.getEntity());
+        assertSame(d, e.getDataMap());
         assertEquals("oldname", e.getOldName());
     }
-
-    @Test
-    public void testEntity() {
-        Object src = new Object();
-        DbEntity d = new DbEntity("abc");
-        EntityEvent e = new EntityEvent(src, null);
-
-        e.setEntity(d);
-        assertSame(d, e.getEntity());
-    }
-
-    @Test
-    public void testNameChange1() {
-        DbEntity d = new DbEntity("abc");
-        EntityEvent e = new EntityEvent(new Object(), d, "xyz");
-        assertEquals(d.getName(), e.getNewName());
-        assertTrue(e.isNameChange());
-    }
-
-    @Test
-	public void testNameChange2() {
-        DbEntity d = new DbEntity("abc");
-		EntityEvent e = new EntityEvent(new Object(), d, "abc");
-		assertEquals(d.getName(), e.getNewName());
-		assertFalse(e.isNameChange());
-	}
 }
+

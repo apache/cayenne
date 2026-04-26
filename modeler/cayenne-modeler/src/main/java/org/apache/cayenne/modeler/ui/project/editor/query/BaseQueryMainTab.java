@@ -97,7 +97,7 @@ public abstract class BaseQueryMainTab extends JPanel {
         if (matchingQuery == null) {
             // completely new name, set new name for entity
             String oldName = query.getName();
-            QueryEvent e = new QueryEvent(this, query, oldName);
+            QueryEvent e = QueryEvent.ofChange(this, query, oldName);
             query.setName(newName);
             query.setDataMap(map);
             map.removeQueryDescriptor(oldName);

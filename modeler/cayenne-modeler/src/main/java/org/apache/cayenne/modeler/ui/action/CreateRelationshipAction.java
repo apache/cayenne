@@ -27,8 +27,9 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.modeler.event.model.MapEvent;
-import org.apache.cayenne.modeler.event.model.RelationshipEvent;
+import org.apache.cayenne.modeler.event.model.ObjRelationshipEvent;
+import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.dbrelationship.DbRelationshipDialogController;
@@ -46,7 +47,7 @@ public class CreateRelationshipAction extends ModelerAbstractAction {
     static void fireObjRelationshipEvent(Object src, ProjectController mediator, ObjEntity objEntity,
                                          ObjRelationship rel) {
 
-        mediator.fireObjRelationshipEvent(new RelationshipEvent(src, rel, objEntity, MapEvent.ADD));
+        mediator.fireObjRelationshipEvent(ObjRelationshipEvent.ofAdd(src, rel, objEntity));
 
         RelationshipDisplayEvent rde = new RelationshipDisplayEvent(src, rel, objEntity, mediator.getSelectedDataMap(),
                 (DataChannelDescriptor) mediator.getProject().getRootNode());
@@ -59,7 +60,7 @@ public class CreateRelationshipAction extends ModelerAbstractAction {
      */
     static void fireDbRelationshipEvent(Object src, ProjectController mediator, DbEntity dbEntity, DbRelationship rel) {
 
-        mediator.fireDbRelationshipEvent(new RelationshipEvent(src, rel, dbEntity, MapEvent.ADD));
+        mediator.fireDbRelationshipEvent(DbRelationshipEvent.ofAdd(src, rel, dbEntity));
 
         RelationshipDisplayEvent rde = new RelationshipDisplayEvent(src, rel, dbEntity, mediator.getSelectedDataMap(),
                 (DataChannelDescriptor) mediator.getProject().getRootNode());

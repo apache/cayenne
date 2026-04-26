@@ -21,34 +21,44 @@ package org.apache.cayenne.modeler.event.model;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
 
-public class EmbeddableAttributeEvent extends EmbeddableEvent {
+public class EmbeddableAttributeEvent extends ModelEvent {
 
-    protected EmbeddableAttribute embeddableAttribute;
+    private final EmbeddableAttribute embeddableAttribute;
+    private final Embeddable embeddable;
 
-    public EmbeddableAttributeEvent(Object source, Embeddable embeddable,
-            EmbeddableAttribute embeddableAttribute) {
-        super(source, embeddable);
-        setEmbeddableAttribute(embeddableAttribute);
+    public static EmbeddableAttributeEvent ofAdd(Object source, EmbeddableAttribute attr, Embeddable embeddable) {
+        return new EmbeddableAttributeEvent(source, attr, embeddable, Type.ADD, null);
     }
 
-    public EmbeddableAttributeEvent(Object source, EmbeddableAttribute attrib,
-            Embeddable embeddable, int id) {
-       
-        this(source, embeddable, attrib);
-        setId(id);
+    public static EmbeddableAttributeEvent ofChange(Object source, EmbeddableAttribute attr, Embeddable embeddable) {
+        return new EmbeddableAttributeEvent(source, attr, embeddable, Type.CHANGE, null);
     }
 
-    @Override
-    public String getNewName() {
-        return (embeddableAttribute != null) ? embeddableAttribute.getName() : null;
+    public static EmbeddableAttributeEvent ofChange(Object source, EmbeddableAttribute attr, Embeddable embeddable, String oldName) {
+        return new EmbeddableAttributeEvent(source, attr, embeddable, Type.CHANGE, oldName);
+    }
+
+    public static EmbeddableAttributeEvent ofRemove(Object source, EmbeddableAttribute attr, Embeddable embeddable) {
+        return new EmbeddableAttributeEvent(source, attr, embeddable, Type.REMOVE, null);
+    }
+
+    private EmbeddableAttributeEvent(
+            Object source, EmbeddableAttribute attr, Embeddable embeddable, Type type, String oldName) {
+        super(source, type, oldName);
+        this.embeddableAttribute = attr;
+        this.embeddable = embeddable;
     }
 
     public EmbeddableAttribute getEmbeddableAttribute() {
         return embeddableAttribute;
     }
 
-    public void setEmbeddableAttribute(EmbeddableAttribute embeddableAttribute) {
-        this.embeddableAttribute = embeddableAttribute;
+    public Embeddable getEmbeddable() {
+        return embeddable;
     }
 
+    @Override
+    public String getNewName() {
+        return (embeddableAttribute != null) ? embeddableAttribute.getName() : null;
+    }
 }

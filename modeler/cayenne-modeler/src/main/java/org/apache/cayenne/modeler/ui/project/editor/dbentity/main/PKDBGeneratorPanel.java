@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.dbentity.main;
 
+import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ItemEvent;
@@ -34,7 +35,6 @@ import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.modeler.event.model.EntityEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
@@ -82,7 +82,7 @@ public class PKDBGeneratorPanel extends PKGeneratorPanel {
             DbAttribute pk = (DbAttribute) pkAttributes.iterator().next();
             if (TypesMapping.isNumeric(pk.getType()) && !pk.isGenerated()) {
                 pk.setGenerated(true);
-                mediator.fireDbEntityEvent(new EntityEvent(this, entity));
+                mediator.fireDbEntityEvent(DbEntityEvent.ofChange(this, entity));
             }
         }
 
@@ -127,7 +127,7 @@ public class PKDBGeneratorPanel extends PKGeneratorPanel {
 
                     if (a.isGenerated() != generated) {
                         a.setGenerated(generated);
-                        mediator.fireDbEntityEvent(new EntityEvent(this, entity));
+                        mediator.fireDbEntityEvent(DbEntityEvent.ofChange(this, entity));
                     }
                 }
             });

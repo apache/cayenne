@@ -66,17 +66,14 @@ public class EmbeddableAttributeTableModel extends CayenneTableModel {
     @Override
     public void setUpdatedValueAt(Object value, int row, int col) {
         EmbeddableAttribute attribute = getEmbeddableAttribute(row);
-        EmbeddableAttributeEvent event = new EmbeddableAttributeEvent(
-                eventSource,
-                embeddable,
-                attribute);
+        String renamedFrom = null;
         String path = null;
         Collection<String> nameAttr = null;
 
         if (col == OBJ_ATTRIBUTE) {
             String oldName = attribute.getName();
             String newName = value != null ? value.toString().trim() : null;
-            event.setOldName(oldName);
+            renamedFrom = oldName;
             if (!Util.nullSafeEquals(oldName, newName)) {
                 attribute.setName(newName);
                 if (embeddable != null) {
@@ -96,7 +93,8 @@ public class EmbeddableAttributeTableModel extends CayenneTableModel {
             fireTableCellUpdated(row, col);
         }
 
-        controller.fireEmbeddableAttributeEvent(event);
+        controller.fireEmbeddableAttributeEvent(
+                EmbeddableAttributeEvent.ofChange(eventSource, attribute, embeddable, renamedFrom));
     }
 
     public int getColumnCount() {

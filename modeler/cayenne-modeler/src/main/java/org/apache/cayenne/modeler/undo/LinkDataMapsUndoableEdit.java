@@ -50,7 +50,7 @@ public class LinkDataMapsUndoableEdit extends CayenneUndoableEdit {
         for (DataMap dataMap : ((DataChannelDescriptor) mediator.getProject().getRootNode()).getDataMaps()) {
             if (!linkedDataMaps.contains(dataMap.getName())) {
                 dataNodeDescriptor.getDataMapNames().add(dataMap.getName());
-                mediator.fireDataNodeEvent(new DataNodeEvent(this, dataNodeDescriptor));
+                mediator.fireDataNodeEvent(DataNodeEvent.ofChange(this, dataNodeDescriptor));
             }
         }
     }
@@ -58,7 +58,7 @@ public class LinkDataMapsUndoableEdit extends CayenneUndoableEdit {
     @Override
     public void undo() throws CannotUndoException {
         dataNodeDescriptor.getDataMapNames().retainAll(linkedDataMaps);
-        mediator.fireDataNodeEvent(new DataNodeEvent(this, dataNodeDescriptor));
+        mediator.fireDataNodeEvent(DataNodeEvent.ofChange(this, dataNodeDescriptor));
     }
 
 }

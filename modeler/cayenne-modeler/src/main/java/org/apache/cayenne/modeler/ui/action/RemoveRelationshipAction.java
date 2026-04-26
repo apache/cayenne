@@ -25,8 +25,9 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.modeler.event.model.MapEvent;
-import org.apache.cayenne.modeler.event.model.RelationshipEvent;
+import org.apache.cayenne.modeler.event.model.ObjRelationshipEvent;
+import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.confirmremove.ConfirmRemoveDialog;
@@ -101,8 +102,8 @@ public class RemoveRelationshipAction extends RemoveAction implements MultipleOb
 
 		for (ObjRelationship rel : rels) {
 			entity.removeRelationship(rel.getName());
-			RelationshipEvent e = new RelationshipEvent(application.getFrameController().getView(),
-					rel, entity, MapEvent.REMOVE);
+			ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(application.getFrameController().getView(),
+					rel, entity);
 			mediator.fireObjRelationshipEvent(e);
 		}
 	}
@@ -113,9 +114,8 @@ public class RemoveRelationshipAction extends RemoveAction implements MultipleOb
 		for(int i = 0; i < rels.length; i++) {
 			rels[i] = entity.getRelationship(rels[i].getName());
 			entity.removeRelationship(rels[i].getName());
-
-			RelationshipEvent e = new RelationshipEvent(application.getFrameController().getView(),
-					rels[i], entity, MapEvent.REMOVE);
+			DbRelationshipEvent e = DbRelationshipEvent.ofRemove(application.getFrameController().getView(),
+					rels[i], entity);
 			mediator.fireDbRelationshipEvent(e);
 		}
 

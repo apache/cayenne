@@ -162,7 +162,7 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
         table.setModel(createTableModel());
         setUpPrefetchBox(table.getColumnModel().getColumn(2));
         
-        mediator.fireQueryEvent(new QueryEvent(this, selectQuery));
+        mediator.fireQueryEvent(QueryEvent.ofChange(this, selectQuery));
     }
 
     public void removePrefetch(String prefetch) {
@@ -172,7 +172,7 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
         table.setModel(createTableModel());
         setUpPrefetchBox(table.getColumnModel().getColumn(2));
 
-        mediator.fireQueryEvent(new QueryEvent(this, selectQuery));
+        mediator.fireQueryEvent(QueryEvent.ofChange(this, selectQuery));
     }
 
 }

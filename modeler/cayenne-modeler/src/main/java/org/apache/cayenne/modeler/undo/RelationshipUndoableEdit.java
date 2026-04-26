@@ -23,8 +23,9 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.modeler.event.model.MapEvent;
-import org.apache.cayenne.modeler.event.model.RelationshipEvent;
+import org.apache.cayenne.modeler.event.model.ObjRelationshipEvent;
+import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 
@@ -69,7 +70,7 @@ public class RelationshipUndoableEdit extends CayenneUndoableEdit {
 		dbEntity.addRelationship(relToFire);
 		projectController
 				.fireDbRelationshipEvent(
-						new RelationshipEvent(this, relToFire, relToFire.getSourceEntity(), MapEvent.ADD));
+						DbRelationshipEvent.ofAdd(this, relToFire, relToFire.getSourceEntity()));
 	}
 
 	private void fireObjRelationshipEvent(ObjRelationship relToFire, ObjRelationship currRel) {
@@ -78,7 +79,7 @@ public class RelationshipUndoableEdit extends CayenneUndoableEdit {
 		objEntity.addRelationship(relToFire);
 		projectController
 				.fireObjRelationshipEvent(
-						new RelationshipEvent(this, relToFire, relToFire.getSourceEntity(), MapEvent.ADD));
+						ObjRelationshipEvent.ofAdd(this, relToFire, relToFire.getSourceEntity()));
 	}
 
 	@Override

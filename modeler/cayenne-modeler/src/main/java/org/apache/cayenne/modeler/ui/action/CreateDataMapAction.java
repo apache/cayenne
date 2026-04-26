@@ -24,7 +24,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.event.model.MapEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
@@ -48,10 +48,10 @@ public class CreateDataMapAction extends ModelerAbstractAction {
         DataNodeDescriptor node = controller.getSelectedDataNode();
         if (node != null && !node.getDataMapNames().contains(map.getName())) {
             node.getDataMapNames().add(map.getName());
-            controller.fireDataNodeEvent(new DataNodeEvent(src, node));
+            controller.fireDataNodeEvent(DataNodeEvent.ofChange(src, node));
         }
 
-        controller.fireDataMapEvent(new DataMapEvent(src, map, MapEvent.ADD));
+        controller.fireDataMapEvent(DataMapEvent.ofAdd(src, map));
 
         DataMapDisplayEvent displayEvent = new DataMapDisplayEvent(src, map, domain, node);
         displayEvent.setMainTabFocus(true);

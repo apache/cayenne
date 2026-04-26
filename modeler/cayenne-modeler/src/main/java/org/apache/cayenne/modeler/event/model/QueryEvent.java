@@ -23,80 +23,61 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.QueryDescriptor;
 
 /**
- * An event generated when a Query object is added to a DataMap, 
+ * An event generated when a Query object is added to a DataMap,
  * removed from a DataMap, or changed within a DataMap.
  */
-public class QueryEvent extends MapEvent {
-    protected QueryDescriptor query;
-    
-    /**
-     * Data map containing the query
-     */
-    protected DataMap map;
+public class QueryEvent extends ModelEvent {
 
-    public QueryEvent(Object source, QueryDescriptor query) {
-        super(source);
-        setQuery(query);
+    private final QueryDescriptor query;
+    private final DataMap map;
+
+    public static QueryEvent ofAdd(Object source, QueryDescriptor query) {
+        return new QueryEvent(source, query, null, Type.ADD, null);
     }
 
-    public QueryEvent(Object source, QueryDescriptor query, String oldName) {
-        this(source, query);
-        setOldName(oldName);
+    public static QueryEvent ofAdd(Object source, QueryDescriptor query, DataMap map) {
+        return new QueryEvent(source, query, map, Type.ADD, null);
     }
 
-    public QueryEvent(Object source, QueryDescriptor query, int type) {
-        this(source, query);
-        setId(type);
-    }
-    
-    /**
-     * Creates a query event, specifying DataMap, containing the query
-     */
-    public QueryEvent(Object source, QueryDescriptor query, DataMap map) {
-        this(source, query);
-        setDataMap(map);
-    }
-    
-    /**
-     * Creates a query event, specifying DataMap, containing the query
-     */
-    public QueryEvent(Object source, QueryDescriptor query, String oldName, DataMap map) {
-        this(source, query, oldName);
-        setDataMap(map);
-    }
-    
-    /**
-     * Creates a query event, specifying DataMap, containing the query
-     */
-    public QueryEvent(Object source, QueryDescriptor query, int type, DataMap map) {
-        this(source, query, type);
-        setDataMap(map);
+    public static QueryEvent ofChange(Object source, QueryDescriptor query) {
+        return new QueryEvent(source, query, null, Type.CHANGE, null);
     }
 
-    @Override
-    public String getNewName() {
-        return (query != null) ? query.getName() : null;
+    public static QueryEvent ofChange(Object source, QueryDescriptor query, String oldName) {
+        return new QueryEvent(source, query, null, Type.CHANGE, oldName);
+    }
+
+    public static QueryEvent ofChange(Object source, QueryDescriptor query, String oldName, DataMap map) {
+        return new QueryEvent(source, query, map, Type.CHANGE, oldName);
+    }
+
+    public static QueryEvent ofRemove(Object source, QueryDescriptor query) {
+        return new QueryEvent(source, query, null, Type.REMOVE, null);
+    }
+
+    public static QueryEvent ofRemove(Object source, QueryDescriptor query, DataMap map) {
+        return new QueryEvent(source, query, map, Type.REMOVE, null);
+    }
+
+    private QueryEvent(Object source, QueryDescriptor query, DataMap map, Type type, String oldName) {
+        super(source, type, oldName);
+        this.query = query;
+        this.map = map;
     }
 
     public QueryDescriptor getQuery() {
         return query;
     }
 
-    public void setQuery(QueryDescriptor query) {
-        this.query = query;
-    }
-    
     /**
-     * @return DataMap, containing the query
+     * @return DataMap that contains the query.
      */
     public DataMap getDataMap() {
         return map;
     }
-    
-    /**
-     * Sets DataMap, containing the query
-     */
-    public void setDataMap(DataMap map) {
-        this.map = map;
+
+    @Override
+    public String getNewName() {
+        return (query != null) ? query.getName() : null;
     }
 }

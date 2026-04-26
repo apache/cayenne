@@ -21,10 +21,10 @@ package org.apache.cayenne.modeler.ui.project.editor.dbentity.properties;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
+import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.event.model.DbEntityListener;
 import org.apache.cayenne.modeler.event.model.DbRelationshipListener;
-import org.apache.cayenne.modeler.event.model.EntityEvent;
-import org.apache.cayenne.modeler.event.model.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
@@ -198,18 +198,18 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
                 true);
     }
 
-    public void dbEntityChanged(EntityEvent e) {
+    public void dbEntityChanged(DbEntityEvent e) {
     }
 
-    public void dbEntityAdded(EntityEvent e) {
+    public void dbEntityAdded(DbEntityEvent e) {
         reloadEntityList(e);
     }
 
-    public void dbEntityRemoved(EntityEvent e) {
+    public void dbEntityRemoved(DbEntityEvent e) {
         reloadEntityList(e);
     }
 
-    public void dbRelationshipChanged(RelationshipEvent e) {
+    public void dbRelationshipChanged(DbRelationshipEvent e) {
         if (e.getSource() != this) {
             if (!(table.getModel() instanceof DbRelationshipTableModel)) {
                 rebuildTable((DbEntity) e.getEntity());
@@ -221,12 +221,12 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
         }
     }
 
-    public void dbRelationshipAdded(RelationshipEvent e) {
+    public void dbRelationshipAdded(DbRelationshipEvent e) {
         rebuildTable((DbEntity) e.getEntity());
         table.select(e.getRelationship());
     }
 
-    public void dbRelationshipRemoved(RelationshipEvent e) {
+    public void dbRelationshipRemoved(DbRelationshipEvent e) {
         DbRelationshipTableModel model = (DbRelationshipTableModel) table.getModel();
         DbRelationship relationship = (DbRelationship) e.getRelationship();
         int ind = model.getObjectList().indexOf(relationship);
@@ -238,7 +238,7 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
      * Refresh the list of db entities (targets). Also refresh the table in case some db
      * relationships were deleted.
      */
-    private void reloadEntityList(EntityEvent e) {
+    private void reloadEntityList(DbEntityEvent e) {
         if (e.getSource() == this
                 || controller.getSelectedDbEntity() == e.getEntity()  // If current model added/removed, do nothing.
                 || controller.getSelectedDbEntity() == null) { // If this is just loading new currentDbEntity, do nothing

@@ -309,7 +309,7 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
         table.setModel(createTableModel());
         setUpPrefetchBox(table.getColumnModel().getColumn(2));
 
-        mediator.fireQueryEvent(new QueryEvent(this, sqlTemplate));
+        mediator.fireQueryEvent(QueryEvent.ofChange(this, sqlTemplate));
     }
 
     public void removePrefetch(String prefetch) {
@@ -319,7 +319,7 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
         table.setModel(createTableModel());
         setUpPrefetchBox(table.getColumnModel().getColumn(2));
 
-        mediator.fireQueryEvent(new QueryEvent(this, sqlTemplate));
+        mediator.fireQueryEvent(QueryEvent.ofChange(this, sqlTemplate));
     }
 
     /**

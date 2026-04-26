@@ -21,33 +21,37 @@ package org.apache.cayenne.modeler.event.model;
 
 import org.apache.cayenne.map.ProcedureParameter;
 
+public class ProcedureParameterEvent extends ModelEvent {
 
-public class ProcedureParameterEvent extends MapEvent {
-    protected ProcedureParameter parameter;
+    private final ProcedureParameter parameter;
 
-    public ProcedureParameterEvent(Object source, ProcedureParameter parameter) {
-        super(source);
-        setParameter(parameter);
+    public static ProcedureParameterEvent ofAdd(Object source, ProcedureParameter parameter) {
+        return new ProcedureParameterEvent(source, parameter, Type.ADD, null);
     }
 
-    public ProcedureParameterEvent(
-        Object source,
-        ProcedureParameter parameter,
-        int type) {
-        this(source, parameter);
-        setId(type);
+    public static ProcedureParameterEvent ofChange(Object source, ProcedureParameter parameter) {
+        return new ProcedureParameterEvent(source, parameter, Type.CHANGE, null);
     }
 
-    @Override
-    public String getNewName() {
-        return (parameter != null) ? parameter.getName() : null;
+    public static ProcedureParameterEvent ofChange(Object source, ProcedureParameter parameter, String oldName) {
+        return new ProcedureParameterEvent(source, parameter, Type.CHANGE, oldName);
+    }
+
+    public static ProcedureParameterEvent ofRemove(Object source, ProcedureParameter parameter) {
+        return new ProcedureParameterEvent(source, parameter, Type.REMOVE, null);
+    }
+
+    private ProcedureParameterEvent(Object source, ProcedureParameter parameter, Type type, String oldName) {
+        super(source, type, oldName);
+        this.parameter = parameter;
     }
 
     public ProcedureParameter getParameter() {
         return parameter;
     }
 
-    public void setParameter(ProcedureParameter parameter) {
-        this.parameter = parameter;
+    @Override
+    public String getNewName() {
+        return (parameter != null) ? parameter.getName() : null;
     }
 }

@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.event.model;
 
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import java.util.EventListener;
 
 /**
@@ -30,17 +31,17 @@ public interface ObjEntityListener extends EventListener {
      * Entity property changed. May be name, attribute or relationship added or removed, etc.
      * Attribute and relationship property changes are handled in respective listeners.
      */
-    void objEntityChanged(EntityEvent e);
+    void objEntityChanged(ObjEntityEvent e);
 
     /**
      * New entity has been created/added.
      */
-    void objEntityAdded(EntityEvent e);
+    void objEntityAdded(ObjEntityEvent e);
 
     /**
      * Entity has been removed.
      */
-    void objEntityRemoved(EntityEvent e);
+    void objEntityRemoved(ObjEntityEvent e);
 
 }
 

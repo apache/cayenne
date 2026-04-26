@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.dbentity.properties;
 
+import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
 import javax.swing.JOptionPane;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,7 +27,6 @@ import java.util.Collection;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.modeler.event.model.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.swing.table.CayenneTableModel;
@@ -144,7 +144,7 @@ public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> 
             if (clash != null && clash != rel) {
                 throw new IllegalArgumentException("Duplicate relationship name: " + newName);
             }
-            RelationshipEvent e = new RelationshipEvent(eventSource, rel, entity, oldName);
+            DbRelationshipEvent e = DbRelationshipEvent.ofChange(eventSource, rel, entity, oldName);
             entity.renameRelationship(rel, newName);
             controller.fireDbRelationshipEvent(e);
             fireTableCellUpdated(row, column);
@@ -170,15 +170,15 @@ public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> 
             }
 
             rel.setToDependentPK(flag);
-            controller.fireDbRelationshipEvent(new RelationshipEvent(eventSource, rel, entity));
+            controller.fireDbRelationshipEvent(DbRelationshipEvent.ofChange(eventSource, rel, entity));
         } else if (column == CARDINALITY) {
             rel.setToMany((Boolean) aValue);
-            controller.fireDbRelationshipEvent(new RelationshipEvent(eventSource, rel, entity));
+            controller.fireDbRelationshipEvent(DbRelationshipEvent.ofChange(eventSource, rel, entity));
 
             updateDependentObjRelationships(rel);
         } else if(column == COMMENTS) {
             setComment((String) aValue, rel);
-            controller.fireDbRelationshipEvent(new RelationshipEvent(eventSource, rel, entity));
+            controller.fireDbRelationshipEvent(DbRelationshipEvent.ofChange(eventSource, rel, entity));
         }
         fireTableRowsUpdated(row, row);
     }

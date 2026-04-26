@@ -23,7 +23,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.modeler.event.model.MapEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.querytype.QueryTypeController;
@@ -62,7 +62,7 @@ public class CreateQueryAction extends ModelerAbstractAction {
      */
     public static void fireQueryEvent(Object src, ProjectController mediator, DataChannelDescriptor domain,
             DataMap dataMap, QueryDescriptor query) {
-        mediator.fireQueryEvent(new QueryEvent(src, query, MapEvent.ADD, dataMap));
+        mediator.fireQueryEvent(QueryEvent.ofAdd(src, query, dataMap));
         mediator.displayQuery(new QueryDisplayEvent(src, query, dataMap, domain));
     }
 }

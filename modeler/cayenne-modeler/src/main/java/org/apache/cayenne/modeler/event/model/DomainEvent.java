@@ -21,32 +21,40 @@ package org.apache.cayenne.modeler.event.model;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 
-/** 
- * Represents events resulted from DataDomain changes 
- * in CayenneModeler.
- * 
+/**
+ * Represents events resulted from DataDomain changes in CayenneModeler.
  */
-public class DomainEvent extends MapEvent {
-	/** Creates a domain change event. */
-	public DomainEvent(Object src, DataChannelDescriptor domain) {
-		super(src);
-		setDomain(domain);
-	}
+public class DomainEvent extends ModelEvent {
 
-	/** Creates a domain event of a specified type. */
-	public DomainEvent(Object src, DataChannelDescriptor domain, int id) {
-		this(src, domain);
-		setId(id);
-	}
+    private final DataChannelDescriptor domain;
 
-	/** Creates a domain name change event.*/
-	public DomainEvent(Object src, DataChannelDescriptor domain, String oldName) {
-		this(src, domain);	
-		setOldName(oldName);
-	}
+    public static DomainEvent ofAdd(Object src, DataChannelDescriptor domain) {
+        return new DomainEvent(src, domain, Type.ADD, null);
+    }
 
-	@Override
+    public static DomainEvent ofChange(Object src, DataChannelDescriptor domain) {
+        return new DomainEvent(src, domain, Type.CHANGE, null);
+    }
+
+    public static DomainEvent ofChange(Object src, DataChannelDescriptor domain, String oldName) {
+        return new DomainEvent(src, domain, Type.CHANGE, oldName);
+    }
+
+    public static DomainEvent ofRemove(Object src, DataChannelDescriptor domain) {
+        return new DomainEvent(src, domain, Type.REMOVE, null);
+    }
+
+    private DomainEvent(Object src, DataChannelDescriptor domain, Type type, String oldName) {
+        super(src, type, oldName);
+        this.domain = domain;
+    }
+
+    public DataChannelDescriptor getDomain() {
+        return domain;
+    }
+
+    @Override
     public String getNewName() {
-		return (domain != null) ? domain.getName() : null;
-	}
+        return (domain != null) ? domain.getName() : null;
+    }
 }

@@ -26,8 +26,8 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.event.model.EntityEvent;
-import org.apache.cayenne.modeler.event.model.MapEvent;
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.entitysync.EntitySyncController;
@@ -108,7 +108,7 @@ public class DbEntitySyncAction extends ModelerAbstractAction {
                 }
 
                 if (merger.synchronizeWithDbEntity(entity)) {
-                    mediator.fireObjEntityEvent(new EntityEvent(this, entity, MapEvent.CHANGE));
+                    mediator.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
                     hasChanges = true;
                 }
 

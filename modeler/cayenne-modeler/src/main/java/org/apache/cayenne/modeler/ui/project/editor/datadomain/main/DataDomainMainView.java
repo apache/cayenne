@@ -143,7 +143,7 @@ public class DataDomainMainView extends JPanel implements DomainDisplayListener 
         if (!Util.nullSafeEquals(value, oldValue)) {
             properties.put(property, value);
 
-            DomainEvent e = new DomainEvent(this, domain);
+            DomainEvent e = DomainEvent.ofChange(this, domain);
             controller.fireDomainEvent(e);
         }
     }
@@ -205,7 +205,7 @@ public class DataDomainMainView extends JPanel implements DomainDisplayListener 
 
         Preferences prefs = controller.getDataDomainPreferences();
 
-        DomainEvent e = new DomainEvent(
+        DomainEvent e = DomainEvent.ofChange(
                 this,
                 dataChannelDescriptor,
                 dataChannelDescriptor.getName());

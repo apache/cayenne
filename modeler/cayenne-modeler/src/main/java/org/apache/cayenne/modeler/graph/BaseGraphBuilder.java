@@ -41,12 +41,11 @@ import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.modeler.event.model.DataMapListener;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.modeler.event.model.EntityEvent;
-import org.apache.cayenne.modeler.event.model.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
@@ -534,20 +533,20 @@ abstract class BaseGraphBuilder<E extends Entity<E, A, R>, A extends Attribute<E
     /**
      * Checks if entity name has changed, then changes map key
      */
-    protected void remapEntity(EntityEvent e) {
+    protected void remapEntity(ModelEvent e) {
         if (e.isNameChange()) {
             entityCells.put(e.getNewName(), entityCells.remove(e.getOldName()));
         }
     }
 
     /**
-     * Checks if entity name has changed, then changes map key
+     * Checks if relationship name has changed, then changes map key
      */
     @SuppressWarnings("unchecked")
-    protected void remapRelationship(RelationshipEvent e) {
+    protected void remapRelationship(Relationship<E, A, R> relationship, ModelEvent e, String entityName) {
         if (e.isNameChange()) {
-            relCells.put(getQualifiedName((Relationship<E, A, R>)e.getRelationship()),
-                    relCells.remove(e.getEntity().getName() + "." + e.getOldName()));
+            relCells.put(getQualifiedName(relationship),
+                    relCells.remove(entityName + "." + e.getOldName()));
         }
     }
 

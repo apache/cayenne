@@ -19,12 +19,12 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.dbentity.main;
 
+import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.modeler.event.model.EntityEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
@@ -234,7 +234,7 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
             throw new ValidationException("Entity name is required.");
         } else if (entity.getDataMap().getDbEntity(newName) == null) {
             // completely new name, set new name for entity
-            EntityEvent e = new EntityEvent(this, entity, entity.getName());
+            DbEntityEvent e = DbEntityEvent.ofChange(this, entity, entity.getName());
             entity.getDataMap().renameDbEntity(entity, newName);
             controller.fireDbEntityEvent(e);
         } else {
@@ -253,7 +253,7 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
 
         if (ent != null && !Util.nullSafeEquals(ent.getCatalog(), text)) {
             ent.setCatalog(text);
-            controller.fireDbEntityEvent(new EntityEvent(this, ent));
+            controller.fireDbEntityEvent(DbEntityEvent.ofChange(this, ent));
         }
     }
 
@@ -267,7 +267,7 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
 
         if (ent != null && !Util.nullSafeEquals(ent.getSchema(), text)) {
             ent.setSchema(text);
-            controller.fireDbEntityEvent(new EntityEvent(this, ent));
+            controller.fireDbEntityEvent(DbEntityEvent.ofChange(this, ent));
         }
     }
 
@@ -284,7 +284,7 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
                 String oldQualifier = ExpressionConvertor.asString(ent.getQualifier());
                 if (!Util.nullSafeEquals(oldQualifier, qualifier)) {
                     ent.setQualifier(ExpressionConvertor.fromString(qualifier));
-                    controller.fireDbEntityEvent(new EntityEvent(this, ent));
+                    controller.fireDbEntityEvent(DbEntityEvent.ofChange(this, ent));
                 }
             } catch (IllegalArgumentException ex) {
                 // unparsable qualifier
@@ -306,6 +306,6 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
         }
 
         ObjectInfo.putToMetaData(controller.getApplication().getMetaData(), entity, ObjectInfo.COMMENT, value);
-        controller.fireDbEntityEvent(new EntityEvent(this, entity));
+        controller.fireDbEntityEvent(DbEntityEvent.ofChange(this, entity));
     }
 }

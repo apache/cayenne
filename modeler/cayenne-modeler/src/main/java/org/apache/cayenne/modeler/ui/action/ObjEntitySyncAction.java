@@ -22,8 +22,8 @@ package org.apache.cayenne.modeler.ui.action;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.merge.context.EntityMergeSupport;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.event.model.EntityEvent;
-import org.apache.cayenne.modeler.event.model.MapEvent;
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.entitysync.EntitySyncController;
@@ -79,7 +79,7 @@ public class ObjEntitySyncAction extends ModelerAbstractAction {
 
             if (merger.synchronizeWithDbEntity(entity)) {
                 mediator
-                        .fireObjEntityEvent(new EntityEvent(this, entity, MapEvent.CHANGE));
+                        .fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
                 mediator.displayObjEntity(new EntityDisplayEvent(
                         this,
                         entity,

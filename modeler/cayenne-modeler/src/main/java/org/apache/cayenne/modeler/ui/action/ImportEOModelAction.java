@@ -44,8 +44,9 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.modeler.event.model.EntityEvent;
-import org.apache.cayenne.modeler.event.model.MapEvent;
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
+import org.apache.cayenne.modeler.event.model.DbEntityEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
@@ -218,7 +219,7 @@ public class ImportEOModelAction extends ModelerAbstractAction {
 
             // send events after the node creation is complete
             getProjectController().fireDataNodeEvent(
-                    new DataNodeEvent(this, node, MapEvent.ADD));
+                    DataNodeEvent.ofAdd(this, node));
             getProjectController().displayDataNode(
                     new DataNodeDisplayEvent(
                             this,
@@ -259,58 +260,45 @@ public class ImportEOModelAction extends ModelerAbstractAction {
             Collection<DbEntity> newDE = new ArrayList<>(currentMap.getDbEntities());
             Collection<QueryDescriptor> newQueries = new ArrayList<>(currentMap.getQueryDescriptors());
 
-            EntityEvent entityEvent = new EntityEvent(application.getFrameController().getView(), null);
-            QueryEvent queryEvent = new QueryEvent(application.getFrameController().getView(), null);
+            Object src = application.getFrameController().getView();
 
             // 1. ObjEntities
             Collection<ObjEntity> addedOE = new ArrayList<>(newOE);
             addedOE.removeAll(originalOE);
             for (ObjEntity e : addedOE) {
-                entityEvent.setEntity(e);
-                entityEvent.setId(MapEvent.ADD);
-                controller.fireObjEntityEvent(entityEvent);
+                controller.fireObjEntityEvent(ObjEntityEvent.ofAdd(src, e));
             }
 
             Collection<ObjEntity> removedOE = new ArrayList<>(originalOE);
             removedOE.removeAll(newOE);
             for (ObjEntity e : removedOE) {
-                entityEvent.setEntity(e);
-                entityEvent.setId(MapEvent.REMOVE);
-                controller.fireObjEntityEvent(entityEvent);
+                controller.fireObjEntityEvent(ObjEntityEvent.ofRemove(src, e));
             }
 
             // 2. DbEntities
             Collection<DbEntity> addedDE = new ArrayList<>(newDE);
             addedDE.removeAll(originalDE);
             for (DbEntity e : addedDE) {
-                entityEvent.setEntity(e);
-                entityEvent.setId(MapEvent.ADD);
-                controller.fireDbEntityEvent(entityEvent);
+                controller.fireDbEntityEvent(DbEntityEvent.ofAdd(src, e));
             }
 
             Collection<DbEntity> removedDE = new ArrayList<>(originalDE);
             removedDE.removeAll(newDE);
             for (DbEntity e : removedDE) {
-                entityEvent.setEntity(e);
-                entityEvent.setId(MapEvent.REMOVE);
-                controller.fireDbEntityEvent(entityEvent);
+                controller.fireDbEntityEvent(DbEntityEvent.ofRemove(src, e));
             }
 
             // 3. queries
             Collection<QueryDescriptor> addedQueries = new ArrayList<>(newQueries);
             addedQueries.removeAll(originalQueries);
             for (QueryDescriptor q : addedQueries) {
-                queryEvent.setQuery(q);
-                queryEvent.setId(MapEvent.ADD);
-                controller.fireQueryEvent(queryEvent);
+                controller.fireQueryEvent(QueryEvent.ofAdd(src, q));
             }
 
             Collection<QueryDescriptor> removedQueries = new ArrayList<>(originalQueries);
             removedQueries.removeAll(newQueries);
             for (QueryDescriptor q : removedQueries) {
-                queryEvent.setQuery(q);
-                queryEvent.setId(MapEvent.REMOVE);
-                controller.fireQueryEvent(queryEvent);
+                controller.fireQueryEvent(QueryEvent.ofRemove(src, q));
             }
 
             controller.displayDataMap(new DataMapDisplayEvent(

@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks;
 
 import org.apache.cayenne.map.CallbackDescriptor;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.event.model.MapEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
 import org.apache.cayenne.modeler.swing.table.CayenneTableModel;
@@ -146,11 +146,10 @@ public class CallbackDescriptorTableModel extends CayenneTableModel<String> {
 
                 fireTableRowsUpdated(row, row);
 
-                controller.fireCallbackMethodEvent(new CallbackMethodEvent(
+                controller.fireCallbackMethodEvent(CallbackMethodEvent.ofChange(
                         eventSource,
                         prevMethod,
-                        method,
-                        MapEvent.CHANGE));
+                        method));
             }
         }
     }

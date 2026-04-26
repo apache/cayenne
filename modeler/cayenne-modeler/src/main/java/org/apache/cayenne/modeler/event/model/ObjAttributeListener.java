@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.event.model;
 
+import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
 import java.util.EventListener;
 
 /**
@@ -30,16 +31,16 @@ public interface ObjAttributeListener extends EventListener {
     /**
      * Attribute property changed.
      */
-    void objAttributeChanged(AttributeEvent e);
+    void objAttributeChanged(ObjAttributeEvent e);
 
     /**
      * New attribute has been created/added.
      */
-    void objAttributeAdded(AttributeEvent e);
+    void objAttributeAdded(ObjAttributeEvent e);
 
     /**
      * Attribute has been removed.
      */
-    void objAttributeRemoved(AttributeEvent e);
+    void objAttributeRemoved(ObjAttributeEvent e);
 }
 

@@ -20,32 +20,31 @@ package org.apache.cayenne.modeler.event.model;
 
 import org.apache.cayenne.map.Embeddable;
 
+public class EmbeddableEvent extends ModelEvent {
 
-public class EmbeddableEvent extends MapEvent {
+    private final Embeddable embeddable;
 
-    protected Embeddable embeddable;
-    
-    public EmbeddableEvent(Object source, Embeddable embeddable) {
-        super(source);
-        setEmbeddable(embeddable);
+    public static EmbeddableEvent ofAdd(Object source, Embeddable embeddable) {
+        return new EmbeddableEvent(source, embeddable, Type.ADD, null);
     }
 
-     public EmbeddableEvent(Object src, Embeddable embeddable2, int id) {
-         this(src, embeddable2);
-         setId(id);
+    public static EmbeddableEvent ofChange(Object source, Embeddable embeddable) {
+        return new EmbeddableEvent(source, embeddable, Type.CHANGE, null);
     }
 
-     public EmbeddableEvent(Object src, Embeddable embeddable2, String oldClassName) {
-         this(src, embeddable2);
-         setOldName(oldClassName);
+    public static EmbeddableEvent ofChange(Object source, Embeddable embeddable, String oldClassName) {
+        return new EmbeddableEvent(source, embeddable, Type.CHANGE, oldClassName);
     }
 
-     
-    public void setEmbeddable(Embeddable embeddable) {
+    public static EmbeddableEvent ofRemove(Object source, Embeddable embeddable) {
+        return new EmbeddableEvent(source, embeddable, Type.REMOVE, null);
+    }
+
+    private EmbeddableEvent(Object source, Embeddable embeddable, Type type, String oldName) {
+        super(source, type, oldName);
         this.embeddable = embeddable;
     }
 
-    
     public Embeddable getEmbeddable() {
         return embeddable;
     }

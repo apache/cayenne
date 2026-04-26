@@ -20,7 +20,7 @@
 package org.apache.cayenne.configuration.event;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.modeler.event.model.MapEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.junit.Test;
 
@@ -33,22 +33,19 @@ public class DataNodeEventTest {
 
     @Test
     public void testNewName() throws Exception {
-        MapEvent event = new DataNodeEvent(new Object(), new DataNodeDescriptor("someName"));
+        ModelEvent event = DataNodeEvent.ofChange(new Object(), new DataNodeDescriptor("someName"));
         assertEquals("someName", event.getNewName());
     }
 
     @Test
     public void testNoNameChange() throws Exception {
-        MapEvent event = new DataNodeEvent(new Object(), new DataNodeDescriptor("someName"));
+        ModelEvent event = DataNodeEvent.ofChange(new Object(), new DataNodeDescriptor("someName"));
         assertFalse(event.isNameChange());
-        
-        event.setOldName("someOldName");
-        assertTrue(event.isNameChange());
     }
 
     @Test
     public void testNameChange() throws Exception {
-        MapEvent event = new DataNodeEvent(
+        ModelEvent event = DataNodeEvent.ofChange(
                 new Object(),
                 new DataNodeDescriptor("someName"),
                 "someOldName");

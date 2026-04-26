@@ -21,35 +21,37 @@ package org.apache.cayenne.modeler.event.model;
 
 import org.apache.cayenne.map.Procedure;
 
-/** 
- * An event generated when a Procedure object is added to a DataMap, 
+/**
+ * An event generated when a Procedure object is added to a DataMap,
  * removed from a DataMap, or changed within a DataMap.
- * 
  */
-public class ProcedureEvent extends MapEvent {
-    protected Procedure procedure;
+public class ProcedureEvent extends ModelEvent {
 
-    public ProcedureEvent(Object source, Procedure procedure) {
-        super(source);
-        setProcedure(procedure);
+    private final Procedure procedure;
+
+    public static ProcedureEvent ofAdd(Object source, Procedure procedure) {
+        return new ProcedureEvent(source, procedure, Type.ADD, null);
     }
 
-    public ProcedureEvent(Object source, Procedure procedure, String oldName) {
-        this(source, procedure);
-        setOldName(oldName);
+    public static ProcedureEvent ofChange(Object source, Procedure procedure) {
+        return new ProcedureEvent(source, procedure, Type.CHANGE, null);
     }
 
-    public ProcedureEvent(Object source, Procedure procedure, int type) {
-        this(source, procedure);
-        setId(type);
+    public static ProcedureEvent ofChange(Object source, Procedure procedure, String oldName) {
+        return new ProcedureEvent(source, procedure, Type.CHANGE, oldName);
+    }
+
+    public static ProcedureEvent ofRemove(Object source, Procedure procedure) {
+        return new ProcedureEvent(source, procedure, Type.REMOVE, null);
+    }
+
+    private ProcedureEvent(Object source, Procedure procedure, Type type, String oldName) {
+        super(source, type, oldName);
+        this.procedure = procedure;
     }
 
     public Procedure getProcedure() {
         return procedure;
-    }
-
-    public void setProcedure(Procedure procedure) {
-        this.procedure = procedure;
     }
 
     @Override

@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.dbentity.main;
 
+import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import java.awt.BorderLayout;
 import java.awt.Font;
 
@@ -26,7 +27,6 @@ import javax.swing.JLabel;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
-import org.apache.cayenne.modeler.event.model.EntityEvent;
 import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.util.Util;
@@ -119,7 +119,7 @@ public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
         DbKeyGenerator generator = mediator.getSelectedDbEntity().getPrimaryKeyGenerator();
         if (!Util.nullSafeEquals(generator.getKeyCacheSize(), cacheSize)) {
             generator.setKeyCacheSize(cacheSize);
-            mediator.fireDbEntityEvent(new EntityEvent(this, generator.getDbEntity()));
+            mediator.fireDbEntityEvent(DbEntityEvent.ofChange(this, generator.getDbEntity()));
         }
     }
 
@@ -137,7 +137,7 @@ public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
         DbKeyGenerator generator = mediator.getSelectedDbEntity().getPrimaryKeyGenerator();
         if (!Util.nullSafeEquals(text, generator.getName())) {
             generator.setGeneratorName(text);
-            mediator.fireDbEntityEvent(new EntityEvent(this, generator.getDbEntity()));
+            mediator.fireDbEntityEvent(DbEntityEvent.ofChange(this, generator.getDbEntity()));
         }
     }
 }

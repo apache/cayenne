@@ -19,11 +19,11 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.dbentity.properties;
 
+import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.modeler.event.model.AttributeEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.swing.table.CayenneTableModel;
@@ -137,11 +137,11 @@ public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
             return;
         }
 
-        AttributeEvent e = new AttributeEvent(eventSource, attr, entity);
+        String oldName = null;
 
         switch (col) {
             case DB_ATTRIBUTE_NAME:
-                setDbAttributeName(attr, (String) newVal, e);
+                oldName = setDbAttributeName(attr, (String) newVal);
                 fireTableCellUpdated(row, col);
                 break;
             case DB_ATTRIBUTE_TYPE:
@@ -166,21 +166,21 @@ public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
                 break;
         }
 
-        controller.fireDbAttributeEvent(e);
+        controller.fireDbAttributeEvent(DbAttributeEvent.ofChange(eventSource, attr, entity, oldName));
     }
 
-    private void setDbAttributeName(DbAttribute attr, String newName, AttributeEvent e) {
+    private String setDbAttributeName(DbAttribute attr, String newName) {
         String oldName = attr.getName();
         if (Util.nullSafeEquals(newName, oldName)) {
-            return;
+            return null;
         }
         DbEntity parent = attr.getEntity();
         DbAttribute clash = parent.getAttributeMap().get(newName);
         if (clash != null && clash != attr) {
             throw new IllegalArgumentException("Duplicate attribute name: " + newName);
         }
-        e.setOldName(oldName);
         parent.renameAttribute(attr, newName);
+        return oldName;
     }
 
     public String getMaxLength(DbAttribute attr) {

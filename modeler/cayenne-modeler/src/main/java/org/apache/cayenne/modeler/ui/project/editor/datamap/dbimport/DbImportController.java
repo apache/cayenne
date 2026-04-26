@@ -81,6 +81,6 @@ public class DbImportController {
     }
 
     public void fireDataMapChangeEvent(DataMap dataMap) {
-        Application.getInstance().getFrameController().getProjectController().fireDataMapEvent(new DataMapEvent(this, dataMap));
+        Application.getInstance().getFrameController().getProjectController().fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
     }
 }

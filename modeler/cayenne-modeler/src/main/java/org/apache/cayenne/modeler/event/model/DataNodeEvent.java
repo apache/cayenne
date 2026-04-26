@@ -21,47 +21,40 @@ package org.apache.cayenne.modeler.event.model;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 
-/** 
- * Represents events resulted from DataNode changes 
- * in CayenneModeler.
+/**
+ * Represents events resulted from DataNode changes in CayenneModeler.
  */
-public class DataNodeEvent extends MapEvent {
-	protected DataNodeDescriptor dataNode;
+public class DataNodeEvent extends ModelEvent {
 
-	/** Creates a node change event. */
-	public DataNodeEvent(Object src, DataNodeDescriptor nextNode) {
-		super(src);
-		setDataNode(nextNode);
-	}
+    private final DataNodeDescriptor dataNode;
 
-	/** Creates a node event of a specified type. */
-	public DataNodeEvent(Object src, DataNodeDescriptor node, int id) {
-		this(src, node);
-		setId(id);
-	}
+    public static DataNodeEvent ofAdd(Object src, DataNodeDescriptor dataNode) {
+        return new DataNodeEvent(src, dataNode, Type.ADD, null);
+    }
 
-	/** Creates a node name change event.*/
-	public DataNodeEvent(Object src, DataNodeDescriptor node, String oldName) {
-		this(src, node);
-		setOldName(oldName);
-	}
+    public static DataNodeEvent ofChange(Object src, DataNodeDescriptor dataNode) {
+        return new DataNodeEvent(src, dataNode, Type.CHANGE, null);
+    }
 
-	/** Returns node object associated with this event. */
-	public DataNodeDescriptor getDataNode() {
-		return dataNode;
-	}
+    public static DataNodeEvent ofChange(Object src, DataNodeDescriptor dataNode, String oldName) {
+        return new DataNodeEvent(src, dataNode, Type.CHANGE, oldName);
+    }
 
-	/**
-	 * Sets the dataNode.
-	 * 
-	 * @param dataNode The dataNode to set
-	 */
-	public void setDataNode(DataNodeDescriptor dataNode) {
-		this.dataNode = dataNode;
-	}
-	
-	@Override
+    public static DataNodeEvent ofRemove(Object src, DataNodeDescriptor dataNode) {
+        return new DataNodeEvent(src, dataNode, Type.REMOVE, null);
+    }
+
+    private DataNodeEvent(Object src, DataNodeDescriptor dataNode, Type type, String oldName) {
+        super(src, type, oldName);
+        this.dataNode = dataNode;
+    }
+
+    public DataNodeDescriptor getDataNode() {
+        return dataNode;
+    }
+
+    @Override
     public String getNewName() {
-		return (dataNode != null) ? dataNode.getName() : null;
-	}
+        return (dataNode != null) ? dataNode.getName() : null;
+    }
 }

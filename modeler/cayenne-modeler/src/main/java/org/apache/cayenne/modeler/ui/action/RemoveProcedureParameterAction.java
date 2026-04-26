@@ -23,7 +23,7 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.event.model.ProcedureParameterEvent;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.modeler.event.model.MapEvent;
+import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.confirmremove.ConfirmRemoveDialog;
@@ -92,7 +92,7 @@ public class RemoveProcedureParameterAction extends RemoveAction implements Mult
 
             procedure.removeCallParameter(parameter.getName());
 
-            ProcedureParameterEvent e = new ProcedureParameterEvent(application.getFrameController().getView(), parameter, MapEvent.REMOVE);
+            ProcedureParameterEvent e = ProcedureParameterEvent.ofRemove(application.getFrameController().getView(), parameter);
 
             mediator.fireProcedureParameterEvent(e);
         }

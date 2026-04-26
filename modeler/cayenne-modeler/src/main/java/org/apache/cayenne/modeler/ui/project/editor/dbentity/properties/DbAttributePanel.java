@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.project.editor.dbentity.properties;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.modeler.event.model.AttributeEvent;
+import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
 import org.apache.cayenne.modeler.event.model.DbAttributeListener;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
@@ -130,18 +130,18 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
     }
 
     @Override
-    public void dbAttributeChanged(AttributeEvent e) {
+    public void dbAttributeChanged(DbAttributeEvent e) {
         table.select(e.getAttribute());
     }
 
     @Override
-    public void dbAttributeAdded(AttributeEvent e) {
+    public void dbAttributeAdded(DbAttributeEvent e) {
         rebuildTable((DbEntity) e.getEntity());
         table.select(e.getAttribute());
     }
 
     @Override
-    public void dbAttributeRemoved(AttributeEvent e) {
+    public void dbAttributeRemoved(DbAttributeEvent e) {
         DbAttributeTableModel model = (DbAttributeTableModel) table.getModel();
         int ind = model.getObjectList().indexOf(e.getAttribute());
         model.removeRow((DbAttribute) e.getAttribute());

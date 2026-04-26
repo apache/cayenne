@@ -112,7 +112,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
             QueryDescriptor query = getQuery();
             if (query != null) {
                 query.setProperty(SelectQueryDescriptor.DISTINCT_PROPERTY, Boolean.toString(distinct.isSelected()));
-                controller.fireQueryEvent(new QueryEvent(this, query));
+                controller.fireQueryEvent(QueryEvent.ofChange(this, query));
             }
         });
     }
@@ -178,7 +178,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
         }
 
         getQuery().setQualifier(createQualifier(text));
-        controller.fireQueryEvent(new QueryEvent(this, getQuery()));
+        controller.fireQueryEvent(QueryEvent.ofChange(this, getQuery()));
     }
 
     /**
@@ -260,7 +260,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
             return;
         }
         ObjectInfo.putToMetaData(controller.getApplication().getMetaData(), query, ObjectInfo.COMMENT, text);
-        controller.fireQueryEvent(new QueryEvent(this, query));
+        controller.fireQueryEvent(QueryEvent.ofChange(this, query));
     }
 
     private String getQueryComment(QueryDescriptor queryDescriptor) {

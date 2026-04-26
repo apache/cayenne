@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.event.model;
 
+import org.apache.cayenne.modeler.event.model.ObjRelationshipEvent;
 import java.util.EventListener;
 
 /**
@@ -29,16 +30,16 @@ public interface ObjRelationshipListener extends EventListener {
     /**
      * Relationship property changed.
      */
-    void objRelationshipChanged(RelationshipEvent e);
+    void objRelationshipChanged(ObjRelationshipEvent e);
 
     /**
      * Relationship has been created/added.
      */
-    void objRelationshipAdded(RelationshipEvent e);
+    void objRelationshipAdded(ObjRelationshipEvent e);
 
     /**
      * Relationship has been removed.
      */
-    void objRelationshipRemoved(RelationshipEvent e);
+    void objRelationshipRemoved(ObjRelationshipEvent e);
 }
 

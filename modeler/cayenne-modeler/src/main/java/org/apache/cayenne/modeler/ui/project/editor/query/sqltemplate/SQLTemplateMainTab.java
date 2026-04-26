@@ -163,7 +163,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
             Object root = entity != null ? entity : controller.getSelectedDataMap();
             template.setRoot(root);
 
-            controller.fireQueryEvent(new QueryEvent(this, template));
+            controller.fireQueryEvent(QueryEvent.ofChange(this, template));
         }
     }
 
@@ -173,7 +173,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
             return;
         }
         ObjectInfo.putToMetaData(controller.getApplication().getMetaData(), query, ObjectInfo.COMMENT, text);
-        controller.fireQueryEvent(new QueryEvent(this, query));
+        controller.fireQueryEvent(QueryEvent.ofChange(this, query));
     }
 
     private String getQueryComment(QueryDescriptor queryDescriptor) {

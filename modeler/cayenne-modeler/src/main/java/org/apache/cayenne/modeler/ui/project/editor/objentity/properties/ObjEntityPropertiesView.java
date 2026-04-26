@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.objentity.properties;
 
-import org.apache.cayenne.modeler.event.model.EntityEvent;
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityListener;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
@@ -139,19 +139,19 @@ public class ObjEntityPropertiesView extends JPanel implements ObjEntityDisplayL
     }
 
     @Override
-    public void objEntityChanged(EntityEvent e) {
+    public void objEntityChanged(ObjEntityEvent e) {
         attributePanel.objEntityChanged(e);
         relationshipPanel.objEntityChanged(e);
     }
 
     @Override
-    public void objEntityAdded(EntityEvent e) {
+    public void objEntityAdded(ObjEntityEvent e) {
         attributePanel.objEntityAdded(e);
         relationshipPanel.objEntityAdded(e);
     }
 
     @Override
-    public void objEntityRemoved(EntityEvent e) {
+    public void objEntityRemoved(ObjEntityEvent e) {
         attributePanel.objEntityRemoved(e);
         relationshipPanel.objEntityRemoved(e);
     }
