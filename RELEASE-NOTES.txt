@@ -54,6 +54,7 @@ CAY-2902 Shared query cache clobbers newer object state
 CAY-2904 Disjoint prefetch returns incorrect data
 CAY-2919 Exception in "Generate Database Schema"
 CAY-2921 Modeler: consistent duplicate name handling
+CAY-2926 Modeler: renaming an ObjEntity adds it to cgen excludeEntities
 
 ----------------------------------
 Release: 5.0-M1

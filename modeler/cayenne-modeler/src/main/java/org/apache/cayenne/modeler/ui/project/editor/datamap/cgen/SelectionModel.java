@@ -178,6 +178,20 @@ class SelectionModel {
         selectedEmbeddables.remove(embeddable.getClassName());
     }
 
+    void renameSelectedEntity(DataMap dataMap, String oldName, String newName) {
+        initCollectionsForSelection(dataMap);
+        if (selectedEntities.remove(oldName)) {
+            selectedEntities.add(newName);
+        }
+    }
+
+    void renameSelectedEmbeddable(DataMap dataMap, String oldClassName, String newClassName) {
+        initCollectionsForSelection(dataMap);
+        if (selectedEmbeddables.remove(oldClassName)) {
+            selectedEmbeddables.add(newClassName);
+        }
+    }
+
     void addSelectedEntities(Collection<String> entities) {
         selectedEntities.addAll(entities);
     }

@@ -461,6 +461,19 @@ public class CgenController extends ChildController<ProjectController> implement
 
     @Override
     public void objEntityChanged(ObjEntityEvent e) {
+        String oldName = e.getOldName();
+        ObjEntity entity = (ObjEntity) e.getEntity();
+        String newName = entity.getName();
+        if (oldName == null || oldName.equals(newName)) {
+            return;
+        }
+        selectionModel.renameSelectedEntity(entity.getDataMap(), oldName, newName);
+        if (cgenConfiguration != null) {
+            if (cgenConfiguration.getEntities().remove(oldName)) {
+                cgenConfiguration.getEntities().add(newName);
+            }
+        }
+        checkCgenConfigDirty();
     }
 
     @Override
@@ -479,6 +492,19 @@ public class CgenController extends ChildController<ProjectController> implement
 
     @Override
     public void embeddableChanged(EmbeddableEvent e, DataMap map) {
+        String oldClassName = e.getOldName();
+        Embeddable embeddable = e.getEmbeddable();
+        String newClassName = embeddable.getClassName();
+        if (oldClassName == null || oldClassName.equals(newClassName)) {
+            return;
+        }
+        selectionModel.renameSelectedEmbeddable(map, oldClassName, newClassName);
+        if (cgenConfiguration != null) {
+            if (cgenConfiguration.getEmbeddables().remove(oldClassName)) {
+                cgenConfiguration.getEmbeddables().add(newClassName);
+            }
+        }
+        checkCgenConfigDirty();
     }
 
     @Override
