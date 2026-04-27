@@ -184,8 +184,8 @@ public class ModelerController extends RootController {
         view.setTitle(getProjectLocationString());
         view.setProjectView(projectController.getView());
 
-        projectController.restoreSelectionFromPrefs();
         application.getActionManager().projectOpened();
+        projectController.restoreSelectionFromPrefs();
 
         // do status update AFTER the project is actually opened...
         if (project.getConfigurationResource() == null) {

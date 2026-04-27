@@ -24,6 +24,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EmbeddedAttribute;
@@ -193,7 +194,8 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttribute> {
     }
 
     private String getDBAttribute(ObjAttribute attribute, DbAttribute dbAttribute) {
-        String path = attribute.getDbAttributePath().value();
+        CayennePath dbAttributePath = attribute.getDbAttributePath();
+        String path = dbAttributePath != null ? dbAttributePath.value() : null;
         if (dbAttribute == null) {
             if (!attribute.isInherited() && attribute.getEntity().isAbstract()) {
                 return path;
