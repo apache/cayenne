@@ -24,10 +24,9 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.mvc.ChildController;
-import org.apache.cayenne.modeler.toolkit.CellRenderers;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.toolkit.table.CheckBoxHeader;
 import org.apache.cayenne.modeler.toolkit.table.ImageRendererColumn;
-import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.toolkit.table.TableSizer;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
@@ -41,7 +40,7 @@ import java.util.List;
 
 public class CgenArtefactSelectorController extends ChildController<CgenController> {
 
-    private static final Icon ERROR_ICON = ModelerUtil.buildIcon("icon-error.png");
+    private static final Icon ERROR_ICON = IconFactory.buildIcon("icon-error.png");
 
     private static final String[] COLUMN_HEADERS = {"", "  Class", ""};
     private static final Class<?>[] COLUMN_CLASSES = {Boolean.class, JLabel.class, String.class};
@@ -178,13 +177,13 @@ public class CgenArtefactSelectorController extends ChildController<CgenControll
         Icon icon;
         if (obj instanceof Embeddable) {
             className = ((Embeddable) obj).getClassName();
-            icon = CellRenderers.iconForObject(new Embeddable());
+            icon = IconFactory.iconForObject(new Embeddable());
         } else if (obj instanceof ObjEntity) {
             className = ((ObjEntity) obj).getName();
-            icon = CellRenderers.iconForObject(new ObjEntity());
+            icon = IconFactory.iconForObject(new ObjEntity());
         } else {
             className = ((DataMap) obj).getName();
-            icon = CellRenderers.iconForObject(new DataMap());
+            icon = IconFactory.iconForObject(new DataMap());
         }
         JLabel labelIcon = new JLabel();
         labelIcon.setIcon(icon);

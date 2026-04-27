@@ -19,38 +19,26 @@
 
 package org.apache.cayenne.modeler.toolkit;
 
-import org.apache.cayenne.modeler.util.ModelerUtil;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.modeler.toolkit.dialog.CayenneDialog;
 
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.SwingConstants;
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.FlowLayout;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * A dialog rendering a progress bar.
  */
-public class ProgressDialog extends JDialog {
+public class ProgressDialog extends CayenneDialog {
 
     protected JProgressBar progressBar;
     protected JLabel statusLabel;
     protected JButton cancelButton;
 
     public ProgressDialog(JFrame parent, String title, String message) {
-        super(parent, title);
-        init(message);
-    }
+        super(parent, title, false);
 
-    private void init(String message) {
         progressBar = new JProgressBar();
         statusLabel = new JLabel(message, SwingConstants.LEFT);
         JLabel messageLabel = new JLabel(message, SwingConstants.LEFT);
@@ -78,7 +66,7 @@ public class ProgressDialog extends JDialog {
 
         setResizable(false);
         pack();
-        ModelerUtil.centerWindow(getOwner(), this);
+        centerWindow();
     }
 
     public JButton getCancelButton() {

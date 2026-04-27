@@ -16,7 +16,7 @@ public class ErrorsController {
             LOGGER.error("CayenneModeler Error", th);
         }
 
-        new ErrorDialog(Application.getInstance().getFrameController().getView(), "CayenneModeler Error", th, true, false).setVisible(true);
+        new ErrorDialog(Application.getInstance(), "CayenneModeler Error", th, true, false).setVisible(true);
     }
 
     /**
@@ -27,6 +27,6 @@ public class ErrorsController {
             LOGGER.warn("CayenneModeler Warning", th);
         }
 
-        new WarningDialog(Application.getInstance().getFrameController().getView(), message, th, false, false).setDetailed(true);
+        new WarningDialog(Application.getInstance(), message, th, false, false).setDetailed(true);
     }
 }

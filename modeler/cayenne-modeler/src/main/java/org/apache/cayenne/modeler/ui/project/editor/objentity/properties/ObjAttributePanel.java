@@ -39,6 +39,7 @@ import org.apache.cayenne.modeler.project.ObjEntityOps;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.WidgetFactory;
 import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
 import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
@@ -48,7 +49,7 @@ import org.apache.cayenne.modeler.ui.action.PasteAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.attrinfo.ObjAttributeInfoDialogController;
-import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.modeler.toolkit.ValueTypes;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -73,7 +74,7 @@ import java.util.Map;
  */
 public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListener, ObjEntityListener, ObjAttributeListener, ProjectBeforeSaveListener {
 
-    private static final ImageIcon INHERITANCE_ICON = ModelerUtil.buildIcon("icon-inheritance.png");
+    private static final ImageIcon INHERITANCE_ICON = IconFactory.buildIcon("icon-inheritance.png");
 
     private final ProjectController controller;
     private final ObjEntityPropertiesView parentPanel;
@@ -114,7 +115,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
             }
         });
 
-        this.editMenu = new JMenuItem("Edit Attribute", ModelerUtil.buildIcon("icon-edit.png"));
+        this.editMenu = new JMenuItem("Edit Attribute", IconFactory.buildIcon("icon-edit.png"));
         editMenu.addActionListener(this::edit);
 
         JPopupMenu popup = new JPopupMenu();
@@ -156,7 +157,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
             }
         }
 
-        String[] registeredTypes = ModelerUtil.getRegisteredTypeNames();
+        String[] registeredTypes = ValueTypes.getTypes();
         Collections.addAll(typeNames, registeredTypes);
         typeNames.addAll(embeddableNames);
 

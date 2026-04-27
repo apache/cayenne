@@ -21,8 +21,8 @@ package org.apache.cayenne.modeler.ui.logconsole;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
-import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.toolkit.border.TopBorder;
 
 import java.awt.*;
@@ -33,8 +33,8 @@ import java.awt.*;
  */
 public class LogConsoleView extends JPanel {
 
-    static private final Icon DOCK_ICON = ModelerUtil.buildIcon("icon-down.png");
-    static private final Icon UNDOCK_ICON = ModelerUtil.buildIcon("icon-up.png");
+    static private final Icon DOCK_ICON = IconFactory.buildIcon("icon-down.png");
+    static private final Icon UNDOCK_ICON = IconFactory.buildIcon("icon-up.png");
 
     /**
      * Area to be filled with log messages
@@ -78,12 +78,12 @@ public class LogConsoleView extends JPanel {
         buttonsBar.setFloatable(false);
 
         copyItem = new ModelerAbstractAction.CayenneToolbarButton(null, 0);
-        copyItem.setIcon(ModelerUtil.buildIcon("icon-copy.png"));
+        copyItem.setIcon(IconFactory.buildIcon("icon-copy.png"));
         copyItem.setText("Copy");
         buttonsBar.add(copyItem);
 
         clearItem = new ModelerAbstractAction.CayenneToolbarButton(null, 0);
-        clearItem.setIcon(ModelerUtil.buildIcon("icon-trash.png"));
+        clearItem.setIcon(IconFactory.buildIcon("icon-trash.png"));
         clearItem.setText("Clear");
         buttonsBar.add(clearItem);
 

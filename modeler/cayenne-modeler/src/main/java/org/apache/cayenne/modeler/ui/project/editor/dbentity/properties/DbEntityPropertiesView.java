@@ -20,11 +20,14 @@ package org.apache.cayenne.modeler.ui.project.editor.dbentity.properties;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
+import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.event.model.DbEntityListener;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.ui.action.CreateObjEntityFromDbAction;
@@ -32,22 +35,14 @@ import org.apache.cayenne.modeler.ui.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.CutAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.DbEntityCounterpartAction;
 import org.apache.cayenne.modeler.ui.action.DbEntitySyncAction;
+import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.ui.action.PasteAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeRelationshipAction;
-import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
-import org.apache.cayenne.modeler.pref.ComponentGeometry;
-import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
-import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.toolkit.image.FilteredIconFactory;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-import javax.swing.JToolBar;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionListener;
 
 public class DbEntityPropertiesView extends JPanel implements DbEntityDisplayListener, DbEntityListener {
@@ -57,11 +52,13 @@ public class DbEntityPropertiesView extends JPanel implements DbEntityDisplayLis
     private final JButton editButton;
     private final JSplitPane splitPane;
     private final JToolBar toolBar;
+    private final ProjectController controller;
 
     public DbEntityPropertiesView(ProjectController controller) {
 
         this.setLayout(new BorderLayout());
 
+        this.controller = controller;
         editButton = new ModelerAbstractAction.CayenneToolbarButton(null, 0);
 
         attributePanel = new DbAttributePanel(controller, this);
@@ -95,10 +92,10 @@ public class DbEntityPropertiesView extends JPanel implements DbEntityDisplayLis
         toolBar.add(globalActions.getAction(DbEntityCounterpartAction.class).buildButton(3));
         toolBar.addSeparator();
 
-        Icon ico = ModelerUtil.buildIcon("icon-edit.png");
+        Icon ico = IconFactory.buildIcon("icon-edit.png");
         editButton.setToolTipText("Edit");
         editButton.setIcon(ico);
-        editButton.setDisabledIcon(FilteredIconFactory.createDisabledIcon(ico));
+        editButton.setDisabledIcon(IconFactory.disabledIcon(ico));
         toolBar.add(editButton).setEnabled(false);
 
         toolBar.addSeparator();
@@ -113,11 +110,11 @@ public class DbEntityPropertiesView extends JPanel implements DbEntityDisplayLis
     }
 
     public void updateActions(Object[] params) {
-        ModelerUtil.updateActions(
-                params.length,
-                RemoveAttributeRelationshipAction.class,
-                CutAttributeRelationshipAction.class,
-                CopyAttributeRelationshipAction.class);
+        GlobalActions actions = controller.getApplication().getActionManager();
+        actions.getAction(RemoveAttributeRelationshipAction.class).updateForSelection(params.length);
+        actions.getAction(CutAttributeRelationshipAction.class).updateForSelection(params.length);
+        actions.getAction(CopyAttributeRelationshipAction.class).updateForSelection(params.length);
+
         if (params instanceof DbRelationship[]) {
             editButton.setEnabled(params.length > 0);
         }

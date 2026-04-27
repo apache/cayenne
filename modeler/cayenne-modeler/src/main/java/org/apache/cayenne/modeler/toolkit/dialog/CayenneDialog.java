@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.modeler.toolkit.dialog;
 
-import org.apache.cayenne.modeler.util.ModelerUtil;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -44,11 +42,24 @@ public class CayenneDialog extends JDialog {
         super(owner, title, modal);
     }
 
-    /** 
-     * Centers this dialog relative to the parent Window 
+    /**
+     * Centers this dialog relative to the parent Window
      */
     public void centerWindow() {
-        ModelerUtil.centerWindow((Window) super.getParent(), this);
+
+        Window parent = (Window) super.getParent();
+        Dimension parentSize = parent.getSize();
+        Dimension childSize = this.getSize();
+
+        Point parentLocation = new Point(0, 0);
+        if (parent.isShowing()) {
+            parentLocation = parent.getLocationOnScreen();
+        }
+
+        int x = parentLocation.x + parentSize.width / 2 - childSize.width / 2;
+        int y = parentLocation.y + parentSize.height / 2 - childSize.height / 2;
+
+        this.setLocation(x, y);
     }
 
     @Override

@@ -22,10 +22,9 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.toolkit.image.FilteredIconFactory;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.errors.ErrorsController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.util.Util;
 
@@ -106,7 +105,7 @@ public abstract class ModelerAbstractAction extends AbstractAction {
      */
     public Icon createIcon() {
         String name = getIconName();
-        return (name != null) ? ModelerUtil.buildIcon(name) : null;
+        return (name != null) ? IconFactory.buildIcon(name) : null;
     }
 
     /**
@@ -223,7 +222,7 @@ public abstract class ModelerAbstractAction extends AbstractAction {
         }
 
         private void initView(int position) {
-            setDisabledIcon(FilteredIconFactory.createDisabledIcon(getIcon()));
+            setDisabledIcon(IconFactory.disabledIcon(getIcon()));
             setFocusPainted(false);
             setFocusable(false);
             putClientProperty("JButton.buttonType", "segmentedTextured");

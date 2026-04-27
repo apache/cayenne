@@ -27,13 +27,12 @@ import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
+import org.apache.cayenne.modeler.project.CgenOps;
 import org.apache.cayenne.modeler.ui.preferences.general.GeneralPreferencesController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.DataDomainGeneratorsViewController;
-import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.tools.ToolsInjectorBuilder;
 
-import java.nio.file.Paths;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
@@ -88,7 +87,7 @@ public class DataDomainCgenController extends DataDomainGeneratorsViewController
     public CgenConfiguration createConfiguration(DataMap dataMap) {
         CgenConfiguration cgenConfiguration = new CgenConfiguration();
         cgenConfiguration.setDataMap(dataMap);
-        cgenConfiguration.updateOutputPath(Paths.get(ModelerUtil.initOutputFolder()));
+        cgenConfiguration.updateOutputPath(CgenOps.baseDir(controller.getApplication()));
         Preferences preferences = controller.getApplication().getPreferencesNode(GeneralPreferencesController.class, "");
         if (preferences != null) {
             cgenConfiguration.setEncoding(preferences.get(GeneralPreferencesController.ENCODING_PREFERENCE, null));

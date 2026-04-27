@@ -21,10 +21,10 @@ package org.apache.cayenne.modeler.ui.welcome;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.action.NewProjectAction;
 import org.apache.cayenne.modeler.ui.action.OpenProjectAction;
 import org.apache.cayenne.modeler.event.model.RecentFileListListener;
-import org.apache.cayenne.modeler.util.ModelerUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -100,8 +100,8 @@ public class WelcomeScreen extends JScrollPane implements RecentFileListListener
     }
 
     private void initButton(String name, int y,  Class<? extends Action> actionClass) {
-        ImageIcon icon = ModelerUtil.buildIcon("welcome/welcome-screen-"+name+"-btn.png");
-        ImageIcon hoverIcon = ModelerUtil.buildIcon("welcome/welcome-screen-"+name+"-btn-hover.png");
+        ImageIcon icon = IconFactory.buildIcon("welcome/welcome-screen-"+name+"-btn.png");
+        ImageIcon hoverIcon = IconFactory.buildIcon("welcome/welcome-screen-"+name+"-btn-hover.png");
         JButton button = createButton(icon, hoverIcon);
         button.setLocation(24, y); // 24px - button left & right padding
         button.addActionListener(Application

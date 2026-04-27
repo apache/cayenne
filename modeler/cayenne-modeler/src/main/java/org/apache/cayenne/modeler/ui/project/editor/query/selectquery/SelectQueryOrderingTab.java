@@ -25,12 +25,11 @@ import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.toolkit.MultiColumnBrowser;
-import org.apache.cayenne.modeler.toolkit.image.FilteredIconFactory;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
 import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
-import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.util.CayenneMapEntry;
@@ -183,16 +182,16 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
 
         JButton add = new ModelerAbstractAction.CayenneToolbarButton(null, 1);
         add.setText("Add Ordering");
-        Icon addIcon = ModelerUtil.buildIcon("icon-plus.png");
+        Icon addIcon = IconFactory.buildIcon("icon-plus.png");
         add.setIcon(addIcon);
-        add.setDisabledIcon(FilteredIconFactory.createDisabledIcon(addIcon));
+        add.setDisabledIcon(IconFactory.disabledIcon(addIcon));
         add.addActionListener(e -> addOrdering());
 
         JButton remove = new ModelerAbstractAction.CayenneToolbarButton(null, 3);
         remove.setText("Remove Ordering");
-        Icon removeIcon = ModelerUtil.buildIcon("icon-trash.png");
+        Icon removeIcon = IconFactory.buildIcon("icon-trash.png");
         remove.setIcon(removeIcon);
-        remove.setDisabledIcon(FilteredIconFactory.createDisabledIcon(removeIcon));
+        remove.setDisabledIcon(IconFactory.disabledIcon(removeIcon));
         remove.addActionListener(e -> removeOrdering());
 
         JToolBar toolBar = new JToolBar();

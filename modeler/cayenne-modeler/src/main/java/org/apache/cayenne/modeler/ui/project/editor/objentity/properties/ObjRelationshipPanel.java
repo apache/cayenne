@@ -27,6 +27,7 @@ import org.apache.cayenne.modeler.event.model.ObjEntityListener;
 import org.apache.cayenne.modeler.event.model.ObjRelationshipListener;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.WidgetFactory;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
@@ -41,8 +42,7 @@ import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
-import org.apache.cayenne.modeler.toolkit.CellRenderers;
-import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.modeler.toolkit.Renderers;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -60,7 +60,7 @@ import java.util.List;
  */
 public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayListener, ObjEntityListener, ObjRelationshipListener {
 
-    private static final ImageIcon INHERITANCE_ICON = ModelerUtil.buildIcon("icon-inheritance.png");
+    private static final ImageIcon INHERITANCE_ICON = IconFactory.buildIcon("icon-inheritance.png");
 
     private static final Object[] DELETE_RULES = new Object[]{
             DeleteRule.deleteRuleName(DeleteRule.NO_ACTION),
@@ -107,7 +107,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
         });
 
         // Create and install a popup
-        Icon ico = ModelerUtil.buildIcon("icon-edit.png");
+        Icon ico = IconFactory.buildIcon("icon-edit.png");
         editMenu = new JMenuItem("Edit Relationship", ico);
 
         JPopupMenu popup = new JPopupMenu();
@@ -232,7 +232,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
         DefaultCellEditor editor = (DefaultCellEditor) col.getCellEditor();
 
         JComboBox combo = (JComboBox) editor.getComponent();
-        combo.setRenderer(CellRenderers.entityListRendererWithIcons(entity.getDataMap()));
+        combo.setRenderer(Renderers.entityListRendererWithIcons(entity.getDataMap()));
 
         ObjRelationshipTableModel model = (ObjRelationshipTableModel) table.getModel();
         model.fireTableDataChanged();
@@ -299,7 +299,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
                 int column) {
 
             Object oldValue = value;
-            value = CellRenderers.asString(value, controller.getSelectedDataMap());
+            value = Renderers.asString(value, controller.getSelectedDataMap());
 
             super.getTableCellRendererComponent(
                     table,
@@ -309,7 +309,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
                     row,
                     column);
 
-            Icon icon = CellRenderers.iconForObject(oldValue);
+            Icon icon = IconFactory.iconForObject(oldValue);
             if (isSelected) {
                 setForeground(UIManager.getColor("Table.selectionForeground"));
             }

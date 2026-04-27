@@ -33,9 +33,8 @@ import org.apache.cayenne.modeler.undo.AddPrefetchUndoableEditForSqlTemplate;
 import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.util.EntityTreeFilter;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
-import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.toolkit.MultiColumnBrowser;
-import org.apache.cayenne.modeler.toolkit.image.FilteredIconFactory;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
 import org.apache.cayenne.util.CayenneMapEntry;
 
@@ -210,9 +209,9 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
 
         JButton add = new ModelerAbstractAction.CayenneToolbarButton(null, 1);
         add.setText("Add Prefetch");
-        Icon addIcon = ModelerUtil.buildIcon("icon-plus.png");
+        Icon addIcon = IconFactory.buildIcon("icon-plus.png");
         add.setIcon(addIcon);
-        add.setDisabledIcon(FilteredIconFactory.createDisabledIcon(addIcon));
+        add.setDisabledIcon(IconFactory.disabledIcon(addIcon));
 
         add.addActionListener(e -> {
             String prefetch = getSelectedPath();
@@ -228,9 +227,9 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
 
         JButton remove = new ModelerAbstractAction.CayenneToolbarButton(null, 3);
         remove.setText("Remove Prefetch");
-        Icon removeIcon = ModelerUtil.buildIcon("icon-trash.png");
+        Icon removeIcon = IconFactory.buildIcon("icon-trash.png");
         remove.setIcon(removeIcon);
-        remove.setDisabledIcon(FilteredIconFactory.createDisabledIcon(removeIcon));
+        remove.setDisabledIcon(IconFactory.disabledIcon(removeIcon));
         remove.addActionListener(e -> {
             int selection = table.getSelectedRow();
             if (selection < 0) {

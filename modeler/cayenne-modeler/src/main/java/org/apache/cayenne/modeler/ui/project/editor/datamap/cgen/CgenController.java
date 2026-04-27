@@ -33,25 +33,24 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
-import org.apache.cayenne.modeler.event.model.EmbeddableEvent;
-import org.apache.cayenne.modeler.event.model.EmbeddableListener;
-import org.apache.cayenne.modeler.event.model.ObjEntityListener;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.modeler.event.model.DataMapListener;
+import org.apache.cayenne.modeler.event.model.EmbeddableEvent;
+import org.apache.cayenne.modeler.event.model.EmbeddableListener;
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
+import org.apache.cayenne.modeler.event.model.ObjEntityListener;
 import org.apache.cayenne.modeler.event.model.ProjectAfterSaveEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.project.CgenOps;
 import org.apache.cayenne.modeler.ui.preferences.general.GeneralPreferencesController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportController;
-import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.tools.ToolsInjectorBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Set;
@@ -255,9 +254,9 @@ public class CgenController extends ChildController<ProjectController> implement
         }
     }
 
-    public void updateGenerateButton(){
+    public void updateGenerateButton() {
         boolean isOutputPathValid = cgenConfigController.getView().isDataValid();
-        view.getGenerateButton().setEnabled(!selectionModel.isModelEmpty()&& isOutputPathValid);
+        view.getGenerateButton().setEnabled(!selectionModel.isModelEmpty() && isOutputPathValid);
     }
 
     private void prepareClasses(DataMap dataMap) {
@@ -301,7 +300,7 @@ public class CgenController extends ChildController<ProjectController> implement
         map.getObjEntities().forEach(configuration::loadEntity);
         map.getEmbeddables().forEach(configuration::loadEmbeddable);
         if (map.getLocation() != null) {
-            Path basePath = Paths.get(ModelerUtil.initOutputFolder());
+            Path basePath = CgenOps.baseDir(application);
             configuration.setRootPath(Utils.getRootPathForDataMap(map));
             configuration.updateOutputPath(basePath);
         }

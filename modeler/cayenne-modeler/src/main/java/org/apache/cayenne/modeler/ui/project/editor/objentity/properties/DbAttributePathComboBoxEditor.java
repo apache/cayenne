@@ -25,17 +25,15 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.util.EntityTreeAttributeRelationshipFilter;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
-import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JLabel;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.text.JTextComponent;
-import java.awt.Component;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -99,7 +97,7 @@ class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor<ObjAtt
         Object currentNode = getCurrentNode(dbAttributePath);
         String[] pathStrings = dbAttributePath.split(Pattern.quote("."));
         String lastStringInPath = pathStrings[pathStrings.length - 1];
-        if (ModelerUtil.getObjectName(currentNode).equals(lastStringInPath) &&
+        if (Renderers.asString(currentNode).equals(lastStringInPath) &&
                 currentNode instanceof DbAttribute) {
             // in this case choose is made.. we save data
 
@@ -111,7 +109,7 @@ class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor<ObjAtt
                 model.setUpdatedValueAt(dbAttributePath, row, DB_ATTRIBUTE_PATH_COLUMN);
                 model.getAttribute(row).setDbAttributePath(dbAttributePath);
             }
-        } else if (ModelerUtil.getObjectName(currentNode).equals(lastStringInPath) &&
+        } else if (Renderers.asString(currentNode).equals(lastStringInPath) &&
                 currentNode instanceof DbRelationship) {
             // in this case we add dot  to pathString (if it is missing) and show variants for currentNode
 

@@ -19,12 +19,12 @@
 
 package org.apache.cayenne.modeler.ui;
 
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.logconsole.LogConsoleController;
 import org.apache.cayenne.modeler.ui.welcome.WelcomeScreen;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
-import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.toolkit.border.TopBorder;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +51,7 @@ public class ModelerFrame extends JFrame {
     public ModelerFrame(GlobalActions globalActions, LogConsoleController logConsoleController) {
         this.globalActions = globalActions;
 
-        setIconImage(ModelerUtil.buildIcon("CayenneModeler.png").getImage());
+        setIconImage(IconFactory.buildIcon("CayenneModeler.png").getImage());
         getContentPane().setLayout(new BorderLayout());
         this.menuBar = new ModelerMenuBar(globalActions, logConsoleController);
         setJMenuBar(menuBar);

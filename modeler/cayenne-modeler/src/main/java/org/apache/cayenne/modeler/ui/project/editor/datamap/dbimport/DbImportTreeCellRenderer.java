@@ -27,8 +27,8 @@ import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
-import org.apache.cayenne.modeler.util.ModelerUtil;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -77,7 +77,7 @@ public class DbImportTreeCellRenderer extends DefaultTreeCellRenderer {
         if (iconName == null) {
             return null;
         }
-        return ModelerUtil.buildIcon(iconName);
+        return IconFactory.buildIcon(iconName);
     }
 
     @Override

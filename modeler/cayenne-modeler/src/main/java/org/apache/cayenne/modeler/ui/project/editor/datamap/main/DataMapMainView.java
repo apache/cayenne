@@ -36,7 +36,7 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.main.schema.SchemaUp
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.superclass.SuperclassUpdateController;
 import org.apache.cayenne.modeler.event.model.ProjectAfterSaveEvent;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
-import org.apache.cayenne.modeler.toolkit.CellRenderers;
+import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
@@ -84,7 +84,7 @@ public class DataMapMainView extends JPanel {
 
         location = new JLabel();
         nodeSelector = WidgetFactory.createUndoableComboBox();
-        nodeSelector.setRenderer(CellRenderers.listRendererWithIcons());
+        nodeSelector.setRenderer(Renderers.listRendererWithIcons());
 
         JButton updateDefaultCatalog = new JButton("Update...");
         defaultCatalog = new CayenneUndoableTextField();

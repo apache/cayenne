@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.ui.project.tree;
 
 import org.apache.cayenne.map.Embeddable;
-import org.apache.cayenne.modeler.toolkit.CellRenderers;
+import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.reflect.PropertyUtils;
 import org.apache.cayenne.resource.Resource;
@@ -48,7 +48,7 @@ public class ProjectTreeView extends JTree {
     private static final Color SELECTION_COLOR = UIManager.getColor("Tree.selectionBackground");
 
     ProjectTreeView() {
-        setCellRenderer(CellRenderers.treeRenderer());
+        setCellRenderer(Renderers.treeRenderer());
         setOpaque(false);
         setBorder(TopBorder.create());
         setRootVisible(true);

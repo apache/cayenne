@@ -36,6 +36,6 @@ public class AboutAction extends ModelerAbstractAction {
     }
 
     public void showAboutDialog() {
-        new AboutDialog();
+        new AboutDialog(application);
     }
 }

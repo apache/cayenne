@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.welcome;
 
-import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -33,7 +33,7 @@ class BackgroundPanel extends JPanel {
 
     public BackgroundPanel(String imagePath) {
         super(null);
-        ImageIcon imageIcon = ModelerUtil.buildIcon(imagePath);
+        ImageIcon imageIcon = IconFactory.buildIcon(imagePath);
         backgroundImage = imageIcon.getImage();
         Dimension dimension = new Dimension(imageIcon.getIconWidth(), imageIcon.getIconHeight());
         setSize(dimension);

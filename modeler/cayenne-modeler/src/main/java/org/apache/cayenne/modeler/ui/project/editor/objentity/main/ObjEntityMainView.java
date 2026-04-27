@@ -36,7 +36,7 @@ import org.apache.cayenne.modeler.ui.action.ObjEntityCounterpartAction;
 import org.apache.cayenne.modeler.ui.action.ObjEntitySyncAction;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
-import org.apache.cayenne.modeler.toolkit.CellRenderers;
+import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.toolkit.checkbox.CayenneCheckBox;
 import org.apache.cayenne.modeler.toolkit.WidgetFactory;
 import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
@@ -295,7 +295,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
 
         DefaultComboBoxModel<DbEntity> dbModel = new DefaultComboBoxModel<>(dbEntities);
         dbModel.setSelectedItem(entity.getDbEntity());
-        dbEntityCombo.setRenderer(CellRenderers.entityListRendererWithIcons(map));
+        dbEntityCombo.setRenderer(Renderers.entityListRendererWithIcons(map));
         dbEntityCombo.setModel(dbModel);
 
         boolean isUsedInheritance = entity.getSuperEntity() != null;
@@ -313,7 +313,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
 
         DefaultComboBoxModel<ObjEntity> superEntityModel = new DefaultComboBoxModel<>(objEntities.toArray(new ObjEntity[0]));
         superEntityModel.setSelectedItem(entity.getSuperEntity());
-        superEntityCombo.setRenderer(CellRenderers.entityListRendererWithIcons(map));
+        superEntityCombo.setRenderer(Renderers.entityListRendererWithIcons(map));
         superEntityCombo.setModel(superEntityModel);
     }
 

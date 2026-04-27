@@ -32,7 +32,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.toolkit.checkbox.CayenneCheckBox;
 import org.apache.cayenne.modeler.toolkit.WidgetFactory;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.toolkit.CellRenderers;
+import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.util.Comparators;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -99,7 +99,7 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
         persistentObjects = new CayenneCheckBox();
 
         entities = WidgetFactory.createUndoableComboBox();
-        entities.setRenderer(CellRenderers.listRendererWithIcons());
+        entities.setRenderer(Renderers.listRendererWithIcons());
 
         this.setLayout(new BorderLayout());
         this.add(createPanelBuilder().getPanel(), BorderLayout.CENTER);

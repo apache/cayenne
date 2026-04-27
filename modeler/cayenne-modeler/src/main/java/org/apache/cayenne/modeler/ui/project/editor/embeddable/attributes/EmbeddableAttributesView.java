@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.embeddable.attributes;
 
+import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
+import org.apache.cayenne.modeler.ui.action.CutAttributeRelationshipAction;
+import org.apache.cayenne.modeler.ui.action.RemoveAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
@@ -41,7 +44,7 @@ import org.apache.cayenne.modeler.event.display.EmbeddableDisplayListener;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
-import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.modeler.toolkit.ValueTypes;
 import org.apache.cayenne.modeler.toolkit.WidgetFactory;
 import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
 
@@ -165,9 +168,7 @@ public class EmbeddableAttributesView extends JPanel implements
     private void setUpTableStructure() {
 
         TableColumn typeColumn = table.getColumnModel().getColumn(EmbeddableAttributeTableModel.OBJ_ATTRIBUTE_TYPE);
-        JComboBox javaTypesCombo = WidgetFactory.createComboBox(
-                ModelerUtil.getRegisteredTypeNames(),
-                false);
+        JComboBox javaTypesCombo = WidgetFactory.createComboBox(ValueTypes.getTypes(), false);
         AutoCompletion.enable(javaTypesCombo, false, true);
         typeColumn.setCellEditor(WidgetFactory.createCellEditor(
                 javaTypesCombo));
@@ -186,14 +187,12 @@ public class EmbeddableAttributesView extends JPanel implements
      * Selects a specified attribute.
      */
     public void selectAttributes(EmbeddableAttribute[] embAttrs) {
-        ModelerUtil.updateActions(
-                embAttrs.length,
-                RemoveAttributeAction.class,
-                CopyAttributeAction.class,
-                CutAttributeAction.class);
+        GlobalActions actions = controller.getApplication().getActionManager();
+        actions.getAction(RemoveAttributeRelationshipAction.class).updateForSelection(embAttrs.length);
+        actions.getAction(CutAttributeRelationshipAction.class).updateForSelection(embAttrs.length);
+        actions.getAction(CopyAttributeRelationshipAction.class).updateForSelection(embAttrs.length);
 
-        EmbeddableAttributeTableModel model = (EmbeddableAttributeTableModel) table
-                .getModel();
+        EmbeddableAttributeTableModel model = (EmbeddableAttributeTableModel) table.getModel();
 
         List listAttrs = model.getObjectList();
         int[] newSel = new int[embAttrs.length];

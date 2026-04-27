@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.toolkit.table;
 
-import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -36,8 +36,8 @@ public class SortButtonRenderer extends DefaultTableCellRenderer {
     public static final int DOWN = 1;
     public static final int UP = 2;
 
-    private static final Icon ICON_DOWN = ModelerUtil.buildIcon("icon-sort-desc.png");
-    private static final Icon ICON_UP = ModelerUtil.buildIcon("icon-sort-asc.png");
+    private static final Icon ICON_DOWN = IconFactory.buildIcon("icon-sort-desc.png");
+    private static final Icon ICON_UP = IconFactory.buildIcon("icon-sort-asc.png");
     private static final Font FONT;
     private static final CompoundBorder BORDER = BorderFactory.createCompoundBorder(
             BorderFactory.createMatteBorder(0, 0, 1, 1, Color.GRAY),

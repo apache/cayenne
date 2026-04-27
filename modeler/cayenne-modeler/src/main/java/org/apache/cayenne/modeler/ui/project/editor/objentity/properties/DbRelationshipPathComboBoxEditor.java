@@ -23,15 +23,13 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.EntityTreeRelationshipFilter;
-import org.apache.cayenne.modeler.util.ModelerUtil;
 
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.text.JTextComponent;
-import java.awt.Component;
+import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.Collection;
@@ -88,7 +86,7 @@ class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEditor<Obj
         Object currentNode = getCurrentNode(dbRelationshipPath);
         String[] pathStrings = dbRelationshipPath.split(Pattern.quote("."));
         String lastStringInPath = pathStrings[pathStrings.length - 1];
-        if (lastStringInPath.equals(ModelerUtil.getObjectName(currentNode))
+        if (lastStringInPath.equals(Renderers.asString(currentNode))
                 && currentNode instanceof DbRelationship) {
             if (enterPressedCount == 1) {
                 //it is second time enter pressed.. so we will save input data

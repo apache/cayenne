@@ -37,7 +37,6 @@ import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.RelationshipUndoableEdit;
-import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 
@@ -52,6 +51,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 
 
@@ -235,15 +235,13 @@ public class DbRelationshipDialogController extends ChildController<ProjectContr
         });
 
         TableColumn sourceColumn = view.getTable().getColumnModel().getColumn(DbJoinTableModel.SOURCE);
-        JComboBox comboBox = WidgetFactory.createComboBox(
-                ModelerUtil.getDbAttributeNames(relationship.getSourceEntity()), true);
+        JComboBox comboBox = WidgetFactory.createComboBox(dbAttributeNames(relationship.getSourceEntity()), true);
 
         AutoCompletion.enable(comboBox);
         sourceColumn.setCellEditor(WidgetFactory.createCellEditor(comboBox));
 
         TableColumn targetColumn = view.getTable().getColumnModel().getColumn(DbJoinTableModel.TARGET);
-        comboBox = WidgetFactory.createComboBox(
-                ModelerUtil.getDbAttributeNames(relationship.getTargetEntity()), true);
+        comboBox = WidgetFactory.createComboBox(dbAttributeNames(relationship.getTargetEntity()), true);
         AutoCompletion.enable(comboBox);
 
         targetColumn.setCellEditor(WidgetFactory.createCellEditor(comboBox));
@@ -488,5 +486,12 @@ public class DbRelationshipDialogController extends ChildController<ProjectContr
         return result == JOptionPane.OK_OPTION;
     }
 
+    private static Collection<String> dbAttributeNames(DbEntity entity) {
+        Set<String> keys = entity.getAttributeMap().keySet();
+        List<String> names = new ArrayList<>(keys.size() + 1);
+        names.add("");
+        names.addAll(keys);
+        return names;
+    }
 
 }

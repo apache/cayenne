@@ -23,7 +23,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
-import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -50,12 +50,12 @@ public class TemplateEditorView extends JFrame {
     protected RSyntaxTextArea classPreviewPane;
 
     private static final String VELOCITY_KEY = "text/velocity";
-    private static final ImageIcon modelerIcon = ModelerUtil.buildIcon("CayenneModeler.png");
-    private static final Icon saveIcon = ModelerUtil.buildIcon("icon-save.png");
-    private static final Icon resetToDefaultIcon = ModelerUtil.buildIcon("icon-undo.png");
-    private static final Icon findIcon = ModelerUtil.buildIcon("icon-query.png");
-    private static final Icon findAndReplaceIcon = ModelerUtil.buildIcon("icon-find_and_replace.png");
-    private static final Icon previewIcon = ModelerUtil.buildIcon("icon-edit.png");
+    private static final ImageIcon modelerIcon = IconFactory.buildIcon("CayenneModeler.png");
+    private static final Icon saveIcon = IconFactory.buildIcon("icon-save.png");
+    private static final Icon resetToDefaultIcon = IconFactory.buildIcon("icon-undo.png");
+    private static final Icon findIcon = IconFactory.buildIcon("icon-query.png");
+    private static final Icon findAndReplaceIcon = IconFactory.buildIcon("icon-find_and_replace.png");
+    private static final Icon previewIcon = IconFactory.buildIcon("icon-edit.png");
 
     protected JButton previewButton;
     protected JButton saveButton;

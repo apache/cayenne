@@ -24,7 +24,7 @@ import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -63,7 +63,7 @@ class DataDomainGeneratorsPanel extends JPanel {
                 checkConfig.setEnabled(false);
             }
         }
-        this.toConfigButton.setIcon(ModelerUtil.buildIcon(icon));
+        this.toConfigButton.setIcon(IconFactory.buildIcon(icon));
         builder.append(checkConfig, dataMapLabel, toConfigButton);
         this.add(builder.getPanel(), BorderLayout.CENTER);
     }

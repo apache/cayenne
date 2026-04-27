@@ -20,32 +20,20 @@
 package org.apache.cayenne.modeler.ui.project.editor.objentity.properties;
 
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.modeler.toolkit.CellRenderers;
+import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.toolkit.WidgetFactory;
 import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
-import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.util.Util;
 
-import javax.swing.AbstractCellEditor;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JTable;
-import javax.swing.ListCellRenderer;
+import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.table.TableCellEditor;
 import javax.swing.text.JTextComponent;
-import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -187,7 +175,7 @@ abstract class PathChooserComboBoxCellEditor<T extends CayenneTableModel<?>> ext
         for (String rootChildText : pathStrings) {
             for (int j = 0; j < treeModel.getChildCount(root); j++) {
                 Object child = treeModel.getChild(root, j);
-                String objectName = ModelerUtil.getObjectName(child);
+                String objectName = Renderers.asString(child);
                 if (objectName.equals(rootChildText)) {
                     root = child;
                     break;
@@ -206,7 +194,7 @@ abstract class PathChooserComboBoxCellEditor<T extends CayenneTableModel<?>> ext
         List<String> currentNodeChildren = new ArrayList<>();
         for (int j = 0; j < treeModel.getChildCount(node); j++) {
             Object child = treeModel.getChild(node, j);
-            String relationshipName = ModelerUtil.getObjectName(child);
+            String relationshipName = Renderers.asString(child);
             currentNodeChildren.add(pathString + relationshipName);
         }
         return currentNodeChildren;
@@ -240,7 +228,7 @@ abstract class PathChooserComboBoxCellEditor<T extends CayenneTableModel<?>> ext
 
     private final class PathChooserComboBoxCellRenderer extends DefaultListCellRenderer {
 
-        private final ImageIcon rightArrow = ModelerUtil.buildIcon("icon-arrow-closed.png");
+        private final ImageIcon rightArrow = IconFactory.buildIcon("icon-arrow-closed.png");
 
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index,
@@ -252,7 +240,7 @@ abstract class PathChooserComboBoxCellEditor<T extends CayenneTableModel<?>> ext
 
             Object currentNode = getCurrentNode(value.toString());
             if (treeModel.isLeaf(currentNode)) {
-                ListCellRenderer<Object> leafRenderer = CellRenderers.listRenderer();
+                ListCellRenderer<Object> leafRenderer = Renderers.listRenderer();
                 return leafRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
             } else {
                 DefaultListCellRenderer nonLeafTextRenderer = new DefaultListCellRenderer();

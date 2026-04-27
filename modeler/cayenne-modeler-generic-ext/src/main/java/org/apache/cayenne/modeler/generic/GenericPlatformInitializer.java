@@ -22,7 +22,7 @@ import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticTheme;
 import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
 import org.apache.cayenne.modeler.service.platform.PlatformInitializer;
-import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,8 +65,8 @@ public class GenericPlatformInitializer implements PlatformInitializer {
 
         UIManager.put("ButtonUI",                       GenericButtonUI.class.getName());
         UIManager.put("HiResGrayFilterEnabled",         Boolean.TRUE);
-        UIManager.put("Tree.expandedIcon",              ModelerUtil.buildIcon("icon-arrow-open.png"));
-        UIManager.put("Tree.collapsedIcon",             ModelerUtil.buildIcon("icon-arrow-closed.png"));
+        UIManager.put("Tree.expandedIcon",              IconFactory.buildIcon("icon-arrow-open.png"));
+        UIManager.put("Tree.collapsedIcon",             IconFactory.buildIcon("icon-arrow-closed.png"));
         UIManager.put("Tree.paintLines",                Boolean.FALSE);
         UIManager.put("Tree.selectionForeground",       Color.BLACK);
         UIManager.put("Tree.selectionBackground",       greyHighlight);

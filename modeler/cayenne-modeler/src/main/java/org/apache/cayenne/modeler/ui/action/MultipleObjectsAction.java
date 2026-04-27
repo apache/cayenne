@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.action;
 
+import org.apache.cayenne.util.Util;
+
 import javax.swing.Action;
 
 /**
@@ -30,4 +32,14 @@ public interface MultipleObjectsAction extends Action {
      * @return The name for the action, either if one or multiple objects are selected
      */
     String getActionName(boolean multiple);
+
+    default void updateForSelection(int selectedObjects) {
+        setEnabled(selectedObjects > 0);
+
+        String newName = getActionName(selectedObjects > 1);
+
+        if (!Util.nullSafeEquals(getValue(Action.NAME), newName)) {
+            putValue(Action.NAME, newName);
+        }
+    }
 }

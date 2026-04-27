@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.project.editor.datamap.cgen;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -85,11 +85,11 @@ public class CgenPane extends JPanel {
         PanelBuilder configCroupBuilder = new PanelBuilder(configCroupLayout);
         CellConstraints cc = new CellConstraints();
         this.configurationsComboBox = new JComboBox<>();
-        this.addConfigBtn = new JButton(ModelerUtil.buildIcon("icon-new.png"));
+        this.addConfigBtn = new JButton(IconFactory.buildIcon("icon-new.png"));
         addConfigBtn.setToolTipText("New configuration");
-        this.editConfigBtn = new JButton(ModelerUtil.buildIcon("icon-edit.png"));
+        this.editConfigBtn = new JButton(IconFactory.buildIcon("icon-edit.png"));
         editConfigBtn.setToolTipText("Rename configuration");
-        this.removeConfigBtn = new JButton(ModelerUtil.buildIcon("icon-trash.png"));
+        this.removeConfigBtn = new JButton(IconFactory.buildIcon("icon-trash.png"));
         removeConfigBtn.setToolTipText("Remove configuration");
         configCroupBuilder.add(configurationsComboBox, cc.xy(1, 1));
         configCroupBuilder.add(addConfigBtn, cc.xy(3, 1));
@@ -100,7 +100,7 @@ public class CgenPane extends JPanel {
 
     private JPanel getGeneratePanel() {
         this.generateButton = new JButton("Generate");
-        this.generateButton.setIcon(ModelerUtil.buildIcon("icon-gen_java.png"));
+        this.generateButton.setIcon(IconFactory.buildIcon("icon-gen_java.png"));
         this.generateButton.setEnabled(false);
         FormLayout generateCroupLayout = new FormLayout(
                 "60dlu", "p");

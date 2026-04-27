@@ -20,13 +20,11 @@
 package org.apache.cayenne.modeler.ui.project.editor.objentity.properties;
 
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.modeler.toolkit.Renderers;
 
-import javax.swing.BorderFactory;
-import javax.swing.JTable;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.Component;
+import java.awt.*;
 
 class DbAttributePathComboBoxRenderer extends DefaultTableCellRenderer {
 
@@ -39,7 +37,7 @@ class DbAttributePathComboBoxRenderer extends DefaultTableCellRenderer {
         setFont(UIManager.getFont("Label.font"));
 
         if (value instanceof DbAttribute) {
-            setText(ModelerUtil.getObjectName(value));
+            setText(Renderers.asString(value));
         } else if (value != null) {
             setText(value.toString());
         }

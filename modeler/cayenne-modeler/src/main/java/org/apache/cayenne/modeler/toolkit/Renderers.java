@@ -19,20 +19,12 @@
 
 package org.apache.cayenne.modeler.toolkit;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.MappingNamespace;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.map.Relationship;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.reflect.PropertyUtils;
 import org.apache.cayenne.util.CayenneMapEntry;
 
 import javax.swing.*;
@@ -46,49 +38,9 @@ import java.awt.*;
 /**
  * Utility class that serves as a factory for various project renderers.
  */
-public final class CellRenderers {
+public final class Renderers {
 
-    // common icons
-    protected static Icon domainIcon = ModelerUtil.buildIcon("icon-dom.png");
-    protected static Icon nodeIcon = ModelerUtil.buildIcon("icon-node.png");
-    protected static Icon mapIcon = ModelerUtil.buildIcon("icon-datamap.png");
-    protected static Icon dbEntityIcon = ModelerUtil.buildIcon("icon-dbentity.png");
-    protected static Icon objEntityIcon = ModelerUtil.buildIcon("icon-objentity.png");
-    protected static Icon procedureIcon = ModelerUtil.buildIcon("icon-stored-procedure.png");
-    protected static Icon queryIcon = ModelerUtil.buildIcon("icon-query.png");
-    protected static Icon embeddableIcon = ModelerUtil.buildIcon("icon-embeddable.png");
-    protected static Icon relationshipIcon = ModelerUtil.buildIcon("icon-relationship.png");
-    protected static Icon attributeIcon = ModelerUtil.buildIcon("icon-attribute.png");
-    protected static Font defaultFont = UIManager.getFont("Label.font");
-
-    public static Icon iconForObject(Object object) {
-        if (object == null) {
-            return null;
-        }
-
-        if (object instanceof DataChannelDescriptor) {
-            return domainIcon;
-        } else if (object instanceof DataNodeDescriptor) {
-            return nodeIcon;
-        } else if (object instanceof DataMap) {
-            return mapIcon;
-        } else if (object instanceof DbEntity) {
-            return dbEntityIcon;
-        } else if (object instanceof ObjEntity) {
-            return objEntityIcon;
-        } else if (object instanceof Procedure) {
-            return procedureIcon;
-        } else if (object instanceof QueryDescriptor) {
-            return queryIcon;
-        } else if (object instanceof Relationship) {
-            return relationshipIcon;
-        } else if (object instanceof Attribute) {
-            return attributeIcon;
-        } else if (object instanceof Embeddable) {
-            return embeddableIcon;
-        }
-        return null;
-    }
+    private static final Font defaultFont = UIManager.getFont("Label.font");
 
     /**
      * Returns a TreeCellRenderer to display Cayenne project tree nodes with icons.
@@ -150,6 +102,23 @@ public final class CellRenderers {
         return obj == null ? null : String.valueOf(obj);
     }
 
+    public static String asString(Object object) {
+        if (object == null) {
+            return null;
+        } else if (object instanceof CayenneMapEntry) {
+            return ((CayenneMapEntry) object).getName();
+        } else if (object instanceof String) {
+            return (String) object;
+        } else {
+            try {
+                // use reflection
+                return (String) PropertyUtils.getProperty(object, "name");
+            } catch (Exception ex) {
+                return null;
+            }
+        }
+    }
+
     final static class EntityRenderer extends DefaultListCellRenderer {
         MappingNamespace namespace;
 
@@ -169,7 +138,7 @@ public final class CellRenderers {
 
             // the sequence is important - call super with converted value,
             // then set an icon, and then return "this" 
-            Icon icon = CellRenderers.iconForObject(value);
+            Icon icon = IconFactory.iconForObject(value);
 
             value = asString(value, namespace);
 
@@ -207,7 +176,7 @@ public final class CellRenderers {
             // the sequence is important - call super with converted value,
             // then set an icon, and then return "this" 
 
-            Object renderedValue = ModelerUtil.getObjectName(value);
+            Object renderedValue = asString(value);
             if (renderedValue == null) {
                 // render NULL as empty string
                 renderedValue = " ";
@@ -221,7 +190,7 @@ public final class CellRenderers {
                     cellHasFocus);
 
             if (showIcons) {
-                Icon icon = iconForObject(value);
+                Icon icon = IconFactory.iconForObject(value);
                 setIcon(icon);
             }
             setFont(defaultFont);
@@ -253,7 +222,7 @@ public final class CellRenderers {
                     hasFocus);
 
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-            Icon icon = iconForObject(node.getUserObject());
+            Icon icon = IconFactory.iconForObject(node.getUserObject());
             setIcon(icon);
             setFont(defaultFont);
 
@@ -278,7 +247,7 @@ public final class CellRenderers {
                 int column) {
 
             Object oldValue = value;
-            value = CellRenderers.asString(value, controller.getSelectedDataMap());
+            value = Renderers.asString(value, controller.getSelectedDataMap());
 
             super.getTableCellRendererComponent(
                     table,
@@ -288,7 +257,7 @@ public final class CellRenderers {
                     row,
                     column);
 
-            Icon icon = CellRenderers.iconForObject(oldValue);
+            Icon icon = IconFactory.iconForObject(oldValue);
             setIcon(icon);
             setFont(defaultFont);
 

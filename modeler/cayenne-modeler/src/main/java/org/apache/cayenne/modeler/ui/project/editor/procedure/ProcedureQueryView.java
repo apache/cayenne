@@ -35,7 +35,7 @@ import org.apache.cayenne.map.ProcedureQueryDescriptor;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.toolkit.WidgetFactory;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.toolkit.CellRenderers;
+import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
@@ -93,7 +93,7 @@ public class ProcedureQueryView extends JPanel {
         comment.addCommitListener(this::setQueryComment);
 
         queryRoot = WidgetFactory.createUndoableComboBox();
-        queryRoot.setRenderer(CellRenderers.listRendererWithIcons());
+        queryRoot.setRenderer(Renderers.listRendererWithIcons());
         properties = new ProcedureQueryPropertiesPanel(mediator);
 
         // assemble

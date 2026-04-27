@@ -19,18 +19,18 @@
 
 package org.apache.cayenne.modeler.ui.errors;
 
-import org.apache.cayenne.modeler.ui.ModelerFrame;
+import org.apache.cayenne.modeler.Application;
 
 import java.awt.*;
 
 class WarningDialog extends ErrorDialog {
 
-    public WarningDialog(ModelerFrame owner, String title, Throwable throwable, boolean detailed, boolean modal) throws HeadlessException {
-        super(owner, title, throwable, detailed, modal);
+    public WarningDialog(Application application, String title, Throwable throwable, boolean detailed, boolean modal) throws HeadlessException {
+        super(application, title, throwable, detailed, modal);
     }
 
     @Override
-    protected String infoHTML() {
+    protected String infoHTML(Application application) {
         return "<font face='Arial,Helvetica' size='+1' color='blue'>"
                 + getTitle()
                 + "</font>";

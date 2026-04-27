@@ -19,50 +19,45 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.procedure;
 
-import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.modeler.event.model.ProcedureEvent;
-import org.apache.cayenne.modeler.event.model.ProcedureParameterEvent;
-import org.apache.cayenne.modeler.event.model.ProcedureParameterListener;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.service.action.GlobalActions;
-import org.apache.cayenne.modeler.ui.action.CopyProcedureParameterAction;
-import org.apache.cayenne.modeler.ui.action.CreateProcedureParameterAction;
-import org.apache.cayenne.modeler.ui.action.CutProcedureParameterAction;
-import org.apache.cayenne.modeler.ui.action.PasteAction;
-import org.apache.cayenne.modeler.ui.action.RemoveProcedureParameterAction;
 import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ProcedureDisplayListener;
 import org.apache.cayenne.modeler.event.display.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
+import org.apache.cayenne.modeler.event.model.ProcedureEvent;
+import org.apache.cayenne.modeler.event.model.ProcedureParameterEvent;
+import org.apache.cayenne.modeler.event.model.ProcedureParameterListener;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
-import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.WidgetFactory;
+import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.toolkit.table.CayenneCellEditor;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
-import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.text.LimitedTextField;
-import org.apache.cayenne.modeler.toolkit.image.FilteredIconFactory;
+import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
+import org.apache.cayenne.modeler.ui.action.CopyProcedureParameterAction;
+import org.apache.cayenne.modeler.ui.action.CreateProcedureParameterAction;
+import org.apache.cayenne.modeler.ui.action.CutAttributeRelationshipAction;
+import org.apache.cayenne.modeler.ui.action.CutProcedureParameterAction;
+import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.ui.action.PasteAction;
+import org.apache.cayenne.modeler.ui.action.RemoveAttributeRelationshipAction;
+import org.apache.cayenne.modeler.ui.action.RemoveProcedureParameterAction;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JToolBar;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.EventObject;
@@ -71,7 +66,7 @@ import java.util.List;
 public class ProcedureParameterTab extends JPanel implements ProcedureParameterListener,
         ProcedureDisplayListener, ExistingSelectionProcessor, ActionListener {
 
-    protected ProjectController eventController;
+    private final ProjectController controller;
 
     protected CayenneTable table;
     protected TableColumnPreferences tablePreferences;
@@ -87,13 +82,13 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
     protected JMenuItem moveUpMenu;
     protected JMenuItem moveDownMenu;
 
-    public ProcedureParameterTab(ProjectController eventController) {
-        this.eventController = eventController;
+    public ProcedureParameterTab(ProjectController controller) {
+        this.controller = controller;
 
         init();
 
-        eventController.addProcedureDisplayListener(this);
-        eventController.addProcedureParameterListener(this);
+        controller.addProcedureDisplayListener(this);
+        controller.addProcedureParameterListener(this);
 
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
@@ -121,18 +116,18 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
         toolBar.add(removeParameterButton);
         toolBar.addSeparator();
 
-        Icon up = ModelerUtil.buildIcon("icon-up.png");
-        Icon down = ModelerUtil.buildIcon("icon-down.png");
+        Icon up = IconFactory.buildIcon("icon-up.png");
+        Icon down = IconFactory.buildIcon("icon-down.png");
 
         moveUp = new ModelerAbstractAction.CayenneToolbarButton(null, 1);
         moveUp.setIcon(up);
-        moveUp.setDisabledIcon(FilteredIconFactory.createDisabledIcon(up));
+        moveUp.setDisabledIcon(IconFactory.disabledIcon(up));
         moveUp.setToolTipText("Move Parameter Up");
         toolBar.add(moveUp);
 
         moveDown = new ModelerAbstractAction.CayenneToolbarButton(null, 3);
         moveDown.setIcon(down);
-        moveDown.setDisabledIcon(FilteredIconFactory.createDisabledIcon(down));
+        moveDown.setDisabledIcon(IconFactory.disabledIcon(down));
         moveDown.setToolTipText("Move Parameter Down");
         toolBar.add(moveDown);
 
@@ -230,10 +225,10 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
         ProcedureParameterDisplayEvent ppde = new ProcedureParameterDisplayEvent(
                 this,
                 parameters,
-                eventController.getSelectedProcedure(),
-                eventController.getSelectedDataMap(),
-                (DataChannelDescriptor) eventController.getProject().getRootNode());
-        eventController.displayProcedureParameter(ppde);
+                controller.getSelectedProcedure(),
+                controller.getSelectedDataMap(),
+                (DataChannelDescriptor) controller.getProject().getRootNode());
+        controller.displayProcedureParameter(ppde);
     }
 
     /**
@@ -249,21 +244,19 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
     /**
      * Selects a specified parameters.
      */
-    public void selectParameters(ProcedureParameter[] parameters) {
-        ModelerUtil.updateActions(
-                parameters.length,
-                RemoveProcedureParameterAction.class,
-                CutProcedureParameterAction.class,
-                CopyProcedureParameterAction.class
-        );
+    public void selectParameters(ProcedureParameter[] params) {
+        GlobalActions actions = controller.getApplication().getActionManager();
+        actions.getAction(RemoveAttributeRelationshipAction.class).updateForSelection(params.length);
+        actions.getAction(CutAttributeRelationshipAction.class).updateForSelection(params.length);
+        actions.getAction(CopyAttributeRelationshipAction.class).updateForSelection(params.length);
 
         ProcedureParameterTableModel model = (ProcedureParameterTableModel) table.getModel();
 
         List<ProcedureParameter> listAttrs = model.getObjectList();
-        int[] newSel = new int[parameters.length];
+        int[] newSel = new int[params.length];
 
-        for (int i = 0; i < parameters.length; i++) {
-            newSel[i] = listAttrs.indexOf(parameters[i]);
+        for (int i = 0; i < params.length; i++) {
+            newSel[i] = listAttrs.indexOf(params[i]);
         }
 
         table.select(newSel);
@@ -272,7 +265,7 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
     protected void rebuildTable(Procedure procedure) {
         ProcedureParameterTableModel model = new ProcedureParameterTableModel(
                 procedure,
-                eventController,
+                controller,
                 this);
 
         table.setModel(model);
@@ -349,7 +342,7 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
 
             // note that 'setCallParameters' is donw by copy internally
             parameter.getProcedure().setCallParameters(model.getObjectList());
-            eventController.fireProcedureEvent(
+            controller.fireProcedureEvent(
                     ProcedureEvent.ofChange(this, parameter.getProcedure())
             );
         }

@@ -20,11 +20,10 @@
 
 package org.apache.cayenne.modeler.ui.errors;
 
-import org.apache.cayenne.modeler.toolkit.WidgetFactory;
-import org.apache.cayenne.modeler.ui.ModelerFrame;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.UrlOpener;
+import org.apache.cayenne.modeler.toolkit.WidgetFactory;
 import org.apache.cayenne.modeler.toolkit.dialog.CayenneDialog;
-import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.util.LocalizedStringsHandler;
 import org.apache.cayenne.util.Util;
 
@@ -47,28 +46,25 @@ class ErrorDialog extends CayenneDialog implements ActionListener {
     protected boolean detailed;
 
     public ErrorDialog(
-            ModelerFrame owner,
+            Application application,
             String title,
             Throwable throwable,
             boolean detailed,
             boolean modal)
             throws HeadlessException {
 
-        super(owner, title, modal);
+        super(application.getFrameController().getView(), title, modal);
 
         setThrowable(Util.unwindException(throwable));
         setDetailed(detailed);
-        init();
-    }
 
-    protected void init() {
         setResizable(false);
 
         Container pane = this.getContentPane();
         pane.setLayout(new BorderLayout());
 
         // info area
-        JEditorPane infoText = new JEditorPane("text/html", infoHTML());
+        JEditorPane infoText = new JEditorPane("text/html", infoHTML(application));
         infoText.setBackground(pane.getBackground());
         infoText.setEditable(false);
         // popup hyperlinks
@@ -124,8 +120,8 @@ class ErrorDialog extends CayenneDialog implements ActionListener {
         this.centerWindow();
     }
 
-    protected String infoHTML() {
-        String bugreportURL = ModelerUtil.getProperty("cayenne.bugreport.url");
+    protected String infoHTML(Application application) {
+        String bugreportURL = application.getString("cayenne.bugreport.url");
         return "<b><font face='Arial,Helvetica' size='+1' color='red'>"
                 + getTitle()
                 + "</font></b><br>"

@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.toolkit.text;
 
-import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.toolkit.text.style.TextSyntax;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -302,7 +302,7 @@ public class CayenneTextPane extends JPanel {
             }
 
             if (imageError) {
-                Image img = ModelerUtil.buildIcon("icon-error.png").getImage();
+                Image img = IconFactory.buildIcon("icon-error.png").getImage();
                 g.drawImage(img, 0, endYPositionToolTip, this);
             }
 

@@ -19,7 +19,7 @@
 package org.apache.cayenne.modeler.toolkit.combo;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.toolkit.CellRenderers;
+import org.apache.cayenne.modeler.toolkit.Renderers;
 
 import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
@@ -60,7 +60,7 @@ public class SuggestionList extends BasicComboPopup {
         DefaultListModel lm = new DefaultListModel();
 
         for (int i = 0; i < model.getSize(); i++) {
-            String item = CellRenderers.asString(
+            String item = Renderers.asString(
                     model.getElementAt(i),
                     // TODO: Application should not be accessed in this scope
                     Application.getInstance().getFrameController().getProjectController().getSelectedDataMap());

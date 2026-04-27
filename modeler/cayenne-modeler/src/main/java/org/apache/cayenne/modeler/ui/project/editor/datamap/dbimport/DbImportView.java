@@ -22,6 +22,7 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.DbImportActions;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.LoadDbSchemaAction;
@@ -30,7 +31,6 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.ColorT
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.TransferableNode;
 import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
-import org.apache.cayenne.modeler.util.ModelerUtil;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -40,8 +40,8 @@ import java.awt.event.ActionEvent;
 public class DbImportView extends JPanel {
 
     private static final int ALL_LINE_SPAN = 5;
-    private static final ImageIcon rightArrow = ModelerUtil.buildIcon("icon-arrow-closed.png");
-    private static final ImageIcon downArrow = ModelerUtil.buildIcon("icon-arrow-open.png");
+    private static final ImageIcon rightArrow = IconFactory.buildIcon("icon-arrow-closed.png");
+    private static final ImageIcon downArrow = IconFactory.buildIcon("icon-arrow-open.png");
 
     private final TreeToolbarPanel treeToolbar;
     private final ReverseEngineeringTreePanel treePanel;

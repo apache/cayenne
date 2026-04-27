@@ -18,33 +18,28 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.objentity.properties;
 
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityListener;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.ui.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.CutAttributeRelationshipAction;
+import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.ui.action.ObjEntityCounterpartAction;
 import org.apache.cayenne.modeler.ui.action.ObjEntitySyncAction;
 import org.apache.cayenne.modeler.ui.action.PasteAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeRelationshipAction;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
-import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
-import org.apache.cayenne.modeler.pref.ComponentGeometry;
-import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
-import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.toolkit.image.FilteredIconFactory;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-import javax.swing.JToolBar;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionListener;
 
 /**
@@ -57,10 +52,12 @@ public class ObjEntityPropertiesView extends JPanel implements ObjEntityDisplayL
     private final JSplitPane splitPane;
     private final JToolBar toolBar;
     private final JButton editButton;
+    private final ProjectController controller;
 
     public ObjEntityPropertiesView(ProjectController controller) {
         this.setLayout(new BorderLayout());
 
+        this.controller = controller;
         this.editButton = new ModelerAbstractAction.CayenneToolbarButton(null, 0);
         attributePanel = new ObjAttributePanel(controller, this);
         relationshipPanel = new ObjRelationshipPanel(controller, this);
@@ -92,10 +89,10 @@ public class ObjEntityPropertiesView extends JPanel implements ObjEntityDisplayL
         toolBar.add(globalActions.getAction(ObjEntityCounterpartAction.class).buildButton(3));
         toolBar.addSeparator();
 
-        Icon ico = ModelerUtil.buildIcon("icon-edit.png");
+        Icon ico = IconFactory.buildIcon("icon-edit.png");
         editButton.setToolTipText("Edit");
         editButton.setIcon(ico);
-        editButton.setDisabledIcon(FilteredIconFactory.createDisabledIcon(ico));
+        editButton.setDisabledIcon(IconFactory.disabledIcon(ico));
         toolBar.add(editButton).setEnabled(false);
 
         toolBar.addSeparator();
@@ -109,11 +106,11 @@ public class ObjEntityPropertiesView extends JPanel implements ObjEntityDisplayL
     }
 
     public void updateActions(Object[] params) {
-        ModelerUtil.updateActions(
-                params.length,
-                RemoveAttributeRelationshipAction.class,
-                CutAttributeRelationshipAction.class,
-                CopyAttributeRelationshipAction.class);
+        GlobalActions actions = controller.getApplication().getActionManager();
+        actions.getAction(RemoveAttributeRelationshipAction.class).updateForSelection(params.length);
+        actions.getAction(CutAttributeRelationshipAction.class).updateForSelection(params.length);
+        actions.getAction(CopyAttributeRelationshipAction.class).updateForSelection(params.length);
+
         editButton.setEnabled(params.length > 0);
     }
 

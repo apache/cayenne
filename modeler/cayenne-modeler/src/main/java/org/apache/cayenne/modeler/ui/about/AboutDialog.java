@@ -19,11 +19,13 @@
 
 package org.apache.cayenne.modeler.ui.about;
 
-import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
+import org.apache.cayenne.util.LocalizedStringsHandler;
+import org.apache.cayenne.util.Util;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
@@ -31,16 +33,6 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.time.LocalDate;
-
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.WindowConstants;
-
-import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.util.LocalizedStringsHandler;
-import org.apache.cayenne.util.Util;
 
 /**
  * Displays the Cayenne license and build information.
@@ -55,50 +47,14 @@ public class AboutDialog extends JFrame implements FocusListener, KeyListener, M
 
     static ImageIcon getLogoImage() {
         if (logoImage == null) {
-            logoImage = ModelerUtil.buildIcon("logo.jpg");
+            logoImage = IconFactory.buildIcon("logo.jpg");
         }
         return logoImage;
     }
 
-    /**
-     * Builds and returns CayenneModeler info string.
-     */
-    static String getInfoString() {
-        if (infoString == null) {
+    public AboutDialog(Application application) {
 
-            double maxMemory = (double) Runtime.getRuntime().maxMemory() / 1024 / 1024;
-            double totalMemory = (double) Runtime.getRuntime().totalMemory() / 1024 / 1024;
-            double freeMemory = (double) Runtime.getRuntime().freeMemory() / 1024 / 1024;
-
-            StringBuilder buffer = new StringBuilder();
-            buffer.append("<html>");
-            buffer.append("<font size='-1' face='Arial,Helvetica'>");
-            buffer.append(String.format(ModelerUtil.getProperty("cayenne.modeler.about.info"), LocalDate.now().getYear()));
-            buffer.append("</font>");
-
-            buffer.append("<font size='-2' face='Arial,Helvetica'>");
-            buffer.append("<br>JVM: ").append(System.getProperty("java.vm.name")).append(" ").append(System.getProperty("java.version"));
-            buffer.append(String.format("<br>Memory: used %.2f MB, max %.2f MB", totalMemory - freeMemory, maxMemory));
-
-            String version = LocalizedStringsHandler.getString("cayenne.version");
-            buffer.append("<br>Version: ").append(version);
-
-            String buildDate = LocalizedStringsHandler.getString("cayenne.build.date");
-            if (!Util.isEmptyString(buildDate)) {
-                buffer.append(" (").append(buildDate).append(")");
-            }
-
-            buffer.append("</font>");
-            buffer.append("</html>");
-            infoString = buffer.toString();
-        }
-
-        return infoString;
-    }
-
-    public AboutDialog() {
-        super();
-        final FlowLayout flowLayout = new FlowLayout();
+        FlowLayout flowLayout = new FlowLayout();
         getContentPane().setLayout(flowLayout);
         getContentPane().setBackground(Color.WHITE);
         this.setUndecorated(true);
@@ -109,7 +65,7 @@ public class AboutDialog extends JFrame implements FocusListener, KeyListener, M
         addKeyListener(this);
         setLocationRelativeTo(null); // centre on screen
 
-        final JPanel panel = new JPanel();
+        JPanel panel = new JPanel();
         panel.setLayout(new GridBagLayout());
         panel.setBackground(Color.WHITE);
         getContentPane().add(panel);
@@ -135,11 +91,44 @@ public class AboutDialog extends JFrame implements FocusListener, KeyListener, M
         gridBagConstraints_2.gridy = 2;
         gridBagConstraints_2.insets = new Insets(6, 12, 12, 12);
         panel.add(info, gridBagConstraints_2);
-        info.setText(getInfoString());
+        info.setText(getInfoString(application));
 
         this.pack();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
+    }
+
+    private static String getInfoString(Application application) {
+        if (infoString == null) {
+
+            double maxMemory = (double) Runtime.getRuntime().maxMemory() / 1024 / 1024;
+            double totalMemory = (double) Runtime.getRuntime().totalMemory() / 1024 / 1024;
+            double freeMemory = (double) Runtime.getRuntime().freeMemory() / 1024 / 1024;
+
+            StringBuilder buffer = new StringBuilder();
+            buffer.append("<html>");
+            buffer.append("<font size='-1' face='Arial,Helvetica'>");
+            buffer.append(String.format(application.getString("cayenne.modeler.about.info"), LocalDate.now().getYear()));
+            buffer.append("</font>");
+
+            buffer.append("<font size='-2' face='Arial,Helvetica'>");
+            buffer.append("<br>JVM: ").append(System.getProperty("java.vm.name")).append(" ").append(System.getProperty("java.version"));
+            buffer.append(String.format("<br>Memory: used %.2f MB, max %.2f MB", totalMemory - freeMemory, maxMemory));
+
+            String version = LocalizedStringsHandler.getString("cayenne.version");
+            buffer.append("<br>Version: ").append(version);
+
+            String buildDate = LocalizedStringsHandler.getString("cayenne.build.date");
+            if (!Util.isEmptyString(buildDate)) {
+                buffer.append(" (").append(buildDate).append(")");
+            }
+
+            buffer.append("</font>");
+            buffer.append("</html>");
+            infoString = buffer.toString();
+        }
+
+        return infoString;
     }
 
     public void keyPressed(KeyEvent e) {

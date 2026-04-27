@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.find;
 
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.action.FindAction;
-import org.apache.cayenne.modeler.toolkit.CellRenderers;
 import org.apache.cayenne.modeler.toolkit.table.ImageRendererColumn;
 import org.apache.cayenne.modeler.toolkit.border.TopBorder;
 
@@ -93,7 +93,7 @@ public class FindDialogView extends JDialog {
         JLabel[][] dataVector = new JLabel[resultEntries.size()][1];
         for (FindAction.SearchResultEntry entry : resultEntries) {
             JLabel labelIcon = new JLabel();
-            labelIcon.setIcon(CellRenderers.iconForObject(entry.getObject()));
+            labelIcon.setIcon(IconFactory.iconForObject(entry.getObject()));
             labelIcon.setText(entry.getName());
             dataVector[index++] = new JLabel[]{labelIcon};
         }

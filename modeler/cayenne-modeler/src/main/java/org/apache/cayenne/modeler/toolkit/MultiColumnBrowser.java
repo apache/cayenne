@@ -19,18 +19,9 @@
 
 package org.apache.cayenne.modeler.toolkit;
 
-import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 
-import javax.swing.AbstractListModel;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JViewport;
-import javax.swing.ListCellRenderer;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -38,11 +29,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +52,7 @@ import java.util.List;
  */
 public class MultiColumnBrowser extends JPanel {
 
-    protected static final ImageIcon rightArrow = ModelerUtil.buildIcon("icon-arrow-closed.png");
+    protected static final ImageIcon rightArrow = IconFactory.buildIcon("icon-arrow-closed.png");
 
     public static final int DEFAULT_MIN_COLUMNS_COUNT = 3;
 
@@ -519,7 +506,7 @@ public class MultiColumnBrowser extends JPanel {
 
         MultiColumnBrowserRenderer() {
 
-            leafRenderer = CellRenderers.listRenderer();
+            leafRenderer = Renderers.listRenderer();
 
             nonLeafTextRenderer = new DefaultListCellRenderer() {
                 @Override
@@ -541,7 +528,7 @@ public class MultiColumnBrowser extends JPanel {
                 return leafRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
             }
 
-            Object renderedValue = ModelerUtil.getObjectName(value);
+            Object renderedValue = Renderers.asString(value);
             if (renderedValue == null) {
                 // render NULL as empty string
                 renderedValue = " ";

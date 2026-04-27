@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.project.editor.query;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.modeler.toolkit.CellRenderers;
+import org.apache.cayenne.modeler.toolkit.Renderers;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -99,7 +99,7 @@ class RootSelectionHandler implements FocusListener, ActionListener {
      */
     boolean hasDefaultName(QueryDescriptor query) {
         String prefix = query.getRoot() == null ? "UntitledQuery" :
-                CellRenderers.asString(query.getRoot(), queryTab.getController().getSelectedDataMap()) + "Query";
+                Renderers.asString(query.getRoot(), queryTab.getController().getSelectedDataMap()) + "Query";
 
         return queryTab.getNameField().getText().startsWith(prefix);
     }

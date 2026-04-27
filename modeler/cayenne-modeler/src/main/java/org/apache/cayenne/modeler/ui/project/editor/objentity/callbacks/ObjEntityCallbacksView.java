@@ -31,6 +31,7 @@ import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
 import org.apache.cayenne.modeler.event.model.CallbackMethodListener;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
 import org.apache.cayenne.modeler.ui.action.CopyCallbackMethodAction;
 import org.apache.cayenne.modeler.ui.action.CreateCallbackMethodAction;
@@ -39,7 +40,6 @@ import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.ui.action.PasteAction;
 import org.apache.cayenne.modeler.ui.action.RemoveCallbackMethodAction;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -260,7 +260,7 @@ public class ObjEntityCallbacksView extends JPanel {
                 cayenneTable,
                 getCreateCallbackMethodAction().buildButton(),
                 new ButtonListener(callbackType),
-                ModelerUtil.buildIcon("icon-create-method.png"));
+                IconFactory.buildIcon("icon-create-method.png"));
 
         return cayenneTable;
     }

@@ -26,7 +26,7 @@ import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.toolkit.CellRenderers;
+import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.toolkit.WidgetFactory;
 import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
@@ -48,7 +48,7 @@ public abstract class BaseQueryMainTab extends JPanel {
     protected void initQueryRoot() {
         queryRoot = WidgetFactory.createComboBox();
         AutoCompletion.enable(queryRoot);
-        queryRoot.setRenderer(CellRenderers.listRendererWithIcons());
+        queryRoot.setRenderer(Renderers.listRendererWithIcons());
 
         RootSelectionHandler rootHandler = new RootSelectionHandler(this);
 

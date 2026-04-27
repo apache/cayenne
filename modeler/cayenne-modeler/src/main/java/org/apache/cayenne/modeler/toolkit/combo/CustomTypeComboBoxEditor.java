@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.toolkit.combo;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.toolkit.CellRenderers;
+import org.apache.cayenne.modeler.toolkit.Renderers;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
@@ -48,7 +48,7 @@ public class CustomTypeComboBoxEditor extends BasicComboBoxEditor {
     @Override
     public void setItem(Object anObject) {
         localOldValue = anObject;
-        super.setItem(anObject == null ? null : CellRenderers.asString(anObject, selectedDataMap()));
+        super.setItem(anObject == null ? null : Renderers.asString(anObject, selectedDataMap()));
     }
 
     @Override
@@ -114,7 +114,7 @@ public class CustomTypeComboBoxEditor extends BasicComboBoxEditor {
          */
         ComboBoxModel model = combo.getModel();
         for (int i = 0; i < model.getSize(); i++) {
-            if (value.equals(CellRenderers.asString(model.getElementAt(i), selectedDataMap()))) {
+            if (value.equals(Renderers.asString(model.getElementAt(i), selectedDataMap()))) {
                 return model.getElementAt(i);
             }
         }

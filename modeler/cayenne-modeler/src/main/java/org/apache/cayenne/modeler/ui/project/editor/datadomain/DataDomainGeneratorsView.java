@@ -21,8 +21,8 @@ package org.apache.cayenne.modeler.ui.project.editor.datadomain;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.util.ModelerUtil;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -97,7 +97,7 @@ public abstract class DataDomainGeneratorsView extends JPanel {
             this.selectAll = new JCheckBox();
             generateAll = new JButton("Run");
             generateAll.setEnabled(false);
-            generateAll.setIcon(ModelerUtil.buildIcon(icon));
+            generateAll.setIcon(IconFactory.buildIcon(icon));
             builder.append(selectAll, new JLabel("Select All"), generateAll);
             this.add(builder.getPanel(), BorderLayout.CENTER);
         }

@@ -19,19 +19,14 @@
 
 package org.apache.cayenne.modeler.ui.preferences.classpath.maven;
 
-import java.awt.BorderLayout;
-import java.awt.Dialog;
-import java.awt.Frame;
-
-import javax.swing.JButton;
-import javax.swing.JTextField;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.toolkit.WidgetFactory;
 import org.apache.cayenne.modeler.toolkit.dialog.CayenneDialog;
-import org.apache.cayenne.modeler.util.ModelerUtil;
+
+import javax.swing.*;
+import java.awt.*;
 
 public class MavenDependencyDialogView extends CayenneDialog {
 
@@ -45,14 +40,14 @@ public class MavenDependencyDialogView extends CayenneDialog {
         super(parentDialog, "Download artifact", true);
         this.initView();
         this.pack();
-        ModelerUtil.centerWindow(parentDialog, this);
+        centerWindow();
     }
 
     public MavenDependencyDialogView(Frame parentFrame) {
         super(parentFrame, "Download artifact", true);
         this.initView();
         this.pack();
-        ModelerUtil.centerWindow(parentFrame, this);
+        centerWindow();
     }
 
     private void initView() {

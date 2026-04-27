@@ -29,6 +29,7 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.Relationship;
+import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.query.Query;
 
 import java.util.Comparator;
@@ -83,8 +84,8 @@ public class Comparators {
 
         public int compare(ConfigurationNode o1, ConfigurationNode o2) {
 
-            String name1 = ModelerUtil.getObjectName(o1);
-            String name2 = ModelerUtil.getObjectName(o2);
+            String name1 = Renderers.asString(o1);
+            String name2 = Renderers.asString(o2);
 
             if (name1 == null) {
                 return (name2 != null) ? -1 : 0;

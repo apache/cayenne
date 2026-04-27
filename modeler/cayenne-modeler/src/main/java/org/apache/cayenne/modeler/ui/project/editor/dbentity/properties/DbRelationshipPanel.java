@@ -26,6 +26,7 @@ import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.event.model.DbEntityListener;
 import org.apache.cayenne.modeler.event.model.DbRelationshipListener;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
@@ -41,8 +42,7 @@ import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.toolkit.WidgetFactory;
 import org.apache.cayenne.modeler.toolkit.table.BoardTableCellRenderer;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
-import org.apache.cayenne.modeler.toolkit.CellRenderers;
-import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
 
 import javax.swing.*;
@@ -77,11 +77,11 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
         GlobalActions globalActions = Application.getInstance().getActionManager();
 
         table = new CayenneTable();
-        table.setDefaultRenderer(DbEntity.class, CellRenderers.entityTableRendererWithIcons(controller));
+        table.setDefaultRenderer(DbEntity.class, Renderers.entityTableRendererWithIcons(controller));
         table.setDefaultRenderer(String.class, new BoardTableCellRenderer());
         tablePreferences = new TableColumnPreferences(DbRelationshipTableModel.class, "relationshipTable");
 
-        editMenu = new JMenuItem("Edit Relationship", ModelerUtil.buildIcon("icon-edit.png"));
+        editMenu = new JMenuItem("Edit Relationship", IconFactory.buildIcon("icon-edit.png"));
 
         JPopupMenu popup = new JPopupMenu();
         popup.add(editMenu);
@@ -179,7 +179,7 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
         targetCombo = WidgetFactory.createComboBox();
         AutoCompletion.enable(targetCombo);
 
-        targetCombo.setRenderer(CellRenderers.entityListRendererWithIcons(entity.getDataMap()));
+        targetCombo.setRenderer(Renderers.entityListRendererWithIcons(entity.getDataMap()));
         targetCombo.setModel(createComboModel());
 
         TableColumn targetColumn = table.getColumnModel().getColumn(DbRelationshipTableModel.TARGET);

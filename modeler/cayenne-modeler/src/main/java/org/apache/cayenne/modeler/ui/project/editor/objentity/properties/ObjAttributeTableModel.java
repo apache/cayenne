@@ -39,7 +39,7 @@ import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
 import org.apache.cayenne.modeler.toolkit.table.CellEditorForAttributeTable;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.modeler.toolkit.ValueTypes;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 
@@ -265,7 +265,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttribute> {
         String newType = value != null ? value.toString() : null;
         attribute.setType(newType);
 
-        if (Arrays.asList(ModelerUtil.getRegisteredTypeNames()).contains(newType) || newType == null) {
+        if (Arrays.asList(ValueTypes.getTypes()).contains(newType) || newType == null) {
             return;
         }
 

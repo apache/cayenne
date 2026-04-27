@@ -25,7 +25,7 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.modeler.toolkit.WidgetFactory;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.mvc.RootController;
-import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
@@ -173,7 +173,7 @@ public class MergerTokenSelectorController extends ChildController<RootControlle
                                                            final boolean isSelected, final boolean hasFocus, final int row, final int column) {
                 super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 setHorizontalTextPosition(SwingConstants.LEFT);
-                setIcon(ModelerUtil.buildIcon("icon-arrow-open.png"));
+                setIcon(IconFactory.buildIcon("icon-arrow-open.png"));
                 return this;
             }
         });
