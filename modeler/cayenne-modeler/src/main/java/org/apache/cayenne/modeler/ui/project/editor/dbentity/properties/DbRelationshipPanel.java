@@ -43,7 +43,6 @@ import org.apache.cayenne.modeler.toolkit.table.BoardTableCellRenderer;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
 import org.apache.cayenne.modeler.toolkit.CellRenderers;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
 
 import javax.swing.*;
@@ -307,7 +306,7 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
                 }
 
                 if (sel.length == 1) {
-                    UIUtil.scrollToSelectedRow(table);
+                    table.scrollToSelectedRow();
                 }
             }
 

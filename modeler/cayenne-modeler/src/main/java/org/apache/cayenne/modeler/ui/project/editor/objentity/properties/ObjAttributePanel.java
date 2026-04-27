@@ -23,33 +23,32 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
+import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
 import org.apache.cayenne.modeler.event.model.ObjAttributeListener;
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityListener;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.event.model.ProjectBeforeSaveEvent;
+import org.apache.cayenne.modeler.event.model.ProjectBeforeSaveListener;
+import org.apache.cayenne.modeler.pref.TableColumnPreferences;
+import org.apache.cayenne.modeler.project.ObjEntityOps;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
+import org.apache.cayenne.modeler.toolkit.WidgetFactory;
+import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
+import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
 import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.CutAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.ObjEntityToSuperEntityAction;
 import org.apache.cayenne.modeler.ui.action.PasteAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeRelationshipAction;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.attrinfo.ObjAttributeInfoDialogController;
-import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
-import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
-import org.apache.cayenne.modeler.event.model.ProjectBeforeSaveEvent;
-import org.apache.cayenne.modeler.event.model.ProjectBeforeSaveListener;
-import org.apache.cayenne.modeler.event.display.TablePopupHandler;
-import org.apache.cayenne.modeler.pref.TableColumnPreferences;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.util.ProjectUtil;
-import org.apache.cayenne.modeler.util.UIUtil;
-import org.apache.cayenne.modeler.toolkit.WidgetFactory;
-import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -249,8 +248,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
     }
 
     public void removeDuplicateAttribute(ObjAttributeEvent e) {
-        Collection<ObjEntity> objEntities = ProjectUtil.getCollectionOfChildren(e.getEntity());
-
+        Collection<ObjEntity> objEntities = ObjEntityOps.subentities(e.getEntity());
 
         for (ObjEntity objEntity : objEntities) {
             if (objEntity.getDeclaredAttribute(e.getAttribute().getName()) != null) {
@@ -473,7 +471,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
                 }
 
                 if (sel.length == 1) {
-                    UIUtil.scrollToSelectedRow(table);
+                    table.scrollToSelectedRow();
                 }
             }
 

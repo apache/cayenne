@@ -38,7 +38,6 @@ import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.toolkit.WidgetFactory;
 import org.apache.cayenne.modeler.toolkit.table.BoardTableCellRenderer;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
-import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.text.LimitedTextField;
 
@@ -225,7 +224,7 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
                 }
 
                 if (sel.length == 1) {
-                    UIUtil.scrollToSelectedRow(table);
+                    table.scrollToSelectedRow();
                 }
             }
         }

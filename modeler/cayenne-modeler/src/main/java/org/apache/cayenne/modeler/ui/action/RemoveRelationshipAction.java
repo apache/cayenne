@@ -25,14 +25,13 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.modeler.event.model.ObjRelationshipEvent;
-import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
-import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
+import org.apache.cayenne.modeler.event.model.ObjRelationshipEvent;
+import org.apache.cayenne.modeler.project.DataMapOps;
 import org.apache.cayenne.modeler.ui.confirmremove.ConfirmRemoveDialog;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.undo.RemoveRelationshipUndoableEdit;
-import org.apache.cayenne.modeler.util.ProjectUtil;
 
 import java.awt.event.ActionEvent;
 
@@ -98,27 +97,27 @@ public class RemoveRelationshipAction extends RemoveAction implements MultipleOb
 	}
 
 	public void removeObjRelationships(ObjEntity entity, ObjRelationship[] rels) {
-		ProjectController mediator = getProjectController();
+		ProjectController controller = getProjectController();
 
 		for (ObjRelationship rel : rels) {
 			entity.removeRelationship(rel.getName());
 			ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(application.getFrameController().getView(),
 					rel, entity);
-			mediator.fireObjRelationshipEvent(e);
+			controller.fireObjRelationshipEvent(e);
 		}
 	}
 
 	public void removeDbRelationships(DbEntity entity, DbRelationship[] rels) {
-		ProjectController mediator = getProjectController();
+		ProjectController controller = getProjectController();
 
 		for(int i = 0; i < rels.length; i++) {
 			rels[i] = entity.getRelationship(rels[i].getName());
 			entity.removeRelationship(rels[i].getName());
 			DbRelationshipEvent e = DbRelationshipEvent.ofRemove(application.getFrameController().getView(),
 					rels[i], entity);
-			mediator.fireDbRelationshipEvent(e);
+			controller.fireDbRelationshipEvent(e);
 		}
 
-		ProjectUtil.cleanObjMappings(mediator.getSelectedDataMap());
+		DataMapOps.removeBrokenObjToDbMappings(controller.getSelectedDataMap());
 	}
 }

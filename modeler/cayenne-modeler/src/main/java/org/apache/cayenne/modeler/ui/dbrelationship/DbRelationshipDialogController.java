@@ -25,13 +25,16 @@ import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.project.DbRelationshipOps;
 import org.apache.cayenne.modeler.toolkit.WidgetFactory;
 import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.warning.WarningDialogByDbTargetChange;
 import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.RelationshipUndoableEdit;
 import org.apache.cayenne.modeler.util.ModelerUtil;
@@ -143,7 +146,7 @@ public class DbRelationshipDialogController extends ChildController<ProjectContr
             if (relationship.getTargetEntityName() == null) {
                 relationship.setTargetEntityName(selectedItem.getName());
             } else if (!relationship.getTargetEntityName().equals(selectedItem.getName())) {
-                if (WarningDialogByDbTargetChange.showWarningDialog(projectController, relationship)) {
+                if (showWarningDialog(projectController, relationship)) {
                     // clear joins...
                     relationship.removeAllJoins();
                     relationship.setTargetEntityName(selectedItem.getName());
@@ -440,4 +443,50 @@ public class DbRelationshipDialogController extends ChildController<ProjectContr
             return getTitle(selected);
         }
     }
+
+
+    private static boolean showWarningDialog(ProjectController controller, DbRelationship relationship) {
+
+        DataChannelDescriptor domain = (DataChannelDescriptor) controller.getProject().getRootNode();
+        Collection<ObjRelationship> objRelationships = DbRelationshipOps.objRelationshipsUsingDbRelationship(domain, relationship);
+        Collection<ObjAttribute> objAttributes = DbRelationshipOps.objAttributesUsingDbRelationship(domain, relationship);
+
+        if (objAttributes.isEmpty() && objRelationships.isEmpty()) {
+            int result = JOptionPane.showConfirmDialog(Application.getInstance().getFrameController().getView(), "Changing target entity will reset all joins.",
+                    "Warning", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            return (result == JOptionPane.OK_OPTION);
+        }
+
+        JPanel dialogPanel = new JPanel();
+        dialogPanel.setLayout(new BorderLayout());
+        JLabel textLabel = new JLabel(String.format("<html><p>Following ObjAttributes and ObjRelationships "
+                + "<br>will be affected by change of DbRelationship <br> '%s'"
+                + " target and must be fixed manually. "
+                + "<br>Are you sure you want to proceed?</p><br></html>", relationship.getName()));
+        dialogPanel.add(textLabel, BorderLayout.NORTH);
+        DefaultListModel<String> model = new DefaultListModel<>();
+        JList<String> objects = new JList<>(model);
+        JScrollPane scrollPane = new JScrollPane(objects);
+
+        if (!objRelationships.isEmpty()) {
+            model.addElement("Relationships: ");
+            for (ObjRelationship objRelationship : objRelationships) {
+                model.addElement(objRelationship.getSourceEntity().getName() + "." + objRelationship.getName());
+            }
+        }
+
+        if (!objAttributes.isEmpty()) {
+            model.addElement("Attributes: ");
+            for (ObjAttribute objAttribute : objAttributes) {
+                model.addElement(objAttribute.getEntity().getName() + "." + objAttribute.getName());
+            }
+        }
+
+        dialogPanel.add(scrollPane, BorderLayout.SOUTH);
+        int result = JOptionPane.showConfirmDialog(Application.getInstance().getFrameController().getView(), dialogPanel,
+                "Warning", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        return result == JOptionPane.OK_OPTION;
+    }
+
+
 }

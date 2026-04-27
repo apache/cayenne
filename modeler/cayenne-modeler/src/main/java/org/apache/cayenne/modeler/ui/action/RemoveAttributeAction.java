@@ -28,15 +28,15 @@ import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
 import org.apache.cayenne.modeler.event.model.EmbeddableAttributeEvent;
-import org.apache.cayenne.modeler.event.model.ModelEvent;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
+import org.apache.cayenne.modeler.project.DataMapOps;
+import org.apache.cayenne.modeler.project.ObjEntityOps;
 import org.apache.cayenne.modeler.ui.confirmremove.ConfirmRemoveDialog;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.undo.RemoveAttributeUndoableEdit;
-import org.apache.cayenne.modeler.util.ProjectUtil;
 
 import java.awt.event.ActionEvent;
 import java.util.Collection;
@@ -131,7 +131,7 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
             mediator.fireDbAttributeEvent(e);
         }
 
-        ProjectUtil.cleanObjMappings(dataMap);
+        DataMapOps.removeBrokenObjToDbMappings(dataMap);
     }
 
     public void removeObjAttributes(ObjEntity entity, ObjAttribute[] attribs) {
@@ -145,7 +145,7 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
                     entity);
             mediator.fireObjAttributeEvent(e);
 
-            Collection<ObjEntity> objEntities = ProjectUtil.getCollectionOfChildren((ObjEntity) e.getEntity());
+            Collection<ObjEntity> objEntities = ObjEntityOps.subentities(e.getEntity());
             for (ObjEntity objEntity: objEntities) {
                 objEntity.removeAttributeOverride(e.getAttribute().getName());
             }

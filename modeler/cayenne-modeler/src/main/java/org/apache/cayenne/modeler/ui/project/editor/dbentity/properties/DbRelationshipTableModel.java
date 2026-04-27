@@ -19,24 +19,24 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.dbentity.properties;
 
-import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
-import javax.swing.JOptionPane;
-import java.util.ArrayList;
-import java.util.Collection;
-
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
+import org.apache.cayenne.modeler.project.DbRelationshipOps;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
-import org.apache.cayenne.modeler.util.ProjectUtil;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 
+import javax.swing.*;
+import java.util.ArrayList;
+
 /**
  * Table model for DbRelationship table.
- * 
+ *
  */
 public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> {
 
@@ -50,7 +50,7 @@ public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> 
     protected DbEntity entity;
 
     public DbRelationshipTableModel(DbEntity entity, ProjectController mediator,
-            Object eventSource) {
+                                    Object eventSource) {
 
         super(mediator, eventSource, new ArrayList<>(entity.getRelationships()));
         this.entity = entity;
@@ -176,7 +176,7 @@ public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> 
             controller.fireDbRelationshipEvent(DbRelationshipEvent.ofChange(eventSource, rel, entity));
 
             updateDependentObjRelationships(rel);
-        } else if(column == COMMENTS) {
+        } else if (column == COMMENTS) {
             setComment((String) aValue, rel);
             controller.fireDbRelationshipEvent(DbRelationshipEvent.ofChange(eventSource, rel, entity));
         }
@@ -194,9 +194,8 @@ public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> 
 
     void updateDependentObjRelationships(DbRelationship relationship) {
 
-        Collection<ObjRelationship> objRelationshipsForDbRelationship = ProjectUtil
-                .findObjRelationshipsForDbRelationship(controller, relationship);
-        for(ObjRelationship objRelationship : objRelationshipsForDbRelationship) {
+        DataChannelDescriptor domain = (DataChannelDescriptor) controller.getProject().getRootNode();
+        for (ObjRelationship objRelationship : DbRelationshipOps.objRelationshipsUsingDbRelationship(domain, relationship)) {
             objRelationship.recalculateToManyValue();
         }
     }
@@ -205,7 +204,7 @@ public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> 
         DbRelationship rel = getRelationship(row);
         if (rel == null) {
             return false;
-        } else if(col == TARGET) {
+        } else if (col == TARGET) {
             return false;
         } else if (col == TO_DEPENDENT_KEY) {
             return rel.isValidForDepPk();

@@ -43,7 +43,6 @@ import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
 import org.apache.cayenne.modeler.toolkit.CellRenderers;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.util.UIUtil;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -431,7 +430,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
                 }
 
                 if (sel.length == 1) {
-                    UIUtil.scrollToSelectedRow(table);
+                    table.scrollToSelectedRow();
                 }
             }
 

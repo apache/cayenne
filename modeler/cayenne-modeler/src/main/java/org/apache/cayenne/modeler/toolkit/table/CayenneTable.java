@@ -104,6 +104,45 @@ public class CayenneTable extends JTable {
         editingCanceled(new ChangeEvent(this));
     }
 
+    /**
+     * Scrolls this table within its enclosing JViewport to the selected row, if any.
+     */
+    public void scrollToSelectedRow() {
+        int row = getSelectedRow();
+        if (row < 0 || !(getParent() instanceof JViewport)) {
+            return;
+        }
+
+        JViewport viewport = (JViewport) getParent();
+        Rectangle rect = getCellRect(row, 0, true);
+        Rectangle viewRect = viewport.getViewRect();
+
+        if (viewRect.intersects(rect)) {
+            return;
+        }
+
+        // Translate the cell location so that it is relative
+        // to the view, assuming the northwest corner of the
+        // view is (0,0).
+        rect.setLocation(rect.x - viewRect.x, rect.y - viewRect.y);
+
+        // Calculate location of rect if it were at the center of view
+        int centerX = (viewRect.width - rect.width) / 2;
+        int centerY = (viewRect.height - rect.height) / 2;
+
+        // Fake the location of the cell so that scrollRectToVisible
+        // will move the cell to the center
+        if (rect.x < centerX) {
+            centerX = -centerX;
+        }
+        if (rect.y < centerY) {
+            centerY = -centerY;
+        }
+        rect.translate(centerX, centerY);
+
+        viewport.scrollRectToVisible(rect);
+    }
+
     public void select(Object row) {
         if (row == null) {
             return;

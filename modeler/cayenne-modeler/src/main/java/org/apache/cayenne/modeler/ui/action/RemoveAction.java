@@ -22,17 +22,6 @@ package org.apache.cayenne.modeler.ui.action;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
-import org.apache.cayenne.modeler.event.model.ObjRelationshipEvent;
-import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
-import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
-import org.apache.cayenne.modeler.event.model.DbEntityEvent;
-import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
-import org.apache.cayenne.modeler.event.model.DataMapEvent;
-import org.apache.cayenne.modeler.event.model.DataNodeEvent;
-import org.apache.cayenne.modeler.event.model.ProcedureEvent;
-import org.apache.cayenne.modeler.event.model.ProcedureParameterEvent;
-import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.DataMap;
@@ -49,21 +38,31 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.Relationship;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
+import org.apache.cayenne.modeler.event.model.DataMapEvent;
+import org.apache.cayenne.modeler.event.model.DataNodeEvent;
+import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
+import org.apache.cayenne.modeler.event.model.DbEntityEvent;
+import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
 import org.apache.cayenne.modeler.event.model.EmbeddableAttributeEvent;
 import org.apache.cayenne.modeler.event.model.EmbeddableEvent;
-import org.apache.cayenne.modeler.event.model.ModelEvent;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
+import org.apache.cayenne.modeler.event.model.ObjRelationshipEvent;
+import org.apache.cayenne.modeler.event.model.ProcedureEvent;
+import org.apache.cayenne.modeler.event.model.ProcedureParameterEvent;
+import org.apache.cayenne.modeler.event.model.QueryEvent;
+import org.apache.cayenne.modeler.project.DataMapOps;
 import org.apache.cayenne.modeler.ui.confirmremove.ConfirmRemoveDialog;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.CallbackType;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
-import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
 import org.apache.cayenne.modeler.undo.RemoveAttributeUndoableEdit;
 import org.apache.cayenne.modeler.undo.RemoveCallbackMethodUndoableEdit;
 import org.apache.cayenne.modeler.undo.RemoveCompoundUndoableEdit;
 import org.apache.cayenne.modeler.undo.RemoveRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.RemoveUndoableEdit;
-import org.apache.cayenne.modeler.util.ProjectUtil;
 
 import javax.swing.*;
 import javax.swing.undo.CompoundEdit;
@@ -222,13 +221,12 @@ public class RemoveAction extends ModelerAbstractAction {
         }
     }
     
-    private void removeEmbAttributes(ProjectController mediator, ConfirmRemoveDialog dialog,
-                                     EmbeddableAttribute[] embAttrs) {
+    private void removeEmbAttributes(ProjectController controller, ConfirmRemoveDialog dialog, EmbeddableAttribute[] embAttrs) {
     	if (embAttrs != null && embAttrs.length > 0) {
         	if ((embAttrs.length == 1 && dialog.shouldDelete("DbAttribute", embAttrs[0].getName()))
                     || (embAttrs.length > 1 && dialog.shouldDelete("selected DbAttributes"))) {
 
-        		Embeddable embeddable = mediator.getSelectedEmbeddable();
+        		Embeddable embeddable = controller.getSelectedEmbeddable();
 
                 application.getUndoManager()
                         .addEdit(new RemoveAttributeUndoableEdit(embeddable, embAttrs));
@@ -237,32 +235,30 @@ public class RemoveAction extends ModelerAbstractAction {
                     embeddable.removeAttribute(attrib.getName());
                     EmbeddableAttributeEvent e = EmbeddableAttributeEvent.ofRemove(application.getFrameController().getView(),
                             attrib, embeddable);
-                    mediator.fireEmbeddableAttributeEvent(e);
+                    controller.fireEmbeddableAttributeEvent(e);
                 }
 
-                ProjectUtil.cleanObjMappings(mediator.getSelectedDataMap());
+                DataMapOps.removeBrokenObjToDbMappings(controller.getSelectedDataMap());
         	}
     	}
 	}
 
-	private void removeObjAttributes(ProjectController mediator,
-			ConfirmRemoveDialog dialog, ObjAttribute[] objAttrs) {
+	private void removeObjAttributes(ProjectController controller, ConfirmRemoveDialog dialog, ObjAttribute[] objAttrs) {
     	if (objAttrs != null && objAttrs.length > 0) {
         	if ((objAttrs.length == 1 && dialog.shouldDelete("DbAttribute", objAttrs[0].getName()))
                     || (objAttrs.length > 1 && dialog.shouldDelete("selected DbAttributes"))) {
 
-        		ObjEntity entity = mediator.getSelectedObjEntity();
+        		ObjEntity entity = controller.getSelectedObjEntity();
 
-                application.getUndoManager()
-                        .addEdit(new RemoveAttributeUndoableEdit(entity, objAttrs));
+                application.getUndoManager().addEdit(new RemoveAttributeUndoableEdit(entity, objAttrs));
 
                 for (ObjAttribute attrib : objAttrs) {
                     entity.removeAttribute(attrib.getName());
                     ObjAttributeEvent e = ObjAttributeEvent.ofRemove(application.getFrameController().getView(), attrib, entity);
-                    mediator.fireObjAttributeEvent(e);
+                    controller.fireObjAttributeEvent(e);
                 }
 
-                ProjectUtil.cleanObjMappings(mediator.getSelectedDataMap());
+                DataMapOps.removeBrokenObjToDbMappings(controller.getSelectedDataMap());
         	}
     	}
 	}
@@ -283,7 +279,7 @@ public class RemoveAction extends ModelerAbstractAction {
                     controller.fireDbAttributeEvent(e);
                 }
 
-                ProjectUtil.cleanObjMappings(controller.getSelectedDataMap());
+                DataMapOps.removeBrokenObjToDbMappings(controller.getSelectedDataMap());
         	}
     	}
     }
@@ -300,7 +296,7 @@ public class RemoveAction extends ModelerAbstractAction {
 					controller.fireDbRelationshipEvent(e);
 				}
 
-				ProjectUtil.cleanObjMappings(controller.getSelectedDataMap());
+                DataMapOps.removeBrokenObjToDbMappings(controller.getSelectedDataMap());
 				application.getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(entity, dbRels));
 			}
 		}

@@ -45,7 +45,6 @@ import org.apache.cayenne.modeler.toolkit.WidgetFactory;
 import org.apache.cayenne.modeler.toolkit.table.CayenneCellEditor;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.text.LimitedTextField;
 import org.apache.cayenne.modeler.toolkit.image.FilteredIconFactory;
@@ -208,7 +207,7 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
 
             if (sel.length == 1) {
                 // scroll table
-                UIUtil.scrollToSelectedRow(table);
+                table.scrollToSelectedRow();
 
                 int rowCount = table.getRowCount();
                 if (rowCount > 1) {

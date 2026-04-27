@@ -19,39 +19,27 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.query.selectquery;
 
-import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.event.model.QueryEvent;
+import org.apache.cayenne.modeler.toolkit.MultiColumnBrowser;
+import org.apache.cayenne.modeler.toolkit.image.FilteredIconFactory;
+import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
 import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.toolkit.MultiColumnBrowser;
-import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SortOrder;
-import org.apache.cayenne.modeler.toolkit.image.FilteredIconFactory;
 import org.apache.cayenne.util.CayenneMapEntry;
 
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.JToolBar;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.tree.TreeModel;
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Dimension;
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.prefs.Preferences;
@@ -80,7 +68,7 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
     protected SelectQueryDescriptor selectQuery;
 
     protected MultiColumnBrowser browser;
-    protected JTable table;
+    protected CayenneTable table;
 
     protected CardLayout cardLayout;
     protected JPanel messagePanel;
@@ -122,7 +110,7 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
         // scroll to selected row whenever a selection even occurs
         table.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
-                UIUtil.scrollToSelectedRow(table);
+                table.scrollToSelectedRow();
             }
         });
     }
@@ -160,7 +148,7 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
 
     protected JPanel createEditorPanel() {
 
-        table = new JTable();
+        table = new CayenneTable();
         table.setRowHeight(25);
         table.setRowMargin(3);
         table.setPreferredScrollableViewportSize(TABLE_DIM);

@@ -42,7 +42,6 @@ import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.toolkit.WidgetFactory;
 import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
 
@@ -138,7 +137,7 @@ public class EmbeddableAttributesView extends JPanel implements
             }
 
             if (sel.length == 1) {
-                UIUtil.scrollToSelectedRow(table);
+                table.scrollToSelectedRow();
             }
         }
 

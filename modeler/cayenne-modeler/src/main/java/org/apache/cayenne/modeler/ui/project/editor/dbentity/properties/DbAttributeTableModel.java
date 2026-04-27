@@ -19,15 +19,15 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.dbentity.properties;
 
-import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
+import org.apache.cayenne.modeler.project.DbAttributeOps;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
-import org.apache.cayenne.modeler.util.ProjectUtil;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 
@@ -256,10 +256,7 @@ public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
 
             attr.setGenerated(false);
 
-            Collection<DbRelationship> relationships = ProjectUtil
-                    .getRelationshipsUsingAttributeAsTarget(attr);
-            relationships
-                    .addAll(ProjectUtil.getRelationshipsUsingAttributeAsSource(attr));
+            Collection<DbRelationship> relationships = DbAttributeOps.relationshipsUsingAttribute(attr);
 
             if (!relationships.isEmpty()) {
                 relationships.removeIf(relationship -> !relationship.isToDependentPK());
@@ -358,4 +355,7 @@ public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
                 break;
         }
     }
+
+
+
 }

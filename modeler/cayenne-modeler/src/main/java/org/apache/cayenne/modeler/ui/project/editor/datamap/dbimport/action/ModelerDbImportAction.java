@@ -28,14 +28,14 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.runner.ModelerDbImportModule;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.runner.ModelerDbLoaderContext;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+import org.apache.cayenne.modeler.project.DataMapOps;
 import org.apache.cayenne.modeler.toolkit.ProgressDialog;
 import org.apache.cayenne.modeler.ui.action.DBConnectionAwareAction;
 import org.apache.cayenne.modeler.ui.dbloadresult.DbLoadResultDialog;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportController;
-import org.apache.cayenne.modeler.util.ProjectUtil;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.runner.ModelerDbImportModule;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.runner.ModelerDbLoaderContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -264,7 +264,7 @@ public class ModelerDbImportAction extends DBConnectionAwareAction {
             } catch (Exception e) {
                 context.processException(e, "Error importing database schema.");
             }
-            ProjectUtil.cleanObjMappings(context.getDataMap());
+            DataMapOps.removeBrokenObjToDbMappings(context.getDataMap());
         }
     }
 }

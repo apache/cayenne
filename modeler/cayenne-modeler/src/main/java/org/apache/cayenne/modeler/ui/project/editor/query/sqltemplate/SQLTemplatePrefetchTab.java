@@ -35,8 +35,8 @@ import org.apache.cayenne.modeler.util.EntityTreeFilter;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.toolkit.MultiColumnBrowser;
-import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.toolkit.image.FilteredIconFactory;
+import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
 import org.apache.cayenne.util.CayenneMapEntry;
 
 import javax.swing.BorderFactory;
@@ -49,7 +49,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -81,7 +80,7 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
     protected SQLTemplateDescriptor sqlTemplate;
 
     protected MultiColumnBrowser browser;
-    protected JTable table;
+    protected CayenneTable table;
 
     protected CardLayout cardLayout;
     protected JPanel messagePanel;
@@ -121,7 +120,7 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
         // scroll to selected row whenever a selection even occurs
         table.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
-                UIUtil.scrollToSelectedRow(table);
+                table.scrollToSelectedRow();
             }
         });
     }
@@ -177,9 +176,7 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
 
     protected JPanel createEditorPanel() {
 
-        table = new JTable();
-        table.setRowHeight(25);
-        table.setRowMargin(3);
+        table = new CayenneTable();
         table.setPreferredScrollableViewportSize(TABLE_DIM);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
