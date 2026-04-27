@@ -25,7 +25,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.mvc.ChildController;
-import org.apache.cayenne.modeler.swing.table.TableSizer;
+import org.apache.cayenne.modeler.toolkit.table.TableSizer;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.validation.ProjectValidator;
 import org.apache.cayenne.validation.ValidationFailure;

@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.project.querytype;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.swing.WidgetFactory;
+import org.apache.cayenne.modeler.toolkit.WidgetFactory;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;

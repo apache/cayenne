@@ -31,7 +31,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.runner.ModelerDbImportModule;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.runner.ModelerDbLoaderContext;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
-import org.apache.cayenne.modeler.swing.ProgressDialog;
+import org.apache.cayenne.modeler.toolkit.ProgressDialog;
 import org.apache.cayenne.modeler.ui.action.DBConnectionAwareAction;
 import org.apache.cayenne.modeler.ui.dbloadresult.DbLoadResultDialog;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportController;

@@ -29,7 +29,7 @@ import javax.swing.JTable;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.swing.table.CayenneTable;
+import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
 
 
 public class ClasspathPreferencesView extends JPanel {

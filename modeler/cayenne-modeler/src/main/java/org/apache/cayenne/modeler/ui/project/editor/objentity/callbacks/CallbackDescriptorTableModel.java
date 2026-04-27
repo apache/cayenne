@@ -20,10 +20,9 @@ package org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks;
 
 import org.apache.cayenne.map.CallbackDescriptor;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
-import org.apache.cayenne.modeler.swing.table.CayenneTableModel;
+import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
 
 import java.util.List;
 

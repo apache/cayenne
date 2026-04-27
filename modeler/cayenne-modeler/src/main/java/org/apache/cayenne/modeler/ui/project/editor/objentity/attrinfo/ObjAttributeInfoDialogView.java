@@ -23,11 +23,11 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
-import org.apache.cayenne.modeler.swing.table.CayenneTable;
+import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.swing.MultiColumnBrowser;
-import org.apache.cayenne.modeler.swing.WidgetFactory;
-import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.MultiColumnBrowser;
+import org.apache.cayenne.modeler.toolkit.WidgetFactory;
+import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;

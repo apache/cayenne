@@ -21,8 +21,8 @@ package org.apache.cayenne.modeler.ui.project.editor.datanode;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.swing.WidgetFactory;
-import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.WidgetFactory;
+import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;

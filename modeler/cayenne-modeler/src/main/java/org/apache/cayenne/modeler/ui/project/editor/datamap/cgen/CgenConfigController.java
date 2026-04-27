@@ -26,7 +26,7 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.pref.FSPath;
-import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.*;

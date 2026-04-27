@@ -24,7 +24,7 @@ import javax.swing.JComponent;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicTextFieldUI;
 
-import org.apache.cayenne.modeler.swing.combo.EditorTextField;
+import org.apache.cayenne.modeler.toolkit.combo.EditorTextField;
 
 /**
  * @since 4.0

@@ -33,12 +33,12 @@ import javax.swing.text.Document;
 
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextPane;
+import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextPane;
 import org.apache.cayenne.project.validation.EJBQLStatementValidator;
 import org.apache.cayenne.project.validation.EJBQLStatementValidator.PositionException;
 import org.apache.cayenne.map.EJBQLQueryDescriptor;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.modeler.swing.text.CayenneTextPane;
+import org.apache.cayenne.modeler.toolkit.text.CayenneTextPane;
 import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

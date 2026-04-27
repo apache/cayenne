@@ -24,8 +24,8 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.TemplateType;
-import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
-import org.apache.cayenne.modeler.swing.checkbox.CayenneCheckBox;
+import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.checkbox.CayenneCheckBox;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.BorderFactory;

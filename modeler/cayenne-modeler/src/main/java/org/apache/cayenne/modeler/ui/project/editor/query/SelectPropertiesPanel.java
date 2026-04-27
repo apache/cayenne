@@ -32,9 +32,8 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 
 import org.apache.cayenne.modeler.event.model.QueryEvent;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.swing.WidgetFactory;
-import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.WidgetFactory;
+import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.map.QueryDescriptor;

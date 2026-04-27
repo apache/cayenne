@@ -25,7 +25,7 @@ import org.apache.cayenne.modeler.ui.logconsole.LogConsoleController;
 import org.apache.cayenne.modeler.ui.welcome.WelcomeScreen;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.swing.border.TopBorder;
+import org.apache.cayenne.modeler.toolkit.border.TopBorder;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;

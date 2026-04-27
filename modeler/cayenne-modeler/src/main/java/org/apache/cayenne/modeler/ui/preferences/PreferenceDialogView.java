@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.preferences;
 
-import org.apache.cayenne.modeler.swing.border.TopBorder;
+import org.apache.cayenne.modeler.toolkit.border.TopBorder;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;

@@ -1,0 +1,79 @@
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
+
+package org.apache.cayenne.modeler.toolkit.dialog;
+
+import org.apache.cayenne.modeler.util.ModelerUtil;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
+
+/**
+ * Superclass of CayenneModeler dialogs.
+ */
+public class CayenneDialog extends JDialog {
+
+    public CayenneDialog(Frame owner) throws HeadlessException {
+        super(owner);
+    }
+
+    public CayenneDialog(Frame owner, String title, boolean modal) throws HeadlessException {
+        super(owner, title, modal);
+    }
+
+    public CayenneDialog(Dialog owner, String title, boolean modal) throws HeadlessException {
+        super(owner, title, modal);
+    }
+
+    /** 
+     * Centers this dialog relative to the parent Window 
+     */
+    public void centerWindow() {
+        ModelerUtil.centerWindow((Window) super.getParent(), this);
+    }
+
+    @Override
+    protected void dialogInit() {
+        super.dialogInit();
+
+        // make dialog closable on escape
+        // TODO: Note that if a dialog contains subcomponents
+        // that use ESC for their own purposes (like editable JTable or JComboBox),
+        // this code will still close the dialog  (e.g. not just an expanded
+        // ComboBox). To fix it see this advise (Swing is Fun!!):
+        //
+        //   http://www.eos.dk/pipermail/swing/2001-June/000789.html
+
+        KeyStroke escReleased = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, true);
+        ActionListener closeAction = e -> {
+            if (CayenneDialog.this.isVisible()) {
+                WindowEvent windowClosing = new WindowEvent(CayenneDialog.this, WindowEvent.WINDOW_CLOSING);
+                CayenneDialog.super.processWindowEvent(windowClosing);
+            }
+        };
+
+        getRootPane().registerKeyboardAction(
+                closeAction,
+                escReleased,
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
+    }
+}

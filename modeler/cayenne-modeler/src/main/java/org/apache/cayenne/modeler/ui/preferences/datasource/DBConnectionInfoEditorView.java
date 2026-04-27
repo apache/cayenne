@@ -29,8 +29,8 @@ import javax.swing.JPanel;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.swing.text.CayennePasswordField;
-import org.apache.cayenne.modeler.swing.text.CayenneTextField;
+import org.apache.cayenne.modeler.toolkit.text.CayennePasswordField;
+import org.apache.cayenne.modeler.toolkit.text.CayenneTextField;
 
 /**
  * A generic panel for entering DataSource information.

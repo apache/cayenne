@@ -20,10 +20,10 @@
 package org.apache.cayenne.modeler.ui.project.editor.objentity.properties;
 
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.modeler.swing.CellRenderers;
-import org.apache.cayenne.modeler.swing.WidgetFactory;
-import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
-import org.apache.cayenne.modeler.swing.table.CayenneTableModel;
+import org.apache.cayenne.modeler.toolkit.CellRenderers;
+import org.apache.cayenne.modeler.toolkit.WidgetFactory;
+import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.util.Util;

@@ -26,10 +26,10 @@ import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.swing.CellRenderers;
-import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
-import org.apache.cayenne.modeler.swing.WidgetFactory;
-import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.CellRenderers;
+import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.WidgetFactory;
+import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 

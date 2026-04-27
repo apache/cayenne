@@ -27,7 +27,7 @@ import org.apache.cayenne.modeler.event.display.ValidationConfigDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ValidationConfigDisplayListener;
 import org.apache.cayenne.project.validation.Inspection;
 import org.apache.cayenne.project.validation.ValidationConfig;
-import org.apache.cayenne.modeler.swing.tree.CheckBoxNodeData;
+import org.apache.cayenne.modeler.toolkit.tree.CheckBoxNodeData;
 
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;

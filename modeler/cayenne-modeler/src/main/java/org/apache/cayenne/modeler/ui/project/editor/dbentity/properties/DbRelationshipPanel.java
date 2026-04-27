@@ -38,13 +38,13 @@ import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
-import org.apache.cayenne.modeler.swing.WidgetFactory;
-import org.apache.cayenne.modeler.swing.table.BoardTableCellRenderer;
-import org.apache.cayenne.modeler.swing.table.CayenneTable;
-import org.apache.cayenne.modeler.swing.CellRenderers;
+import org.apache.cayenne.modeler.toolkit.WidgetFactory;
+import org.apache.cayenne.modeler.toolkit.table.BoardTableCellRenderer;
+import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
+import org.apache.cayenne.modeler.toolkit.CellRenderers;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.UIUtil;
-import org.apache.cayenne.modeler.swing.combo.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;

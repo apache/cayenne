@@ -24,11 +24,11 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.mvc.ChildController;
-import org.apache.cayenne.modeler.swing.CellRenderers;
-import org.apache.cayenne.modeler.swing.table.CheckBoxHeader;
-import org.apache.cayenne.modeler.swing.table.ImageRendererColumn;
+import org.apache.cayenne.modeler.toolkit.CellRenderers;
+import org.apache.cayenne.modeler.toolkit.table.CheckBoxHeader;
+import org.apache.cayenne.modeler.toolkit.table.ImageRendererColumn;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.swing.table.TableSizer;
+import org.apache.cayenne.modeler.toolkit.table.TableSizer;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 

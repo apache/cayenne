@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.pref;
 
-import org.apache.cayenne.modeler.swing.table.CayenneTable;
+import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

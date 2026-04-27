@@ -36,7 +36,6 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.errors.ErrorsController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
@@ -45,7 +44,7 @@ import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallb
 import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
 import org.apache.cayenne.modeler.undo.PasteCompoundUndoableEdit;
 import org.apache.cayenne.modeler.undo.PasteUndoableEdit;
-import org.apache.cayenne.modeler.swing.copypaste.CayenneTransferable;
+import org.apache.cayenne.modeler.toolkit.copypaste.CayenneTransferable;
 import org.apache.cayenne.query.Query;
 
 import javax.swing.KeyStroke;

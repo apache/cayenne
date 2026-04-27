@@ -20,10 +20,10 @@
 
 package org.apache.cayenne.modeler.ui.errors;
 
-import org.apache.cayenne.modeler.swing.WidgetFactory;
+import org.apache.cayenne.modeler.toolkit.WidgetFactory;
 import org.apache.cayenne.modeler.ui.ModelerFrame;
-import org.apache.cayenne.modeler.swing.UrlOpener;
-import org.apache.cayenne.modeler.swing.dialog.CayenneDialog;
+import org.apache.cayenne.modeler.toolkit.UrlOpener;
+import org.apache.cayenne.modeler.toolkit.dialog.CayenneDialog;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.util.LocalizedStringsHandler;
 import org.apache.cayenne.util.Util;

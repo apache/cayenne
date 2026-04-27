@@ -31,7 +31,7 @@ import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
 import org.apache.cayenne.modeler.event.model.CallbackMethodListener;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
-import org.apache.cayenne.modeler.swing.table.CayenneTable;
+import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
 import org.apache.cayenne.modeler.ui.action.CopyCallbackMethodAction;
 import org.apache.cayenne.modeler.ui.action.CreateCallbackMethodAction;
 import org.apache.cayenne.modeler.ui.action.CutCallbackMethodAction;

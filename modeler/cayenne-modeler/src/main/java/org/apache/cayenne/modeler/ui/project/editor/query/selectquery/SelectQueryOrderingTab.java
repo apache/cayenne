@@ -28,11 +28,11 @@ import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.swing.MultiColumnBrowser;
+import org.apache.cayenne.modeler.toolkit.MultiColumnBrowser;
 import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SortOrder;
-import org.apache.cayenne.modeler.swing.image.FilteredIconFactory;
+import org.apache.cayenne.modeler.toolkit.image.FilteredIconFactory;
 import org.apache.cayenne.util.CayenneMapEntry;
 
 import javax.swing.BorderFactory;

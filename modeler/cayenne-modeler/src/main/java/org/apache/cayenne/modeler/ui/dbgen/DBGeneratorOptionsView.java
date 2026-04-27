@@ -43,7 +43,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.swing.border.TopBorder;
+import org.apache.cayenne.modeler.toolkit.border.TopBorder;
 
 /**
  * Wizard for generating the database from the data map.

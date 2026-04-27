@@ -22,7 +22,7 @@ import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
-import org.apache.cayenne.modeler.swing.table.CayenneTableModel;
+import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
 
 public class CayenneTableModelUndoableEdit extends AbstractUndoableEdit {
 

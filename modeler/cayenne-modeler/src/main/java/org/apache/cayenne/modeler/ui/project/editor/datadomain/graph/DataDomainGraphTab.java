@@ -27,7 +27,7 @@ import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.graph.GraphBuilder;
 import org.apache.cayenne.modeler.graph.GraphRegistry;
 import org.apache.cayenne.modeler.graph.GraphType;
-import org.apache.cayenne.modeler.swing.WidgetFactory;
+import org.apache.cayenne.modeler.toolkit.WidgetFactory;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.RebuildGraphAction;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.SaveAsImageAction;

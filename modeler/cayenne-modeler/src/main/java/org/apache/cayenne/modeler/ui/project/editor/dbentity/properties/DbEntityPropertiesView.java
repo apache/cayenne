@@ -39,7 +39,7 @@ import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.swing.image.FilteredIconFactory;
+import org.apache.cayenne.modeler.toolkit.image.FilteredIconFactory;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.Icon;

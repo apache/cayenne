@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.dbactionoptions;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.swing.dialog.CayenneDialog;
+import org.apache.cayenne.modeler.toolkit.dialog.CayenneDialog;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;

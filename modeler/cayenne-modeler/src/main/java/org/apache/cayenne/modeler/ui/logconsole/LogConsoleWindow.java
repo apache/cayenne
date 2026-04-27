@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.logconsole;
 
-import org.apache.cayenne.modeler.swing.dialog.CayenneDialog;
+import org.apache.cayenne.modeler.toolkit.dialog.CayenneDialog;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;

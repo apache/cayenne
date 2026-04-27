@@ -29,10 +29,10 @@ import javax.swing.JComboBox;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.swing.checkbox.CayenneCheckBox;
-import org.apache.cayenne.modeler.swing.WidgetFactory;
+import org.apache.cayenne.modeler.toolkit.checkbox.CayenneCheckBox;
+import org.apache.cayenne.modeler.toolkit.WidgetFactory;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.swing.CellRenderers;
+import org.apache.cayenne.modeler.toolkit.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
 
 import com.jgoodies.forms.builder.PanelBuilder;

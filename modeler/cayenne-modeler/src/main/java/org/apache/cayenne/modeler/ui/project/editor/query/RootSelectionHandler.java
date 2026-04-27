@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.project.editor.query;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.modeler.swing.CellRenderers;
+import org.apache.cayenne.modeler.toolkit.CellRenderers;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

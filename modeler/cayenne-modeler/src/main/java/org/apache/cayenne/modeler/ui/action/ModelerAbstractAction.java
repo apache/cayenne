@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.swing.image.FilteredIconFactory;
+import org.apache.cayenne.modeler.toolkit.image.FilteredIconFactory;
 import org.apache.cayenne.modeler.ui.errors.ErrorsController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.ModelerUtil;

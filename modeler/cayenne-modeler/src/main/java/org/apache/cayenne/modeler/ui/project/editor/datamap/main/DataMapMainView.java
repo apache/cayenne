@@ -36,12 +36,12 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.main.schema.SchemaUp
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.superclass.SuperclassUpdateController;
 import org.apache.cayenne.modeler.event.model.ProjectAfterSaveEvent;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
-import org.apache.cayenne.modeler.swing.CellRenderers;
-import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.CellRenderers;
+import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
-import org.apache.cayenne.modeler.swing.checkbox.CayenneCheckBox;
-import org.apache.cayenne.modeler.swing.WidgetFactory;
+import org.apache.cayenne.modeler.toolkit.checkbox.CayenneCheckBox;
+import org.apache.cayenne.modeler.toolkit.WidgetFactory;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 

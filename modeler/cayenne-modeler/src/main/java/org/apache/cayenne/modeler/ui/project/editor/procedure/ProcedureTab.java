@@ -31,9 +31,9 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.modeler.event.model.ProcedureEvent;
-import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
-import org.apache.cayenne.modeler.swing.checkbox.CayenneCheckBox;
+import org.apache.cayenne.modeler.toolkit.checkbox.CayenneCheckBox;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 

@@ -20,13 +20,12 @@ package org.apache.cayenne.modeler.ui.project.editor.query.ejbql;
 
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MappingNamespace;
-import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.project.extension.info.ObjectInfo;

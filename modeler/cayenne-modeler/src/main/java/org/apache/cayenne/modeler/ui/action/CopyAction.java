@@ -34,7 +34,7 @@ import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
-import org.apache.cayenne.modeler.swing.copypaste.CayenneTransferable;
+import org.apache.cayenne.modeler.toolkit.copypaste.CayenneTransferable;
 
 import javax.swing.*;
 import java.awt.*;

@@ -22,8 +22,8 @@ package org.apache.cayenne.modeler.ui.project.editor.datanode.jdbc;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.swing.text.CayennePasswordField;
-import org.apache.cayenne.modeler.swing.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.text.CayennePasswordField;
+import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
 
 import javax.swing.*;
 import java.awt.*;

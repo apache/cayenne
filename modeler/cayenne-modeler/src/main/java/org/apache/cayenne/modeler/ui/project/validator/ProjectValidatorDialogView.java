@@ -27,7 +27,7 @@ import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.DisableValidationInspectionAction;
 import org.apache.cayenne.modeler.ui.action.ShowValidationOptionAction;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
-import org.apache.cayenne.modeler.swing.dialog.CayenneDialog;
+import org.apache.cayenne.modeler.toolkit.dialog.CayenneDialog;
 import org.apache.cayenne.validation.ValidationFailure;
 
 import javax.swing.*;
