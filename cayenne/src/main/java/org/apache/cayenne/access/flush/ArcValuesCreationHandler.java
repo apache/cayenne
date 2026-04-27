@@ -19,7 +19,15 @@
 
 package org.apache.cayenne.access.flush;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.flush.operation.DbRowOp;
@@ -33,10 +41,13 @@ import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.EntityInheritanceTree;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.util.CayenneMapEntry;
@@ -111,17 +122,21 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
         ObjectId srcId = id;
         ObjectId targetId = null;
 
+        List<CayenneMapEntry> dbPathComponents = new ArrayList<>();
         Iterator<CayenneMapEntry> dbPathIterator = entity.resolvePathComponents(dbPath);
-        while(dbPathIterator.hasNext()) {
-            CayenneMapEntry entry = dbPathIterator.next();
+        dbPathIterator.forEachRemaining(dbPathComponents::add);
+
+        for (int i = 0; i < dbPathComponents.size(); i++) {
+            CayenneMapEntry entry = dbPathComponents.get(i);
             flattenedPath = flattenedPath.dot(entry.getName());
-            if(entry instanceof DbRelationship) {
+            if (entry instanceof DbRelationship) {
                 DbRelationship relationship = (DbRelationship)entry;
                 // intermediate db entity to be inserted
                 DbEntity target = relationship.getTargetEntity();
                 // if ID is present, just use it, otherwise create new
                 // if this is the last segment, and it's a relationship, use known target id from arc creation
-                if(!dbPathIterator.hasNext()) {
+                boolean isLast = i == dbPathComponents.size() - 1;
+                if (isLast) {
                     targetId = finalTargetId;
                 } else {
                     if(!relationship.isToMany()) {
@@ -131,16 +146,34 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
                     }
                 }
 
-                if(targetId == null) {
+                // if targetId is not present, try to derive it from finalTargetId
+                if (targetId == null && finalTargetId != null) {
+                    List<CayenneMapEntry> remainingPath = dbPathComponents.subList(i + 1, dbPathComponents.size());
+                    Map<String, Object> derivedPk = derivePkValuesFromFinal(target, finalTargetId, remainingPath);
+                    if (!derivedPk.isEmpty()) {
+                        targetId = ObjectId.of(ASTDbPath.DB_PREFIX + target.getName(), derivedPk);
+                        if (!relationship.isToMany()) {
+                            factory.getStore().markFlattenedPath(id, flattenedPath, targetId);
+                        }
+                    }
+                }
+
+                if (targetId == null) {
                     // should insert, regardless of original operation (insert/update)
                     targetId = ObjectId.of(ASTDbPath.DB_PREFIX + target.getName());
-                    if(!relationship.isToMany()) {
+                    if (!relationship.isToMany()) {
                         factory.getStore().markFlattenedPath(id, flattenedPath, targetId);
                     }
 
                     DbRowOpType type;
-                    if(relationship.isToMany()) {
-                        type = add ? DbRowOpType.INSERT : DbRowOpType.DELETE;
+                    if (relationship.isToMany()) {
+                        // in case of vertical inheritance avoid DELETE/INSERT - use UPDATE instead (CAY-2890)
+                        boolean isVI = isInVerticalInheritanceChain(target);
+                        if (isVI) {
+                            type = (defaultType == DbRowOpType.INSERT && add) ? DbRowOpType.INSERT : DbRowOpType.UPDATE;
+                        } else {
+                            type = add ? DbRowOpType.INSERT : DbRowOpType.DELETE;
+                        }
                         factory.getOrCreate(target, targetId, type);
                     } else {
                         type = add ? DbRowOpType.INSERT : DbRowOpType.UPDATE;
@@ -148,7 +181,7 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
                                 .getValues()
                                 .addFlattenedId(flattenedPath, targetId);
                     }
-                } else if(dbPathIterator.hasNext()) {
+                } else if (!isLast) {
                     // should update existing DB row
                     factory.getOrCreate(target, targetId, add ? DbRowOpType.UPDATE : defaultType);
                 }
@@ -180,6 +213,141 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
             }
         }
         return true;
+    }
+
+    /**
+     * Checks if the given DbEntity is part of a vertical inheritance (VI) hierarchy.
+     * This is determined by finding ObjEntity inheritance roots and checking if the target
+     * DbEntity is reachable via PK-to-PK relationships from the root's DbEntity.
+     */
+    private boolean isInVerticalInheritanceChain(DbEntity target) {
+        DataMap dataMap = target.getDataMap();
+        if (dataMap == null) {
+            return false;
+        }
+
+        EntityResolver resolver = new EntityResolver(List.of(dataMap));
+        for (ObjEntity objEntity : dataMap.getObjEntities()) {
+            if (objEntity.getSuperEntity() != null) {
+                continue;
+            }
+            EntityInheritanceTree inheritanceTree = resolver.getInheritanceTree(objEntity.getName());
+            if (inheritanceTree == null || inheritanceTree.getChildren().isEmpty()) {
+                continue;
+            }
+            DbEntity rootDbEntity = objEntity.getDbEntity();
+            if (rootDbEntity != null && isInDependentPkChain(rootDbEntity, target)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * BFS traversal to check if target DbEntity is reachable from root via toDependentPK relationships.
+     * In vertical inheritance, child tables are linked to parent tables via PK-to-PK foreign keys.
+     */
+    private boolean isInDependentPkChain(DbEntity root, DbEntity target) {
+        Queue<DbEntity> queue = new LinkedList<>();
+        Set<DbEntity> visited = new HashSet<>();
+        queue.add(root);
+        visited.add(root);
+
+        while (!queue.isEmpty()) {
+            DbEntity current = queue.remove();
+            for (DbRelationship relationship : current.getRelationships()) {
+                if (!relationship.isToDependentPK()) {
+                    continue;
+                }
+                DbEntity childEntity = relationship.getTargetEntity();
+                if (childEntity == null || !visited.add(childEntity)) {
+                    continue;
+                }
+                if (childEntity == target) {
+                    return true;
+                }
+                queue.add(childEntity);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Derives PK values for the target DbEntity from finalTargetId by tracing through
+     * the remaining path. Only works if the entire remaining path consists of PK-to-PK joins.
+     *
+     * @return map of target PK attribute names to their values, or empty map if derivation fails
+     */
+    private Map<String, Object> derivePkValuesFromFinal(DbEntity target, ObjectId finalTargetId,
+                                                        List<CayenneMapEntry> remainingPath) {
+        Map<String, Object> finalIdSnapshot = finalTargetId.getIdSnapshot();
+        if (finalIdSnapshot == null) {
+            return Map.of();
+        }
+        Map<String, String> targetToFinalPkMapping = resolvePkMapping(target, remainingPath);
+        if (targetToFinalPkMapping.isEmpty()) {
+            return Map.of();
+        }
+
+        Map<String, Object> derivedPkValues = new HashMap<>(targetToFinalPkMapping.size());
+        for (Map.Entry<String, String> entry : targetToFinalPkMapping.entrySet()) {
+            String targetPkAttr = entry.getKey();
+            String finalPkAttr = entry.getValue();
+            Object value = finalIdSnapshot.get(finalPkAttr);
+            if (value == null) {
+                return Map.of();
+            }
+            derivedPkValues.put(targetPkAttr, value);
+        }
+        return derivedPkValues;
+    }
+
+    /**
+     * Builds a mapping from target's PK attribute names to the corresponding PK attribute names
+     * in the final entity of the path. Traces through each relationship's joins to follow
+     * the PK-to-PK chain.
+     *
+     * @return map where key = target PK attr name, value = final entity PK attr name;
+     *         empty map if the path is not a valid PK-to-PK chain
+     */
+    private Map<String, String> resolvePkMapping(DbEntity target, List<CayenneMapEntry> remainingPath) {
+        Map<String, String> targetToCurrentPk = new HashMap<>();
+        for (DbAttribute pk : target.getPrimaryKeys()) {
+            targetToCurrentPk.put(pk.getName(), pk.getName());
+        }
+        if (targetToCurrentPk.isEmpty()) {
+            return Map.of();
+        }
+
+        for (CayenneMapEntry pathComponent : remainingPath) {
+            if (!(pathComponent instanceof DbRelationship)) {
+                return Map.of();
+            }
+            DbRelationship rel = (DbRelationship) pathComponent;
+            DbRelationship reverse = rel.getReverseRelationship();
+            boolean isPkToPk = rel.isToDependentPK() || (reverse != null && reverse.isToDependentPK());
+            if (!isPkToPk || rel.isToMany()) {
+                return Map.of();
+            }
+            Map<String, String> nextMapping = new HashMap<>(targetToCurrentPk.size());
+            for (DbJoin join : rel.getJoins()) {
+                if (!join.getSource().isPrimaryKey() || !join.getTarget().isPrimaryKey()) {
+                    return Map.of();
+                }
+                for (Map.Entry<String, String> entry : targetToCurrentPk.entrySet()) {
+                    String targetPkAttr = entry.getKey();
+                    String currentPkAttr = entry.getValue();
+                    if (currentPkAttr.equals(join.getSource().getName())) {
+                        nextMapping.put(targetPkAttr, join.getTarget().getName());
+                    }
+                }
+            }
+            if (nextMapping.size() != targetToCurrentPk.size()) {
+                return Map.of();
+            }
+            targetToCurrentPk = nextMapping;
+        }
+        return targetToCurrentPk;
     }
 
     protected void processRelationship(DbRelationship dbRelationship, ObjectId srcId, ObjectId targetId, boolean add) {

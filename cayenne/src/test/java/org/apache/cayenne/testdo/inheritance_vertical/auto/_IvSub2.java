@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.inheritance_vertical.IvRoot;
+import org.apache.cayenne.testdo.inheritance_vertical.IvSub1;
 import org.apache.cayenne.testdo.inheritance_vertical.IvSub2;
 
 /**
@@ -28,10 +30,12 @@ public abstract class _IvSub2 extends IvRoot {
 
     public static final StringProperty<String> SUB2ATTR = PropertyFactory.createString("sub2Attr", String.class);
     public static final StringProperty<String> SUB2NAME = PropertyFactory.createString("sub2Name", String.class);
+    public static final EntityProperty<IvSub1> RELATED_SUB1 = PropertyFactory.createEntity("relatedSub1", IvSub1.class);
 
     protected String sub2Attr;
     protected String sub2Name;
 
+    protected Object relatedSub1;
 
     public void setSub2Attr(String sub2Attr) {
         beforePropertyWrite("sub2Attr", this.sub2Attr, sub2Attr);
@@ -53,6 +57,14 @@ public abstract class _IvSub2 extends IvRoot {
         return this.sub2Name;
     }
 
+    public void setRelatedSub1(IvSub1 relatedSub1) {
+        setToOneTarget("relatedSub1", relatedSub1, true);
+    }
+
+    public IvSub1 getRelatedSub1() {
+        return (IvSub1)readProperty("relatedSub1");
+    }
+
     @Override
     public Object readPropertyDirectly(String propName) {
         if(propName == null) {
@@ -64,6 +76,8 @@ public abstract class _IvSub2 extends IvRoot {
                 return this.sub2Attr;
             case "sub2Name":
                 return this.sub2Name;
+            case "relatedSub1":
+                return this.relatedSub1;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -81,6 +95,9 @@ public abstract class _IvSub2 extends IvRoot {
                 break;
             case "sub2Name":
                 this.sub2Name = (String)val;
+                break;
+            case "relatedSub1":
+                this.relatedSub1 = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);
@@ -100,6 +117,7 @@ public abstract class _IvSub2 extends IvRoot {
         super.writeState(out);
         out.writeObject(this.sub2Attr);
         out.writeObject(this.sub2Name);
+        out.writeObject(this.relatedSub1);
     }
 
     @Override
@@ -107,6 +125,7 @@ public abstract class _IvSub2 extends IvRoot {
         super.readState(in);
         this.sub2Attr = (String)in.readObject();
         this.sub2Name = (String)in.readObject();
+        this.relatedSub1 = in.readObject();
     }
 
 }
