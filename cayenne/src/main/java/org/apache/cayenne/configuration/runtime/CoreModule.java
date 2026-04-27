@@ -394,6 +394,7 @@ public class CoreModule implements Module {
                 .addDefaultExtendedType(new UtilDateType())
                 .addDefaultExtendedType(new CalendarType<>(GregorianCalendar.class))
                 .addDefaultExtendedType(new CalendarType<>(Calendar.class))
+                .addDefaultExtendedType(new UUIDType())
                 .addDefaultExtendedType(new GeoJsonType())
                 .addDefaultExtendedType(new WktType())
 
@@ -402,7 +403,6 @@ public class CoreModule implements Module {
                 // ValueObjectTypes
                 .addValueObjectType(BigIntegerValueType.class)
                 .addValueObjectType(BigDecimalValueType.class)
-                .addValueObjectType(UUIDValueType.class)
                 .addValueObjectType(LocalDateValueType.class)
                 .addValueObjectType(LocalTimeValueType.class)
                 .addValueObjectType(LocalDateTimeValueType.class)

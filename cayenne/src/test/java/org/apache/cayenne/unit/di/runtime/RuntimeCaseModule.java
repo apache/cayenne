@@ -193,12 +193,12 @@ public class RuntimeCaseModule implements Module {
                 .addDefaultExtendedType(new CalendarType<>(GregorianCalendar.class))
                 .addDefaultExtendedType(new CalendarType<>(Calendar.class))
                 .addDefaultExtendedType(new DurationType())
+                .addDefaultExtendedType(new UUIDType())
 
                 .addExtendedTypeFactory(new InternalUnsupportedTypeFactory())
 
                 .addValueObjectType(BigIntegerValueType.class)
                 .addValueObjectType(BigDecimalValueType.class)
-                .addValueObjectType(UUIDValueType.class)
                 .addValueObjectType(LocalDateValueType.class)
                 .addValueObjectType(LocalTimeValueType.class)
                 .addValueObjectType(LocalDateTimeValueType.class)
