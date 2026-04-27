@@ -375,6 +375,26 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
     }
 
     /**
+     * Returns a boolean indicating whether the FK is accessed through an inheritance chain
+     * (one or more shared-PK joins followed by the actual FK-to-PK join).
+     *
+     * @since 5.0
+     */
+    public boolean isFkThroughInheritance() {
+        List<DbRelationship> dbRels = getDbRelationships();
+        if (dbRels.size() < 2) {
+            return false;
+        }
+        for (int i = 0; i < dbRels.size() - 1; i++) {
+            DbRelationship rel = dbRels.get(i);
+            if (!rel.isToDependentPK() || rel.isToMany()) {
+                return false;
+            }
+        }
+        return dbRels.get(dbRels.size() - 1).isToPK();
+    }
+
+    /**
      * Returns true if underlying DbRelationships point to dependent entity.
      */
     public boolean isToDependentEntity() {
