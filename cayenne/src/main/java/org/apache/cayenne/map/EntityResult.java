@@ -75,6 +75,13 @@ public class EntityResult {
         return dbFields;
     }
 
+    /**
+     * Returns the total number of fields added to this result.
+     */
+    public int getFieldCount() {
+        return fields != null ? fields.size() : 0;
+    }
+
     private ObjEntity getRootEntity(EntityResolver resolver) {
         if (entityName != null) {
             return resolver.getObjEntity(entityName);
