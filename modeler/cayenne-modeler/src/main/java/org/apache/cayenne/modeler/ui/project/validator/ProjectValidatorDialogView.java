@@ -22,7 +22,6 @@ package org.apache.cayenne.modeler.ui.project.validator;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.DisableValidationInspectionAction;
 import org.apache.cayenne.modeler.ui.action.ShowValidationOptionAction;
@@ -71,7 +70,7 @@ public class ProjectValidatorDialogView extends CayenneDialog {
         problemsTable.setTableHeader(null);
         problemsTable.setDefaultRenderer(ValidationFailure.class, new ValidationRenderer());
 
-        GlobalActions globalActions = Application.getInstance().getActionManager();
+        GlobalActions globalActions = controller.getApplication().getActionManager();
         JPopupMenu popup = new JPopupMenu();
         popup.add(globalActions.getAction(ShowValidationOptionAction.class).buildMenu());
         popup.add(globalActions.getAction(DisableValidationInspectionAction.class).buildMenu());

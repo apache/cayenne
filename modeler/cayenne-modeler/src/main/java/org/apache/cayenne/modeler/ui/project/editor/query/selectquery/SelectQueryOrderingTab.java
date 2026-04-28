@@ -22,7 +22,6 @@ package org.apache.cayenne.modeler.ui.project.editor.query.selectquery;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.toolkit.MultiColumnBrowser;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
@@ -84,9 +83,9 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
         messagePanel = new JPanel(new BorderLayout());
         cardLayout = new CardLayout();
 
-        Preferences detail = Application.getInstance().getPreferencesNode(this.getClass(), "");
+        Preferences detail = mediator.getApplication().getPreferencesNode(this.getClass(), "");
 
-        int defLocation = Application.getInstance().getFrameController().getView().getHeight() / 2;
+        int defLocation = mediator.getApplication().getFrameController().getView().getHeight() / 2;
         int location = detail != null ? detail.getInt(
                 getDividerLocationProperty(),
                 defLocation) : defLocation;
@@ -366,7 +365,7 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
         if (JSplitPane.DIVIDER_LOCATION_PROPERTY.equals(evt.getPropertyName())) {
             int value = (Integer) evt.getNewValue();
 
-            Preferences detail = Application.getInstance().getPreferencesNode(this.getClass(), "");
+            Preferences detail = mediator.getApplication().getPreferencesNode(this.getClass(), "");
             detail.putInt(getDividerLocationProperty(), value);
         }
     }

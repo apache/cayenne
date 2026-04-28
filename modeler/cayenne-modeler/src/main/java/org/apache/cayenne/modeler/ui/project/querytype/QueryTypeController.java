@@ -89,7 +89,7 @@ public class QueryTypeController extends ChildController<ProjectController> {
         dataMap.addQueryDescriptor(query);
 
         getApplication().getUndoManager().addEdit(
-                new CreateQueryUndoableEdit(domain, dataMap, query));
+                new CreateQueryUndoableEdit(parent, domain, dataMap, query));
 
         // notify listeners
         fireQueryEvent(this, parent, dataMap, query);

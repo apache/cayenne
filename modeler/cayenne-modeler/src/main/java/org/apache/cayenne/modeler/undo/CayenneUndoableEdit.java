@@ -20,18 +20,17 @@ package org.apache.cayenne.modeler.undo;
 
 import javax.swing.undo.AbstractUndoableEdit;
 
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 
 public abstract class CayenneUndoableEdit extends AbstractUndoableEdit {
-    
-	protected GlobalActions globalActions;
-	protected ProjectController controller;
-	
-	public CayenneUndoableEdit() {
-		this.globalActions = Application.getInstance().getActionManager();
-		this.controller = Application.getInstance().getFrameController().getProjectController();
+
+	protected final GlobalActions globalActions;
+	protected final ProjectController controller;
+
+	protected CayenneUndoableEdit(ProjectController controller) {
+		this.controller = controller;
+		this.globalActions = controller.getApplication().getActionManager();
 	}
 
 	@Override

@@ -47,10 +47,10 @@ public abstract class ValidationDisplayHandler {
     protected ValidationFailure validationFailure;
     protected DataChannelDescriptor domain;
 
-    public static ValidationDisplayHandler getErrorMsg(ValidationFailure result) {
+    public static ValidationDisplayHandler getErrorMsg(ValidationFailure result, ProjectController controller) {
         Object validatedObj = result.getSource();
 
-        ValidationDisplayHandler msg = null;
+        ValidationDisplayHandler msg;
         if (validatedObj instanceof Embeddable) {
             msg = new EmbeddableErrorMsg(result);
         }
@@ -86,10 +86,11 @@ public abstract class ValidationDisplayHandler {
         }
         else {
             // do nothing ... this maybe a project node that is not displayed
-            LOGGER.info("unknown project node: " + validatedObj);
+            LOGGER.info("unknown project node: {}", validatedObj);
             msg = new NullHanlder(result);
         }
 
+        msg.setDomain((DataChannelDescriptor) controller.getProject().getRootNode());
         return msg;
     }
 
@@ -121,10 +122,6 @@ public abstract class ValidationDisplayHandler {
 
     public Object getObject() {
         return validationFailure.getSource();
-    }
-
-    public ValidationFailure getValidationFailure() {
-        return validationFailure;
     }
 
     private static final class NullHanlder extends ValidationDisplayHandler {

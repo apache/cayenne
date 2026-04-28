@@ -24,7 +24,6 @@ import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.undo.AddPrefetchUndoableEdit;
 import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
@@ -73,7 +72,7 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
         prefetchBox.addItem(DISJOINT_PREFETCH_SEMANTICS);
         prefetchBox.addItem(DISJOINT_BY_ID_PREFETCH_SEMANTICS);
 
-        prefetchBox.addActionListener(e -> Application.getInstance().getFrameController().getProjectController().setDirty(true));
+        prefetchBox.addActionListener(e -> mediator.setDirty(true));
 
         column.setCellEditor(new DefaultCellEditor(prefetchBox));
 
@@ -100,7 +99,7 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
 
             addPrefetch(prefetch);
 
-            Application.getInstance().getUndoManager().addEdit(new AddPrefetchUndoableEdit(prefetch, SelectQueryPrefetchTab.this));
+            mediator.getApplication().getUndoManager().addEdit(new AddPrefetchUndoableEdit(prefetch, SelectQueryPrefetchTab.this));
         });
 
         JButton remove = new ModelerAbstractAction.CayenneToolbarButton(null, 3);

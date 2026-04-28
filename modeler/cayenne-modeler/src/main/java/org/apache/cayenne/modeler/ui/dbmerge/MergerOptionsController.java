@@ -94,7 +94,7 @@ public class MergerOptionsController extends ChildController<ProjectController> 
         this.mergerTokenFactoryProvider = mergerTokenFactoryProvider;
         this.dataMap = dataMap;
         this.tokens = new MergerTokenSelectorController(parent);
-        this.view = new MergerOptionsView(tokens.getView());
+        this.view = new MergerOptionsView(application, tokens.getView());
         this.connectionInfo = connectionInfo;
         this.defaultCatalog = defaultCatalog;
         this.defaultSchema = defaultSchema;

@@ -70,7 +70,7 @@ public class ModelerController extends RootController {
         this.view = new ModelerFrame(application.getActionManager(), application.getLogConsoleController());
         application.getPlatformInitializer().setupMenus(view);
         this.projectController = new ProjectController(this);
-        this.dbImportController = new DbImportController();
+        this.dbImportController = new DbImportController(this);
     }
 
     @Override

@@ -32,25 +32,24 @@ public class LinkDataMapsUndoableEdit extends CayenneUndoableEdit {
 
     DataNodeDescriptor dataNodeDescriptor;
     Collection<String> linkedDataMaps;
-    ProjectController mediator;
 
     @Override
     public String getPresentationName() {
         return "Link unlinked DataMaps";
     }
 
-    public LinkDataMapsUndoableEdit(DataNodeDescriptor dataNodeDescriptor, Collection<String> linkedDataMaps, ProjectController mediator) {
+    public LinkDataMapsUndoableEdit(ProjectController mediator, DataNodeDescriptor dataNodeDescriptor, Collection<String> linkedDataMaps) {
+        super(mediator);
         this.dataNodeDescriptor = dataNodeDescriptor;
         this.linkedDataMaps = linkedDataMaps;
-        this.mediator = mediator;
     }
 
     @Override
     public void redo() throws CannotRedoException {
-        for (DataMap dataMap : ((DataChannelDescriptor) mediator.getProject().getRootNode()).getDataMaps()) {
+        for (DataMap dataMap : ((DataChannelDescriptor) controller.getProject().getRootNode()).getDataMaps()) {
             if (!linkedDataMaps.contains(dataMap.getName())) {
                 dataNodeDescriptor.getDataMapNames().add(dataMap.getName());
-                mediator.fireDataNodeEvent(DataNodeEvent.ofChange(this, dataNodeDescriptor));
+                controller.fireDataNodeEvent(DataNodeEvent.ofChange(this, dataNodeDescriptor));
             }
         }
     }
@@ -58,7 +57,7 @@ public class LinkDataMapsUndoableEdit extends CayenneUndoableEdit {
     @Override
     public void undo() throws CannotUndoException {
         dataNodeDescriptor.getDataMapNames().retainAll(linkedDataMaps);
-        mediator.fireDataNodeEvent(DataNodeEvent.ofChange(this, dataNodeDescriptor));
+        controller.fireDataNodeEvent(DataNodeEvent.ofChange(this, dataNodeDescriptor));
     }
 
 }

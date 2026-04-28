@@ -61,7 +61,7 @@ public class UpdateValidationConfigAction extends ModelerAbstractAction {
 
         if (undoable) {
             CayenneUndoManager undoManager = application.getUndoManager();
-            undoManager.addEdit(new UpdateValidationConfigUndoableEdit(oldConfig, config));
+            undoManager.addEdit(new UpdateValidationConfigUndoableEdit(getProjectController(), oldConfig, config));
         }
         getProjectController().fireDomainEvent(DomainEvent.ofChange(e.getSource(), dataChannel));
     }

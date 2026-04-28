@@ -58,7 +58,7 @@ public class ValidateAction extends ModelerAbstractAction {
             new ProjectValidatorDialogController(getProjectController()).showOnFailures(validationResult.getFailures());
         }
         else {
-            ProjectValidatorDialogController.showOnSuccess();
+            ProjectValidatorDialogController.showOnSuccess(application);
         }
     }
 }

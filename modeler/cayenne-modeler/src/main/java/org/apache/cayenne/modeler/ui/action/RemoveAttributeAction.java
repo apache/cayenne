@@ -87,7 +87,7 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
                 Embeddable embeddable = mediator.getSelectedEmbeddable();
 
                 application.getUndoManager().addEdit(
-                        new RemoveAttributeUndoableEdit(embeddable, embAttrs));
+                        new RemoveAttributeUndoableEdit(mediator,embeddable, embAttrs));
 
                 removeEmbeddableAttributes(embeddable, embAttrs);
 
@@ -99,7 +99,7 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
 
                 ObjEntity entity = mediator.getSelectedObjEntity();
 
-                application.getUndoManager().addEdit(new RemoveAttributeUndoableEdit(entity, objAttrs));
+                application.getUndoManager().addEdit(new RemoveAttributeUndoableEdit(mediator,entity, objAttrs));
 
                 removeObjAttributes(entity, objAttrs);
             }
@@ -110,7 +110,7 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
 
         		DbEntity entity = mediator.getSelectedDbEntity();
 
-                application.getUndoManager().addEdit(new RemoveAttributeUndoableEdit(entity, dbAttrs));
+                application.getUndoManager().addEdit(new RemoveAttributeUndoableEdit(mediator,entity, dbAttrs));
 
                 removeDbAttributes(mediator.getSelectedDataMap(), entity, dbAttrs);
         	}

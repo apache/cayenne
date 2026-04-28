@@ -107,7 +107,7 @@ public class CreateObjEntityAction extends ModelerAbstractAction {
 
         onObjEntityCreated(this, controller, dataMap, entity);
 
-        application.getUndoManager().addEdit(new CreateObjEntityUndoableEdit(dataMap, entity));
+        application.getUndoManager().addEdit(new CreateObjEntityUndoableEdit(getProjectController(), dataMap, entity));
     }
 
     public void createObjEntity(DataMap dataMap, ObjEntity entity) {

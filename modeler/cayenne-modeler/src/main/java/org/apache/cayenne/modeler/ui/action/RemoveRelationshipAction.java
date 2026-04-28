@@ -78,7 +78,7 @@ public class RemoveRelationshipAction extends RemoveAction implements MultipleOb
 							.shouldDelete("selected ObjRelationships"))) {
 				ObjEntity entity = mediator.getSelectedObjEntity();
 				removeObjRelationships(entity, rels);
-				application.getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(entity, rels));
+				application.getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(mediator,entity, rels));
 			}
 		} else {
 			DbRelationship[] dbRels = getProjectController()
@@ -90,7 +90,7 @@ public class RemoveRelationshipAction extends RemoveAction implements MultipleOb
 								.shouldDelete("selected DbRelationships"))) {
 					DbEntity entity = mediator.getSelectedDbEntity();
 					removeDbRelationships(entity, dbRels);
-					application.getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(entity, dbRels));
+					application.getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(mediator,entity, dbRels));
 				}
 			}
 		}

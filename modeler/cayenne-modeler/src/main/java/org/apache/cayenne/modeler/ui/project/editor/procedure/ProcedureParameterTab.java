@@ -23,7 +23,6 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ProcedureDisplayListener;
 import org.apache.cayenne.modeler.event.display.ProcedureParameterDisplayEvent;
@@ -110,7 +109,7 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        GlobalActions globalActions = Application.getInstance().getActionManager();
+        GlobalActions globalActions = controller.getApplication().getActionManager();
         toolBar.add(globalActions.getAction(CreateProcedureParameterAction.class).buildButton(1));
         removeParameterButton = globalActions.getAction(RemoveProcedureParameterAction.class).buildButton(3);
         toolBar.add(removeParameterButton);

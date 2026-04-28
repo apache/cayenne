@@ -67,7 +67,7 @@ public abstract class DataDomainGeneratorsViewController<T> implements DataMapLi
         refreshSelectedMaps(dataMaps);
         generatorsPanels.clear();
         for(DataMap dataMap : dataMaps) {
-            DataDomainGeneratorsPanel generatorPanel = new DataDomainGeneratorsPanel(dataMap, "icon-datamap.png", type);
+            DataDomainGeneratorsPanel generatorPanel = new DataDomainGeneratorsPanel(controller.getApplication(),dataMap, "icon-datamap.png", type);
             initListenersForPanel(generatorPanel);
             generatorsPanels.put(dataMap, generatorPanel);
         }
@@ -159,7 +159,7 @@ public abstract class DataDomainGeneratorsViewController<T> implements DataMapLi
 
     @Override
     public void dataMapAdded(DataMapEvent e) {
-        DataDomainGeneratorsPanel generatorPanel = new DataDomainGeneratorsPanel(e.getDataMap(), "icon-datamap.png", type);
+        DataDomainGeneratorsPanel generatorPanel = new DataDomainGeneratorsPanel(controller.getApplication(),e.getDataMap(), "icon-datamap.png", type);
         initListenersForPanel(generatorPanel);
         generatorsPanels.put(e.getDataMap(), generatorPanel);
         if(isSelectAllChecked()) {

@@ -63,6 +63,7 @@ public class CreateCallbackMethodAction extends ModelerAbstractAction {
         createCallbackMethod(callbackType, methodName);
         application.getUndoManager().addEdit(
                 new CreateCallbackMethodUndoableEdit(
+                        getProjectController(),
                         callbackType,
                         methodName));
     }

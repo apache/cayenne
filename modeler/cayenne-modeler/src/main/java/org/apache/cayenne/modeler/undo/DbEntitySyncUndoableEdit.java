@@ -28,6 +28,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.util.EntityMergeListener;
 
 public class DbEntitySyncUndoableEdit extends CompoundEdit {
@@ -42,11 +43,13 @@ public class DbEntitySyncUndoableEdit extends CompoundEdit {
         return !edits.isEmpty();
     }
 
+    private final ProjectController controller;
     private DataChannelDescriptor domain;
     private DataMap map;
 
-    public DbEntitySyncUndoableEdit(DataChannelDescriptor domain, DataMap map) {
+    public DbEntitySyncUndoableEdit(ProjectController controller, DataChannelDescriptor domain, DataMap map) {
         super();
+        this.controller = controller;
         this.domain = domain;
         this.map = map;
     }
@@ -60,11 +63,11 @@ public class DbEntitySyncUndoableEdit extends CompoundEdit {
         }
 
         public void objRelationshipAdded(ObjRelationship rel) {
-            addEdit(new CreateRelationshipUndoableEdit(entity, new ObjRelationship[] {rel}));
+            addEdit(new CreateRelationshipUndoableEdit(controller, entity, new ObjRelationship[] {rel}));
         }
 
         public void objAttributeAdded(ObjAttribute attr) {
-            addEdit(new CreateAttributeUndoableEdit(domain, map, entity, attr));
+            addEdit(new CreateAttributeUndoableEdit(controller, domain, map, entity, attr));
         }
     }
 
@@ -84,7 +87,7 @@ public class DbEntitySyncUndoableEdit extends CompoundEdit {
             for (DbAttribute da : dbAttrs) {
                 ObjAttribute oa = entity.getAttributeForDbAttribute(da);
                 if (oa != null) {
-                    addEdit(new RemoveAttributeUndoableEdit(entity, new ObjAttribute[] {oa}));
+                    addEdit(new RemoveAttributeUndoableEdit(controller, entity, new ObjAttribute[] {oa}));
                 }
             }
         }

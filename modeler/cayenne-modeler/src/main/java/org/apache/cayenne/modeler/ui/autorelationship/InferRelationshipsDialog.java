@@ -47,8 +47,8 @@ public class InferRelationshipsDialog extends JDialog {
 
     protected JComboBox<String> strategyCombo;
 
-    public InferRelationshipsDialog(Component entitySelectorPanel) {
-        super(Application.getInstance().getFrameController().getView());
+    public InferRelationshipsDialog(Application application, Component entitySelectorPanel) {
+        super(application.getFrameController().getView());
         this.generateButton = new JButton("Create DbRelationships");
         this.cancelButton = new JButton("Cancel");
         this.entityCount = new JLabel("No DbRelationships selected");

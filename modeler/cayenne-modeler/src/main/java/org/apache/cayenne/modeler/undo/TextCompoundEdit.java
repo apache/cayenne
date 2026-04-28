@@ -44,6 +44,7 @@ import javax.swing.undo.CompoundEdit;
 public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
 
     private final JTextComponent editor;
+    private final Application application;
 
     private final TreePath treePath;
     private int selectedTabIndex;
@@ -54,12 +55,13 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
 
     private final JTextFieldUndoListener listener;
 
-    public TextCompoundEdit(JTextComponent editor, JTextFieldUndoListener listener) {
+    public TextCompoundEdit(Application application, JTextComponent editor, JTextFieldUndoListener listener) {
 
+        this.application = application;
         this.editor = editor;
         this.listener = listener;
 
-        ProjectView projectView = ((ModelerFrame) Application.getInstance().getFrameController().getView())
+        ProjectView projectView = ((ModelerFrame) application.getFrameController().getView())
                 .getProjectView();
 
         treePath = projectView.getProjectTreeView().getSelectionPath();
@@ -110,7 +112,7 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
 
     private void restoreSelections() {
 
-        ProjectView projectView = ((ModelerFrame) Application.getInstance().getFrameController().getView())
+        ProjectView projectView = ((ModelerFrame) application.getFrameController().getView())
                 .getProjectView();
 
         projectView.getProjectTreeView().getSelectionModel().setSelectionPath(treePath);

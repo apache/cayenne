@@ -91,7 +91,7 @@ public class JTextFieldUndoListener implements UndoableEditListener {
         lastOffset = editor.getCaretPosition();
         lastLength = editor.getDocument().getLength();
 
-        compoundEdit = new TextCompoundEdit(editor, this);
+        compoundEdit = new TextCompoundEdit(Application.getInstance(), editor, this);
 
         if (isKeyEdit) {
             compoundEdit.addEdit(anEdit);

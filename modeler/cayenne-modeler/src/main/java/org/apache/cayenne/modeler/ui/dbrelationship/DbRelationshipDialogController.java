@@ -27,7 +27,6 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
@@ -71,7 +70,7 @@ public class DbRelationshipDialogController extends ChildController<ProjectContr
 
     public DbRelationshipDialogController(ProjectController projectController) {
         super(projectController);
-        this.view = new DbRelationshipDialogView();
+        this.view = new DbRelationshipDialogView(application);
         this.projectController = projectController;
     }
 
@@ -91,7 +90,7 @@ public class DbRelationshipDialogController extends ChildController<ProjectContr
     }
 
     public DbRelationshipDialogController modifyRaltionship(DbRelationship dbRelationship) {
-        this.undo = new RelationshipUndoableEdit(dbRelationship);
+        this.undo = new RelationshipUndoableEdit(parent, dbRelationship);
 
         this.relationship = dbRelationship;
         this.reverseRelationship = this.relationship.getReverseRelationship();
@@ -385,7 +384,7 @@ public class DbRelationshipDialogController extends ChildController<ProjectContr
 
             projectController.displayDbRelationship(rde);
             application.getUndoManager().addEdit(
-                    new CreateRelationshipUndoableEdit(relationship.getSourceEntity(), new DbRelationship[]{relationship}));
+                    new CreateRelationshipUndoableEdit(parent, relationship.getSourceEntity(), new DbRelationship[]{relationship}));
         }
     }
 
@@ -450,7 +449,7 @@ public class DbRelationshipDialogController extends ChildController<ProjectContr
         Collection<ObjAttribute> objAttributes = DbRelationshipOps.objAttributesUsingDbRelationship(domain, relationship);
 
         if (objAttributes.isEmpty() && objRelationships.isEmpty()) {
-            int result = JOptionPane.showConfirmDialog(Application.getInstance().getFrameController().getView(), "Changing target entity will reset all joins.",
+            int result = JOptionPane.showConfirmDialog(controller.getApplication().getFrameController().getView(), "Changing target entity will reset all joins.",
                     "Warning", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
             return (result == JOptionPane.OK_OPTION);
         }
@@ -481,7 +480,7 @@ public class DbRelationshipDialogController extends ChildController<ProjectContr
         }
 
         dialogPanel.add(scrollPane, BorderLayout.SOUTH);
-        int result = JOptionPane.showConfirmDialog(Application.getInstance().getFrameController().getView(), dialogPanel,
+        int result = JOptionPane.showConfirmDialog(controller.getApplication().getFrameController().getView(), dialogPanel,
                 "Warning", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         return result == JOptionPane.OK_OPTION;
     }

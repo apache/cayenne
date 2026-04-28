@@ -61,7 +61,7 @@ public class CreateProcedureAction extends ModelerAbstractAction {
         procedure.setName(NameBuilder.builder(procedure, map).name());
         createProcedure(map, procedure);
 
-        application.getUndoManager().addEdit(new CreateProcedureUndoableEdit(map, procedure));
+        application.getUndoManager().addEdit(new CreateProcedureUndoableEdit(getProjectController(), map, procedure));
     }
 
     public void createProcedure(DataMap map, Procedure procedure) {

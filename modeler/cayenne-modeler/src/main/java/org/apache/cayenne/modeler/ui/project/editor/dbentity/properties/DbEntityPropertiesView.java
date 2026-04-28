@@ -20,7 +20,6 @@ package org.apache.cayenne.modeler.ui.project.editor.dbentity.properties;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.model.DbEntityEvent;
@@ -81,7 +80,7 @@ public class DbEntityPropertiesView extends JPanel implements DbEntityDisplayLis
         add(splitPane);
         toolBar = new JToolBar();
         toolBar.setFloatable(false);
-        GlobalActions globalActions = Application.getInstance().getActionManager();
+        GlobalActions globalActions = controller.getApplication().getActionManager();
 
         toolBar.add(globalActions.getAction(CreateAttributeAction.class).buildButton(1));
         toolBar.add(globalActions.getAction(CreateRelationshipAction.class).buildButton(3));

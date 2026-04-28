@@ -36,8 +36,8 @@ public class RemoveEntityAction extends RemoveAction {
 
     private final GraphBuilder<?,?,?> builder;
     
-    public RemoveEntityAction(GraphBuilder<?,?,?> builder) {
-        super(Application.getInstance());
+    public RemoveEntityAction(GraphBuilder<?,?,?> builder, Application application) {
+        super(application);
         this.builder = builder;
         setEnabled(true);
     }
@@ -53,13 +53,13 @@ public class RemoveEntityAction extends RemoveAction {
         
         if (entity instanceof ObjEntity) {
             if (dialog.shouldDelete("ObjEntity", entity.getName())) {
-                application.getUndoManager().addEdit(new RemoveUndoableEdit(entity.getDataMap(), (ObjEntity) entity));
+                application.getUndoManager().addEdit(new RemoveUndoableEdit(getProjectController(), entity.getDataMap(), (ObjEntity) entity));
                 removeObjEntity(entity.getDataMap(), (ObjEntity) entity);
             }
         }
         else {
             if (dialog.shouldDelete("DbEntity", entity.getName())) {
-                application.getUndoManager().addEdit(new RemoveUndoableEdit(entity.getDataMap(), (DbEntity) entity));
+                application.getUndoManager().addEdit(new RemoveUndoableEdit(getProjectController(), entity.getDataMap(), (DbEntity) entity));
                 removeDbEntity(entity.getDataMap(), (DbEntity) entity);
             }
         }

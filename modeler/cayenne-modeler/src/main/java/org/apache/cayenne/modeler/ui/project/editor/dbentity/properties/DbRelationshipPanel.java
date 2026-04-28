@@ -25,7 +25,6 @@ import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
 import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.event.model.DbEntityListener;
 import org.apache.cayenne.modeler.event.model.DbRelationshipListener;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
@@ -74,7 +73,7 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
 
         this.setLayout(new BorderLayout());
 
-        GlobalActions globalActions = Application.getInstance().getActionManager();
+        GlobalActions globalActions = controller.getApplication().getActionManager();
 
         table = new CayenneTable();
         table.setDefaultRenderer(DbEntity.class, Renderers.entityTableRendererWithIcons(controller));
@@ -131,7 +130,7 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
         List listRels = model.getObjectList();
         int[] newSel = new int[rels.length];
 
-        GlobalActions globalActions = Application.getInstance().getActionManager();
+        GlobalActions globalActions = controller.getApplication().getActionManager();
         globalActions.getAction(RemoveAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
         globalActions.getAction(CutAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
         globalActions.getAction(CopyAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
@@ -287,7 +286,7 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
                 parentPanel.getAttributePanel().getTable().getCellEditor().stopCellEditing();
             }
 
-            GlobalActions globalActions = Application.getInstance().getActionManager();
+            GlobalActions globalActions = controller.getApplication().getActionManager();
             globalActions.getAction(RemoveAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
             globalActions.getAction(CutAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
             globalActions.getAction(CopyAttributeRelationshipAction.class).setCurrentSelectedPanel(this);

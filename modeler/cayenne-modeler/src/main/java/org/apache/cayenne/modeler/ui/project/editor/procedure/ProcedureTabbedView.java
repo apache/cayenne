@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.ui.project.editor.procedure;
 
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.action.RemoveProcedureParameterAction;
 import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
@@ -33,10 +32,12 @@ import java.awt.*;
 
 public class ProcedureTabbedView extends JTabbedPane {
 
+    private final ProjectController controller;
     private final ProcedureTab procedurePanel;
     private final ProcedureParameterTab procedureParameterPanel;
 
     public ProcedureTabbedView(ProjectController controller) {
+        this.controller = controller;
         setTabPlacement(JTabbedPane.TOP);
         procedurePanel = new ProcedureTab(controller);
         addTab("Procedure", new JScrollPane(procedurePanel));
@@ -58,7 +59,7 @@ public class ProcedureTabbedView extends JTabbedPane {
     }
 
     private void currentProcedureChanged(ProcedureDisplayEvent e) {
-        Application.getInstance().getActionManager().getAction(
+        controller.getApplication().getActionManager().getAction(
                 RemoveProcedureParameterAction.class).setEnabled(false);
 
         if (e.getProcedure() == null)

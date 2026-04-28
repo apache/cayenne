@@ -23,7 +23,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
@@ -89,10 +88,10 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
 
         this.setLayout(new BorderLayout());
 
-        GlobalActions globalActions = Application.getInstance().getActionManager();
+        GlobalActions globalActions = controller.getApplication().getActionManager();
 
         table = new CayenneTable();
-        table.setDefaultRenderer(String.class, new CellRenderer());
+        table.setDefaultRenderer(String.class, new CellRenderer(controller));
         tablePreferences = new TableColumnPreferences(
                 ObjAttributeTableModel.class,
                 "objEntity/attributeTable");
@@ -261,7 +260,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
                         JOptionPane.QUESTION_MESSAGE,
                         JOptionPane.YES_NO_OPTION);
 
-                JDialog dialog = pane.createDialog(Application.getInstance().getFrameController().getView(), "Confirm Remove");
+                JDialog dialog = pane.createDialog(controller.getApplication().getFrameController().getView(), "Confirm Remove");
                 dialog.setVisible(true);
 
                 boolean shouldDelete;
@@ -359,6 +358,12 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
     // custom renderer used for inherited attributes highlighting
     static final class CellRenderer extends DefaultTableCellRenderer {
 
+        private final ProjectController controller;
+
+        CellRenderer(ProjectController controller) {
+            this.controller = controller;
+        }
+
         @Override
         public Component getTableCellRendererComponent(
                 JTable table,
@@ -400,7 +405,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
         public void mouseClicked(MouseEvent event, int x) {
             Point point = event.getPoint();
             if (point.x - x <= INHERITANCE_ICON.getIconWidth()) {
-                GlobalActions globalActions = Application.getInstance().getActionManager();
+                GlobalActions globalActions = controller.getApplication().getActionManager();
                 globalActions.getAction(ObjEntityToSuperEntityAction.class).performAction(null);
             }
         }
@@ -453,7 +458,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
                 parentPanel.getRelationshipPanel().getTable().getCellEditor().stopCellEditing();
             }
 
-            GlobalActions globalActions = Application.getInstance().getActionManager();
+            GlobalActions globalActions = controller.getApplication().getActionManager();
             globalActions.getAction(RemoveAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
             globalActions.getAction(CutAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
             globalActions.getAction(CopyAttributeRelationshipAction.class).setCurrentSelectedPanel(this);

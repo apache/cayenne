@@ -28,7 +28,6 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.ui.action.CreateRelationshipAction;
@@ -87,7 +86,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
         JToolBar toolBar = new JToolBar();
         toolBar.setBorder(BorderFactory.createEmptyBorder());
         toolBar.setFloatable(false);
-        GlobalActions globalActions = Application.getInstance().getActionManager();
+        GlobalActions globalActions = controller.getApplication().getActionManager();
 
         toolBar.add(globalActions.getAction(CreateAttributeAction.class).buildButton(1));
         toolBar.add(globalActions.getAction(CreateRelationshipAction.class).buildButton(3));
@@ -187,7 +186,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
 
                 if (duplicateAttributes != null && !duplicateAttributes.isEmpty()) {
                     DuplicatedAttributesDialog.showDialog(
-                            Application.getInstance().getFrameController().getView(), duplicateAttributes, superEntity, entity);
+                            controller.getApplication().getFrameController().getView(), controller, duplicateAttributes, superEntity, entity);
                     if (DuplicatedAttributesDialog.getResult().equals(DuplicatedAttributesDialog.CANCEL_RESULT)) {
                         superEntityCombo.setSelectedItem(entity.getSuperEntity());
                         superClassName.setText(entity.getSuperClassName());
@@ -389,7 +388,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
             controller.fireObjEntityEvent(e);
 
             // suggest to update class name
-            ClassNameUpdaterController nameUpdater = new ClassNameUpdaterController(Application.getInstance().getFrameController(), entity);
+            ClassNameUpdaterController nameUpdater = new ClassNameUpdaterController(controller.getApplication().getFrameController(), entity);
 
             if (nameUpdater.doNameUpdate()) {
                 className.setText(entity.getClassName());

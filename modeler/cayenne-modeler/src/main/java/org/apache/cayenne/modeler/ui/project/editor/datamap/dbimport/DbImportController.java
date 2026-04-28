@@ -18,28 +18,35 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport;
 
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
-import java.util.concurrent.ConcurrentMap;
-
-import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.ui.ModelerController;
 import org.apache.cayenne.modeler.ui.dbloadresult.DbLoadResultDialog;
 
-public class DbImportController {
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.Component;
+import java.util.concurrent.ConcurrentMap;
+
+public class DbImportController extends ChildController<ModelerController> {
 
     private static final String DIALOG_TITLE = "Db Import Result";
 
     private DbLoadResultDialog dbLoadResultDialog;
     private boolean globalImport;
 
-    public DbImportController() {
+    public DbImportController(ModelerController parent) {
+        super(parent);
+    }
+
+    @Override
+    public Component getView() {
+        return dbLoadResultDialog;
     }
 
     public DbLoadResultDialog createDialog() {
         if(dbLoadResultDialog == null) {
-            dbLoadResultDialog = new DbLoadResultDialog(DIALOG_TITLE);
+            dbLoadResultDialog = new DbLoadResultDialog(application, DIALOG_TITLE);
         }
         return dbLoadResultDialog;
     }
@@ -78,9 +85,5 @@ public class DbImportController {
         for (int i = rowCount - 1; i >= 0; i--) {
             tableModel.removeRow(i);
         }
-    }
-
-    public void fireDataMapChangeEvent(DataMap dataMap) {
-        Application.getInstance().getFrameController().getProjectController().fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
     }
 }

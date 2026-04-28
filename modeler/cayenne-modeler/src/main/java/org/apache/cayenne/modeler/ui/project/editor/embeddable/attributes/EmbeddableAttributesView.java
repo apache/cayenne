@@ -30,7 +30,6 @@ import org.apache.cayenne.modeler.event.model.EmbeddableAttributeEvent;
 import org.apache.cayenne.modeler.event.model.EmbeddableAttributeListener;
 import org.apache.cayenne.modeler.event.model.EmbeddableEvent;
 import org.apache.cayenne.modeler.event.model.EmbeddableListener;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CopyAttributeAction;
@@ -74,7 +73,7 @@ public class EmbeddableAttributesView extends JPanel implements
 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
-        GlobalActions globalActions = Application.getInstance().getActionManager();
+        GlobalActions globalActions = controller.getApplication().getActionManager();
 
         toolBar.add(globalActions.getAction(CreateAttributeAction.class).buildButton());
         toolBar.addSeparator();

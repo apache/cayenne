@@ -53,7 +53,7 @@ public class DbLoadResultDialog extends JDialog {
     private JPanel buttonPanel;
     private JScrollPane scrollPane;
 
-    public DbLoadResultDialog(String title) {
+    public DbLoadResultDialog(Application application, String title) {
         super();
         this.title = title;
         this.tableForMap = new ConcurrentHashMap<>();
@@ -64,16 +64,16 @@ public class DbLoadResultDialog extends JDialog {
         this.buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         initElements();
         buildElements();
-        configureDialog();
+        configureDialog(application);
     }
 
-    private void configureDialog() {
+    private void configureDialog(Application application) {
         this.setResizable(true);
         this.setTitle(title);
         this.setModal(false);
         this.setPreferredSize(new Dimension(400, 400));
         this.pack();
-        this.setLocationRelativeTo(Application.getInstance().getFrameController().getView().getProjectView());
+        this.setLocationRelativeTo(application.getFrameController().getView().getProjectView());
     }
 
     private void initElements() {

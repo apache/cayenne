@@ -126,35 +126,35 @@ public class RemoveAction extends ModelerAbstractAction {
             if (dialog.shouldDelete("ObjEntity", controller.getSelectedObjEntity().getName())) {
 
                 application.getUndoManager()
-                        .addEdit(new RemoveUndoableEdit(controller.getSelectedDataMap(), controller.getSelectedObjEntity()));
+                        .addEdit(new RemoveUndoableEdit(controller, controller.getSelectedDataMap(), controller.getSelectedObjEntity()));
                 removeObjEntity(controller.getSelectedDataMap(), controller.getSelectedObjEntity());
             }
         } else if (controller.getSelectedDbEntity() != null) {
             if (dialog.shouldDelete("DbEntity", controller.getSelectedDbEntity().getName())) {
 
                 application.getUndoManager()
-                        .addEdit(new RemoveUndoableEdit(controller.getSelectedDataMap(), controller.getSelectedDbEntity()));
+                        .addEdit(new RemoveUndoableEdit(controller, controller.getSelectedDataMap(), controller.getSelectedDbEntity()));
                 removeDbEntity(controller.getSelectedDataMap(), controller.getSelectedDbEntity());
             }
         } else if (controller.getSelectedQuery() != null) {
             if (dialog.shouldDelete("query", controller.getSelectedQuery().getName())) {
 
                 application.getUndoManager()
-                        .addEdit(new RemoveUndoableEdit(controller.getSelectedDataMap(), controller.getSelectedQuery()));
+                        .addEdit(new RemoveUndoableEdit(controller, controller.getSelectedDataMap(), controller.getSelectedQuery()));
                 removeQuery(controller.getSelectedDataMap(), controller.getSelectedQuery());
             }
         } else if (controller.getSelectedProcedure() != null) {
             if (dialog.shouldDelete("procedure", controller.getSelectedProcedure().getName())) {
 
                 application.getUndoManager()
-                        .addEdit(new RemoveUndoableEdit(controller.getSelectedDataMap(), controller.getSelectedProcedure()));
+                        .addEdit(new RemoveUndoableEdit(controller, controller.getSelectedDataMap(), controller.getSelectedProcedure()));
                 removeProcedure(controller.getSelectedDataMap(), controller.getSelectedProcedure());
             }
         } else if (controller.getSelectedEmbeddable() != null) {
             if (dialog.shouldDelete("embeddable", controller.getSelectedEmbeddable().getClassName())) {
 
                 application.getUndoManager()
-                        .addEdit(new RemoveUndoableEdit(controller.getSelectedDataMap(), controller.getSelectedEmbeddable()));
+                        .addEdit(new RemoveUndoableEdit(controller, controller.getSelectedDataMap(), controller.getSelectedEmbeddable()));
                 removeEmbeddable(controller.getSelectedDataMap(), controller.getSelectedEmbeddable());
             }
         } else if (controller.getSelectedDataMap() != null) {
@@ -163,13 +163,13 @@ public class RemoveAction extends ModelerAbstractAction {
                 // In context of Data node just remove from Data Node
                 if (controller.getSelectedDataNode() != null) {
                     application.getUndoManager()
-                            .addEdit(new RemoveUndoableEdit(application, controller.getSelectedDataNode(),
+                            .addEdit(new RemoveUndoableEdit(controller, controller.getSelectedDataNode(),
                                     controller.getSelectedDataMap()));
                     removeDataMapFromDataNode(controller.getSelectedDataNode(), controller.getSelectedDataMap());
                 } else {
                     // Not under Data Node, remove completely
                     application.getUndoManager()
-                            .addEdit(new RemoveUndoableEdit(application, controller.getSelectedDataMap()));
+                            .addEdit(new RemoveUndoableEdit(controller, controller.getSelectedDataMap()));
                     removeDataMap(controller.getSelectedDataMap());
                 }
             }
@@ -177,7 +177,7 @@ public class RemoveAction extends ModelerAbstractAction {
             if (dialog.shouldDelete("data node", controller.getSelectedDataNode().getName())) {
 
                 application.getUndoManager()
-                        .addEdit(new RemoveUndoableEdit(application, controller.getSelectedDataNode()));
+                        .addEdit(new RemoveUndoableEdit(controller, controller.getSelectedDataNode()));
                 removeDataNode(controller.getSelectedDataNode());
             }
         } else if (controller.getSelectedPaths() != null) { // multiple deletion
@@ -229,7 +229,7 @@ public class RemoveAction extends ModelerAbstractAction {
         		Embeddable embeddable = controller.getSelectedEmbeddable();
 
                 application.getUndoManager()
-                        .addEdit(new RemoveAttributeUndoableEdit(embeddable, embAttrs));
+                        .addEdit(new RemoveAttributeUndoableEdit(controller,embeddable, embAttrs));
 
                 for (EmbeddableAttribute attrib : embAttrs) {
                     embeddable.removeAttribute(attrib.getName());
@@ -250,7 +250,7 @@ public class RemoveAction extends ModelerAbstractAction {
 
         		ObjEntity entity = controller.getSelectedObjEntity();
 
-                application.getUndoManager().addEdit(new RemoveAttributeUndoableEdit(entity, objAttrs));
+                application.getUndoManager().addEdit(new RemoveAttributeUndoableEdit(controller,entity, objAttrs));
 
                 for (ObjAttribute attrib : objAttrs) {
                     entity.removeAttribute(attrib.getName());
@@ -271,7 +271,7 @@ public class RemoveAction extends ModelerAbstractAction {
         		DbEntity entity = controller.getSelectedDbEntity();
 
                 application.getUndoManager()
-                        .addEdit(new RemoveAttributeUndoableEdit(entity, dbAttrs));
+                        .addEdit(new RemoveAttributeUndoableEdit(controller,entity, dbAttrs));
 
                 for (DbAttribute attrib : dbAttrs) {
                     entity.removeAttribute(attrib.getName());
@@ -297,7 +297,7 @@ public class RemoveAction extends ModelerAbstractAction {
 				}
 
                 DataMapOps.removeBrokenObjToDbMappings(controller.getSelectedDataMap());
-				application.getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(entity, dbRels));
+				application.getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(controller,entity, dbRels));
 			}
 		}
 	}
@@ -311,7 +311,7 @@ public class RemoveAction extends ModelerAbstractAction {
 ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(application.getFrameController().getView(), rel, entity);
 				controller.fireObjRelationshipEvent(e);
 			}
-			application.getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(entity, rels));
+			application.getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(controller,entity, rels));
 		}		
 	}
 
@@ -329,7 +329,7 @@ ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(application.getFrameContr
                 mediator.fireCallbackMethodEvent(ce);
             }
             
-            application.getUndoManager().addEdit(new RemoveCallbackMethodUndoableEdit(callbackType, methods));
+            application.getUndoManager().addEdit(new RemoveCallbackMethodUndoableEdit(getProjectController(), callbackType, methods));
         }		
 	}
 
@@ -470,32 +470,33 @@ ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(application.getFrameContr
 
         UndoableEdit undo = null;
 
+        ProjectController controller = getProjectController();
         if (object instanceof DataMap) {
             if (parentObject instanceof DataNodeDescriptor) {
-                undo = new RemoveUndoableEdit(application, (DataNodeDescriptor) parentObject, (DataMap) object);
+                undo = new RemoveUndoableEdit(controller, (DataNodeDescriptor) parentObject, (DataMap) object);
                 removeDataMapFromDataNode((DataNodeDescriptor) parentObject, (DataMap) object);
             } else {
                 // Not under Data Node, remove completely
-                undo = new RemoveUndoableEdit(application, (DataMap) object);
+                undo = new RemoveUndoableEdit(controller, (DataMap) object);
                 removeDataMap((DataMap) object);
             }
         } else if (object instanceof DataNodeDescriptor) {
-            undo = new RemoveUndoableEdit(application, (DataNodeDescriptor) object);
+            undo = new RemoveUndoableEdit(controller, (DataNodeDescriptor) object);
             removeDataNode((DataNodeDescriptor) object);
         } else if (object instanceof DbEntity) {
-            undo = new RemoveUndoableEdit(((DbEntity) object).getDataMap(), (DbEntity) object);
+            undo = new RemoveUndoableEdit(controller, ((DbEntity) object).getDataMap(), (DbEntity) object);
             removeDbEntity(((DbEntity) object).getDataMap(), (DbEntity) object);
         } else if (object instanceof ObjEntity) {
-            undo = new RemoveUndoableEdit(((ObjEntity) object).getDataMap(), (ObjEntity) object);
+            undo = new RemoveUndoableEdit(controller, ((ObjEntity) object).getDataMap(), (ObjEntity) object);
             removeObjEntity(((ObjEntity) object).getDataMap(), (ObjEntity) object);
         } else if (object instanceof QueryDescriptor) {
-            undo = new RemoveUndoableEdit(((QueryDescriptor) object).getDataMap(), (QueryDescriptor) object);
+            undo = new RemoveUndoableEdit(controller, ((QueryDescriptor) object).getDataMap(), (QueryDescriptor) object);
             removeQuery(((QueryDescriptor) object).getDataMap(), (QueryDescriptor) object);
         } else if (object instanceof Procedure) {
-            undo = new RemoveUndoableEdit(((Procedure) object).getDataMap(), (Procedure) object);
+            undo = new RemoveUndoableEdit(controller, ((Procedure) object).getDataMap(), (Procedure) object);
             removeProcedure(((Procedure) object).getDataMap(), (Procedure) object);
         } else if (object instanceof Embeddable) {
-            undo = new RemoveUndoableEdit(((Embeddable) object).getDataMap(), (Embeddable) object);
+            undo = new RemoveUndoableEdit(controller, ((Embeddable) object).getDataMap(), (Embeddable) object);
             removeEmbeddable(((Embeddable) object).getDataMap(), (Embeddable) object);
         }
 

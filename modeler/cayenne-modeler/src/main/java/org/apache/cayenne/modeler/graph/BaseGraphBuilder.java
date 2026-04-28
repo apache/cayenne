@@ -46,6 +46,7 @@ import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
@@ -361,15 +362,16 @@ abstract class BaseGraphBuilder<E extends Entity<E, A, R>, A extends Attribute<E
      * Creates popup menu
      */
     protected JPopupMenu createPopupMenu() {
-        GlobalActions globalActions = mediator.getApplication().getActionManager();
+        Application application = mediator.getApplication();
+        GlobalActions globalActions = application.getActionManager();
 
         JPopupMenu menu = new JPopupMenu();
-        menu.add(new EntityDisplayAction(this).buildMenu());
+        menu.add(new EntityDisplayAction(this, application).buildMenu());
         menu.addSeparator();
-        menu.add(new EntityDisplayAction(this, globalActions.getAction(CreateAttributeAction.class)).buildMenu());
-        menu.add(new EntityDisplayAction(this, globalActions.getAction(CreateRelationshipAction.class)).buildMenu());
+        menu.add(new EntityDisplayAction(this, globalActions.getAction(CreateAttributeAction.class), application).buildMenu());
+        menu.add(new EntityDisplayAction(this, globalActions.getAction(CreateRelationshipAction.class), application).buildMenu());
         menu.addSeparator();
-        menu.add(new RemoveEntityAction(this));
+        menu.add(new RemoveEntityAction(this, application));
 
         return menu;
     }

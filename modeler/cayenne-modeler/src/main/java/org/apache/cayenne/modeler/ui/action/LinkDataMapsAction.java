@@ -60,7 +60,7 @@ public class LinkDataMapsAction extends ModelerAbstractAction {
         }
 
         application.getUndoManager().addEdit(
-                new LinkDataMapsUndoableEdit(dataNodeDescriptor, linkedDataMaps, mediator));
+                new LinkDataMapsUndoableEdit(mediator, dataNodeDescriptor, linkedDataMaps));
     }
 
 }

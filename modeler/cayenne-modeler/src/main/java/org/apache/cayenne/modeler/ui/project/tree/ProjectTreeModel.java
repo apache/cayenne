@@ -135,7 +135,7 @@ public class ProjectTreeModel extends DefaultTreeModel {
 		return (DefaultMutableTreeNode) super.getRoot();
 	}
 
-	public DefaultMutableTreeNode getNodeForObjectPath(Object[] path) {
+	public DefaultMutableTreeNode getNodeForObjectPath(Object... path) {
 		if (path == null || path.length == 0) {
 			return null;
 		}

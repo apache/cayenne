@@ -40,14 +40,14 @@ public class EntityDisplayAction extends ModelerAbstractAction {
 
     private final GraphBuilder builder;
 
-    public EntityDisplayAction(GraphBuilder builder) {
-        super("Show", Application.getInstance());
+    public EntityDisplayAction(GraphBuilder builder, Application application) {
+        super("Show", application);
         this.builder = builder;
         init();
     }
 
-    public EntityDisplayAction(GraphBuilder builder, ModelerAbstractAction delegate) {
-        super((String) delegate.getValue(Action.NAME), Application.getInstance());
+    public EntityDisplayAction(GraphBuilder builder, ModelerAbstractAction delegate, Application application) {
+        super((String) delegate.getValue(Action.NAME), application);
         this.delegate = delegate;
         this.builder = builder;
         init();

@@ -21,13 +21,11 @@ package org.apache.cayenne.modeler.ui.project.validator;
 
 import javax.swing.JFrame;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
 import org.apache.cayenne.validation.ValidationFailure;
@@ -52,7 +50,6 @@ public class AttributeErrorMsg extends ValidationDisplayHandler {
         attribute = (Attribute<?,?,?>) object;
         entity = attribute.getEntity();
         map = entity.getDataMap();
-        domain = (DataChannelDescriptor) Application.getInstance().getProject().getRootNode();
     }
 
     public void displayField(ProjectController mediator, JFrame frame) {

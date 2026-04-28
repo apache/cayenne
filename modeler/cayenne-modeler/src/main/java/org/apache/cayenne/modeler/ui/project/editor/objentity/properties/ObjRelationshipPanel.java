@@ -25,7 +25,6 @@ import org.apache.cayenne.modeler.event.model.ObjRelationshipEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityListener;
 import org.apache.cayenne.modeler.event.model.ObjRelationshipListener;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.WidgetFactory;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
@@ -81,7 +80,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
 
         this.setLayout(new BorderLayout());
 
-        GlobalActions globalActions = Application.getInstance().getActionManager();
+        GlobalActions globalActions = controller.getApplication().getActionManager();
 
         table = new CayenneTable();
         table.setDefaultRenderer(String.class, new StringRenderer());
@@ -255,7 +254,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
         table.setRowMargin(3);
 
         TableColumn col = table.getColumnModel().getColumn(ObjRelationshipTableModel.REL_TARGET_PATH);
-        col.setCellEditor(new DbRelationshipPathComboBoxEditor());
+        col.setCellEditor(new DbRelationshipPathComboBoxEditor(controller.getApplication()));
         col.setCellRenderer(new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -318,7 +317,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
         }
     }
 
-    static class StringRenderer extends DefaultTableCellRenderer {
+    class StringRenderer extends DefaultTableCellRenderer {
 
         @Override
         public Component getTableCellRendererComponent(
@@ -371,7 +370,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
         public void mouseClicked(MouseEvent event, int x) {
             Point point = event.getPoint();
             if (point.x - x <= INHERITANCE_ICON.getIconWidth()) {
-                GlobalActions globalActions = Application.getInstance().getActionManager();
+                GlobalActions globalActions = controller.getApplication().getActionManager();
                 globalActions.getAction(ObjEntityToSuperEntityAction.class).performAction(null);
             }
         }
@@ -411,7 +410,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
                 parentPanel.getAttributePanel().getTable().getCellEditor().stopCellEditing();
             }
 
-            GlobalActions globalActions = Application.getInstance().getActionManager();
+            GlobalActions globalActions = controller.getApplication().getActionManager();
             globalActions.getAction(RemoveAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
             globalActions.getAction(CutAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
             globalActions.getAction(CopyAttributeRelationshipAction.class).setCurrentSelectedPanel(this);

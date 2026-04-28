@@ -25,8 +25,6 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.event.model.ObjRelationshipEvent;
 import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
-import org.apache.cayenne.modeler.event.model.ModelEvent;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 
 import javax.swing.undo.CannotRedoException;
@@ -36,11 +34,10 @@ public class RelationshipUndoableEdit extends CayenneUndoableEdit {
 
 	private final Relationship<?,?,?> relationship;
     private final Relationship<?,?,?> prevRelationship;
-    private final ProjectController projectController;
     private final boolean useDb;
 
-	public RelationshipUndoableEdit(Relationship<?,?,?> relationship) {
-		this.projectController = Application.getInstance().getFrameController().getProjectController();
+	public RelationshipUndoableEdit(ProjectController controller, Relationship<?,?,?> relationship) {
+		super(controller);
 		this.relationship = relationship;
 		this.useDb = relationship instanceof DbRelationship;
 		this.prevRelationship = copyRelationship(relationship);
@@ -68,7 +65,7 @@ public class RelationshipUndoableEdit extends CayenneUndoableEdit {
 		DbEntity dbEntity = currRel.getSourceEntity();
 		dbEntity.removeRelationship(currRel.getName());
 		dbEntity.addRelationship(relToFire);
-		projectController
+		controller
 				.fireDbRelationshipEvent(
 						DbRelationshipEvent.ofAdd(this, relToFire, relToFire.getSourceEntity()));
 	}
@@ -77,7 +74,7 @@ public class RelationshipUndoableEdit extends CayenneUndoableEdit {
 		ObjEntity objEntity = currRel.getSourceEntity();
 		objEntity.removeRelationship(currRel.getName());
 		objEntity.addRelationship(relToFire);
-		projectController
+		controller
 				.fireObjRelationshipEvent(
 						ObjRelationshipEvent.ofAdd(this, relToFire, relToFire.getSourceEntity()));
 	}

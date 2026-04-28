@@ -54,8 +54,8 @@ public class MergerOptionsView extends JDialog {
     protected Component tables;
     protected JTabbedPane tabs;
 
-    public MergerOptionsView(Component tables) {
-        super(Application.getInstance().getFrameController().getView());
+    public MergerOptionsView(Application application, Component tables) {
+        super(application.getFrameController().getView());
         
         // create widgets
         this.generateButton = new JButton("Migrate");

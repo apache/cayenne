@@ -49,8 +49,8 @@ public class DbRelationshipDialogView extends CayenneDialog {
 
     private boolean cancelPressed;
 
-    public DbRelationshipDialogView() {
-        super(Application.getInstance().getFrameController().getView(), "Create dbRelationship", true);
+    public DbRelationshipDialogView(Application application) {
+        super(application.getFrameController().getView(), "Create dbRelationship", true);
 
         initView();
         this.pack();

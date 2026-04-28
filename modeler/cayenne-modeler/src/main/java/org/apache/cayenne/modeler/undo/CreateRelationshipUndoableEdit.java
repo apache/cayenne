@@ -28,6 +28,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.ui.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.RemoveRelationshipAction;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 
 public class CreateRelationshipUndoableEdit extends CayenneUndoableEdit {
@@ -38,12 +39,14 @@ public class CreateRelationshipUndoableEdit extends CayenneUndoableEdit {
     private DbEntity dbEnt;
     private DbRelationship[] dbRel;
 
-    public CreateRelationshipUndoableEdit(ObjEntity objEnt, ObjRelationship[] objectRel) {
+    public CreateRelationshipUndoableEdit(ProjectController controller, ObjEntity objEnt, ObjRelationship[] objectRel) {
+        super(controller);
         this.objEnt = objEnt;
         this.objectRel = objectRel;
     }
 
-    public CreateRelationshipUndoableEdit(DbEntity dbEnt, DbRelationship[] dbRel) {
+    public CreateRelationshipUndoableEdit(ProjectController controller, DbEntity dbEnt, DbRelationship[] dbRel) {
+        super(controller);
         this.dbEnt = dbEnt;
         this.dbRel = dbRel;
     }

@@ -24,6 +24,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
@@ -36,7 +37,8 @@ public class ChangePKGeneratorUndoableEdit extends CayenneUndoableEdit {
 
     private PkGeneratorState newState;
 
-    public ChangePKGeneratorUndoableEdit(DbEntity dbEntity) {
+    public ChangePKGeneratorUndoableEdit(ProjectController controller, DbEntity dbEntity) {
+        super(controller);
         this.dbEntity = dbEntity;
     }
 

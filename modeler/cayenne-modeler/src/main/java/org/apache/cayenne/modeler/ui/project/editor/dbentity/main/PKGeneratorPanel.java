@@ -46,7 +46,7 @@ public abstract class PKGeneratorPanel extends JPanel {
      * Called by parent when the panel becomes visible.
      */
     public void onInit(DbEntity entity) {
-        ChangePKGeneratorUndoableEdit edit = new ChangePKGeneratorUndoableEdit(entity);
+        ChangePKGeneratorUndoableEdit edit = new ChangePKGeneratorUndoableEdit(mediator, entity);
         edit.captureOldState();
 
         onInitInternal(entity);

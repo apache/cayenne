@@ -28,7 +28,6 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.event.model.ObjRelationshipEvent;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.dbrelationship.DbRelationshipDialogController;
 import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
@@ -87,7 +86,7 @@ public class ObjRelationshipInfoController extends ChildController<ProjectContro
 
     public ObjRelationshipInfoController(ProjectController controller) {
         super(controller);
-        this.view = new ObjRelationshipInfoView();
+        this.view = new ObjRelationshipInfoView(application);
         getPathBrowser().addTreeSelectionListener(this);
 
         view.getCollectionTypeCombo().addItem(COLLECTION_TYPE_COLLECTION);
@@ -109,7 +108,7 @@ public class ObjRelationshipInfoController extends ChildController<ProjectContro
 
     public ObjRelationshipInfoController modifyRelationship(ObjRelationship rel) {
         this.relationship = rel;
-        this.undo = new RelationshipUndoableEdit(rel);
+        this.undo = new RelationshipUndoableEdit(parent, rel);
         // validate -
         // current limitation is that an ObjRelationship must have source
         // and target entities present, with DbEntities chosen.
@@ -250,12 +249,12 @@ public class ObjRelationshipInfoController extends ChildController<ProjectContro
         if (isCreate) {
             relationship.getSourceEntity().addRelationship(relationship);
             fireObjRelationshipEvent(this);
-            Application.getInstance().getUndoManager().addEdit(
-                    new CreateRelationshipUndoableEdit(relationship.getSourceEntity(), new ObjRelationship[]{relationship}));
+            application.getUndoManager().addEdit(
+                    new CreateRelationshipUndoableEdit(parent, relationship.getSourceEntity(), new ObjRelationship[]{relationship}));
         } else {
             parent.fireObjRelationshipEvent(ObjRelationshipEvent.ofChange(this, relationship,
                     relationship.getSourceEntity()));
-            Application.getInstance().getUndoManager().addEdit(undo);
+            application.getUndoManager().addEdit(undo);
         }
 
         view.getSourceEntityLabel().setText(relationship.getSourceEntity().getName());

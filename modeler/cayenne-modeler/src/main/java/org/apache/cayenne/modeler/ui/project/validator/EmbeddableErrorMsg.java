@@ -20,10 +20,8 @@ package org.apache.cayenne.modeler.ui.project.validator;
 
 import javax.swing.JFrame;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 import org.apache.cayenne.validation.ValidationFailure;
@@ -39,10 +37,6 @@ public class EmbeddableErrorMsg extends ValidationDisplayHandler {
         Object object = result.getSource();
         embeddable = (Embeddable) object;
         map = embeddable.getDataMap();
-        domain = (DataChannelDescriptor) Application
-                .getInstance()
-                .getProject()
-                .getRootNode();
     }
 
     @Override

@@ -50,13 +50,13 @@ public class JUndoableCheckBoxEdit extends AbstractUndoableEdit {
     private boolean isSelected;
 
 
-    JUndoableCheckBoxEdit(JCheckBox checkBox, ActionListener actionListener) {
+    JUndoableCheckBoxEdit(Application application, JCheckBox checkBox, ActionListener actionListener) {
 
         this.checkBox = checkBox;
         this.actionListener = actionListener;
         this.isSelected = checkBox.isSelected();
 
-        projectView = ((ModelerFrame) Application.getInstance().getFrameController().getView()).getProjectView();
+        projectView = ((ModelerFrame) application.getFrameController().getView()).getProjectView();
 
         treePath = projectView.getProjectTreeView().getSelectionPath();
 

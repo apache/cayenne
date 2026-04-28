@@ -60,8 +60,8 @@ public class ObjRelationshipInfoView extends JDialog{
     private final JCheckBox usedForLocking;
     private final JTextField comment;
 
-    public ObjRelationshipInfoView() {
-        super(Application.getInstance().getFrameController().getView());
+    public ObjRelationshipInfoView(Application application) {
+        super(application.getFrameController().getView());
 
         this.cancelButton = new JButton("Cancel");
         this.saveButton = new JButton("Done");

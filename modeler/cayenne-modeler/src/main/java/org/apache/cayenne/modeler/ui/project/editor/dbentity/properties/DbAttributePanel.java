@@ -23,7 +23,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
 import org.apache.cayenne.modeler.event.model.DbAttributeListener;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
@@ -64,7 +63,7 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
 
         this.setLayout(new BorderLayout());
 
-        GlobalActions globalActions = Application.getInstance().getActionManager();
+        GlobalActions globalActions = controller.getApplication().getActionManager();
 
         // Create table with two columns and no rows.
         table = new CayenneTable();
@@ -107,13 +106,13 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
         List<?> listAttrs = model.getObjectList();
         int[] newSel = new int[attrs.length];
 
-        Application.getInstance().getActionManager()
+        controller.getApplication().getActionManager()
                 .getAction(RemoveAttributeRelationshipAction.class)
                 .setCurrentSelectedPanel(parentPanel.getAttributePanel());
-        Application.getInstance().getActionManager()
+        controller.getApplication().getActionManager()
                 .getAction(CutAttributeRelationshipAction.class)
                 .setCurrentSelectedPanel(parentPanel.getAttributePanel());
-        Application.getInstance().getActionManager()
+        controller.getApplication().getActionManager()
                 .getAction(CopyAttributeRelationshipAction.class)
                 .setCurrentSelectedPanel(parentPanel.getAttributePanel());
 
@@ -207,7 +206,7 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
                 parentPanel.getRelationshipPanel().getTable().getCellEditor().stopCellEditing();
             }
 
-            GlobalActions globalActions = Application.getInstance().getActionManager();
+            GlobalActions globalActions = controller.getApplication().getActionManager();
 
             globalActions.getAction(RemoveAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
             globalActions.getAction(CutAttributeRelationshipAction.class).setCurrentSelectedPanel(this);

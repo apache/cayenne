@@ -84,8 +84,8 @@ public class DbEntitySyncAction extends ModelerAbstractAction {
 
             merger.setNameGenerator(new PreserveRelationshipNameGenerator());
 
-            DbEntitySyncUndoableEdit undoableEdit = new DbEntitySyncUndoableEdit((DataChannelDescriptor) mediator
-                    .getProject().getRootNode(), mediator.getSelectedDataMap());
+            DbEntitySyncUndoableEdit undoableEdit = new DbEntitySyncUndoableEdit(mediator,
+                    (DataChannelDescriptor) mediator.getProject().getRootNode(), mediator.getSelectedDataMap());
 
             // filter out inherited entities, as we need to add attributes only to the roots
             filterInheritedEntities(entities);

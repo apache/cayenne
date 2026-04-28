@@ -23,7 +23,6 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
 import org.apache.cayenne.modeler.project.DbAttributeOps;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
@@ -269,7 +268,7 @@ public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
                             + " \"To Dep PK\" relationships using this attribute?";
 
                     int answer = JOptionPane.showConfirmDialog(
-                            Application.getInstance().getFrameController().getView(),
+                            controller.getApplication().getFrameController().getView(),
                             message);
                     if (answer != JOptionPane.YES_OPTION) {
                         // no action needed

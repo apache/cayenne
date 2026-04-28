@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.undo;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.modeler.ui.action.CreateNodeAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAction;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
@@ -34,7 +35,8 @@ public class CreateNodeUndoableEdit extends CayenneUndoableEdit {
 
     private final DataNodeDescriptor node;
 
-    public CreateNodeUndoableEdit(DataNodeDescriptor node) {
+    public CreateNodeUndoableEdit(ProjectController controller, DataNodeDescriptor node) {
+        super(controller);
         this.node = node;
     }
 

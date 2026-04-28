@@ -26,7 +26,6 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeAction;
@@ -47,12 +46,14 @@ import java.awt.*;
 
 public class ObjEntityView extends JTabbedPane {
 
+    private final ProjectController controller;
     private final Component entityPanel;
     private final ObjEntityPropertiesView attributeRelationshipTab;
     private final ObjEntityCallbacksView callbacksPanel;
     private int lastTabIndex;
 
     public ObjEntityView(ProjectController controller) {
+        this.controller = controller;
 
         setTabPlacement(JTabbedPane.TOP);
 
@@ -92,7 +93,7 @@ public class ObjEntityView extends JTabbedPane {
     }
 
     private void resetRemoveButtons() {
-        GlobalActions globalActions = Application.getInstance().getActionManager();
+        GlobalActions globalActions = controller.getApplication().getActionManager();
 
         globalActions.getAction(RemoveAttributeAction.class).setEnabled(false);
         globalActions.getAction(RemoveRelationshipAction.class).setEnabled(false);

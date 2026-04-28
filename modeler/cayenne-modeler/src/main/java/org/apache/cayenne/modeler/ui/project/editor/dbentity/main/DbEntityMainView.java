@@ -25,7 +25,6 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.ui.action.CreateObjEntityFromDbAction;
@@ -79,7 +78,7 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
         toolBar = new JToolBar();
         toolBar.setBorder(BorderFactory.createEmptyBorder());
         toolBar.setFloatable(false);
-        GlobalActions globalActions = Application.getInstance().getActionManager();
+        GlobalActions globalActions = controller.getApplication().getActionManager();
 
         toolBar.add(globalActions.getAction(CreateAttributeAction.class).buildButton(1));
         toolBar.add(globalActions.getAction(CreateRelationshipAction.class).buildButton(3));

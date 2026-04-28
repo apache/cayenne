@@ -19,6 +19,7 @@
 package org.apache.cayenne.modeler.undo;
 
 import org.apache.cayenne.modeler.ui.action.UpdateValidationConfigAction;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.project.validation.ValidationConfig;
 
 import javax.swing.undo.CannotRedoException;
@@ -29,7 +30,8 @@ public class UpdateValidationConfigUndoableEdit extends CayenneUndoableEdit {
     private final ValidationConfig oldConfig;
     private final ValidationConfig newConfig;
 
-    public UpdateValidationConfigUndoableEdit(ValidationConfig oldConfig, ValidationConfig newConfig) {
+    public UpdateValidationConfigUndoableEdit(ProjectController controller, ValidationConfig oldConfig, ValidationConfig newConfig) {
+        super(controller);
         this.oldConfig = oldConfig;
         this.newConfig = newConfig;
     }

@@ -27,7 +27,6 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.SQLTemplateDescriptor;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.undo.AddPrefetchUndoableEditForSqlTemplate;
 import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
@@ -95,9 +94,9 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
         messagePanel = new JPanel(new BorderLayout());
         cardLayout = new CardLayout();
 
-        Preferences detail = Application.getInstance().getPreferencesNode(this.getClass(), "");
+        Preferences detail = mediator.getApplication().getPreferencesNode(this.getClass(), "");
 
-        int defLocation = Application.getInstance().getFrameController().getView().getHeight() / 2;
+        int defLocation = mediator.getApplication().getFrameController().getView().getHeight() / 2;
         int location = detail != null ? detail.getInt(
                 getDividerLocationProperty(),
                 defLocation) : defLocation;
@@ -163,7 +162,7 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
         prefetchBox.addItem(SelectQueryPrefetchTab.JOINT_PREFETCH_SEMANTICS);
         prefetchBox.addItem(SelectQueryPrefetchTab.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
 
-        prefetchBox.addActionListener(e -> Application.getInstance().getFrameController().getProjectController().setDirty(true));
+        prefetchBox.addActionListener(e -> mediator.setDirty(true));
 
         column.setCellEditor(new DefaultCellEditor(prefetchBox));
 
@@ -222,7 +221,7 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
 
             addPrefetch(prefetch);
 
-            Application.getInstance().getUndoManager().addEdit(new AddPrefetchUndoableEditForSqlTemplate(prefetch, SQLTemplatePrefetchTab.this));
+            mediator.getApplication().getUndoManager().addEdit(new AddPrefetchUndoableEditForSqlTemplate(prefetch, SQLTemplatePrefetchTab.this));
         });
 
         JButton remove = new ModelerAbstractAction.CayenneToolbarButton(null, 3);
@@ -325,7 +324,7 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
         if (JSplitPane.DIVIDER_LOCATION_PROPERTY.equals(evt.getPropertyName())) {
             int value = (Integer) evt.getNewValue();
 
-            Preferences detail = Application.getInstance().getPreferencesNode(this.getClass(), "");
+            Preferences detail = mediator.getApplication().getPreferencesNode(this.getClass(), "");
             detail.putInt(getDividerLocationProperty(), value);
         }
     }

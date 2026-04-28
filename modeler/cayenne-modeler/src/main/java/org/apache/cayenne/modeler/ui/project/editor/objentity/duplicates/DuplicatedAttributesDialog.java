@@ -23,7 +23,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.WidgetFactory;
 import org.apache.cayenne.modeler.ui.ModelerFrame;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
@@ -67,7 +66,8 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
     protected JButton cancelButton;
     protected JButton proceedButton;
 
-    public static void showDialog(ModelerFrame editor, List<ObjAttribute> duplicatedAttributes,
+    public static void showDialog(ModelerFrame editor, ProjectController controller,
+                                  List<ObjAttribute> duplicatedAttributes,
                                   ObjEntity superEntity, ObjEntity entity) {
 
         if (instance == null) {
@@ -77,7 +77,7 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
 
         instance.setSuperEntity(superEntity);
         instance.setEntity(entity);
-        instance.setDuplicatedAttributes(duplicatedAttributes);
+        instance.setDuplicatedAttributes(controller, duplicatedAttributes);
         instance.updateTable();
         instance.setVisible(true);
     }
@@ -162,7 +162,7 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
         }
     }
 
-    public void setDuplicatedAttributes(List<ObjAttribute> attributes) {
+    public void setDuplicatedAttributes(ProjectController controller, List<ObjAttribute> attributes) {
         if (duplicatedAttributes == null) {
             duplicatedAttributes = new LinkedList<DuplicatedAttributeInfo>();
         }
@@ -175,7 +175,6 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
             duplicatedAttributes.add(attributeInfo);
         }
 
-        ProjectController controller = Application.getInstance().getFrameController().getProjectController();
         attributesTable.setModel(new DuplicatedAttributeTableModel(controller, this, duplicatedAttributes));
 
     }

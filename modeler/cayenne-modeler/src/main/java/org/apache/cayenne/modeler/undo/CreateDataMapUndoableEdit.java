@@ -22,6 +22,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ui.action.CreateDataMapAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAction;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 
 import javax.swing.undo.CannotRedoException;
@@ -37,7 +38,8 @@ public class CreateDataMapUndoableEdit extends CayenneUndoableEdit {
     private DataChannelDescriptor domain;
     private DataMap map;
 
-    public CreateDataMapUndoableEdit(DataChannelDescriptor domain, DataMap map) {
+    public CreateDataMapUndoableEdit(ProjectController controller, DataChannelDescriptor domain, DataMap map) {
+        super(controller);
         this.domain = domain;
         this.map = map;
     }

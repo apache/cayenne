@@ -20,6 +20,7 @@ package org.apache.cayenne.modeler.undo;
 
 import org.apache.cayenne.modeler.ui.action.CreateCallbackMethodAction;
 import org.apache.cayenne.modeler.ui.action.RemoveCallbackMethodAction;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.CallbackType;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
 
@@ -31,8 +32,9 @@ public class RemoveCallbackMethodUndoableEdit extends CayenneUndoableEdit {
     private final CallbackType callbackType;
     private final ObjCallbackMethod[] methods;
 
-    public RemoveCallbackMethodUndoableEdit(CallbackType callbackType,
+    public RemoveCallbackMethodUndoableEdit(ProjectController controller, CallbackType callbackType,
     		ObjCallbackMethod[] methods) {
+        super(controller);
         this.callbackType = callbackType;
         this.methods = methods;
     }

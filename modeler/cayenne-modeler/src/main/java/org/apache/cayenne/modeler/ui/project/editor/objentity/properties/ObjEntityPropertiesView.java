@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.objentity.properties;
 
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
@@ -80,7 +79,7 @@ public class ObjEntityPropertiesView extends JPanel implements ObjEntityDisplayL
 
         toolBar = new JToolBar();
         toolBar.setFloatable(false);
-        GlobalActions globalActions = Application.getInstance().getActionManager();
+        GlobalActions globalActions = controller.getApplication().getActionManager();
 
         toolBar.add(globalActions.getAction(CreateAttributeAction.class).buildButton(1));
         toolBar.add(globalActions.getAction(CreateRelationshipAction.class).buildButton(3));

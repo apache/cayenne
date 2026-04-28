@@ -280,7 +280,7 @@ public class InferRelationshipsController extends ChildController<RootController
         // show dialog even on empty DataMap, as custom generation may still take
         // advantage of it
 
-        view = new InferRelationshipsDialog(entitySelector.getView());
+        view = new InferRelationshipsDialog(application, entitySelector.getView());
         initBindings();
 
         view.pack();
@@ -364,7 +364,7 @@ public class InferRelationshipsController extends ChildController<RootController
             rel.setToMany(temp.isToMany());
             temp.getSource().addRelationship(rel);
 
-            undoableEdit.addEdit(new CreateRelationshipUndoableEdit(temp.getSource(), new DbRelationship[]{rel}));
+            undoableEdit.addEdit(new CreateRelationshipUndoableEdit(application.getFrameController().getProjectController(), temp.getSource(), new DbRelationship[]{rel}));
         }
         JOptionPane.showMessageDialog(view, getSelectedEntitiesSize() + " relationships generated");
         view.dispose();

@@ -29,6 +29,7 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeAction;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 
 public class CreateAttributeUndoableEdit extends CayenneUndoableEdit {
@@ -96,16 +97,18 @@ public class CreateAttributeUndoableEdit extends CayenneUndoableEdit {
         }
     }
 
-    public CreateAttributeUndoableEdit(DataChannelDescriptor domain, DataMap map,
+    public CreateAttributeUndoableEdit(ProjectController controller, DataChannelDescriptor domain, DataMap map,
             ObjEntity objEntity, ObjAttribute attr) {
+        super(controller);
         this.domain = domain;
         this.dataMap = map;
         this.objEntity = objEntity;
         this.objAttr = attr;
     }
 
-    public CreateAttributeUndoableEdit(DataChannelDescriptor domain, DataMap map,
+    public CreateAttributeUndoableEdit(ProjectController controller, DataChannelDescriptor domain, DataMap map,
             DbEntity dbEntity, DbAttribute attr) {
+        super(controller);
         this.domain = domain;
         this.dataMap = map;
         this.dbEntity = dbEntity;

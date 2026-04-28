@@ -21,13 +21,11 @@ package org.apache.cayenne.modeler.ui.project.validator;
 
 import javax.swing.JFrame;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 import org.apache.cayenne.validation.ValidationFailure;
@@ -51,10 +49,6 @@ public class RelationshipErrorMsg extends ValidationDisplayHandler {
         rel = (Relationship<?,?,?>) object;
         entity = rel.getSourceEntity();
         map = entity.getDataMap();
-        domain = (DataChannelDescriptor) Application
-                .getInstance()
-                .getProject()
-                .getRootNode();
     }
 
     public void displayField(ProjectController mediator, JFrame frame) {

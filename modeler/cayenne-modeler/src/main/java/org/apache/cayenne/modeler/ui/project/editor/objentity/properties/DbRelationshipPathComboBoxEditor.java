@@ -39,9 +39,14 @@ class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEditor<Obj
 
     private static final int REL_TARGET_PATH_COLUMN = 2;
     private static int enterPressedCount = 0;
+    private final Application application;
     private JTable table;
     private String savePath;
     private ObjRelationshipTableModel model;
+
+    DbRelationshipPathComboBoxEditor(Application application) {
+        this.application = application;
+    }
 
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
@@ -184,7 +189,7 @@ class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEditor<Obj
         String path = model.getRelationship(row).getDbRelationshipPath().value();
         if (!changeObjEntity(path)) {
             JOptionPane.showMessageDialog(
-                    Application.getInstance().getFrameController().getView(),
+                    application.getFrameController().getView(),
                     "Can't set dbAttribute path. At first set target entity in dbEntity.",
                     "Error",
                     JOptionPane.ERROR_MESSAGE);

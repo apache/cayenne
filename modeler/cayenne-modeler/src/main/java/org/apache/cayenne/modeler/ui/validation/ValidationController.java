@@ -35,7 +35,7 @@ public class ValidationController extends ChildController<RootController> {
 
     public ValidationController(RootController parent) {
         super(parent);
-        this.view = new ValidationView();
+        this.view = new ValidationView(application);
         view.getCloseButton().addActionListener(e -> closeDialogAction());
     }
 

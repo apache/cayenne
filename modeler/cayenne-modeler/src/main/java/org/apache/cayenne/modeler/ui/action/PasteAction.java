@@ -119,6 +119,7 @@ public class PasteAction extends ModelerAbstractAction implements FlavorListener
                     for (Object o : (List) content) {
                         paste(currentObject, o);
                         undoableEdit.addEdit(new PasteUndoableEdit(
+                                getProjectController(),
                                 domain,
                                 map,
                                 currentObject,
@@ -126,7 +127,7 @@ public class PasteAction extends ModelerAbstractAction implements FlavorListener
                     }
                 } else {
                     paste(currentObject, content);
-                    undoableEdit = new PasteUndoableEdit(domain, map, currentObject, content);
+                    undoableEdit = new PasteUndoableEdit(getProjectController(), domain, map, currentObject, content);
                 }
 
                 application.getUndoManager().addEdit(undoableEdit);

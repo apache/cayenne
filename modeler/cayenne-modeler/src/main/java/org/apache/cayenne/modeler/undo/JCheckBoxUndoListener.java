@@ -30,7 +30,7 @@ public class JCheckBoxUndoListener implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        UndoableEdit edit = new JUndoableCheckBoxEdit((JCheckBox) e.getSource(), this);
+        UndoableEdit edit = new JUndoableCheckBoxEdit(Application.getInstance(), (JCheckBox) e.getSource(), this);
         Application.getInstance().getUndoManager().addEdit(edit);
     }
 }

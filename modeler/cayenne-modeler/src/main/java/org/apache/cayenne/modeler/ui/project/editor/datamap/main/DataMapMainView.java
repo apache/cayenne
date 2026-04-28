@@ -26,7 +26,6 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.action.LinkDataMapAction;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.catalog.CatalogUpdateController;
@@ -330,10 +329,7 @@ public class DataMapMainView extends JPanel {
 
         // search for matching map name across domains, as currently they have to be
         // unique globally
-        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) Application
-                .getInstance()
-                .getProject()
-                .getRootNode();
+        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) controller.getProject().getRootNode();
 
         DataMap matchingMap = dataChannelDescriptor.getDataMap(newName);
 

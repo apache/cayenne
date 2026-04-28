@@ -77,7 +77,7 @@ public class CreateDataMapAction extends ModelerAbstractAction {
         map.setName(NameBuilder.builder(map, dataChannelDescriptor).name());
         onMapCreated(this, getProjectController(), map);
 
-        application.getUndoManager().addEdit(new CreateDataMapUndoableEdit(dataChannelDescriptor, map));
+        application.getUndoManager().addEdit(new CreateDataMapUndoableEdit(getProjectController(), dataChannelDescriptor, map));
     }
 
     /**

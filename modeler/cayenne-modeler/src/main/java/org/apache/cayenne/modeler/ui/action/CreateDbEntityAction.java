@@ -62,7 +62,7 @@ public class CreateDbEntityAction extends ModelerAbstractAction {
         entity.setName(NameBuilder.builder(entity, map).name());
         createEntity(map, entity);
 
-        application.getUndoManager().addEdit(new CreateDbEntityUndoableEdit(map, entity));
+        application.getUndoManager().addEdit(new CreateDbEntityUndoableEdit(getProjectController(), map, entity));
     }
 
     /**

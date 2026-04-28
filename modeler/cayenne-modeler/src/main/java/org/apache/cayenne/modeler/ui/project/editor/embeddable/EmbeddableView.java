@@ -23,7 +23,6 @@ import org.apache.cayenne.modeler.ui.project.editor.embeddable.main.EmbeddableMa
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeAction;
@@ -37,10 +36,12 @@ import java.awt.*;
 
 public class EmbeddableView extends JTabbedPane {
 
+    private final ProjectController controller;
     private final JScrollPane embeddablePanel;
     private final EmbeddableAttributesView attributesPanel;
 
     public EmbeddableView(ProjectController controller) {
+        this.controller = controller;
 
         setTabPlacement(JTabbedPane.TOP);
 
@@ -68,7 +69,7 @@ public class EmbeddableView extends JTabbedPane {
     }
 
     private void resetRemoveButtons() {
-        GlobalActions globalActions = Application.getInstance().getActionManager();
+        GlobalActions globalActions = controller.getApplication().getActionManager();
 
         globalActions.getAction(RemoveAttributeAction.class).setEnabled(false);
         globalActions.getAction(RemoveCallbackMethodAction.class).setEnabled(false);

@@ -41,14 +41,14 @@ class DataDomainGeneratorsPanel extends JPanel {
     private JCheckBox checkConfig;
     private JButton toConfigButton;
 
-    DataDomainGeneratorsPanel(DataMap dataMap, String icon, Class<?> type) {
+    DataDomainGeneratorsPanel(Application application, DataMap dataMap, String icon, Class<?> type) {
         this.type = type;
         this.icon = icon;
         this.dataMap = dataMap;
-        initView();
+        initView(application);
     }
 
-    private void initView(){
+    private void initView(Application application){
         setLayout(new BorderLayout());
         FormLayout layout = new FormLayout(
                 "left:pref, 4dlu, fill:70dlu, 3dlu, fill:120, 3dlu, fill:120", "");
@@ -56,7 +56,7 @@ class DataDomainGeneratorsPanel extends JPanel {
         this.checkConfig = new JCheckBox();
         JLabel dataMapLabel = new JLabel(dataMap.getName());
         dataMapLabel.setToolTipText(dataMap.getName());
-        DataChannelMetaData metaData = Application.getInstance().getMetaData();
+        DataChannelMetaData metaData = application.getMetaData();
         this.toConfigButton = new JButton("Edit Config");
         if(metaData.get(dataMap, type) == null) {
             if(type == ReverseEngineering.class) {

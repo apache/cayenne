@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.ui.project.editor.datamap.cgen;
 
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.TemplateType;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.TemplateEditorController;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
@@ -235,7 +234,7 @@ public class CgenConfigController extends ChildController<CgenController> {
         if (!Util.isEmptyString(currentDir)) {
             chooser.setCurrentDirectory(new File(currentDir));
         } else {
-            FSPath lastDir = Application.getInstance().getFrameController().getLastDirectory();
+            FSPath lastDir = application.getFrameController().getLastDirectory();
             lastDir.updateChooser(chooser);
         }
 
