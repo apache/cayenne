@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.project.editor.datanode;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.toolkit.WidgetFactory;
+import org.apache.cayenne.modeler.toolkit.combobox.CayenneUndoableComboBox;
 import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 
@@ -49,11 +49,11 @@ public class DataNodeView extends JPanel {
         // create widgets
         this.dataNodeName = new CayenneUndoableTextField(undoManager);
 
-        this.factories = WidgetFactory.createUndoableComboBox(undoManager);
+        this.factories = new CayenneUndoableComboBox<>(undoManager);
 
-        this.localDataSources = WidgetFactory.createUndoableComboBox(undoManager);
+        this.localDataSources = new CayenneUndoableComboBox<>(undoManager);
 
-        this.schemaUpdateStrategy = WidgetFactory.createUndoableComboBox(undoManager);
+        this.schemaUpdateStrategy = new CayenneUndoableComboBox<>(undoManager);
         this.dataSourceDetailLayout = new CardLayout();
         this.dataSourceDetail = new JPanel(dataSourceDetailLayout);
 

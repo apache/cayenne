@@ -32,11 +32,13 @@ import org.apache.cayenne.modeler.event.model.ProcedureParameterEvent;
 import org.apache.cayenne.modeler.event.model.ProcedureParameterListener;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
-import org.apache.cayenne.modeler.toolkit.WidgetFactory;
-import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
+import org.apache.cayenne.modeler.toolkit.table.CayenneComboBoxCellEditor;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
-import org.apache.cayenne.modeler.toolkit.table.CayenneCellEditor;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
+import org.apache.cayenne.modeler.toolkit.table.CayenneTablePanel;
+import org.apache.cayenne.modeler.toolkit.table.CayenneTextFieldCellEditor;
 import org.apache.cayenne.modeler.toolkit.text.LimitedTextField;
 import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.CopyProcedureParameterAction;
@@ -59,6 +61,7 @@ import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 import java.util.EventObject;
 import java.util.List;
 
@@ -169,7 +172,7 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
 
         TablePopupHandler.install(table, popup);
 
-        add(WidgetFactory.createTablePanel(table, null), BorderLayout.CENTER);
+        add(new CayenneTablePanel(table), BorderLayout.CENTER);
 
         globalActions.setupCutCopyPaste(
                 table,
@@ -280,27 +283,27 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
 
         TableColumn typesColumn = table.getColumnModel()
                 .getColumn(ProcedureParameterTableModel.PARAMETER_TYPE);
-        JComboBox typesEditor = WidgetFactory
-                .createComboBox(TypesMapping.getDatabaseTypes(), true);
+        String[] dbTypes = TypesMapping.getDatabaseTypes();
+        Arrays.sort(dbTypes);
+        JComboBox typesEditor = new CayenneComboBox<>(dbTypes);
         AutoCompletion.enable(typesEditor);
-        typesColumn.setCellEditor(WidgetFactory
-                .createCellEditor(typesEditor));
+        typesColumn.setCellEditor(new CayenneComboBoxCellEditor(typesEditor));
 
         // direction column tweaking
         TableColumn directionColumn = table.getColumnModel()
                 .getColumn(ProcedureParameterTableModel.PARAMETER_DIRECTION);
-        JComboBox directionEditor = WidgetFactory
-                .createComboBox(ProcedureParameterTableModel.PARAMETER_DIRECTION_NAMES, false);
+        JComboBox directionEditor = new CayenneComboBox<>(
+                ProcedureParameterTableModel.PARAMETER_DIRECTION_NAMES);
         directionEditor.setEditable(false);
-        directionColumn.setCellEditor(new CayenneCellEditor(directionEditor));
+        directionColumn.setCellEditor(new CayenneComboBoxCellEditor(directionEditor));
 
         TableColumn precisionColumn = table.getColumnModel().getColumn(ProcedureParameterTableModel.PARAMETER_PRECISION);
         LimitedTextField limitedPrecisionField = new LimitedTextField(10);
-        precisionColumn.setCellEditor(WidgetFactory.createCellEditor(limitedPrecisionField));
+        precisionColumn.setCellEditor(new CayenneTextFieldCellEditor(limitedPrecisionField));
 
         TableColumn lengthColumn = table.getColumnModel().getColumn(ProcedureParameterTableModel.PARAMETER_LENGTH);
         LimitedTextField limitedLengthField = new LimitedTextField(10);
-        lengthColumn.setCellEditor(WidgetFactory.createCellEditor(limitedLengthField));
+        lengthColumn.setCellEditor(new CayenneTextFieldCellEditor(limitedLengthField));
 
         moveUp.setEnabled(false);
         moveDown.setEnabled(false);

@@ -16,36 +16,40 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.modeler.toolkit.table;
 
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import java.awt.BorderLayout;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.EventObject;
 
 /**
- * Overrides CellEditor to allow multiple selection in table without bothering the editor.
+ * A panel that hosts a table inside a scroll pane, configured with the modeler's
+ * common defaults: multi-interval selection, fixed column widths, and a click
+ * outside the table that ends any in-progress cell edit.
  */
-public class CayenneCellEditor extends DefaultCellEditor {
+public class CayenneTablePanel extends JPanel {
 
-    public CayenneCellEditor(final JTextField textField) {
-        super(textField);
-    }
+    public CayenneTablePanel(JTable table) {
+        setLayout(new BorderLayout(5, 5));
 
-    public CayenneCellEditor(final JComboBox comboBox) {
-        super(comboBox);
-    }
+        table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-    @Override
-    public boolean isCellEditable(EventObject e) {
-        if (e instanceof MouseEvent) {
-            //allow multiple selection without 
-
-            MouseEvent me = (MouseEvent) e;
-            if (me.isControlDown() || me.isShiftDown()) {
-                return false;
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (table.isEditing()) {
+                    table.getCellEditor().stopCellEditing();
+                }
             }
-        }
+        });
 
-        return super.isCellEditable(e);
+        add(scrollPane, BorderLayout.CENTER);
     }
 }

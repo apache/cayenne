@@ -40,7 +40,7 @@ import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.modeler.toolkit.checkbox.CayenneCheckBox;
-import org.apache.cayenne.modeler.toolkit.WidgetFactory;
+import org.apache.cayenne.modeler.toolkit.combobox.CayenneUndoableComboBox;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -82,7 +82,7 @@ public class DataMapMainView extends JPanel {
         name.addCommitListener(this::setDataMapName);
 
         location = new JLabel();
-        nodeSelector = WidgetFactory.createUndoableComboBox(controller.getApplication().getUndoManager());
+        nodeSelector = new CayenneUndoableComboBox<>(controller.getApplication().getUndoManager());
         nodeSelector.setRenderer(Renderers.listRendererWithIcons());
 
         JButton updateDefaultCatalog = new JButton("Update...");

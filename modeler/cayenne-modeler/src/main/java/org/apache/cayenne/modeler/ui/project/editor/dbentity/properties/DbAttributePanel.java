@@ -34,10 +34,13 @@ import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
-import org.apache.cayenne.modeler.toolkit.WidgetFactory;
 import org.apache.cayenne.modeler.toolkit.table.BoardTableCellRenderer;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
-import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.table.CayenneTablePanel;
+import org.apache.cayenne.modeler.toolkit.table.CayenneTextFieldCellEditor;
+import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
+import org.apache.cayenne.modeler.toolkit.table.CayenneComboBoxCellEditor;
 import org.apache.cayenne.modeler.toolkit.text.LimitedTextField;
 
 import javax.swing.*;
@@ -45,6 +48,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import java.awt.*;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -83,7 +87,7 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
         popup.add(globalActions.getAction(PasteAction.class).buildMenu());
 
         TablePopupHandler.install(table, popup);
-        add(WidgetFactory.createTablePanel(table, null), BorderLayout.CENTER);
+        add(new CayenneTablePanel(table), BorderLayout.CENTER);
 
         controller.addDbEntityDisplayListener(this);
         controller.addDbAttributeListener(this);
@@ -173,20 +177,21 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
         table.setRowMargin(3);
 
         String[] types = TypesMapping.getDatabaseTypes();
-        JComboBox comboBox = WidgetFactory.createComboBox(types, true);
+        Arrays.sort(types);
+        JComboBox comboBox = new CayenneComboBox<>(types);
 
         // Types.NULL makes no sense as a column type
         comboBox.removeItem("NULL");
         AutoCompletion.enable(comboBox);
 
         TableColumn typeColumn = table.getColumnModel().getColumn(DbAttributeTableModel.DB_ATTRIBUTE_TYPE);
-        typeColumn.setCellEditor(WidgetFactory.createCellEditor(comboBox));
+        typeColumn.setCellEditor(new CayenneComboBoxCellEditor(comboBox));
 
         TableColumn lengthColumn = table.getColumnModel().getColumn(DbAttributeTableModel.DB_ATTRIBUTE_MAX);
-        lengthColumn.setCellEditor(WidgetFactory.createCellEditor(new LimitedTextField(10)));
+        lengthColumn.setCellEditor(new CayenneTextFieldCellEditor(new LimitedTextField(10)));
 
         TableColumn scaleColumn = table.getColumnModel().getColumn(DbAttributeTableModel.DB_ATTRIBUTE_SCALE);
-        scaleColumn.setCellEditor(WidgetFactory.createCellEditor(new LimitedTextField(10)));
+        scaleColumn.setCellEditor(new CayenneTextFieldCellEditor(new LimitedTextField(10)));
 
         tablePreferences.bind(table, null, null, null, DbAttributeTableModel.DB_ATTRIBUTE_NAME, true);
     }

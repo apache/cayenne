@@ -24,7 +24,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
-import org.apache.cayenne.modeler.toolkit.WidgetFactory;
+import org.apache.cayenne.modeler.toolkit.buttons.CayenneButtonPanel;
 import org.apache.cayenne.modeler.toolkit.dialog.CayenneDialog;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
 
@@ -127,8 +127,7 @@ public class DbRelationshipDialogView extends CayenneDialog {
         builder.add(joinButtons, cc.xywh(5, 21, 1, 3));
 
         getContentPane().add(builder.getPanel(), BorderLayout.CENTER);
-        JButton[] buttons = {cancelButton, saveButton};
-        getContentPane().add(WidgetFactory.createButtonPanel(buttons), BorderLayout.SOUTH);
+        getContentPane().add(new CayenneButtonPanel(cancelButton, saveButton), BorderLayout.SOUTH);
     }
 
     public void enableOptions(boolean enable) {

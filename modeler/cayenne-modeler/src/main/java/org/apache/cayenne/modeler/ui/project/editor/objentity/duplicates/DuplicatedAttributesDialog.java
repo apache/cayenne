@@ -23,7 +23,8 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.toolkit.WidgetFactory;
+import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
+import org.apache.cayenne.modeler.toolkit.table.CayenneComboBoxCellEditor;
 import org.apache.cayenne.modeler.ui.ModelerFrame;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.toolkit.dialog.CayenneDialog;
@@ -142,9 +143,8 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
 
     private void updateTable() {
         TableColumn actionColumn = attributesTable.getColumnModel().getColumn(DuplicatedAttributeTableModel.ACTION);
-        JComboBox actionsCombo = WidgetFactory.createComboBox(
-                new String[] { DELETE_ACTION, RENAME_ACTION }, false);
-        actionColumn.setCellEditor(WidgetFactory.createCellEditor(actionsCombo));
+        JComboBox actionsCombo = new CayenneComboBox<>(DELETE_ACTION, RENAME_ACTION);
+        actionColumn.setCellEditor(new CayenneComboBoxCellEditor(actionsCombo));
     }
 
     private void applyChanges() {

@@ -38,11 +38,13 @@ import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
-import org.apache.cayenne.modeler.toolkit.WidgetFactory;
 import org.apache.cayenne.modeler.toolkit.table.BoardTableCellRenderer;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
+import org.apache.cayenne.modeler.toolkit.table.CayenneTablePanel;
 import org.apache.cayenne.modeler.toolkit.Renderers;
-import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
+import org.apache.cayenne.modeler.toolkit.table.CayenneComboBoxCellEditor;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -92,7 +94,7 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
         popup.add(globalActions.getAction(PasteAction.class).buildMenu());
 
         TablePopupHandler.install(table, popup);
-        add(WidgetFactory.createTablePanel(table, null), BorderLayout.CENTER);
+        add(new CayenneTablePanel(table), BorderLayout.CENTER);
 
         this.controller.addDbEntityDisplayListener(this);
         this.controller.addDbEntityListener(this);
@@ -175,14 +177,14 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
         table.setRowHeight(25);
         table.setRowMargin(3);
 
-        targetCombo = WidgetFactory.createComboBox();
+        targetCombo = new CayenneComboBox<>();
         AutoCompletion.enable(targetCombo);
 
         targetCombo.setRenderer(Renderers.entityListRendererWithIcons(entity.getDataMap()));
         targetCombo.setModel(createComboModel());
 
         TableColumn targetColumn = table.getColumnModel().getColumn(DbRelationshipTableModel.TARGET);
-        targetColumn.setCellEditor(WidgetFactory.createCellEditor(targetCombo));
+        targetColumn.setCellEditor(new CayenneComboBoxCellEditor(targetCombo));
 
         TableColumn toDepPkColumn = table.getColumnModel().getColumn(DbRelationshipTableModel.TO_DEPENDENT_KEY);
         toDepPkColumn.setCellRenderer(new CheckBoxCellRenderer());
@@ -210,7 +212,7 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
     public void dbRelationshipChanged(DbRelationshipEvent e) {
         if (e.getSource() != this) {
             if (!(table.getModel() instanceof DbRelationshipTableModel)) {
-                rebuildTable((DbEntity) e.getEntity());
+                rebuildTable(e.getEntity());
             }
 
             table.select(e.getRelationship());
@@ -220,13 +222,13 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
     }
 
     public void dbRelationshipAdded(DbRelationshipEvent e) {
-        rebuildTable((DbEntity) e.getEntity());
+        rebuildTable(e.getEntity());
         table.select(e.getRelationship());
     }
 
     public void dbRelationshipRemoved(DbRelationshipEvent e) {
         DbRelationshipTableModel model = (DbRelationshipTableModel) table.getModel();
-        DbRelationship relationship = (DbRelationship) e.getRelationship();
+        DbRelationship relationship = e.getRelationship();
         int ind = model.getObjectList().indexOf(relationship);
         model.removeRelationship(relationship);
         table.select(ind);

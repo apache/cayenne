@@ -26,8 +26,9 @@ import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
 import org.apache.cayenne.modeler.toolkit.ValueTypes;
 import org.apache.cayenne.modeler.toolkit.MultiColumnBrowser;
-import org.apache.cayenne.modeler.toolkit.WidgetFactory;
-import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.buttons.CayenneButtonPanel;
+import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -82,7 +83,7 @@ public class ObjAttributeInfoDialogView extends JDialog {
         this.currentPathLabel = new JLabel();
         this.sourceEntityLabel = new JLabel();
 
-        this.typeComboBox = WidgetFactory.createComboBox(ValueTypes.getTypes(), false);
+        this.typeComboBox = new CayenneComboBox<>(ValueTypes.getTypes());
         AutoCompletion.enable(typeComboBox, false, true);
         typeComboBox.getRenderer();
 
@@ -196,8 +197,7 @@ public class ObjAttributeInfoDialogView extends JDialog {
             }
         });
 
-        JButton[] buttons = {cancelButton, saveButton};
-        add(WidgetFactory.createButtonPanel(buttons), BorderLayout.SOUTH);
+        add(new CayenneButtonPanel(cancelButton, saveButton), BorderLayout.SOUTH);
     }
 
     public CayenneTable getOverrideAttributeTable() {

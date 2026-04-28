@@ -24,7 +24,8 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.MultiColumnBrowser;
-import org.apache.cayenne.modeler.toolkit.WidgetFactory;
+import org.apache.cayenne.modeler.toolkit.buttons.CayenneButtonPanel;
+import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
 
 import javax.swing.*;
 import java.awt.*;
@@ -74,12 +75,12 @@ public class ObjRelationshipInfoView extends JDialog{
         getRootPane().setDefaultButton(saveButton);
         saveButton.setEnabled(true);
         newRelButton.setEnabled(true);
-        collectionTypeCombo = WidgetFactory.createComboBox();
+        collectionTypeCombo = new CayenneComboBox<>();
         collectionTypeCombo.setVisible(true);
-        this.targetCombo = WidgetFactory.createComboBox();
+        this.targetCombo = new CayenneComboBox<>();
         targetCombo.setVisible(true);
 
-        this.mapKeysCombo = WidgetFactory.createComboBox();
+        this.mapKeysCombo = new CayenneComboBox<>();
         mapKeysCombo.setVisible(true);
       
         
@@ -87,7 +88,7 @@ public class ObjRelationshipInfoView extends JDialog{
         pathBrowser.setPreferredColumnSize(BROWSER_CELL_DIM);
         pathBrowser.setDefaultRenderer();
 
-        this.deleteRule = WidgetFactory.createComboBox(DELETE_RULES, false);
+        this.deleteRule = new CayenneComboBox<>(DELETE_RULES);
         this.usedForLocking = new JCheckBox();
         this.comment = new JTextField();
         
@@ -141,8 +142,7 @@ public class ObjRelationshipInfoView extends JDialog{
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), cc.xywh(1, 25, 5, 3));
 
         add(builder.getPanel(), BorderLayout.CENTER);
-        JButton[] buttons = {cancelButton, saveButton};
-        add(WidgetFactory.createButtonPanel(buttons), BorderLayout.SOUTH);
+        add(new CayenneButtonPanel(cancelButton, saveButton), BorderLayout.SOUTH);
     }
 
     public JButton getSaveButton()

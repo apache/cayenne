@@ -34,7 +34,7 @@ public class CayenneCheckBox extends JCheckBox {
         ActionListener undoListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                undoManager.addEdit(new CheckboxUndoableEdit((JCheckBox) e.getSource(), this));
+                undoManager.addEdit(new CayenneCheckBoxUndoableEdit((JCheckBox) e.getSource(), this));
             }
         };
         this.addActionListener(undoListener);

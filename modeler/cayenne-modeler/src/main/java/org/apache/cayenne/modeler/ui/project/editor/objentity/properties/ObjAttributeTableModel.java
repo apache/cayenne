@@ -35,7 +35,7 @@ import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.project.DbEntityOps;
-import org.apache.cayenne.modeler.toolkit.WidgetFactory;
+import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
 import org.apache.cayenne.modeler.toolkit.table.CellEditorForAttributeTable;
@@ -237,8 +237,8 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttribute> {
     public CellEditorForAttributeTable setCellEditor(
             Collection<String> nameAttr,
             CayenneTable table) {
-        this.cellEditor = new CellEditorForAttributeTable(table, WidgetFactory
-                .createComboBox(nameAttr, true));
+        this.cellEditor = new CellEditorForAttributeTable(table,
+                new CayenneComboBox<>(nameAttr.stream().sorted().toArray(String[]::new)));
         this.table = table;
         return cellEditor;
     }

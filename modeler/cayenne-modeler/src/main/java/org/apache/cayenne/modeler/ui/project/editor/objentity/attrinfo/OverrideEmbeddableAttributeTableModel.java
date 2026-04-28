@@ -27,7 +27,7 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
-import org.apache.cayenne.modeler.toolkit.WidgetFactory;
+import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
 import org.apache.cayenne.modeler.toolkit.table.CellEditorForAttributeTable;
 
 import javax.swing.*;
@@ -130,8 +130,8 @@ public class OverrideEmbeddableAttributeTableModel extends CayenneTableModel {
             Collection<String> nameAttr,
             CayenneTable table) {
         this.table = table;
-        this.cellEditor = new CellEditorForAttributeTable(table, WidgetFactory
-                .createComboBox(nameAttr, true));
+        this.cellEditor = new CellEditorForAttributeTable(table,
+                new CayenneComboBox<>(nameAttr.stream().sorted().toArray(String[]::new)));
         return cellEditor;
     }
 
@@ -215,9 +215,8 @@ public class OverrideEmbeddableAttributeTableModel extends CayenneTableModel {
                 Collection<String> attributeComboForRow = new ArrayList<String>();
                 attributeComboForRow.addAll(nameAttr);
                 attributeComboForRow.add(embAt.getDbAttributeName());
-                JComboBox comboBoxForRow = WidgetFactory.createComboBox(
-                        attributeComboForRow,
-                        true);
+                JComboBox comboBoxForRow = new CayenneComboBox<>(
+                        attributeComboForRow.stream().sorted().toArray(String[]::new));
 
                 cellEditor.setEditorAt(i, new DefaultCellEditor(comboBoxForRow));
                 BoxCellRenderer renderer = new BoxCellRenderer();

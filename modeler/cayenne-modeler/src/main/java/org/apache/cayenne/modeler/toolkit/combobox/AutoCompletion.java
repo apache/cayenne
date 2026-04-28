@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.toolkit.combo;
+package org.apache.cayenne.modeler.toolkit.combobox;
 
 import javax.swing.JComboBox;
 import javax.swing.JList;

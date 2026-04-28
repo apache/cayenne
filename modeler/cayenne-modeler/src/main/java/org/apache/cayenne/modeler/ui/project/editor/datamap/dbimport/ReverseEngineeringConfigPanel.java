@@ -23,8 +23,8 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.toolkit.WidgetFactory;
-import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
 import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
@@ -103,7 +103,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
     }
 
     private void initFormElements() {
-        strategyCombo = WidgetFactory.createComboBox();
+        strategyCombo = new CayenneComboBox<>();
         AutoCompletion.enable(strategyCombo, false, true);
         strategyCombo.setToolTipText("Naming strategy to use");
 

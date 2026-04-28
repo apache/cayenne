@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.errors;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.UrlOpener;
-import org.apache.cayenne.modeler.toolkit.WidgetFactory;
+import org.apache.cayenne.modeler.toolkit.buttons.CayenneButtonPanel;
 import org.apache.cayenne.modeler.toolkit.dialog.CayenneDialog;
 import org.apache.cayenne.util.LocalizedStringsHandler;
 import org.apache.cayenne.util.Util;
@@ -113,7 +113,7 @@ class ErrorDialog extends CayenneDialog implements ActionListener {
 
         JButton[] buttons = (showHide != null) ? new JButton[]{close, showHide}
                 : new JButton[]{close};
-        pane.add(WidgetFactory.createButtonPanel(buttons), BorderLayout.SOUTH);
+        pane.add(new CayenneButtonPanel(buttons), BorderLayout.SOUTH);
 
         // prepare to display
         this.pack();

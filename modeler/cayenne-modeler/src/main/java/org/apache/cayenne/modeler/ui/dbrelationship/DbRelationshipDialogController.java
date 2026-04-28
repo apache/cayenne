@@ -31,8 +31,9 @@ import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.project.DbRelationshipOps;
-import org.apache.cayenne.modeler.toolkit.WidgetFactory;
-import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
+import org.apache.cayenne.modeler.toolkit.table.CayenneComboBoxCellEditor;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.RelationshipUndoableEdit;
@@ -234,16 +235,18 @@ public class DbRelationshipDialogController extends ChildController<ProjectContr
         });
 
         TableColumn sourceColumn = view.getTable().getColumnModel().getColumn(DbJoinTableModel.SOURCE);
-        JComboBox comboBox = WidgetFactory.createComboBox(dbAttributeNames(relationship.getSourceEntity()), true);
+        JComboBox comboBox = new CayenneComboBox<>(
+                dbAttributeNames(relationship.getSourceEntity()).stream().sorted().toArray(String[]::new));
 
         AutoCompletion.enable(comboBox);
-        sourceColumn.setCellEditor(WidgetFactory.createCellEditor(comboBox));
+        sourceColumn.setCellEditor(new CayenneComboBoxCellEditor(comboBox));
 
         TableColumn targetColumn = view.getTable().getColumnModel().getColumn(DbJoinTableModel.TARGET);
-        comboBox = WidgetFactory.createComboBox(dbAttributeNames(relationship.getTargetEntity()), true);
+        comboBox = new CayenneComboBox<>(
+                dbAttributeNames(relationship.getTargetEntity()).stream().sorted().toArray(String[]::new));
         AutoCompletion.enable(comboBox);
 
-        targetColumn.setCellEditor(WidgetFactory.createCellEditor(comboBox));
+        targetColumn.setCellEditor(new CayenneComboBoxCellEditor(comboBox));
 
         view.getTablePreferences().bind(view.getTable(), null, null, null, DbJoinTableModel.SOURCE, true);
     }

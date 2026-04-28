@@ -24,7 +24,7 @@ import org.apache.cayenne.modeler.event.model.EmbeddableAttributeEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
-import org.apache.cayenne.modeler.toolkit.WidgetFactory;
+import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
 import org.apache.cayenne.modeler.toolkit.table.CellEditorForAttributeTable;
 import org.apache.cayenne.util.Util;
 
@@ -134,8 +134,8 @@ public class EmbeddableAttributeTableModel extends CayenneTableModel {
     public CellEditorForAttributeTable setCellEditor(
             Collection<String> nameAttr,
             CayenneTable table) {
-        this.cellEditor = new CellEditorForAttributeTable(table, WidgetFactory
-                .createComboBox(nameAttr, true));
+        this.cellEditor = new CellEditorForAttributeTable(table,
+                new CayenneComboBox<>(nameAttr.stream().sorted().toArray(String[]::new)));
         return cellEditor;
     }
 

@@ -25,7 +25,8 @@ import org.apache.cayenne.modeler.event.model.ObjRelationshipEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityListener;
 import org.apache.cayenne.modeler.event.model.ObjRelationshipListener;
-import org.apache.cayenne.modeler.toolkit.WidgetFactory;
+import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
+import org.apache.cayenne.modeler.toolkit.table.CayenneComboBoxCellEditor;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
@@ -41,6 +42,7 @@ import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
+import org.apache.cayenne.modeler.toolkit.table.CayenneTablePanel;
 import org.apache.cayenne.modeler.toolkit.Renderers;
 
 import javax.swing.*;
@@ -119,7 +121,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
         popup.add(globalActions.getAction(PasteAction.class).buildMenu());
 
         TablePopupHandler.install(table, popup);
-        add(WidgetFactory.createTablePanel(table, null), BorderLayout.CENTER);
+        add(new CayenneTablePanel(table), BorderLayout.CENTER);
 
         controller.addObjEntityDisplayListener(this);
         controller.addObjEntityListener(this);
@@ -266,16 +268,13 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
         });
 
         col = table.getColumnModel().getColumn(ObjRelationshipTableModel.REL_DELETE_RULE);
-        JComboBox deleteRulesCombo = WidgetFactory.createComboBox(
-                DELETE_RULES,
-                false);
+        JComboBox deleteRulesCombo = new CayenneComboBox<>(DELETE_RULES);
         deleteRulesCombo.setFocusable(false);
         deleteRulesCombo.setEditable(true);
         ((JComponent) deleteRulesCombo.getEditor().getEditorComponent()).setBorder(null);
         deleteRulesCombo.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
         deleteRulesCombo.setSelectedIndex(0); // Default to the first value
-        col.setCellEditor(WidgetFactory.createCellEditor(
-                deleteRulesCombo));
+        col.setCellEditor(new CayenneComboBoxCellEditor(deleteRulesCombo));
 
         tablePreferences.bind(
                 table,

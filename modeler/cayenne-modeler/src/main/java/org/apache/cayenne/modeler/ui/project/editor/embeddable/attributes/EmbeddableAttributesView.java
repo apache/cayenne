@@ -43,9 +43,11 @@ import org.apache.cayenne.modeler.event.display.EmbeddableDisplayListener;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
+import org.apache.cayenne.modeler.toolkit.table.CayenneTablePanel;
 import org.apache.cayenne.modeler.toolkit.ValueTypes;
-import org.apache.cayenne.modeler.toolkit.WidgetFactory;
-import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
+import org.apache.cayenne.modeler.toolkit.table.CayenneComboBoxCellEditor;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -104,7 +106,7 @@ public class EmbeddableAttributesView extends JPanel implements
         popup.add(globalActions.getAction(PasteAction.class).buildMenu());
 
         TablePopupHandler.install(table, popup);
-        add(WidgetFactory.createTablePanel(table, null), BorderLayout.CENTER);
+        add(new CayenneTablePanel(table), BorderLayout.CENTER);
     }
 
     private void initController() {
@@ -167,10 +169,9 @@ public class EmbeddableAttributesView extends JPanel implements
     private void setUpTableStructure() {
 
         TableColumn typeColumn = table.getColumnModel().getColumn(EmbeddableAttributeTableModel.OBJ_ATTRIBUTE_TYPE);
-        JComboBox javaTypesCombo = WidgetFactory.createComboBox(ValueTypes.getTypes(), false);
+        JComboBox javaTypesCombo = new CayenneComboBox<>(ValueTypes.getTypes());
         AutoCompletion.enable(javaTypesCombo, false, true);
-        typeColumn.setCellEditor(WidgetFactory.createCellEditor(
-                javaTypesCombo));
+        typeColumn.setCellEditor(new CayenneComboBoxCellEditor(javaTypesCombo));
 
         tablePreferences.bind(
                 table,

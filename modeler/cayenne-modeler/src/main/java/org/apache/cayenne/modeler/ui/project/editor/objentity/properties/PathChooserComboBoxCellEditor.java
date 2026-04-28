@@ -21,8 +21,8 @@ package org.apache.cayenne.modeler.ui.project.editor.objentity.properties;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.modeler.toolkit.Renderers;
-import org.apache.cayenne.modeler.toolkit.WidgetFactory;
-import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
@@ -66,9 +66,7 @@ abstract class PathChooserComboBoxCellEditor<T extends CayenneTableModel<?>> ext
         String dbAttributePath = getPathToInitializeCombo(model, row);
         List<String> nodeChildren = getChildren(currentNode, dbAttributePath);
         this.table = table;
-        comboBoxPathChooser = WidgetFactory.createComboBox(
-                nodeChildren,
-                false);
+        comboBoxPathChooser = new CayenneComboBox<>(nodeChildren);
         comboBoxPathChooser.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent event) {

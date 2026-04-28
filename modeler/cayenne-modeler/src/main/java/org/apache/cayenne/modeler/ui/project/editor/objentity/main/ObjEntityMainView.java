@@ -37,8 +37,8 @@ import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.toolkit.checkbox.CayenneCheckBox;
-import org.apache.cayenne.modeler.toolkit.WidgetFactory;
-import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
 import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.ExpressionConvertor;
@@ -108,8 +108,8 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
         qualifier = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
         qualifier.addCommitListener(this::setQualifier);
 
-        dbEntityCombo = WidgetFactory.createComboBox();
-        superEntityCombo = WidgetFactory.createComboBox();
+        dbEntityCombo = new CayenneComboBox<>();
+        superEntityCombo = new CayenneComboBox<>();
 
         AutoCompletion.enable(dbEntityCombo);
         AutoCompletion.enable(superEntityCombo);

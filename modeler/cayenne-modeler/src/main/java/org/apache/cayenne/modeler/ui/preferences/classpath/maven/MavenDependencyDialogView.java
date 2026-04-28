@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.preferences.classpath.maven;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.toolkit.WidgetFactory;
+import org.apache.cayenne.modeler.toolkit.buttons.CayenneButtonPanel;
 import org.apache.cayenne.modeler.toolkit.dialog.CayenneDialog;
 
 import javax.swing.*;
@@ -83,8 +83,7 @@ public class MavenDependencyDialogView extends CayenneDialog {
             cancelButton = new JButton("Cancel");
             getRootPane().setDefaultButton(downloadButton);
 
-            JButton[] buttons = {cancelButton, downloadButton};
-            getContentPane().add(WidgetFactory.createButtonPanel(buttons), BorderLayout.SOUTH);
+            getContentPane().add(new CayenneButtonPanel(cancelButton, downloadButton), BorderLayout.SOUTH);
         }
     }
 

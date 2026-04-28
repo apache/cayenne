@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.toolkit.combo;
+package org.apache.cayenne.modeler.toolkit.combobox;
 
 import java.awt.Color;
 import java.awt.Component;

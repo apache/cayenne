@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.toolkit.combo;
+package org.apache.cayenne.modeler.toolkit.combobox;
 
 import javax.swing.*;
 import javax.swing.undo.AbstractUndoableEdit;
@@ -24,20 +24,19 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import java.awt.event.ItemListener;
 
-public class ComboBoxUndoableEdit extends AbstractUndoableEdit {
+class CayenneComboBoxUndoableEdit extends AbstractUndoableEdit {
 
     private final JComboBox<?> comboBox;
     private final Object deselectedItem;
     private final Object selectedItem;
     private final ItemListener undoItemListener;
 
-    public ComboBoxUndoableEdit(
+    public CayenneComboBoxUndoableEdit(
             JComboBox<?> comboBox,
             Object deselectedItem,
             Object selectedItem,
             ItemListener undoItemListener) {
 
-        super();
         this.comboBox = comboBox;
         this.deselectedItem = deselectedItem;
         this.selectedItem = selectedItem;

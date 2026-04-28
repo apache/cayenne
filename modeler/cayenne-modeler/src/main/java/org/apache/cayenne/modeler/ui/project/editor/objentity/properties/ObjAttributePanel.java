@@ -36,11 +36,13 @@ import org.apache.cayenne.modeler.event.model.ProjectBeforeSaveListener;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.project.ObjEntityOps;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
-import org.apache.cayenne.modeler.toolkit.WidgetFactory;
-import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
+import org.apache.cayenne.modeler.toolkit.table.CayenneComboBoxCellEditor;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
 import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
+import org.apache.cayenne.modeler.toolkit.table.CayenneTablePanel;
 import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.CutAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.ObjEntityToSuperEntityAction;
@@ -127,7 +129,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
         popup.add(globalActions.getAction(PasteAction.class).buildMenu());
 
         TablePopupHandler.install(table, popup);
-        add(WidgetFactory.createTablePanel(table, null), BorderLayout.CENTER);
+        add(new CayenneTablePanel(table), BorderLayout.CENTER);
 
         controller.addObjEntityDisplayListener(this);
         controller.addObjEntityListener(this);
@@ -162,9 +164,9 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
 
         TableColumn typeColumn = table.getColumnModel().getColumn(ObjAttributeTableModel.OBJ_ATTRIBUTE_TYPE);
 
-        JComboBox<String> javaTypesCombo = WidgetFactory.createComboBox(typeNames.toArray(new String[0]), false);
+        JComboBox<String> javaTypesCombo = new CayenneComboBox<>(typeNames);
         AutoCompletion.enable(javaTypesCombo, false, true);
-        typeColumn.setCellEditor(WidgetFactory.createCellEditor(javaTypesCombo));
+        typeColumn.setCellEditor(new CayenneComboBoxCellEditor(javaTypesCombo));
     }
 
     /**

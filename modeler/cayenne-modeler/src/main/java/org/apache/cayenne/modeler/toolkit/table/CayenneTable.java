@@ -20,7 +20,6 @@
 package org.apache.cayenne.modeler.toolkit.table;
 
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
-import org.apache.cayenne.modeler.toolkit.WidgetFactory;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -78,7 +77,7 @@ public class CayenneTable extends JTable {
         super.createDefaultEditors();
 
         JTextField textField = new JTextField(20);
-        DefaultCellEditor textEditor = WidgetFactory.createCellEditor(textField);
+        CayenneTextFieldCellEditor textEditor = new CayenneTextFieldCellEditor(textField);
         textEditor.setClickCountToStart(1);
 
         setDefaultEditor(Object.class, textEditor);

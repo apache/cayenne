@@ -32,7 +32,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 
 import org.apache.cayenne.modeler.event.model.QueryEvent;
-import org.apache.cayenne.modeler.toolkit.WidgetFactory;
+import org.apache.cayenne.modeler.toolkit.combobox.CayenneUndoableComboBox;
 import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.query.QueryCacheStrategy;
@@ -99,7 +99,7 @@ public abstract class SelectPropertiesPanel extends JPanel {
         pageSize = new CayenneUndoableTextField(mediator.getApplication().getUndoManager(), 7);
         pageSize.addCommitListener(this::setPageSize);
 
-        cacheStrategy = WidgetFactory.createUndoableComboBox(mediator.getApplication().getUndoManager());
+        cacheStrategy = new CayenneUndoableComboBox<>(mediator.getApplication().getUndoManager());
         cacheStrategy.setRenderer(new CacheStrategyRenderer());
         cacheGroups = new CayenneUndoableTextField(mediator.getApplication().getUndoManager());
         cacheGroups.addCommitListener(this::setCacheGroups);

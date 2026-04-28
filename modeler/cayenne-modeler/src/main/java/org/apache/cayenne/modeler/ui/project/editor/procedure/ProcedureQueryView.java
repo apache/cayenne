@@ -33,7 +33,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureQueryDescriptor;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.modeler.toolkit.WidgetFactory;
+import org.apache.cayenne.modeler.toolkit.combobox.CayenneUndoableComboBox;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
@@ -92,7 +92,7 @@ public class ProcedureQueryView extends JPanel {
         comment = new CayenneUndoableTextField(mediator.getApplication().getUndoManager());
         comment.addCommitListener(this::setQueryComment);
 
-        queryRoot = WidgetFactory.createUndoableComboBox(mediator.getApplication().getUndoManager());
+        queryRoot = new CayenneUndoableComboBox<>(mediator.getApplication().getUndoManager());
         queryRoot.setRenderer(Renderers.listRendererWithIcons());
         properties = new ProcedureQueryPropertiesPanel(mediator);
 
@@ -274,7 +274,7 @@ public class ProcedureQueryView extends JPanel {
         }
 
         protected PanelBuilder createPanelBuilder() {
-            labelCase = WidgetFactory.createUndoableComboBox(mediator.getApplication().getUndoManager());
+            labelCase = new CayenneUndoableComboBox<>(mediator.getApplication().getUndoManager());
             labelCase.setRenderer(new LabelCapsRenderer());
             labelCase.addActionListener(event -> {
                 String value = labelCase.getModel().getSelectedItem().toString();
