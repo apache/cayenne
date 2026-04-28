@@ -653,7 +653,7 @@ public class ObjAttributeInfoDialogController extends ChildController<ProjectCon
             } else {
                 attrOverrides = new HashMap<>();
             }
-            if (attrOverrides.size() > 0) {
+            if (!attrOverrides.isEmpty()) {
                 for (Map.Entry<String, String> attrOv : attrOverrides.entrySet()) {
                     ((EmbeddedAttribute) attributeSaved).addAttributeOverride(attrOv.getKey(), attrOv.getValue());
                 }

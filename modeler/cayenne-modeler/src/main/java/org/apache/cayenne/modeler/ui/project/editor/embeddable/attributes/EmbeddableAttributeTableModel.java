@@ -21,36 +21,25 @@ package org.apache.cayenne.modeler.ui.project.editor.embeddable.attributes;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.modeler.event.model.EmbeddableAttributeEvent;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
-import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
-import org.apache.cayenne.modeler.toolkit.table.CellEditorForAttributeTable;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.util.Util;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 
 public class EmbeddableAttributeTableModel extends CMTableModel {
 
-    private Embeddable embeddable;
+    private final Embeddable embeddable;
 
     // Columns
     static final int OBJ_ATTRIBUTE = 0;
     static final int OBJ_ATTRIBUTE_TYPE = 1;
     static final int DB_ATTRIBUTE = 2;
 
-    private CellEditorForAttributeTable cellEditor;
-
-    public EmbeddableAttributeTableModel(Embeddable embeddable,
-            ProjectController mediator, Object eventSource) {
-        super(mediator, eventSource, new ArrayList<EmbeddableAttribute>(embeddable
-                .getAttributes()));
+    public EmbeddableAttributeTableModel(Embeddable embeddable, ProjectController mediator, Object eventSource) {
+        super(mediator, eventSource, new ArrayList<>(embeddable.getAttributes()));
         this.embeddable = embeddable;
-
-        // order using local comparator
-        // Collections.sort(objectList, new EmbeddableAttributeComparator());
     }
 
     public EmbeddableAttribute getEmbeddableAttribute(int row) {
@@ -131,37 +120,9 @@ public class EmbeddableAttributeTableModel extends CMTableModel {
         }
     }
 
-    public CellEditorForAttributeTable setCellEditor(
-            Collection<String> nameAttr,
-            CMTable table) {
-        this.cellEditor = new CellEditorForAttributeTable(table,
-                new CMComboBox<>(nameAttr.stream().sorted().toArray(String[]::new)));
-        return cellEditor;
-    }
-
-    public CellEditorForAttributeTable getCellEditor() {
-        return cellEditor;
-    }
-
+    @Override
     public boolean isCellEditable(int row, int col) {
         return true;
-    }
-
-    final class EmbeddableAttributeComparator implements Comparator {
-
-        public int compare(Object o1, Object o2) {
-            EmbeddableAttribute a1 = (EmbeddableAttribute) o1;
-            EmbeddableAttribute a2 = (EmbeddableAttribute) o2;
-
-            int delta = getWeight(a1) - getWeight(a2);
-
-            return (delta != 0) ? delta : Util.nullSafeCompare(true, a1.getName(), a2
-                    .getName());
-        }
-
-        private int getWeight(EmbeddableAttribute a) {
-            return a.getEmbeddable() == embeddable ? 1 : -1;
-        }
     }
 
     @Override

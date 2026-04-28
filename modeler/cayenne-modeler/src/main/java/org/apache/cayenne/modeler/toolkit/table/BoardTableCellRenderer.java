@@ -25,8 +25,10 @@ import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.Component;
 
+// TODO: suspect. Only used in DbEntity views
 public class BoardTableCellRenderer extends DefaultTableCellRenderer {
 
+    @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
         super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
         setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));

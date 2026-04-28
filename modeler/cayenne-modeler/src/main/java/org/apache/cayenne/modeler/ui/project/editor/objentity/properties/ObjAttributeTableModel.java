@@ -35,25 +35,20 @@ import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.project.DbEntityOps;
-import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
-import org.apache.cayenne.modeler.toolkit.table.CMTable;
-import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
-import org.apache.cayenne.modeler.toolkit.table.CellEditorForAttributeTable;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.toolkit.ValueTypes;
+import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 
 /**
  * Model for the Object Entity attributes and for Obj to DB Attribute Mapping tables.
  * Allows adding/removing attributes, modifying the types and the names.
- * 
  */
 public class ObjAttributeTableModel extends CMTableModel<ObjAttribute> {
 
@@ -69,8 +64,6 @@ public class ObjAttributeTableModel extends CMTableModel<ObjAttribute> {
 
     private final ObjEntity entity;
     private DbEntity dbEntity;
-    private CellEditorForAttributeTable cellEditor;
-    private CMTable table;
 
     public ObjAttributeTableModel(ObjEntity entity, ProjectController mediator, Object eventSource) {
         super(mediator, eventSource, new ArrayList<>(entity.getAttributes()));
@@ -79,10 +72,6 @@ public class ObjAttributeTableModel extends CMTableModel<ObjAttribute> {
 
         // order using local comparator
         objectList.sort(new AttributeComparator());
-    }
-
-    public CMTable getTable() {
-        return table;
     }
 
     public Class<?> getColumnClass(int col) {
@@ -234,19 +223,6 @@ public class ObjAttributeTableModel extends CMTableModel<ObjAttribute> {
         return TypesMapping.getSqlNameByType(type);
     }
 
-    public CellEditorForAttributeTable setCellEditor(
-            Collection<String> nameAttr,
-            CMTable table) {
-        this.cellEditor = new CellEditorForAttributeTable(table,
-                new CMComboBox<>(nameAttr.stream().sorted().toArray(String[]::new)));
-        this.table = table;
-        return cellEditor;
-    }
-
-    public CellEditorForAttributeTable getCellEditor() {
-        return cellEditor;
-    }
-    
     private void setObjAttribute(ObjAttribute attribute, Object value) {
         String newName = value != null ? value.toString().trim() : null;
         String oldName = attribute.getName();

@@ -24,18 +24,16 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
-import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
-import org.apache.cayenne.modeler.toolkit.table.CellEditorForAttributeTable;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -51,7 +49,7 @@ public class OverrideEmbeddableAttributeTableModel extends CMTableModel {
     private final ObjAttribute attr;
     private boolean isAttributeOverrideChange;
 
-    private CellEditorForAttributeTable cellEditor;
+    private ObjAttributeTableCellEditor cellEditor;
     private CMTable table;
 
     protected List<EmbeddableAttribute> embeddableList;
@@ -74,8 +72,7 @@ public class OverrideEmbeddableAttributeTableModel extends CMTableModel {
         if (attr instanceof EmbeddedAttribute) {
             EmbeddedAttribute embeddedAttribute = (EmbeddedAttribute) attr;
             overrideAttr = new TreeMap<>(embeddedAttribute.getAttributeOverrides());
-        }
-        else {
+        } else {
             overrideAttr = null;
         }
 
@@ -126,26 +123,19 @@ public class OverrideEmbeddableAttributeTableModel extends CMTableModel {
         return isAttributeOverrideChange;
     }
 
-    public CellEditorForAttributeTable setCellEditor(
-            Collection<String> nameAttr,
-            CMTable table) {
+    public void setCellEditor(Collection<String> nameAttr, CMTable table) {
         this.table = table;
-        this.cellEditor = new CellEditorForAttributeTable(table,
-                new CMComboBox<>(nameAttr.stream().sorted().toArray(String[]::new)));
-        return cellEditor;
+        this.cellEditor = new ObjAttributeTableCellEditor(table, new CMComboBox<>(nameAttr.stream().sorted().toArray(String[]::new)));
     }
 
-    public CellEditorForAttributeTable getCellEditor() {
-        return cellEditor;
-    }
-
+    @Override
     public boolean isCellEditable(int row, int col) {
         return col == DB_ATTRIBUTE;
     }
 
     public EmbeddableAttribute getEmbeddableAttribute(int row) {
         return (row >= 0 && row < embeddableList.size())
-                ? (EmbeddableAttribute) embeddableList.get(row)
+                ? embeddableList.get(row)
                 : null;
     }
 
@@ -158,20 +148,16 @@ public class OverrideEmbeddableAttributeTableModel extends CMTableModel {
 
         if (column == OBJ_ATTRIBUTE) {
             return attribute.getName();
-        }
-        else if (column == OBJ_ATTRIBUTE_TYPE) {
+        } else if (column == OBJ_ATTRIBUTE_TYPE) {
             return attribute.getType();
-        }
-        else {
+        } else {
             String dbAttributeName = attribute.getDbAttributeName();
             if (column == DB_ATTRIBUTE) {
                 return dbAttributeName;
-            }
-            else if (column == DB_ATTRIBUTE_TYPE) {
+            } else if (column == DB_ATTRIBUTE_TYPE) {
 
                 return getDBAttrType(dbAttributeName);
-            }
-            else {
+            } else {
                 return null;
             }
         }
@@ -212,8 +198,7 @@ public class OverrideEmbeddableAttributeTableModel extends CMTableModel {
             EmbeddableAttribute embAt = getEmbeddableAttribute(i);
             if (!nameAttr.contains(embAt.getDbAttributeName())
                     && embAt.getDbAttributeName() != null) {
-                Collection<String> attributeComboForRow = new ArrayList<String>();
-                attributeComboForRow.addAll(nameAttr);
+                Collection<String> attributeComboForRow = new ArrayList<>(nameAttr);
                 attributeComboForRow.add(embAt.getDbAttributeName());
                 JComboBox comboBoxForRow = new CMComboBox<>(
                         attributeComboForRow.stream().sorted().toArray(String[]::new));
@@ -240,39 +225,35 @@ public class OverrideEmbeddableAttributeTableModel extends CMTableModel {
 
     @Override
     public void sortByColumn(final int sortCol, boolean isAscent) {
-        Collections.sort(embeddableList, new Comparator<EmbeddableAttribute>() {
-
-            public int compare(EmbeddableAttribute o1, EmbeddableAttribute o2) {
-                Integer compareObjAttributesVal = compareObjAttributes(o1, o2);
-                if (compareObjAttributesVal != null) {
-                    return compareObjAttributesVal;
-                }
-                String valueToCompare1 = "";
-                String valueToCompare2 = "";
-                switch (sortCol) {
-                    case OBJ_ATTRIBUTE:
-                        valueToCompare1 = o1.getName();
-                        valueToCompare2 = o2.getName();
-                        break;
-                    case OBJ_ATTRIBUTE_TYPE:
-                        valueToCompare1 = o1.getType();
-                        valueToCompare2 = o2.getType();
-                        break;
-                    case DB_ATTRIBUTE:
-                        valueToCompare1 = o1.getDbAttributeName();
-                        valueToCompare2 = o2.getDbAttributeName();
-                        break;
-                    case DB_ATTRIBUTE_TYPE:
-                        valueToCompare1 = getDBAttrType(o1.getDbAttributeName());
-                        valueToCompare2 = getDBAttrType(o2.getDbAttributeName());
-                        break;
-                }
-
-                return (valueToCompare1 == null) ? -1 : (valueToCompare2 == null)
-                        ? 1
-                        : valueToCompare1.compareTo(valueToCompare2);
+        embeddableList.sort((o1, o2) -> {
+            Integer compareObjAttributesVal = compareObjAttributes(o1, o2);
+            if (compareObjAttributesVal != null) {
+                return compareObjAttributesVal;
+            }
+            String valueToCompare1 = "";
+            String valueToCompare2 = "";
+            switch (sortCol) {
+                case OBJ_ATTRIBUTE:
+                    valueToCompare1 = o1.getName();
+                    valueToCompare2 = o2.getName();
+                    break;
+                case OBJ_ATTRIBUTE_TYPE:
+                    valueToCompare1 = o1.getType();
+                    valueToCompare2 = o2.getType();
+                    break;
+                case DB_ATTRIBUTE:
+                    valueToCompare1 = o1.getDbAttributeName();
+                    valueToCompare2 = o2.getDbAttributeName();
+                    break;
+                case DB_ATTRIBUTE_TYPE:
+                    valueToCompare1 = getDBAttrType(o1.getDbAttributeName());
+                    valueToCompare2 = getDBAttrType(o2.getDbAttributeName());
+                    break;
             }
 
+            return (valueToCompare1 == null) ? -1 : (valueToCompare2 == null)
+                    ? 1
+                    : valueToCompare1.compareTo(valueToCompare2);
         });
 
         if (!isAscent) {
@@ -282,13 +263,11 @@ public class OverrideEmbeddableAttributeTableModel extends CMTableModel {
     }
 
     private Integer compareObjAttributes(EmbeddableAttribute o1, EmbeddableAttribute o2) {
-        if ((o1 == null && o2 == null) || o1 == o2) {
+        if (o1 == o2) {
             return 0;
-        }
-        else if (o1 == null && o2 != null) {
+        } else if (o1 == null) {
             return -1;
-        }
-        else if (o1 != null && o2 == null) {
+        } else if (o2 == null) {
             return 1;
         }
         return null;
