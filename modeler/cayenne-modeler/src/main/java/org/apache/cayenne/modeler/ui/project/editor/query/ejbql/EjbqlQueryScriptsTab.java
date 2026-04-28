@@ -64,7 +64,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
 
     private void initView() {
 
-        scriptArea = new CayenneUndoableTextPane(new EjbqlSyntax());
+        scriptArea = new CayenneUndoableTextPane(mediator.getApplication().getUndoManager(), new EjbqlSyntax());
         scriptArea.getDocument().addDocumentListener(this);
         scriptArea.getDocument().addDocumentListener(new DocumentListener() {
 

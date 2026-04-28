@@ -25,7 +25,6 @@ import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.undo.AddPrefetchUndoableEdit;
 import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.util.EntityTreeFilter;
 import org.apache.cayenne.modeler.util.EntityTreeModel;

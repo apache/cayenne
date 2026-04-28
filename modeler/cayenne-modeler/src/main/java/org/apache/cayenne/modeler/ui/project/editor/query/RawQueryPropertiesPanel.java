@@ -96,9 +96,9 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
 
         // create widgets
 
-        persistentObjects = new CayenneCheckBox();
+        persistentObjects = new CayenneCheckBox(mediator.getApplication().getUndoManager());
 
-        entities = WidgetFactory.createUndoableComboBox();
+        entities = WidgetFactory.createUndoableComboBox(mediator.getApplication().getUndoManager());
         entities.setRenderer(Renderers.listRendererWithIcons());
 
         this.setLayout(new BorderLayout());

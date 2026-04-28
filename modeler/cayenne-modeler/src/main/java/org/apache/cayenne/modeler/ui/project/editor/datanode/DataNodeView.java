@@ -23,6 +23,7 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.toolkit.WidgetFactory;
 import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -43,20 +44,20 @@ public class DataNodeView extends JPanel {
     protected JButton configLocalDataSources;
     protected JComboBox<String> schemaUpdateStrategy;
 
-    public DataNodeView() {
+    public DataNodeView(CayenneUndoManager undoManager) {
 
         // create widgets
-        this.dataNodeName = new CayenneUndoableTextField();
+        this.dataNodeName = new CayenneUndoableTextField(undoManager);
 
-        this.factories = WidgetFactory.createUndoableComboBox();
+        this.factories = WidgetFactory.createUndoableComboBox(undoManager);
 
-        this.localDataSources = WidgetFactory.createUndoableComboBox();
+        this.localDataSources = WidgetFactory.createUndoableComboBox(undoManager);
 
-        this.schemaUpdateStrategy = WidgetFactory.createUndoableComboBox();
+        this.schemaUpdateStrategy = WidgetFactory.createUndoableComboBox(undoManager);
         this.dataSourceDetailLayout = new CardLayout();
         this.dataSourceDetail = new JPanel(dataSourceDetailLayout);
 
-        this.customAdapter = new CayenneUndoableTextField();
+        this.customAdapter = new CayenneUndoableTextField(undoManager);
 
         this.configLocalDataSources = new JButton("...");
         this.configLocalDataSources.setToolTipText("configure local DataSource");

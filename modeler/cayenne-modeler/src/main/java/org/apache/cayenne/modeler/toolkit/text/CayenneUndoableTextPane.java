@@ -19,7 +19,7 @@
 package org.apache.cayenne.modeler.toolkit.text;
 
 import org.apache.cayenne.modeler.toolkit.text.style.TextSyntax;
-import org.apache.cayenne.modeler.undo.JTextFieldUndoListener;
+import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 
 import javax.swing.event.UndoableEditListener;
 
@@ -27,10 +27,10 @@ public class CayenneUndoableTextPane extends CayenneTextPane {
 
     private UndoableEditListener undoListener;
 
-    public CayenneUndoableTextPane(TextSyntax syntax) {
+    public CayenneUndoableTextPane(CayenneUndoManager undoManager, TextSyntax syntax) {
         super(syntax);
 
-        this.undoListener = new JTextFieldUndoListener(this.getPane());
+        this.undoListener = new TextComponentUndoListener(this.getPane(), undoManager);
         getDocument().addUndoableEditListener(this.undoListener);
     }
 

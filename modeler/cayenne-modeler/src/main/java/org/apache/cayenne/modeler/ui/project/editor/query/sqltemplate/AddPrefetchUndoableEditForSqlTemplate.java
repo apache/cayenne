@@ -17,20 +17,34 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.undo;
+package org.apache.cayenne.modeler.ui.project.editor.query.sqltemplate;
 
-import org.apache.cayenne.modeler.Application;
+import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
 
-import javax.swing.*;
-import javax.swing.undo.UndoableEdit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+class AddPrefetchUndoableEditForSqlTemplate extends AbstractUndoableEdit {
 
-public class JCheckBoxUndoListener implements ActionListener{
+    private final String prefetch;
+    private final SQLTemplatePrefetchTab tab;
+
+    public AddPrefetchUndoableEditForSqlTemplate(String prefetch, SQLTemplatePrefetchTab tab) {
+        this.prefetch = prefetch;
+        this.tab = tab;
+    }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        UndoableEdit edit = new JUndoableCheckBoxEdit(Application.getInstance(), (JCheckBox) e.getSource(), this);
-        Application.getInstance().getUndoManager().addEdit(edit);
+    public String getPresentationName() {
+        return "Add Prefetch";
+    }
+
+    @Override
+    public void redo() throws CannotRedoException {
+        tab.addPrefetch(prefetch);
+    }
+
+    @Override
+    public void undo() throws CannotUndoException {
+        tab.removePrefetch(prefetch);
     }
 }

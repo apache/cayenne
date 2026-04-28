@@ -41,7 +41,7 @@ public class CustomDataSourceEditorController extends DataSourceEditorController
 
     @Override
     protected void initFieldListeners() {
-        this.view = new CustomDataSourceView();
+        this.view = new CustomDataSourceView(application.getUndoManager());
 
         view.getFactoryName().addCommitListener(v -> {
             setFactoryName(v);

@@ -83,10 +83,10 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
 
     private void initView() {
         // create widgets
-        name = new CayenneUndoableTextField();
+        name = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
         name.addCommitListener(this::setQueryName);
 
-        comment = new CayenneUndoableTextField();
+        comment = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
         comment.addCommitListener(this::setQueryComment);
 
         properties = new SQLTemplateQueryPropertiesPanel(controller);
@@ -203,7 +203,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
 
         @Override
         protected PanelBuilder createPanelBuilder() {
-            labelCase = WidgetFactory.createUndoableComboBox();
+            labelCase = WidgetFactory.createUndoableComboBox(controller.getApplication().getUndoManager());
             labelCase.setRenderer(new LabelCapsRenderer());
 
             labelCase.addActionListener(event -> {

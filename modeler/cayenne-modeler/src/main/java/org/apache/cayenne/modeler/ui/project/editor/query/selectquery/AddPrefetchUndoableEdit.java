@@ -16,22 +16,18 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
-package org.apache.cayenne.modeler.undo;
-
-import org.apache.cayenne.modeler.ui.project.editor.query.sqltemplate.SQLTemplatePrefetchTab;
-import org.apache.cayenne.modeler.ui.project.editor.query.selectquery.SelectQueryPrefetchTab;
+package org.apache.cayenne.modeler.ui.project.editor.query.selectquery;
 
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
-public class AddPrefetchUndoableEditForSqlTemplate extends AbstractUndoableEdit {
+class AddPrefetchUndoableEdit extends AbstractUndoableEdit {
 
-    private String prefetch;
-    private SQLTemplatePrefetchTab tab;
+    private final String prefetch;
+    private final SelectQueryPrefetchTab tab;
 
-    public AddPrefetchUndoableEditForSqlTemplate(String prefetch, SQLTemplatePrefetchTab tab) {
+    public AddPrefetchUndoableEdit(String prefetch, SelectQueryPrefetchTab tab) {
         super();
         this.prefetch = prefetch;
         this.tab = tab;

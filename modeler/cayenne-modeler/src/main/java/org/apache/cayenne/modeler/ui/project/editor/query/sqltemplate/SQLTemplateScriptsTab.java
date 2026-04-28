@@ -81,7 +81,7 @@ public class SQLTemplateScriptsTab extends JPanel {
 
     private void prepareScriptAreas() {
         for(String key : DbAdapterInfo.getStandardAdapters()) {
-            CayenneTextPane currPane = new CayenneUndoableTextPane(new SQLSyntax());
+            CayenneTextPane currPane = new CayenneUndoableTextPane(mediator.getApplication().getUndoManager(), new SQLSyntax());
             currPane.setName(key);
             currPane.getDocument().addDocumentListener(new CustomListener(currPane.getName()));
             builder.add(currPane.getScrollPane(), cc.xy(3, 2));
@@ -114,7 +114,7 @@ public class SQLTemplateScriptsTab extends JPanel {
         // assemble
         cc = new CellConstraints();
 
-        textPane = new CayenneUndoableTextPane(new SQLSyntax());
+        textPane = new CayenneUndoableTextPane(mediator.getApplication().getUndoManager(), new SQLSyntax());
         textPane.setName(DEFAULT_LABEL);
         textPane.getDocument().addDocumentListener(new CustomListener(textPane.getName()));
 

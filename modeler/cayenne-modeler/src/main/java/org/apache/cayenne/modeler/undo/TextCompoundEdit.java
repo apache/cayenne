@@ -23,8 +23,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.ModelerFrame;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
 import org.apache.cayenne.modeler.ui.project.editor.EditorPanelView;
 import org.apache.cayenne.modeler.ui.project.editor.query.sqltemplate.SQLTemplateTabbedView;
@@ -44,7 +42,6 @@ import javax.swing.undo.CompoundEdit;
 public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
 
     private final JTextComponent editor;
-    private final Application application;
 
     private final TreePath treePath;
     private int selectedTabIndex;
@@ -53,16 +50,19 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
 
     private Object targetObject;
 
-    private final JTextFieldUndoListener listener;
+    private final Runnable onUndoCleanup;
 
-    public TextCompoundEdit(Application application, JTextComponent editor, JTextFieldUndoListener listener) {
+    public TextCompoundEdit(JTextComponent editor, Runnable onUndoCleanup) {
 
-        this.application = application;
         this.editor = editor;
-        this.listener = listener;
+        this.onUndoCleanup = onUndoCleanup;
 
-        ProjectView projectView = ((ModelerFrame) application.getFrameController().getView())
-                .getProjectView();
+        ProjectView projectView = (ProjectView) SwingUtilities.getAncestorOfClass(ProjectView.class, editor);
+        if (projectView == null) {
+            // editor not yet mounted; selection capture is best-effort
+            this.treePath = null;
+            return;
+        }
 
         treePath = projectView.getProjectTreeView().getSelectionPath();
 
@@ -112,8 +112,10 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
 
     private void restoreSelections() {
 
-        ProjectView projectView = ((ModelerFrame) application.getFrameController().getView())
-                .getProjectView();
+        ProjectView projectView = (ProjectView) SwingUtilities.getAncestorOfClass(ProjectView.class, editor);
+        if (projectView == null) {
+            return;
+        }
 
         projectView.getProjectTreeView().getSelectionModel().setSelectionPath(treePath);
 
@@ -166,7 +168,7 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
     public void undo() throws CannotUndoException {
         restoreSelections();
 
-        listener.finishCurrentEdit();
+        onUndoCleanup.run();
 
         if (canUndo()) {
             super.undo();

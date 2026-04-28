@@ -107,7 +107,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
         AutoCompletion.enable(strategyCombo, false, true);
         strategyCombo.setToolTipText("Naming strategy to use");
 
-        meaningfulPk = new CayenneUndoableTextField();
+        meaningfulPk = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
         meaningfulPk.setToolTipText("<html>Regular expression to filter tables with meaningful primary keys.<br>" +
                 "Multiple expressions divided by comma can be used.<br>" +
                 "Example: <b>^table1|^table2|^prefix.*|table_name</b></html>");
@@ -118,7 +118,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
             }
         });
 
-        stripFromTableNames = new CayenneUndoableTextField();
+        stripFromTableNames = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
         stripFromTableNames.setToolTipText("<html>Regex that matches the part of the table name that needs to be stripped off " +
                 "when generating ObjEntity name</html>");
         stripFromTableNames.addCommitListener(text -> {
@@ -128,7 +128,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
             }
         });
 
-        tableTypes = new CayenneUndoableTextField();
+        tableTypes = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
         tableTypes.setToolTipText("<html>Default types to import is TABLE and VIEW.");
         tableTypes.addCommitListener(this::applyTableTypes);
 

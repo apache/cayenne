@@ -63,11 +63,11 @@ public class DataDomainMainView extends JPanel implements DomainDisplayListener 
     protected void initView() {
 
         // create widgets
-        this.name = new CayenneUndoableTextField();
+        this.name = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
         this.name.addCommitListener(this::setDomainName);
 
-        this.objectValidation = new CayenneCheckBox();
-        this.sharedCache = new CayenneCheckBox();
+        this.objectValidation = new CayenneCheckBox(controller.getApplication().getUndoManager());
+        this.sharedCache = new CayenneCheckBox(controller.getApplication().getUndoManager());
 
         // assemble
         CellConstraints cc = new CellConstraints();

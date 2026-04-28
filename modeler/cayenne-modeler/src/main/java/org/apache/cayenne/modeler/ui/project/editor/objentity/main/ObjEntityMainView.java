@@ -99,13 +99,13 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
         add(toolBar, BorderLayout.NORTH);
 
         // create widgets
-        name = new CayenneUndoableTextField();
+        name = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
         name.addCommitListener(this::setEntityName);
-        superClassName = new CayenneUndoableTextField();
+        superClassName = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
         superClassName.addCommitListener(this::setSuperClassName);
-        className = new CayenneUndoableTextField();
+        className = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
         className.addCommitListener(this::setClassName);
-        qualifier = new CayenneUndoableTextField();
+        qualifier = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
         qualifier.addCommitListener(this::setQualifier);
 
         dbEntityCombo = WidgetFactory.createComboBox();
@@ -114,9 +114,9 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
         AutoCompletion.enable(dbEntityCombo);
         AutoCompletion.enable(superEntityCombo);
 
-        readOnly = new CayenneCheckBox();
+        readOnly = new CayenneCheckBox(controller.getApplication().getUndoManager());
 
-        optimisticLocking = new CayenneCheckBox();
+        optimisticLocking = new CayenneCheckBox(controller.getApplication().getUndoManager());
 
         // borderless clickable button used as a label
         JButton tableLabel = new JButton("Table/View:");
@@ -127,9 +127,9 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
         tableLabel.setBorder(null);
 
 
-        isAbstract = new CayenneCheckBox();
+        isAbstract = new CayenneCheckBox(controller.getApplication().getUndoManager());
 
-        comment = new CayenneUndoableTextField();
+        comment = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
         comment.addCommitListener(this::setComment);
 
         // assemble

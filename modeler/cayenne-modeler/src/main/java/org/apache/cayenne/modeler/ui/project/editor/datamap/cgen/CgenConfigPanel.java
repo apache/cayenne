@@ -71,11 +71,11 @@ public class CgenConfigPanel extends JPanel {
     public CgenConfigPanel(CgenController cgenController) {
         this.cgenController = cgenController;
         this.selectOutputFolder = new JButton("..");
-        this.pairs = new CayenneCheckBox();
-        this.overwrite = new CayenneCheckBox();
-        this.usePackagePath = new CayenneCheckBox();
-        this.createPropertyNames = new CayenneCheckBox();
-        this.pkProperties = new CayenneCheckBox();
+        this.pairs = new CayenneCheckBox(cgenController.getApplication().getUndoManager());
+        this.overwrite = new CayenneCheckBox(cgenController.getApplication().getUndoManager());
+        this.usePackagePath = new CayenneCheckBox(cgenController.getApplication().getUndoManager());
+        this.createPropertyNames = new CayenneCheckBox(cgenController.getApplication().getUndoManager());
+        this.pkProperties = new CayenneCheckBox(cgenController.getApplication().getUndoManager());
 
         initTextFields();
         initEditTemplateLabels();
@@ -166,19 +166,19 @@ public class CgenConfigPanel extends JPanel {
     }
 
     private void initTextFields() {
-        this.superPkg = new CayenneUndoableTextField();
+        this.superPkg = new CayenneUndoableTextField(cgenController.getApplication().getUndoManager());
         this.superPkg.addCommitListener(text -> {
             getCgenConfig().setSuperPkg(text);
             checkConfigDirty();
         });
 
-        this.outputPattern = new CayenneUndoableTextField();
+        this.outputPattern = new CayenneUndoableTextField(cgenController.getApplication().getUndoManager());
         this.outputPattern.addCommitListener(text -> {
             getCgenConfig().setOutputPattern(text);
             checkConfigDirty();
         });
 
-        this.outputFolder = new CayenneUndoableTextField() {
+        this.outputFolder = new CayenneUndoableTextField(cgenController.getApplication().getUndoManager()) {
             @Override
             public void setText(String text) {
                 super.setText(text);

@@ -19,17 +19,25 @@
 
 package org.apache.cayenne.modeler.toolkit.checkbox;
 
-import org.apache.cayenne.modeler.undo.JCheckBoxUndoListener;
+import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
 
 public class CayenneCheckBox extends JCheckBox {
 
     private boolean modelUpdateDisabled;
 
-    public CayenneCheckBox() {
-        this.addActionListener(new JCheckBoxUndoListener());
+    public CayenneCheckBox(CayenneUndoManager undoManager) {
+        ActionListener undoListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                undoManager.addEdit(new CheckboxUndoableEdit((JCheckBox) e.getSource(), this));
+            }
+        };
+        this.addActionListener(undoListener);
     }
 
     @Override

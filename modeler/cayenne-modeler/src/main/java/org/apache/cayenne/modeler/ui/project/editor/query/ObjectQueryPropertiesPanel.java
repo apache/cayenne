@@ -48,7 +48,7 @@ public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel {
         super.initView();
         // create widgets
 
-        dataRows = new CayenneCheckBox();
+        dataRows = new CayenneCheckBox(mediator.getApplication().getUndoManager());
 
         // assemble
         CellConstraints cc = new CellConstraints();

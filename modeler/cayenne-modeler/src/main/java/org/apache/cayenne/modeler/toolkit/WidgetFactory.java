@@ -21,12 +21,15 @@ package org.apache.cayenne.modeler.toolkit;
 
 import org.apache.cayenne.modeler.toolkit.combo.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.combo.ComboBoxCellEditor;
+import org.apache.cayenne.modeler.toolkit.combo.ComboBoxUndoableEdit;
 import org.apache.cayenne.modeler.toolkit.table.CayenneCellEditor;
-import org.apache.cayenne.modeler.undo.JComboBoxUndoListener;
+import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
@@ -80,12 +83,37 @@ public final class WidgetFactory {
     /**
      * Creates undoable JComboBox.
      */
-    public static <T> JComboBox<T> createUndoableComboBox() {
+    public static <T> JComboBox<T> createUndoableComboBox(CayenneUndoManager undoManager) {
         JComboBox<T> comboBox = new JComboBox<>();
-        comboBox.addItemListener(new JComboBoxUndoListener());
+        comboBox.addItemListener(new UndoableSelectionListener(undoManager));
         comboBox.setBackground(Color.WHITE);
         comboBox.setMaximumRowCount(COMBOBOX_MAX_VISIBLE_SIZE);
         return comboBox;
+    }
+
+    /**
+     * Tracks selection changes on a JComboBox and pushes them to the undo stack.
+     */
+    private static class UndoableSelectionListener implements ItemListener {
+        private final CayenneUndoManager undoManager;
+        private Object deselectedItem;
+
+        UndoableSelectionListener(CayenneUndoManager undoManager) {
+            this.undoManager = undoManager;
+        }
+
+        @Override
+        public void itemStateChanged(ItemEvent e) {
+            switch (e.getStateChange()) {
+                case ItemEvent.DESELECTED:
+                    deselectedItem = e.getItem();
+                    break;
+                case ItemEvent.SELECTED:
+                    undoManager.addEdit(new ComboBoxUndoableEdit(
+                            (JComboBox<?>) e.getSource(), deselectedItem, e.getItem(), this));
+                    break;
+            }
+        }
     }
 
     /**

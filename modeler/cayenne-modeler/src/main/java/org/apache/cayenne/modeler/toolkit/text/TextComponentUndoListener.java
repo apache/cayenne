@@ -16,9 +16,10 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.undo;
+package org.apache.cayenne.modeler.toolkit.text;
 
-import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.undo.CayenneUndoManager;
+import org.apache.cayenne.modeler.undo.TextCompoundEdit;
 
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
@@ -30,9 +31,10 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-public class JTextFieldUndoListener implements UndoableEditListener {
+class TextComponentUndoListener implements UndoableEditListener {
 
     private final JTextComponent editor;
+    private final CayenneUndoManager undoManager;
     private CompoundEdit compoundEdit;
 
     private int lastOffset;
@@ -40,8 +42,9 @@ public class JTextFieldUndoListener implements UndoableEditListener {
 
     private boolean isKeyEdit;
 
-    public JTextFieldUndoListener(JTextComponent editor) {
+    public TextComponentUndoListener(JTextComponent editor, CayenneUndoManager undoManager) {
         this.editor = editor;
+        this.undoManager = undoManager;
         this.editor.addFocusListener(new FocusAdapter() {
 
             @Override
@@ -67,7 +70,7 @@ public class JTextFieldUndoListener implements UndoableEditListener {
         }
 
         // See AbstractDocument.DefaultDocumentEvent.getPresentationName() method
-        if("AbstractDocument.styleChangeText".equals(e.getEdit().getPresentationName())) {
+        if ("AbstractDocument.styleChangeText".equals(e.getEdit().getPresentationName())) {
             compoundEdit.addEdit(e.getEdit());
             return;
         }
@@ -91,7 +94,7 @@ public class JTextFieldUndoListener implements UndoableEditListener {
         lastOffset = editor.getCaretPosition();
         lastLength = editor.getDocument().getLength();
 
-        compoundEdit = new TextCompoundEdit(Application.getInstance(), editor, this);
+        compoundEdit = new TextCompoundEdit(editor, this::finishCurrentEdit);
 
         if (isKeyEdit) {
             compoundEdit.addEdit(anEdit);
@@ -99,7 +102,7 @@ public class JTextFieldUndoListener implements UndoableEditListener {
             return null;
         }
 
-        Application.getInstance().getUndoManager().addEdit(compoundEdit);
+        undoManager.addEdit(compoundEdit);
         return compoundEdit;
     }
 

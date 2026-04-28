@@ -92,21 +92,21 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
         toolBar.add(globalActions.getAction(ShowGraphEntityAction.class).buildButton());
 
         // create widgets
-        name = new CayenneUndoableTextField();
+        name = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
         name.addCommitListener(this::setEntityName);
 
         catalogLabel = new JLabel("Catalog:");
-        catalog = new CayenneUndoableTextField();
+        catalog = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
         catalog.addCommitListener(this::setCatalog);
 
         schemaLabel = new JLabel("Schema:");
-        schema = new CayenneUndoableTextField();
+        schema = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
         schema.addCommitListener(this::setSchema);
 
-        qualifier = new CayenneUndoableTextField();
+        qualifier = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
         qualifier.addCommitListener(this::setQualifier);
 
-        comment = new CayenneUndoableTextField();
+        comment = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
         comment.addCommitListener(this::setComment);
 
         pkGeneratorType = new JComboBox<>();

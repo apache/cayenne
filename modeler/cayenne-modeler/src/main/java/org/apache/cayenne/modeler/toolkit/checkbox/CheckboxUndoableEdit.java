@@ -17,13 +17,11 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.undo;
+package org.apache.cayenne.modeler.toolkit.checkbox;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.ModelerFrame;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
 import org.apache.cayenne.modeler.ui.project.editor.EditorPanelView;
 import org.apache.cayenne.query.SQLTemplate;
@@ -36,27 +34,28 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import java.awt.event.ActionListener;
 
-public class JUndoableCheckBoxEdit extends AbstractUndoableEdit {
+public class CheckboxUndoableEdit extends AbstractUndoableEdit {
 
     private final JCheckBox checkBox;
     private final ActionListener actionListener;
+    private final ProjectView projectView;
+    private final boolean isSelected;
+
     private JTabbedPane tabbedPane;
     private TreePath treePath;
     private Object targetObject;
-    private ProjectView projectView;
-
     private int selectedTabIndex;
 
-    private boolean isSelected;
-
-
-    JUndoableCheckBoxEdit(Application application, JCheckBox checkBox, ActionListener actionListener) {
+    CheckboxUndoableEdit(JCheckBox checkBox, ActionListener actionListener) {
 
         this.checkBox = checkBox;
         this.actionListener = actionListener;
         this.isSelected = checkBox.isSelected();
 
-        projectView = ((ModelerFrame) application.getFrameController().getView()).getProjectView();
+        projectView = (ProjectView) SwingUtilities.getAncestorOfClass(ProjectView.class, checkBox);
+        if (projectView == null) {
+            return;
+        }
 
         treePath = projectView.getProjectTreeView().getSelectionPath();
 
@@ -89,6 +88,10 @@ public class JUndoableCheckBoxEdit extends AbstractUndoableEdit {
     }
 
     private void restoreSelections() {
+
+        if (projectView == null) {
+            return;
+        }
 
         projectView.getProjectTreeView().getSelectionModel().setSelectionPath(treePath);
 

@@ -69,16 +69,16 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
 
     private void initView() {
         // create widgets
-        name = new CayenneUndoableTextField();
+        name = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
         name.addCommitListener(this::setQueryName);
 
-        qualifier = new CayenneUndoableTextField();
+        qualifier = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
         qualifier.addCommitListener(this::setQueryQualifier);
 
-        comment = new CayenneUndoableTextField();
+        comment = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
         comment.addCommitListener(this::setQueryComment);
 
-        distinct = new CayenneCheckBox();
+        distinct = new CayenneCheckBox(controller.getApplication().getUndoManager());
 
         properties = new ObjectQueryPropertiesPanel(controller);
 

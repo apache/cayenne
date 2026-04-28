@@ -16,36 +16,37 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.undo;
+package org.apache.cayenne.modeler.toolkit.combo;
 
+import javax.swing.*;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
+import java.awt.event.ItemListener;
 
-import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
+public class ComboBoxUndoableEdit extends AbstractUndoableEdit {
 
-public class CayenneTableModelUndoableEdit extends AbstractUndoableEdit {
+    private final JComboBox<?> comboBox;
+    private final Object deselectedItem;
+    private final Object selectedItem;
+    private final ItemListener undoItemListener;
 
-    private CayenneTableModel model;
-    private Object oldValue;
-    private Object newValue;
-    private int row;
-    private int col;
+    public ComboBoxUndoableEdit(
+            JComboBox<?> comboBox,
+            Object deselectedItem,
+            Object selectedItem,
+            ItemListener undoItemListener) {
+
+        super();
+        this.comboBox = comboBox;
+        this.deselectedItem = deselectedItem;
+        this.selectedItem = selectedItem;
+        this.undoItemListener = undoItemListener;
+    }
 
     @Override
     public String getPresentationName() {
-        return "Cell Change";
-    }
-    
-    public CayenneTableModelUndoableEdit(CayenneTableModel model, Object oldValue, Object newValue,
-            int row, int col) {
-        
-        this.model = model;
-        this.oldValue = oldValue;
-        this.newValue = newValue;
-        this.row = row;
-        this.col = col;
-        
+        return "Selection";
     }
 
     @Override
@@ -55,13 +56,22 @@ public class CayenneTableModelUndoableEdit extends AbstractUndoableEdit {
 
     @Override
     public void redo() throws CannotRedoException {
-        model.setUpdatedValueAt(newValue, row, col);
-        model.fireTableCellUpdated(row, col);
+        comboBox.removeItemListener(undoItemListener);
+
+        try {
+            comboBox.setSelectedItem(selectedItem);
+        } finally {
+            comboBox.addItemListener(undoItemListener);
+        }
     }
 
     @Override
     public void undo() throws CannotUndoException {
-        model.setUpdatedValueAt(oldValue, row, col);
-        model.fireTableCellUpdated(row, col);
+        comboBox.removeItemListener(undoItemListener);
+        try {
+            comboBox.setSelectedItem(deselectedItem);
+        } finally {
+            comboBox.addItemListener(undoItemListener);
+        }
     }
 }

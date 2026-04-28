@@ -24,6 +24,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.toolkit.text.CayennePasswordField;
 import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,16 +40,16 @@ public class JDBCDataSourceView extends JPanel {
     protected CayenneUndoableTextField maxConnections;
     protected JButton syncWithLocal;
 
-    public JDBCDataSourceView() {
+    public JDBCDataSourceView(CayenneUndoManager undoManager) {
 
-        driver = new CayenneUndoableTextField();
+        driver = new CayenneUndoableTextField(undoManager);
         driver.setTrim(true);
-        url = new CayenneUndoableTextField();
+        url = new CayenneUndoableTextField(undoManager);
         url.setTrim(true);
-        userName = new CayenneUndoableTextField();
+        userName = new CayenneUndoableTextField(undoManager);
         password = new CayennePasswordField();
-        minConnections = new CayenneUndoableTextField(6);
-        maxConnections = new CayenneUndoableTextField(6);
+        minConnections = new CayenneUndoableTextField(undoManager, 6);
+        maxConnections = new CayenneUndoableTextField(undoManager, 6);
         syncWithLocal = new JButton("Sync with Local");
         syncWithLocal.setToolTipText("Update from local DataSource");
 

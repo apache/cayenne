@@ -51,9 +51,9 @@ public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
                 "* Custom sequences are supported on Oracle and Postgres");
         note.setFont(note.getFont().deriveFont(Font.ITALIC).deriveFont(11f));
 
-        customPKName = new CayenneUndoableTextField();
+        customPKName = new CayenneUndoableTextField(mediator.getApplication().getUndoManager());
         customPKName.addCommitListener(this::setPKName);
-        customPKSize = new CayenneUndoableTextField();
+        customPKSize = new CayenneUndoableTextField(mediator.getApplication().getUndoManager());
         customPKSize.addCommitListener(this::setPKSize);
 
         // assemble

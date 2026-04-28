@@ -70,10 +70,10 @@ public class EmbeddableMainView extends JPanel implements EmbeddableDisplayListe
 
         add(toolBar, BorderLayout.NORTH);
 
-        className = new CayenneUndoableTextField();
+        className = new CayenneUndoableTextField(mediator.getApplication().getUndoManager());
         className.addCommitListener(this::setClassName);
 
-        comment = new CayenneUndoableTextField();
+        comment = new CayenneUndoableTextField(mediator.getApplication().getUndoManager());
         comment.addCommitListener(this::setComment);
 
         FormLayout layout = new FormLayout(

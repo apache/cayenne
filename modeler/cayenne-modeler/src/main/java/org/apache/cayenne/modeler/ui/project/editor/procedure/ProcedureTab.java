@@ -64,19 +64,19 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
     private void initView() {
         // create widgets
 
-        this.name = new CayenneUndoableTextField();
+        this.name = new CayenneUndoableTextField(eventController.getApplication().getUndoManager());
         this.name.addCommitListener(this::setProcedureName);
 
-        this.schema = new CayenneUndoableTextField();
+        this.schema = new CayenneUndoableTextField(eventController.getApplication().getUndoManager());
         this.schema.addCommitListener(this::setSchema);
 
-        this.catalog = new CayenneUndoableTextField();
+        this.catalog = new CayenneUndoableTextField(eventController.getApplication().getUndoManager());
         this.catalog.addCommitListener(this::setCatalog);
 
-        this.comment = new CayenneUndoableTextField();
+        this.comment = new CayenneUndoableTextField(eventController.getApplication().getUndoManager());
         this.comment.addCommitListener(this::setComment);
 
-        this.returnsValue = new CayenneCheckBox();
+        this.returnsValue = new CayenneCheckBox(eventController.getApplication().getUndoManager());
         this.returnsValue.setToolTipText("first parameter will be used as return value");
 
         FormLayout layout = new FormLayout("right:pref, 3dlu, fill:200dlu", "");

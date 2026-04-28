@@ -50,10 +50,10 @@ public class EjbqlQueryMainTab extends JPanel{
 
     private void initView() {
         // create widgets
-        name = new CayenneUndoableTextField();
+        name = new CayenneUndoableTextField(mediator.getApplication().getUndoManager());
         name.addCommitListener(this::setQueryName);
 
-        comment = new CayenneUndoableTextField();
+        comment = new CayenneUndoableTextField(mediator.getApplication().getUndoManager());
         comment.addCommitListener(this::setQueryComment);
 
         properties = new EjbqlQueryPropertiesPanel(mediator);

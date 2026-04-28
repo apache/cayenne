@@ -53,7 +53,7 @@ public class JDBCDataSourceController extends DataSourceEditorController {
 
     @Override
     protected void initFieldListeners() {
-        this.view = new JDBCDataSourceView();
+        this.view = new JDBCDataSourceView(application.getUndoManager());
 
         view.getUserName().addCommitListener(v -> {
             getNode().getDataSourceDescriptor().setUserName(v);

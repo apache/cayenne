@@ -86,13 +86,13 @@ public class ProcedureQueryView extends JPanel {
 
     private void initView() {
         // create widgets
-        name = new CayenneUndoableTextField();
+        name = new CayenneUndoableTextField(mediator.getApplication().getUndoManager());
         name.addCommitListener(this::setQueryName);
 
-        comment = new CayenneUndoableTextField();
+        comment = new CayenneUndoableTextField(mediator.getApplication().getUndoManager());
         comment.addCommitListener(this::setQueryComment);
 
-        queryRoot = WidgetFactory.createUndoableComboBox();
+        queryRoot = WidgetFactory.createUndoableComboBox(mediator.getApplication().getUndoManager());
         queryRoot.setRenderer(Renderers.listRendererWithIcons());
         properties = new ProcedureQueryPropertiesPanel(mediator);
 
@@ -274,7 +274,7 @@ public class ProcedureQueryView extends JPanel {
         }
 
         protected PanelBuilder createPanelBuilder() {
-            labelCase = WidgetFactory.createUndoableComboBox();
+            labelCase = WidgetFactory.createUndoableComboBox(mediator.getApplication().getUndoManager());
             labelCase.setRenderer(new LabelCapsRenderer());
             labelCase.addActionListener(event -> {
                 String value = labelCase.getModel().getSelectedItem().toString();

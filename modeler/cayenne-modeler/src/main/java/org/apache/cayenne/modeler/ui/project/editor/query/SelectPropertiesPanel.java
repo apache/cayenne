@@ -90,18 +90,18 @@ public abstract class SelectPropertiesPanel extends JPanel {
     }
 
     protected void initView() {
-        fetchOffset = new CayenneUndoableTextField(7);
+        fetchOffset = new CayenneUndoableTextField(mediator.getApplication().getUndoManager(), 7);
         fetchOffset.addCommitListener(this::setFetchOffset);
 
-        fetchLimit = new CayenneUndoableTextField(7);
+        fetchLimit = new CayenneUndoableTextField(mediator.getApplication().getUndoManager(), 7);
         fetchLimit.addCommitListener(this::setFetchLimit);
 
-        pageSize = new CayenneUndoableTextField(7);
+        pageSize = new CayenneUndoableTextField(mediator.getApplication().getUndoManager(), 7);
         pageSize.addCommitListener(this::setPageSize);
 
-        cacheStrategy = WidgetFactory.createUndoableComboBox();
+        cacheStrategy = WidgetFactory.createUndoableComboBox(mediator.getApplication().getUndoManager());
         cacheStrategy.setRenderer(new CacheStrategyRenderer());
-        cacheGroups = new CayenneUndoableTextField();
+        cacheGroups = new CayenneUndoableTextField(mediator.getApplication().getUndoManager());
         cacheGroups.addCommitListener(this::setCacheGroups);
     }
 

@@ -78,36 +78,36 @@ public class DataMapMainView extends JPanel {
         this.controller = controller;
 
         // create widgets
-        name = new CayenneUndoableTextField();
+        name = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
         name.addCommitListener(this::setDataMapName);
 
         location = new JLabel();
-        nodeSelector = WidgetFactory.createUndoableComboBox();
+        nodeSelector = WidgetFactory.createUndoableComboBox(controller.getApplication().getUndoManager());
         nodeSelector.setRenderer(Renderers.listRendererWithIcons());
 
         JButton updateDefaultCatalog = new JButton("Update...");
-        defaultCatalog = new CayenneUndoableTextField();
+        defaultCatalog = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
         defaultCatalog.addCommitListener(this::setDefaultCatalog);
 
         JButton updateDefaultSchema = new JButton("Update...");
-        defaultSchema = new CayenneUndoableTextField();
+        defaultSchema = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
         defaultSchema.addCommitListener(this::setDefaultSchema);
 
-        quoteSQLIdentifiers = new CayenneCheckBox();
+        quoteSQLIdentifiers = new CayenneCheckBox(controller.getApplication().getUndoManager());
 
-        comment = new CayenneUndoableTextField();
+        comment = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
         comment.addCommitListener(this::updateComment);
 
         JButton updateDefaultPackage = new JButton("Update...");
-        defaultPackage = new CayenneUndoableTextField();
+        defaultPackage = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
         defaultPackage.addCommitListener(this::setDefaultPackage);
 
         JButton updateDefaultSuperclass = new JButton("Update...");
-        defaultSuperclass = new CayenneUndoableTextField();
+        defaultSuperclass = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
         defaultSuperclass.addCommitListener(this::setDefaultSuperclass);
 
         JButton updateDefaultLockType = new JButton("Update...");
-        defaultLockType = new CayenneCheckBox();
+        defaultLockType = new CayenneCheckBox(controller.getApplication().getUndoManager());
 
         // assemble
         FormLayout layout = new FormLayout(

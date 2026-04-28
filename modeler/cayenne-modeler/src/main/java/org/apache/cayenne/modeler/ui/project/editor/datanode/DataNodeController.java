@@ -73,7 +73,7 @@ public class DataNodeController extends ChildController<ProjectController> {
 
         super(parent);
 
-        this.view = new DataNodeView();
+        this.view = new DataNodeView(application.getUndoManager());
         this.datasourceEditors = new HashMap<>();
         this.nodeChangeProcessor = () -> parent.fireDataNodeEvent(DataNodeEvent.ofChange(DataNodeController.this, node));
         this.defaultSubeditor = new CustomDataSourceEditorController(parent, nodeChangeProcessor);

@@ -18,18 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.undo;
 
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoableEdit;
-
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.action.RedoAction;
 import org.apache.cayenne.modeler.ui.action.UndoAction;
-import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
 
-public class CayenneUndoManager extends javax.swing.undo.UndoManager {
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
+import javax.swing.undo.UndoableEdit;
 
-    private Application application;
+public class CayenneUndoManager extends UndoManager {
+
+    private final Application application;
 
     public CayenneUndoManager(Application application) {
         this.application = application;
@@ -88,9 +88,8 @@ public class CayenneUndoManager extends javax.swing.undo.UndoManager {
     }
 
     private void updateUI() {
-        ModelerAbstractAction undoAction = application.getActionManager().getAction(UndoAction.class);
-
-        ModelerAbstractAction redoAction = application.getActionManager().getAction(RedoAction.class);
+        UndoAction undoAction = application.getActionManager().getAction(UndoAction.class);
+        RedoAction redoAction = application.getActionManager().getAction(RedoAction.class);
 
         undoAction.setEnabled(canUndo());
         redoAction.setEnabled(canRedo());

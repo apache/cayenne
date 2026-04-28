@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.toolkit.text;
 
-import org.apache.cayenne.modeler.undo.JTextFieldUndoListener;
+import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 
 import javax.swing.event.UndoableEditListener;
 
@@ -26,14 +26,14 @@ public class CayenneUndoableTextField extends CayenneTextField {
 
     private final UndoableEditListener undoListener;
 
-    public CayenneUndoableTextField() {
-        this.undoListener = new JTextFieldUndoListener(this);
+    public CayenneUndoableTextField(CayenneUndoManager undoManager) {
+        this.undoListener = new TextComponentUndoListener(this, undoManager);
         this.getDocument().addUndoableEditListener(this.undoListener);
     }
 
-    public CayenneUndoableTextField(int columns) {
+    public CayenneUndoableTextField(CayenneUndoManager undoManager, int columns) {
         super(columns);
-        this.undoListener = new JTextFieldUndoListener(this);
+        this.undoListener = new TextComponentUndoListener(this, undoManager);
         this.getDocument().addUndoableEditListener(this.undoListener);
     }
 
