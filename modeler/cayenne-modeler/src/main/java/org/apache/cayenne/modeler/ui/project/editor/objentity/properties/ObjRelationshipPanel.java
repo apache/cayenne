@@ -85,6 +85,8 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
         GlobalActions globalActions = controller.getApplication().getActionManager();
 
         table = new CayenneTable();
+        table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.setDefaultRenderer(String.class, new StringRenderer());
         table.setDefaultRenderer(ObjEntity.class, new EntityRenderer());
         tablePreferences = new TableColumnPreferences(ObjRelationshipTableModel.class, "objEntity/relationshipTable");

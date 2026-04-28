@@ -142,6 +142,8 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
 
         // Create table with two columns and no rows.
         table = new CayenneTable();
+        table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         tablePreferences = new TableColumnPreferences(
                 this.getClass(),

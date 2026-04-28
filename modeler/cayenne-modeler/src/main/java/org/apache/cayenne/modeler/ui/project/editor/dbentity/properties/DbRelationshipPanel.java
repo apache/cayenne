@@ -78,6 +78,8 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
         GlobalActions globalActions = controller.getApplication().getActionManager();
 
         table = new CayenneTable();
+        table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.setDefaultRenderer(DbEntity.class, Renderers.entityTableRendererWithIcons(controller));
         table.setDefaultRenderer(String.class, new BoardTableCellRenderer());
         tablePreferences = new TableColumnPreferences(DbRelationshipTableModel.class, "relationshipTable");

@@ -90,6 +90,8 @@ public class EmbeddableAttributesView extends JPanel implements
         add(toolBar, BorderLayout.NORTH);
 
         table = new CayenneTable();
+        table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         tablePreferences = new TableColumnPreferences(
                 this.getClass(),

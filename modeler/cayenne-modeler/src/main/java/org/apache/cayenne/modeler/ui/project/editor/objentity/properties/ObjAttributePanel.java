@@ -93,6 +93,8 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
         GlobalActions globalActions = controller.getApplication().getActionManager();
 
         table = new CayenneTable();
+        table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.setDefaultRenderer(String.class, new CellRenderer(controller));
         tablePreferences = new TableColumnPreferences(
                 ObjAttributeTableModel.class,
@@ -136,7 +138,6 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
         controller.addObjAttributeListener(this);
 
         table.getSelectionModel().addListSelectionListener(this::valueChanged);
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         globalActions.setupCutCopyPaste(
                 table,

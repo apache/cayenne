@@ -22,23 +22,18 @@ package org.apache.cayenne.modeler.toolkit.table;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 /**
- * A panel that hosts a table inside a scroll pane, configured with the modeler's
- * common defaults: multi-interval selection, fixed column widths, and a click
- * outside the table that ends any in-progress cell edit.
+ * Wraps a table in a scroll pane. A click on the scroll pane outside the table
+ * ends any in-progress cell edit.
  */
 public class CayenneTablePanel extends JPanel {
 
     public CayenneTablePanel(JTable table) {
         setLayout(new BorderLayout(5, 5));
-
-        table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.addMouseListener(new MouseAdapter() {

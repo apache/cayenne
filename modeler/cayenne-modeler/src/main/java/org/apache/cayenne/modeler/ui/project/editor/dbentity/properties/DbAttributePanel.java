@@ -71,6 +71,8 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
 
         // Create table with two columns and no rows.
         table = new CayenneTable();
+        table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         tablePreferences = new TableColumnPreferences(
                 DbAttributeTableModel.class,
                 "attributeTable");
