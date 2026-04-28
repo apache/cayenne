@@ -56,7 +56,7 @@ public class GraphRegistry implements DomainListener {
 
         GraphBuilder builder = graphMap.get(type);
         if (builder == null) {
-            builder = graphMap.createGraphBuilder(type, true);
+            builder = graphMap.createGraphBuilder(mediator, type, true);
             
             mediator.setDirty(true);
         }

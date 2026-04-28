@@ -21,13 +21,16 @@ package org.apache.cayenne.modeler.service.graph;
 
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.project.extension.LoaderDelegate;
 
 class GraphLoaderDelegate implements LoaderDelegate {
 
+    private final Application application;
     private final DataChannelMetaData metaData;
 
-    GraphLoaderDelegate(DataChannelMetaData metaData) {
+    GraphLoaderDelegate(Application application, DataChannelMetaData metaData) {
+        this.application = application;
         this.metaData = metaData;
     }
 
@@ -39,7 +42,7 @@ class GraphLoaderDelegate implements LoaderDelegate {
     @Override
     public NamespaceAwareNestedTagHandler createHandler(NamespaceAwareNestedTagHandler parent, String tag) {
         if(GraphsRootHandler.GRAPHS_TAG.equals(tag)) {
-            return new GraphsRootHandler(parent, metaData);
+            return new GraphsRootHandler(parent, application, metaData);
         }
         return null;
     }

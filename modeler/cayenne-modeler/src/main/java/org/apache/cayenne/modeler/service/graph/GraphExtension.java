@@ -24,6 +24,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.graph.GraphRegistry;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.extension.BaseNamingDelegate;
@@ -40,9 +41,12 @@ public class GraphExtension implements ProjectExtension {
     @Inject
     protected Provider<DataChannelMetaData> metaDataProvider;
 
+    @Inject
+    protected Provider<Application> applicationProvider;
+
     @Override
     public LoaderDelegate createLoaderDelegate() {
-        return new GraphLoaderDelegate(metaDataProvider.get());
+        return new GraphLoaderDelegate(applicationProvider.get(), metaDataProvider.get());
     }
 
     @Override

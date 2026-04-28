@@ -46,7 +46,6 @@ import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
@@ -362,7 +361,7 @@ abstract class BaseGraphBuilder<E extends Entity<E, A, R>, A extends Attribute<E
      * Creates popup menu
      */
     protected JPopupMenu createPopupMenu() {
-        GlobalActions globalActions = Application.getInstance().getActionManager();
+        GlobalActions globalActions = mediator.getApplication().getActionManager();
 
         JPopupMenu menu = new JPopupMenu();
         menu.add(new EntityDisplayAction(this).buildMenu());
@@ -603,7 +602,7 @@ abstract class BaseGraphBuilder<E extends Entity<E, A, R>, A extends Attribute<E
             // graph has been modified
             mediator.setDirty(true);
 
-            Application.getInstance().getUndoManager().undoableEditHappened(e);
+            mediator.getApplication().getUndoManager().undoableEditHappened(e);
         }
     }
 }

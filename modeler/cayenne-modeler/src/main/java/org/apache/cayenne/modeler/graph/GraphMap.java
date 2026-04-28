@@ -22,7 +22,6 @@ import java.util.HashMap;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 
 /**
@@ -65,19 +64,15 @@ public class GraphMap extends HashMap<GraphType, GraphBuilder> {
         this.selectedType = selectedType;
     }
     
-    public GraphBuilder createGraphBuilder(GraphType type, boolean doLayout) {
+    public GraphBuilder createGraphBuilder(ProjectController mediator, GraphType type, boolean doLayout) {
         try {
             GraphBuilder builder = type.getBuilderClass().getDeclaredConstructor().newInstance();
-            builder.buildGraph(getProjectController(), domain, doLayout);
+            builder.buildGraph(mediator, domain, doLayout);
             put(type, builder);
-            
+
             return builder;
         } catch (Exception e) {
             throw new CayenneRuntimeException("Could not instantiate GraphBuilder", e);
         }
-    }
-
-    private ProjectController getProjectController() {
-        return Application.getInstance().getFrameController().getProjectController();
     }
 }

@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.service.graph;
 
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
+import org.apache.cayenne.modeler.Application;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -29,11 +30,13 @@ class GraphsRootHandler extends NamespaceAwareNestedTagHandler {
 
     static final String GRAPHS_TAG = "graphs";
 
+    private final Application application;
     private final DataChannelMetaData metaData;
 
-    public GraphsRootHandler(NamespaceAwareNestedTagHandler parentHandler, DataChannelMetaData metaData) {
+    public GraphsRootHandler(NamespaceAwareNestedTagHandler parentHandler, Application application, DataChannelMetaData metaData) {
         super(parentHandler);
         setTargetNamespace(GraphExtension.NAMESPACE);
+        this.application = application;
         this.metaData = metaData;
     }
 
@@ -45,7 +48,7 @@ class GraphsRootHandler extends NamespaceAwareNestedTagHandler {
     @Override
     protected ContentHandler createChildTagHandler(String namespaceURI, String localName, String qName, Attributes attributes) {
         if(GraphHandler.GRAPH_TAG.equals(localName)) {
-            return new GraphHandler(this, metaData);
+            return new GraphHandler(this, application, metaData);
         }
         return super.createChildTagHandler(namespaceURI, localName, qName, attributes);
     }

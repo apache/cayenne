@@ -20,6 +20,7 @@ package org.apache.cayenne.modeler.service.graph;
 
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.graph.GraphBuilder;
 import org.apache.cayenne.modeler.graph.GraphMap;
 import org.apache.cayenne.modeler.graph.GraphRegistry;
@@ -49,7 +50,7 @@ class GraphHandler extends NamespaceAwareNestedTagHandler {
 
     double scale;
 
-    public GraphHandler(NamespaceAwareNestedTagHandler parent, DataChannelMetaData metaData) {
+    public GraphHandler(NamespaceAwareNestedTagHandler parent, Application application, DataChannelMetaData metaData) {
         super(parent);
         loaderContext.addDataChannelListener(dataChannelDescriptor -> {
             GraphRegistry registry = metaData.get(dataChannelDescriptor, GraphRegistry.class);
@@ -60,7 +61,8 @@ class GraphHandler extends NamespaceAwareNestedTagHandler {
 
             GraphMap map = registry.getGraphMap(dataChannelDescriptor);
             //apply changes
-            GraphBuilder builder = map.createGraphBuilder(graphType, false);
+            GraphBuilder builder = map.createGraphBuilder(
+                    application.getFrameController().getProjectController(), graphType, false);
             builder.getGraph().setScale(scale);
 
             // lookup
