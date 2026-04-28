@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.toolkit;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.progress;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -30,13 +30,13 @@ import java.awt.*;
 /**
  * A dialog rendering a progress bar.
  */
-public class ProgressDialog extends CayenneDialog {
+public class DbImportProgressDialog extends CayenneDialog {
 
     protected JProgressBar progressBar;
     protected JLabel statusLabel;
     protected JButton cancelButton;
 
-    public ProgressDialog(JFrame parent, String title, String message) {
+    public DbImportProgressDialog(JFrame parent, String title, String message) {
         super(parent, title, false);
 
         progressBar = new JProgressBar();
@@ -44,7 +44,6 @@ public class ProgressDialog extends CayenneDialog {
         JLabel messageLabel = new JLabel(message, SwingConstants.LEFT);
         cancelButton = new JButton("Cancel");
 
-        // assemble
         CellConstraints cc = new CellConstraints();
         FormLayout layout = new FormLayout("fill:max(250dlu;pref)", "p, 3dlu, p, 3dlu, p");
         PanelBuilder builder = new PanelBuilder(layout);

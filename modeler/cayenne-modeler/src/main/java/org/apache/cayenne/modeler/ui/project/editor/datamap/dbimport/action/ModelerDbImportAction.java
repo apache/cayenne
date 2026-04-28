@@ -30,7 +30,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.project.DataMapOps;
-import org.apache.cayenne.modeler.toolkit.ProgressDialog;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.progress.DbImportProgressDialog;
 import org.apache.cayenne.modeler.ui.action.DBConnectionAwareAction;
 import org.apache.cayenne.modeler.ui.dbloadresult.DbLoadResultDialog;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportController;
@@ -143,7 +143,7 @@ public class ModelerDbImportAction extends DBConnectionAwareAction {
         private final ModelerDbLoaderContext context;
         private final JFrame frame;
         private final String title;
-        private ProgressDialog dialog;
+        private DbImportProgressDialog dialog;
         private Timer taskPollingTimer;
         private boolean finished;
 
@@ -194,7 +194,7 @@ public class ModelerDbImportAction extends DBConnectionAwareAction {
             }
 
             LOGGER.debug("task still in progress, will show progress dialog...");
-            this.dialog = new ProgressDialog(frame, "Progress...", title);
+            this.dialog = new DbImportProgressDialog(frame, "Progress...", title);
             this.dialog.getCancelButton().addActionListener(e -> setCanceled(true));
             updateProgress();
 
