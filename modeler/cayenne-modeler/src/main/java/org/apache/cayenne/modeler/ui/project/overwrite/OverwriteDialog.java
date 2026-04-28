@@ -17,37 +17,34 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.overwrite;
+package org.apache.cayenne.modeler.ui.project.overwrite;
 
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
-
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-
 
 public class OverwriteDialog {
 
     private static final String SELECT_ANOTHER = "Select Another";
     private static final String OVERWRITE = "Overwrite";
     private static final String CANCEL = "Cancel";
-    private static final String[] OPTIONS = new String[] {
-            SELECT_ANOTHER, OVERWRITE, CANCEL
-    };
 
-    protected File file;
-    protected Component parent;
-    protected String result = CANCEL;
+    private final File file;
+    private final Component parent;
+    private String result;
 
     public OverwriteDialog(File file, Component parent) {
         this.file = file;
         this.parent = parent;
+        this.result = CANCEL;
     }
 
     public void show() {
-        JOptionPane pane = new JOptionPane("Do you want to overwrite an existing file: "
-                + file, JOptionPane.QUESTION_MESSAGE);
-        pane.setOptions(OPTIONS);
+        String message = "Do you want to overwrite the existing file: " + file;
+        JOptionPane pane = new JOptionPane(message, JOptionPane.QUESTION_MESSAGE);
+        pane.setOptions(new String[]{
+                SELECT_ANOTHER, OVERWRITE, CANCEL
+        });
 
         JDialog dialog = pane.createDialog(parent, "File exists");
         dialog.setVisible(true);
@@ -62,9 +59,5 @@ public class OverwriteDialog {
 
     public boolean shouldOverwrite() {
         return OVERWRITE.equals(result);
-    }
-
-    public boolean shouldCancel() {
-        return result == null || CANCEL.equals(result);
     }
 }
