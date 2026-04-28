@@ -25,7 +25,7 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.pref.FSPath;
-import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.*;
@@ -223,7 +223,7 @@ public class CgenConfigController extends ChildController<CgenController> {
      */
     public void selectOutputFolderAction() {
 
-        CayenneUndoableTextField outputFolder = view.getOutputFolder();
+        CMUndoableTextField outputFolder = view.getOutputFolder();
         String currentDir = outputFolder.getText();
 
         JFileChooser chooser = new JFileChooser();

@@ -33,10 +33,10 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureQueryDescriptor;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.modeler.toolkit.combobox.CayenneUndoableComboBox;
+import org.apache.cayenne.modeler.toolkit.combobox.CMUndoableComboBox;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.toolkit.Renderers;
-import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.query.CapsStrategy;
@@ -72,8 +72,8 @@ public class ProcedureQueryView extends JPanel {
     }
 
     protected ProjectController mediator;
-    protected CayenneUndoableTextField name;
-    protected CayenneUndoableTextField comment;
+    protected CMUndoableTextField name;
+    protected CMUndoableTextField comment;
     protected JComboBox<Procedure> queryRoot;
     protected SelectPropertiesPanel properties;
 
@@ -86,13 +86,13 @@ public class ProcedureQueryView extends JPanel {
 
     private void initView() {
         // create widgets
-        name = new CayenneUndoableTextField(mediator.getApplication().getUndoManager());
+        name = new CMUndoableTextField(mediator.getApplication().getUndoManager());
         name.addCommitListener(this::setQueryName);
 
-        comment = new CayenneUndoableTextField(mediator.getApplication().getUndoManager());
+        comment = new CMUndoableTextField(mediator.getApplication().getUndoManager());
         comment.addCommitListener(this::setQueryComment);
 
-        queryRoot = new CayenneUndoableComboBox<>(mediator.getApplication().getUndoManager());
+        queryRoot = new CMUndoableComboBox<>(mediator.getApplication().getUndoManager());
         queryRoot.setRenderer(Renderers.listRendererWithIcons());
         properties = new ProcedureQueryPropertiesPanel(mediator);
 
@@ -274,7 +274,7 @@ public class ProcedureQueryView extends JPanel {
         }
 
         protected PanelBuilder createPanelBuilder() {
-            labelCase = new CayenneUndoableComboBox<>(mediator.getApplication().getUndoManager());
+            labelCase = new CMUndoableComboBox<>(mediator.getApplication().getUndoManager());
             labelCase.setRenderer(new LabelCapsRenderer());
             labelCase.addActionListener(event -> {
                 String value = labelCase.getModel().getSelectedItem().toString();

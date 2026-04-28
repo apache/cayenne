@@ -39,12 +39,12 @@ import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.toolkit.table.BoardTableCellRenderer;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTablePanel;
+import org.apache.cayenne.modeler.toolkit.table.CMTable;
+import org.apache.cayenne.modeler.toolkit.table.CMTablePanel;
 import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
-import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
-import org.apache.cayenne.modeler.toolkit.table.CayenneComboBoxCellEditor;
+import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
+import org.apache.cayenne.modeler.toolkit.table.CMComboBoxCellEditor;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -63,7 +63,7 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
         DbEntityListener, DbRelationshipListener, TableModelListener {
 
     private final ProjectController controller;
-    private final CayenneTable table;
+    private final CMTable table;
     private final TableColumnPreferences tablePreferences;
     private final DbEntityPropertiesView parentPanel;
     private final JMenuItem editMenu;
@@ -77,7 +77,7 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
 
         GlobalActions globalActions = controller.getApplication().getActionManager();
 
-        table = new CayenneTable();
+        table = new CMTable();
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.setDefaultRenderer(DbEntity.class, Renderers.entityTableRendererWithIcons(controller));
@@ -96,7 +96,7 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
         popup.add(globalActions.getAction(PasteAction.class).buildMenu());
 
         TablePopupHandler.install(table, popup);
-        add(new CayenneTablePanel(table), BorderLayout.CENTER);
+        add(new CMTablePanel(table), BorderLayout.CENTER);
 
         this.controller.addDbEntityDisplayListener(this);
         this.controller.addDbEntityListener(this);
@@ -112,7 +112,7 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
                 CopyAttributeRelationshipAction.class);
     }
 
-    public CayenneTable getTable() {
+    public CMTable getTable() {
         return table;
     }
 
@@ -179,14 +179,14 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
         table.setRowHeight(25);
         table.setRowMargin(3);
 
-        targetCombo = new CayenneComboBox<>();
+        targetCombo = new CMComboBox<>();
         AutoCompletion.enable(targetCombo);
 
         targetCombo.setRenderer(Renderers.entityListRendererWithIcons(entity.getDataMap()));
         targetCombo.setModel(createComboModel());
 
         TableColumn targetColumn = table.getColumnModel().getColumn(DbRelationshipTableModel.TARGET);
-        targetColumn.setCellEditor(new CayenneComboBoxCellEditor(targetCombo));
+        targetColumn.setCellEditor(new CMComboBoxCellEditor(targetCombo));
 
         TableColumn toDepPkColumn = table.getColumnModel().getColumn(DbRelationshipTableModel.TO_DEPENDENT_KEY);
         toDepPkColumn.setCellRenderer(new CheckBoxCellRenderer());

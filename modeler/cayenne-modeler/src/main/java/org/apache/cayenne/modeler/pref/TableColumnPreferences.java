@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.pref;
 
-import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
+import org.apache.cayenne.modeler.toolkit.table.CMTable;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -97,7 +97,7 @@ public class TableColumnPreferences extends CayennePreference {
             int defaultSortColumn,
             boolean defaultSortOrder) {
         bind(table, minSizes, maxSizes, defaultSizes);
-        ((CayenneTable) table).setColumnPreferences(this);
+        ((CMTable) table).setColumnPreferences(this);
         this.defaultSortColumn = defaultSortColumn;
         this.defaultSortOrder = defaultSortOrder;
         updateSort(defaultSortColumn, defaultSortOrder);
@@ -178,7 +178,7 @@ public class TableColumnPreferences extends CayennePreference {
     }
 
     private void updateSort(int defaultSortColumn, boolean defaultSortOrder) {
-        ((CayenneTable) table).sort(
+        ((CMTable) table).sort(
                 getSortColumn(defaultSortColumn),
                 getSortOrder(defaultSortOrder));
     }

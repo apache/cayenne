@@ -29,8 +29,8 @@ import javax.swing.JComboBox;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.toolkit.checkbox.CayenneCheckBox;
-import org.apache.cayenne.modeler.toolkit.combobox.CayenneUndoableComboBox;
+import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
+import org.apache.cayenne.modeler.toolkit.combobox.CMUndoableComboBox;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.util.Comparators;
@@ -96,9 +96,9 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
 
         // create widgets
 
-        persistentObjects = new CayenneCheckBox(mediator.getApplication().getUndoManager());
+        persistentObjects = new CMCheckBox(mediator.getApplication().getUndoManager());
 
-        entities = new CayenneUndoableComboBox<>(mediator.getApplication().getUndoManager());
+        entities = new CMUndoableComboBox<>(mediator.getApplication().getUndoManager());
         entities.setRenderer(Renderers.listRendererWithIcons());
 
         this.setLayout(new BorderLayout());

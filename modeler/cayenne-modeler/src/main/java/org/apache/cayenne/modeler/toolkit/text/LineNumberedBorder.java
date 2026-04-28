@@ -26,9 +26,9 @@ import java.awt.*;
 public class LineNumberedBorder extends AbstractBorder {
 	private int etalon;
 	private int lineNumberWidth;
-	private CayenneTextPane pane;
+	private CMTextPane pane;
 
-	public LineNumberedBorder(CayenneTextPane pane) {
+	public LineNumberedBorder(CMTextPane pane) {
 		setEtalon(10);
 		this.pane = pane;
 	}

@@ -26,7 +26,7 @@ import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
+import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 
@@ -38,7 +38,7 @@ import java.util.Comparator;
  * Table model to display ObjRelationships.
  * 
  */
-public class ObjRelationshipTableModel extends CayenneTableModel<ObjRelationship> {
+public class ObjRelationshipTableModel extends CMTableModel<ObjRelationship> {
 
     // Columns
     public static final int REL_NAME = 0;

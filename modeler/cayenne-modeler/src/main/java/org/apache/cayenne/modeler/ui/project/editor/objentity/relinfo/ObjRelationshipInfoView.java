@@ -24,8 +24,8 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.MultiColumnBrowser;
-import org.apache.cayenne.modeler.toolkit.buttons.CayenneButtonPanel;
-import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
+import org.apache.cayenne.modeler.toolkit.buttons.CMButtonPanel;
+import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 
 import javax.swing.*;
 import java.awt.*;
@@ -75,12 +75,12 @@ public class ObjRelationshipInfoView extends JDialog{
         getRootPane().setDefaultButton(saveButton);
         saveButton.setEnabled(true);
         newRelButton.setEnabled(true);
-        collectionTypeCombo = new CayenneComboBox<>();
+        collectionTypeCombo = new CMComboBox<>();
         collectionTypeCombo.setVisible(true);
-        this.targetCombo = new CayenneComboBox<>();
+        this.targetCombo = new CMComboBox<>();
         targetCombo.setVisible(true);
 
-        this.mapKeysCombo = new CayenneComboBox<>();
+        this.mapKeysCombo = new CMComboBox<>();
         mapKeysCombo.setVisible(true);
       
         
@@ -88,7 +88,7 @@ public class ObjRelationshipInfoView extends JDialog{
         pathBrowser.setPreferredColumnSize(BROWSER_CELL_DIM);
         pathBrowser.setDefaultRenderer();
 
-        this.deleteRule = new CayenneComboBox<>(DELETE_RULES);
+        this.deleteRule = new CMComboBox<>(DELETE_RULES);
         this.usedForLocking = new JCheckBox();
         this.comment = new JTextField();
         
@@ -142,7 +142,7 @@ public class ObjRelationshipInfoView extends JDialog{
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), cc.xywh(1, 25, 5, 3));
 
         add(builder.getPanel(), BorderLayout.CENTER);
-        add(new CayenneButtonPanel(cancelButton, saveButton), BorderLayout.SOUTH);
+        add(new CMButtonPanel(cancelButton, saveButton), BorderLayout.SOUTH);
     }
 
     public JButton getSaveButton()

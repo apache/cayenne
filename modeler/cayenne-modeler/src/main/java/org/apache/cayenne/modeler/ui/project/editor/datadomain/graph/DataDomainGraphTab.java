@@ -27,7 +27,7 @@ import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.graph.GraphBuilder;
 import org.apache.cayenne.modeler.graph.GraphRegistry;
 import org.apache.cayenne.modeler.graph.GraphType;
-import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
+import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.RebuildGraphAction;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.SaveAsImageAction;
@@ -70,7 +70,7 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
             names[i] = types[i].getName();
         }
 
-        diagramCombo = new CayenneComboBox<>(names);
+        diagramCombo = new CMComboBox<>(names);
         diagramCombo.addItemListener(this);
 
         toolbar.add(new RebuildGraphAction(this,controller.getApplication()).buildButton(1));

@@ -26,11 +26,11 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 /**
- * A CayenneComboBox that records selection changes on the modeler's undo stack.
+ * A CMComboBox that records selection changes on the modeler's undo stack.
  */
-public class CayenneUndoableComboBox<T> extends CayenneComboBox<T> {
+public class CMUndoableComboBox<T> extends CMComboBox<T> {
 
-    public CayenneUndoableComboBox(CayenneUndoManager undoManager) {
+    public CMUndoableComboBox(CayenneUndoManager undoManager) {
         addItemListener(new UndoableSelectionListener(undoManager));
     }
 
@@ -50,7 +50,7 @@ public class CayenneUndoableComboBox<T> extends CayenneComboBox<T> {
                     deselectedItem = e.getItem();
                     break;
                 case ItemEvent.SELECTED:
-                    undoManager.addEdit(new CayenneComboBoxUndoableEdit(
+                    undoManager.addEdit(new CMComboBoxUndoableEdit(
                             (JComboBox<?>) e.getSource(), deselectedItem, e.getItem(), this));
                     break;
             }

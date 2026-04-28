@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.progress;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.toolkit.dialog.CayenneDialog;
+import org.apache.cayenne.modeler.toolkit.dialog.CMDialog;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,7 +30,7 @@ import java.awt.*;
 /**
  * A dialog rendering a progress bar.
  */
-public class DbImportProgressDialog extends CayenneDialog {
+public class DbImportProgressDialog extends CMDialog {
 
     protected JProgressBar progressBar;
     protected JLabel statusLabel;

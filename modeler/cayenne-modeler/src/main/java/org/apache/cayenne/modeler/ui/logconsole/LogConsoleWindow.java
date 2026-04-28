@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.logconsole;
 
-import org.apache.cayenne.modeler.toolkit.dialog.CayenneDialog;
+import org.apache.cayenne.modeler.toolkit.dialog.CMDialog;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -26,7 +26,7 @@ import java.awt.event.WindowEvent;
 /**
  * LogConsoleWindow is used to show log in a separate dialog
  */
-public class LogConsoleWindow extends CayenneDialog {
+public class LogConsoleWindow extends CMDialog {
 
     /**
      * Constructs a new log console window

@@ -25,7 +25,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.border.TopBorder;
-import org.apache.cayenne.modeler.toolkit.text.CayenneTextArea;
+import org.apache.cayenne.modeler.toolkit.text.CMTextArea;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -46,7 +46,7 @@ import java.awt.FlowLayout;
  */
 public class MergerOptionsView extends JDialog {
 
-    protected CayenneTextArea sql;
+    protected CMTextArea sql;
     protected JButton generateButton;
     protected JButton cancelButton;
     protected JButton saveSqlButton;
@@ -66,7 +66,7 @@ public class MergerOptionsView extends JDialog {
         this.tables = tables;
         this.tabs = new JTabbedPane(SwingConstants.TOP);
         this.tabs.setFocusable(false);
-        this.sql = new CayenneTextArea();
+        this.sql = new CMTextArea();
         sql.setEditable(false);
         sql.setLineWrap(true);
         sql.setWrapStyleWord(true);
@@ -132,7 +132,7 @@ public class MergerOptionsView extends JDialog {
         return saveSqlButton;
     }
 
-    public CayenneTextArea getSql() {
+    public CMTextArea getSql() {
         return sql;
     }
 }

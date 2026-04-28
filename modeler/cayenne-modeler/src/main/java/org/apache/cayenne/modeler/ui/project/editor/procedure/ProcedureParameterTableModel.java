@@ -24,13 +24,13 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
+import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.JOptionPane;
 import java.util.ArrayList;
 
-public class ProcedureParameterTableModel extends CayenneTableModel<ProcedureParameter> {
+public class ProcedureParameterTableModel extends CMTableModel<ProcedureParameter> {
 
     public static final int PARAMETER_NUMBER    = 0;
     public static final int PARAMETER_NAME      = 1;

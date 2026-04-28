@@ -19,29 +19,32 @@
 
 package org.apache.cayenne.modeler.toolkit.table;
 
-import javax.swing.DefaultCellEditor;
-import javax.swing.JTextField;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import java.awt.BorderLayout;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.EventObject;
 
 /**
- * Text-field cell editor that suppresses editing when the user is performing a
- * multi-row selection gesture (ctrl/shift-click).
+ * Wraps a table in a scroll pane. A click on the scroll pane outside the table
+ * ends any in-progress cell edit.
  */
-public class CayenneTextFieldCellEditor extends DefaultCellEditor {
+public class CMTablePanel extends JPanel {
 
-    public CayenneTextFieldCellEditor(JTextField textField) {
-        super(textField);
-    }
+    public CMTablePanel(JTable table) {
+        setLayout(new BorderLayout(5, 5));
 
-    @Override
-    public boolean isCellEditable(EventObject e) {
-        if (e instanceof MouseEvent) {
-            MouseEvent me = (MouseEvent) e;
-            if (me.isControlDown() || me.isShiftDown()) {
-                return false;
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (table.isEditing()) {
+                    table.getCellEditor().stopCellEditing();
+                }
             }
-        }
-        return super.isCellEditable(e);
+        });
+
+        add(scrollPane, BorderLayout.CENTER);
     }
 }

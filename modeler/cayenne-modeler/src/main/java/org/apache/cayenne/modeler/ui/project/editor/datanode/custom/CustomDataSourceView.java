@@ -23,7 +23,7 @@ import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
 
-import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
@@ -31,13 +31,13 @@ import com.jgoodies.forms.layout.FormLayout;
 
 public class CustomDataSourceView extends JPanel {
 
-    protected CayenneUndoableTextField factoryName;
-    protected CayenneUndoableTextField locationHint;
+    protected CMUndoableTextField factoryName;
+    protected CMUndoableTextField locationHint;
 
     public CustomDataSourceView(CayenneUndoManager undoManager) {
 
-        factoryName = new CayenneUndoableTextField(undoManager);
-        locationHint = new CayenneUndoableTextField(undoManager);
+        factoryName = new CMUndoableTextField(undoManager);
+        locationHint = new CMUndoableTextField(undoManager);
 
         // assemble
         FormLayout layout = new FormLayout("right:80dlu, 3dlu, fill:200dlu", "");
@@ -53,11 +53,11 @@ public class CustomDataSourceView extends JPanel {
         this.add(builder.getPanel(), BorderLayout.CENTER);
     }
 
-    public CayenneUndoableTextField getLocationHint() {
+    public CMUndoableTextField getLocationHint() {
         return locationHint;
     }
 
-    public CayenneUndoableTextField getFactoryName() {
+    public CMUndoableTextField getFactoryName() {
         return factoryName;
     }
 }

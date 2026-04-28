@@ -22,8 +22,8 @@ package org.apache.cayenne.modeler.ui.errors;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.UrlOpener;
-import org.apache.cayenne.modeler.toolkit.buttons.CayenneButtonPanel;
-import org.apache.cayenne.modeler.toolkit.dialog.CayenneDialog;
+import org.apache.cayenne.modeler.toolkit.buttons.CMButtonPanel;
+import org.apache.cayenne.modeler.toolkit.dialog.CMDialog;
 import org.apache.cayenne.util.LocalizedStringsHandler;
 import org.apache.cayenne.util.Util;
 
@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-class ErrorDialog extends CayenneDialog implements ActionListener {
+class ErrorDialog extends CMDialog implements ActionListener {
 
     protected JButton close;
     protected JButton showHide;
@@ -113,7 +113,7 @@ class ErrorDialog extends CayenneDialog implements ActionListener {
 
         JButton[] buttons = (showHide != null) ? new JButton[]{close, showHide}
                 : new JButton[]{close};
-        pane.add(new CayenneButtonPanel(buttons), BorderLayout.SOUTH);
+        pane.add(new CMButtonPanel(buttons), BorderLayout.SOUTH);
 
         // prepare to display
         this.pack();

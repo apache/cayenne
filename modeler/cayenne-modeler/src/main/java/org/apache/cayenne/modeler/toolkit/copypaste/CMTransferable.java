@@ -31,16 +31,16 @@ import java.io.StringWriter;
 import java.util.List;
 
 /**
- * CayenneTransferable is a data holder of Cayenne object(s), like Entities, Attributes, Relationships etc.
+ * CMTransferable is a data holder of Cayenne object(s), like Entities, Attributes, Relationships etc.
  */
-public class CayenneTransferable implements Transferable {
+public class CMTransferable implements Transferable {
 
     public static final DataFlavor CAYENNE_FLAVOR = new DataFlavor(Serializable.class, "Cayenne Object");
     private static final DataFlavor[] FLAVORS = new DataFlavor[]{CAYENNE_FLAVOR, DataFlavor.stringFlavor};
 
     private final Object data;
 
-    public CayenneTransferable(Object data) {
+    public CMTransferable(Object data) {
         this.data = data;
     }
 

@@ -22,14 +22,14 @@ import org.apache.cayenne.map.CallbackDescriptor;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
+import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 
 import java.util.List;
 
 /**
  * Table model for displaying methods list for a particular CallbackDescriptor
  */
-public class CallbackDescriptorTableModel extends CayenneTableModel<String> {
+public class CallbackDescriptorTableModel extends CMTableModel<String> {
 
     private static final int COLUMN_COUNT = 1;
     public static final int METHOD_NAME = 0;

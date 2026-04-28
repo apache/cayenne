@@ -34,7 +34,7 @@ import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
-import org.apache.cayenne.modeler.toolkit.copypaste.CayenneTransferable;
+import org.apache.cayenne.modeler.toolkit.copypaste.CMTransferable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -86,7 +86,7 @@ public class CopyAction extends ModelerAbstractAction {
 
         if (content != null) {
             Clipboard sysClip = Toolkit.getDefaultToolkit().getSystemClipboard();
-            sysClip.setContents(new CayenneTransferable(content), null);
+            sysClip.setContents(new CMTransferable(content), null);
         }
 
         // update paste button

@@ -28,17 +28,17 @@ import java.awt.event.WindowEvent;
 /**
  * Superclass of CayenneModeler dialogs.
  */
-public class CayenneDialog extends JDialog {
+public class CMDialog extends JDialog {
 
-    public CayenneDialog(Frame owner) throws HeadlessException {
+    public CMDialog(Frame owner) throws HeadlessException {
         super(owner);
     }
 
-    public CayenneDialog(Frame owner, String title, boolean modal) throws HeadlessException {
+    public CMDialog(Frame owner, String title, boolean modal) throws HeadlessException {
         super(owner, title, modal);
     }
 
-    public CayenneDialog(Dialog owner, String title, boolean modal) throws HeadlessException {
+    public CMDialog(Dialog owner, String title, boolean modal) throws HeadlessException {
         super(owner, title, modal);
     }
 
@@ -76,9 +76,9 @@ public class CayenneDialog extends JDialog {
 
         KeyStroke escReleased = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, true);
         ActionListener closeAction = e -> {
-            if (CayenneDialog.this.isVisible()) {
-                WindowEvent windowClosing = new WindowEvent(CayenneDialog.this, WindowEvent.WINDOW_CLOSING);
-                CayenneDialog.super.processWindowEvent(windowClosing);
+            if (CMDialog.this.isVisible()) {
+                WindowEvent windowClosing = new WindowEvent(CMDialog.this, WindowEvent.WINDOW_CLOSING);
+                CMDialog.super.processWindowEvent(windowClosing);
             }
         };
 

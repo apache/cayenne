@@ -31,9 +31,9 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.modeler.event.model.ProcedureEvent;
-import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
-import org.apache.cayenne.modeler.toolkit.checkbox.CayenneCheckBox;
+import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -47,10 +47,10 @@ import java.util.EventObject;
 public class ProcedureTab extends JPanel implements ProcedureDisplayListener, ExistingSelectionProcessor {
 
     protected ProjectController eventController;
-    protected CayenneUndoableTextField name;
-    protected CayenneUndoableTextField schema;
-    protected CayenneUndoableTextField catalog;
-    protected CayenneUndoableTextField comment;
+    protected CMUndoableTextField name;
+    protected CMUndoableTextField schema;
+    protected CMUndoableTextField catalog;
+    protected CMUndoableTextField comment;
     protected JCheckBox returnsValue;
     protected boolean ignoreChange;
 
@@ -64,19 +64,19 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
     private void initView() {
         // create widgets
 
-        this.name = new CayenneUndoableTextField(eventController.getApplication().getUndoManager());
+        this.name = new CMUndoableTextField(eventController.getApplication().getUndoManager());
         this.name.addCommitListener(this::setProcedureName);
 
-        this.schema = new CayenneUndoableTextField(eventController.getApplication().getUndoManager());
+        this.schema = new CMUndoableTextField(eventController.getApplication().getUndoManager());
         this.schema.addCommitListener(this::setSchema);
 
-        this.catalog = new CayenneUndoableTextField(eventController.getApplication().getUndoManager());
+        this.catalog = new CMUndoableTextField(eventController.getApplication().getUndoManager());
         this.catalog.addCommitListener(this::setCatalog);
 
-        this.comment = new CayenneUndoableTextField(eventController.getApplication().getUndoManager());
+        this.comment = new CMUndoableTextField(eventController.getApplication().getUndoManager());
         this.comment.addCommitListener(this::setComment);
 
-        this.returnsValue = new CayenneCheckBox(eventController.getApplication().getUndoManager());
+        this.returnsValue = new CMCheckBox(eventController.getApplication().getUndoManager());
         this.returnsValue.setToolTipText("first parameter will be used as return value");
 
         FormLayout layout = new FormLayout("right:pref, 3dlu, fill:200dlu", "");

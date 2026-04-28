@@ -17,34 +17,34 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.toolkit.table;
+package org.apache.cayenne.modeler.toolkit.combobox;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import java.awt.BorderLayout;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.UIManager;
+import java.awt.Color;
+import java.util.List;
+import java.util.Vector;
 
 /**
- * Wraps a table in a scroll pane. A click on the scroll pane outside the table
- * ends any in-progress cell edit.
+ * A modeler-styled JComboBox.
  */
-public class CayenneTablePanel extends JPanel {
+public class CMComboBox<T> extends JComboBox<T> {
+    
+    public CMComboBox() {
+        setFont(UIManager.getFont("Label.font"));
+        setBackground(Color.WHITE);
+        setMaximumRowCount(12);
+    }
 
-    public CayenneTablePanel(JTable table) {
-        setLayout(new BorderLayout(5, 5));
+    @SafeVarargs
+    public CMComboBox(T... model) {
+        this();
+        setModel(new DefaultComboBoxModel<>(model));
+    }
 
-        JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (table.isEditing()) {
-                    table.getCellEditor().stopCellEditing();
-                }
-            }
-        });
-
-        add(scrollPane, BorderLayout.CENTER);
+    public CMComboBox(List<T> model) {
+        this();
+        setModel(new DefaultComboBoxModel<>(new Vector<>(model)));
     }
 }

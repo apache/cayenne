@@ -16,34 +16,18 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.modeler.toolkit.text;
 
-import org.apache.cayenne.modeler.undo.CayenneUndoManager;
+import org.apache.cayenne.validation.ValidationException;
 
-import javax.swing.event.UndoableEditListener;
+/**
+ * Listener invoked when a Cayenne text widget commits a new value. Implementations may
+ * throw {@link ValidationException} to reject the input — the widget will revert to the
+ * previous committed value and surface the message to the user.
+ */
+@FunctionalInterface
+public interface CMTextCommitListener {
 
-public class CayenneUndoableTextField extends CayenneTextField {
-
-    private final UndoableEditListener undoListener;
-
-    public CayenneUndoableTextField(CayenneUndoManager undoManager) {
-        this.undoListener = new TextComponentUndoListener(this, undoManager);
-        this.getDocument().addUndoableEditListener(this.undoListener);
-    }
-
-    public CayenneUndoableTextField(CayenneUndoManager undoManager, int columns) {
-        super(columns);
-        this.undoListener = new TextComponentUndoListener(this, undoManager);
-        this.getDocument().addUndoableEditListener(this.undoListener);
-    }
-
-    @Override
-    public void setText(String t) {
-        this.getDocument().removeUndoableEditListener(this.undoListener);
-        try {
-            super.setText(t);
-        } finally {
-            this.getDocument().addUndoableEditListener(this.undoListener);
-        }
-    }
+    void onCommit(String value) throws ValidationException;
 }

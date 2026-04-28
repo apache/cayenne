@@ -31,8 +31,8 @@ import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.modeler.toolkit.combobox.CayenneUndoableComboBox;
-import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.combobox.CMUndoableComboBox;
+import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
@@ -71,7 +71,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
         labelCapsLabels.put(CapsStrategy.UPPER, UPPER_CAPS_LABEL);
     }
 
-    protected CayenneUndoableTextField comment;
+    protected CMUndoableTextField comment;
     protected SelectPropertiesPanel properties;
 
     public SQLTemplateMainTab(ProjectController mediator) {
@@ -83,10 +83,10 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
 
     private void initView() {
         // create widgets
-        name = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
+        name = new CMUndoableTextField(controller.getApplication().getUndoManager());
         name.addCommitListener(this::setQueryName);
 
-        comment = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
+        comment = new CMUndoableTextField(controller.getApplication().getUndoManager());
         comment.addCommitListener(this::setQueryComment);
 
         properties = new SQLTemplateQueryPropertiesPanel(controller);
@@ -203,7 +203,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
 
         @Override
         protected PanelBuilder createPanelBuilder() {
-            labelCase = new CayenneUndoableComboBox<>(controller.getApplication().getUndoManager());
+            labelCase = new CMUndoableComboBox<>(controller.getApplication().getUndoManager());
             labelCase.setRenderer(new LabelCapsRenderer());
 
             labelCase.addActionListener(event -> {

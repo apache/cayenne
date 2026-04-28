@@ -16,46 +16,32 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.modeler.toolkit.text;
 
-package org.apache.cayenne.modeler.toolkit.checkbox;
-
+import org.apache.cayenne.modeler.toolkit.text.style.TextSyntax;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemListener;
+import javax.swing.event.UndoableEditListener;
 
-public class CayenneCheckBox extends JCheckBox {
+public class CMUndoableTextPane extends CMTextPane {
 
-    private boolean modelUpdateDisabled;
+    private UndoableEditListener undoListener;
 
-    public CayenneCheckBox(CayenneUndoManager undoManager) {
-        ActionListener undoListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                undoManager.addEdit(new CayenneCheckBoxUndoableEdit((JCheckBox) e.getSource(), this));
-            }
-        };
-        this.addActionListener(undoListener);
+    public CMUndoableTextPane(CayenneUndoManager undoManager, TextSyntax syntax) {
+        super(syntax);
+
+        this.undoListener = new TextComponentUndoListener(this.getPane(), undoManager);
+        getDocument().addUndoableEditListener(this.undoListener);
     }
 
     @Override
-    public void setSelected(boolean b) {
-        modelUpdateDisabled = true;
+    public void setText(String t) {
+        getDocument().removeUndoableEditListener(this.undoListener);
+
         try {
-            super.setSelected(b);
+            super.setText(t);
         } finally {
-            modelUpdateDisabled = false;
+            getDocument().addUndoableEditListener(this.undoListener);
         }
-    }
-
-    @Override
-    public void addItemListener(ItemListener l) {
-        super.addItemListener(e -> {
-            if(!modelUpdateDisabled) {
-                l.itemStateChanged(e);
-            }
-        });
     }
 }

@@ -22,13 +22,13 @@ package org.apache.cayenne.modeler.ui.preferences.classpath.maven;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.toolkit.buttons.CayenneButtonPanel;
-import org.apache.cayenne.modeler.toolkit.dialog.CayenneDialog;
+import org.apache.cayenne.modeler.toolkit.buttons.CMButtonPanel;
+import org.apache.cayenne.modeler.toolkit.dialog.CMDialog;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class MavenDependencyDialogView extends CayenneDialog {
+public class MavenDependencyDialogView extends CMDialog {
 
     private JButton downloadButton;
     private JButton cancelButton;
@@ -83,7 +83,7 @@ public class MavenDependencyDialogView extends CayenneDialog {
             cancelButton = new JButton("Cancel");
             getRootPane().setDefaultButton(downloadButton);
 
-            getContentPane().add(new CayenneButtonPanel(cancelButton, downloadButton), BorderLayout.SOUTH);
+            getContentPane().add(new CMButtonPanel(cancelButton, downloadButton), BorderLayout.SOUTH);
         }
     }
 

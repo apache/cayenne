@@ -16,32 +16,25 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.toolkit.text;
 
-import org.apache.cayenne.modeler.toolkit.text.style.TextSyntax;
-import org.apache.cayenne.modeler.undo.CayenneUndoManager;
+package org.apache.cayenne.modeler.toolkit.buttons;
 
-import javax.swing.event.UndoableEditListener;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import java.awt.FlowLayout;
 
-public class CayenneUndoableTextPane extends CayenneTextPane {
+/**
+ * A panel that lays out a row of right-aligned buttons, typically used at the bottom of a dialog.
+ */
+public class CMButtonPanel extends JPanel {
 
-    private UndoableEditListener undoListener;
+    public CMButtonPanel(JButton... buttons) {
+        setBorder(BorderFactory.createEmptyBorder(3, 20, 3, 7));
+        setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-    public CayenneUndoableTextPane(CayenneUndoManager undoManager, TextSyntax syntax) {
-        super(syntax);
-
-        this.undoListener = new TextComponentUndoListener(this.getPane(), undoManager);
-        getDocument().addUndoableEditListener(this.undoListener);
-    }
-
-    @Override
-    public void setText(String t) {
-        getDocument().removeUndoableEditListener(this.undoListener);
-
-        try {
-            super.setText(t);
-        } finally {
-            getDocument().addUndoableEditListener(this.undoListener);
+        for (JButton button : buttons) {
+            add(button);
         }
     }
 }

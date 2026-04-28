@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.dbactionoptions;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.toolkit.dialog.CayenneDialog;
+import org.apache.cayenne.modeler.toolkit.dialog.CMDialog;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -35,7 +35,7 @@ import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.util.Collection;
 
-public class DbActionOptionsDialog extends CayenneDialog {
+public class DbActionOptionsDialog extends CMDialog {
 
     public static final int CANCEL = 0;
     public static final int SELECT = 1;

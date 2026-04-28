@@ -33,7 +33,7 @@ import org.apache.cayenne.modeler.util.EntityTreeFilter;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.toolkit.MultiColumnBrowser;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
+import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.util.CayenneMapEntry;
 
 import javax.swing.BorderFactory;
@@ -77,7 +77,7 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
     protected SQLTemplateDescriptor sqlTemplate;
 
     protected MultiColumnBrowser browser;
-    protected CayenneTable table;
+    protected CMTable table;
 
     protected CardLayout cardLayout;
     protected JPanel messagePanel;
@@ -173,7 +173,7 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
 
     protected JPanel createEditorPanel() {
 
-        table = new CayenneTable();
+        table = new CMTable();
         table.setPreferredScrollableViewportSize(TABLE_DIM);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 

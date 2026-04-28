@@ -24,14 +24,14 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import java.awt.event.ItemListener;
 
-class CayenneComboBoxUndoableEdit extends AbstractUndoableEdit {
+class CMComboBoxUndoableEdit extends AbstractUndoableEdit {
 
     private final JComboBox<?> comboBox;
     private final Object deselectedItem;
     private final Object selectedItem;
     private final ItemListener undoItemListener;
 
-    public CayenneComboBoxUndoableEdit(
+    public CMComboBoxUndoableEdit(
             JComboBox<?> comboBox,
             Object deselectedItem,
             Object selectedItem,

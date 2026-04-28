@@ -36,13 +36,13 @@ import java.util.List;
  * Cayenne text widgets, but unlike them this area fires per keystroke — there is no prior
  * committed value to revert to and surfacing a dialog mid-typing would be hostile, so any
  * thrown {@code ValidationException} is silently dropped here. Validation that reverts and
- * prompts belongs on a commit-on-focus-lost widget such as {@link CayenneTextField}.
+ * prompts belongs on a commit-on-focus-lost widget such as {@link CMTextField}.
  */
-public class CayenneTextArea extends JTextArea {
+public class CMTextArea extends JTextArea {
 
-    private final List<CayenneTextCommitListener> commitListeners;
+    private final List<CMTextCommitListener> commitListeners;
 
-    public CayenneTextArea() {
+    public CMTextArea() {
         commitListeners = new ArrayList<>(2);
         getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -61,14 +61,14 @@ public class CayenneTextArea extends JTextArea {
         });
     }
 
-    public void addCommitListener(CayenneTextCommitListener listener) {
+    public void addCommitListener(CMTextCommitListener listener) {
         commitListeners.add(listener);
     }
 
     private void fireCommit() {
         String text = getText();
         String value = (text != null && text.isEmpty()) ? null : text;
-        for (CayenneTextCommitListener listener : commitListeners) {
+        for (CMTextCommitListener listener : commitListeners) {
             try {
                 listener.onCommit(value);
             } catch (ValidationException ignored) {

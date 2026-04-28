@@ -25,7 +25,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
 import org.apache.cayenne.modeler.project.DbAttributeOps;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
+import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
@@ -38,7 +38,7 @@ import java.util.Collections;
 /**
  * Model for DbEntity attributes. Allows adding/removing attributes, modifying types and names.
  */
-public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
+public class DbAttributeTableModel extends CMTableModel<DbAttribute> {
 
     static final int DB_ATTRIBUTE_NAME = 0;
     static final int DB_ATTRIBUTE_TYPE = 1;

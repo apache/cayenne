@@ -38,7 +38,7 @@ import java.util.EventObject;
 /**
  * Common superclass of tables used in Cayenne. Contains some common configuration settings and utility methods.
  */
-public class CayenneTable extends JTable {
+public class CMTable extends JTable {
 
     private final static int EPSILON = 5;
     private final static Cursor east = Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR);
@@ -49,7 +49,7 @@ public class CayenneTable extends JTable {
     private TableColumnPreferences columnPreferences;
     private boolean isColumnWidthChanged;
 
-    public CayenneTable() {
+    public CMTable() {
         setRowHeight(25);
         setRowMargin(3);
 
@@ -77,7 +77,7 @@ public class CayenneTable extends JTable {
         super.createDefaultEditors();
 
         JTextField textField = new JTextField(20);
-        CayenneTextFieldCellEditor textEditor = new CayenneTextFieldCellEditor(textField);
+        CMTextFieldCellEditor textEditor = new CMTextFieldCellEditor(textField);
         textEditor.setClickCountToStart(1);
 
         setDefaultEditor(Object.class, textEditor);
@@ -85,12 +85,12 @@ public class CayenneTable extends JTable {
     }
 
     /**
-     * @return CayenneTableModel, or null if model can't be casted to CayenneTableModel.
+     * @return CMTableModel, or null if model can't be casted to CMTableModel.
      */
-    public CayenneTableModel getCayenneModel() {
+    public CMTableModel getCayenneModel() {
         TableModel model = getModel();
-        if (model instanceof CayenneTableModel) {
-            return (CayenneTableModel) model;
+        if (model instanceof CMTableModel) {
+            return (CMTableModel) model;
         }
         return null;
     }
@@ -147,7 +147,7 @@ public class CayenneTable extends JTable {
             return;
         }
 
-        CayenneTableModel model = getCayenneModel();
+        CMTableModel model = getCayenneModel();
         int ind = model.getObjectList().indexOf(row);
 
         if (ind >= 0) {
@@ -157,7 +157,7 @@ public class CayenneTable extends JTable {
 
     public void select(int index) {
 
-        CayenneTableModel model = getCayenneModel();
+        CMTableModel model = getCayenneModel();
         if (index >= model.getObjectList().size()) {
             index = model.getObjectList().size() - 1;
         }
@@ -288,7 +288,7 @@ public class CayenneTable extends JTable {
     }
 
     private void sortByDefinedColumn(int col, int sortCol, boolean order) {
-        CayenneTableModel model = (CayenneTableModel) getModel();
+        CMTableModel model = (CMTableModel) getModel();
         if (renderer.isSortingEnabled() && model.isColumnSortable(sortCol)) {
             renderer.setSelectedColumn(col, order);
             getTableHeader().repaint();
@@ -311,7 +311,7 @@ public class CayenneTable extends JTable {
             } else if (!isResizeCursor()) {
                 int col = header.columnAtPoint(e.getPoint());
                 int sortCol = convertColumnIndexToModel(col);
-                if (renderer.isSortingEnabled() && ((CayenneTableModel) getModel()).isColumnSortable(sortCol)) {
+                if (renderer.isSortingEnabled() && ((CMTableModel) getModel()).isColumnSortable(sortCol)) {
                     boolean isAscent = SortButtonRenderer.DOWN != renderer.getState(col);
                     sortByDefinedColumn(col, sortCol, isAscent);
                     columnPreferences.setSortOrder(isAscent);
@@ -341,13 +341,13 @@ public class CayenneTable extends JTable {
             if (tcr == null)
                 tcr = getTableHeader().getDefaultRenderer();
             Object obj = tc.getHeaderValue();
-            Component comp = tcr.getTableCellRendererComponent(CayenneTable.this, obj, false, false, 0, 0);
+            Component comp = tcr.getTableCellRendererComponent(CMTable.this, obj, false, false, 0, 0);
             int maxWidth = comp.getPreferredSize().width;
 
             for (int i = 0, ub = getRowCount(); i != ub; ++i) {
                 tcr = getCellRenderer(i, col);
                 obj = getValueAt(i, col);
-                comp = tcr.getTableCellRendererComponent(CayenneTable.this, obj, false, false, i, col);
+                comp = tcr.getTableCellRendererComponent(CMTable.this, obj, false, false, i, col);
                 int w = comp.getPreferredSize().width;
                 if (w > maxWidth)
                     maxWidth = w;

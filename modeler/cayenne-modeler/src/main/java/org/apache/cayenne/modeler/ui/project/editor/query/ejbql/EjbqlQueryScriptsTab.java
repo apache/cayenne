@@ -33,12 +33,12 @@ import javax.swing.text.Document;
 
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextPane;
+import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextPane;
 import org.apache.cayenne.project.validation.EJBQLStatementValidator;
 import org.apache.cayenne.project.validation.EJBQLStatementValidator.PositionException;
 import org.apache.cayenne.map.EJBQLQueryDescriptor;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.modeler.toolkit.text.CayenneTextPane;
+import org.apache.cayenne.modeler.toolkit.text.CMTextPane;
 import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +48,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(EjbqlQueryScriptsTab.class);
 
     protected ProjectController mediator;
-    protected CayenneTextPane scriptArea;
+    protected CMTextPane scriptArea;
     private boolean updateDisabled;
     protected EJBQLStatementValidator ejbqlQueryValidator = new EJBQLStatementValidator();
 
@@ -64,7 +64,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
 
     private void initView() {
 
-        scriptArea = new CayenneUndoableTextPane(mediator.getApplication().getUndoManager(), new EjbqlSyntax());
+        scriptArea = new CMUndoableTextPane(mediator.getApplication().getUndoManager(), new EjbqlSyntax());
         scriptArea.getDocument().addDocumentListener(this);
         scriptArea.getDocument().addDocumentListener(new DocumentListener() {
 

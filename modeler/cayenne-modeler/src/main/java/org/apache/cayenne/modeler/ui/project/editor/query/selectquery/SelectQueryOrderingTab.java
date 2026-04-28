@@ -25,7 +25,7 @@ import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.toolkit.MultiColumnBrowser;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
+import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
@@ -66,7 +66,7 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
     protected SelectQueryDescriptor selectQuery;
 
     protected MultiColumnBrowser browser;
-    protected CayenneTable table;
+    protected CMTable table;
 
     protected CardLayout cardLayout;
     protected JPanel messagePanel;
@@ -146,7 +146,7 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
 
     protected JPanel createEditorPanel() {
 
-        table = new CayenneTable();
+        table = new CMTable();
         table.setRowHeight(25);
         table.setRowMargin(3);
         table.setPreferredScrollableViewportSize(TABLE_DIM);

@@ -22,9 +22,9 @@ package org.apache.cayenne.modeler.ui.project.editor.objentity.properties;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
-import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
+import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
+import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.util.Util;
 
@@ -45,7 +45,7 @@ import java.util.regex.Pattern;
 /**
  * Used as cell editor, when you need to choose path in comboBox and use autocompletion.
  */
-abstract class PathChooserComboBoxCellEditor<T extends CayenneTableModel<?>> extends AbstractCellEditor implements TableCellEditor, ActionListener, PopupMenuListener {
+abstract class PathChooserComboBoxCellEditor<T extends CMTableModel<?>> extends AbstractCellEditor implements TableCellEditor, ActionListener, PopupMenuListener {
 
     protected JComboBox<String> comboBoxPathChooser;
     protected int previousEmbeddedLevel = 0;
@@ -66,7 +66,7 @@ abstract class PathChooserComboBoxCellEditor<T extends CayenneTableModel<?>> ext
         String dbAttributePath = getPathToInitializeCombo(model, row);
         List<String> nodeChildren = getChildren(currentNode, dbAttributePath);
         this.table = table;
-        comboBoxPathChooser = new CayenneComboBox<>(nodeChildren);
+        comboBoxPathChooser = new CMComboBox<>(nodeChildren);
         comboBoxPathChooser.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent event) {

@@ -24,8 +24,8 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.TemplateType;
-import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
-import org.apache.cayenne.modeler.toolkit.checkbox.CayenneCheckBox;
+import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.BorderFactory;
@@ -41,7 +41,7 @@ import java.nio.file.Paths;
 
 public class CgenConfigPanel extends JPanel {
 
-    protected CayenneUndoableTextField outputFolder;
+    protected CMUndoableTextField outputFolder;
     protected JButton selectOutputFolder;
     protected CgenController cgenController;
     private boolean isDataValid;
@@ -52,8 +52,8 @@ public class CgenConfigPanel extends JPanel {
     private final JCheckBox usePackagePath;
     private final JCheckBox createPropertyNames;
     private final JCheckBox pkProperties;
-    private CayenneUndoableTextField superPkg;
-    protected CayenneUndoableTextField outputPattern;
+    private CMUndoableTextField superPkg;
+    protected CMUndoableTextField outputPattern;
     private JButton editSuperclassTemplateBtn;
     private JButton editSubclassTemplateBtn;
     private JButton editEmbeddableTemplateBtn;
@@ -71,11 +71,11 @@ public class CgenConfigPanel extends JPanel {
     public CgenConfigPanel(CgenController cgenController) {
         this.cgenController = cgenController;
         this.selectOutputFolder = new JButton("..");
-        this.pairs = new CayenneCheckBox(cgenController.getApplication().getUndoManager());
-        this.overwrite = new CayenneCheckBox(cgenController.getApplication().getUndoManager());
-        this.usePackagePath = new CayenneCheckBox(cgenController.getApplication().getUndoManager());
-        this.createPropertyNames = new CayenneCheckBox(cgenController.getApplication().getUndoManager());
-        this.pkProperties = new CayenneCheckBox(cgenController.getApplication().getUndoManager());
+        this.pairs = new CMCheckBox(cgenController.getApplication().getUndoManager());
+        this.overwrite = new CMCheckBox(cgenController.getApplication().getUndoManager());
+        this.usePackagePath = new CMCheckBox(cgenController.getApplication().getUndoManager());
+        this.createPropertyNames = new CMCheckBox(cgenController.getApplication().getUndoManager());
+        this.pkProperties = new CMCheckBox(cgenController.getApplication().getUndoManager());
 
         initTextFields();
         initEditTemplateLabels();
@@ -166,19 +166,19 @@ public class CgenConfigPanel extends JPanel {
     }
 
     private void initTextFields() {
-        this.superPkg = new CayenneUndoableTextField(cgenController.getApplication().getUndoManager());
+        this.superPkg = new CMUndoableTextField(cgenController.getApplication().getUndoManager());
         this.superPkg.addCommitListener(text -> {
             getCgenConfig().setSuperPkg(text);
             checkConfigDirty();
         });
 
-        this.outputPattern = new CayenneUndoableTextField(cgenController.getApplication().getUndoManager());
+        this.outputPattern = new CMUndoableTextField(cgenController.getApplication().getUndoManager());
         this.outputPattern.addCommitListener(text -> {
             getCgenConfig().setOutputPattern(text);
             checkConfigDirty();
         });
 
-        this.outputFolder = new CayenneUndoableTextField(cgenController.getApplication().getUndoManager()) {
+        this.outputFolder = new CMUndoableTextField(cgenController.getApplication().getUndoManager()) {
             @Override
             public void setText(String text) {
                 super.setText(text);
@@ -241,11 +241,11 @@ public class CgenConfigPanel extends JPanel {
         return pkProperties;
     }
 
-    public CayenneUndoableTextField getOutputPattern() {
+    public CMUndoableTextField getOutputPattern() {
         return outputPattern;
     }
 
-    public CayenneUndoableTextField getSuperPkg() {
+    public CMUndoableTextField getSuperPkg() {
         return superPkg;
     }
 
@@ -298,7 +298,7 @@ public class CgenConfigPanel extends JPanel {
     }
 
 
-    public CayenneUndoableTextField getOutputFolder() {
+    public CMUndoableTextField getOutputFolder() {
         return outputFolder;
     }
 

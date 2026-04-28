@@ -24,8 +24,8 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
-import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
-import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
+import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
 
@@ -37,15 +37,15 @@ public class ReverseEngineeringConfigPanel extends JPanel {
     private static final String DATA_FIELDS_LAYOUT = "right:pref, 3dlu, fill:235dlu";
 
     private JComboBox<String> strategyCombo;
-    private CayenneUndoableTextField meaningfulPk;
-    private CayenneUndoableTextField stripFromTableNames;
+    private CMUndoableTextField meaningfulPk;
+    private CMUndoableTextField stripFromTableNames;
     private JCheckBox skipRelationshipsLoading;
     private JCheckBox skipPrimaryKeyLoading;
     private JCheckBox forceDataMapCatalog;
     private JCheckBox forceDataMapSchema;
     private JCheckBox useJava7Types;
 
-    private CayenneUndoableTextField tableTypes;
+    private CMUndoableTextField tableTypes;
 
     private final ProjectController controller;
     private final DbImportView dbImportView;
@@ -103,11 +103,11 @@ public class ReverseEngineeringConfigPanel extends JPanel {
     }
 
     private void initFormElements() {
-        strategyCombo = new CayenneComboBox<>();
+        strategyCombo = new CMComboBox<>();
         AutoCompletion.enable(strategyCombo, false, true);
         strategyCombo.setToolTipText("Naming strategy to use");
 
-        meaningfulPk = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
+        meaningfulPk = new CMUndoableTextField(controller.getApplication().getUndoManager());
         meaningfulPk.setToolTipText("<html>Regular expression to filter tables with meaningful primary keys.<br>" +
                 "Multiple expressions divided by comma can be used.<br>" +
                 "Example: <b>^table1|^table2|^prefix.*|table_name</b></html>");
@@ -118,7 +118,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
             }
         });
 
-        stripFromTableNames = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
+        stripFromTableNames = new CMUndoableTextField(controller.getApplication().getUndoManager());
         stripFromTableNames.setToolTipText("<html>Regex that matches the part of the table name that needs to be stripped off " +
                 "when generating ObjEntity name</html>");
         stripFromTableNames.addCommitListener(text -> {
@@ -128,7 +128,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
             }
         });
 
-        tableTypes = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
+        tableTypes = new CMUndoableTextField(controller.getApplication().getUndoManager());
         tableTypes.setToolTipText("<html>Default types to import is TABLE and VIEW.");
         tableTypes.addCommitListener(this::applyTableTypes);
 
@@ -231,11 +231,11 @@ public class ReverseEngineeringConfigPanel extends JPanel {
         return strategyCombo;
     }
 
-    CayenneUndoableTextField getMeaningfulPk() {
+    CMUndoableTextField getMeaningfulPk() {
         return meaningfulPk;
     }
 
-    CayenneUndoableTextField getStripFromTableNames() {
+    CMUndoableTextField getStripFromTableNames() {
         return stripFromTableNames;
     }
 
@@ -259,7 +259,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
         return useJava7Types;
     }
 
-    CayenneUndoableTextField getTableTypes() {
+    CMUndoableTextField getTableTypes() {
         return tableTypes;
     }
 

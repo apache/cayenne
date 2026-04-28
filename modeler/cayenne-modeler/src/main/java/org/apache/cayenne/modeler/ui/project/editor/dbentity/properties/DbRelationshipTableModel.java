@@ -25,7 +25,7 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
 import org.apache.cayenne.modeler.project.DbRelationshipOps;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
+import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
@@ -37,7 +37,7 @@ import java.util.ArrayList;
  * Table model for DbRelationship table.
  *
  */
-public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> {
+public class DbRelationshipTableModel extends CMTableModel<DbRelationship> {
 
     // Columns
     static final int NAME = 0;

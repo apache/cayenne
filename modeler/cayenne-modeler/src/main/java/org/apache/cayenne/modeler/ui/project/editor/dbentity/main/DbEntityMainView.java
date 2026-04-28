@@ -33,7 +33,7 @@ import org.apache.cayenne.modeler.ui.action.DbEntityCounterpartAction;
 import org.apache.cayenne.modeler.ui.action.DbEntitySyncAction;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
-import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.ExpressionConvertor;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ShowGraphEntityAction;
@@ -56,11 +56,11 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
 
     private final ProjectController controller;
 
-    private final CayenneUndoableTextField name;
-    private final CayenneUndoableTextField catalog;
-    private final CayenneUndoableTextField schema;
-    private final CayenneUndoableTextField qualifier;
-    private final CayenneUndoableTextField comment;
+    private final CMUndoableTextField name;
+    private final CMUndoableTextField catalog;
+    private final CMUndoableTextField schema;
+    private final CMUndoableTextField qualifier;
+    private final CMUndoableTextField comment;
 
     private final JLabel catalogLabel;
     private final JLabel schemaLabel;
@@ -92,21 +92,21 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
         toolBar.add(globalActions.getAction(ShowGraphEntityAction.class).buildButton());
 
         // create widgets
-        name = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
+        name = new CMUndoableTextField(controller.getApplication().getUndoManager());
         name.addCommitListener(this::setEntityName);
 
         catalogLabel = new JLabel("Catalog:");
-        catalog = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
+        catalog = new CMUndoableTextField(controller.getApplication().getUndoManager());
         catalog.addCommitListener(this::setCatalog);
 
         schemaLabel = new JLabel("Schema:");
-        schema = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
+        schema = new CMUndoableTextField(controller.getApplication().getUndoManager());
         schema.addCommitListener(this::setSchema);
 
-        qualifier = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
+        qualifier = new CMUndoableTextField(controller.getApplication().getUndoManager());
         qualifier.addCommitListener(this::setQualifier);
 
-        comment = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
+        comment = new CMUndoableTextField(controller.getApplication().getUndoManager());
         comment.addCommitListener(this::setComment);
 
         pkGeneratorType = new JComboBox<>();

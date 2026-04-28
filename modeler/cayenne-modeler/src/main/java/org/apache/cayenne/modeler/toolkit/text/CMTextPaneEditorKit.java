@@ -21,12 +21,12 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class CayenneTextPaneEditorKit extends StyledEditorKit {
+class CMTextPaneEditorKit extends StyledEditorKit {
 
     private final ViewFactory xmlViewFactory;
     private final String contentType;
 
-    public CayenneTextPaneEditorKit(TextSyntax syntax) {
+    public CMTextPaneEditorKit(TextSyntax syntax) {
         contentType = syntax.contentType();
         xmlViewFactory = e -> new TextPaneView(e, syntax);
     }

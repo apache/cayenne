@@ -27,9 +27,9 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.toolkit.Renderers;
-import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
-import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
+import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -38,7 +38,7 @@ import javax.swing.*;
 public abstract class BaseQueryMainTab extends JPanel {
 
     protected final ProjectController controller;
-    protected CayenneUndoableTextField name;
+    protected CMUndoableTextField name;
     protected JComboBox<ObjEntity> queryRoot;
 
     protected BaseQueryMainTab(ProjectController controller) {
@@ -46,7 +46,7 @@ public abstract class BaseQueryMainTab extends JPanel {
     }
 
     protected void initQueryRoot() {
-        queryRoot = new CayenneComboBox<>();
+        queryRoot = new CMComboBox<>();
         AutoCompletion.enable(queryRoot);
         queryRoot.setRenderer(Renderers.listRendererWithIcons());
 
@@ -57,7 +57,7 @@ public abstract class BaseQueryMainTab extends JPanel {
         queryRoot.getEditor().getEditorComponent().addFocusListener(rootHandler);
     }
 
-    public CayenneUndoableTextField getNameField() {
+    public CMUndoableTextField getNameField() {
         return name;
     }
 

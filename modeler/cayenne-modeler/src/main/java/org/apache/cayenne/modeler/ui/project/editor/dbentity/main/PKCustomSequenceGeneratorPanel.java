@@ -27,7 +27,7 @@ import javax.swing.JLabel;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
-import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
@@ -37,8 +37,8 @@ import com.jgoodies.forms.layout.FormLayout;
 
 public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
 
-    protected CayenneUndoableTextField customPKName;
-    protected CayenneUndoableTextField customPKSize;
+    protected CMUndoableTextField customPKName;
+    protected CMUndoableTextField customPKSize;
 
     public PKCustomSequenceGeneratorPanel(ProjectController mediator) {
         super(mediator);
@@ -51,9 +51,9 @@ public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
                 "* Custom sequences are supported on Oracle and Postgres");
         note.setFont(note.getFont().deriveFont(Font.ITALIC).deriveFont(11f));
 
-        customPKName = new CayenneUndoableTextField(mediator.getApplication().getUndoManager());
+        customPKName = new CMUndoableTextField(mediator.getApplication().getUndoManager());
         customPKName.addCommitListener(this::setPKName);
-        customPKSize = new CayenneUndoableTextField(mediator.getApplication().getUndoManager());
+        customPKSize = new CMUndoableTextField(mediator.getApplication().getUndoManager());
         customPKSize.addCommitListener(this::setPKSize);
 
         // assemble

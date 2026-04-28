@@ -37,7 +37,7 @@ import java.util.EventObject;
  * and plain combos uniformly. Editing is suppressed for ctrl/shift-clicks so
  * the user can extend a multi-row selection without opening the editor.
  */
-public class CayenneComboBoxCellEditor extends AbstractCellEditor
+public class CMComboBoxCellEditor extends AbstractCellEditor
         implements TableCellEditor, ActionListener, Serializable {
 
     // Auto-complete combos collide with DefaultCellEditor's stop-editing flow,
@@ -48,7 +48,7 @@ public class CayenneComboBoxCellEditor extends AbstractCellEditor
     private final JComboBox<?> comboBox;
     private final boolean autocomplete;
 
-    public CayenneComboBoxCellEditor(JComboBox<?> comboBox) {
+    public CMComboBoxCellEditor(JComboBox<?> comboBox) {
         this.comboBox = comboBox;
         this.autocomplete = Boolean.TRUE.equals(
                 comboBox.getClientProperty(AutoCompletion.AUTOCOMPLETION_PROPERTY));

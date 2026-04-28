@@ -27,8 +27,8 @@ import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SQLTemplateDescriptor;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.DbAdapterInfo;
-import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextPane;
-import org.apache.cayenne.modeler.toolkit.text.CayenneTextPane;
+import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextPane;
+import org.apache.cayenne.modeler.toolkit.text.CMTextPane;
 import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,8 +69,8 @@ public class SQLTemplateScriptsTab extends JPanel {
     protected List<String> keys;
     protected PanelBuilder builder;
     protected CellConstraints cc;
-    protected CayenneTextPane textPane;
-    protected List<CayenneTextPane> panes;
+    protected CMTextPane textPane;
+    protected List<CMTextPane> panes;
     protected ListSelectionListener scriptRefreshHandler;
 
     public SQLTemplateScriptsTab(ProjectController mediator) {
@@ -81,7 +81,7 @@ public class SQLTemplateScriptsTab extends JPanel {
 
     private void prepareScriptAreas() {
         for(String key : DbAdapterInfo.getStandardAdapters()) {
-            CayenneTextPane currPane = new CayenneUndoableTextPane(mediator.getApplication().getUndoManager(), new SQLSyntax());
+            CMTextPane currPane = new CMUndoableTextPane(mediator.getApplication().getUndoManager(), new SQLSyntax());
             currPane.setName(key);
             currPane.getDocument().addDocumentListener(new CustomListener(currPane.getName()));
             builder.add(currPane.getScrollPane(), cc.xy(3, 2));
@@ -114,7 +114,7 @@ public class SQLTemplateScriptsTab extends JPanel {
         // assemble
         cc = new CellConstraints();
 
-        textPane = new CayenneUndoableTextPane(mediator.getApplication().getUndoManager(), new SQLSyntax());
+        textPane = new CMUndoableTextPane(mediator.getApplication().getUndoManager(), new SQLSyntax());
         textPane.setName(DEFAULT_LABEL);
         textPane.getDocument().addDocumentListener(new CustomListener(textPane.getName()));
 
@@ -196,7 +196,7 @@ public class SQLTemplateScriptsTab extends JPanel {
         final String text = (key.equals(DEFAULT_LABEL)) ? query.getSql() : query
                 .getAdapterSql().get(key);
 
-        for (final CayenneTextPane textPane : panes) {
+        for (final CMTextPane textPane : panes) {
             if (key.equals(textPane.getName())) {
                 textPane.setDocumentTextDirect(text);
                 textPane.getScrollPane().setVisible(true);

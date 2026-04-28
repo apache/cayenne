@@ -24,14 +24,14 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
-import org.apache.cayenne.modeler.toolkit.buttons.CayenneButtonPanel;
-import org.apache.cayenne.modeler.toolkit.dialog.CayenneDialog;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
+import org.apache.cayenne.modeler.toolkit.buttons.CMButtonPanel;
+import org.apache.cayenne.modeler.toolkit.dialog.CMDialog;
+import org.apache.cayenne.modeler.toolkit.table.CMTable;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class DbRelationshipDialogView extends CayenneDialog {
+public class DbRelationshipDialogView extends CMDialog {
 
     private JTextField name;
     private JComboBox<String> targetEntities;
@@ -40,7 +40,7 @@ public class DbRelationshipDialogView extends CayenneDialog {
     private JTextField comment;
     private JLabel sourceName;
     private JTextField reverseName;
-    private CayenneTable table;
+    private CMTable table;
     private TableColumnPreferences tablePreferences;
     private JButton addButton;
     private JButton removeButton;
@@ -127,7 +127,7 @@ public class DbRelationshipDialogView extends CayenneDialog {
         builder.add(joinButtons, cc.xywh(5, 21, 1, 3));
 
         getContentPane().add(builder.getPanel(), BorderLayout.CENTER);
-        getContentPane().add(new CayenneButtonPanel(cancelButton, saveButton), BorderLayout.SOUTH);
+        getContentPane().add(new CMButtonPanel(cancelButton, saveButton), BorderLayout.SOUTH);
     }
 
     public void enableOptions(boolean enable) {
@@ -173,7 +173,7 @@ public class DbRelationshipDialogView extends CayenneDialog {
         return reverseName;
     }
 
-    public CayenneTable getTable() {
+    public CMTable getTable() {
         return table;
     }
 
@@ -205,7 +205,7 @@ public class DbRelationshipDialogView extends CayenneDialog {
         this.cancelPressed = cancelPressed;
     }
 
-    final class AttributeTable extends CayenneTable {
+    final class AttributeTable extends CMTable {
 
         final Dimension preferredSize = new Dimension(203, 100);
 

@@ -34,7 +34,7 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import java.awt.event.ActionListener;
 
-public class CayenneCheckBoxUndoableEdit extends AbstractUndoableEdit {
+public class CMCheckBoxUndoableEdit extends AbstractUndoableEdit {
 
     private final JCheckBox checkBox;
     private final ActionListener actionListener;
@@ -46,7 +46,7 @@ public class CayenneCheckBoxUndoableEdit extends AbstractUndoableEdit {
     private Object targetObject;
     private int selectedTabIndex;
 
-    CayenneCheckBoxUndoableEdit(JCheckBox checkBox, ActionListener actionListener) {
+    CMCheckBoxUndoableEdit(JCheckBox checkBox, ActionListener actionListener) {
 
         this.checkBox = checkBox;
         this.actionListener = actionListener;

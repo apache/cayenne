@@ -32,8 +32,8 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 
 import org.apache.cayenne.modeler.event.model.QueryEvent;
-import org.apache.cayenne.modeler.toolkit.combobox.CayenneUndoableComboBox;
-import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.combobox.CMUndoableComboBox;
+import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.map.QueryDescriptor;
@@ -74,11 +74,11 @@ public abstract class SelectPropertiesPanel extends JPanel {
         cachePolicyLabels.put(QueryCacheStrategy.SHARED_CACHE,  SHARED_CACHE_LABEL);
     }
 
-    protected CayenneUndoableTextField fetchOffset;
-    protected CayenneUndoableTextField fetchLimit;
-    protected CayenneUndoableTextField pageSize;
+    protected CMUndoableTextField fetchOffset;
+    protected CMUndoableTextField fetchLimit;
+    protected CMUndoableTextField pageSize;
     protected JComboBox<QueryCacheStrategy> cacheStrategy;
-    protected CayenneUndoableTextField cacheGroups;
+    protected CMUndoableTextField cacheGroups;
     protected JComponent cacheGroupsLabel;
 
     protected ProjectController mediator;
@@ -90,18 +90,18 @@ public abstract class SelectPropertiesPanel extends JPanel {
     }
 
     protected void initView() {
-        fetchOffset = new CayenneUndoableTextField(mediator.getApplication().getUndoManager(), 7);
+        fetchOffset = new CMUndoableTextField(mediator.getApplication().getUndoManager(), 7);
         fetchOffset.addCommitListener(this::setFetchOffset);
 
-        fetchLimit = new CayenneUndoableTextField(mediator.getApplication().getUndoManager(), 7);
+        fetchLimit = new CMUndoableTextField(mediator.getApplication().getUndoManager(), 7);
         fetchLimit.addCommitListener(this::setFetchLimit);
 
-        pageSize = new CayenneUndoableTextField(mediator.getApplication().getUndoManager(), 7);
+        pageSize = new CMUndoableTextField(mediator.getApplication().getUndoManager(), 7);
         pageSize.addCommitListener(this::setPageSize);
 
-        cacheStrategy = new CayenneUndoableComboBox<>(mediator.getApplication().getUndoManager());
+        cacheStrategy = new CMUndoableComboBox<>(mediator.getApplication().getUndoManager());
         cacheStrategy.setRenderer(new CacheStrategyRenderer());
-        cacheGroups = new CayenneUndoableTextField(mediator.getApplication().getUndoManager());
+        cacheGroups = new CMUndoableTextField(mediator.getApplication().getUndoManager());
         cacheGroups.addCommitListener(this::setCacheGroups);
     }
 

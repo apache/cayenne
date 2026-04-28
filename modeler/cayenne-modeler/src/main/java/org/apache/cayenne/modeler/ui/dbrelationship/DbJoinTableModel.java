@@ -23,7 +23,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
+import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 
 import java.util.ArrayList;
 
@@ -32,7 +32,7 @@ import java.util.ArrayList;
  * don't take place until commit() is called. Creation of the new
  * DbAttributes is not allowed - user should choose from the existing ones.
  */
-public class DbJoinTableModel extends CayenneTableModel<DbJoin> {
+public class DbJoinTableModel extends CMTableModel<DbJoin> {
 
     // Columns
     static final int SOURCE = 0;

@@ -22,9 +22,9 @@ import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.modeler.event.model.EmbeddableAttributeEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
-import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
+import org.apache.cayenne.modeler.toolkit.table.CMTable;
+import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
+import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.toolkit.table.CellEditorForAttributeTable;
 import org.apache.cayenne.util.Util;
 
@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 
-public class EmbeddableAttributeTableModel extends CayenneTableModel {
+public class EmbeddableAttributeTableModel extends CMTableModel {
 
     private Embeddable embeddable;
 
@@ -133,9 +133,9 @@ public class EmbeddableAttributeTableModel extends CayenneTableModel {
 
     public CellEditorForAttributeTable setCellEditor(
             Collection<String> nameAttr,
-            CayenneTable table) {
+            CMTable table) {
         this.cellEditor = new CellEditorForAttributeTable(table,
-                new CayenneComboBox<>(nameAttr.stream().sorted().toArray(String[]::new)));
+                new CMComboBox<>(nameAttr.stream().sorted().toArray(String[]::new)));
         return cellEditor;
     }
 

@@ -36,10 +36,10 @@ import org.apache.cayenne.modeler.ui.action.ObjEntitySyncAction;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.toolkit.Renderers;
-import org.apache.cayenne.modeler.toolkit.checkbox.CayenneCheckBox;
+import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
-import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
-import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
+import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.ExpressionConvertor;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ShowGraphEntityAction;
@@ -64,19 +64,19 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
     private static final ObjEntity NO_INHERITANCE = new ObjEntity("Direct Mapping to Table/View");
 
     private final ProjectController controller;
-    private final CayenneUndoableTextField name;
-    private final CayenneUndoableTextField className;
+    private final CMUndoableTextField name;
+    private final CMUndoableTextField className;
 
     private final JLabel superclassLabel;
-    private final CayenneUndoableTextField superClassName;
-    private final CayenneUndoableTextField qualifier;
+    private final CMUndoableTextField superClassName;
+    private final CMUndoableTextField qualifier;
     private final JComboBox<DbEntity> dbEntityCombo;
     private final JComboBox<ObjEntity> superEntityCombo;
     private final JCheckBox readOnly;
     private final JCheckBox optimisticLocking;
 
     private final JCheckBox isAbstract;
-    private final CayenneUndoableTextField comment;
+    private final CMUndoableTextField comment;
 
     public ObjEntityMainView(ProjectController controller) {
         this.controller = controller;
@@ -99,24 +99,24 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
         add(toolBar, BorderLayout.NORTH);
 
         // create widgets
-        name = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
+        name = new CMUndoableTextField(controller.getApplication().getUndoManager());
         name.addCommitListener(this::setEntityName);
-        superClassName = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
+        superClassName = new CMUndoableTextField(controller.getApplication().getUndoManager());
         superClassName.addCommitListener(this::setSuperClassName);
-        className = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
+        className = new CMUndoableTextField(controller.getApplication().getUndoManager());
         className.addCommitListener(this::setClassName);
-        qualifier = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
+        qualifier = new CMUndoableTextField(controller.getApplication().getUndoManager());
         qualifier.addCommitListener(this::setQualifier);
 
-        dbEntityCombo = new CayenneComboBox<>();
-        superEntityCombo = new CayenneComboBox<>();
+        dbEntityCombo = new CMComboBox<>();
+        superEntityCombo = new CMComboBox<>();
 
         AutoCompletion.enable(dbEntityCombo);
         AutoCompletion.enable(superEntityCombo);
 
-        readOnly = new CayenneCheckBox(controller.getApplication().getUndoManager());
+        readOnly = new CMCheckBox(controller.getApplication().getUndoManager());
 
-        optimisticLocking = new CayenneCheckBox(controller.getApplication().getUndoManager());
+        optimisticLocking = new CMCheckBox(controller.getApplication().getUndoManager());
 
         // borderless clickable button used as a label
         JButton tableLabel = new JButton("Table/View:");
@@ -127,9 +127,9 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
         tableLabel.setBorder(null);
 
 
-        isAbstract = new CayenneCheckBox(controller.getApplication().getUndoManager());
+        isAbstract = new CMCheckBox(controller.getApplication().getUndoManager());
 
-        comment = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
+        comment = new CMUndoableTextField(controller.getApplication().getUndoManager());
         comment.addCommitListener(this::setComment);
 
         // assemble

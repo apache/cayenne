@@ -23,12 +23,12 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
+import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.toolkit.ValueTypes;
 import org.apache.cayenne.modeler.toolkit.MultiColumnBrowser;
-import org.apache.cayenne.modeler.toolkit.buttons.CayenneButtonPanel;
+import org.apache.cayenne.modeler.toolkit.buttons.CMButtonPanel;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
-import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
+import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -65,7 +65,7 @@ public class ObjAttributeInfoDialogView extends JDialog {
     private final JComboBox<String> typeComboBox;
     private final JPanel typeManagerPane;
 
-    private final CayenneTable overrideAttributeTable;
+    private final CMTable overrideAttributeTable;
     private final TableColumnPreferences tablePreferences;
 
     private final JCheckBox usedForLockingCheckBox;
@@ -83,7 +83,7 @@ public class ObjAttributeInfoDialogView extends JDialog {
         this.currentPathLabel = new JLabel();
         this.sourceEntityLabel = new JLabel();
 
-        this.typeComboBox = new CayenneComboBox<>(ValueTypes.getTypes());
+        this.typeComboBox = new CMComboBox<>(ValueTypes.getTypes());
         AutoCompletion.enable(typeComboBox, false, true);
         typeComboBox.getRenderer();
 
@@ -91,7 +91,7 @@ public class ObjAttributeInfoDialogView extends JDialog {
         this.lazyCheckBox = new JCheckBox();
         this.commentField = new JTextField();
 
-        overrideAttributeTable = new CayenneTable();
+        overrideAttributeTable = new CMTable();
         tablePreferences = new TableColumnPreferences(getClass(), "overrideAttributeTable");
 
         getRootPane().setDefaultButton(saveButton);
@@ -197,10 +197,10 @@ public class ObjAttributeInfoDialogView extends JDialog {
             }
         });
 
-        add(new CayenneButtonPanel(cancelButton, saveButton), BorderLayout.SOUTH);
+        add(new CMButtonPanel(cancelButton, saveButton), BorderLayout.SOUTH);
     }
 
-    public CayenneTable getOverrideAttributeTable() {
+    public CMTable getOverrideAttributeTable() {
         return overrideAttributeTable;
     }
     

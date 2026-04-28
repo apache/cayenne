@@ -39,15 +39,15 @@ import java.util.List;
 /**
  * Superclass of CayenneModeler table model classes.
  */
-public abstract class CayenneTableModel<T> extends AbstractTableModel {
+public abstract class CMTableModel<T> extends AbstractTableModel {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CayenneTableModel.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CMTableModel.class);
 
     protected ProjectController controller;
     protected Object eventSource;
     protected List<T> objectList;
 
-    protected CayenneTableModel(ProjectController controller, Object eventSource, List<T> objectList) {
+    protected CMTableModel(ProjectController controller, Object eventSource, List<T> objectList) {
         this.eventSource = eventSource;
         this.controller = controller;
         this.objectList = objectList;
@@ -63,7 +63,7 @@ public abstract class CayenneTableModel<T> extends AbstractTableModel {
 
                 this.controller.getApplication()
                         .getUndoManager()
-                        .addEdit(new CayenneTableModelUndoableEdit(this, oldValue, newVal, row, col));
+                        .addEdit(new CMTableModelUndoableEdit(this, oldValue, newVal, row, col));
             }
         } catch (IllegalArgumentException e) {
             LOGGER.error("Error setting table model value", e);

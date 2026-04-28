@@ -17,24 +17,31 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.toolkit.buttons;
+package org.apache.cayenne.modeler.toolkit.table;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import java.awt.FlowLayout;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JTextField;
+import java.awt.event.MouseEvent;
+import java.util.EventObject;
 
 /**
- * A panel that lays out a row of right-aligned buttons, typically used at the bottom of a dialog.
+ * Text-field cell editor that suppresses editing when the user is performing a
+ * multi-row selection gesture (ctrl/shift-click).
  */
-public class CayenneButtonPanel extends JPanel {
+public class CMTextFieldCellEditor extends DefaultCellEditor {
 
-    public CayenneButtonPanel(JButton... buttons) {
-        setBorder(BorderFactory.createEmptyBorder(3, 20, 3, 7));
-        setLayout(new FlowLayout(FlowLayout.RIGHT));
+    public CMTextFieldCellEditor(JTextField textField) {
+        super(textField);
+    }
 
-        for (JButton button : buttons) {
-            add(button);
+    @Override
+    public boolean isCellEditable(EventObject e) {
+        if (e instanceof MouseEvent) {
+            MouseEvent me = (MouseEvent) e;
+            if (me.isControlDown() || me.isShiftDown()) {
+                return false;
+            }
         }
+        return super.isCellEditable(e);
     }
 }

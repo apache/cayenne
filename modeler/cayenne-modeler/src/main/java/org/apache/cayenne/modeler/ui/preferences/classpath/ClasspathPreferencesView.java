@@ -29,7 +29,7 @@ import javax.swing.JTable;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
+import org.apache.cayenne.modeler.toolkit.table.CMTable;
 
 
 public class ClasspathPreferencesView extends JPanel {
@@ -48,7 +48,7 @@ public class ClasspathPreferencesView extends JPanel {
         addMvnButton = new JButton("Get From Maven Central");
         removeEntryButton = new JButton("Remove");
 
-        table = new CayenneTable();
+        table = new CMTable();
         table.setRowMargin(3);
         table.setRowHeight(25);
 

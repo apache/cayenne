@@ -29,8 +29,8 @@ import javax.swing.JPanel;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.toolkit.text.CayennePasswordField;
-import org.apache.cayenne.modeler.toolkit.text.CayenneTextField;
+import org.apache.cayenne.modeler.toolkit.text.CMPasswordField;
+import org.apache.cayenne.modeler.toolkit.text.CMTextField;
 
 /**
  * A generic panel for entering DataSource information.
@@ -38,10 +38,10 @@ import org.apache.cayenne.modeler.toolkit.text.CayenneTextField;
 public class DBConnectionInfoEditorView extends JPanel {
 
     protected JComboBox adapters;
-    protected CayenneTextField driver;
-    protected CayenneTextField url;
-    protected CayenneTextField userName;
-    protected CayennePasswordField password;
+    protected CMTextField driver;
+    protected CMTextField url;
+    protected CMTextField userName;
+    protected CMPasswordField password;
 
     protected Collection<JLabel> labels;
 
@@ -51,10 +51,10 @@ public class DBConnectionInfoEditorView extends JPanel {
         adapters = new JComboBox();
         adapters.setEditable(true);
 
-        driver = new CayenneTextField();
-        url = new CayenneTextField();
-        userName = new CayenneTextField();
-        password = new CayennePasswordField();
+        driver = new CMTextField();
+        url = new CMTextField();
+        userName = new CMTextField();
+        password = new CMPasswordField();
         labels = new ArrayList<>();
 
         // assemble
@@ -76,19 +76,19 @@ public class DBConnectionInfoEditorView extends JPanel {
         return adapters;
     }
 
-    public CayenneTextField getDriver() {
+    public CMTextField getDriver() {
         return driver;
     }
 
-    public CayennePasswordField getPassword() {
+    public CMPasswordField getPassword() {
         return password;
     }
 
-    public CayenneTextField getUrl() {
+    public CMTextField getUrl() {
         return url;
     }
 
-    public CayenneTextField getUserName() {
+    public CMTextField getUserName() {
         return userName;
     }
 

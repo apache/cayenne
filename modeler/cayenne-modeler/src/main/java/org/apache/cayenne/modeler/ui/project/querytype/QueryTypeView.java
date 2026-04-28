@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.project.querytype;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.toolkit.buttons.CayenneButtonPanel;
+import org.apache.cayenne.modeler.toolkit.buttons.CMButtonPanel;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -80,7 +80,7 @@ public class QueryTypeView extends JDialog {
         setLayout(new BorderLayout());
         add(builder.getPanel(), BorderLayout.CENTER);
 
-        add(new CayenneButtonPanel(cancelButton, createButton), BorderLayout.SOUTH);
+        add(new CMButtonPanel(cancelButton, createButton), BorderLayout.SOUTH);
 
         setTitle("Select New Query Type");
     }

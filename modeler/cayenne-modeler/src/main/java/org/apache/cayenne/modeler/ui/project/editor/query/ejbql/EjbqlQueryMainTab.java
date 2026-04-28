@@ -25,7 +25,7 @@ import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MappingNamespace;
-import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
@@ -39,8 +39,8 @@ import com.jgoodies.forms.layout.FormLayout;
 public class EjbqlQueryMainTab extends JPanel{
 
     protected ProjectController mediator;
-    protected CayenneUndoableTextField name;
-    protected CayenneUndoableTextField comment;
+    protected CMUndoableTextField name;
+    protected CMUndoableTextField comment;
     protected EjbqlQueryPropertiesPanel properties;
 
     public EjbqlQueryMainTab(ProjectController mediator) {
@@ -50,10 +50,10 @@ public class EjbqlQueryMainTab extends JPanel{
 
     private void initView() {
         // create widgets
-        name = new CayenneUndoableTextField(mediator.getApplication().getUndoManager());
+        name = new CMUndoableTextField(mediator.getApplication().getUndoManager());
         name.addCommitListener(this::setQueryName);
 
-        comment = new CayenneUndoableTextField(mediator.getApplication().getUndoManager());
+        comment = new CMUndoableTextField(mediator.getApplication().getUndoManager());
         comment.addCommitListener(this::setQueryComment);
 
         properties = new EjbqlQueryPropertiesPanel(mediator);

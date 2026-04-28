@@ -32,7 +32,7 @@ import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
 import org.apache.cayenne.modeler.event.model.CallbackMethodListener;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
+import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.ui.action.CopyCallbackMethodAction;
 import org.apache.cayenne.modeler.ui.action.CreateCallbackMethodAction;
 import org.apache.cayenne.modeler.ui.action.CutCallbackMethodAction;
@@ -89,7 +89,7 @@ public class ObjEntityCallbacksView extends JPanel {
             new CallbackType(LifecycleEvent.POST_LOAD),
     };
 
-    private final CayenneTable[] tables = new CayenneTable[callbackTypes.length];
+    private final CMTable[] tables = new CMTable[callbackTypes.length];
 
     public ObjEntityCallbacksView(ProjectController controller) {
         this.controller = controller;
@@ -150,7 +150,7 @@ public class ObjEntityCallbacksView extends JPanel {
             }
         });
 
-        for (CayenneTable table : tables) {
+        for (CMTable table : tables) {
             controller.getApplication().getActionManager().setupCutCopyPaste(
                     table,
                     CutCallbackMethodAction.class,
@@ -217,7 +217,7 @@ public class ObjEntityCallbacksView extends JPanel {
             tables[i].setModel(model);
         }
 
-        for (CayenneTable table : tables) {
+        for (CMTable table : tables) {
             tablePreferences.bind(table, MIN_SIZES, null, null);
         }
     }
@@ -238,8 +238,8 @@ public class ObjEntityCallbacksView extends JPanel {
         validate();
     }
 
-    private CayenneTable createTable(CallbackType callbackType) {
-        final CayenneTable cayenneTable = new CayenneTable();
+    private CMTable createTable(CallbackType callbackType) {
+        final CMTable cayenneTable = new CMTable();
 
         cayenneTable.setDragEnabled(true);
         cayenneTable.setSortable(false);
@@ -275,7 +275,7 @@ public class ObjEntityCallbacksView extends JPanel {
         return popup;
     }
 
-    private JPanel createTablePanel(final CayenneTable cayenneTable) {
+    private JPanel createTablePanel(final CMTable cayenneTable) {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
         panel.add(cayenneTable.getTableHeader(), BorderLayout.NORTH);
@@ -342,9 +342,9 @@ public class ObjEntityCallbacksView extends JPanel {
 
     private class CallbackImportableHandler extends TransferHandler {
 
-        private final CayenneTable table;
+        private final CMTable table;
 
-        CallbackImportableHandler(CayenneTable table) {
+        CallbackImportableHandler(CMTable table) {
             this.table = table;
         }
 
@@ -393,9 +393,9 @@ public class ObjEntityCallbacksView extends JPanel {
 
     private class CallbackListSelectionListener implements ListSelectionListener {
 
-        private final CayenneTable table;
+        private final CMTable table;
 
-        CallbackListSelectionListener(CayenneTable table) {
+        CallbackListSelectionListener(CMTable table) {
             this.table = table;
         }
 
@@ -404,7 +404,7 @@ public class ObjEntityCallbacksView extends JPanel {
                 ObjCallbackMethod[] methods = new ObjCallbackMethod[0];
 
                 if (!((ListSelectionModel) e.getSource()).isSelectionEmpty()) {
-                    for (CayenneTable nextTable : tables) {
+                    for (CMTable nextTable : tables) {
                         if (!nextTable.equals(table)) {
                             nextTable.clearSelection();
                             if (nextTable.getCellEditor() != null) {
@@ -446,9 +446,9 @@ public class ObjEntityCallbacksView extends JPanel {
 
     private static class CallbackTableColumnModelListener implements TableColumnModelListener {
 
-        private final CayenneTable table;
+        private final CMTable table;
 
-        CallbackTableColumnModelListener(CayenneTable table) {
+        CallbackTableColumnModelListener(CMTable table) {
             this.table = table;
         }
 
@@ -473,16 +473,16 @@ public class ObjEntityCallbacksView extends JPanel {
 
     private class CallbackMouseAdapter extends MouseAdapter {
 
-        private final CayenneTable table;
+        private final CMTable table;
 
-        CallbackMouseAdapter(CayenneTable table) {
+        CallbackMouseAdapter(CMTable table) {
             this.table = table;
         }
 
         @Override
         public void mouseReleased(MouseEvent e) {
             if (table.getColumnWidthChanged()) {
-                for (CayenneTable nextTable : tables) {
+                for (CMTable nextTable : tables) {
                     nextTable.getColumnModel().getColumn(0).setPreferredWidth(table.getWidth());
                 }
                 tablePreferences = new TableColumnPreferences(ObjEntityCallbacksView.class, "objEntity/callbackTable");
@@ -503,9 +503,9 @@ public class ObjEntityCallbacksView extends JPanel {
 
     private class CallbackMouseMotionListener implements MouseMotionListener {
 
-        private final CayenneTable table;
+        private final CMTable table;
 
-        CallbackMouseMotionListener(CayenneTable table) {
+        CallbackMouseMotionListener(CMTable table) {
             this.table = table;
         }
 
@@ -515,7 +515,7 @@ public class ObjEntityCallbacksView extends JPanel {
         public void mouseDragged(MouseEvent e) {
             if (table.getColumnWidthChanged()) {
                 tablePreferences.bind(table, MIN_SIZES, null, null);
-                for (CayenneTable nextTable : tables) {
+                for (CMTable nextTable : tables) {
                     if (!table.equals(nextTable)) {
                         nextTable.getColumnModel().getColumn(0).setPreferredWidth(table.getWidth());
                     }

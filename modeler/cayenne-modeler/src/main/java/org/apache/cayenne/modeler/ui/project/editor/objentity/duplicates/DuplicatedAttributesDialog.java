@@ -23,12 +23,12 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
-import org.apache.cayenne.modeler.toolkit.table.CayenneComboBoxCellEditor;
+import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
+import org.apache.cayenne.modeler.toolkit.table.CMComboBoxCellEditor;
 import org.apache.cayenne.modeler.ui.ModelerFrame;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.toolkit.dialog.CayenneDialog;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
+import org.apache.cayenne.modeler.toolkit.dialog.CMDialog;
+import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -46,7 +46,7 @@ import java.util.List;
  * Dialog for resolving name collision.
  * 
  */
-public class DuplicatedAttributesDialog extends CayenneDialog {
+public class DuplicatedAttributesDialog extends CMDialog {
 
     protected static DuplicatedAttributesDialog instance;
 
@@ -143,8 +143,8 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
 
     private void updateTable() {
         TableColumn actionColumn = attributesTable.getColumnModel().getColumn(DuplicatedAttributeTableModel.ACTION);
-        JComboBox actionsCombo = new CayenneComboBox<>(DELETE_ACTION, RENAME_ACTION);
-        actionColumn.setCellEditor(new CayenneComboBoxCellEditor(actionsCombo));
+        JComboBox actionsCombo = new CMComboBox<>(DELETE_ACTION, RENAME_ACTION);
+        actionColumn.setCellEditor(new CMComboBoxCellEditor(actionsCombo));
     }
 
     private void applyChanges() {
@@ -187,7 +187,7 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
         this.entity = entity;
     }
 
-    class DuplicatedAttributeTableModel extends CayenneTableModel {
+    class DuplicatedAttributeTableModel extends CMTableModel {
 
         static final int ATTRIBUTE_NAME = 0;
         static final int PARENT_TYPE = 1;
@@ -195,7 +195,7 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
         static final int ACTION = 3;
 
         /**
-         * Constructor for CayenneTableModel.
+         * Constructor for CMTableModel.
          */
         public DuplicatedAttributeTableModel(ProjectController controller, Object eventSource, List objectList) {
             super(controller, eventSource, objectList);

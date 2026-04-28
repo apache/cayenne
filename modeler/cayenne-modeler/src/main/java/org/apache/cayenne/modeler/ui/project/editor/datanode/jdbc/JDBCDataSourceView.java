@@ -22,8 +22,8 @@ package org.apache.cayenne.modeler.ui.project.editor.datanode.jdbc;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.toolkit.text.CayennePasswordField;
-import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.text.CMPasswordField;
+import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 
 import javax.swing.*;
@@ -31,25 +31,25 @@ import java.awt.*;
 
 public class JDBCDataSourceView extends JPanel {
 
-    protected CayenneUndoableTextField driver;
-    protected CayenneUndoableTextField url;
-    protected CayenneUndoableTextField userName;
-    protected CayennePasswordField password;
+    protected CMUndoableTextField driver;
+    protected CMUndoableTextField url;
+    protected CMUndoableTextField userName;
+    protected CMPasswordField password;
 
-    protected CayenneUndoableTextField minConnections;
-    protected CayenneUndoableTextField maxConnections;
+    protected CMUndoableTextField minConnections;
+    protected CMUndoableTextField maxConnections;
     protected JButton syncWithLocal;
 
     public JDBCDataSourceView(CayenneUndoManager undoManager) {
 
-        driver = new CayenneUndoableTextField(undoManager);
+        driver = new CMUndoableTextField(undoManager);
         driver.setTrim(true);
-        url = new CayenneUndoableTextField(undoManager);
+        url = new CMUndoableTextField(undoManager);
         url.setTrim(true);
-        userName = new CayenneUndoableTextField(undoManager);
-        password = new CayennePasswordField();
-        minConnections = new CayenneUndoableTextField(undoManager, 6);
-        maxConnections = new CayenneUndoableTextField(undoManager, 6);
+        userName = new CMUndoableTextField(undoManager);
+        password = new CMPasswordField();
+        minConnections = new CMUndoableTextField(undoManager, 6);
+        maxConnections = new CMUndoableTextField(undoManager, 6);
         syncWithLocal = new JButton("Sync with Local");
         syncWithLocal.setToolTipText("Update from local DataSource");
 
@@ -81,27 +81,27 @@ public class JDBCDataSourceView extends JPanel {
         this.add(builder.getPanel(), BorderLayout.CENTER);
     }
 
-    public CayenneUndoableTextField getDriver() {
+    public CMUndoableTextField getDriver() {
         return driver;
     }
 
-    public CayennePasswordField getPassword() {
+    public CMPasswordField getPassword() {
         return password;
     }
 
-    public CayenneUndoableTextField getUrl() {
+    public CMUndoableTextField getUrl() {
         return url;
     }
 
-    public CayenneUndoableTextField getUserName() {
+    public CMUndoableTextField getUserName() {
         return userName;
     }
 
-    public CayenneUndoableTextField getMaxConnections() {
+    public CMUndoableTextField getMaxConnections() {
         return maxConnections;
     }
 
-    public CayenneUndoableTextField getMinConnections() {
+    public CMUndoableTextField getMinConnections() {
         return minConnections;
     }
 

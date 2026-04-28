@@ -25,9 +25,9 @@ import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
-import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
+import org.apache.cayenne.modeler.toolkit.table.CMTable;
+import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
+import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.toolkit.table.CellEditorForAttributeTable;
 
 import javax.swing.*;
@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class OverrideEmbeddableAttributeTableModel extends CayenneTableModel {
+public class OverrideEmbeddableAttributeTableModel extends CMTableModel {
 
     // Columns
     static final int OBJ_ATTRIBUTE = 0;
@@ -52,7 +52,7 @@ public class OverrideEmbeddableAttributeTableModel extends CayenneTableModel {
     private boolean isAttributeOverrideChange;
 
     private CellEditorForAttributeTable cellEditor;
-    private CayenneTable table;
+    private CMTable table;
 
     protected List<EmbeddableAttribute> embeddableList;
 
@@ -128,10 +128,10 @@ public class OverrideEmbeddableAttributeTableModel extends CayenneTableModel {
 
     public CellEditorForAttributeTable setCellEditor(
             Collection<String> nameAttr,
-            CayenneTable table) {
+            CMTable table) {
         this.table = table;
         this.cellEditor = new CellEditorForAttributeTable(table,
-                new CayenneComboBox<>(nameAttr.stream().sorted().toArray(String[]::new)));
+                new CMComboBox<>(nameAttr.stream().sorted().toArray(String[]::new)));
         return cellEditor;
     }
 
@@ -215,7 +215,7 @@ public class OverrideEmbeddableAttributeTableModel extends CayenneTableModel {
                 Collection<String> attributeComboForRow = new ArrayList<String>();
                 attributeComboForRow.addAll(nameAttr);
                 attributeComboForRow.add(embAt.getDbAttributeName());
-                JComboBox comboBoxForRow = new CayenneComboBox<>(
+                JComboBox comboBoxForRow = new CMComboBox<>(
                         attributeComboForRow.stream().sorted().toArray(String[]::new));
 
                 cellEditor.setEditorAt(i, new DefaultCellEditor(comboBoxForRow));

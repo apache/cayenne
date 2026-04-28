@@ -31,8 +31,8 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
-import org.apache.cayenne.modeler.toolkit.checkbox.CayenneCheckBox;
-import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
+import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.ExpressionConvertor;
 import org.apache.cayenne.modeler.ui.project.editor.query.BaseQueryMainTab;
@@ -54,8 +54,8 @@ import java.util.Iterator;
  */
 public class SelectQueryMainTab extends BaseQueryMainTab {
 
-    protected CayenneUndoableTextField comment;
-    protected CayenneUndoableTextField qualifier;
+    protected CMUndoableTextField comment;
+    protected CMUndoableTextField qualifier;
     protected JCheckBox distinct;
     protected ObjectQueryPropertiesPanel properties;
 
@@ -69,16 +69,16 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
 
     private void initView() {
         // create widgets
-        name = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
+        name = new CMUndoableTextField(controller.getApplication().getUndoManager());
         name.addCommitListener(this::setQueryName);
 
-        qualifier = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
+        qualifier = new CMUndoableTextField(controller.getApplication().getUndoManager());
         qualifier.addCommitListener(this::setQueryQualifier);
 
-        comment = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
+        comment = new CMUndoableTextField(controller.getApplication().getUndoManager());
         comment.addCommitListener(this::setQueryComment);
 
-        distinct = new CayenneCheckBox(controller.getApplication().getUndoManager());
+        distinct = new CMCheckBox(controller.getApplication().getUndoManager());
 
         properties = new ObjectQueryPropertiesPanel(controller);
 

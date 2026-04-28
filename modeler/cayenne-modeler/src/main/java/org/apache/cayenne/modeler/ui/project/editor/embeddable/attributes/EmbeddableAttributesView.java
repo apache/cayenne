@@ -42,12 +42,12 @@ import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayListener;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTablePanel;
+import org.apache.cayenne.modeler.toolkit.table.CMTable;
+import org.apache.cayenne.modeler.toolkit.table.CMTablePanel;
 import org.apache.cayenne.modeler.toolkit.ValueTypes;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
-import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
-import org.apache.cayenne.modeler.toolkit.table.CayenneComboBoxCellEditor;
+import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
+import org.apache.cayenne.modeler.toolkit.table.CMComboBoxCellEditor;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -61,7 +61,7 @@ public class EmbeddableAttributesView extends JPanel implements
         ExistingSelectionProcessor {
 
     private final ProjectController controller;
-    private CayenneTable table;
+    private CMTable table;
     private TableColumnPreferences tablePreferences;
 
     public EmbeddableAttributesView(ProjectController controller) {
@@ -89,7 +89,7 @@ public class EmbeddableAttributesView extends JPanel implements
 
         add(toolBar, BorderLayout.NORTH);
 
-        table = new CayenneTable();
+        table = new CMTable();
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
@@ -108,7 +108,7 @@ public class EmbeddableAttributesView extends JPanel implements
         popup.add(globalActions.getAction(PasteAction.class).buildMenu());
 
         TablePopupHandler.install(table, popup);
-        add(new CayenneTablePanel(table), BorderLayout.CENTER);
+        add(new CMTablePanel(table), BorderLayout.CENTER);
     }
 
     private void initController() {
@@ -171,9 +171,9 @@ public class EmbeddableAttributesView extends JPanel implements
     private void setUpTableStructure() {
 
         TableColumn typeColumn = table.getColumnModel().getColumn(EmbeddableAttributeTableModel.OBJ_ATTRIBUTE_TYPE);
-        JComboBox javaTypesCombo = new CayenneComboBox<>(ValueTypes.getTypes());
+        JComboBox javaTypesCombo = new CMComboBox<>(ValueTypes.getTypes());
         AutoCompletion.enable(javaTypesCombo, false, true);
-        typeColumn.setCellEditor(new CayenneComboBoxCellEditor(javaTypesCombo));
+        typeColumn.setCellEditor(new CMComboBoxCellEditor(javaTypesCombo));
 
         tablePreferences.bind(
                 table,

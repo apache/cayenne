@@ -32,7 +32,7 @@ import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayListener;
-import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
@@ -46,8 +46,8 @@ import java.util.Iterator;
 public class EmbeddableMainView extends JPanel implements EmbeddableDisplayListener {
 
     protected ProjectController mediator;
-    protected CayenneUndoableTextField className;
-    protected CayenneUndoableTextField comment;
+    protected CMUndoableTextField className;
+    protected CMUndoableTextField comment;
 
     public EmbeddableMainView(ProjectController mediator) {
         this.mediator = mediator;
@@ -70,10 +70,10 @@ public class EmbeddableMainView extends JPanel implements EmbeddableDisplayListe
 
         add(toolBar, BorderLayout.NORTH);
 
-        className = new CayenneUndoableTextField(mediator.getApplication().getUndoManager());
+        className = new CMUndoableTextField(mediator.getApplication().getUndoManager());
         className.addCommitListener(this::setClassName);
 
-        comment = new CayenneUndoableTextField(mediator.getApplication().getUndoManager());
+        comment = new CMUndoableTextField(mediator.getApplication().getUndoManager());
         comment.addCommitListener(this::setComment);
 
         FormLayout layout = new FormLayout(

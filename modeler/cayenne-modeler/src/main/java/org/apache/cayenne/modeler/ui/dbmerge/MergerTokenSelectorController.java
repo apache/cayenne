@@ -24,7 +24,7 @@ import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.mvc.RootController;
-import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
+import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 
 import javax.swing.DefaultCellEditor;
@@ -162,7 +162,7 @@ public class MergerTokenSelectorController extends ChildController<RootControlle
         final TableColumnModel columnModel = view.getTokens().getColumnModel();
 
         // dropdown for direction column
-        final JComboBox directionCombo = new CayenneComboBox<>(dirs);
+        final JComboBox directionCombo = new CMComboBox<>(dirs);
         directionCombo.setEditable(false);
         final TableColumn directionColumn = columnModel.getColumn(
                 MergerTokenTableModel.COL_DIRECTION);

@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.dbgen;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
+import org.apache.cayenne.modeler.toolkit.table.CMTable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,7 +51,7 @@ public class TableSelectorView extends JPanel {
         topPanel.add(checkAll);
         topPanel.add(checkAllLabel);
 
-        tables = new CayenneTable();
+        tables = new CMTable();
         tables.setRowHeight(25);
         tables.setRowMargin(3);
 

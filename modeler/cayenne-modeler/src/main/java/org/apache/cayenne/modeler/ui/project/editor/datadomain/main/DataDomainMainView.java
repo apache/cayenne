@@ -28,8 +28,8 @@ import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DomainDisplayListener;
 import org.apache.cayenne.modeler.event.model.DomainEvent;
 import org.apache.cayenne.modeler.pref.RenamedPreferences;
-import org.apache.cayenne.modeler.toolkit.checkbox.CayenneCheckBox;
-import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
+import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
@@ -46,7 +46,7 @@ public class DataDomainMainView extends JPanel implements DomainDisplayListener 
 
     private final ProjectController controller;
 
-    protected CayenneUndoableTextField name;
+    protected CMUndoableTextField name;
     protected JCheckBox objectValidation;
     protected JCheckBox sharedCache;
 
@@ -63,11 +63,11 @@ public class DataDomainMainView extends JPanel implements DomainDisplayListener 
     protected void initView() {
 
         // create widgets
-        this.name = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
+        this.name = new CMUndoableTextField(controller.getApplication().getUndoManager());
         this.name.addCommitListener(this::setDomainName);
 
-        this.objectValidation = new CayenneCheckBox(controller.getApplication().getUndoManager());
-        this.sharedCache = new CayenneCheckBox(controller.getApplication().getUndoManager());
+        this.objectValidation = new CMCheckBox(controller.getApplication().getUndoManager());
+        this.sharedCache = new CMCheckBox(controller.getApplication().getUndoManager());
 
         // assemble
         CellConstraints cc = new CellConstraints();

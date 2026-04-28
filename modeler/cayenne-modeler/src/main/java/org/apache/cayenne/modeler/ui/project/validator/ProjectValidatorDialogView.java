@@ -26,7 +26,7 @@ import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.DisableValidationInspectionAction;
 import org.apache.cayenne.modeler.ui.action.ShowValidationOptionAction;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
-import org.apache.cayenne.modeler.toolkit.dialog.CayenneDialog;
+import org.apache.cayenne.modeler.toolkit.dialog.CMDialog;
 import org.apache.cayenne.validation.ValidationFailure;
 
 import javax.swing.*;
@@ -44,7 +44,7 @@ import java.util.List;
 /**
  * Dialog for displaying validation errors.
  */
-public class ProjectValidatorDialogView extends CayenneDialog {
+public class ProjectValidatorDialogView extends CMDialog {
 
     public static final Color WARNING_COLOR = new Color(245, 194, 194);
 

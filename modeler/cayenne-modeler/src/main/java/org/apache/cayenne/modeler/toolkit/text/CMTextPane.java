@@ -34,7 +34,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 
-public class CayenneTextPane extends JPanel {
+public class CMTextPane extends JPanel {
 
     protected Highlighter.HighlightPainter painter;
     private JTextPaneScrollable pane;
@@ -57,7 +57,7 @@ public class CayenneTextPane extends JPanel {
         this.tooltipTextError = tooltipTextError;
     }
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CayenneTextPane.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CMTextPane.class);
 
     public void setText(String text) {
         pane.setText(text);
@@ -126,7 +126,7 @@ public class CayenneTextPane extends JPanel {
         return position + posInLine;
     }
 
-    public CayenneTextPane(TextSyntax syntax) {
+    public CMTextPane(TextSyntax syntax) {
         super();
 
         Dimension dimension = new Dimension(15, 15);
@@ -135,10 +135,10 @@ public class CayenneTextPane extends JPanel {
         setMinimumSize(dimension);
         setBorder(null);
 
-        pane = new JTextPaneScrollable(new CayenneTextPaneEditorKit(syntax)) {
+        pane = new JTextPaneScrollable(new CMTextPaneEditorKit(syntax)) {
             public void paint(Graphics g) {
                 super.paint(g);
-                CayenneTextPane.this.repaint();
+                CMTextPane.this.repaint();
             }
         };
 
@@ -180,7 +180,7 @@ public class CayenneTextPane extends JPanel {
     }
 
     /**
-     * set underlines text in JCayenneTextPane
+     * set underlines text in JCMTextPane
      *
      * @param line      int - starting line for underlined text
      * @param lastIndex int - starting position in line for underlined text
@@ -338,7 +338,7 @@ public class CayenneTextPane extends JPanel {
 
     class JTextPaneScrollable extends JTextPane {
 
-        JTextPaneScrollable(CayenneTextPaneEditorKit editorKit) {
+        JTextPaneScrollable(CMTextPaneEditorKit editorKit) {
             // Set editor kit
             this.setEditorKitForContentType(editorKit.getContentType(), editorKit);
             this.setContentType(editorKit.getContentType());

@@ -22,9 +22,9 @@ import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
-class CayenneTableModelUndoableEdit extends AbstractUndoableEdit {
+class CMTableModelUndoableEdit extends AbstractUndoableEdit {
 
-    private final CayenneTableModel<?> model;
+    private final CMTableModel<?> model;
     private final Object oldValue;
     private final Object newValue;
     private final int row;
@@ -35,8 +35,8 @@ class CayenneTableModelUndoableEdit extends AbstractUndoableEdit {
         return "Cell Change";
     }
 
-    public CayenneTableModelUndoableEdit(
-            CayenneTableModel<?> model,
+    public CMTableModelUndoableEdit(
+            CMTableModel<?> model,
             Object oldValue,
             Object newValue,
             int row,

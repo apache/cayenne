@@ -35,9 +35,9 @@ import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.project.DbEntityOps;
-import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTableModel;
+import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
+import org.apache.cayenne.modeler.toolkit.table.CMTable;
+import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 import org.apache.cayenne.modeler.toolkit.table.CellEditorForAttributeTable;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.toolkit.ValueTypes;
@@ -55,7 +55,7 @@ import java.util.Comparator;
  * Allows adding/removing attributes, modifying the types and the names.
  * 
  */
-public class ObjAttributeTableModel extends CayenneTableModel<ObjAttribute> {
+public class ObjAttributeTableModel extends CMTableModel<ObjAttribute> {
 
     // Columns
     public static final int OBJ_ATTRIBUTE = 0;
@@ -70,7 +70,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttribute> {
     private final ObjEntity entity;
     private DbEntity dbEntity;
     private CellEditorForAttributeTable cellEditor;
-    private CayenneTable table;
+    private CMTable table;
 
     public ObjAttributeTableModel(ObjEntity entity, ProjectController mediator, Object eventSource) {
         super(mediator, eventSource, new ArrayList<>(entity.getAttributes()));
@@ -81,7 +81,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttribute> {
         objectList.sort(new AttributeComparator());
     }
 
-    public CayenneTable getTable() {
+    public CMTable getTable() {
         return table;
     }
 
@@ -236,9 +236,9 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttribute> {
 
     public CellEditorForAttributeTable setCellEditor(
             Collection<String> nameAttr,
-            CayenneTable table) {
+            CMTable table) {
         this.cellEditor = new CellEditorForAttributeTable(table,
-                new CayenneComboBox<>(nameAttr.stream().sorted().toArray(String[]::new)));
+                new CMComboBox<>(nameAttr.stream().sorted().toArray(String[]::new)));
         this.table = table;
         return cellEditor;
     }

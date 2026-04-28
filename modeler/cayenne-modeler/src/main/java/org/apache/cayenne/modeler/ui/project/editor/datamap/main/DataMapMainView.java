@@ -36,11 +36,11 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.main.superclass.Supe
 import org.apache.cayenne.modeler.event.model.ProjectAfterSaveEvent;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.toolkit.Renderers;
-import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
-import org.apache.cayenne.modeler.toolkit.checkbox.CayenneCheckBox;
-import org.apache.cayenne.modeler.toolkit.combobox.CayenneUndoableComboBox;
+import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
+import org.apache.cayenne.modeler.toolkit.combobox.CMUndoableComboBox;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -62,52 +62,52 @@ public class DataMapMainView extends JPanel {
 
     private final ProjectController controller;
 
-    private final CayenneUndoableTextField name;
+    private final CMUndoableTextField name;
     private final JLabel location;
     private final JComboBox<DataNodeDescriptor> nodeSelector;
     private final JCheckBox defaultLockType;
-    private final CayenneUndoableTextField defaultCatalog;
-    private final CayenneUndoableTextField defaultSchema;
-    private final CayenneUndoableTextField defaultPackage;
-    private final CayenneUndoableTextField defaultSuperclass;
+    private final CMUndoableTextField defaultCatalog;
+    private final CMUndoableTextField defaultSchema;
+    private final CMUndoableTextField defaultPackage;
+    private final CMUndoableTextField defaultSuperclass;
     private final JCheckBox quoteSQLIdentifiers;
 
-    private final CayenneUndoableTextField comment;
+    private final CMUndoableTextField comment;
 
     public DataMapMainView(ProjectController controller) {
         this.controller = controller;
 
         // create widgets
-        name = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
+        name = new CMUndoableTextField(controller.getApplication().getUndoManager());
         name.addCommitListener(this::setDataMapName);
 
         location = new JLabel();
-        nodeSelector = new CayenneUndoableComboBox<>(controller.getApplication().getUndoManager());
+        nodeSelector = new CMUndoableComboBox<>(controller.getApplication().getUndoManager());
         nodeSelector.setRenderer(Renderers.listRendererWithIcons());
 
         JButton updateDefaultCatalog = new JButton("Update...");
-        defaultCatalog = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
+        defaultCatalog = new CMUndoableTextField(controller.getApplication().getUndoManager());
         defaultCatalog.addCommitListener(this::setDefaultCatalog);
 
         JButton updateDefaultSchema = new JButton("Update...");
-        defaultSchema = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
+        defaultSchema = new CMUndoableTextField(controller.getApplication().getUndoManager());
         defaultSchema.addCommitListener(this::setDefaultSchema);
 
-        quoteSQLIdentifiers = new CayenneCheckBox(controller.getApplication().getUndoManager());
+        quoteSQLIdentifiers = new CMCheckBox(controller.getApplication().getUndoManager());
 
-        comment = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
+        comment = new CMUndoableTextField(controller.getApplication().getUndoManager());
         comment.addCommitListener(this::updateComment);
 
         JButton updateDefaultPackage = new JButton("Update...");
-        defaultPackage = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
+        defaultPackage = new CMUndoableTextField(controller.getApplication().getUndoManager());
         defaultPackage.addCommitListener(this::setDefaultPackage);
 
         JButton updateDefaultSuperclass = new JButton("Update...");
-        defaultSuperclass = new CayenneUndoableTextField(controller.getApplication().getUndoManager());
+        defaultSuperclass = new CMUndoableTextField(controller.getApplication().getUndoManager());
         defaultSuperclass.addCommitListener(this::setDefaultSuperclass);
 
         JButton updateDefaultLockType = new JButton("Update...");
-        defaultLockType = new CayenneCheckBox(controller.getApplication().getUndoManager());
+        defaultLockType = new CMCheckBox(controller.getApplication().getUndoManager());
 
         // assemble
         FormLayout layout = new FormLayout(

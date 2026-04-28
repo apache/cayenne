@@ -21,8 +21,8 @@ package org.apache.cayenne.modeler.ui.project.editor.datanode;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.toolkit.combobox.CayenneUndoableComboBox;
-import org.apache.cayenne.modeler.toolkit.text.CayenneUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.combobox.CMUndoableComboBox;
+import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 
 import javax.swing.JButton;
@@ -35,11 +35,11 @@ import java.awt.Font;
 
 public class DataNodeView extends JPanel {
 
-    protected CayenneUndoableTextField dataNodeName;
+    protected CMUndoableTextField dataNodeName;
     protected JComboBox<String> factories;
     protected JPanel dataSourceDetail;
     protected CardLayout dataSourceDetailLayout;
-    protected CayenneUndoableTextField customAdapter;
+    protected CMUndoableTextField customAdapter;
     protected JComboBox<String> localDataSources;
     protected JButton configLocalDataSources;
     protected JComboBox<String> schemaUpdateStrategy;
@@ -47,17 +47,17 @@ public class DataNodeView extends JPanel {
     public DataNodeView(CayenneUndoManager undoManager) {
 
         // create widgets
-        this.dataNodeName = new CayenneUndoableTextField(undoManager);
+        this.dataNodeName = new CMUndoableTextField(undoManager);
 
-        this.factories = new CayenneUndoableComboBox<>(undoManager);
+        this.factories = new CMUndoableComboBox<>(undoManager);
 
-        this.localDataSources = new CayenneUndoableComboBox<>(undoManager);
+        this.localDataSources = new CMUndoableComboBox<>(undoManager);
 
-        this.schemaUpdateStrategy = new CayenneUndoableComboBox<>(undoManager);
+        this.schemaUpdateStrategy = new CMUndoableComboBox<>(undoManager);
         this.dataSourceDetailLayout = new CardLayout();
         this.dataSourceDetail = new JPanel(dataSourceDetailLayout);
 
-        this.customAdapter = new CayenneUndoableTextField(undoManager);
+        this.customAdapter = new CMUndoableTextField(undoManager);
 
         this.configLocalDataSources = new JButton("...");
         this.configLocalDataSources.setToolTipText("configure local DataSource");
@@ -99,7 +99,7 @@ public class DataNodeView extends JPanel {
         return schemaUpdateStrategy;
     }
 
-    public CayenneUndoableTextField getDataNodeName() {
+    public CMUndoableTextField getDataNodeName() {
         return dataNodeName;
     }
 
@@ -123,7 +123,7 @@ public class DataNodeView extends JPanel {
         return configLocalDataSources;
     }
 
-    public CayenneUndoableTextField getCustomAdapter() {
+    public CMUndoableTextField getCustomAdapter() {
         return customAdapter;
     }
 }

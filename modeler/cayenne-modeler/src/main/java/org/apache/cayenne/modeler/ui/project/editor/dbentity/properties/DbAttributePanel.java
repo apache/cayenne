@@ -35,12 +35,12 @@ import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.toolkit.table.BoardTableCellRenderer;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTablePanel;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTextFieldCellEditor;
+import org.apache.cayenne.modeler.toolkit.table.CMTable;
+import org.apache.cayenne.modeler.toolkit.table.CMTablePanel;
+import org.apache.cayenne.modeler.toolkit.table.CMTextFieldCellEditor;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
-import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
-import org.apache.cayenne.modeler.toolkit.table.CayenneComboBoxCellEditor;
+import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
+import org.apache.cayenne.modeler.toolkit.table.CMComboBoxCellEditor;
 import org.apache.cayenne.modeler.toolkit.text.LimitedTextField;
 
 import javax.swing.*;
@@ -57,7 +57,7 @@ import java.util.List;
 public class DbAttributePanel extends JPanel implements DbEntityDisplayListener, DbAttributeListener {
 
     private final ProjectController controller;
-    private final CayenneTable table;
+    private final CMTable table;
     private final TableColumnPreferences tablePreferences;
     private final DbEntityPropertiesView parentPanel;
 
@@ -70,7 +70,7 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
         GlobalActions globalActions = controller.getApplication().getActionManager();
 
         // Create table with two columns and no rows.
-        table = new CayenneTable();
+        table = new CMTable();
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         tablePreferences = new TableColumnPreferences(
@@ -89,7 +89,7 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
         popup.add(globalActions.getAction(PasteAction.class).buildMenu());
 
         TablePopupHandler.install(table, popup);
-        add(new CayenneTablePanel(table), BorderLayout.CENTER);
+        add(new CMTablePanel(table), BorderLayout.CENTER);
 
         controller.addDbEntityDisplayListener(this);
         controller.addDbAttributeListener(this);
@@ -102,7 +102,7 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
                 CopyAttributeRelationshipAction.class);
     }
 
-    public CayenneTable getTable() {
+    public CMTable getTable() {
         return table;
     }
 
@@ -180,20 +180,20 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
 
         String[] types = TypesMapping.getDatabaseTypes();
         Arrays.sort(types);
-        JComboBox comboBox = new CayenneComboBox<>(types);
+        JComboBox comboBox = new CMComboBox<>(types);
 
         // Types.NULL makes no sense as a column type
         comboBox.removeItem("NULL");
         AutoCompletion.enable(comboBox);
 
         TableColumn typeColumn = table.getColumnModel().getColumn(DbAttributeTableModel.DB_ATTRIBUTE_TYPE);
-        typeColumn.setCellEditor(new CayenneComboBoxCellEditor(comboBox));
+        typeColumn.setCellEditor(new CMComboBoxCellEditor(comboBox));
 
         TableColumn lengthColumn = table.getColumnModel().getColumn(DbAttributeTableModel.DB_ATTRIBUTE_MAX);
-        lengthColumn.setCellEditor(new CayenneTextFieldCellEditor(new LimitedTextField(10)));
+        lengthColumn.setCellEditor(new CMTextFieldCellEditor(new LimitedTextField(10)));
 
         TableColumn scaleColumn = table.getColumnModel().getColumn(DbAttributeTableModel.DB_ATTRIBUTE_SCALE);
-        scaleColumn.setCellEditor(new CayenneTextFieldCellEditor(new LimitedTextField(10)));
+        scaleColumn.setCellEditor(new CMTextFieldCellEditor(new LimitedTextField(10)));
 
         tablePreferences.bind(table, null, null, null, DbAttributeTableModel.DB_ATTRIBUTE_NAME, true);
     }

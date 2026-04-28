@@ -33,12 +33,12 @@ import org.apache.cayenne.modeler.event.model.ProcedureParameterListener;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
-import org.apache.cayenne.modeler.toolkit.combobox.CayenneComboBox;
-import org.apache.cayenne.modeler.toolkit.table.CayenneComboBoxCellEditor;
+import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
+import org.apache.cayenne.modeler.toolkit.table.CMComboBoxCellEditor;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTable;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTablePanel;
-import org.apache.cayenne.modeler.toolkit.table.CayenneTextFieldCellEditor;
+import org.apache.cayenne.modeler.toolkit.table.CMTable;
+import org.apache.cayenne.modeler.toolkit.table.CMTablePanel;
+import org.apache.cayenne.modeler.toolkit.table.CMTextFieldCellEditor;
 import org.apache.cayenne.modeler.toolkit.text.LimitedTextField;
 import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.CopyProcedureParameterAction;
@@ -70,7 +70,7 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
 
     private final ProjectController controller;
 
-    protected CayenneTable table;
+    protected CMTable table;
     protected TableColumnPreferences tablePreferences;
     protected JButton removeParameterButton;
     protected JButton moveUp;
@@ -141,7 +141,7 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
         add(toolBar, BorderLayout.NORTH);
 
         // Create table with two columns and no rows.
-        table = new CayenneTable();
+        table = new CMTable();
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
@@ -174,7 +174,7 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
 
         TablePopupHandler.install(table, popup);
 
-        add(new CayenneTablePanel(table), BorderLayout.CENTER);
+        add(new CMTablePanel(table), BorderLayout.CENTER);
 
         globalActions.setupCutCopyPaste(
                 table,
@@ -287,25 +287,25 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
                 .getColumn(ProcedureParameterTableModel.PARAMETER_TYPE);
         String[] dbTypes = TypesMapping.getDatabaseTypes();
         Arrays.sort(dbTypes);
-        JComboBox typesEditor = new CayenneComboBox<>(dbTypes);
+        JComboBox typesEditor = new CMComboBox<>(dbTypes);
         AutoCompletion.enable(typesEditor);
-        typesColumn.setCellEditor(new CayenneComboBoxCellEditor(typesEditor));
+        typesColumn.setCellEditor(new CMComboBoxCellEditor(typesEditor));
 
         // direction column tweaking
         TableColumn directionColumn = table.getColumnModel()
                 .getColumn(ProcedureParameterTableModel.PARAMETER_DIRECTION);
-        JComboBox directionEditor = new CayenneComboBox<>(
+        JComboBox directionEditor = new CMComboBox<>(
                 ProcedureParameterTableModel.PARAMETER_DIRECTION_NAMES);
         directionEditor.setEditable(false);
-        directionColumn.setCellEditor(new CayenneComboBoxCellEditor(directionEditor));
+        directionColumn.setCellEditor(new CMComboBoxCellEditor(directionEditor));
 
         TableColumn precisionColumn = table.getColumnModel().getColumn(ProcedureParameterTableModel.PARAMETER_PRECISION);
         LimitedTextField limitedPrecisionField = new LimitedTextField(10);
-        precisionColumn.setCellEditor(new CayenneTextFieldCellEditor(limitedPrecisionField));
+        precisionColumn.setCellEditor(new CMTextFieldCellEditor(limitedPrecisionField));
 
         TableColumn lengthColumn = table.getColumnModel().getColumn(ProcedureParameterTableModel.PARAMETER_LENGTH);
         LimitedTextField limitedLengthField = new LimitedTextField(10);
-        lengthColumn.setCellEditor(new CayenneTextFieldCellEditor(limitedLengthField));
+        lengthColumn.setCellEditor(new CMTextFieldCellEditor(limitedLengthField));
 
         moveUp.setEnabled(false);
         moveDown.setEnabled(false);

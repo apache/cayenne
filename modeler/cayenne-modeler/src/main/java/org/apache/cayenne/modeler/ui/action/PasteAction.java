@@ -44,7 +44,7 @@ import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallb
 import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
 import org.apache.cayenne.modeler.undo.PasteCompoundUndoableEdit;
 import org.apache.cayenne.modeler.undo.PasteUndoableEdit;
-import org.apache.cayenne.modeler.toolkit.copypaste.CayenneTransferable;
+import org.apache.cayenne.modeler.toolkit.copypaste.CMTransferable;
 import org.apache.cayenne.query.Query;
 
 import javax.swing.KeyStroke;
@@ -98,7 +98,7 @@ public class PasteAction extends ModelerAbstractAction implements FlavorListener
     public void performAction(ActionEvent e) {
         try {
             Object content = Toolkit.getDefaultToolkit().getSystemClipboard().getData(
-                    CayenneTransferable.CAYENNE_FLAVOR);
+                    CMTransferable.CAYENNE_FLAVOR);
 
             Object currentObject = getProjectController().getSelectedObject();
 
@@ -492,7 +492,7 @@ public class PasteAction extends ModelerAbstractAction implements FlavorListener
     private boolean getState() {
         try {
             Object content = Toolkit.getDefaultToolkit().getSystemClipboard().getData(
-                    CayenneTransferable.CAYENNE_FLAVOR);
+                    CMTransferable.CAYENNE_FLAVOR);
 
             if (content instanceof List) {
                 content = ((List) content).get(0);
