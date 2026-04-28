@@ -18,17 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks;
 
-import java.io.Serializable;
-
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
+
+import java.io.Serializable;
 
 public class ObjCallbackMethod implements XMLSerializable,
 	Serializable {
 	
 	private String name;
-	private CallbackType callbackType;
+	private final CallbackType callbackType;
 
 	public ObjCallbackMethod(String name, CallbackType callbackType) {
 		this.name = name;
@@ -73,9 +73,4 @@ public class ObjCallbackMethod implements XMLSerializable,
 	public CallbackType getCallbackType() {
 		return callbackType;
 	}
-
-	public void setCallbackType(CallbackType callbackType) {
-		this.callbackType = callbackType;
-	}
-
 }

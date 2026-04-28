@@ -19,21 +19,18 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.dbentity.main;
 
-import org.apache.cayenne.modeler.event.model.DbEntityEvent;
-import java.awt.BorderLayout;
-import java.awt.Font;
-
-import javax.swing.JLabel;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
+import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import java.awt.*;
 
 public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
 
@@ -107,7 +104,7 @@ public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
 
         int cacheSize = 0;
 
-        if (text != null && text.trim().length() > 0) {
+        if (text != null && !text.trim().isEmpty()) {
             try {
                 cacheSize = Integer.parseInt(text);
             }
@@ -130,7 +127,7 @@ public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
             return;
         }
 
-        if (text != null && text.trim().length() == 0) {
+        if (text != null && text.trim().isEmpty()) {
             text = null;
         }
 

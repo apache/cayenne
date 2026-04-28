@@ -25,9 +25,9 @@ import java.io.Serializable;
 
 public class CallbackType implements Serializable {
 
-    private LifecycleEvent type;
-    private String name;
-    private int counter;
+    private final LifecycleEvent type;
+    private final String name;
+    private final int counter;
 
     public CallbackType(LifecycleEvent type) {
         this.type = type;
@@ -35,39 +35,14 @@ public class CallbackType implements Serializable {
         this.counter = 0;
     }
 
-    /**
-     * @return callback type id
-     */
     public LifecycleEvent getType() {
         return type;
     }
 
-    /**
-     * @return callback name
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * @return number of callback methods of this type.
-     */
-    public int getCounter() {
-        return counter;
-    }
-
-    /**
-     * Method to specify counter value
-     *
-     * @param counter new coutner value
-     */
-    public void setCounter(int counter) {
-        this.counter = counter;
-    }
-
-    /**
-     * @return a human readable label representing for this callback.
-     */
     public String toString() {
         if (counter <= 0) {
             return name;
@@ -86,10 +61,7 @@ public class CallbackType implements Serializable {
 
         CallbackType that = (CallbackType) o;
 
-        if (type != that.type)
-            return false;
-
-        return true;
+        return type == that.type;
     }
 
     public int hashCode() {

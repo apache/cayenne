@@ -22,15 +22,14 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
-public class ImageRendererColumn extends DefaultTableCellRenderer {
+public class IconCellRenderer extends DefaultTableCellRenderer {
 
-    public ImageRendererColumn() {
-        super();
-    }
+    @Override
+    public Component getTableCellRendererComponent(
+            JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 
-    public Component getTableCellRendererComponent(JTable table, Object value,
-            boolean isSelected, boolean hasFocus, int row, int column) {
         super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
         JLabel label = (JLabel) value;
         setText(label.getText());
         setIcon(label.getIcon());

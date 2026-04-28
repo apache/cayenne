@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.ui.find;
 
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.action.FindAction;
-import org.apache.cayenne.modeler.toolkit.table.ImageRendererColumn;
+import org.apache.cayenne.modeler.toolkit.table.IconCellRenderer;
 import org.apache.cayenne.modeler.toolkit.border.TopBorder;
 
 import javax.swing.*;
@@ -62,7 +62,7 @@ public class FindDialogView extends JDialog {
         tableModel.setDataVector(convertToDataVector(searchResults), new Object[] {""});
 
         table = new JTable(tableModel);
-        table.getColumnModel().getColumn(0).setCellRenderer(new ImageRendererColumn());
+        table.getColumnModel().getColumn(0).setCellRenderer(new IconCellRenderer());
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         InputMap im = table.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);

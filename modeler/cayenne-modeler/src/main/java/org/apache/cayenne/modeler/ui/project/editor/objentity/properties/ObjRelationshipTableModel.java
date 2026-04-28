@@ -220,17 +220,6 @@ public class ObjRelationshipTableModel extends CMTableModel<ObjRelationship> {
                 ObjRelationshipEvent.ofChange(eventSource, relationship, entity, renamedFrom));
     }
 
-    public void removeRow(int row) {
-        if (row < 0) {
-            return;
-        }
-        ObjRelationship rel = getRelationship(row);
-        controller.fireObjRelationshipEvent(ObjRelationshipEvent.ofRemove(eventSource, rel, entity));
-        objectList.remove(row);
-        entity.removeRelationship(rel.getName());
-        fireTableRowsDeleted(row, row);
-    }
-
     private boolean isInherited(int row) {
         ObjRelationship relationship = getRelationship(row);
         return (relationship != null) && relationship.getSourceEntity() != entity;

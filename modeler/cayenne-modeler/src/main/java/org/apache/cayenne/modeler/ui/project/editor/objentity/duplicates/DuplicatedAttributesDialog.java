@@ -164,7 +164,7 @@ public class DuplicatedAttributesDialog extends CMDialog {
 
     public void setDuplicatedAttributes(ProjectController controller, List<ObjAttribute> attributes) {
         if (duplicatedAttributes == null) {
-            duplicatedAttributes = new LinkedList<DuplicatedAttributeInfo>();
+            duplicatedAttributes = new LinkedList<>();
         }
 
         duplicatedAttributes.clear();
@@ -273,11 +273,11 @@ public class DuplicatedAttributesDialog extends CMDialog {
         }
     }
 
-    public class DuplicatedAttributeInfo {
-        private String name;
+    public static class DuplicatedAttributeInfo {
+        private final String name;
         private String newName;
-        private String type;
-        private String parentType;
+        private final String type;
+        private final String parentType;
         private String action;
 
         DuplicatedAttributeInfo(String name, String type, String parentType, String action) {

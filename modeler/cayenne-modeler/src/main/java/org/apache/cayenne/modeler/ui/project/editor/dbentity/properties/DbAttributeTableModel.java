@@ -211,7 +211,7 @@ public class DbAttributeTableModel extends CMTableModel<DbAttribute> {
     }
 
     public void setMaxLength(String newVal, DbAttribute attr) {
-        if (newVal == null || newVal.trim().length() <= 0) {
+        if (newVal == null || newVal.trim().isEmpty()) {
             attr.setMaxLength(-1);
         } else {
             try {
@@ -231,7 +231,7 @@ public class DbAttributeTableModel extends CMTableModel<DbAttribute> {
     }
 
     public void setScale(String newVal, DbAttribute attr) {
-        if (newVal == null || newVal.trim().length() <= 0) {
+        if (newVal == null || newVal.trim().isEmpty()) {
             attr.setScale(-1);
         } else {
             try {

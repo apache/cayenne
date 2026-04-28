@@ -131,7 +131,7 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
     public void selectRelationships(DbRelationship[] rels) {
         DbRelationshipTableModel model = (DbRelationshipTableModel) table.getModel();
 
-        List listRels = model.getObjectList();
+        List<DbRelationship> listRels = model.getObjectList();
         int[] newSel = new int[rels.length];
 
         GlobalActions globalActions = controller.getApplication().getActionManager();

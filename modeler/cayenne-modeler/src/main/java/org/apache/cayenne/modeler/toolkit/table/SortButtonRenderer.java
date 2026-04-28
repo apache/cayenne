@@ -30,7 +30,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 
-public class SortButtonRenderer extends DefaultTableCellRenderer {
+class SortButtonRenderer extends DefaultTableCellRenderer {
 
     public static final int NONE = 0;
     public static final int DOWN = 1;
@@ -92,7 +92,7 @@ public class SortButtonRenderer extends DefaultTableCellRenderer {
     }
 
     public int getState(int col) {
-        if (col == currentColumn){
+        if (col == currentColumn) {
             return currentState;
         }
         return NONE;

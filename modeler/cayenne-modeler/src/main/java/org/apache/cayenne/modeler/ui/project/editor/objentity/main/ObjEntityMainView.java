@@ -70,12 +70,11 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
     private final JLabel superclassLabel;
     private final CMUndoableTextField superClassName;
     private final CMUndoableTextField qualifier;
-    private final JComboBox<DbEntity> dbEntityCombo;
-    private final JComboBox<ObjEntity> superEntityCombo;
-    private final JCheckBox readOnly;
-    private final JCheckBox optimisticLocking;
-
-    private final JCheckBox isAbstract;
+    private final CMComboBox<DbEntity> dbEntityCombo;
+    private final CMComboBox<ObjEntity> superEntityCombo;
+    private final CMCheckBox readOnly;
+    private final CMCheckBox optimisticLocking;
+    private final CMCheckBox isAbstract;
     private final CMUndoableTextField comment;
 
     public ObjEntityMainView(ProjectController controller) {
@@ -199,7 +198,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
                 if (name == null) {
                     for (ObjAttribute objAttribute : entity.getAttributes()) {
                         if (objAttribute.getDbAttribute() == null) {
-                            objAttribute.setDbAttributePath((String)null);
+                            objAttribute.setDbAttributePath((String) null);
                         }
                     }
                 }
@@ -267,7 +266,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
     /**
      * Updates the view from the current model state. Invoked when a currently displayed
      * ObjEntity is changed.
-     * 
+     *
      * @param entity current entity
      */
     private void initFromModel(final ObjEntity entity) {

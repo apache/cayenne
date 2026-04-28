@@ -140,7 +140,7 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
 
     @Override
     public void dbAttributeAdded(DbAttributeEvent e) {
-        rebuildTable((DbEntity) e.getEntity());
+        rebuildTable(e.getEntity());
         table.select(e.getAttribute());
     }
 
@@ -148,7 +148,7 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
     public void dbAttributeRemoved(DbAttributeEvent e) {
         DbAttributeTableModel model = (DbAttributeTableModel) table.getModel();
         int ind = model.getObjectList().indexOf(e.getAttribute());
-        model.removeRow((DbAttribute) e.getAttribute());
+        model.removeRow(e.getAttribute());
         table.select(ind);
     }
 

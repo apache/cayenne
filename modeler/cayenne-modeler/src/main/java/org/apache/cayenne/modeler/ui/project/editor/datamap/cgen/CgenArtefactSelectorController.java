@@ -25,8 +25,7 @@ import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
-import org.apache.cayenne.modeler.toolkit.table.CheckBoxHeader;
-import org.apache.cayenne.modeler.toolkit.table.ImageRendererColumn;
+import org.apache.cayenne.modeler.toolkit.table.IconCellRenderer;
 import org.apache.cayenne.modeler.toolkit.table.TableSizer;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
@@ -112,8 +111,8 @@ public class CgenArtefactSelectorController extends ChildController<CgenControll
 
         TableColumnModel columnModel = view.getTable().getColumnModel();
         columnModel.getColumn(0).setHeaderRenderer(checkBoxHeader);
-        columnModel.getColumn(1).setCellRenderer(new ImageRendererColumn());
-        columnModel.getColumn(2).setCellRenderer(new ImageRendererColumn());
+        columnModel.getColumn(1).setCellRenderer(new IconCellRenderer());
+        columnModel.getColumn(2).setCellRenderer(new IconCellRenderer());
 
         TableSizer.sizeColumns(view.getTable(), Boolean.TRUE, "XXXXXXXXXXXXXXXXXXXXXXXXXX", "XX");
     }

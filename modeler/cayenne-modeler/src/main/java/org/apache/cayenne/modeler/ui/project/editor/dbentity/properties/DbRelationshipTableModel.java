@@ -58,7 +58,8 @@ public class DbRelationshipTableModel extends CMTableModel<DbRelationship> {
     /**
      * Returns DbRelationship class.
      */
-    public Class getElementsClass() {
+    @Override
+    public Class<?> getElementsClass() {
         return DbRelationship.class;
     }
 
@@ -83,7 +84,8 @@ public class DbRelationshipTableModel extends CMTableModel<DbRelationship> {
         }
     }
 
-    public Class getColumnClass(int col) {
+    @Override
+    public Class<?> getColumnClass(int col) {
         switch (col) {
             case TARGET:
                 return DbEntity.class;

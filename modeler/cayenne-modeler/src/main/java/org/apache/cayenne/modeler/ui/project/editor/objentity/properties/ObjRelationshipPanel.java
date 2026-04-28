@@ -149,7 +149,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
     public void selectRelationships(ObjRelationship[] rels) {
         ObjRelationshipTableModel model = (ObjRelationshipTableModel) table.getModel();
 
-        List listRels = model.getObjectList();
+        List<ObjRelationship> listRels = model.getObjectList();
         int[] newSel = new int[rels.length];
 
         parentPanel.updateActions(rels);
@@ -204,14 +204,14 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
     }
 
     public void objRelationshipAdded(ObjRelationshipEvent e) {
-        rebuildTable((ObjEntity) e.getEntity());
+        rebuildTable(e.getEntity());
         table.select(e.getRelationship());
     }
 
     public void objRelationshipRemoved(ObjRelationshipEvent e) {
         ObjRelationshipTableModel model = (ObjRelationshipTableModel) table.getModel();
         int ind = model.getObjectList().indexOf(e.getRelationship());
-        model.removeRow((ObjRelationship) e.getRelationship());
+        model.removeRow(e.getRelationship());
         table.select(ind);
     }
 

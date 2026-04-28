@@ -19,26 +19,20 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.dbentity.main;
 
-import org.apache.cayenne.modeler.event.model.DbEntityEvent;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.Collection;
-
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JList;
-import javax.swing.MutableComboBoxModel;
-import javax.swing.plaf.basic.BasicComboBoxRenderer;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
+import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.Collection;
 
 public class PKDBGeneratorPanel extends PKGeneratorPanel {
 
@@ -137,7 +131,7 @@ public class PKDBGeneratorPanel extends PKGeneratorPanel {
         revalidate();
     }
 
-    class AttributeRenderer extends BasicComboBoxRenderer {
+    static class AttributeRenderer extends BasicComboBoxRenderer {
 
         public Component getListCellRendererComponent(
                 JList list,
