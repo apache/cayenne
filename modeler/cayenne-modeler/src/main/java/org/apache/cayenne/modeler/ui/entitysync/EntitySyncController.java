@@ -21,6 +21,8 @@ package org.apache.cayenne.modeler.ui.entitysync;
 
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.dbsync.merge.context.EntityMergeSupport;
+import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
@@ -65,7 +67,7 @@ public class EntitySyncController extends ChildController<RootController> {
         try {
             namingStrategy = NameGeneratorPreferences.getInstance().createNamingStrategy(application);
         } catch (Throwable e) {
-            namingStrategy = NameGeneratorPreferences.defaultNameGenerator();
+            namingStrategy = new DefaultObjectNameGenerator(NoStemStemmer.getInstance());
         }
 
         // TODO: Modeler-controlled defaults for all the hardcoded boolean flags here.

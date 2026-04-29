@@ -182,7 +182,7 @@ public class DataSourceController extends ChildController<ProjectController> {
         // doing connection testing...
         try {
             try {
-                this.adapter = info.makeAdapter(classLoader);
+                this.adapter = info.makeAdapter(classLoader, getApplication().getDbAdapterFactory());
                 this.dataSource = info.makeDataSource(classLoader);
             } catch (SQLException ignore) {
                 showNoConnectorDialog("Unable to load driver '" + info.getJdbcDriver() + "'");

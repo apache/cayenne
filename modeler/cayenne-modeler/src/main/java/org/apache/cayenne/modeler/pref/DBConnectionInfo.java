@@ -21,9 +21,9 @@ package org.apache.cayenne.modeler.pref;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
+import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
 import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
 import org.apache.cayenne.util.Util;
 
@@ -38,330 +38,304 @@ import java.util.prefs.Preferences;
 
 public class DBConnectionInfo extends CayennePreference {
 
-	private static final String EMPTY_STRING = "";
-	public static final String DB_ADAPTER_PROPERTY = "dbAdapter";
-	public static final String JDBC_DRIVER_PROPERTY = "jdbcDriver";
-	public static final String PASSWORD_PROPERTY = "password";
-	public static final String URL_PROPERTY = "url";
-	public static final String USER_NAME_PROPERTY = "userName";
-	private static final String DB_CONNECTION_INFO = "dbConnectionInfo";
+    private static final String EMPTY_STRING = "";
+    public static final String DB_ADAPTER_PROPERTY = "dbAdapter";
+    public static final String JDBC_DRIVER_PROPERTY = "jdbcDriver";
+    public static final String PASSWORD_PROPERTY = "password";
+    public static final String URL_PROPERTY = "url";
+    public static final String USER_NAME_PROPERTY = "userName";
+    private static final String DB_CONNECTION_INFO = "dbConnectionInfo";
 
-	private String nodeName;
+    private String nodeName;
 
-	private String dbAdapter;
-	private String jdbcDriver;
-	private String password;
-	private String url;
-	private String userName;
+    private String dbAdapter;
+    private String jdbcDriver;
+    private String password;
+    private String url;
+    private String userName;
 
-	private boolean allowDataSourceFailure;
+    private boolean allowDataSourceFailure;
 
-	public DBConnectionInfo() {
-		this.currentPreference = CayennePreference.getRoot().node(DB_CONNECTION_INFO);
-	};
+    public DBConnectionInfo() {
+        this.currentPreference = CayennePreference.getRoot().node(DB_CONNECTION_INFO);
+    }
 
-	public DBConnectionInfo(final String nameNode, final boolean initFromPreferences) {
-		this();
-		setNodeName(nameNode);
-		if (initFromPreferences) {
-			initObjectPreference();
-		}
-	};
+    public DBConnectionInfo(String nameNode, boolean initFromPreferences) {
+        this();
+        setNodeName(nameNode);
+        if (initFromPreferences) {
+            initObjectPreference();
+        }
+    }
 
-	@Override
-	public Preferences getCurrentPreference() {
-		if (getNodeName() == null) {
-			return super.getCurrentPreference();
-		}
-		return currentPreference.node(getNodeName());
-	}
+    @Override
+    public Preferences getCurrentPreference() {
+        if (getNodeName() == null) {
+            return super.getCurrentPreference();
+        }
+        return currentPreference.node(getNodeName());
+    }
 
-	public void setAllowDataSourceFailure(boolean allowDataSourceFailure) {
-		this.allowDataSourceFailure = allowDataSourceFailure;
-	}
+    public void setAllowDataSourceFailure(boolean allowDataSourceFailure) {
+        this.allowDataSourceFailure = allowDataSourceFailure;
+    }
 
-	@Override
-	public void saveObjectPreference() {
-		if (getCurrentPreference() != null) {
-			if (getDbAdapter() != null) {
-				getCurrentPreference().put(DB_ADAPTER_PROPERTY, getDbAdapter());
-			}
-			if (getUrl() != null) {
-				getCurrentPreference().put(URL_PROPERTY, getUrl());
-			}
-			if (getUserName() != null) {
-				getCurrentPreference().put(USER_NAME_PROPERTY, getUserName());
-			}
-			if (getPassword() != null) {
-				getCurrentPreference().put(PASSWORD_PROPERTY, getPassword());
-			}
-			if (getJdbcDriver() != null) {
-				getCurrentPreference().put(JDBC_DRIVER_PROPERTY, getJdbcDriver());
-			}
-		}
-	}
+    @Override
+    public void saveObjectPreference() {
+        if (getCurrentPreference() != null) {
+            if (getDbAdapter() != null) {
+                getCurrentPreference().put(DB_ADAPTER_PROPERTY, getDbAdapter());
+            }
+            if (getUrl() != null) {
+                getCurrentPreference().put(URL_PROPERTY, getUrl());
+            }
+            if (getUserName() != null) {
+                getCurrentPreference().put(USER_NAME_PROPERTY, getUserName());
+            }
+            if (getPassword() != null) {
+                getCurrentPreference().put(PASSWORD_PROPERTY, getPassword());
+            }
+            if (getJdbcDriver() != null) {
+                getCurrentPreference().put(JDBC_DRIVER_PROPERTY, getJdbcDriver());
+            }
+        }
+    }
 
-	public void initObjectPreference() {
-		if (getCurrentPreference() != null) {
-			setDbAdapter(getCurrentPreference().get(DB_ADAPTER_PROPERTY, null));
-			setUrl(getCurrentPreference().get(URL_PROPERTY, null));
-			setUserName(getCurrentPreference().get(USER_NAME_PROPERTY, null));
-			setPassword(getCurrentPreference().get(PASSWORD_PROPERTY, null));
-			setJdbcDriver(getCurrentPreference().get(JDBC_DRIVER_PROPERTY, null));
-			setNodeName(getCurrentPreference().name());
-		}
-	}
+    public void initObjectPreference() {
+        if (getCurrentPreference() != null) {
+            setDbAdapter(getCurrentPreference().get(DB_ADAPTER_PROPERTY, null));
+            setUrl(getCurrentPreference().get(URL_PROPERTY, null));
+            setUserName(getCurrentPreference().get(USER_NAME_PROPERTY, null));
+            setPassword(getCurrentPreference().get(PASSWORD_PROPERTY, null));
+            setJdbcDriver(getCurrentPreference().get(JDBC_DRIVER_PROPERTY, null));
+            setNodeName(getCurrentPreference().name());
+        }
+    }
 
-	public String getNodeName() {
-		return nodeName;
-	}
+    public String getNodeName() {
+        return nodeName;
+    }
 
-	public void setNodeName(final String nodeName) {
-		this.nodeName = nodeName;
-	}
+    public void setNodeName(final String nodeName) {
+        this.nodeName = nodeName;
+    }
 
-	public String getDbAdapter() {
-		return dbAdapter;
-	}
+    public String getDbAdapter() {
+        return dbAdapter;
+    }
 
-	public void setDbAdapter(final String dbAdapter) {
-		this.dbAdapter = dbAdapter;
-	}
+    public void setDbAdapter(final String dbAdapter) {
+        this.dbAdapter = dbAdapter;
+    }
 
-	public String getJdbcDriver() {
-		return jdbcDriver;
-	}
+    public String getJdbcDriver() {
+        return jdbcDriver;
+    }
 
-	public void setJdbcDriver(final String jdbcDriver) {
-		this.jdbcDriver = jdbcDriver;
-	}
+    public void setJdbcDriver(final String jdbcDriver) {
+        this.jdbcDriver = jdbcDriver;
+    }
 
-	public String getPassword() {
-		return password == null ? EMPTY_STRING : password;
-	}
+    public String getPassword() {
+        return password == null ? EMPTY_STRING : password;
+    }
 
-	public void setPassword(final String password) {
-		this.password = password;
-	}
+    public void setPassword(final String password) {
+        this.password = password;
+    }
 
-	public String getUrl() {
-		return url;
-	}
+    public String getUrl() {
+        return url;
+    }
 
-	public void setUrl(final String url) {
-		this.url = url;
-	}
+    public void setUrl(final String url) {
+        this.url = url;
+    }
 
-	public String getUserName() {
-		return userName == null ? EMPTY_STRING : userName;
-	}
+    public String getUserName() {
+        return userName == null ? EMPTY_STRING : userName;
+    }
 
-	public void setUserName(final String userName) {
-		this.userName = userName;
-	}
+    public void setUserName(final String userName) {
+        this.userName = userName;
+    }
 
-	/**
-	 * Creates a DbAdapter based on configured values.
-	 */
-	public DbAdapter makeAdapter(final ModelerClassLoader classLoader) throws Exception {
-		DataNodeDescriptor descriptor = new DataNodeDescriptor();
-		descriptor.setAdapterType(getDbAdapter());
-		DataSource dataSource = makeDataSource(classLoader);
-		return Application.getInstance().getDbAdapterFactory().createAdapter(descriptor, dataSource);
-	}
+    /**
+     * Creates a DbAdapter based on configured values.
+     */
+    public DbAdapter makeAdapter(ModelerClassLoader classLoader, DbAdapterFactory adapterFactory) throws Exception {
+        DataNodeDescriptor descriptor = new DataNodeDescriptor();
+        descriptor.setAdapterType(getDbAdapter());
+        DataSource dataSource = makeDataSource(classLoader);
+        return adapterFactory.createAdapter(descriptor, dataSource);
+    }
 
-	/**
-	 * Returns a DataSource that uses connection information from this object.
-	 * Returned DataSource is not pooling its connections. It can be wrapped in
-	 * PoolManager if pooling is needed.
-	 */
-	public DataSource makeDataSource(final ModelerClassLoader classLoader) throws SQLException {
+    /**
+     * Returns a DataSource that uses connection information from this object.
+     * Returned DataSource is not pooling its connections. It can be wrapped in
+     * PoolManager if pooling is needed.
+     */
+    public DataSource makeDataSource(ModelerClassLoader classLoader) throws SQLException {
 
-		// validate...
-		if (getJdbcDriver() == null) {
-			if(allowDataSourceFailure) {
-				return new DeferredDataSource(classLoader);
-			}
-			throw new SQLException("No JDBC driver set.");
-		}
+        // validate...
+        if (getJdbcDriver() == null) {
+            if (allowDataSourceFailure) {
+                return new DeferredDataSource(classLoader);
+            }
+            throw new SQLException("No JDBC driver set.");
+        }
 
-		if (getUrl() == null) {
-			if(allowDataSourceFailure) {
-				return new DeferredDataSource(classLoader);
-			}
-			throw new SQLException("No DB URL set.");
-		}
+        if (getUrl() == null) {
+            if (allowDataSourceFailure) {
+                return new DeferredDataSource(classLoader);
+            }
+            throw new SQLException("No DB URL set.");
+        }
 
-		if (!Util.isBlank(getPassword()) && Util.isBlank(getUserName())) {
-			throw new SQLException("No username when password is set.");
-		}
+        if (!Util.isBlank(getPassword()) && Util.isBlank(getUserName())) {
+            throw new SQLException("No username when password is set.");
+        }
 
-		// load driver...
-		Driver driver = null;
+        // load driver...
+        Driver driver;
 
-		try {
-			driver = classLoader.loadClass(Driver.class, getJdbcDriver()).getDeclaredConstructor().newInstance();
-		} catch (Throwable th) {
-			throw new SQLException("Driver load error: " + Util.unwindException(th).getLocalizedMessage());
-		}
+        try {
+            driver = classLoader.loadClass(Driver.class, getJdbcDriver()).getDeclaredConstructor().newInstance();
+        } catch (Throwable th) {
+            throw new SQLException("Driver load error: " + Util.unwindException(th).getLocalizedMessage());
+        }
 
-		return new DriverDataSource(driver, getUrl(), getUserName(), getPassword());
-	}
+        return new DriverDataSource(driver, getUrl(), getUserName(), getPassword());
+    }
 
-	/**
-	 * Updates another DBConnectionInfo with this object's values.
-	 */
-	public boolean copyTo(final DBConnectionInfo dataSourceInfo) {
-		boolean updated = false;
+    /**
+     * Updates another DBConnectionInfo with this object's values.
+     */
+    public boolean copyTo(DBConnectionInfo dataSourceInfo) {
+        boolean updated = false;
 
-		if (!Util.nullSafeEquals(dataSourceInfo.getUrl(), getUrl())) {
-			dataSourceInfo.setUrl(getUrl());
-			updated = true;
-		}
+        if (!Util.nullSafeEquals(dataSourceInfo.getUrl(), getUrl())) {
+            dataSourceInfo.setUrl(getUrl());
+            updated = true;
+        }
 
-		if (!Util.nullSafeEquals(dataSourceInfo.getUserName(), getUserName())) {
-			dataSourceInfo.setUserName(getUserName());
-			updated = true;
-		}
+        if (!Util.nullSafeEquals(dataSourceInfo.getUserName(), getUserName())) {
+            dataSourceInfo.setUserName(getUserName());
+            updated = true;
+        }
 
-		if (!Util.nullSafeEquals(dataSourceInfo.getPassword(), getPassword())) {
-			dataSourceInfo.setPassword(getPassword());
-			updated = true;
-		}
+        if (!Util.nullSafeEquals(dataSourceInfo.getPassword(), getPassword())) {
+            dataSourceInfo.setPassword(getPassword());
+            updated = true;
+        }
 
-		if (!Util.nullSafeEquals(dataSourceInfo.getJdbcDriver(), getJdbcDriver())) {
-			dataSourceInfo.setJdbcDriver(getJdbcDriver());
-			updated = true;
-		}
+        if (!Util.nullSafeEquals(dataSourceInfo.getJdbcDriver(), getJdbcDriver())) {
+            dataSourceInfo.setJdbcDriver(getJdbcDriver());
+            updated = true;
+        }
 
-		if (!Util.nullSafeEquals(dataSourceInfo.getDbAdapter(), getDbAdapter())) {
-			dataSourceInfo.setDbAdapter(getDbAdapter());
-			updated = true;
-		}
+        if (!Util.nullSafeEquals(dataSourceInfo.getDbAdapter(), getDbAdapter())) {
+            dataSourceInfo.setDbAdapter(getDbAdapter());
+            updated = true;
+        }
 
-		return updated;
-	}
+        return updated;
+    }
 
-	/**
-	 * Updates DataSourceInfo with this object's values.
-	 * <p>
-	 * <i>Currently doesn't set the adapter property. Need to change the UI to
-	 * handle adapter via DataSourceInfo first, and then it should be safe to do
-	 * an adapter update here. </i>
-	 * </p>
-	 */
-	public boolean copyTo(final DataSourceDescriptor dataSourceInfo) {
-		boolean updated = false;
+    /**
+     * Updates DataSourceInfo with this object's values.
+     * <p>
+     * <i>Currently doesn't set the adapter property. Need to change the UI to
+     * handle adapter via DataSourceInfo first, and then it should be safe to do
+     * an adapter update here. </i>
+     * </p>
+     */
+    public boolean copyTo(final DataSourceDescriptor dataSourceInfo) {
+        boolean updated = false;
 
-		if (!Util.nullSafeEquals(dataSourceInfo.getDataSourceUrl(), getUrl())) {
-			dataSourceInfo.setDataSourceUrl(getUrl());
-			updated = true;
-		}
+        if (!Util.nullSafeEquals(dataSourceInfo.getDataSourceUrl(), getUrl())) {
+            dataSourceInfo.setDataSourceUrl(getUrl());
+            updated = true;
+        }
 
-		if (!Util.nullSafeEquals(dataSourceInfo.getUserName(), getUserName())) {
-			dataSourceInfo.setUserName(getUserName());
-			updated = true;
-		}
+        if (!Util.nullSafeEquals(dataSourceInfo.getUserName(), getUserName())) {
+            dataSourceInfo.setUserName(getUserName());
+            updated = true;
+        }
 
-		if (!Util.nullSafeEquals(dataSourceInfo.getPassword(), getPassword())) {
-			dataSourceInfo.setPassword(getPassword());
-			updated = true;
-		}
+        if (!Util.nullSafeEquals(dataSourceInfo.getPassword(), getPassword())) {
+            dataSourceInfo.setPassword(getPassword());
+            updated = true;
+        }
 
-		if (!Util.nullSafeEquals(dataSourceInfo.getJdbcDriver(), getJdbcDriver())) {
-			dataSourceInfo.setJdbcDriver(getJdbcDriver());
-			updated = true;
-		}
+        if (!Util.nullSafeEquals(dataSourceInfo.getJdbcDriver(), getJdbcDriver())) {
+            dataSourceInfo.setJdbcDriver(getJdbcDriver());
+            updated = true;
+        }
 
-		return updated;
-	}
+        return updated;
+    }
 
-	public boolean copyFrom(final DataSourceDescriptor dataSourceInfo) {
-		boolean updated = false;
+    private class DeferredDataSource implements DataSource {
 
-		if (!Util.nullSafeEquals(dataSourceInfo.getDataSourceUrl(), getUrl())) {
-			setUrl(dataSourceInfo.getDataSourceUrl());
-			updated = true;
-		}
+        private final ModelerClassLoader classLoader;
 
-		if (!Util.nullSafeEquals(dataSourceInfo.getUserName(), getUserName())) {
-			setUserName(dataSourceInfo.getUserName());
-			updated = true;
-		}
+        public DeferredDataSource(ModelerClassLoader classLoader) {
+            this.classLoader = classLoader;
+        }
 
-		if (!Util.nullSafeEquals(dataSourceInfo.getPassword(), getPassword())) {
-			setPassword(dataSourceInfo.getPassword());
-			updated = true;
-		}
+        DataSource getDeferredDataSource() throws SQLException {
+            allowDataSourceFailure = false;
+            return makeDataSource(classLoader);
+        }
 
-		if (!Util.nullSafeEquals(dataSourceInfo.getJdbcDriver(), getJdbcDriver())) {
-			setJdbcDriver(dataSourceInfo.getJdbcDriver());
-			updated = true;
-		}
+        @Override
+        public Connection getConnection() throws SQLException {
+            return getDeferredDataSource().getConnection();
+        }
 
-		return updated;
-	}
+        @Override
+        public Connection getConnection(String username, String password) throws SQLException {
+            return getDeferredDataSource().getConnection(username, password);
+        }
 
-	private class DeferredDataSource implements DataSource {
+        @Override
+        public PrintWriter getLogWriter() throws SQLException {
+            return getDeferredDataSource().getLogWriter();
+        }
 
-		private final ModelerClassLoader classLoader;
+        @Override
+        public void setLogWriter(PrintWriter out) throws SQLException {
+            getDeferredDataSource().setLogWriter(out);
+        }
 
-		public DeferredDataSource(ModelerClassLoader classLoader) {
-			this.classLoader = classLoader;
-		}
+        @Override
+        public void setLoginTimeout(int seconds) throws SQLException {
+            getDeferredDataSource().setLoginTimeout(seconds);
+        }
 
-		DataSource getDeferredDataSource() throws SQLException {
-			allowDataSourceFailure = false;
-			return makeDataSource(classLoader);
-		}
+        @Override
+        public int getLoginTimeout() throws SQLException {
+            return getDeferredDataSource().getLoginTimeout();
+        }
 
-		@Override
-		public Connection getConnection() throws SQLException {
-			return getDeferredDataSource().getConnection();
-		}
+        @Override
+        public <T> T unwrap(Class<T> iface) throws SQLException {
+            return getDeferredDataSource().unwrap(iface);
+        }
 
-		@Override
-		public Connection getConnection(String username, String password) throws SQLException {
-			return getDeferredDataSource().getConnection(username, password);
-		}
+        @Override
+        public boolean isWrapperFor(Class<?> iface) throws SQLException {
+            return getDeferredDataSource().isWrapperFor(iface);
+        }
 
-		@Override
-		public PrintWriter getLogWriter() throws SQLException {
-			return getDeferredDataSource().getLogWriter();
-		}
-
-		@Override
-		public void setLogWriter(PrintWriter out) throws SQLException {
-			getDeferredDataSource().setLogWriter(out);
-		}
-
-		@Override
-		public void setLoginTimeout(int seconds) throws SQLException {
-			getDeferredDataSource().setLoginTimeout(seconds);
-		}
-
-		@Override
-		public int getLoginTimeout() throws SQLException {
-			return getDeferredDataSource().getLoginTimeout();
-		}
-
-		@Override
-		public <T> T unwrap(Class<T> iface) throws SQLException {
-			return getDeferredDataSource().unwrap(iface);
-		}
-
-		@Override
-		public boolean isWrapperFor(Class<?> iface) throws SQLException {
-			return getDeferredDataSource().isWrapperFor(iface);
-		}
-
-		@Override
-		public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-			try {
-				return getDeferredDataSource().getParentLogger();
-			} catch (SQLException e) {
-				throw new SQLFeatureNotSupportedException(e);
-			}
-		}
-	}
+        @Override
+        public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+            try {
+                return getDeferredDataSource().getParentLogger();
+            } catch (SQLException e) {
+                throw new SQLFeatureNotSupportedException(e);
+            }
+        }
+    }
 }

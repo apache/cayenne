@@ -83,7 +83,7 @@ public class InferRelationshipsDialog extends JDialog {
         this.choice = CANCEL;
 
         strategyCombo.setModel(new DefaultComboBoxModel(
-                NameGeneratorPreferences.getInstance().getLastUsedStrategies()));
+                NameGeneratorPreferences.getInstance().getLastUsedStrategies(application)));
 
         setTitle("Infer Relationships");
     }

@@ -97,7 +97,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
     void initStrategy(ReverseEngineering reverseEngineering) {
         Vector<String> arr = NameGeneratorPreferences
                 .getInstance()
-                .getLastUsedStrategies();
+                .getLastUsedStrategies(controller.getApplication());
         strategyCombo.setModel(new DefaultComboBoxModel<>(arr));
         strategyCombo.setSelectedItem(reverseEngineering.getNamingStrategy());
     }
@@ -184,7 +184,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
             String strategy = (String) ReverseEngineeringConfigPanel.this.getStrategyCombo().getSelectedItem();
             checkStrategy(strategy);
             getReverseEngineeringBySelectedMap().setNamingStrategy(strategy);
-            NameGeneratorPreferences.getInstance().addToLastUsedStrategies(strategy);
+            NameGeneratorPreferences.getInstance().addToLastUsedStrategies(controller.getApplication(), strategy);
             if (!dbImportView.isInitFromModel()) {
                 controller.setDirty(true);
             }

@@ -19,7 +19,6 @@
 package org.apache.cayenne.modeler.util;
 
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
-import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.modeler.Application;
 
@@ -37,7 +36,7 @@ public class NameGeneratorPreferences {
     /**
      * Naming strategies to appear in combobox by default
      */
-    private static final Vector<String> PREDEFINED_STRATEGIES = new Vector<String>();
+    private static final Vector<String> PREDEFINED_STRATEGIES = new Vector<>();
     static {
         PREDEFINED_STRATEGIES.add(DefaultObjectNameGenerator.class.getCanonicalName());
     }
@@ -48,33 +47,30 @@ public class NameGeneratorPreferences {
         return instance;
     }
 
-    Preferences getPreference() {
-        return Application.getInstance().getMainPreferenceForProject();
+    Preferences getPreference(Application application) {
+        return application.getMainPreferenceForProject();
     }
 
     /**
      * @return last used strategies, PREDEFINED_STRATEGIES by default
      */
-    public Vector<String> getLastUsedStrategies() {
+    public Vector<String> getLastUsedStrategies(Application application) {
 
-        String prop = null;
-
-        if (getPreference() != null) {
-            prop = getPreference().get(STRATEGIES_PREFERENCE, null);
-        }
+        Preferences pref = getPreference(application);
+        String prop = pref != null ? pref.get(STRATEGIES_PREFERENCE, null) : null;
 
         if (prop == null) {
             return PREDEFINED_STRATEGIES;
         }
 
-        return new Vector<String>(Arrays.asList(prop.split(",")));
+        return new Vector<>(Arrays.asList(prop.split(",")));
     }
 
     /**
      * Adds strategy to history
      */
-    public void addToLastUsedStrategies(String strategy) {
-        Vector<String> strategies = getLastUsedStrategies();
+    public void addToLastUsedStrategies(Application application, String strategy) {
+        Vector<String> strategies = getLastUsedStrategies(application);
 
         // move to top
         strategies.remove(strategy);
@@ -84,20 +80,14 @@ public class NameGeneratorPreferences {
         for (String str : strategies) {
             res.append(str).append(",");
         }
-        if (!strategies.isEmpty()) {
-            res.deleteCharAt(res.length() - 1);
-        }
+        res.deleteCharAt(res.length() - 1);
 
-        getPreference().put(STRATEGIES_PREFERENCE, res.toString());
+        getPreference(application).put(STRATEGIES_PREFERENCE, res.toString());
     }
 
     public ObjectNameGenerator createNamingStrategy(Application application) throws Exception {
 
         return application.getClassLoader()
-                .loadClass(ObjectNameGenerator.class, getLastUsedStrategies().get(0)).getDeclaredConstructor().newInstance();
-    }
-
-    public static ObjectNameGenerator defaultNameGenerator() {
-        return new DefaultObjectNameGenerator(NoStemStemmer.getInstance());
+                .loadClass(ObjectNameGenerator.class, getLastUsedStrategies(application).get(0)).getDeclaredConstructor().newInstance();
     }
 }

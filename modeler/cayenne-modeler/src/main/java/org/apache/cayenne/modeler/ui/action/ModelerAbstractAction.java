@@ -146,7 +146,7 @@ public abstract class ModelerAbstractAction extends AbstractAction {
             performAction(e);
         }
         catch (Throwable th) {
-            ErrorsController.guiException(th);
+            ErrorsController.guiException(application, th);
         }
     }
 

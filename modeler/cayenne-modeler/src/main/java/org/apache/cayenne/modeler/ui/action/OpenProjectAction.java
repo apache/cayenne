@@ -179,7 +179,7 @@ public class OpenProjectAction extends ProjectAction {
             openProjectResourse(rootSource, controller);
         } catch (Exception ex) {
             LOGGER.warn("Error loading project file.", ex);
-            ErrorsController.guiWarning(ex, "Error loading project");
+            ErrorsController.guiWarning(application, ex, "Error loading project");
         }
     }
 

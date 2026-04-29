@@ -118,7 +118,7 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
 
     private void loadDataBase(DBConnectionInfo connectionInfo) throws Exception {
         DraggableTreePanel draggableTreePanel = view.getDraggableTreePanel();
-        ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader()
+        ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader(application.getDbAdapterFactory())
                 .load(connectionInfo, application.getClassLoader());
         draggableTreePanel.getSourceTree()
                 .setEnabled(true);
@@ -131,7 +131,7 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
 
     private void loadTables(DBConnectionInfo connectionInfo, TreePath tablePath) throws Exception {
         DraggableTreePanel draggableTreePanel = view.getDraggableTreePanel();
-        ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader()
+        ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader(application.getDbAdapterFactory())
                 .loadTables(connectionInfo,
                         application.getClassLoader(),
                         tablePath,
@@ -143,7 +143,7 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
 
     private void loadColumns(DBConnectionInfo connectionInfo, TreePath tablePath) throws SQLException {
         DraggableTreePanel draggableTreePanel = view.getDraggableTreePanel();
-        ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader()
+        ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader(application.getDbAdapterFactory())
                 .loadColumns(connectionInfo, application.getClassLoader(), tablePath);
         draggableTreePanel.getSourceTree()
                 .update(databaseReverseEngineering,

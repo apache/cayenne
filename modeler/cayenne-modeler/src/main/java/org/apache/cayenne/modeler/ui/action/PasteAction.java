@@ -135,7 +135,7 @@ public class PasteAction extends ModelerAbstractAction implements FlavorListener
         } catch (UnsupportedFlavorException ufe) {
             // do nothing
         } catch (Exception ex) {
-            ErrorsController.guiException(ex);
+            ErrorsController.guiException(application, ex);
         }
     }
 

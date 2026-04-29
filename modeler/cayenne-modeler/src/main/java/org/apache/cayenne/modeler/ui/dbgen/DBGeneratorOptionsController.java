@@ -123,7 +123,7 @@ public class DBGeneratorOptionsController extends ChildController<ProjectControl
      */
     protected void prepareGenerator() {
         try {
-            DbAdapter adapter = connectionInfo.makeAdapter(getApplication().getClassLoader());
+            DbAdapter adapter = connectionInfo.makeAdapter(getApplication().getClassLoader(), getApplication().getDbAdapterFactory());
             generators = new ArrayList<>();
             for (DataMap dataMap : dataMaps) {
                 this.generators.add(new DbGenerator(

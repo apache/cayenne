@@ -34,14 +34,16 @@ public class ConfirmRemoveDialog {
 
     private static final String DELETE = "Delete";
 
+    private final Application application;
+    private final boolean allowAsking;
+
     private boolean shouldDelete = true;
 
     /**
-     * If false, no question will be asked no matter what settings are
+     * @param allowAsking if false, no question will be asked no matter what settings are
      */
-    private boolean allowAsking;
-
-    public ConfirmRemoveDialog(boolean allowAsking) {
+    public ConfirmRemoveDialog(Application application, boolean allowAsking) {
+        this.application = application;
         this.allowAsking = allowAsking;
     }
 
@@ -57,14 +59,14 @@ public class ConfirmRemoveDialog {
         JOptionPane pane = new JOptionPane(message, JOptionPane.QUESTION_MESSAGE);
         pane.setOptions(new Object[]{ DELETE, "Cancel" });
         pane.setInitialValue(DELETE);
-        pane.createDialog(Application.getInstance().getFrameController().getView(), "Confirm Delete").setVisible(true);
+        pane.createDialog(application.getFrameController().getView(), "Confirm Delete").setVisible(true);
 
         shouldDelete = DELETE.equals(pane.getValue());
 
         // If the user clicks "cancel" or window close button, we'll just ignore whatever's in the checkbox because
         // it's non-sensical.
         if (shouldDelete) {
-            Preferences pref = Application.getInstance().getPreferencesNode(
+            Preferences pref = application.getPreferencesNode(
                     GeneralPreferencesController.class,
                     "");
             pref.putBoolean(
@@ -80,7 +82,7 @@ public class ConfirmRemoveDialog {
     public boolean shouldDelete(String name) {
         if (allowAsking) {
 
-            Preferences pref = Application.getInstance().getPreferencesNode(
+            Preferences pref = application.getPreferencesNode(
                     GeneralPreferencesController.class,
                     "");
 

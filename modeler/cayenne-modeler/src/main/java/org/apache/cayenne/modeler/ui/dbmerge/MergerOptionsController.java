@@ -134,7 +134,7 @@ public class MergerOptionsController extends ChildController<ProjectController> 
      */
     protected void prepareMigrator() {
         try {
-            adapter = connectionInfo.makeAdapter(getApplication().getClassLoader());
+            adapter = connectionInfo.makeAdapter(getApplication().getClassLoader(), getApplication().getDbAdapterFactory());
 
             MergerTokenFactory mergerTokenFactory = mergerTokenFactoryProvider.get(adapter);
             tokens.setMergerTokenFactory(mergerTokenFactory);

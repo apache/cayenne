@@ -104,7 +104,7 @@ public class RemoveAction extends ModelerAbstractAction {
      * @param allowAsking If false, no question will be asked no matter what settings are
      */
     public ConfirmRemoveDialog getConfirmDeleteDialog(boolean allowAsking) {
-        return new ConfirmRemoveDialog(allowAsking);
+        return new ConfirmRemoveDialog(application, allowAsking);
     }
 
     @Override

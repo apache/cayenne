@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
 import org.apache.cayenne.dbsync.reverse.dbimport.FilterContainer;
@@ -47,14 +48,16 @@ public class DatabaseSchemaLoader {
     private static final String INCLUDE_ALL_PATTERN = "%";
 
     private final ReverseEngineering databaseReverseEngineering;
+    private final DbAdapterFactory adapterFactory;
 
-    public DatabaseSchemaLoader() {
-        databaseReverseEngineering = new ReverseEngineering();
+    public DatabaseSchemaLoader(DbAdapterFactory adapterFactory) {
+        this.adapterFactory = adapterFactory;
+        this.databaseReverseEngineering = new ReverseEngineering();
     }
 
     public ReverseEngineering load(DBConnectionInfo connectionInfo,
                                    ModelerClassLoader loadingService) throws Exception {
-        DbAdapter dbAdapter = connectionInfo.makeAdapter(loadingService);
+        DbAdapter dbAdapter = connectionInfo.makeAdapter(loadingService, adapterFactory);
         try (Connection connection = connectionInfo.makeDataSource(loadingService).getConnection()) {
             processCatalogs(connection, dbAdapter);
         }
@@ -128,7 +131,7 @@ public class DatabaseSchemaLoader {
                                          String[] tableTypesFromConfig) throws Exception {
         int pathIndex = 1;
         String catalogName = null, schemaName = null;
-        DbAdapter adapter = connectionInfo.makeAdapter(loadingService);
+        DbAdapter adapter = connectionInfo.makeAdapter(loadingService, adapterFactory);
 
         Object userObject = getUserObjectOrNull(path, pathIndex);
         if (userObject != null) {

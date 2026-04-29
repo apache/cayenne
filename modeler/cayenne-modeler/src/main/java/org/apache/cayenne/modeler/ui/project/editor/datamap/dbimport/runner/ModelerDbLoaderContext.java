@@ -138,7 +138,7 @@ public class ModelerDbLoaderContext {
             ModelerClassLoader classLoader = application.getClassLoader();
             config.getDbLoaderConfig().setFiltersConfig(new FiltersConfigBuilder(reverseEngineering)
                     .dataSource(connectionInfo.makeDataSource(classLoader))
-                    .dbAdapter(connectionInfo.makeAdapter(classLoader))
+                    .dbAdapter(connectionInfo.makeAdapter(classLoader, application.getDbAdapterFactory()))
                     .build());
         } catch (Exception e) {
             processException(e, "Fail while building configs.");

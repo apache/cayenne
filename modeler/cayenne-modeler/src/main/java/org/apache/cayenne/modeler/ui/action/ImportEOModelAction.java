@@ -159,7 +159,7 @@ public class ImportEOModelAction extends ModelerAbstractAction {
 
             } catch (Exception ex) {
                 LOGGER.info("EOModel Loading Exception", ex);
-                ErrorsController.guiException(ex);
+                ErrorsController.guiException(application, ex);
             }
 
         }

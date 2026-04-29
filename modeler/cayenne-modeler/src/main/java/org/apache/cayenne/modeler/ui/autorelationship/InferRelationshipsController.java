@@ -66,7 +66,7 @@ public class InferRelationshipsController extends ChildController<RootController
         this.selectedEntities = new HashSet<>();
         this.strategy = createNamingStrategy(NameGeneratorPreferences
                 .getInstance()
-                .getLastUsedStrategies()
+                .getLastUsedStrategies(application)
                 .get(0));
         setNamingStrategy(strategy);
         setRelationships();
@@ -324,9 +324,9 @@ public class InferRelationshipsController extends ChildController<RootController
             if (strategy == null) {
                 return;
             }
-            NameGeneratorPreferences.getInstance().addToLastUsedStrategies(strategyClass);
+            NameGeneratorPreferences.getInstance().addToLastUsedStrategies(application, strategyClass);
             view.getStrategyCombo().setModel(
-                    new DefaultComboBoxModel<>(NameGeneratorPreferences.getInstance().getLastUsedStrategies()));
+                    new DefaultComboBoxModel<>(NameGeneratorPreferences.getInstance().getLastUsedStrategies(application)));
         } catch (Throwable th) {
             LOGGER.error("Error in " + getClass().getName(), th);
             return;

@@ -11,22 +11,22 @@ public class ErrorsController {
     /**
      * Shows an error dialog with stack trace
      */
-    public static void guiException(Throwable th) {
+    public static void guiException(Application application, Throwable th) {
         if (th != null) {
             LOGGER.error("CayenneModeler Error", th);
         }
 
-        new ErrorDialog(Application.getInstance(), "CayenneModeler Error", th, true, false).setVisible(true);
+        new ErrorDialog(application, "CayenneModeler Error", th, true, false).setVisible(true);
     }
 
     /**
      * Shows a warning dialog with stack trace
      */
-    public static void guiWarning(Throwable th, String message) {
+    public static void guiWarning(Application application, Throwable th, String message) {
         if (th != null) {
             LOGGER.warn("CayenneModeler Warning", th);
         }
 
-        new WarningDialog(Application.getInstance(), message, th, false, false).setDetailed(true);
+        new WarningDialog(application, message, th, false, false).setDetailed(true);
     }
 }
