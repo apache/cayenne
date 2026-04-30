@@ -33,13 +33,13 @@ import java.lang.reflect.Method;
  * incorrectly (in fact, only classes with valueOf(String) methods
  * are supported).
  */
-public class CustomTypeComboBoxEditor extends BasicComboBoxEditor {
+class CustomTypeComboBoxEditor extends BasicComboBoxEditor {
 
     protected Object localOldValue;
-    protected final JComboBox combo;
+    protected final JComboBox<?> combo;
     protected final boolean allowsUserValues;
 
-    public CustomTypeComboBoxEditor(JComboBox combo, boolean allowsUserValues) {
+    public CustomTypeComboBoxEditor(JComboBox<?> combo, boolean allowsUserValues) {
         this.editor = new EditorTextField(combo);
         this.combo = combo;
         this.allowsUserValues = allowsUserValues;
@@ -62,7 +62,7 @@ public class CustomTypeComboBoxEditor extends BasicComboBoxEditor {
                 return localOldValue;
             } else {
                 // Must take the value from the editor and get the value and cast it to the new type.
-                Class cls = localOldValue.getClass();
+                Class<?> cls = localOldValue.getClass();
                 try {
                     newValue = convert((String) newValue, cls);
                 } catch (Exception ignored) {
@@ -96,10 +96,8 @@ public class CustomTypeComboBoxEditor extends BasicComboBoxEditor {
             return value;
         }
 
-        /*
-         * We still try to it in BasicComboBox's way, so that primary object
-         * types (such as numbers) would still be supported
-         */
+        // We still try to it in BasicComboBox's way, so that primary object types (such as numbers) would still be
+        // supported
         try {
             Method method = classTo.getMethod("valueOf", String.class);
             return method.invoke(null, value);
@@ -112,7 +110,7 @@ public class CustomTypeComboBoxEditor extends BasicComboBoxEditor {
          * combobox model's items to String.
          * All string values are assumed unique is one model.
          */
-        ComboBoxModel model = combo.getModel();
+        ComboBoxModel<?> model = combo.getModel();
         for (int i = 0; i < model.getSize(); i++) {
             if (value.equals(Renderers.asString(model.getElementAt(i), selectedDataMap()))) {
                 return model.getElementAt(i);
