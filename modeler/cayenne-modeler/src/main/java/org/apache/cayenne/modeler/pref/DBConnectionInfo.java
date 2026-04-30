@@ -44,7 +44,7 @@ public class DBConnectionInfo extends CayennePreference {
     public static final String PASSWORD_PROPERTY = "password";
     public static final String URL_PROPERTY = "url";
     public static final String USER_NAME_PROPERTY = "userName";
-    private static final String DB_CONNECTION_INFO = "dbConnectionInfo";
+    static final String DB_CONNECTION_INFO = "dbConnectionInfo";
 
     private String nodeName;
 

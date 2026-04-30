@@ -22,8 +22,8 @@ package org.apache.cayenne.modeler.ui.preferences.datasource;
 import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.modeler.event.model.DataSourceEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
-import org.apache.cayenne.modeler.pref.ChildrenMapPreference;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+import org.apache.cayenne.modeler.pref.DBConnectionInfoDefaults;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
 import org.apache.cayenne.modeler.ui.preferences.PreferenceDialogController;
 import org.apache.cayenne.modeler.ui.preferences.classpath.ClasspathPreferencesController;
@@ -53,8 +53,8 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 
 	private final DataSourcePreferencesView view;
 	private String dataSourceKey;
-	private Map dataSources;
-	private final ChildrenMapPreference dataSourcePreferences;
+	private Map<String, DBConnectionInfo> dataSources;
+	private final DBConnectionInfoDefaults dataSourcePreferences;
 
 	public DataSourcePreferencesController(PreferenceDialogController parent) {
 		super(parent);
@@ -62,9 +62,8 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 		this.view = new DataSourcePreferencesView(this);
 
 		// init view data
-		this.dataSourcePreferences = getApplication().getProjectPreferences().getDetailObject(
-				DBConnectionInfo.class);
-		this.dataSources = dataSourcePreferences.getChildrenPreferences();
+		this.dataSourcePreferences = getApplication().getProjectPreferences().getDataSourceRegistry();
+		this.dataSources = dataSourcePreferences.getAll();
 
 		Object[] keys = dataSources.keySet().toArray();
 		Arrays.sort(keys);
@@ -96,7 +95,7 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 		});
 	}
 
-	public Map getDataSources() {
+	public Map<String, DBConnectionInfo> getDataSources() {
 		return dataSources;
 	}
 
@@ -110,7 +109,7 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 	}
 
 	public DBConnectionInfo getConnectionInfo() {
-		return (DBConnectionInfo) dataSourcePreferences.getObject(dataSourceKey);
+		return dataSourcePreferences.get(dataSourceKey);
 	}
 
 	/**
@@ -121,8 +120,7 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 		DBConnectionInfo dataSource = creatorWizard.startupAction();
 
 		if (dataSource != null) {
-			dataSourcePreferences.create(creatorWizard.getName(), dataSource);
-			dataSources = dataSourcePreferences.getChildrenPreferences();
+			dataSources = dataSourcePreferences.getAll();
 
 			Object[] keys = dataSources.keySet().toArray();
 			Arrays.sort(keys);
@@ -143,8 +141,7 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 			DBConnectionInfo dataSource = wizard.startupAction();
 
 			if (dataSource != null) {
-				dataSourcePreferences.create(wizard.getName(), dataSource);
-				dataSources = dataSourcePreferences.getChildrenPreferences();
+				dataSources = dataSourcePreferences.getAll();
 
 				Object[] keys = dataSources.keySet().toArray();
 				Arrays.sort(keys);
@@ -164,7 +161,7 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 		if (key != null) {
 			dataSourcePreferences.remove(key);
 
-			dataSources = dataSourcePreferences.getChildrenPreferences();
+			dataSources = dataSourcePreferences.getAll();
 			Object[] keys = dataSources.keySet().toArray();
 			Arrays.sort(keys);
 			view.getDataSources().setModel(new DefaultComboBoxModel<>(keys));

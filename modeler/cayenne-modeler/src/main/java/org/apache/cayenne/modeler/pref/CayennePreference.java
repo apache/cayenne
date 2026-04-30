@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.pref;
 
 import java.util.prefs.Preferences;
 
-public class CayennePreference implements Preference {
+public class CayennePreference {
 
     private static final String CAYENNE_PREFERENCES_PATH = "org/apache/cayenne";
 
@@ -30,7 +30,6 @@ public class CayennePreference implements Preference {
         return Preferences.userRoot().node(CAYENNE_PREFERENCES_PATH);
     }
 
-    @Override
     public Preferences getCurrentPreference() {
         return currentPreference;
     }

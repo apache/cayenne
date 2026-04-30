@@ -32,7 +32,7 @@ public class DataSourceDuplicatorController extends ChildController<DataSourcePr
 
     protected DataSourceDuplicatorView view;
     protected boolean canceled;
-    protected Map dataSources;
+    protected Map<String, DBConnectionInfo> dataSources;
     protected String prototypeKey;
 
     public DataSourceDuplicatorController(DataSourcePreferencesController parent, String prototypeKey) {
@@ -117,10 +117,10 @@ public class DataSourceDuplicatorController extends ChildController<DataSourcePr
             return null;
         }
 
-        DBConnectionInfo prototype = (DBConnectionInfo) dataSources.get(prototypeKey);
-        DBConnectionInfo dataSource = (DBConnectionInfo) getApplication()
+        DBConnectionInfo prototype = dataSources.get(prototypeKey);
+        DBConnectionInfo dataSource = getApplication()
                 .getProjectPreferences()
-                .getDetailObject(DBConnectionInfo.class)
+                .getDataSourceRegistry()
                 .create(getName());
 
         prototype.copyTo(dataSource);

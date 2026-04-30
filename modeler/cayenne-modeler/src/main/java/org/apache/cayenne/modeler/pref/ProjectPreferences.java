@@ -27,21 +27,16 @@ import java.util.prefs.Preferences;
 
 public class ProjectPreferences {
 
-    private final Map<Class<?>, ChildrenMapPreference> modelerPreferences;
+    private final DBConnectionInfoDefaults dataSourceRegistry;
     private final Map<Preferences, CayennePreference> modelerProjectPreferences;
 
     public ProjectPreferences() {
-        modelerPreferences = new HashMap<>();
-        modelerPreferences.put(DBConnectionInfo.class, new ChildrenMapPreference(new DBConnectionInfo()));
+        dataSourceRegistry = new DBConnectionInfoDefaults();
         modelerProjectPreferences = new HashMap<>();
-
-        for (ChildrenMapPreference value : modelerPreferences.values()) {
-            value.initChildrenPreferences();
-        }
     }
 
-    public ChildrenMapPreference getDetailObject(Class<?> className) {
-        return modelerPreferences.get(className);
+    public DBConnectionInfoDefaults getDataSourceRegistry() {
+        return dataSourceRegistry;
     }
 
     public <T extends CayennePreference> T getProjectDetailObject(

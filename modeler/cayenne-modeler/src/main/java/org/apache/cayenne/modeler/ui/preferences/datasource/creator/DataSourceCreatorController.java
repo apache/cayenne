@@ -34,7 +34,7 @@ public class DataSourceCreatorController extends ChildController<DataSourcePrefe
 
     protected DataSourceCreatorView view;
     protected boolean canceled;
-    protected Map dataSources;
+    protected Map<String, DBConnectionInfo> dataSources;
 
     public DataSourceCreatorController(DataSourcePreferencesController parent) {
         super(parent);
@@ -122,9 +122,9 @@ public class DataSourceCreatorController extends ChildController<DataSourcePrefe
             return null;
         }
 
-        DBConnectionInfo dataSource = (DBConnectionInfo) getApplication()
+        DBConnectionInfo dataSource = getApplication()
                 .getProjectPreferences()
-                .getDetailObject(DBConnectionInfo.class)
+                .getDataSourceRegistry()
                 .create(getName());
 
         Object adapter = view.getAdapters().getSelectedItem();

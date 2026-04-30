@@ -119,10 +119,10 @@ public class JDBCDataSourceController extends DataSourceEditorController {
             return;
         }
 
-        DBConnectionInfo dataSource = (DBConnectionInfo) getApplication()
+        DBConnectionInfo dataSource = getApplication()
             .getProjectPreferences()
-            .getDetailObject(DBConnectionInfo.class)
-            .getObject(key);
+            .getDataSourceRegistry()
+            .get(key);
 
         if (dataSource != null) {
             if (dataSource.copyTo(projectDataSourceDescriptor)) {

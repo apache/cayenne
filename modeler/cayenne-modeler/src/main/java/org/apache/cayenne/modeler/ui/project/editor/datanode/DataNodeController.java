@@ -212,9 +212,8 @@ public class DataNodeController extends ChildController<ProjectController> {
     }
 
     protected void refreshLocalDataSources() {
-        @SuppressWarnings("unchecked")
-        Map<String, Object> sources = (Map<String, Object>) getApplication().getProjectPreferences()
-                .getDetailObject(DBConnectionInfo.class).getChildrenPreferences();
+        Map<String, DBConnectionInfo> sources = getApplication().getProjectPreferences()
+                .getDataSourceRegistry().getAll();
 
         int len = sources.size();
         String[] keys = new String[len + 1];

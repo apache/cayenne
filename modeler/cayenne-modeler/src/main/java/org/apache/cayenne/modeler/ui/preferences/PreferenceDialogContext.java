@@ -20,7 +20,6 @@
 package org.apache.cayenne.modeler.ui.preferences;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.pref.ProjectPreferences;
 
 import java.util.HashMap;
@@ -59,7 +58,7 @@ public class PreferenceDialogContext {
     }
 
     public void save() {
-        projectPreferences.getDetailObject(DBConnectionInfo.class).save();
+        projectPreferences.getDataSourceRegistry().save();
 
         // update boolean preferences
         for (Map.Entry<Preferences, Map<String, Boolean>> entry : changedBooleanPreferences.entrySet()) {
@@ -89,6 +88,6 @@ public class PreferenceDialogContext {
     }
 
     public void revert() {
-        projectPreferences.getDetailObject(DBConnectionInfo.class).cancel();
+        projectPreferences.getDataSourceRegistry().cancel();
     }
 }

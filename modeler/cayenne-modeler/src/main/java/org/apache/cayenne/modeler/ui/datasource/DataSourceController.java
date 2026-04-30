@@ -240,10 +240,8 @@ public class DataSourceController extends ChildController<ProjectController> {
         return view;
     }
 
-    @SuppressWarnings("unchecked")
     private void refreshDataSources() {
-        this.dataSources = (Map<String, DBConnectionInfo>) getApplication().getProjectPreferences().getDetailObject(DBConnectionInfo.class)
-                .getChildrenPreferences();
+        this.dataSources = getApplication().getProjectPreferences().getDataSourceRegistry().getAll();
 
         // 1.2 migration fix - update data source adapter names
         final String _12package = "org.objectstyle.cayenne.";
