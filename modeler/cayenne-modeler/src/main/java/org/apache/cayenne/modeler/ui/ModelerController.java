@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.mvc.RootController;
-import org.apache.cayenne.modeler.toolkit.CMComponentGeometryPrefs;
+import org.apache.cayenne.modeler.toolkit.component.CMComponentGeometryPrefs;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
 import org.apache.cayenne.modeler.service.os.OperatingSystem;

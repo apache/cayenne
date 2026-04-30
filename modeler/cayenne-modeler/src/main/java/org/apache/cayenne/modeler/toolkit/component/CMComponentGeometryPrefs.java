@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.toolkit;
+package org.apache.cayenne.modeler.toolkit.component;
 
 import java.awt.*;
 import java.awt.event.ComponentAdapter;

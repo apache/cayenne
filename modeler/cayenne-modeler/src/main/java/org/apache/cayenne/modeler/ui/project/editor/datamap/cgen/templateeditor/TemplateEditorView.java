@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.toolkit.CMComponentGeometryPrefs;
+import org.apache.cayenne.modeler.toolkit.component.CMComponentGeometryPrefs;
 import org.apache.cayenne.modeler.toolkit.splitpane.CMSplitPanePrefs;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
