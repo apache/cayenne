@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.preferences.datasource.creator;
 
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.ui.preferences.datasource.DataSourcePreferencesController;
-import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.util.DbAdapterInfo;
 
 import javax.swing.*;
@@ -34,13 +34,13 @@ public class DataSourceCreatorController extends ChildController<DataSourcePrefe
 
     protected DataSourceCreatorView view;
     protected boolean canceled;
-    protected Map<String, DBConnectionInfo> dataSources;
+    protected Map<String, DBConnector> dataSources;
 
     public DataSourceCreatorController(DataSourcePreferencesController parent) {
         super(parent);
         this.view = new DataSourceCreatorView((JDialog) SwingUtilities
                 .getWindowAncestor(parent.getView()));
-        this.dataSources = parent.getDataSources();
+        this.dataSources = parent.getConnectors();
 
         DefaultComboBoxModel model = new DefaultComboBoxModel(DbAdapterInfo
                 .getStandardAdapters());
@@ -98,7 +98,7 @@ public class DataSourceCreatorController extends ChildController<DataSourcePrefe
     /**
      * Pops up a dialog and blocks current thread until the dialog is closed.
      */
-    public DBConnectionInfo startupAction() {
+    public DBConnector startupAction() {
         // this should handle closing via ESC
         canceled = true;
 
@@ -117,15 +117,12 @@ public class DataSourceCreatorController extends ChildController<DataSourcePrefe
         return (name.length() > 0) ? name : null;
     }
 
-    protected DBConnectionInfo createDataSource() {
+    protected DBConnector createDataSource() {
         if (canceled) {
             return null;
         }
 
-        DBConnectionInfo dataSource = getApplication()
-                .getProjectPreferences()
-                .getDataSourceRegistry()
-                .create(getName());
+        DBConnector dataSource = parent.create(getName());
 
         Object adapter = view.getAdapters().getSelectedItem();
         if (NO_ADAPTER.equals(adapter)) {

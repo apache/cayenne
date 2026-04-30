@@ -28,7 +28,7 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.project.DataMapOps;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.progress.DbImportProgressDialog;
 import org.apache.cayenne.modeler.ui.action.DBConnectionAwareAction;
@@ -76,7 +76,7 @@ public class ModelerDbImportAction extends DBConnectionAwareAction {
                 application,
                 dataMap);
 
-        DBConnectionInfo connectionInfo = getConnectionInfo(DIALOG_TITLE, dataMap);
+        DBConnector connectionInfo = getConnector(DIALOG_TITLE, dataMap);
         if (connectionInfo == null) {
             return;
         }

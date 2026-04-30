@@ -22,10 +22,10 @@ package org.apache.cayenne.modeler.ui.action;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.datasource.DataSourceController;
-import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 
-import static org.apache.cayenne.modeler.pref.DBConnectionInfo.*;
+import static org.apache.cayenne.modeler.dbconnector.DBConnector.*;
 
 /**
  * Base action that provides DBConnectionInfo for the current DataMap or calls {@link DataSourceController} dialog to
@@ -37,22 +37,22 @@ public abstract class DBConnectionAwareAction extends ModelerAbstractAction {
         super(name, application);
     }
 
-    protected DBConnectionInfo getConnectionInfo(String title, DataMap dataMap) {
+    protected DBConnector getConnector(String title, DataMap dataMap) {
 
-        DBConnectionInfo connectionInfo = getConnectionInfoFromPreferences(dataMap);
-        if (connectionInfo == null) {
-            DataSourceController connectWizard = getDataSourceWizard(title);
-            if (connectWizard == null) {
+        DBConnector connector = getConnectionInfoFromPreferences(dataMap);
+        if (connector == null) {
+            DataSourceController controller = getDataSourceController(title);
+            if (controller == null) {
                 return null;
             }
-            connectionInfo = connectWizard.getConnectionInfo();
-            saveConnectionInfo(dataMap, connectWizard);
+            connector = controller.getConnector();
+            saveConnector(dataMap, controller);
         }
 
-        return connectionInfo;
+        return connector;
     }
 
-    protected DataSourceController getDataSourceWizard(String title, String[] buttons) {
+    protected DataSourceController getDataSourceController(String title, String[] buttons) {
         DataSourceController connectWizard = new DataSourceController(getProjectController(), title, buttons);
         if (!connectWizard.startupAction()) {
             return null;
@@ -60,7 +60,7 @@ public abstract class DBConnectionAwareAction extends ModelerAbstractAction {
         return connectWizard;
     }
 
-    protected DataSourceController getDataSourceWizard(String title) {
+    protected DataSourceController getDataSourceController(String title) {
         DataSourceController connectWizard = new DataSourceController(getProjectController(), title);
         if (!connectWizard.startupAction()) {
             return null;
@@ -68,7 +68,7 @@ public abstract class DBConnectionAwareAction extends ModelerAbstractAction {
         return connectWizard;
     }
 
-    private DBConnectionInfo getConnectionInfoFromPreferences(DataMap dataMap) {
+    private DBConnector getConnectionInfoFromPreferences(DataMap dataMap) {
 
         DataMapDefaults defaults = getProjectController().getSelectedDataMapPreferences(dataMap);
         if (defaults == null
@@ -77,7 +77,7 @@ public abstract class DBConnectionAwareAction extends ModelerAbstractAction {
             return null;
         }
 
-        DBConnectionInfo connectionInfo = new DBConnectionInfo();
+        DBConnector connectionInfo = new DBConnector();
         connectionInfo.setDbAdapter(defaults.getCurrentPreference().get(DB_ADAPTER_PROPERTY, null));
         connectionInfo.setUrl(defaults.getCurrentPreference().get(URL_PROPERTY, null));
         connectionInfo.setUserName(defaults.getCurrentPreference().get(USER_NAME_PROPERTY, null));
@@ -86,18 +86,18 @@ public abstract class DBConnectionAwareAction extends ModelerAbstractAction {
         return connectionInfo;
     }
 
-    protected void saveConnectionInfo(DataMap dataMap, DataSourceController connectWizard) {
+    protected void saveConnector(DataMap dataMap, DataSourceController controller) {
         DataMapDefaults dataMapDefaults = getProjectController().getSelectedDataMapPreferences(dataMap);
 
-        String dbAdapter = connectWizard.getConnectionInfo().getDbAdapter();
+        String dbAdapter = controller.getConnector().getDbAdapter();
         if (dbAdapter != null) {
             dataMapDefaults.getCurrentPreference().put(DB_ADAPTER_PROPERTY, dbAdapter);
         } else {
             dataMapDefaults.getCurrentPreference().remove(DB_ADAPTER_PROPERTY);
         }
-        dataMapDefaults.getCurrentPreference().put(URL_PROPERTY, connectWizard.getConnectionInfo().getUrl());
-        dataMapDefaults.getCurrentPreference().put(USER_NAME_PROPERTY, connectWizard.getConnectionInfo().getUserName());
-        dataMapDefaults.getCurrentPreference().put(PASSWORD_PROPERTY, connectWizard.getConnectionInfo().getPassword());
-        dataMapDefaults.getCurrentPreference().put(JDBC_DRIVER_PROPERTY, connectWizard.getConnectionInfo().getJdbcDriver());
+        dataMapDefaults.getCurrentPreference().put(URL_PROPERTY, controller.getConnector().getUrl());
+        dataMapDefaults.getCurrentPreference().put(USER_NAME_PROPERTY, controller.getConnector().getUserName());
+        dataMapDefaults.getCurrentPreference().put(PASSWORD_PROPERTY, controller.getConnector().getPassword());
+        dataMapDefaults.getCurrentPreference().put(JDBC_DRIVER_PROPERTY, controller.getConnector().getJdbcDriver());
     }
 }

@@ -84,11 +84,12 @@ public class PreferenceDialogController extends ChildController<RootController> 
     }
 
     private void cancelAction() {
-        context.revert();
+        dataSourcePrefsController.discard();
         view.dispose();
     }
 
     private void savePreferencesAction() {
+        dataSourcePrefsController.commit();
         context.save();
         view.dispose();
     }

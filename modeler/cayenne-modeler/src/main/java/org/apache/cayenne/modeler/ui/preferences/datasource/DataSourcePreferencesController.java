@@ -22,11 +22,12 @@ package org.apache.cayenne.modeler.ui.preferences.datasource;
 import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.modeler.event.model.DataSourceEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
-import org.apache.cayenne.modeler.pref.DBConnectionInfo;
-import org.apache.cayenne.modeler.pref.DBConnectionInfoDefaults;
+import org.apache.cayenne.modeler.dbconnector.DBConnector;
+import org.apache.cayenne.modeler.dbconnector.DBConnectors;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
 import org.apache.cayenne.modeler.ui.preferences.PreferenceDialogController;
 import org.apache.cayenne.modeler.ui.preferences.classpath.ClasspathPreferencesController;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.preferences.datasource.creator.DataSourceCreatorController;
 import org.apache.cayenne.modeler.ui.preferences.datasource.duplicator.DataSourceDuplicatorController;
 import org.apache.cayenne.util.Util;
@@ -40,6 +41,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -52,20 +55,23 @@ import java.util.stream.Collectors;
 public class DataSourcePreferencesController extends ChildController<PreferenceDialogController> {
 
 	private final DataSourcePreferencesView view;
-	private String dataSourceKey;
-	private Map<String, DBConnectionInfo> dataSources;
-	private final DBConnectionInfoDefaults dataSourcePreferences;
+	private final DBConnectors registry;
+	private final Map<String, DBConnector> connectors;
+	private final Set<String> toRemove;
+	private String connectorName;
 
 	public DataSourcePreferencesController(PreferenceDialogController parent) {
 		super(parent);
 
 		this.view = new DataSourcePreferencesView(this);
 
-		// init view data
-		this.dataSourcePreferences = getApplication().getProjectPreferences().getDataSourceRegistry();
-		this.dataSources = dataSourcePreferences.getAll();
+		// init view data — work on a snapshot of the live registry; commit/discard on Save/Revert
+		this.registry = getApplication().getDbConnectors();
+		this.connectors = new LinkedHashMap<>();
+		registry.getAll().forEach((name, connector) -> connectors.put(name, copyOf(connector)));
+		this.toRemove = new HashSet<>();
 
-		Object[] keys = dataSources.keySet().toArray();
+		Object[] keys = connectors.keySet().toArray();
 		Arrays.sort(keys);
 		DefaultComboBoxModel<Object> dataSourceModel = new DefaultComboBoxModel<>(keys);
 		view.getDataSources().setModel(dataSourceModel);
@@ -91,25 +97,72 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 
 		view.getDataSources().addActionListener(e -> {
 			Object sel = view.getDataSources().getSelectedItem();
-			setDataSourceKey(sel != null ? sel.toString() : null);
+			setConnectorName(sel != null ? sel.toString() : null);
 		});
 	}
 
-	public Map<String, DBConnectionInfo> getDataSources() {
-		return dataSources;
+	public Map<String, DBConnector> getConnectors() {
+		return connectors;
 	}
 
-	public String getDataSourceKey() {
-		return dataSourceKey;
+	public String getConnectorName() {
+		return connectorName;
 	}
 
-	public void setDataSourceKey(String dataSourceKey) {
-		this.dataSourceKey = dataSourceKey;
+	public void setConnectorName(String connectorName) {
+		this.connectorName = connectorName;
 		editDataSourceAction();
 	}
 
-	public DBConnectionInfo getConnectionInfo() {
-		return dataSourcePreferences.get(dataSourceKey);
+	public DBConnector getConnectionInfo() {
+		return connectors.get(connectorName);
+	}
+
+	/**
+	 * Adds a new entry to the working snapshot. Sub-dialogs (creator/duplicator) call this
+	 * after validating uniqueness against {@link #getConnectors()}.
+	 */
+	public DBConnector create(String name) {
+		DBConnector info = new DBConnector();
+		connectors.put(name, info);
+		toRemove.remove(name);
+		return info;
+	}
+
+	/**
+	 * Apply the working snapshot to the live registry. Called on dialog Save.
+	 * Fires DataSourceEvents for new and removed entries so listeners (e.g. open
+	 * DataSource wizards) refresh against the post-commit registry state.
+	 */
+	public void commit() {
+		Set<String> existingBeforeCommit = new HashSet<>(registry.getAll().keySet());
+
+		for (String name : toRemove) {
+			registry.remove(name);
+			fireEvent(DataSourceEvent.ofRemove(this, name));
+		}
+		toRemove.clear();
+
+		connectors.forEach((name, info) -> {
+			boolean isNew = !existingBeforeCommit.contains(name);
+			registry.put(name, info);
+			if (isNew) {
+				fireEvent(DataSourceEvent.ofAdd(this, name));
+			}
+		});
+	}
+
+	/**
+	 * Drop the working snapshot. Called on dialog Cancel — registry is unchanged.
+	 */
+	public void discard() {
+		// working snapshot lives in this controller and is GC-eligible after dialog dispose
+	}
+
+	private static DBConnector copyOf(DBConnector src) {
+		DBConnector copy = new DBConnector();
+		src.copyTo(copy);
+		return copy;
 	}
 
 	/**
@@ -117,17 +170,14 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 	 */
 	public void newDataSourceAction() {
 		DataSourceCreatorController creatorWizard = new DataSourceCreatorController(this);
-		DBConnectionInfo dataSource = creatorWizard.startupAction();
+		DBConnector dataSource = creatorWizard.startupAction();
 
 		if (dataSource != null) {
-			dataSources = dataSourcePreferences.getAll();
-
-			Object[] keys = dataSources.keySet().toArray();
+			Object[] keys = connectors.keySet().toArray();
 			Arrays.sort(keys);
 			view.getDataSources().setModel(new DefaultComboBoxModel<>(keys));
 			view.getDataSources().setSelectedItem(creatorWizard.getName());
 			editDataSourceAction();
-			fireEvent(DataSourceEvent.ofAdd(this, creatorWizard.getName()));
 		}
 	}
 
@@ -138,17 +188,14 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 		Object selected = view.getDataSources().getSelectedItem();
 		if (selected != null) {
 			DataSourceDuplicatorController wizard = new DataSourceDuplicatorController(this, selected.toString());
-			DBConnectionInfo dataSource = wizard.startupAction();
+			DBConnector dataSource = wizard.startupAction();
 
 			if (dataSource != null) {
-				dataSources = dataSourcePreferences.getAll();
-
-				Object[] keys = dataSources.keySet().toArray();
+				Object[] keys = connectors.keySet().toArray();
 				Arrays.sort(keys);
 				view.getDataSources().setModel(new DefaultComboBoxModel<>(keys));
 				view.getDataSources().setSelectedItem(wizard.getName());
 				editDataSourceAction();
-				fireEvent(DataSourceEvent.ofAdd(this, wizard.getName()));
 			}
 		}
 	}
@@ -157,21 +204,24 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 	 * Removes current DataSource.
 	 */
 	public void removeDataSourceAction() {
-		String key = getDataSourceKey();
+		String key = getConnectorName();
 		if (key != null) {
-			dataSourcePreferences.remove(key);
+			connectors.remove(key);
+			toRemove.add(key);
 
-			dataSources = dataSourcePreferences.getAll();
-			Object[] keys = dataSources.keySet().toArray();
+			Object[] keys = connectors.keySet().toArray();
 			Arrays.sort(keys);
 			view.getDataSources().setModel(new DefaultComboBoxModel<>(keys));
 			editDataSourceAction(keys.length > 0 ? keys[0] : null);
-			fireEvent(DataSourceEvent.ofRemove(this, key));
 		}
 	}
 
 	private void fireEvent(DataSourceEvent event) {
-		getApplication().getFrameController().getProjectController().fireDataSourceEvent(event);
+		ProjectController pc = getApplication().getFrameController().getProjectController();
+		// listeners list is null when no project is loaded (e.g. prefs opened from main menu)
+		if (pc.getProject() != null) {
+			pc.fireDataSourceEvent(event);
+		}
 	}
 
 	/**
@@ -194,7 +244,7 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 	 * operation.
 	 */
 	public void testDataSourceAction() {
-		DBConnectionInfo currentDataSource = getConnectionInfo();
+		DBConnector currentDataSource = getConnectionInfo();
 		if (currentDataSource == null) {
 			return;
 		}

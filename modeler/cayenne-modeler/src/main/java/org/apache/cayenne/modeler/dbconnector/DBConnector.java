@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.pref;
+package org.apache.cayenne.modeler.dbconnector;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
@@ -34,9 +34,8 @@ import java.sql.Driver;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
-import java.util.prefs.Preferences;
 
-public class DBConnectionInfo extends CayennePreference {
+public class DBConnector {
 
     private static final String EMPTY_STRING = "";
     public static final String DB_ADAPTER_PROPERTY = "dbAdapter";
@@ -44,9 +43,6 @@ public class DBConnectionInfo extends CayennePreference {
     public static final String PASSWORD_PROPERTY = "password";
     public static final String URL_PROPERTY = "url";
     public static final String USER_NAME_PROPERTY = "userName";
-    static final String DB_CONNECTION_INFO = "dbConnectionInfo";
-
-    private String nodeName;
 
     private String dbAdapter;
     private String jdbcDriver;
@@ -56,68 +52,8 @@ public class DBConnectionInfo extends CayennePreference {
 
     private boolean allowDataSourceFailure;
 
-    public DBConnectionInfo() {
-        this.currentPreference = CayennePreference.getRoot().node(DB_CONNECTION_INFO);
-    }
-
-    public DBConnectionInfo(String nameNode, boolean initFromPreferences) {
-        this();
-        setNodeName(nameNode);
-        if (initFromPreferences) {
-            initObjectPreference();
-        }
-    }
-
-    @Override
-    public Preferences getCurrentPreference() {
-        if (getNodeName() == null) {
-            return super.getCurrentPreference();
-        }
-        return currentPreference.node(getNodeName());
-    }
-
     public void setAllowDataSourceFailure(boolean allowDataSourceFailure) {
         this.allowDataSourceFailure = allowDataSourceFailure;
-    }
-
-    @Override
-    public void saveObjectPreference() {
-        if (getCurrentPreference() != null) {
-            if (getDbAdapter() != null) {
-                getCurrentPreference().put(DB_ADAPTER_PROPERTY, getDbAdapter());
-            }
-            if (getUrl() != null) {
-                getCurrentPreference().put(URL_PROPERTY, getUrl());
-            }
-            if (getUserName() != null) {
-                getCurrentPreference().put(USER_NAME_PROPERTY, getUserName());
-            }
-            if (getPassword() != null) {
-                getCurrentPreference().put(PASSWORD_PROPERTY, getPassword());
-            }
-            if (getJdbcDriver() != null) {
-                getCurrentPreference().put(JDBC_DRIVER_PROPERTY, getJdbcDriver());
-            }
-        }
-    }
-
-    public void initObjectPreference() {
-        if (getCurrentPreference() != null) {
-            setDbAdapter(getCurrentPreference().get(DB_ADAPTER_PROPERTY, null));
-            setUrl(getCurrentPreference().get(URL_PROPERTY, null));
-            setUserName(getCurrentPreference().get(USER_NAME_PROPERTY, null));
-            setPassword(getCurrentPreference().get(PASSWORD_PROPERTY, null));
-            setJdbcDriver(getCurrentPreference().get(JDBC_DRIVER_PROPERTY, null));
-            setNodeName(getCurrentPreference().name());
-        }
-    }
-
-    public String getNodeName() {
-        return nodeName;
-    }
-
-    public void setNodeName(final String nodeName) {
-        this.nodeName = nodeName;
     }
 
     public String getDbAdapter() {
@@ -211,31 +147,31 @@ public class DBConnectionInfo extends CayennePreference {
     /**
      * Updates another DBConnectionInfo with this object's values.
      */
-    public boolean copyTo(DBConnectionInfo dataSourceInfo) {
+    public boolean copyTo(DBConnector connector) {
         boolean updated = false;
 
-        if (!Util.nullSafeEquals(dataSourceInfo.getUrl(), getUrl())) {
-            dataSourceInfo.setUrl(getUrl());
+        if (!Util.nullSafeEquals(connector.getUrl(), getUrl())) {
+            connector.setUrl(getUrl());
             updated = true;
         }
 
-        if (!Util.nullSafeEquals(dataSourceInfo.getUserName(), getUserName())) {
-            dataSourceInfo.setUserName(getUserName());
+        if (!Util.nullSafeEquals(connector.getUserName(), getUserName())) {
+            connector.setUserName(getUserName());
             updated = true;
         }
 
-        if (!Util.nullSafeEquals(dataSourceInfo.getPassword(), getPassword())) {
-            dataSourceInfo.setPassword(getPassword());
+        if (!Util.nullSafeEquals(connector.getPassword(), getPassword())) {
+            connector.setPassword(getPassword());
             updated = true;
         }
 
-        if (!Util.nullSafeEquals(dataSourceInfo.getJdbcDriver(), getJdbcDriver())) {
-            dataSourceInfo.setJdbcDriver(getJdbcDriver());
+        if (!Util.nullSafeEquals(connector.getJdbcDriver(), getJdbcDriver())) {
+            connector.setJdbcDriver(getJdbcDriver());
             updated = true;
         }
 
-        if (!Util.nullSafeEquals(dataSourceInfo.getDbAdapter(), getDbAdapter())) {
-            dataSourceInfo.setDbAdapter(getDbAdapter());
+        if (!Util.nullSafeEquals(connector.getDbAdapter(), getDbAdapter())) {
+            connector.setDbAdapter(getDbAdapter());
             updated = true;
         }
 

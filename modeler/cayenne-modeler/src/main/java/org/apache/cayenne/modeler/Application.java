@@ -27,6 +27,8 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.modeler.pref.CayennePreference;
+import org.apache.cayenne.modeler.pref.DBConnectorPrefs;
+import org.apache.cayenne.modeler.dbconnector.DBConnectors;
 import org.apache.cayenne.modeler.pref.ProjectPreferences;
 import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
@@ -77,6 +79,7 @@ public class Application {
     protected String name;
     protected CayenneUndoManager undoManager;
     protected ProjectPreferences projectPreferences;
+    protected DBConnectors dbConnectors;
     protected CayennePreference cayennePreference;
 
     @Inject
@@ -198,6 +201,8 @@ public class Application {
         // TODO: should "project" preferences reside in ProjectController?
         this.projectPreferences = new ProjectPreferences();
 
+        this.dbConnectors = DBConnectorPrefs.loadAndBind();
+
         refreshClassLoader();
 
         // TODO: is this used by DB Import and CGen? If so, the corresponding actions must set it in a proper scope.
@@ -230,6 +235,10 @@ public class Application {
 
     public ProjectPreferences getProjectPreferences() {
         return projectPreferences;
+    }
+
+    public DBConnectors getDbConnectors() {
+        return dbConnectors;
     }
 
     public Preferences getMainPreferenceForProject() {

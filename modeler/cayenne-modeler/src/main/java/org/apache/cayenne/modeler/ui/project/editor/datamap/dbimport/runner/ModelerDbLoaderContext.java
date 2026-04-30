@@ -25,7 +25,7 @@ import org.apache.cayenne.dbsync.reverse.dbload.DbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.util.Util;
@@ -100,7 +100,7 @@ public class ModelerDbLoaderContext {
         this.loadStatusNote = loadStatusNote;
     }
 
-    public boolean buildConfig(DBConnectionInfo connectionInfo) {
+    public boolean buildConfig(DBConnector connectionInfo) {
         if (connectionInfo == null) {
             return false;
         }
@@ -126,7 +126,7 @@ public class ModelerDbLoaderContext {
     }
 
     // Fill config from metadata reverseEngineering
-    private void fillConfig(DbImportConfiguration config, DBConnectionInfo connectionInfo,
+    private void fillConfig(DbImportConfiguration config, DBConnector connectionInfo,
                             ReverseEngineering reverseEngineering) {
         config.setAdapter(connectionInfo.getDbAdapter());
         config.setUsername(connectionInfo.getUserName());

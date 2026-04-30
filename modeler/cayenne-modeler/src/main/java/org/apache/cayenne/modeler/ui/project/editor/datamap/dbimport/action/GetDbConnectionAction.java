@@ -42,11 +42,11 @@ public class GetDbConnectionAction extends DBConnectionAwareAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        DataSourceController connectWizard = getDataSourceWizard(DIALOG_TITLE, new String[]{"Continue", "Cancel"});
+        DataSourceController connectWizard = getDataSourceController(DIALOG_TITLE, new String[]{"Continue", "Cancel"});
         if (connectWizard == null) {
             return;
         }
-        saveConnectionInfo(
+        saveConnector(
                 application.getFrameController().getProjectController().getSelectedDataMap(),
                 connectWizard);
     }

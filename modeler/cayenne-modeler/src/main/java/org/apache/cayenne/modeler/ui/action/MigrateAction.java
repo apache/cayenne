@@ -55,7 +55,7 @@ public class MigrateAction extends DBConnectionAwareAction {
 
     public void performAction(ActionEvent e) {
 
-        DataSourceController connectWizard = getDataSourceWizard("Migrate DB Schema: Connect to Database");
+        DataSourceController connectWizard = getDataSourceController("Migrate DB Schema: Connect to Database");
         if(connectWizard == null) {
             return;
         }
@@ -80,7 +80,7 @@ public class MigrateAction extends DBConnectionAwareAction {
         new MergerOptionsController(
                 getProjectController(),
                 "Migrate DB Schema: Options",
-                connectWizard.getConnectionInfo(),
+                connectWizard.getConnector(),
                 map, selectedCatalog, selectedSchema, mergerTokenFactoryProvider).startupAction();
     }
 

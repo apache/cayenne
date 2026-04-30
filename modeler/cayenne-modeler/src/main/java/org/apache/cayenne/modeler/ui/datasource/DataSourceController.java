@@ -27,7 +27,8 @@ import org.apache.cayenne.modeler.ui.preferences.PreferenceDialogController;
 import org.apache.cayenne.modeler.event.model.DataSourceEvent;
 import org.apache.cayenne.modeler.event.model.DataSourceListener;
 import org.apache.cayenne.modeler.mvc.ChildController;
-import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+import org.apache.cayenne.modeler.dbconnector.DBConnector;
+import org.apache.cayenne.modeler.dbconnector.DBConnectors;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 
 import javax.sql.DataSource;
@@ -36,10 +37,11 @@ import java.awt.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
-import static org.apache.cayenne.modeler.pref.DBConnectionInfo.*;
+import static org.apache.cayenne.modeler.dbconnector.DBConnector.*;
 
 /**
  * A subclass of ConnectionWizard that tests configured DataSource, but does not
@@ -48,13 +50,12 @@ import static org.apache.cayenne.modeler.pref.DBConnectionInfo.*;
  */
 public class DataSourceController extends ChildController<ProjectController> {
 
-    private final ProjectController projectController;
     private final DataSourceView view;
 
-    private Map<String, DBConnectionInfo> dataSources;
+    private Map<String, DBConnector> connectors;
     private String dataSourceKey;
-    // this object is a clone of an object selected from the dropdown, as we need to allow local temporary modifications
-    private DBConnectionInfo connectionInfo;
+    // a clone of an object selected from the dropdown, as we need to allow local temporary modifications
+    private DBConnector connector;
     private DbAdapter adapter;
     private DataSource dataSource;
     private boolean canceled;
@@ -67,8 +68,7 @@ public class DataSourceController extends ChildController<ProjectController> {
     public DataSourceController(ProjectController parent, String title, String[] buttons) {
         super(parent);
 
-        this.connectionInfo = new DBConnectionInfo();
-        this.projectController = parent;
+        this.connector = new DBConnector();
 
         this.view = new DataSourceView(this, buttons);
         this.view.setTitle(title);
@@ -107,7 +107,7 @@ public class DataSourceController extends ChildController<ProjectController> {
     private void initFavouriteDataSource() {
         final Preferences pref = getApplication().getPreferencesNode(GeneralPreferencesController.class, "");
         final String favouriteDataSource = pref.get(GeneralPreferencesController.FAVOURITE_DATA_SOURCE, null);
-        if (favouriteDataSource != null && dataSources.containsKey(favouriteDataSource)) {
+        if (favouriteDataSource != null && connectors.containsKey(favouriteDataSource)) {
             setDataSourceKey(favouriteDataSource);
             view.getDataSources().setSelectedItem(dataSourceKey);
         }
@@ -118,9 +118,9 @@ public class DataSourceController extends ChildController<ProjectController> {
                 .removeDataSourceListener(dataSourceListener);
     }
 
-    private DBConnectionInfo getConnectionInfoFromPreferences() {
-        DBConnectionInfo connectionInfo = new DBConnectionInfo();
-        DataMapDefaults dataMapDefaults = projectController.getSelectedDataMapPreferences(projectController.getSelectedDataMap());
+    private DBConnector getConnectionInfoFromPreferences() {
+        DBConnector connectionInfo = new DBConnector();
+        DataMapDefaults dataMapDefaults = parent.getSelectedDataMapPreferences(parent.getSelectedDataMap());
         connectionInfo.setDbAdapter(dataMapDefaults.getCurrentPreference().get(DB_ADAPTER_PROPERTY, null));
         connectionInfo.setUrl(dataMapDefaults.getCurrentPreference().get(URL_PROPERTY, null));
         connectionInfo.setUserName(dataMapDefaults.getCurrentPreference().get(USER_NAME_PROPERTY, null));
@@ -133,13 +133,13 @@ public class DataSourceController extends ChildController<ProjectController> {
         this.dataSourceKey = dataSourceKey;
 
         // update a clone object that will be used to obtain connection...
-        final DBConnectionInfo currentInfo = dataSources.get(dataSourceKey);
-        if (currentInfo != null) {
-            currentInfo.copyTo(connectionInfo);
+        DBConnector currentConnector = connectors.get(dataSourceKey);
+        if (currentConnector != null) {
+            currentConnector.copyTo(connector);
         } else {
-            connectionInfo = new DBConnectionInfo();
+            connector = new DBConnector();
         }
-        view.getConnectionInfo().setConnectionInfo(connectionInfo);
+        view.getConnectionInfo().setConnectionInfo(connector);
     }
 
     /**
@@ -151,15 +151,14 @@ public class DataSourceController extends ChildController<ProjectController> {
         refreshDataSources();
         initFavouriteDataSource();
 
-        final DataMapDefaults dataMapDefaults = projectController.
-                getSelectedDataMapPreferences(projectController.getSelectedDataMap());
+        final DataMapDefaults dataMapDefaults = parent.getSelectedDataMapPreferences(parent.getSelectedDataMap());
         if (dataMapDefaults.getCurrentPreference().get(DB_ADAPTER_PROPERTY, null) != null) {
-            getConnectionInfoFromPreferences().copyTo(connectionInfo);
+            getConnectionInfoFromPreferences().copyTo(connector);
         }
         view.pack();
         view.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         view.setModal(true);
-        view.connectionInfo.setConnectionInfo(connectionInfo);
+        view.connectionInfo.setConnectionInfo(connector);
         makeCloseableOnEscape();
         centerView();
         view.setVisible(true);
@@ -167,8 +166,8 @@ public class DataSourceController extends ChildController<ProjectController> {
         return !canceled;
     }
 
-    public DBConnectionInfo getConnectionInfo() {
-        return connectionInfo;
+    public DBConnector getConnector() {
+        return connector;
     }
 
     /**
@@ -176,7 +175,7 @@ public class DataSourceController extends ChildController<ProjectController> {
      * connection. Does not store the open connection.
      */
     public void okAction() {
-        DBConnectionInfo info = getConnectionInfo();
+        DBConnector info = getConnector();
         ModelerClassLoader classLoader = getApplication().getClassLoader();
 
         // doing connection testing...
@@ -241,22 +240,25 @@ public class DataSourceController extends ChildController<ProjectController> {
     }
 
     private void refreshDataSources() {
-        this.dataSources = getApplication().getProjectPreferences().getDataSourceRegistry().getAll();
+        DBConnectors registry = getApplication().getDbConnectors();
+        this.connectors = registry.getAll();
 
         // 1.2 migration fix - update data source adapter names
         final String _12package = "org.objectstyle.cayenne.";
-        for (DBConnectionInfo info : dataSources.values()) {
+        for (Map.Entry<String, DBConnector> e : new LinkedHashMap<>(connectors).entrySet()) {
+            DBConnector info = e.getValue();
             if (info.getDbAdapter() != null && info.getDbAdapter().startsWith(_12package)) {
                 info.setDbAdapter("org.apache.cayenne." + info.getDbAdapter().substring(_12package.length()));
+                registry.put(e.getKey(), info);
             }
         }
 
-        final String[] keys = dataSources.keySet().toArray(new String[0]);
+        final String[] keys = connectors.keySet().toArray(new String[0]);
         Arrays.sort(keys);
         view.getDataSources().setModel(new DefaultComboBoxModel<>(keys));
 
         String key = null;
-        if (dataSourceKey == null || !dataSources.containsKey(dataSourceKey)) {
+        if (dataSourceKey == null || !connectors.containsKey(dataSourceKey)) {
             if (keys.length > 0) {
                 key = keys[0];
             }

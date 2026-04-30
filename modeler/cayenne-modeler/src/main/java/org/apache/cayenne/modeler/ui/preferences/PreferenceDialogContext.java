@@ -20,7 +20,6 @@
 package org.apache.cayenne.modeler.ui.preferences;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.pref.ProjectPreferences;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,14 +31,12 @@ import java.util.prefs.Preferences;
 public class PreferenceDialogContext {
 
     private final Application application;
-    private final ProjectPreferences projectPreferences;
     private final Map<Preferences, Map<String, String>> changedPreferences;
     private final Map<Preferences, Map<String, String>> removedPreferences;
     private final Map<Preferences, Map<String, Boolean>> changedBooleanPreferences;
 
     public PreferenceDialogContext(Application application) {
         this.application = application;
-        this.projectPreferences = application.getProjectPreferences();
         this.changedPreferences = new HashMap<>();
         this.removedPreferences = new HashMap<>();
         this.changedBooleanPreferences = new HashMap<>();
@@ -58,8 +55,6 @@ public class PreferenceDialogContext {
     }
 
     public void save() {
-        projectPreferences.getDataSourceRegistry().save();
-
         // update boolean preferences
         for (Map.Entry<Preferences, Map<String, Boolean>> entry : changedBooleanPreferences.entrySet()) {
             Preferences pref = entry.getKey();
@@ -85,9 +80,5 @@ public class PreferenceDialogContext {
         }
 
         application.refreshClassLoader();
-    }
-
-    public void revert() {
-        projectPreferences.getDataSourceRegistry().cancel();
     }
 }

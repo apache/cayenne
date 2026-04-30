@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.preferences.datasource.duplicator;
 
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.ui.preferences.datasource.DataSourcePreferencesController;
-import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+import org.apache.cayenne.modeler.dbconnector.DBConnector;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,7 +32,7 @@ public class DataSourceDuplicatorController extends ChildController<DataSourcePr
 
     protected DataSourceDuplicatorView view;
     protected boolean canceled;
-    protected Map<String, DBConnectionInfo> dataSources;
+    protected Map<String, DBConnector> dataSources;
     protected String prototypeKey;
 
     public DataSourceDuplicatorController(DataSourcePreferencesController parent, String prototypeKey) {
@@ -40,7 +40,7 @@ public class DataSourceDuplicatorController extends ChildController<DataSourcePr
         this.view = new DataSourceDuplicatorView("Create a copy of \""
                 + prototypeKey
                 + "\"");
-        this.dataSources = parent.getDataSources();
+        this.dataSources = parent.getConnectors();
         this.prototypeKey = prototypeKey;
 
         String suggestion = prototypeKey + "0";
@@ -93,7 +93,7 @@ public class DataSourceDuplicatorController extends ChildController<DataSourcePr
     /**
      * Pops up a dialog and blocks current thread until the dialog is closed.
      */
-    public DBConnectionInfo startupAction() {
+    public DBConnector startupAction() {
         // this should handle closing via ESC
         canceled = true;
 
@@ -112,16 +112,13 @@ public class DataSourceDuplicatorController extends ChildController<DataSourcePr
         return (name.length() > 0) ? name : null;
     }
 
-    protected DBConnectionInfo createDataSource() {
+    protected DBConnector createDataSource() {
         if (canceled) {
             return null;
         }
 
-        DBConnectionInfo prototype = dataSources.get(prototypeKey);
-        DBConnectionInfo dataSource = getApplication()
-                .getProjectPreferences()
-                .getDataSourceRegistry()
-                .create(getName());
+        DBConnector prototype = dataSources.get(prototypeKey);
+        DBConnector dataSource = parent.create(getName());
 
         prototype.copyTo(dataSource);
         return dataSource;

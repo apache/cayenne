@@ -27,7 +27,7 @@ import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.validation.ValidationController;
 import org.apache.cayenne.modeler.ui.datasource.DataSourceController;
 import org.apache.cayenne.modeler.mvc.ChildController;
-import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.pref.DBGeneratorDefaults;
 import org.apache.cayenne.modeler.util.DbAdapterInfo;
 import org.apache.cayenne.validation.ValidationResult;
@@ -48,7 +48,7 @@ public class DBGeneratorOptionsController extends ChildController<ProjectControl
     protected DBGeneratorOptionsView view;
     private boolean updatingAdapterCombo;
 
-    protected DBConnectionInfo connectionInfo;
+    protected DBConnector connectionInfo;
     protected Collection<DataMap> dataMaps;
     protected DBGeneratorDefaults generatorDefaults;
     protected Collection<DbGenerator> generators;
@@ -62,7 +62,7 @@ public class DBGeneratorOptionsController extends ChildController<ProjectControl
         this.dataMaps = dataMaps;
         this.tables = new TableSelectorController(parent);
         this.view = new DBGeneratorOptionsView(tables.getView());
-        this.connectionInfo = new DBConnectionInfo();
+        this.connectionInfo = new DBConnector();
         // DataSource may not be initialized, so warn connection wizard
         this.connectionInfo.setAllowDataSourceFailure(true);
         this.generatorDefaults = new DBGeneratorDefaults(parent
@@ -222,7 +222,7 @@ public class DBGeneratorOptionsController extends ChildController<ProjectControl
             return;
         }
 
-        this.connectionInfo = connectWizard.getConnectionInfo();
+        this.connectionInfo = connectWizard.getConnector();
 
         refreshGeneratorAction();
 

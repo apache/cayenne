@@ -29,7 +29,7 @@ import org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.modeler.ui.preferences.PreferenceDialogController;
 import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
-import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datanode.custom.CustomDataSourceEditorController;
@@ -212,8 +212,7 @@ public class DataNodeController extends ChildController<ProjectController> {
     }
 
     protected void refreshLocalDataSources() {
-        Map<String, DBConnectionInfo> sources = getApplication().getProjectPreferences()
-                .getDataSourceRegistry().getAll();
+        Map<String, DBConnector> sources = getApplication().getDbConnectors().getAll();
 
         int len = sources.size();
         String[] keys = new String[len + 1];

@@ -42,10 +42,9 @@ import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
-import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.validation.ValidationController;
 import org.apache.cayenne.project.Project;
@@ -71,7 +70,7 @@ public class MergerOptionsController extends ChildController<ProjectController> 
 
     protected MergerOptionsView view;
 
-    protected DBConnectionInfo connectionInfo;
+    protected DBConnector connectionInfo;
     protected DataMap dataMap;
     protected DbAdapter adapter;
     protected String textForSQL;
@@ -84,7 +83,7 @@ public class MergerOptionsController extends ChildController<ProjectController> 
     public MergerOptionsController(
             ProjectController parent,
             String title,
-            DBConnectionInfo connectionInfo,
+            DBConnector connectionInfo,
             DataMap dataMap,
             String defaultCatalog,
             String defaultSchema,

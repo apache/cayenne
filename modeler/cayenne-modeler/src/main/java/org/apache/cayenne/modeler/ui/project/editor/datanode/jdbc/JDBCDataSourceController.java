@@ -24,7 +24,7 @@ import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.modeler.ui.ModelerController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datanode.DataSourceEditorController;
-import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.apache.cayenne.util.Util;
 
 import java.awt.*;
@@ -119,9 +119,8 @@ public class JDBCDataSourceController extends DataSourceEditorController {
             return;
         }
 
-        DBConnectionInfo dataSource = getApplication()
-            .getProjectPreferences()
-            .getDataSourceRegistry()
+        DBConnector dataSource = getApplication()
+            .getDbConnectors()
             .get(key);
 
         if (dataSource != null) {

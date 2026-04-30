@@ -32,7 +32,7 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportVie
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DraggableTreePanel;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.PrintColumnsBiFunction;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.PrintTablesBiFunction;
-import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +75,7 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
             draggableTreePanel.getMoveInvertButton().setEnabled(false);
             try {
 
-                DBConnectionInfo connectionInfo = getConnectionInfo(
+                DBConnector connectionInfo = getConnector(
                         "Load Db Schema",
                         application.getFrameController().getProjectController().getSelectedDataMap());
 
@@ -116,7 +116,7 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
         thread.start();
     }
 
-    private void loadDataBase(DBConnectionInfo connectionInfo) throws Exception {
+    private void loadDataBase(DBConnector connectionInfo) throws Exception {
         DraggableTreePanel draggableTreePanel = view.getDraggableTreePanel();
         ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader(application.getDbAdapterFactory())
                 .load(connectionInfo, application.getClassLoader());
@@ -129,7 +129,7 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
         ((DbImportModel) draggableTreePanel.getSourceTree().getModel()).reload();
     }
 
-    private void loadTables(DBConnectionInfo connectionInfo, TreePath tablePath) throws Exception {
+    private void loadTables(DBConnector connectionInfo, TreePath tablePath) throws Exception {
         DraggableTreePanel draggableTreePanel = view.getDraggableTreePanel();
         ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader(application.getDbAdapterFactory())
                 .loadTables(connectionInfo,
@@ -141,7 +141,7 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
                         new PrintTablesBiFunction(draggableTreePanel.getSourceTree()));
     }
 
-    private void loadColumns(DBConnectionInfo connectionInfo, TreePath tablePath) throws SQLException {
+    private void loadColumns(DBConnector connectionInfo, TreePath tablePath) throws SQLException {
         DraggableTreePanel draggableTreePanel = view.getDraggableTreePanel();
         ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader(application.getDbAdapterFactory())
                 .loadColumns(connectionInfo, application.getClassLoader(), tablePath);

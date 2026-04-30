@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.preferences.datasource;
 
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.mvc.RootController;
-import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.util.DbAdapterInfo;
 
 import javax.swing.*;
@@ -33,10 +33,10 @@ import java.awt.*;
 public class DBConnectionInfoEditorController extends ChildController<RootController> {
 
     // transient placeholder to display disabled form
-    private static final DBConnectionInfo emptyInfo = new DBConnectionInfo();
+    private static final DBConnector emptyInfo = new DBConnector();
 
     protected DBConnectionInfoEditorView view;
-    protected DBConnectionInfo connectionInfo;
+    protected DBConnector connectionInfo;
 
     public DBConnectionInfoEditorController(RootController parent) {
         super(parent);
@@ -74,12 +74,12 @@ public class DBConnectionInfoEditorController extends ChildController<RootContro
         return view;
     }
 
-    public void setConnectionInfo(DBConnectionInfo connectionInfo) {
+    public void setConnectionInfo(DBConnector connectionInfo) {
         this.connectionInfo = connectionInfo;
 
         view.setEnabled(connectionInfo != null);
 
-        DBConnectionInfo ci = connectionInfo != null ? connectionInfo : emptyInfo;
+        DBConnector ci = connectionInfo != null ? connectionInfo : emptyInfo;
         view.getUserName().setText(ci.getUserName());
         view.getPassword().setText(ci.getPassword());
         view.getDriver().setText(ci.getJdbcDriver());

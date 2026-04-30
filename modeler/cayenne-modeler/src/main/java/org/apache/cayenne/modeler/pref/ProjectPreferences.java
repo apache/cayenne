@@ -27,16 +27,10 @@ import java.util.prefs.Preferences;
 
 public class ProjectPreferences {
 
-    private final DBConnectionInfoDefaults dataSourceRegistry;
     private final Map<Preferences, CayennePreference> modelerProjectPreferences;
 
     public ProjectPreferences() {
-        dataSourceRegistry = new DBConnectionInfoDefaults();
         modelerProjectPreferences = new HashMap<>();
-    }
-
-    public DBConnectionInfoDefaults getDataSourceRegistry() {
-        return dataSourceRegistry;
     }
 
     public <T extends CayennePreference> T getProjectDetailObject(
