@@ -85,7 +85,7 @@ public class ModelerFrame extends JFrame {
         getContentPane().add(splitPane, BorderLayout.CENTER);
         getContentPane().add(statusBar, BorderLayout.SOUTH);
 
-        this.welcomePanel = new WelcomeScreen();
+        this.welcomePanel = new WelcomeScreen(globalActions);
         this.menuBar.addRecentFileListener(welcomePanel);
 
         fireRecentFileListChanged(); // start filling list in welcome screen and in menu

@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.modeler.ui.welcome;
 
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.action.NewProjectAction;
 import org.apache.cayenne.modeler.ui.action.OpenProjectAction;
@@ -40,11 +40,14 @@ public class WelcomeScreen extends JScrollPane implements RecentFileListListener
     private static final Color TOP_GRADIENT = new Color(153, 153, 153);
     private static final Color BOTTOM_GRADIENT = new Color(230, 230, 230);
 
+    private final GlobalActions actionManager;
+
     private JList<String> recentProjectsList;
     private JPanel buttonsPanel;
     private JPanel mainPanel;
 
-    public WelcomeScreen() {
+    public WelcomeScreen(GlobalActions actionManager) {
+        this.actionManager = actionManager;
         initView();
     }
 
@@ -104,10 +107,7 @@ public class WelcomeScreen extends JScrollPane implements RecentFileListListener
         ImageIcon hoverIcon = IconFactory.buildIcon("welcome/welcome-screen-"+name+"-btn-hover.png");
         JButton button = createButton(icon, hoverIcon);
         button.setLocation(24, y); // 24px - button left & right padding
-        button.addActionListener(Application
-                .getInstance()
-                .getActionManager()
-                .getAction(actionClass));
+        button.addActionListener(actionManager.getAction(actionClass));
         buttonsPanel.add(button);
     }
 
@@ -115,10 +115,7 @@ public class WelcomeScreen extends JScrollPane implements RecentFileListListener
     public void onFileSelect(File file) {
         ActionEvent event = new ActionEvent(file, 0, null);
         // Fire an action with the file as source
-        Application.getInstance()
-                .getActionManager()
-                .getAction(OpenProjectAction.class)
-                .performAction(event);
+        actionManager.getAction(OpenProjectAction.class).performAction(event);
     }
 
     /**
