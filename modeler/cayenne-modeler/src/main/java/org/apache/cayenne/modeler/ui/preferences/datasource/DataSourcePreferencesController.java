@@ -20,14 +20,12 @@
 package org.apache.cayenne.modeler.ui.preferences.datasource;
 
 import org.apache.cayenne.datasource.DriverDataSource;
-import org.apache.cayenne.modeler.event.model.DataSourceEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.dbconnector.DBConnectors;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
 import org.apache.cayenne.modeler.ui.preferences.PreferenceDialogController;
 import org.apache.cayenne.modeler.ui.preferences.classpath.ClasspathPreferencesController;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.preferences.datasource.creator.DataSourceCreatorController;
 import org.apache.cayenne.modeler.ui.preferences.datasource.duplicator.DataSourceDuplicatorController;
 import org.apache.cayenne.util.Util;
@@ -131,25 +129,14 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 
 	/**
 	 * Apply the working snapshot to the live registry. Called on dialog Save.
-	 * Fires DataSourceEvents for new and removed entries so listeners (e.g. open
-	 * DataSource wizards) refresh against the post-commit registry state.
 	 */
 	public void commit() {
-		Set<String> existingBeforeCommit = new HashSet<>(registry.getAll().keySet());
-
 		for (String name : toRemove) {
 			registry.remove(name);
-			fireEvent(DataSourceEvent.ofRemove(this, name));
 		}
 		toRemove.clear();
 
-		connectors.forEach((name, info) -> {
-			boolean isNew = !existingBeforeCommit.contains(name);
-			registry.put(name, info);
-			if (isNew) {
-				fireEvent(DataSourceEvent.ofAdd(this, name));
-			}
-		});
+		connectors.forEach(registry::put);
 	}
 
 	/**
@@ -213,14 +200,6 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 			Arrays.sort(keys);
 			view.getDataSources().setModel(new DefaultComboBoxModel<>(keys));
 			editDataSourceAction(keys.length > 0 ? keys[0] : null);
-		}
-	}
-
-	private void fireEvent(DataSourceEvent event) {
-		ProjectController pc = getApplication().getFrameController().getProjectController();
-		// listeners list is null when no project is loaded (e.g. prefs opened from main menu)
-		if (pc.getProject() != null) {
-			pc.fireDataSourceEvent(event);
 		}
 	}
 

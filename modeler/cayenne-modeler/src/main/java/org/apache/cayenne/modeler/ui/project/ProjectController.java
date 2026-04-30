@@ -1293,35 +1293,6 @@ public class ProjectController extends ChildController<ModelerController> {
         }
     }
 
-    public void addDataSourceListener(DataSourceListener listener) {
-        listeners.add(DataSourceListener.class, listener);
-    }
-
-    public void removeDataSourceListener(DataSourceListener listener) {
-        listeners.remove(DataSourceListener.class, listener);
-    }
-
-    public void fireDataSourceEvent(DataSourceEvent e) {
-        LOGGER.debug("fireDataSourceEvent: {}", e.getDataSourceName());
-        for (DataSourceListener listener : listeners.getListeners(DataSourceListener.class)) {
-            switch (e.getType()) {
-                case ADD:
-                    listener.callbackDataSourceAdded(e);
-                    break;
-                // Change event not supported for now
-                // There is no good place to catch data source modification
-                /*case MapEvent.CHANGE:
-                    listener.callbackDataSourceChanged(e);
-                    break;*/
-                case REMOVE:
-                    listener.callbackDataSourceRemoved(e);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid RelationshipEvent type: " + e.getType());
-            }
-        }
-    }
-
     public ArrayList<Embeddable> getEmbeddablesInCurrentDataDomain() {
         DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) getProject().getRootNode();
         Collection<DataMap> maps = dataChannelDescriptor.getDataMaps();

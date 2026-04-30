@@ -24,8 +24,6 @@ import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.preferences.general.GeneralPreferencesController;
 import org.apache.cayenne.modeler.ui.preferences.PreferenceDialogController;
-import org.apache.cayenne.modeler.event.model.DataSourceEvent;
-import org.apache.cayenne.modeler.event.model.DataSourceListener;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.dbconnector.DBConnectors;
@@ -37,8 +35,10 @@ import java.awt.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.prefs.Preferences;
 
 import static org.apache.cayenne.modeler.dbconnector.DBConnector.*;
@@ -59,7 +59,6 @@ public class DataSourceController extends ChildController<ProjectController> {
     private DbAdapter adapter;
     private DataSource dataSource;
     private boolean canceled;
-    private DataSourceListener dataSourceListener;
 
     public DataSourceController(ProjectController parent, String title) {
         this(parent, title, new String[]{"Continue", "Cancel"});
@@ -74,7 +73,6 @@ public class DataSourceController extends ChildController<ProjectController> {
         this.view.setTitle(title);
 
         initBindings();
-        initDataSourceListener();
     }
 
     protected void initBindings() {
@@ -88,22 +86,6 @@ public class DataSourceController extends ChildController<ProjectController> {
         view.getConfigButton().addActionListener(e -> dataSourceConfigAction());
     }
 
-    private void initDataSourceListener() {
-        dataSourceListener = new DataSourceListener() {
-            @Override
-            public void callbackDataSourceRemoved(DataSourceEvent e) {
-            }
-
-            @Override
-            public void callbackDataSourceAdded(DataSourceEvent e) {
-                setDataSourceKey(e.getDataSourceName());
-                refreshDataSources();
-            }
-        };
-        getApplication().getFrameController().getProjectController()
-                .addDataSourceListener(dataSourceListener);
-    }
-
     private void initFavouriteDataSource() {
         final Preferences pref = getApplication().getPreferencesNode(GeneralPreferencesController.class, "");
         final String favouriteDataSource = pref.get(GeneralPreferencesController.FAVOURITE_DATA_SOURCE, null);
@@ -111,11 +93,6 @@ public class DataSourceController extends ChildController<ProjectController> {
             setDataSourceKey(favouriteDataSource);
             view.getDataSources().setSelectedItem(dataSourceKey);
         }
-    }
-
-    private void removeDataSourceListener() {
-        getApplication().getFrameController().getProjectController()
-                .removeDataSourceListener(dataSourceListener);
     }
 
     private DBConnector getConnectionInfoFromPreferences() {
@@ -202,14 +179,10 @@ public class DataSourceController extends ChildController<ProjectController> {
         onClose(true);
     }
 
-    /**
-     * On close handler. Introduced to remove data source listener.
-     */
     protected void onClose(final boolean canceled) {
         // set success flag, and unblock the caller...
         this.canceled = canceled;
         view.dispose();
-        removeDataSourceListener();
         if (!canceled) {
             Preferences pref = getApplication().getPreferencesNode(GeneralPreferencesController.class, "");
             pref.put(GeneralPreferencesController.FAVOURITE_DATA_SOURCE, dataSourceKey);
@@ -220,8 +193,18 @@ public class DataSourceController extends ChildController<ProjectController> {
      * Opens preferences panel to allow configuration of DataSource presets.
      */
     public void dataSourceConfigAction() {
-        final PreferenceDialogController prefs = new PreferenceDialogController(this);
+        DBConnectors registry = getApplication().getDbConnectors();
+        Set<String> before = new HashSet<>(registry.getAll().keySet());
+
+        PreferenceDialogController prefs = new PreferenceDialogController(this);
         prefs.showDataSourceEditorAction(dataSourceKey);
+
+        // auto-select any newly-added DataSource (last new wins, matching prior commit-order behavior)
+        for (String name : registry.getAll().keySet()) {
+            if (!before.contains(name)) {
+                dataSourceKey = name;
+            }
+        }
         refreshDataSources();
     }
 
