@@ -19,14 +19,13 @@
 
 package org.apache.cayenne.modeler.ui;
 
-import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
-import org.apache.cayenne.modeler.ui.project.ProjectView;
+import org.apache.cayenne.modeler.pref.JSplitPanePrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
-import org.apache.cayenne.modeler.ui.logconsole.LogConsoleController;
-import org.apache.cayenne.modeler.ui.welcome.WelcomeScreen;
-import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.toolkit.border.TopBorder;
-import org.slf4j.LoggerFactory;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
+import org.apache.cayenne.modeler.ui.logconsole.LogConsoleController;
+import org.apache.cayenne.modeler.ui.project.ProjectView;
+import org.apache.cayenne.modeler.ui.welcome.WelcomeScreen;
 
 import javax.swing.*;
 import java.awt.*;
@@ -66,12 +65,7 @@ public class ModelerFrame extends JFrame {
         splitPane.getInsets().right = 5;
         splitPane.setResizeWeight(0.7);
 
-        try {
-            ComponentGeometry geometry = new ComponentGeometry(this.getClass(), getClass().getSimpleName() + "/splitPane/divider");
-            geometry.bindIntProperty(splitPane, JSplitPane.DIVIDER_LOCATION_PROPERTY, 400);
-        } catch (Exception ex) {
-            LoggerFactory.getLogger(getClass()).error("Cannot bind divider property", ex);
-        }
+        JSplitPanePrefs.bindToPrefs(getClass().getSimpleName() + "/splitPane/divider", splitPane, 400);
 
         JPanel statusBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 1));
         statusBar.setBorder(TopBorder.create());

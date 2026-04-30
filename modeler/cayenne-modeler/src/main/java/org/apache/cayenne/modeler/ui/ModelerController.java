@@ -21,17 +21,17 @@ package org.apache.cayenne.modeler.ui;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.action.ExitAction;
-import org.apache.cayenne.modeler.ui.action.OpenProjectAction;
 import org.apache.cayenne.modeler.mvc.RootController;
-import org.apache.cayenne.modeler.pref.ComponentGeometry;
+import org.apache.cayenne.modeler.pref.ComponentGeometryPrefs;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
+import org.apache.cayenne.modeler.service.os.OperatingSystem;
+import org.apache.cayenne.modeler.ui.action.ExitAction;
+import org.apache.cayenne.modeler.ui.action.OpenProjectAction;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportController;
 import org.apache.cayenne.modeler.ui.project.validator.ProjectValidatorDialogController;
 import org.apache.cayenne.modeler.util.FileFilters;
-import org.apache.cayenne.modeler.service.os.OperatingSystem;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.validation.ProjectValidator;
 import org.apache.cayenne.validation.ValidationFailure;
@@ -143,7 +143,8 @@ public class ModelerController extends RootController {
             }
         });
 
-        new ComponentGeometry(view.getClass(), null).resetAndTrackGeometry(view, 1200, 720, 0);
+
+        ComponentGeometryPrefs.bindToTypePrefs(view, 1200, 720);
 
         view.setVisible(true);
     }

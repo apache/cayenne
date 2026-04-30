@@ -22,12 +22,11 @@ package org.apache.cayenne.modeler.ui.project;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CollapseTreeAction;
 import org.apache.cayenne.modeler.ui.action.FilterAction;
-import org.apache.cayenne.modeler.pref.ComponentGeometry;
+import org.apache.cayenne.modeler.pref.JSplitPanePrefs;
 import org.apache.cayenne.modeler.ui.project.editor.EditorPanelView;
 import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeController;
 import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeView;
 import org.apache.cayenne.modeler.ui.project.tree.treefilter.TreeFilterController;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -92,13 +91,7 @@ public class ProjectView extends JPanel {
 
         this.filterController = new TreeFilterController(treePanel);
 
-        // Moving this to try-catch block per CAY-940. Exception will be stack-traced
-        try {
-            ComponentGeometry geometry = new ComponentGeometry(this.getClass(), getClass().getSimpleName() + "/splitPane/divider");
-            geometry.bindIntProperty(splitPane, JSplitPane.DIVIDER_LOCATION_PROPERTY, 300);
-        } catch (Exception ex) {
-            LoggerFactory.getLogger(getClass()).error("Cannot bind divider property", ex);
-        }
+        JSplitPanePrefs.bindToPrefs(getClass().getSimpleName() + "/splitPane/divider", splitPane, 300);
     }
 
     public EditorPanelView getEditorPanel() {

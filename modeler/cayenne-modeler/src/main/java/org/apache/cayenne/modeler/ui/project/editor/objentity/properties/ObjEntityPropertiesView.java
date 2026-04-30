@@ -22,7 +22,7 @@ import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityListener;
-import org.apache.cayenne.modeler.pref.ComponentGeometry;
+import org.apache.cayenne.modeler.pref.JSplitPanePrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
@@ -35,7 +35,6 @@ import org.apache.cayenne.modeler.ui.action.ObjEntitySyncAction;
 import org.apache.cayenne.modeler.ui.action.PasteAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -65,15 +64,7 @@ public class ObjEntityPropertiesView extends JPanel implements ObjEntityDisplayL
         splitPane.setOneTouchExpandable(true);
         splitPane.setResizeWeight(0.5);
 
-        try {
-            ComponentGeometry geometry = new ComponentGeometry(
-                    this.getClass(),
-                    "objEntityAttrRelTab/splitPane/divider");
-
-            geometry.bindIntProperty(splitPane, JSplitPane.DIVIDER_LOCATION_PROPERTY, -1);
-        } catch (Exception ex) {
-            LoggerFactory.getLogger(getClass()).error("Cannot bind divider property", ex);
-        }
+        JSplitPanePrefs.bindToPrefs("objEntityAttrRelTab/splitPane/divider", splitPane, -1);
 
         add(splitPane);
 

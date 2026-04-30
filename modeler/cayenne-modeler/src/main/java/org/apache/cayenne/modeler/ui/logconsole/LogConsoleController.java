@@ -19,11 +19,16 @@
 package org.apache.cayenne.modeler.ui.logconsole;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.mvc.RootController;
+import org.apache.cayenne.modeler.pref.ComponentGeometryPrefs;
 import org.apache.cayenne.util.Util;
 
-import javax.swing.text.*;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -135,7 +140,7 @@ public class LogConsoleController extends RootController {
 
             if (logWindow == null) {
                 logWindow = new LogConsoleWindow(this);
-                new ComponentGeometry(getClass(), null).resetAndTrackGeometry(logWindow, 600, 300, 0);
+                ComponentGeometryPrefs.bindToTypePrefs(logWindow, 600, 300);
             }
 
             logWindow.setContentPane(view);
