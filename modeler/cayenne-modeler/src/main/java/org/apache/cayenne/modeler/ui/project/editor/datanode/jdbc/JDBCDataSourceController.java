@@ -120,7 +120,7 @@ public class JDBCDataSourceController extends DataSourceEditorController {
         }
 
         DBConnectionInfo dataSource = (DBConnectionInfo) getApplication()
-            .getCayenneProjectPreferences()
+            .getProjectPreferences()
             .getDetailObject(DBConnectionInfo.class)
             .getObject(key);
 

@@ -119,7 +119,7 @@ public class DataSourceDuplicatorController extends ChildController<DataSourcePr
 
         DBConnectionInfo prototype = (DBConnectionInfo) dataSources.get(prototypeKey);
         DBConnectionInfo dataSource = (DBConnectionInfo) getApplication()
-                .getCayenneProjectPreferences()
+                .getProjectPreferences()
                 .getDetailObject(DBConnectionInfo.class)
                 .create(getName());
 

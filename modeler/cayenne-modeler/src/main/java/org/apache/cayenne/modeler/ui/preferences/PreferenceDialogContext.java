@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.preferences;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
-import org.apache.cayenne.modeler.pref.CayenneProjectPreferences;
+import org.apache.cayenne.modeler.pref.ProjectPreferences;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,14 +33,14 @@ import java.util.prefs.Preferences;
 public class PreferenceDialogContext {
 
     private final Application application;
-    private final CayenneProjectPreferences cayenneProjectPreferences;
+    private final ProjectPreferences projectPreferences;
     private final Map<Preferences, Map<String, String>> changedPreferences;
     private final Map<Preferences, Map<String, String>> removedPreferences;
     private final Map<Preferences, Map<String, Boolean>> changedBooleanPreferences;
 
     public PreferenceDialogContext(Application application) {
         this.application = application;
-        this.cayenneProjectPreferences = application.getCayenneProjectPreferences();
+        this.projectPreferences = application.getProjectPreferences();
         this.changedPreferences = new HashMap<>();
         this.removedPreferences = new HashMap<>();
         this.changedBooleanPreferences = new HashMap<>();
@@ -59,7 +59,7 @@ public class PreferenceDialogContext {
     }
 
     public void save() {
-        cayenneProjectPreferences.getDetailObject(DBConnectionInfo.class).save();
+        projectPreferences.getDetailObject(DBConnectionInfo.class).save();
 
         // update boolean preferences
         for (Map.Entry<Preferences, Map<String, Boolean>> entry : changedBooleanPreferences.entrySet()) {
@@ -89,6 +89,6 @@ public class PreferenceDialogContext {
     }
 
     public void revert() {
-        cayenneProjectPreferences.getDetailObject(DBConnectionInfo.class).cancel();
+        projectPreferences.getDetailObject(DBConnectionInfo.class).cancel();
     }
 }

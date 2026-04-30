@@ -39,8 +39,8 @@ public abstract class ChildController<P extends RootController> extends RootCont
     @Override
     public FSPath getLastDirectory() {
         // find start directory in preferences
-        FSPath path = (FSPath) application
-                .getCayenneProjectPreferences()
+        FSPath path = application
+                .getProjectPreferences()
                 .getProjectDetailObject(
                         FSPath.class,
                         getViewPreferences().node("lastDir"));

@@ -123,7 +123,7 @@ public class DataSourceCreatorController extends ChildController<DataSourcePrefe
         }
 
         DBConnectionInfo dataSource = (DBConnectionInfo) getApplication()
-                .getCayenneProjectPreferences()
+                .getProjectPreferences()
                 .getDetailObject(DBConnectionInfo.class)
                 .create(getName());
 

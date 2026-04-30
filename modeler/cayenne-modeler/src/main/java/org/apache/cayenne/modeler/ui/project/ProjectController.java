@@ -138,8 +138,9 @@ public class ProjectController extends ChildController<ModelerController> {
     }
 
     public ProjectStatePreferences getProjectStatePreferences() {
-        return (ProjectStatePreferences) application.getCayenneProjectPreferences().getProjectDetailObject(
-                ProjectStatePreferences.class, getDataDomainPreferences());
+        return application.getProjectPreferences().getProjectDetailObject(
+                ProjectStatePreferences.class,
+                getDataDomainPreferences());
     }
 
     /**
@@ -174,13 +175,12 @@ public class ProjectController extends ChildController<ModelerController> {
         } else {
             pref = getDataDomainPreferences().node("DataMap").node(map.getName()).node(nameSuffix);
         }
-        return (DataMapDefaults) application.getCayenneProjectPreferences().getProjectDetailObject(
-                DataMapDefaults.class, pref);
+        return application.getProjectPreferences().getProjectDetailObject(DataMapDefaults.class, pref);
     }
 
     public DataMapDefaults getSelectedDataMapPreferences(DataMap dataMap) {
         Preferences pref = getDataDomainPreferences().node("DataMap").node(dataMap.getName());
-        return (DataMapDefaults) application.getCayenneProjectPreferences().getProjectDetailObject(DataMapDefaults.class, pref);
+        return application.getProjectPreferences().getProjectDetailObject(DataMapDefaults.class, pref);
     }
 
     /**
@@ -193,8 +193,9 @@ public class ProjectController extends ChildController<ModelerController> {
             throw new CayenneRuntimeException("No DataNode selected");
         }
 
-        return (DataNodeDefaults) application.getCayenneProjectPreferences().getProjectDetailObject(
-                DataNodeDefaults.class, getDataDomainPreferences().node("DataNode").node(node.getName()));
+        return application.getProjectPreferences().getProjectDetailObject(
+                DataNodeDefaults.class,
+                getDataDomainPreferences().node("DataNode").node(node.getName()));
 
     }
 

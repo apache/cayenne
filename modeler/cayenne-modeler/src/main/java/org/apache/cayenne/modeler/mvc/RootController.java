@@ -63,8 +63,8 @@ public abstract class RootController {
      */
     public FSPath getLastDirectory() {
 
-        FSPath path = (FSPath) application
-                .getCayenneProjectPreferences()
+        FSPath path = application
+                .getProjectPreferences()
                 .getProjectDetailObject(FSPath.class, getViewPreferences().node("lastDir"));
 
         if (path.getPath() == null) {

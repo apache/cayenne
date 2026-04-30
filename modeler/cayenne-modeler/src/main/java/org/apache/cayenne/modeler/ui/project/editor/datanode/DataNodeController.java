@@ -213,7 +213,7 @@ public class DataNodeController extends ChildController<ProjectController> {
 
     protected void refreshLocalDataSources() {
         @SuppressWarnings("unchecked")
-        Map<String, Object> sources = (Map<String, Object>) getApplication().getCayenneProjectPreferences()
+        Map<String, Object> sources = (Map<String, Object>) getApplication().getProjectPreferences()
                 .getDetailObject(DBConnectionInfo.class).getChildrenPreferences();
 
         int len = sources.size();

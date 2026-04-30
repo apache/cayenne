@@ -20,7 +20,6 @@
 package org.apache.cayenne.modeler.ui.preferences.datasource;
 
 import org.apache.cayenne.datasource.DriverDataSource;
-import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.event.model.DataSourceEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.ChildrenMapPreference;
@@ -63,7 +62,7 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 		this.view = new DataSourcePreferencesView(this);
 
 		// init view data
-		this.dataSourcePreferences = getApplication().getCayenneProjectPreferences().getDetailObject(
+		this.dataSourcePreferences = getApplication().getProjectPreferences().getDetailObject(
 				DBConnectionInfo.class);
 		this.dataSources = dataSourcePreferences.getChildrenPreferences();
 

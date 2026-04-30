@@ -27,7 +27,7 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.modeler.pref.CayennePreference;
-import org.apache.cayenne.modeler.pref.CayenneProjectPreferences;
+import org.apache.cayenne.modeler.pref.ProjectPreferences;
 import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
@@ -76,7 +76,7 @@ public class Application {
     protected ModelerController frameController;
     protected String name;
     protected CayenneUndoManager undoManager;
-    protected CayenneProjectPreferences cayenneProjectPreferences;
+    protected ProjectPreferences projectPreferences;
     protected CayennePreference cayennePreference;
 
     @Inject
@@ -196,7 +196,7 @@ public class Application {
         this.logConsoleController = new LogConsoleController(this);
 
         // TODO: should "project" preferences reside in ProjectController?
-        this.cayenneProjectPreferences = new CayenneProjectPreferences();
+        this.projectPreferences = new ProjectPreferences();
 
         refreshClassLoader();
 
@@ -228,8 +228,8 @@ public class Application {
         }
     }
 
-    public CayenneProjectPreferences getCayenneProjectPreferences() {
-        return cayenneProjectPreferences;
+    public ProjectPreferences getProjectPreferences() {
+        return projectPreferences;
     }
 
     public Preferences getMainPreferenceForProject() {

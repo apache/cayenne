@@ -25,12 +25,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
-public class CayenneProjectPreferences {
+public class ProjectPreferences {
 
     private final Map<Class<?>, ChildrenMapPreference> modelerPreferences;
     private final Map<Preferences, CayennePreference> modelerProjectPreferences;
 
-    public CayenneProjectPreferences() {
+    public ProjectPreferences() {
         modelerPreferences = new HashMap<>();
         modelerPreferences.put(DBConnectionInfo.class, new ChildrenMapPreference(new DBConnectionInfo()));
         modelerProjectPreferences = new HashMap<>();
@@ -44,15 +44,15 @@ public class CayenneProjectPreferences {
         return modelerPreferences.get(className);
     }
 
-    public CayennePreference getProjectDetailObject(
-            Class<? extends CayennePreference> objectClass,
+    public <T extends CayennePreference> T getProjectDetailObject(
+            Class<T> objectClass,
             Preferences preferences) {
 
-        CayennePreference preference = modelerProjectPreferences.get(preferences);
+        T preference = (T) modelerProjectPreferences.get(preferences);
 
         if (preference == null) {
             try {
-                Constructor<? extends CayennePreference> ct = objectClass.getConstructor(Preferences.class);
+                Constructor<T> ct = objectClass.getConstructor(Preferences.class);
                 preference = ct.newInstance(preferences);
                 modelerProjectPreferences.put(preferences, preference);
             } catch (Throwable e) {

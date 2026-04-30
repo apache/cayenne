@@ -242,7 +242,7 @@ public class DataSourceController extends ChildController<ProjectController> {
 
     @SuppressWarnings("unchecked")
     private void refreshDataSources() {
-        this.dataSources = (Map<String, DBConnectionInfo>) getApplication().getCayenneProjectPreferences().getDetailObject(DBConnectionInfo.class)
+        this.dataSources = (Map<String, DBConnectionInfo>) getApplication().getProjectPreferences().getDetailObject(DBConnectionInfo.class)
                 .getChildrenPreferences();
 
         // 1.2 migration fix - update data source adapter names
