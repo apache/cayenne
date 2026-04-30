@@ -30,6 +30,7 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.toolkit.table.CMTablePrefs;
 import org.apache.cayenne.modeler.project.DbRelationshipOps;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
@@ -248,7 +249,8 @@ public class DbRelationshipDialogController extends ChildController<ProjectContr
 
         targetColumn.setCellEditor(new CMComboBoxCellEditor(comboBox));
 
-        view.getTablePreferences().bind(view.getTable(), null, null, null, DbJoinTableModel.SOURCE, true);
+        CMTablePrefs.of(DbRelationshipDialogView.class, "dbentity/dbjoinTable")
+                .bind(view.getTable(), null, DbJoinTableModel.SOURCE);
     }
 
     private void enableOptions(boolean enable) {

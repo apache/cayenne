@@ -33,7 +33,7 @@ import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
-import org.apache.cayenne.modeler.pref.TableColumnPreferences;
+import org.apache.cayenne.modeler.toolkit.table.CMTablePrefs;
 import org.apache.cayenne.modeler.toolkit.table.BoardTableCellRenderer;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.toolkit.table.CMTablePanel;
@@ -58,7 +58,6 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
 
     private final ProjectController controller;
     private final CMTable table;
-    private final TableColumnPreferences tablePreferences;
     private final DbEntityPropertiesView parentPanel;
 
     public DbAttributePanel(ProjectController controller, DbEntityPropertiesView parentPanel) {
@@ -73,9 +72,6 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
         table = new CMTable();
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        tablePreferences = new TableColumnPreferences(
-                DbAttributeTableModel.class,
-                "attributeTable");
         table.setDefaultRenderer(String.class, new BoardTableCellRenderer());
 
         // TODO: There is no edit panel for DbAttributes, so for now no edit contextual menu and the edit button is disabled
@@ -195,7 +191,8 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
         TableColumn scaleColumn = table.getColumnModel().getColumn(DbAttributeTableModel.DB_ATTRIBUTE_SCALE);
         scaleColumn.setCellEditor(new CMTextFieldCellEditor(new LimitedTextField(10)));
 
-        tablePreferences.bind(table, null, null, null, DbAttributeTableModel.DB_ATTRIBUTE_NAME, true);
+        CMTablePrefs.of(DbAttributeTableModel.class, "attributeTable")
+                .bind(table, null, DbAttributeTableModel.DB_ATTRIBUTE_NAME);
     }
 
     private void valueChanged(ListSelectionEvent e) {

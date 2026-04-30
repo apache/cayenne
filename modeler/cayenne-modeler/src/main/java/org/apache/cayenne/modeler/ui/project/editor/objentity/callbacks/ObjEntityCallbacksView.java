@@ -30,7 +30,7 @@ import org.apache.cayenne.modeler.event.display.CallbackTypeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
 import org.apache.cayenne.modeler.event.model.CallbackMethodListener;
-import org.apache.cayenne.modeler.pref.TableColumnPreferences;
+import org.apache.cayenne.modeler.toolkit.table.CMTablePrefs;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.ui.action.CopyCallbackMethodAction;
@@ -75,7 +75,6 @@ public class ObjEntityCallbacksView extends JPanel {
     private final ProjectController controller;
 
     private final JPanel auxPanel;
-    private TableColumnPreferences tablePreferences;
     private final JPopupMenu popupMenu;
 
     private final CallbackType[] callbackTypes = {
@@ -218,7 +217,8 @@ public class ObjEntityCallbacksView extends JPanel {
         }
 
         for (CMTable table : tables) {
-            tablePreferences.bind(table, MIN_SIZES, null, null);
+            CMTablePrefs.of(ObjEntityCallbacksView.class, "objEntity/callbackTable")
+                    .bind(table, MIN_SIZES);
         }
     }
 
@@ -231,8 +231,6 @@ public class ObjEntityCallbacksView extends JPanel {
             tables[index] = createTable(callbackType);
             builder.append(createTablePanel(tables[index++]));
         }
-
-        tablePreferences = new TableColumnPreferences(ObjEntityCallbacksView.class, "objEntity/callbackTable");
 
         auxPanel.add(builder.getPanel(), BorderLayout.CENTER);
         validate();
@@ -485,7 +483,6 @@ public class ObjEntityCallbacksView extends JPanel {
                 for (CMTable nextTable : tables) {
                     nextTable.getColumnModel().getColumn(0).setPreferredWidth(table.getWidth());
                 }
-                tablePreferences = new TableColumnPreferences(ObjEntityCallbacksView.class, "objEntity/callbackTable");
                 table.setColumnWidthChanged(false);
             }
         }
@@ -514,7 +511,8 @@ public class ObjEntityCallbacksView extends JPanel {
 
         public void mouseDragged(MouseEvent e) {
             if (table.getColumnWidthChanged()) {
-                tablePreferences.bind(table, MIN_SIZES, null, null);
+                CMTablePrefs.of(ObjEntityCallbacksView.class, "objEntity/callbackTable")
+                        .bind(table, MIN_SIZES);
                 for (CMTable nextTable : tables) {
                     if (!table.equals(nextTable)) {
                         nextTable.getColumnModel().getColumn(0).setPreferredWidth(table.getWidth());

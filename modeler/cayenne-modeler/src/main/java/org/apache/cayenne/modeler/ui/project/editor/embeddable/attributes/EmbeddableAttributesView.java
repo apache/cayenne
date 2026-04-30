@@ -41,7 +41,7 @@ import org.apache.cayenne.modeler.event.display.EmbeddableAttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayListener;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
-import org.apache.cayenne.modeler.pref.TableColumnPreferences;
+import org.apache.cayenne.modeler.toolkit.table.CMTablePrefs;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.toolkit.table.CMTablePanel;
 import org.apache.cayenne.modeler.toolkit.ValueTypes;
@@ -62,7 +62,6 @@ public class EmbeddableAttributesView extends JPanel implements
 
     private final ProjectController controller;
     private CMTable table;
-    private TableColumnPreferences tablePreferences;
 
     public EmbeddableAttributesView(ProjectController controller) {
         this.controller = controller;
@@ -92,10 +91,6 @@ public class EmbeddableAttributesView extends JPanel implements
         table = new CMTable();
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-
-        tablePreferences = new TableColumnPreferences(
-                this.getClass(),
-                "embeddable/attributeTable");
 
         // Create and install a popup
         JPopupMenu popup = new JPopupMenu();
@@ -175,13 +170,8 @@ public class EmbeddableAttributesView extends JPanel implements
         AutoCompletion.enable(javaTypesCombo, false, true);
         typeColumn.setCellEditor(new CMComboBoxCellEditor(javaTypesCombo));
 
-        tablePreferences.bind(
-                table,
-                null,
-                null,
-                null,
-                EmbeddableAttributeTableModel.OBJ_ATTRIBUTE,
-                true);
+        CMTablePrefs.of(getClass(), "embeddable/attributeTable")
+                .bind(table, null, EmbeddableAttributeTableModel.OBJ_ATTRIBUTE);
 
     }
 

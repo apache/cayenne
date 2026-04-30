@@ -22,8 +22,8 @@ package org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.pref.ComponentGeometryPrefs;
-import org.apache.cayenne.modeler.pref.JSplitPanePrefs;
+import org.apache.cayenne.modeler.toolkit.CMComponentGeometryPrefs;
+import org.apache.cayenne.modeler.toolkit.splitpane.CMSplitPanePrefs;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -149,8 +149,8 @@ public class TemplateEditorView extends JFrame {
     }
 
     private void bindGeometry() {
-        JSplitPanePrefs.bindToPrefs("split/divider", split, 600);
-        ComponentGeometryPrefs.bindToTypePrefs(this, 1200, 700);
+        CMSplitPanePrefs.of(TemplateEditorView.class, "split/divider").bind(split, 600);
+        CMComponentGeometryPrefs.of(getClass()).bind(this, 1200, 700);
     }
 
     private void mapVelocityTokenMaker() {

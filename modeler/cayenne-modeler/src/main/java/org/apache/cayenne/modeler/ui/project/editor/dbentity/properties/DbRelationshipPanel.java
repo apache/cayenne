@@ -37,7 +37,7 @@ import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
-import org.apache.cayenne.modeler.pref.TableColumnPreferences;
+import org.apache.cayenne.modeler.toolkit.table.CMTablePrefs;
 import org.apache.cayenne.modeler.toolkit.table.BoardTableCellRenderer;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.toolkit.table.CMTablePanel;
@@ -64,7 +64,6 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
 
     private final ProjectController controller;
     private final CMTable table;
-    private final TableColumnPreferences tablePreferences;
     private final DbEntityPropertiesView parentPanel;
     private final JMenuItem editMenu;
     private JComboBox<DbEntity> targetCombo;
@@ -82,7 +81,6 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.setDefaultRenderer(DbEntity.class, Renderers.entityTableRendererWithIcons(controller));
         table.setDefaultRenderer(String.class, new BoardTableCellRenderer());
-        tablePreferences = new TableColumnPreferences(DbRelationshipTableModel.class, "relationshipTable");
 
         editMenu = new JMenuItem("Edit Relationship", IconFactory.buildIcon("icon-edit.png"));
 
@@ -191,13 +189,8 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
         TableColumn toDepPkColumn = table.getColumnModel().getColumn(DbRelationshipTableModel.TO_DEPENDENT_KEY);
         toDepPkColumn.setCellRenderer(new CheckBoxCellRenderer());
 
-        tablePreferences.bind(
-                table,
-                null,
-                null,
-                null,
-                DbRelationshipTableModel.NAME,
-                true);
+        CMTablePrefs.of(DbRelationshipTableModel.class, "relationshipTable")
+                .bind(table, null, DbRelationshipTableModel.NAME);
     }
 
     public void dbEntityChanged(DbEntityEvent e) {

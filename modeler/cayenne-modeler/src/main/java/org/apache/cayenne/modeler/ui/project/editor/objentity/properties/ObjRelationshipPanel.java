@@ -40,7 +40,7 @@ import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
-import org.apache.cayenne.modeler.pref.TableColumnPreferences;
+import org.apache.cayenne.modeler.toolkit.table.CMTablePrefs;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.toolkit.table.CMTablePanel;
 import org.apache.cayenne.modeler.toolkit.Renderers;
@@ -72,7 +72,6 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
 
     private final ProjectController controller;
     private final CMTable table;
-    private final TableColumnPreferences tablePreferences;
     private final ObjEntityPropertiesView parentPanel;
     private final JMenuItem editMenu;
 
@@ -89,7 +88,6 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.setDefaultRenderer(String.class, new StringRenderer());
         table.setDefaultRenderer(ObjEntity.class, new EntityRenderer());
-        tablePreferences = new TableColumnPreferences(ObjRelationshipTableModel.class, "objEntity/relationshipTable");
 
         table.addMouseListener(new MouseAdapter() {
             @Override
@@ -278,13 +276,8 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
         deleteRulesCombo.setSelectedIndex(0); // Default to the first value
         col.setCellEditor(new CMComboBoxCellEditor(deleteRulesCombo));
 
-        tablePreferences.bind(
-                table,
-                null,
-                null,
-                null,
-                ObjRelationshipTableModel.REL_NAME,
-                true);
+        CMTablePrefs.of(ObjRelationshipTableModel.class, "objEntity/relationshipTable")
+                .bind(table, null, ObjRelationshipTableModel.REL_NAME);
     }
 
     class EntityRenderer extends StringRenderer {

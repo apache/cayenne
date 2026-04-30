@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.project;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CollapseTreeAction;
 import org.apache.cayenne.modeler.ui.action.FilterAction;
-import org.apache.cayenne.modeler.pref.JSplitPanePrefs;
+import org.apache.cayenne.modeler.toolkit.splitpane.CMSplitPanePrefs;
 import org.apache.cayenne.modeler.ui.project.editor.EditorPanelView;
 import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeController;
 import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeView;
@@ -91,7 +91,7 @@ public class ProjectView extends JPanel {
 
         this.filterController = new TreeFilterController(treePanel);
 
-        JSplitPanePrefs.bindToPrefs(getClass().getSimpleName() + "/splitPane/divider", splitPane, 300);
+        CMSplitPanePrefs.of(ProjectView.class, "splitPane/divider").bind(splitPane, 300);
     }
 
     public EditorPanelView getEditorPanel() {

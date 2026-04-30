@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.ui.logconsole;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.mvc.RootController;
-import org.apache.cayenne.modeler.pref.ComponentGeometryPrefs;
+import org.apache.cayenne.modeler.toolkit.CMComponentGeometryPrefs;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.text.AttributeSet;
@@ -140,7 +140,7 @@ public class LogConsoleController extends RootController {
 
             if (logWindow == null) {
                 logWindow = new LogConsoleWindow(this);
-                ComponentGeometryPrefs.bindToTypePrefs(logWindow, 600, 300);
+                CMComponentGeometryPrefs.of(logWindow.getClass()).bind(logWindow, 600, 300);
             }
 
             logWindow.setContentPane(view);

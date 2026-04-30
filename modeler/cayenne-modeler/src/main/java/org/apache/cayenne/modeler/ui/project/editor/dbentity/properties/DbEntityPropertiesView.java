@@ -24,7 +24,7 @@ import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.event.model.DbEntityListener;
-import org.apache.cayenne.modeler.pref.JSplitPanePrefs;
+import org.apache.cayenne.modeler.toolkit.splitpane.CMSplitPanePrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
@@ -66,7 +66,7 @@ public class DbEntityPropertiesView extends JPanel implements DbEntityDisplayLis
         splitPane.setOneTouchExpandable(true);
         splitPane.setResizeWeight(0.5);
 
-        JSplitPanePrefs.bindToPrefs("dbEntityAttrRelTab/splitPane/divider", splitPane, -1);
+        CMSplitPanePrefs.of(DbEntityPropertiesView.class, "splitPane/divider").bind(splitPane, -1);
 
         add(splitPane);
         toolBar = new JToolBar();

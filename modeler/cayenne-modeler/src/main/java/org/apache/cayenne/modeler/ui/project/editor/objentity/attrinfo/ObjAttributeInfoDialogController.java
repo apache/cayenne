@@ -32,6 +32,7 @@ import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.toolkit.table.CMTablePrefs;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.properties.ObjAttributeTableModel;
 import org.apache.cayenne.modeler.util.EntityTreeAttributeRelationshipFilter;
@@ -295,8 +296,9 @@ public class ObjAttributeInfoDialogController extends ChildController<ProjectCon
                 .getColumn(OverrideEmbeddableAttributeTableModel.DB_ATTRIBUTE_TYPE);
         dbAttrTypeColumn.setCellRenderer(renderer);
 
-        view.getTablePreferences().bind(view.getOverrideAttributeTable(), null, null, null,
-                OverrideEmbeddableAttributeTableModel.OBJ_ATTRIBUTE, true);
+        CMTablePrefs.of(ObjAttributeInfoDialogView.class, "overrideAttributeTable")
+                .bind(view.getOverrideAttributeTable(), null,
+                        OverrideEmbeddableAttributeTableModel.OBJ_ATTRIBUTE);
 
         initComboBoxes();
 

@@ -23,7 +23,6 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.toolkit.buttons.CMButtonPanel;
 import org.apache.cayenne.modeler.toolkit.dialog.CMDialog;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
@@ -41,7 +40,6 @@ public class DbRelationshipDialogView extends CMDialog {
     private JLabel sourceName;
     private JTextField reverseName;
     private CMTable table;
-    private TableColumnPreferences tablePreferences;
     private JButton addButton;
     private JButton removeButton;
     private JButton saveButton;
@@ -78,7 +76,6 @@ public class DbRelationshipDialogView extends CMDialog {
         table = new AttributeTable();
 
         table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tablePreferences = new TableColumnPreferences(getClass(), "dbentity/dbjoinTable");
 
         getRootPane().setDefaultButton(saveButton);
 
@@ -175,10 +172,6 @@ public class DbRelationshipDialogView extends CMDialog {
 
     public CMTable getTable() {
         return table;
-    }
-
-    public TableColumnPreferences getTablePreferences() {
-        return tablePreferences;
     }
 
     public JButton getAddButton() {

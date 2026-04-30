@@ -22,7 +22,7 @@ import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityListener;
-import org.apache.cayenne.modeler.pref.JSplitPanePrefs;
+import org.apache.cayenne.modeler.toolkit.splitpane.CMSplitPanePrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
@@ -64,7 +64,7 @@ public class ObjEntityPropertiesView extends JPanel implements ObjEntityDisplayL
         splitPane.setOneTouchExpandable(true);
         splitPane.setResizeWeight(0.5);
 
-        JSplitPanePrefs.bindToPrefs("objEntityAttrRelTab/splitPane/divider", splitPane, -1);
+        CMSplitPanePrefs.of(ObjEntityPropertiesView.class, "splitPane/divider").bind(splitPane, -1);
 
         add(splitPane);
 

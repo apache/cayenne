@@ -22,7 +22,6 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
-import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.toolkit.ValueTypes;
 import org.apache.cayenne.modeler.toolkit.MultiColumnBrowser;
@@ -66,7 +65,6 @@ public class ObjAttributeInfoDialogView extends JDialog {
     private final JPanel typeManagerPane;
 
     private final CMTable overrideAttributeTable;
-    private final TableColumnPreferences tablePreferences;
 
     private final JCheckBox usedForLockingCheckBox;
     private final JCheckBox lazyCheckBox;
@@ -92,7 +90,6 @@ public class ObjAttributeInfoDialogView extends JDialog {
         this.commentField = new JTextField();
 
         overrideAttributeTable = new CMTable();
-        tablePreferences = new TableColumnPreferences(getClass(), "overrideAttributeTable");
 
         getRootPane().setDefaultButton(saveButton);
         saveButton.setEnabled(false);
@@ -202,10 +199,6 @@ public class ObjAttributeInfoDialogView extends JDialog {
 
     public CMTable getOverrideAttributeTable() {
         return overrideAttributeTable;
-    }
-    
-    public TableColumnPreferences getTablePreferences() {
-        return tablePreferences;
     }
 
     public JComboBox<String> getTypeComboBox() {

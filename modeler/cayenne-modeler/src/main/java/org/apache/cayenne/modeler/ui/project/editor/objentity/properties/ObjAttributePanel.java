@@ -33,7 +33,7 @@ import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityListener;
 import org.apache.cayenne.modeler.event.model.ProjectBeforeSaveEvent;
 import org.apache.cayenne.modeler.event.model.ProjectBeforeSaveListener;
-import org.apache.cayenne.modeler.pref.TableColumnPreferences;
+import org.apache.cayenne.modeler.toolkit.table.CMTablePrefs;
 import org.apache.cayenne.modeler.project.ObjEntityOps;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
@@ -81,7 +81,6 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
     private final ObjEntityPropertiesView parentPanel;
 
     private final CMTable table;
-    private final TableColumnPreferences tablePreferences;
     private final JMenuItem editMenu;
 
     public ObjAttributePanel(ProjectController controller, ObjEntityPropertiesView parentPanel) {
@@ -96,9 +95,6 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.setDefaultRenderer(String.class, new CellRenderer(controller));
-        tablePreferences = new TableColumnPreferences(
-                ObjAttributeTableModel.class,
-                "objEntity/attributeTable");
 
         // go to SuperEntity from ObjEntity by inheritance icon
         table.addMouseListener(new MouseAdapter() {
@@ -318,13 +314,8 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
         table.getColumnModel().getColumn(ObjAttributeTableModel.DB_ATTRIBUTE).setCellRenderer(new DbAttributePathComboBoxRenderer());
         table.getColumnModel().getColumn(ObjAttributeTableModel.DB_ATTRIBUTE).setCellEditor(new DbAttributePathComboBoxEditor());
 
-        tablePreferences.bind(
-                table,
-                minSizes,
-                null,
-                null,
-                ObjAttributeTableModel.OBJ_ATTRIBUTE,
-                true);
+        CMTablePrefs.of(ObjAttributeTableModel.class, "objEntity/attributeTable")
+                .bind(table, minSizes, ObjAttributeTableModel.OBJ_ATTRIBUTE);
     }
 
     /**

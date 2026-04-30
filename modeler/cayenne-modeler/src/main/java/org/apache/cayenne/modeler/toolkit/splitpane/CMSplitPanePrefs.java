@@ -17,21 +17,28 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.pref;
+package org.apache.cayenne.modeler.toolkit.splitpane;
 
 import javax.swing.*;
-import java.util.Objects;
 import java.util.prefs.Preferences;
 
-public class JSplitPanePrefs {
+public final class CMSplitPanePrefs {
 
-    public static void bindToPrefs(String prefsPath, JSplitPane p, int defaultLocation) {
-        Objects.requireNonNull(prefsPath);
-        Preferences prefs = Preferences.userNodeForPackage(p.getClass()).node(prefsPath);
-        bind(prefs, p, defaultLocation);
+    private final Preferences prefs;
+
+    private CMSplitPanePrefs(Preferences prefs) {
+        this.prefs = prefs;
     }
 
-    private static void bind(Preferences prefs, JSplitPane p, int defaultLocation) {
+    public static CMSplitPanePrefs of(Class<?> anchor) {
+        return new CMSplitPanePrefs(Preferences.userNodeForPackage(anchor));
+    }
+
+    public static CMSplitPanePrefs of(Class<?> anchor, String path) {
+        return new CMSplitPanePrefs(Preferences.userNodeForPackage(anchor).node(path));
+    }
+
+    public void bind(JSplitPane p, int defaultLocation) {
 
         int dividerLocation = prefs.getInt(JSplitPane.DIVIDER_LOCATION_PROPERTY, defaultLocation);
         if (dividerLocation > 0) {
@@ -43,4 +50,3 @@ public class JSplitPanePrefs {
                 e -> prefs.putInt(JSplitPane.DIVIDER_LOCATION_PROPERTY, p.getDividerLocation()));
     }
 }
-

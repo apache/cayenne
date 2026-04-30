@@ -17,26 +17,35 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.pref;
+package org.apache.cayenne.modeler.toolkit;
 
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.prefs.Preferences;
 
-public class ComponentGeometryPrefs {
+public final class CMComponentGeometryPrefs {
 
     private static final String HEIGHT_PROPERTY = "height";
     private static final String WIDTH_PROPERTY = "width";
     private static final String X_PROPERTY = "x";
     private static final String Y_PROPERTY = "y";
 
-    public static void bindToTypePrefs(Component c, int defaultWidth, int defaultHeight) {
-        Preferences prefs = Preferences.userNodeForPackage(c.getClass());
-        bind(prefs, c, defaultWidth, defaultHeight);
+    private final Preferences prefs;
+
+    private CMComponentGeometryPrefs(Preferences prefs) {
+        this.prefs = prefs;
     }
 
-    private static void bind(Preferences prefs, Component c, int defaultWidth, int defaultHeight) {
+    public static CMComponentGeometryPrefs of(Class<?> anchor) {
+        return new CMComponentGeometryPrefs(Preferences.userNodeForPackage(anchor));
+    }
+
+    public static CMComponentGeometryPrefs of(Class<?> anchor, String path) {
+        return new CMComponentGeometryPrefs(Preferences.userNodeForPackage(anchor).node(path));
+    }
+
+    public void bind(Component c, int defaultWidth, int defaultHeight) {
 
         int w = prefs.getInt(WIDTH_PROPERTY, defaultWidth);
         int h = prefs.getInt(HEIGHT_PROPERTY, defaultHeight);
@@ -68,4 +77,3 @@ public class ComponentGeometryPrefs {
         });
     }
 }
-

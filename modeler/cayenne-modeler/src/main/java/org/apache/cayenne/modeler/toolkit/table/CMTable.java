@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.modeler.toolkit.table;
 
-import org.apache.cayenne.modeler.pref.TableColumnPreferences;
-
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.TableModelEvent;
@@ -34,6 +32,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.EventObject;
+import java.util.function.BiConsumer;
 
 /**
  * Common superclass of tables used in Cayenne. Contains some common configuration settings and utility methods.
@@ -46,7 +45,7 @@ public class CMTable extends JTable {
 
     private final SortButtonRenderer renderer;
 
-    private TableColumnPreferences columnPreferences;
+    private BiConsumer<Integer, Boolean> sortChangedListener;
     private boolean isColumnWidthChanged;
 
     public CMTable() {
@@ -269,10 +268,8 @@ public class CMTable extends JTable {
                 isAscend);
     }
 
-    public void setColumnPreferences(TableColumnPreferences tableColumnPreferences) {
-        if (this.columnPreferences == null) {
-            this.columnPreferences = tableColumnPreferences;
-        }
+    public void setSortChangedListener(BiConsumer<Integer, Boolean> sortChangedListener) {
+        this.sortChangedListener = sortChangedListener;
     }
 
     public boolean getColumnWidthChanged() {
@@ -311,11 +308,12 @@ public class CMTable extends JTable {
             } else if (!isResizeCursor()) {
                 int col = header.columnAtPoint(e.getPoint());
                 int sortCol = convertColumnIndexToModel(col);
-                if (renderer.isSortingEnabled() && ((CMTableModel) getModel()).isColumnSortable(sortCol)) {
+                if (renderer.isSortingEnabled() && ((CMTableModel<?>) getModel()).isColumnSortable(sortCol)) {
                     boolean isAscent = SortButtonRenderer.DOWN != renderer.getState(col);
                     sortByDefinedColumn(col, sortCol, isAscent);
-                    columnPreferences.setSortOrder(isAscent);
-                    columnPreferences.setSortColumn(sortCol);
+                    if (sortChangedListener != null) {
+                        sortChangedListener.accept(sortCol, isAscent);
+                    }
                 }
             }
         }

@@ -30,7 +30,7 @@ import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.event.model.ProcedureEvent;
 import org.apache.cayenne.modeler.event.model.ProcedureParameterEvent;
 import org.apache.cayenne.modeler.event.model.ProcedureParameterListener;
-import org.apache.cayenne.modeler.pref.TableColumnPreferences;
+import org.apache.cayenne.modeler.toolkit.table.CMTablePrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
@@ -71,7 +71,6 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
     private final ProjectController controller;
 
     protected CMTable table;
-    protected TableColumnPreferences tablePreferences;
     protected JButton removeParameterButton;
     protected JButton moveUp;
     protected JButton moveDown;
@@ -144,10 +143,6 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
         table = new CMTable();
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-
-        tablePreferences = new TableColumnPreferences(
-                this.getClass(),
-                "procedure/parameterTable");
 
         // Create and install a popup
         JPopupMenu popup = new JPopupMenu();
@@ -310,7 +305,7 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
         moveUp.setEnabled(false);
         moveDown.setEnabled(false);
 
-        tablePreferences.bind(table, null, null, null);
+        CMTablePrefs.of(getClass(), "procedure/parameterTable").bind(table, null);
     }
 
     public void procedureParameterAdded(ProcedureParameterEvent e) {

@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.modeler.dbconnector;
 
-import org.apache.cayenne.modeler.pref.DBConnectorPrefs;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;

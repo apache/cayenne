@@ -27,7 +27,7 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.modeler.pref.CayennePreference;
-import org.apache.cayenne.modeler.pref.DBConnectorPrefs;
+import org.apache.cayenne.modeler.dbconnector.DBConnectorPrefs;
 import org.apache.cayenne.modeler.dbconnector.DBConnectors;
 import org.apache.cayenne.modeler.pref.ProjectPreferences;
 import org.apache.cayenne.modeler.pref.LastProjectsPreferences;

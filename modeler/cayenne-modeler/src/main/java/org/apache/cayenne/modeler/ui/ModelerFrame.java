@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.ui;
 
-import org.apache.cayenne.modeler.pref.JSplitPanePrefs;
+import org.apache.cayenne.modeler.toolkit.splitpane.CMSplitPanePrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.border.TopBorder;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
@@ -65,7 +65,7 @@ public class ModelerFrame extends JFrame {
         splitPane.getInsets().right = 5;
         splitPane.setResizeWeight(0.7);
 
-        JSplitPanePrefs.bindToPrefs(getClass().getSimpleName() + "/splitPane/divider", splitPane, 400);
+        CMSplitPanePrefs.of(ModelerFrame.class, "splitPane/divider").bind(splitPane, 400);
 
         JPanel statusBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 1));
         statusBar.setBorder(TopBorder.create());
