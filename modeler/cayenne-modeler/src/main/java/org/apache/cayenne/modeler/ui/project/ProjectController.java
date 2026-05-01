@@ -23,7 +23,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -37,42 +36,22 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
-import org.apache.cayenne.modeler.event.model.DbEntityEvent;
-import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
-import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
-import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
-import org.apache.cayenne.modeler.event.model.ObjRelationshipEvent;
-import org.apache.cayenne.modeler.event.model.DbAttributeListener;
-import org.apache.cayenne.modeler.event.model.DbEntityListener;
-import org.apache.cayenne.modeler.event.model.DbRelationshipListener;
-import org.apache.cayenne.modeler.event.model.EmbeddableAttributeEvent;
-import org.apache.cayenne.modeler.event.model.EmbeddableAttributeListener;
-import org.apache.cayenne.modeler.event.model.EmbeddableEvent;
-import org.apache.cayenne.modeler.event.model.EmbeddableListener;
-import org.apache.cayenne.modeler.event.model.ModelEvent;
-import org.apache.cayenne.modeler.event.model.ObjAttributeListener;
-import org.apache.cayenne.modeler.event.model.ObjEntityListener;
-import org.apache.cayenne.modeler.event.model.ObjRelationshipListener;
-import org.apache.cayenne.modeler.service.action.GlobalActions;
-import org.apache.cayenne.modeler.ui.action.RevertAction;
-import org.apache.cayenne.modeler.ui.action.SaveAction;
-import org.apache.cayenne.modeler.ui.action.SaveAsAction;
-import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.CallbackType;
-import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
 import org.apache.cayenne.modeler.event.display.*;
 import org.apache.cayenne.modeler.event.model.*;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.modeler.pref.ProjectStatePreferences;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.ModelerController;
+import org.apache.cayenne.modeler.ui.action.RevertAction;
+import org.apache.cayenne.modeler.ui.action.SaveAction;
+import org.apache.cayenne.modeler.ui.action.SaveAsAction;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.CallbackType;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.project.ConfigurationNodeParentGetter;
 import org.apache.cayenne.project.Project;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.event.EventListenerList;
 import java.util.ArrayList;
@@ -89,8 +68,6 @@ import java.util.prefs.Preferences;
  * A controller that works with the project tree, tracking selection and dispatching project events.
  */
 public class ProjectController extends ChildController<ModelerController> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProjectController.class);
 
     private ProjectNavigationHistory navigationHistory;
     private EventListenerList listeners;
@@ -532,7 +509,7 @@ public class ProjectController extends ChildController<ModelerController> {
         boolean changed = e.getDomain() != state.dataDomain || (
                 state.dataNode != null || state.dataMap != null || state.dbEntity != null || state.objEntity != null || state.procedure != null || state.query != null || state.embeddable != null
         );
-        LOGGER.debug("displayDomain: {}{}", e.getDomain() != null ? e.getDomain().getName() : null, changed ? "" : ", ignored unchanged");
+//        LOGGER.debug("displayDomain: {}{}", e.getDomain() != null ? e.getDomain().getName() : null, changed ? "" : ", ignored unchanged");
 
         if (changed) {
             state = new ControllerState();
@@ -557,7 +534,6 @@ public class ProjectController extends ChildController<ModelerController> {
      * originator.
      */
     public void fireDomainEvent(DomainEvent e) {
-        LOGGER.debug("fireDomainEvent: {}", e.getDomain().getName());
         setDirty(true);
 
         if (e.getType() == ModelEvent.Type.REMOVE) {
@@ -579,7 +555,6 @@ public class ProjectController extends ChildController<ModelerController> {
         boolean changed = e.getDataNode() != state.dataNode || (
                 state.dataMap != null || state.dbEntity != null || state.objEntity != null || state.procedure != null || state.query != null || state.embeddable != null
         );
-        LOGGER.debug("displayDataNode: {}{}", e.getDataNode().getName(), changed ? "" : ", ignored unchanged");
 
         if (changed) {
             state = new ControllerState();
@@ -594,7 +569,6 @@ public class ProjectController extends ChildController<ModelerController> {
     }
 
     public void fireDataNodeEvent(DataNodeEvent e) {
-        LOGGER.debug("fireDataNodeEvent: {}", e.getDataNode().getName());
         setDirty(true);
 
         if (e.getType() == ModelEvent.Type.REMOVE) {
@@ -623,7 +597,6 @@ public class ProjectController extends ChildController<ModelerController> {
                 state.dbEntity != null || state.objEntity != null || state.procedure != null || state.query != null || state.embeddable != null
         );
 
-        LOGGER.debug("displayDataMap: {}{}", e.getDataMap().getName(), changed ? "" : (e.isMainTabFocus() ? ", unchanged but main-tab-focus" : ", ignored unchanged"));
         if (changed) {
             state = new ControllerState();
             state.dataDomain = e.getDomain();
@@ -647,7 +620,6 @@ public class ProjectController extends ChildController<ModelerController> {
     }
 
     public void fireProjectAfterSaveEvent(ProjectAfterSaveEvent e) {
-        LOGGER.debug("fireProjectAfterSaveEvent");
         fileChangeTracker.reset();
         for (ProjectAfterSaveListener eventListener : listeners.getListeners(ProjectAfterSaveListener.class)) {
             eventListener.projectSaved(e);
@@ -659,7 +631,6 @@ public class ProjectController extends ChildController<ModelerController> {
      * originator.
      */
     public void fireDataMapEvent(DataMapEvent e) {
-        LOGGER.debug("fireDataMapEvent: {}", e.getDataMap().getName());
         setDirty(true);
 
         if (e.getType() == ModelEvent.Type.REMOVE) {
@@ -684,7 +655,6 @@ public class ProjectController extends ChildController<ModelerController> {
     }
 
     public void fireObjEntityEvent(ObjEntityEvent e) {
-        LOGGER.debug("fireObjEntityEvent: {}", e.getEntity().getName());
         setDirty(true);
 
         if (e.getType() == ModelEvent.Type.REMOVE) {
@@ -709,7 +679,6 @@ public class ProjectController extends ChildController<ModelerController> {
     }
 
     public void fireDbEntityEvent(DbEntityEvent e) {
-        LOGGER.debug("fireDbEntityEvent: {}", e.getEntity().getName());
         setDirty(true);
 
         if (e.getType() == ModelEvent.Type.REMOVE) {
@@ -734,7 +703,6 @@ public class ProjectController extends ChildController<ModelerController> {
     }
 
     public void fireQueryEvent(QueryEvent e) {
-        LOGGER.debug("fireQueryEvent: {}", e.getQuery().getName());
         setDirty(true);
 
         if (e.getType() == ModelEvent.Type.REMOVE) {
@@ -759,7 +727,6 @@ public class ProjectController extends ChildController<ModelerController> {
     }
 
     public void fireProcedureEvent(ProcedureEvent e) {
-        LOGGER.debug("fireProcedureEvent: {}", e.getProcedure().getName());
         setDirty(true);
 
         if (e.getType() == ModelEvent.Type.REMOVE) {
@@ -788,7 +755,6 @@ public class ProjectController extends ChildController<ModelerController> {
      * its originator.
      */
     public void fireProcedureParameterEvent(ProcedureParameterEvent e) {
-        LOGGER.debug("fireProcedureParameterEvent: {}", e.getParameter().getName());
         setDirty(true);
 
         EventListener[] list = listeners.getListeners(ProcedureParameterListener.class);
@@ -822,8 +788,6 @@ public class ProjectController extends ChildController<ModelerController> {
     public void displayObjEntity(EntityDisplayEvent e) {
         boolean changed = e.getEntity() != state.objEntity;
 
-        LOGGER.debug("displayObjEntity: {}{}", e.getEntity().getName(), changed ? "" : (e.isMainTabFocus() ? ", unchanged but main-tab-focus" : ", ignored unchanged"));
-
         if (changed) {
             state = new ControllerState();
             state.dataDomain = e.getDomain();
@@ -845,7 +809,6 @@ public class ProjectController extends ChildController<ModelerController> {
 
     public void displayEmbeddable(EmbeddableDisplayEvent e) {
         boolean changed = e.getEmbeddable() != state.embeddable;
-        LOGGER.debug("displayEmbeddable: {}{}", e.getEmbeddable().getClassName(), changed ? "" : (e.isMainTabFocus() ? ", unchanged but main-tab-focus" : ", ignored unchanged"));
 
         if (changed) {
             state = new ControllerState();
@@ -867,7 +830,6 @@ public class ProjectController extends ChildController<ModelerController> {
 
     public void displayQuery(QueryDisplayEvent e) {
         boolean changed = e.getQuery() != state.query;
-        LOGGER.debug("displayQuery: {}{}", e.getQuery().getName(), changed ? "" : ", ignored unchanged");
 
         if (changed) {
             state = new ControllerState();
@@ -884,7 +846,6 @@ public class ProjectController extends ChildController<ModelerController> {
 
     public void displayProcedure(ProcedureDisplayEvent e) {
         boolean changed = e.getProcedure() != state.procedure;
-        LOGGER.debug("displayProcedure: {}{}", e.getProcedure().getName(), changed ? "" : (e.isTabReset() ? ", unchanged but tab-reset" : ", ignored unchanged"));
 
         if (changed) {
             state = new ControllerState();
@@ -905,7 +866,6 @@ public class ProjectController extends ChildController<ModelerController> {
 
     public void displayProcedureParameter(ProcedureParameterDisplayEvent e) {
         boolean changed = !Arrays.equals(e.getProcedureParameters(), state.procedureParameters);
-        LOGGER.debug("displayProcedureParameter: {}{}", e.getProcedure().getName(), changed ? "" : ", ignored unchanged");
 
         if (changed) {
             if (state.procedure != e.getProcedure()) {
@@ -924,7 +884,6 @@ public class ProjectController extends ChildController<ModelerController> {
 
     public void displayDbEntity(EntityDisplayEvent e) {
         boolean changed = e.getEntity() != state.dbEntity;
-        LOGGER.debug("displayDbEntity: {}{}", e.getEntity().getName(), changed ? "" : (e.isMainTabFocus() ? ", unchanged but main-tab-focus" : ", ignored unchanged"));
 
         if (changed) {
             state = new ControllerState();
@@ -948,7 +907,6 @@ public class ProjectController extends ChildController<ModelerController> {
      * Notifies all listeners of the change(add, remove) and does the change.
      */
     public void fireDbAttributeEvent(DbAttributeEvent e) {
-        LOGGER.debug("fireDbAttributeEvent: {}", e.getAttribute().getName());
         setDirty(true);
 
         for (DbAttributeListener l : listeners.getListeners(DbAttributeListener.class)) {
@@ -970,7 +928,6 @@ public class ProjectController extends ChildController<ModelerController> {
 
     public void displayDbAttribute(AttributeDisplayEvent e) {
         boolean changed = !Arrays.equals(e.getAttributes(), state.dbAttributes);
-        LOGGER.debug("displayDbAttribute: {}{}", Arrays.stream(e.getAttributes()).map(Attribute::getName).toArray(), changed ? "" : ", ignored unchanged");
 
         if (changed) {
             if (e.getEntity() != state.dbEntity) {
@@ -992,7 +949,6 @@ public class ProjectController extends ChildController<ModelerController> {
      * Notifies all listeners of the change (add, remove) and does the change.
      */
     public void fireObjAttributeEvent(ObjAttributeEvent e) {
-        LOGGER.debug("fireObjAttributeEvent: {}", e.getAttribute().getName());
         setDirty(true);
 
         for (ObjAttributeListener listener : listeners.getListeners(ObjAttributeListener.class)) {
@@ -1014,7 +970,6 @@ public class ProjectController extends ChildController<ModelerController> {
 
     public void displayObjAttribute(AttributeDisplayEvent e) {
         boolean changed = !Arrays.equals(e.getAttributes(), state.objAttributes);
-        LOGGER.debug("displayObjAttribute: {}{}", Arrays.stream(e.getAttributes()).map(Attribute::getName).toArray(), changed ? "" : ", ignored unchanged");
 
         if (changed) {
             if (e.getEntity() != state.objEntity) {
@@ -1034,7 +989,6 @@ public class ProjectController extends ChildController<ModelerController> {
 
     public void displayEmbeddableAttribute(EmbeddableAttributeDisplayEvent ev) {
         boolean changed = !Arrays.equals(ev.getEmbeddableAttributes(), state.embeddableAttributes);
-        LOGGER.debug("displayEmbeddableAttribute: {}{}", Arrays.stream(ev.getEmbeddableAttributes()).map(EmbeddableAttribute::getName).toArray(), changed ? "" : ", ignored unchanged");
 
         if (changed) {
             if (ev.getEmbeddable() != state.embeddable) {
@@ -1056,7 +1010,6 @@ public class ProjectController extends ChildController<ModelerController> {
      * Notifies all listeners of the change(add, remove) and does the change.
      */
     public void fireDbRelationshipEvent(DbRelationshipEvent e) {
-        LOGGER.debug("fireDbRelationshipEvent: {}", e.getRelationship().getName());
         setDirty(true);
 
         for (DbRelationshipListener listener : listeners.getListeners(DbRelationshipListener.class)) {
@@ -1078,7 +1031,6 @@ public class ProjectController extends ChildController<ModelerController> {
 
     public void displayDbRelationship(RelationshipDisplayEvent e) {
         boolean changed = !Arrays.equals(e.getRelationships(), state.dbRelationships);
-        LOGGER.debug("displayDbRelationship: {}{}", Arrays.stream(e.getRelationships()).map(Relationship::getName).toArray(), changed ? "" : ", ignored unchanged");
 
         if (changed) {
             if (e.getEntity() != state.dbEntity) {
@@ -1100,7 +1052,6 @@ public class ProjectController extends ChildController<ModelerController> {
      * Notifies all listeners of the change(add, remove) and does the change.
      */
     public void fireObjRelationshipEvent(ObjRelationshipEvent e) {
-        LOGGER.debug("fireObjRelationshipEvent: {}", e.getRelationship().getName());
         setDirty(true);
 
         for (ObjRelationshipListener listener : listeners.getListeners(ObjRelationshipListener.class)) {
@@ -1121,7 +1072,6 @@ public class ProjectController extends ChildController<ModelerController> {
     }
 
     public void displayMultipleObjects(MultipleObjectsDisplayEvent e) {
-        LOGGER.debug("displayMultipleObjects");
         state = new ControllerState();
         state.paths = e.getNodes();
         state.parentPath = e.getParentNode();
@@ -1133,7 +1083,6 @@ public class ProjectController extends ChildController<ModelerController> {
 
     public void displayObjRelationship(RelationshipDisplayEvent e) {
         boolean changed = !Arrays.equals(e.getRelationships(), state.objRelationships);
-        LOGGER.debug("displayObjRelationship: {}{}", Arrays.stream(e.getRelationships()).map(Relationship::getName).toArray(), changed ? "" : ", ignored unchanged");
 
         if (changed) {
             if (e.getEntity() != state.objEntity) {
@@ -1152,7 +1101,6 @@ public class ProjectController extends ChildController<ModelerController> {
     }
 
     public void displayValidationConfig(ValidationConfigDisplayEvent event) {
-        LOGGER.debug("displayValidationConfig");
         for (ValidationConfigDisplayListener l : listeners.getListeners(ValidationConfigDisplayListener.class)) {
             l.validationOptionChanged(event);
         }
@@ -1183,7 +1131,6 @@ public class ProjectController extends ChildController<ModelerController> {
     }
 
     public void displayCallbackType(CallbackTypeDisplayEvent e) {
-        LOGGER.debug("displayCallbackType: {}", e.getCallbackType());
         state.callbackType = e.getCallbackType();
         for (CallbackTypeSelectionListener l : listeners.getListeners(CallbackTypeSelectionListener.class)) {
             l.callbackTypeSelected(e);
@@ -1199,7 +1146,6 @@ public class ProjectController extends ChildController<ModelerController> {
     }
 
     public void displayCallbackMethod(CallbackMethodDisplayEvent e) {
-        LOGGER.debug("displayCallbackMethod");
         state.callbackMethods = e.getCallbackMethods();
         for (CallbackMethodDisplayListener l : listeners.getListeners(CallbackMethodDisplayListener.class)) {
             l.callbackMethodSelected(e);
@@ -1211,7 +1157,6 @@ public class ProjectController extends ChildController<ModelerController> {
     }
 
     public void fireCallbackMethodEvent(CallbackMethodEvent e) {
-        LOGGER.debug("fireCallbackMethodEvent: {}", e.getNewName());
         setDirty(true);
 
         for (CallbackMethodListener listener : listeners.getListeners(CallbackMethodListener.class)) {
@@ -1240,7 +1185,6 @@ public class ProjectController extends ChildController<ModelerController> {
     }
 
     public void fireEmbeddableEvent(EmbeddableEvent e, DataMap map) {
-        LOGGER.debug("fireEmbeddableEvent: {}", e.getEmbeddable().getClassName());
         setDirty(true);
         for (EmbeddableListener listener : listeners.getListeners(EmbeddableListener.class)) {
 
@@ -1261,7 +1205,6 @@ public class ProjectController extends ChildController<ModelerController> {
     }
 
     public void fireEmbeddableAttributeEvent(EmbeddableAttributeEvent e) {
-        LOGGER.debug("fireEmbeddableAttributeEvent: {}", e.getEmbeddableAttribute().getName());
         setDirty(true);
         for (EmbeddableAttributeListener listener : listeners.getListeners(EmbeddableAttributeListener.class)) {
 
@@ -1282,7 +1225,6 @@ public class ProjectController extends ChildController<ModelerController> {
     }
 
     public void fireProjectBeforeSaveEvent(ProjectBeforeSaveEvent e) {
-        LOGGER.debug("fireProjectBeforeSaveEvent");
         for (ProjectBeforeSaveListener listener : listeners.getListeners(ProjectBeforeSaveListener.class)) {
             listener.projectWillBeSaved(e);
         }
