@@ -124,7 +124,6 @@ public class SaveAsAction extends ModelerAbstractAction {
 
                     RenamedPreferences.copyPreferences(newPref, tempOldPref, false);
                     tempOldPref.removeNode();
-                    application.getFrameController().getLastDirectory().setDirectory(projectDir);
                 }
             }
         }

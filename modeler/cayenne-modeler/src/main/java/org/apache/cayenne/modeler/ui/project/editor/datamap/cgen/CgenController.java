@@ -113,20 +113,9 @@ public class CgenController extends ChildController<ProjectController> implement
         initConfigurationsComboBox();
         setConfiguration((String) view.getConfigurationsComboBox().getSelectedItem());
         cgenConfigController.initForm(cgenConfiguration);
-        addConfigurationComboBoxListener();
         classesSelector.startup();
         initFromModel = false;
         classesSelector.validate(classes);
-    }
-
-    private void addConfigurationComboBoxListener() {
-        view.getConfigurationsComboBox().addActionListener(e -> {
-            selectionModel.clearAll();
-            setConfiguration((String) view.getConfigurationsComboBox().getSelectedItem());
-            cgenConfigController.initForm(cgenConfiguration);
-            classesSelector.initBindings();
-            classesSelector.validate(classes);
-        });
     }
 
     private void initCgenConfigurations(DataMap dataMap) {
@@ -155,6 +144,17 @@ public class CgenController extends ChildController<ProjectController> implement
         view.getAddConfigBtn().addActionListener(e -> addConfigAction());
         view.getEditConfigBtn().addActionListener(e -> editConfigAction());
         view.getRemoveConfigBtn().addActionListener(e -> removeConfigAction());
+        view.getConfigurationsComboBox().addActionListener(e -> {
+            // ignore events fired while initFromModel() is rebuilding the combo box
+            if (initFromModel) {
+                return;
+            }
+            selectionModel.clearAll();
+            setConfiguration((String) view.getConfigurationsComboBox().getSelectedItem());
+            cgenConfigController.initForm(cgenConfiguration);
+            classesSelector.initBindings();
+            classesSelector.validate(classes);
+        });
         generatorSelectedAction();
     }
 

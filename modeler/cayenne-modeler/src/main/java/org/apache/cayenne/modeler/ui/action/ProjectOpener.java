@@ -22,6 +22,7 @@ package org.apache.cayenne.modeler.ui.action;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
 import org.apache.cayenne.modeler.ui.project.overwrite.OverwriteDialog;
 import org.apache.cayenne.modeler.util.FileFilters;
 import org.apache.cayenne.project.Project;
@@ -31,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
+import java.util.List;
 
 
 /**
@@ -62,7 +64,7 @@ class ProjectOpener extends JFileChooser {
         // configure dialog
         setDialogTitle("Select Project Directory");
         setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-        setCurrentDirectory(getDefaultStartDir(application));
+        setCurrentDirectory(getDefaultStartDir());
 
         // preselect current directory
         if (getCurrentDirectory() != null) {
@@ -118,7 +120,7 @@ class ProjectOpener extends JFileChooser {
         // configure dialog
         setDialogTitle("Select Project File");
         setFileSelectionMode(JFileChooser.FILES_ONLY);
-        setCurrentDirectory(getDefaultStartDir(application));
+        setCurrentDirectory(getDefaultStartDir());
 
         // configure filters
         resetChoosableFileFilters();
@@ -135,17 +137,14 @@ class ProjectOpener extends JFileChooser {
         return getSelectedFile();
     }
 
-    private File getDefaultStartDir(Application application) {
-        File existingDir = application
-                .getFrameController()
-                .getLastDirectory()
-                .getExistingDirectory(false);
-
-        if (existingDir == null) {
-            // go to current dir...
-            existingDir = new File(System.getProperty("user.dir"));
+    private File getDefaultStartDir() {
+        List<File> recent = LastProjectsPreferences.getFiles();
+        if (!recent.isEmpty()) {
+            File parent = recent.get(0).getParentFile();
+            if (parent != null && parent.isDirectory()) {
+                return parent;
+            }
         }
-
-        return existingDir;
+        return new File(System.getProperty("user.dir"));
     }
 }

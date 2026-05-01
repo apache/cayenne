@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.modeler.mvc;
 
-import org.apache.cayenne.modeler.pref.FSPath;
-
 import java.awt.*;
 import java.util.Objects;
 
@@ -34,18 +32,6 @@ public abstract class ChildController<P extends RootController> extends RootCont
     protected ChildController(P parent) {
         super(Objects.requireNonNull(parent).getApplication());
         this.parent = parent;
-    }
-
-    @Override
-    public FSPath getLastDirectory() {
-        // find start directory in preferences
-        FSPath path = new FSPath(getViewPreferences().node("lastDir"));
-
-        if (path.getPath() == null) {
-            path.setPath(parent.getLastDirectory().getPath());
-        }
-
-        return path;
     }
 
     /**

@@ -20,7 +20,6 @@
 package org.apache.cayenne.modeler.mvc;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +28,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-import java.util.prefs.Preferences;
 
 /**
  * A superclass of most controllers.
@@ -41,7 +37,6 @@ public abstract class RootController {
     private static final Logger LOGGER = LoggerFactory.getLogger(RootController.class);
 
     protected final Application application;
-    protected PropertyChangeSupport propertyChangeSupport;
 
     protected RootController(Application application) {
         this.application = application;
@@ -51,48 +46,11 @@ public abstract class RootController {
         return application;
     }
 
-    /**
-     * Returns the view associated with this Controller.
-     */
     public abstract Component getView();
 
     /**
-     * Returns last file system directory visited by user for this component. If there is
-     * no such directory set up in the preferences, creates a new object, setting its path
-     * to the parent last directory or to the user HOME directory.
-     */
-    public FSPath getLastDirectory() {
-
-        FSPath path = new FSPath(getViewPreferences().node("lastDir"));
-
-        if (path.getPath() == null) {
-            path.setPath(System.getProperty("user.home"));
-        }
-
-        return path;
-    }
-
-    /**
-     * Returns preference for this component view.
-     */
-    protected Preferences getViewPreferences() {
-
-        if (getApplication().getProject() == null) {
-            return getApplication().getPreferencesNode(getView().getClass(), "");
-        }
-
-        Preferences pref = getApplication().getMainPreferenceForProject();
-        String pathToProject = pref.absolutePath();
-        String path = pathToProject
-                + "/"
-                + getView().getClass().getName().replace(".", "/");
-
-        return pref.node(path);
-    }
-
-    /**
-     * Utility method to provide a visual indication an execution error. This
-     * implementation logs an error and pops up a dialog window with error message.
+     * Provides a visual indication of an execution error. This implementation logs an error and pops up a dialog
+     * window with error message.
      */
     protected void reportError(String title, Throwable th) {
         th = Util.unwindException(th);
@@ -156,31 +114,5 @@ public abstract class RootController {
         }
 
         return null;
-    }
-
-    /**
-     * Fires property change event. Exists for the benefit of subclasses.
-     */
-    protected void firePropertyChange(
-            String propertyName,
-            Object oldValue,
-            Object newValue) {
-        if (propertyChangeSupport != null) {
-            propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
-        }
-    }
-
-    /**
-     * Adds a listener for property change events.
-     */
-    public void addPropertyChangeListener(
-            String expression,
-            PropertyChangeListener listener) {
-
-        if (propertyChangeSupport == null) {
-            propertyChangeSupport = new PropertyChangeSupport(this);
-        }
-
-        propertyChangeSupport.addPropertyChangeListener(expression, listener);
     }
 }

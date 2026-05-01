@@ -25,11 +25,10 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
-import org.apache.cayenne.modeler.event.model.ModelEvent;
-import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.mvc.RootController;
+import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.InferRelationshipsUndoableEdit;
 import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
@@ -38,6 +37,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -51,13 +52,14 @@ public class InferRelationshipsController extends ChildController<RootController
     public static final String SELECTED_PROPERTY = "selected";
 
     protected DataMap dataMap;
-    protected java.util.List<InferredRelationship> inferredRelationships;
-    protected java.util.List<DbEntity> entities;
+    protected List<InferredRelationship> inferredRelationships;
+    protected List<DbEntity> entities;
     protected Set<InferredRelationship> selectedEntities;
     protected int index;
     protected ObjectNameGenerator strategy;
     private final InferRelationshipsTabController entitySelector;
     private InferRelationshipsDialog view;
+    private PropertyChangeSupport propertyChangeSupport;
 
     public InferRelationshipsController(RootController parent, DataMap dataMap) {
         super(parent);
@@ -228,13 +230,28 @@ public class InferRelationshipsController extends ChildController<RootController
     public void setSelected(InferredRelationship entity, boolean selectedFlag) {
         if (selectedFlag) {
             if (selectedEntities.add(entity)) {
-                firePropertyChange(SELECTED_PROPERTY, null, null);
+                firePropertyChange();
             }
         } else {
             if (selectedEntities.remove(entity)) {
-                firePropertyChange(SELECTED_PROPERTY, null, null);
+                firePropertyChange();
             }
         }
+    }
+
+    private void firePropertyChange() {
+        if (propertyChangeSupport != null) {
+            propertyChangeSupport.firePropertyChange(InferRelationshipsController.SELECTED_PROPERTY, null, null);
+        }
+    }
+
+    private void addPropertyChangeListener(PropertyChangeListener listener) {
+
+        if (propertyChangeSupport == null) {
+            propertyChangeSupport = new PropertyChangeSupport(this);
+        }
+
+        propertyChangeSupport.addPropertyChangeListener(InferRelationshipsController.SELECTED_PROPERTY, listener);
     }
 
     public int getSelectedEntitiesSize() {
@@ -294,7 +311,7 @@ public class InferRelationshipsController extends ChildController<RootController
     protected void initBindings() {
         view.getCancelButton().addActionListener(e -> cancelAction());
         view.getGenerateButton().addActionListener(e -> generateAction());
-        addPropertyChangeListener(SELECTED_PROPERTY, evt -> entitySelectedAction());
+        addPropertyChangeListener(evt -> entitySelectedAction());
         view.getStrategyCombo().addActionListener(e -> strategyComboAction());
     }
 
@@ -414,7 +431,7 @@ public class InferRelationshipsController extends ChildController<RootController
         }
 
         if (modified) {
-            firePropertyChange(SELECTED_PROPERTY, null, null);
+            firePropertyChange();
         }
 
         return modified;

@@ -21,10 +21,10 @@ package org.apache.cayenne.modeler.ui.project.editor.datamap.cgen;
 
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.TemplateType;
+import org.apache.cayenne.modeler.project.CgenOps;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.TemplateEditorController;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
-import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.util.Util;
 
@@ -141,12 +141,16 @@ public class CgenConfigController extends ChildController<CgenController> {
 
         if (cgenConfiguration.getRootPath() != null) {
             view.getOutputFolder().setText(cgenConfiguration.buildOutputPath().toString());
+            view.applyOutputFolder(view.getOutputFolder().getText());
+        } else {
+            // unsaved project: no project root to resolve a relative output path against,
+            // so leave the field empty rather than running validation on a stale value
+            view.getOutputFolder().setText("");
         }
         if (cgenConfiguration.getArtifactsGenerationMode().equalsIgnoreCase("all")) {
             parent.setCurrentClass(cgenConfiguration.getDataMap());
             parent.setSelected(true);
         }
-        view.applyOutputFolder(view.getOutputFolder().getText());
         view.getOutputPattern().setText(cgenConfiguration.getOutputPattern());
         view.getPairs().setSelected(cgenConfiguration.isMakePairs());
         view.getUsePackagePath().setSelected(cgenConfiguration.isUsePkgPath());
@@ -234,8 +238,7 @@ public class CgenConfigController extends ChildController<CgenController> {
         if (!Util.isEmptyString(currentDir)) {
             chooser.setCurrentDirectory(new File(currentDir));
         } else {
-            FSPath lastDir = application.getFrameController().getLastDirectory();
-            lastDir.updateChooser(chooser);
+            chooser.setCurrentDirectory(CgenOps.baseDir(application).toFile());
         }
 
         int result = chooser.showOpenDialog(view);

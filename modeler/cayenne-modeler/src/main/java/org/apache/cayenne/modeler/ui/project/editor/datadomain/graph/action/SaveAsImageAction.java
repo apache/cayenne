@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
-import org.apache.cayenne.modeler.pref.FSPath;
+import org.apache.cayenne.modeler.toolkit.filechooser.CMFileChooserPrefs;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.DataDomainGraphTab;
 import org.apache.cayenne.modeler.util.FileFilters;
 import org.jgraph.JGraph;
@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.prefs.Preferences;
 
 /**
  * Action for saving graph as image
@@ -57,13 +58,11 @@ public class SaveAsImageAction extends ModelerAbstractAction {
 
 	@Override
 	public void performAction(ActionEvent e) {
-		// find start directory in preferences
-		FSPath lastDir = application.getFrameController().getLastDirectory();
-
-		// configure dialog
 		JFileChooser chooser = new JFileChooser();
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		lastDir.updateChooser(chooser);
+
+		Preferences lastDir = Preferences.userNodeForPackage(SaveAsImageAction.class).node("lastImageDir");
+		CMFileChooserPrefs.of(lastDir).bind(chooser);
 
 		chooser.setAcceptAllFileFilterUsed(false);
 
@@ -72,8 +71,6 @@ public class SaveAsImageAction extends ModelerAbstractAction {
 
 		int status = chooser.showSaveDialog(application.getFrameController().getView());
 		if (status == JFileChooser.APPROVE_OPTION) {
-			lastDir.updateFromChooser(chooser);
-
 			String path = chooser.getSelectedFile().getPath();
 			if (!path.endsWith("." + ext)) {
 				path += "." + ext;

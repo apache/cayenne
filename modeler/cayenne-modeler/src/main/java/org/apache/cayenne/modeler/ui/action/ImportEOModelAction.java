@@ -52,7 +52,7 @@ import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
-import org.apache.cayenne.modeler.pref.FSPath;
+import org.apache.cayenne.modeler.toolkit.filechooser.CMFileChooserPrefs;
 import org.apache.cayenne.modeler.ui.errors.ErrorsController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.FileFilters;
@@ -70,6 +70,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.prefs.Preferences;
 
 /**
  * Action handler for WebObjects EOModel import function.
@@ -129,12 +130,6 @@ public class ImportEOModelAction extends ModelerAbstractAction {
         int status = fileChooser.showOpenDialog(application.getFrameController().getView());
 
         if (status == JFileChooser.APPROVE_OPTION) {
-
-            // save preferences
-            FSPath lastDir = application
-                    .getFrameController()
-                    .getLastEOModelDirectory();
-            lastDir.updateFromChooser(fileChooser);
 
             File file = fileChooser.getSelectedFile();
             if (file.isFile()) {
@@ -332,8 +327,8 @@ public class ImportEOModelAction extends ModelerAbstractAction {
             eoModelChooser = new EOModelChooser("Select EOModel");
         }
 
-        FSPath lastDir = application.getFrameController().getLastEOModelDirectory();
-        lastDir.updateChooser(eoModelChooser);
+        Preferences prefs = Preferences.userNodeForPackage(ImportEOModelAction.class).node("lastEOMDir");
+        CMFileChooserPrefs.of(prefs).bind(eoModelChooser);
 
         return eoModelChooser;
     }

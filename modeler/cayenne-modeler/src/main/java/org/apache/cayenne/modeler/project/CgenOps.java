@@ -2,18 +2,18 @@ package org.apache.cayenne.modeler.project;
 
 import org.apache.cayenne.gen.internal.Utils;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.pref.FSPath;
+import org.apache.cayenne.project.Project;
+import org.apache.cayenne.resource.Resource;
 
-import java.io.File;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class CgenOps {
 
-    // TODO:
-    //  1. "cayenne.cgen.destdir" is a Maven Modeler startup artifact. Should go away with CAY-2925 (or should be
-    //  reimplemented as an app arg).
-    //  2. "getLastDirectory()" is likely the wrong directory for the base
+    // TODO: "cayenne.cgen.destdir" is a Maven Modeler startup artifact. Should go away with CAY-2925 (or should be
+    // reimplemented as an app arg).
 
     public static Path baseDir(Application application) {
         String propDir = System.getProperty("cayenne.cgen.destdir");
@@ -21,10 +21,28 @@ public class CgenOps {
             return Paths.get(propDir);
         }
 
-        FSPath lastPath = application.getFrameController().getLastDirectory();
-        File lastDir = lastPath.getExistingDirectory(false);
+        Path projectRoot = projectRoot(application);
+        if (projectRoot == null) {
+            return Paths.get(".");
+        }
 
-        return Utils.getMavenSrcPathForPath(lastPath.getPath()).map(Paths::get)
-                .orElseGet(() -> Paths.get(lastDir != null ? lastDir.getAbsolutePath() : "."));
+        return Utils.getMavenSrcPathForPath(projectRoot).map(Paths::get).orElse(projectRoot);
+    }
+
+    private static Path projectRoot(Application application) {
+        Project project = application.getProject();
+        if (project == null) {
+            return null;
+        }
+        Resource resource = project.getConfigurationResource();
+        if (resource == null) {
+            return null;
+        }
+        try {
+            Path path = Path.of(resource.getURL().toURI());
+            return Files.isRegularFile(path) ? path.getParent() : path;
+        } catch (URISyntaxException e) {
+            return null;
+        }
     }
 }

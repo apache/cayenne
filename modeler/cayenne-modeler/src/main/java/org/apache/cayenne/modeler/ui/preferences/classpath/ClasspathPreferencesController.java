@@ -20,6 +20,7 @@
 package org.apache.cayenne.modeler.ui.preferences.classpath;
 
 import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.toolkit.filechooser.CMFileChooserPrefs;
 import org.apache.cayenne.modeler.ui.preferences.PreferenceDialogController;
 import org.apache.cayenne.modeler.ui.preferences.classpath.maven.MavenDependencyDialogController;
 import org.apache.cayenne.modeler.util.FileFilters;
@@ -147,7 +148,9 @@ public class ClasspathPreferencesController extends ChildController<PreferenceDi
         chooser.setFileSelectionMode(selectionMode);
         chooser.setDialogType(JFileChooser.OPEN_DIALOG);
         chooser.setAcceptAllFileFilterUsed(true);
-        getLastDirectory().updateChooser(chooser);
+
+        Preferences lastDir = Preferences.userNodeForPackage(ClasspathPreferencesController.class).node("lastClasspathDir");
+        CMFileChooserPrefs.of(lastDir).bind(chooser);
         if (filter != null) {
             chooser.addChoosableFileFilter(filter);
         }
@@ -159,8 +162,6 @@ public class ClasspathPreferencesController extends ChildController<PreferenceDi
             selected = chooser.getSelectedFile();
         }
 
-        // store last dir in preferences
-        getLastDirectory().updateFromChooser(chooser);
         // add to classpath list
         addClasspathEntry(selected);
     }

@@ -26,7 +26,7 @@ import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.pref.FSPath;
+import org.apache.cayenne.modeler.toolkit.filechooser.CMFileChooserPrefs;
 import org.apache.cayenne.modeler.util.FileFilters;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
@@ -38,6 +38,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.URL;
+import java.util.prefs.Preferences;
 
 /**
  * Modeler action that imports a DataMap into a project from an arbitrary
@@ -98,24 +99,17 @@ public class ImportDataMapAction extends ModelerAbstractAction {
 
     protected File selectDataMap(Frame f) {
 
-        // find start directory in preferences
-        FSPath lastDir = application.getFrameController().getLastDirectory();
-
-        // configure dialog
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        lastDir.updateChooser(chooser);
+
+        Preferences prefs = Preferences.userNodeForPackage(ImportDataMapAction.class).node("lastDataMapDir");
+        CMFileChooserPrefs.of(prefs).bind(chooser);
 
         chooser.addChoosableFileFilter(FileFilters.getDataMapFilter());
 
         int status = chooser.showDialog(f, "Select DataMap");
         if (status == JFileChooser.APPROVE_OPTION) {
-            File file = chooser.getSelectedFile();
-
-            // save to preferences...
-            lastDir.updateFromChooser(chooser);
-
-            return file;
+            return chooser.getSelectedFile();
         }
 
         return null;
