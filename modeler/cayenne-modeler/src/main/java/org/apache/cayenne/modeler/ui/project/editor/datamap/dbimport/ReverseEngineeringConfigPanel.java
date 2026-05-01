@@ -231,34 +231,6 @@ public class ReverseEngineeringConfigPanel extends JPanel {
         return strategyCombo;
     }
 
-    CMUndoableTextField getMeaningfulPk() {
-        return meaningfulPk;
-    }
-
-    CMUndoableTextField getStripFromTableNames() {
-        return stripFromTableNames;
-    }
-
-    JCheckBox getSkipRelationshipsLoading() {
-        return skipRelationshipsLoading;
-    }
-
-    JCheckBox getSkipPrimaryKeyLoading() {
-        return skipPrimaryKeyLoading;
-    }
-
-    JCheckBox getForceDataMapCatalog() {
-        return forceDataMapCatalog;
-    }
-
-    JCheckBox getForceDataMapSchema() {
-        return forceDataMapSchema;
-    }
-
-    JCheckBox getUseJava7Types() {
-        return useJava7Types;
-    }
-
     CMUndoableTextField getTableTypes() {
         return tableTypes;
     }
