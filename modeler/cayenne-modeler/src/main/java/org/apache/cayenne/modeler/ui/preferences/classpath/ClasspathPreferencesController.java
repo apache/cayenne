@@ -20,12 +20,11 @@
 package org.apache.cayenne.modeler.ui.preferences.classpath;
 
 import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.pref.ClasspathPrefs;
 import org.apache.cayenne.modeler.toolkit.filechooser.CMFileChooserPrefs;
 import org.apache.cayenne.modeler.ui.preferences.PreferenceDialogController;
 import org.apache.cayenne.modeler.ui.preferences.classpath.maven.MavenDependencyDialogController;
 import org.apache.cayenne.modeler.util.FileFilters;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -33,80 +32,39 @@ import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
 
 public class ClasspathPreferencesController extends ChildController<PreferenceDialogController> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClasspathPreferencesController.class);
-
     private final ClasspathPreferencesView view;
     private final List<String> classPathEntries;
-    private final List<String> classPathKeys;
     private final ClasspathTableModel tableModel;
-    private final Preferences preferences;
-
-    private int counter;
 
     public ClasspathPreferencesController(PreferenceDialogController parent) {
         super(parent);
 
         this.view = new ClasspathPreferencesView();
-
-        // this prefs node is shared with other dialog panels... be aware of
-        // that when accessing the keys
-        this.preferences = getApplication().getPreferencesNode(this.getClass(), "");
-
-        this.classPathEntries = new ArrayList<>();
-        this.classPathKeys = new ArrayList<>();
-        this.counter = loadPreferences();
+        this.classPathEntries = new ArrayList<>(ClasspathPrefs.of().getEntries());
         this.tableModel = new ClasspathTableModel(classPathEntries);
 
         initBindings();
     }
 
-    private synchronized int loadPreferences() {
-
-        String[] cpKeys;
-        try {
-            cpKeys = preferences.keys();
-        } catch (BackingStoreException e) {
-            LOGGER.info("Error loading preferences", e);
-            return 0;
-        }
-
-        int max = 0;
-        for (String cpKey : cpKeys) {
-            try {
-                int c = Integer.parseInt(cpKey);
-                if (c > max) {
-                    max = c;
-                }
-            } catch (NumberFormatException e) {
-                // we are sharing the 'preferences' node with other dialogs, and
-                // this is a rather poor way of telling our preference keys from
-                // other dialog keys ... ours are numeric, the rest are
-                // string..
-
-                // TODO: better key namespacing...
-                continue;
-            }
-
-            String tempValue = preferences.get(cpKey, "");
-            if (!"".equals(tempValue)) {
-                classPathEntries.add(tempValue);
-                classPathKeys.add(cpKey);
-            }
-        }
-
-        return max;
-    }
-
     public Component getView() {
         return view;
+    }
+
+    public List<String> getEntries() {
+        return classPathEntries;
+    }
+
+    /**
+     * Flushes the working snapshot to {@link ClasspathPrefs} and refreshes the
+     * Modeler classloader. Called on dialog Save.
+     */
+    public void commit() {
+        ClasspathPrefs.of().setEntries(classPathEntries);
+        getApplication().refreshClassLoader();
     }
 
     protected void initBindings() {
@@ -136,10 +94,7 @@ public class ClasspathPreferencesController extends ChildController<PreferenceDi
             return;
         }
 
-        updatePreferences(classPathKeys.get(selected), "");
         classPathEntries.remove(selected);
-        classPathKeys.remove(selected);
-
         tableModel.fireTableRowsDeleted(selected, selected);
     }
 
@@ -149,8 +104,7 @@ public class ClasspathPreferencesController extends ChildController<PreferenceDi
         chooser.setDialogType(JFileChooser.OPEN_DIALOG);
         chooser.setAcceptAllFileFilterUsed(true);
 
-        Preferences lastDir = Preferences.userNodeForPackage(ClasspathPreferencesController.class).node("lastClasspathDir");
-        CMFileChooserPrefs.of(lastDir).bind(chooser);
+        CMFileChooserPrefs.of(ClasspathPrefs.of().lastClasspathDir()).bind(chooser);
         if (filter != null) {
             chooser.addChoosableFileFilter(filter);
         }
@@ -162,33 +116,21 @@ public class ClasspathPreferencesController extends ChildController<PreferenceDi
             selected = chooser.getSelectedFile();
         }
 
-        // add to classpath list
         addClasspathEntry(selected);
     }
 
     public synchronized void addClasspathEntry(File selected) {
-        if (selected == null || classPathEntries.contains(selected.getAbsolutePath())) {
+        if (selected == null) {
+            return;
+        }
+        String path = selected.getAbsolutePath();
+        if (classPathEntries.contains(path)) {
             return;
         }
 
         int len = classPathEntries.size();
-        int key = ++counter;
-
-        String value = selected.getAbsolutePath();
-        updatePreferences(Integer.toString(key), value);
-        classPathEntries.add(value);
-        classPathKeys.add(Integer.toString(key));
-
+        classPathEntries.add(path);
         tableModel.fireTableRowsInserted(len, len);
-    }
-
-    public void updatePreferences(String key, String value) {
-        Map<String, String> map = parent.getContext().getChangedPreferences().get(preferences);
-        if (map == null) {
-            map = new HashMap<>();
-        }
-        map.put(key, value);
-        parent.getContext().getChangedPreferences().put(preferences, map);
     }
 
     static class ClasspathTableModel extends AbstractTableModel {
@@ -215,5 +157,4 @@ public class ClasspathPreferencesController extends ChildController<PreferenceDi
             return "Custom ClassPath";
         }
     }
-
 }

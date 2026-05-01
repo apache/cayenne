@@ -39,7 +39,6 @@ public class PreferenceDialogController extends ChildController<RootController> 
     };
 
     private final PreferenceDialogView view;
-    private final PreferenceDialogContext context;
 
     private final GeneralPreferencesController generalPrefsController;
     private final DataSourcePreferencesController dataSourcePrefsController;
@@ -55,9 +54,6 @@ public class PreferenceDialogController extends ChildController<RootController> 
         this.view = (parentView instanceof Dialog)
                 ? new PreferenceDialogView((Dialog) parentView)
                 : new PreferenceDialogView((Frame) parentView);
-
-
-        this.context = new PreferenceDialogContext(application);
 
         JList<String> list = view.getList();
         list.setListData(preferenceMenus);
@@ -91,7 +87,7 @@ public class PreferenceDialogController extends ChildController<RootController> 
     private void savePreferencesAction() {
         dataSourcePrefsController.commit();
         generalPrefsController.commit();
-        context.save();
+        classpathPrefsController.commit();
         view.dispose();
     }
 
@@ -129,7 +125,7 @@ public class PreferenceDialogController extends ChildController<RootController> 
         return view;
     }
 
-    public PreferenceDialogContext getContext() {
-        return context;
+    public ClasspathPreferencesController getClasspathPrefsController() {
+        return classpathPrefsController;
     }
 }

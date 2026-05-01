@@ -29,6 +29,7 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.modeler.pref.CayennePreference;
 import org.apache.cayenne.modeler.dbconnector.DBConnectorPrefs;
 import org.apache.cayenne.modeler.dbconnector.DBConnectors;
+import org.apache.cayenne.modeler.pref.ClasspathPrefs;
 import org.apache.cayenne.modeler.pref.GeneralPrefs;
 import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
@@ -37,7 +38,6 @@ import org.apache.cayenne.modeler.service.platform.PlatformInitializer;
 import org.apache.cayenne.modeler.ui.ModelerController;
 import org.apache.cayenne.modeler.ui.action.OpenProjectAction;
 import org.apache.cayenne.modeler.ui.logconsole.LogConsoleController;
-import org.apache.cayenne.modeler.ui.preferences.classpath.ClasspathPreferencesController;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 import org.apache.cayenne.project.ConfigurationNodeParentGetter;
 import org.apache.cayenne.project.Project;
@@ -49,10 +49,8 @@ import org.apache.cayenne.util.IDUtil;
 
 import javax.swing.*;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
@@ -260,21 +258,7 @@ public class Application {
      * Reinitializes ModelerClassLoader from preferences.
      */
     public void refreshClassLoader() {
-
-        // init from preferences...
-        Preferences classLoaderPref = getPreferencesNode(ClasspathPreferencesController.class, "");
-
-        String[] keys;
-        List<String> values = new ArrayList<>();
-
-        try {
-            keys = classLoaderPref.keys();
-            for (String cpKey : keys) {
-                values.add(classLoaderPref.get(cpKey, ""));
-            }
-        } catch (BackingStoreException ignored) {
-        }
-
+        List<String> values = ClasspathPrefs.of().getEntries();
         if (!values.isEmpty()) {
             getClassLoader().setFiles(values.stream().map(File::new).collect(Collectors.toList()));
         }

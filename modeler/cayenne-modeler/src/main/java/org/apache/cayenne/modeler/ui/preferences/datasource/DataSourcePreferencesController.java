@@ -25,7 +25,6 @@ import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.dbconnector.DBConnectors;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
 import org.apache.cayenne.modeler.ui.preferences.PreferenceDialogController;
-import org.apache.cayenne.modeler.ui.preferences.classpath.ClasspathPreferencesController;
 import org.apache.cayenne.modeler.ui.preferences.datasource.creator.DataSourceCreatorController;
 import org.apache.cayenne.modeler.ui.preferences.datasource.duplicator.DataSourceDuplicatorController;
 import org.apache.cayenne.util.Util;
@@ -36,15 +35,13 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
 /**
@@ -219,8 +216,7 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 	}
 
 	/**
-	 * Tries to establish a DB connection, reporting the status of this
-	 * operation.
+	 * Tries to establish a DB connection, reporting the status of this operation.
 	 */
 	public void testDataSourceAction() {
 		DBConnector currentDataSource = getConnectionInfo();
@@ -242,34 +238,7 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 
 			ModelerClassLoader classLoader = new ModelerClassLoader();
 
-			Set<File> oldPathFiles = getApplication().getClassLoader().getFiles();
-
-			Collection<String> details = new ArrayList<>();
-			for (File oldPathFile : oldPathFiles) {
-				details.add(oldPathFile.getAbsolutePath());
-			}
-
-			Preferences classPathPreferences = getApplication().getPreferencesNode(ClasspathPreferencesController.class, "");
-			if (parent.getContext().getChangedPreferences().containsKey(classPathPreferences)) {
-				Map<String, String> map = parent.getContext().getChangedPreferences().get(classPathPreferences);
-
-				for (Map.Entry<String, String> en : map.entrySet()) {
-					String key = en.getKey();
-					if (!details.contains(key)) {
-						details.add(key);
-					}
-				}
-			}
-
-			if (parent.getContext().getRemovedPreferences().containsKey(classPathPreferences)) {
-				Map<String, String> map = parent.getContext().getRemovedPreferences().get(classPathPreferences);
-
-				for (Map.Entry<String, String> en : map.entrySet()) {
-					String key = en.getKey();
-                    details.remove(key);
-				}
-			}
-
+			List<String> details = parent.getClasspathPrefsController().getEntries();
 			if (!details.isEmpty()) {
 				classLoader.setFiles(details.stream().map(File::new).collect(Collectors.toList()));
 			}
