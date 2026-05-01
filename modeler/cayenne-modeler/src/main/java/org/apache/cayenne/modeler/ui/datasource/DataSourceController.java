@@ -22,12 +22,12 @@ package org.apache.cayenne.modeler.ui.datasource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.preferences.general.GeneralPreferencesController;
 import org.apache.cayenne.modeler.ui.preferences.PreferenceDialogController;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.dbconnector.DBConnectors;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
+import org.apache.cayenne.modeler.pref.GeneralPrefs;
 
 import javax.sql.DataSource;
 import javax.swing.*;
@@ -39,7 +39,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.prefs.Preferences;
 
 import static org.apache.cayenne.modeler.dbconnector.DBConnector.*;
 
@@ -87,8 +86,7 @@ public class DataSourceController extends ChildController<ProjectController> {
     }
 
     private void initFavouriteDataSource() {
-        final Preferences pref = getApplication().getPreferencesNode(GeneralPreferencesController.class, "");
-        final String favouriteDataSource = pref.get(GeneralPreferencesController.FAVOURITE_DATA_SOURCE, null);
+        String favouriteDataSource = GeneralPrefs.of().getFavouriteDataSource();
         if (favouriteDataSource != null && connectors.containsKey(favouriteDataSource)) {
             setDataSourceKey(favouriteDataSource);
             view.getDataSources().setSelectedItem(dataSourceKey);
@@ -184,8 +182,7 @@ public class DataSourceController extends ChildController<ProjectController> {
         this.canceled = canceled;
         view.dispose();
         if (!canceled) {
-            Preferences pref = getApplication().getPreferencesNode(GeneralPreferencesController.class, "");
-            pref.put(GeneralPreferencesController.FAVOURITE_DATA_SOURCE, dataSourceKey);
+            GeneralPrefs.of().setFavouriteDataSource(dataSourceKey);
         }
     }
 

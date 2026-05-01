@@ -31,11 +31,11 @@ import java.awt.*;
 public class PreferenceDialogController extends ChildController<RootController> {
 
     private static final String GENERAL_KEY = "General";
-    private static final String DATA_SOURCES_KEY = "Local DataSources";
-    private static final String CLASS_PATH_KEY = "ClassPath";
+    private static final String DATA_SOURCES_KEY = "DataSources";
+    private static final String CLASSPATH_KEY = "Classpath";
 
     private static final String[] preferenceMenus = new String[]{
-            GENERAL_KEY, DATA_SOURCES_KEY, CLASS_PATH_KEY
+            GENERAL_KEY, DATA_SOURCES_KEY, CLASSPATH_KEY
     };
 
     private final PreferenceDialogView view;
@@ -73,7 +73,7 @@ public class PreferenceDialogController extends ChildController<RootController> 
         view.getDetailPanel().add(dataSourcePrefsController.getView(), DATA_SOURCES_KEY);
 
         this.classpathPrefsController = new ClasspathPreferencesController(this);
-        view.getDetailPanel().add(classpathPrefsController.getView(), CLASS_PATH_KEY);
+        view.getDetailPanel().add(classpathPrefsController.getView(), CLASSPATH_KEY);
     }
 
     public void updateSelection() {
@@ -90,6 +90,7 @@ public class PreferenceDialogController extends ChildController<RootController> 
 
     private void savePreferencesAction() {
         dataSourcePrefsController.commit();
+        generalPrefsController.commit();
         context.save();
         view.dispose();
     }
@@ -99,7 +100,7 @@ public class PreferenceDialogController extends ChildController<RootController> 
     }
 
     public void showClassPathEditorAction() {
-        doShow(CLASS_PATH_KEY, classpathPrefsController);
+        doShow(CLASSPATH_KEY, classpathPrefsController);
     }
 
     public void showDataSourceEditorAction(Object dataSourceKey) {

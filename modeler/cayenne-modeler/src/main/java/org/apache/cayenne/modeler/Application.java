@@ -29,6 +29,7 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.modeler.pref.CayennePreference;
 import org.apache.cayenne.modeler.dbconnector.DBConnectorPrefs;
 import org.apache.cayenne.modeler.dbconnector.DBConnectors;
+import org.apache.cayenne.modeler.pref.GeneralPrefs;
 import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
@@ -37,7 +38,6 @@ import org.apache.cayenne.modeler.ui.ModelerController;
 import org.apache.cayenne.modeler.ui.action.OpenProjectAction;
 import org.apache.cayenne.modeler.ui.logconsole.LogConsoleController;
 import org.apache.cayenne.modeler.ui.preferences.classpath.ClasspathPreferencesController;
-import org.apache.cayenne.modeler.ui.preferences.general.GeneralPreferencesController;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 import org.apache.cayenne.project.ConfigurationNodeParentGetter;
 import org.apache.cayenne.project.Project;
@@ -282,8 +282,7 @@ public class Application {
 
     private File initialProjectFromPreferences() {
 
-        Preferences autoLoadLastProject = getPreferencesNode(GeneralPreferencesController.class, "");
-        if ((autoLoadLastProject != null) && autoLoadLastProject.getBoolean(GeneralPreferencesController.AUTO_LOAD_PROJECT_PREFERENCE, false)) {
+        if (GeneralPrefs.of().isAutoLoadProject()) {
             List<File> files = LastProjectsPreferences.getFiles();
             if (!files.isEmpty()) {
                 return files.get(0);

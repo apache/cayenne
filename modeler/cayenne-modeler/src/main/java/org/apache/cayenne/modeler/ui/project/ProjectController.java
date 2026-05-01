@@ -41,7 +41,6 @@ import org.apache.cayenne.modeler.event.model.*;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.pref.DataNodeDefaults;
-import org.apache.cayenne.modeler.pref.ProjectPrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.ModelerController;
 import org.apache.cayenne.modeler.ui.action.RevertAction;

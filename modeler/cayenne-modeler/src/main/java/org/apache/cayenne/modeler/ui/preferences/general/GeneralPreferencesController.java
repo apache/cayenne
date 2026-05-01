@@ -20,73 +20,42 @@
 package org.apache.cayenne.modeler.ui.preferences.general;
 
 import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.pref.GeneralPrefs;
 import org.apache.cayenne.modeler.ui.preferences.PreferenceDialogController;
-import org.apache.cayenne.util.Util;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Vector;
-import java.util.prefs.Preferences;
+import java.util.List;
 
 public class GeneralPreferencesController extends ChildController<PreferenceDialogController> {
 
-    public static final String AUTO_LOAD_PROJECT_PREFERENCE = "autoLoadProject";
-    public static final String DELETE_PROMPT_PREFERENCE = "deletePrompt";
-    public static final String ENCODING_PREFERENCE = "encoding";
-
-    /**
-     * Favourite data source preference
-     * Currently used in reengineering dialog where it's selected by default
-     * It's not present in preferences dialog hence can't be modified directly
-     */
-    public static final String FAVOURITE_DATA_SOURCE = "favouriteDataSource";
+    private static final String[] STANDARD_ENCODINGS = {
+            "ISO-8859-1", "US-ASCII", "UTF-8", "UTF-16", "UTF-16BE", "UTF-16LE"
+    };
 
     private final GeneralPreferencesView view;
     private final String systemEncoding;
-    private final Preferences preferences;
-
-    private boolean autoLoadProjectPreference;
-    private String encoding;
-    private boolean defaultEncoding;
-    private boolean deletePromptPreference;
+    private final String defaultLabel;
 
     public GeneralPreferencesController(PreferenceDialogController parent) {
         super(parent);
 
-        this.preferences = application.getPreferencesNode(GeneralPreferencesController.class, "");
-        this.encoding = preferences.get(ENCODING_PREFERENCE, null);
-        this.autoLoadProjectPreference = preferences.getBoolean(AUTO_LOAD_PROJECT_PREFERENCE, false);
-        this.deletePromptPreference = preferences.getBoolean(DELETE_PROMPT_PREFERENCE, false);
-
+        GeneralPrefs prefs = GeneralPrefs.of();
         this.systemEncoding = detectPlatformEncoding();
+        this.defaultLabel = systemEncoding + " (default)";
 
         this.view = new GeneralPreferencesView();
-        this.view.setEnabled(true);
 
-        Vector allEncodings = supportedEncodings(systemEncoding);
-        view.getEncodingChoices().setModel(new DefaultComboBoxModel(allEncodings));
-        view.getDefaultEncodingLabel().setText("Default (" + systemEncoding + ")");
-        view.getDefaultEncoding().setSelected(true);
+        view.getEncodingChoices().setModel(new DefaultComboBoxModel<>(supportedEncodings()));
+        selectEncoding(prefs.getEncoding());
+        view.getAutoLoadProject().setSelected(prefs.isAutoLoadProject());
 
-        view.getDefaultEncoding().addActionListener(e -> setDefaultEncoding(view.getDefaultEncoding().isSelected()));
-        view.getOtherEncoding().addActionListener(e -> setDefaultEncoding(!view.getOtherEncoding().isSelected()));
-        view.getEncodingChoices().addActionListener(e -> {
-            Object sel = view.getEncodingChoices().getSelectedItem();
-            setEncoding(sel != null ? sel.toString() : null);
-        });
-
-        setSelectedEncoding(encoding);
-
-        this.view.getAutoLoadProject().addActionListener(e -> setAutoLoadProject(view.getAutoLoadProject().isSelected()));
-        this.view.getDeletePrompt().addActionListener(e -> setDeletePrompt(view.getDeletePrompt().isSelected()));
-        this.view.getAutoLoadProject().setSelected(autoLoadProjectPreference);
-        this.view.getDeletePrompt().setSelected(deletePromptPreference);
+        // Note how the meaning of the preference is the opposite of the checkbox
+        view.getNoDeletePrompt().setSelected(!prefs.isDeletePrompt());
     }
 
     @Override
@@ -94,96 +63,41 @@ public class GeneralPreferencesController extends ChildController<PreferenceDial
         return view;
     }
 
-    public String getEncoding() {
-        return encoding;
-    }
+    public void commit() {
+        GeneralPrefs prefs = GeneralPrefs.of();
 
-    public void setEncoding(String encoding) {
-        if (!Util.nullSafeEquals(this.encoding, encoding)) {
-            addChangedPreferences(ENCODING_PREFERENCE, encoding);
-            this.encoding = encoding;
-        }
+        Object selected = view.getEncodingChoices().getSelectedItem();
+        String encoding = (selected == null || defaultLabel.equals(selected)) ? systemEncoding : selected.toString();
+
+        prefs.setEncoding(encoding);
+        prefs.setAutoLoadProject(view.getAutoLoadProject().isSelected());
+        prefs.setDeletePrompt(!view.getNoDeletePrompt().isSelected());
     }
 
     /**
      * Returns default encoding on the current platform.
      */
     protected String detectPlatformEncoding() {
-        // this info is private until 1.5, so have to hack it...
         return new OutputStreamWriter(new ByteArrayOutputStream()).getEncoding();
     }
 
     /**
-     * Returns an array of charsets that all JVMs must support cross-platform combined
-     * with a default platform charset. See Javadocs for java.nio.charset.Charset for the
-     * list of "standard" charsets.
+     * Returns charsets that all JVMs must support cross-platform, with the platform
+     * default placed first and labeled. See java.nio.charset.Charset for the list of
+     * "standard" charsets.
      */
-    protected Vector supportedEncodings(String platformEncoding) {
-        String[] defaultCharsets = new String[] {
-                "US-ASCII", "ISO-8859-1", "UTF-8", "UTF-16BE", "UTF-16LE", "UTF-16"
-        };
+    private String[] supportedEncodings() {
+        List<String> charsets = new ArrayList<>(Arrays.asList(STANDARD_ENCODINGS));
+        charsets.remove(systemEncoding);
+        charsets.add(0, defaultLabel);
+        return charsets.toArray(new String[0]);
+    }
 
-        Vector charsets = new Vector(Arrays.asList(defaultCharsets));
-        if (!charsets.contains(platformEncoding)) {
-            charsets.add(platformEncoding);
+    private void selectEncoding(String encoding) {
+        if (encoding == null || encoding.isEmpty() || encoding.equals(systemEncoding)) {
+            view.getEncodingChoices().setSelectedItem(defaultLabel);
+        } else {
+            view.getEncodingChoices().setSelectedItem(encoding);
         }
-
-        Collections.sort(charsets);
-        return charsets;
-    }
-
-    private void setSelectedEncoding(String encoding) {
-        this.encoding = encoding;
-        this.defaultEncoding = encoding == null || encoding.equals(systemEncoding);
-
-        view.getEncodingChoices().setSelectedItem(encoding);
-        view.getDefaultEncoding().setSelected(defaultEncoding);
-        view.getOtherEncoding().setSelected(!defaultEncoding);
-        view.getEncodingChoices().setEnabled(!defaultEncoding);
-        view.getDefaultEncodingLabel().setEnabled(defaultEncoding);
-    }
-
-    private void setDefaultEncoding(boolean b) {
-        if (b != defaultEncoding) {
-            this.defaultEncoding = b;
-
-            if (b) {
-                setEncoding(systemEncoding);
-                view.getEncodingChoices().setEnabled(false);
-                view.getDefaultEncodingLabel().setEnabled(true);
-            }
-            else {
-                view.getEncodingChoices().setEnabled(true);
-                view.getDefaultEncodingLabel().setEnabled(false);
-            }
-        }
-    }
-
-    private void setAutoLoadProject(boolean autoLoadProject) {
-        addChangedBooleanPreferences(AUTO_LOAD_PROJECT_PREFERENCE, autoLoadProject);
-        this.autoLoadProjectPreference = autoLoadProject;
-    }
-
-    private void setDeletePrompt(boolean deletePrompt) {
-        addChangedBooleanPreferences(DELETE_PROMPT_PREFERENCE, deletePrompt);
-        this.deletePromptPreference = deletePrompt;
-    }
-
-    public void addChangedBooleanPreferences(String key, boolean value) {
-        Map<String, Boolean> map = parent.getContext().getChangedBooleanPreferences().get(preferences);
-        if (map == null) {
-            map = new HashMap<>();
-        }
-        map.put(key, value);
-        parent.getContext().getChangedBooleanPreferences().put(preferences, map);
-    }
-
-    public void addChangedPreferences(String key, String value) {
-        Map<String, String> map = parent.getContext().getChangedPreferences().get(preferences);
-        if (map == null) {
-            map = new HashMap<>();
-        }
-        map.put(key, value);
-        parent.getContext().getChangedPreferences().put(preferences, map);
     }
 }

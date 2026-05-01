@@ -18,19 +18,77 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.pref;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
- * use for preferences where in preference's node path contains dependence from name dataChanelDescriptor, 
- * dataNodeDescriptor, dataMap etc.
+ * Base class for preferences whose node path embeds a name that can change at runtime
+ * (DataChannelDescriptor, DataNodeDescriptor, DataMap, ...). The Java {@link Preferences}
+ * API has no native rename, so on rename we copy the entire subtree to the new path and
+ * defer cleanup until the user saves or exits.
+ * <p>
+ * Two process-wide buffers track the speculative rename:
+ * <ul>
+ *   <li>{@code oldNodes} — original nodes to delete on save (commit)</li>
+ *   <li>{@code newNodes} — copied nodes to delete on unsaved exit (rollback)</li>
+ * </ul>
+ * The buffers are shared across all rename sites because the commit/rollback decision
+ * is made far from the rename itself, in {@code SaveAction} and {@code ExitAction}.
+ * Access is implicitly single-threaded (Swing EDT).
  */
 public abstract class RenamedPreferences extends CayennePreference {
 
-    private static List<Preferences> newNode;
-    private static List<Preferences> oldNode;
+    private static final Logger LOGGER = LoggerFactory.getLogger(RenamedPreferences.class);
+
+    private static final List<Preferences> newNodes = new ArrayList<>();
+    private static final List<Preferences> oldNodes = new ArrayList<>();
+
+    public static Preferences copyPreferences(String newName, Preferences oldPref) {
+        Preferences parent = oldPref.parent();
+        Preferences newPref = parent.node(newName);
+        return copyTracked(newPref, oldPref);
+    }
+
+    /**
+     * Copies the {@code oldPref} subtree onto {@code newPref} and registers both nodes
+     * for deferred cleanup: {@code oldPref} on save, {@code newPref} on unsaved exit.
+     */
+    public static Preferences copyTracked(Preferences newPref, Preferences oldPref) {
+        return copy(newPref, oldPref, true);
+    }
+
+    /**
+     * Copies the {@code oldPref} subtree onto {@code newPref} without registering either
+     * node for deferred cleanup. Used by Save As, where the caller manages cleanup itself.
+     */
+    public static Preferences copyUntracked(Preferences newPref, Preferences oldPref) {
+        return copy(newPref, oldPref, false);
+    }
+
+    public static void removeOldPreferences() {
+        for (Preferences pref : oldNodes) {
+            removeNodeQuietly(pref);
+        }
+        clearPreferences();
+    }
+
+    public static void removeNewPreferences() {
+        for (Preferences pref : newNodes) {
+            removeNodeQuietly(pref);
+        }
+        clearPreferences();
+    }
+
+    public static void clearPreferences() {
+        oldNodes.clear();
+        newNodes.clear();
+    }
 
     public RenamedPreferences(Preferences pref) {
         this.currentPreference = pref;
@@ -40,32 +98,51 @@ public abstract class RenamedPreferences extends CayennePreference {
         this.currentPreference = copyPreferences(newName, getCurrentPreference());
     }
 
-    public static Preferences copyPreferences(String newName, Preferences oldPref) {
+    private static Preferences copy(Preferences newPref, Preferences oldPref, boolean track) {
+        try {
+            String[] names = oldPref.keys();
+            for (String name : names) {
+                newPref.put(name, oldPref.get(name, ""));
+            }
 
-        Preferences parent = oldPref.parent();
-        Preferences newPref = parent.node(newName);
-        return copyPreferences(newPref, oldPref, true);
+            String oldPath = oldPref.absolutePath();
+            String newPath = newPref.absolutePath();
+
+            List<Preferences> childrenOldPref = childrenCopy(oldPref, oldPath, newPath);
+            while (!childrenOldPref.isEmpty()) {
+                List<Preferences> childrenPrefTemp = new ArrayList<>();
+                for (Preferences child : childrenOldPref) {
+                    childrenPrefTemp.addAll(childrenCopy(child, oldPath, newPath));
+                }
+                childrenOldPref = childrenPrefTemp;
+            }
+
+            if (track) {
+                if (!containsByPath(newNodes, newPref)) {
+                    newNodes.add(newPref);
+                }
+                if (!containsByPath(oldNodes, oldPref)) {
+                    oldNodes.add(oldPref);
+                }
+            }
+
+            return newPref;
+        } catch (BackingStoreException e) {
+            throw new RuntimeException("Error renaming preferences", e);
+        }
     }
 
-    private static ArrayList<Preferences> childrenCopy(
-            Preferences pref,
-            String oldPath,
-            String newPath) {
-
+    private static List<Preferences> childrenCopy(Preferences pref, String oldPath, String newPath) {
         try {
             String[] children = pref.childrenNames();
-
-            ArrayList<Preferences> prefChild = new ArrayList<>();
+            List<Preferences> prefChild = new ArrayList<>();
 
             for (String child : children) {
-                // get old preference
                 Preferences childNode = pref.node(child);
 
-                if (!equalsPath(oldNode, childNode)) {
-                    // path to node
+                if (!containsByPath(oldNodes, childNode)) {
                     String path = childNode.absolutePath().replace(oldPath, newPath);
 
-                    // copy all preferences in this node
                     String[] names = childNode.keys();
                     Preferences newPref = Preferences.userRoot().node(path);
                     for (String name : names) {
@@ -76,118 +153,33 @@ public abstract class RenamedPreferences extends CayennePreference {
             }
 
             return prefChild;
-        }
-        catch (BackingStoreException e) {
-        }
-        return null;
-    }
-
-    public static void removeOldPreferences() {
-        if (oldNode != null) {
-
-            for (Preferences pref : oldNode) {
-                try {
-                    pref.removeNode();
-                } catch (BackingStoreException e) {
-                } catch (IllegalStateException e) {
-                    // do nothing
-                }
-            }
-            clearPreferences();
-        }
-
-    }
-
-    public static void removeNewPreferences() {
-        if (newNode != null) {
-
-            for (Preferences pref : newNode) {
-                try {
-                    pref.removeNode();
-                } catch (BackingStoreException e) {
-                } catch (IllegalStateException e) {
-                    // do nothing
-                }
-            }
-            clearPreferences();
+        } catch (BackingStoreException e) {
+            LOGGER.warn("Error reading preference children at '{}'", pref.absolutePath(), e);
+            return Collections.emptyList();
         }
     }
 
-    public static void clearPreferences() {
-        oldNode.clear();
-        newNode.clear();
-    }
-
-    public static Preferences copyPreferences(
-            Preferences newPref,
-            Preferences oldPref,
-            boolean addToPreferenceList) {
-
+    private static void removeNodeQuietly(Preferences pref) {
         try {
-            // copy all preferences in this node
-            String[] names = oldPref.keys();
-
-            for (String name : names) {
-                newPref.put(name, oldPref.get(name, ""));
-            }
-
-            String oldPath = oldPref.absolutePath();
-            String newPath = newPref.absolutePath();
-
-            // copy children nodes and its preferences
-            ArrayList<Preferences> childrenOldPref = childrenCopy(
-                    oldPref,
-                    oldPath,
-                    newPath);
-
-            while (!childrenOldPref.isEmpty()) {
-
-                ArrayList<Preferences> childrenPrefTemp = new ArrayList<>();
-
-                for (Preferences child : childrenOldPref) {
-                    ArrayList<Preferences> childArray = childrenCopy(
-                            child,
-                            oldPath,
-                            newPath);
-
-                    childrenPrefTemp.addAll(childArray);
-                }
-
-                childrenOldPref.clear();
-                childrenOldPref.addAll(childrenPrefTemp);
-            }
-
-            if (newNode == null) {
-                newNode = new ArrayList<>();
-            }
-            if (oldNode == null) {
-                oldNode = new ArrayList<>();
-            }
-
-            if (addToPreferenceList) {
-                if (!equalsPath(newNode, newPref)) {
-                    newNode.add(newPref);
-                }
-                if (!equalsPath(oldNode, oldPref)) {
-                    oldNode.add(oldPref);
-                }
-            }
-
-            return newPref;
-        }
-        catch (BackingStoreException e) {
-            throw new RuntimeException("Error remane preferences");
+            pref.removeNode();
+        } catch (BackingStoreException | IllegalStateException e) {
+            LOGGER.warn("Error removing preference node '{}'", safePath(pref), e);
         }
     }
 
-    private static boolean equalsPath(List<Preferences> listPref, Preferences pref) {
-        if (listPref != null) {
-            for (Preferences next : listPref) {
-                String pathInList = next.absolutePath();
-                String path = pref.absolutePath();
-                if (pathInList.equals(path)) {
-                    return true;
-                }
+    private static String safePath(Preferences pref) {
+        try {
+            return pref.absolutePath();
+        } catch (IllegalStateException e) {
+            return "<removed>";
+        }
+    }
+
+    private static boolean containsByPath(List<Preferences> list, Preferences pref) {
+        String path = pref.absolutePath();
+        for (Preferences next : list) {
+            if (next.absolutePath().equals(path)) {
+                return true;
             }
         }
         return false;

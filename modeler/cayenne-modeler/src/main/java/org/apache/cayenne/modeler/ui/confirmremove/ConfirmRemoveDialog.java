@@ -18,13 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.confirmremove;
 
-import java.util.prefs.Preferences;
-
-import javax.swing.JCheckBox;
-import javax.swing.JOptionPane;
-
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.preferences.general.GeneralPreferencesController;
+import org.apache.cayenne.modeler.pref.GeneralPrefs;
+
+import javax.swing.*;
 
 /**
  * Used to confirm deleting items in the model.
@@ -66,12 +63,7 @@ public class ConfirmRemoveDialog {
         // If the user clicks "cancel" or window close button, we'll just ignore whatever's in the checkbox because
         // it's non-sensical.
         if (shouldDelete) {
-            Preferences pref = application.getPreferencesNode(
-                    GeneralPreferencesController.class,
-                    "");
-            pref.putBoolean(
-                    GeneralPreferencesController.DELETE_PROMPT_PREFERENCE,
-                    neverPromptAgainBox.isSelected());
+            GeneralPrefs.of().setDeletePrompt(!neverPromptAgainBox.isSelected());
         }
     }
 
@@ -80,19 +72,8 @@ public class ConfirmRemoveDialog {
     }
 
     public boolean shouldDelete(String name) {
-        if (allowAsking) {
-
-            Preferences pref = application.getPreferencesNode(
-                    GeneralPreferencesController.class,
-                    "");
-
-            // See if the user has opted not to showDialog the delete dialog.
-            if ((pref == null)
-                    || !pref.getBoolean(
-                            GeneralPreferencesController.DELETE_PROMPT_PREFERENCE,
-                            false)) {
-                showDialog(name);
-            }
+        if (allowAsking && GeneralPrefs.of().isDeletePrompt()) {
+            showDialog(name);
         }
 
         return shouldDelete;

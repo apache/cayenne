@@ -41,8 +41,8 @@ import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityListener;
 import org.apache.cayenne.modeler.event.model.ProjectAfterSaveEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
+import org.apache.cayenne.modeler.pref.GeneralPrefs;
 import org.apache.cayenne.modeler.project.CgenOps;
-import org.apache.cayenne.modeler.ui.preferences.general.GeneralPreferencesController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportController;
 import org.apache.cayenne.tools.ToolsInjectorBuilder;
@@ -56,7 +56,6 @@ import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Predicate;
-import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
 /**
@@ -304,10 +303,7 @@ public class CgenController extends ChildController<ProjectController> implement
             configuration.setRootPath(Utils.getRootPathForDataMap(map));
             configuration.updateOutputPath(basePath);
         }
-        Preferences preferences = application.getPreferencesNode(GeneralPreferencesController.class, "");
-        if (preferences != null) {
-            configuration.setEncoding(preferences.get(GeneralPreferencesController.ENCODING_PREFERENCE, null));
-        }
+        configuration.setEncoding(GeneralPrefs.of().getEncoding());
         return configuration;
     }
 

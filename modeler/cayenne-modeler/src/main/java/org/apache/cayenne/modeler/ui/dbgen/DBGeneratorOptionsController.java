@@ -28,7 +28,6 @@ import org.apache.cayenne.modeler.ui.validation.ValidationController;
 import org.apache.cayenne.modeler.ui.datasource.DataSourceController;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
-import org.apache.cayenne.modeler.pref.DBGeneratorDefaults;
 import org.apache.cayenne.modeler.util.DbAdapterInfo;
 import org.apache.cayenne.validation.ValidationResult;
 
@@ -50,7 +49,7 @@ public class DBGeneratorOptionsController extends ChildController<ProjectControl
 
     protected DBConnector connectionInfo;
     protected Collection<DataMap> dataMaps;
-    protected DBGeneratorDefaults generatorDefaults;
+    protected DBGeneratorPrefs generatorDefaults;
     protected Collection<DbGenerator> generators;
     protected String textForSQL;
 
@@ -65,7 +64,7 @@ public class DBGeneratorOptionsController extends ChildController<ProjectControl
         this.connectionInfo = new DBConnector();
         // DataSource may not be initialized, so warn connection wizard
         this.connectionInfo.setAllowDataSourceFailure(true);
-        this.generatorDefaults = new DBGeneratorDefaults(parent
+        this.generatorDefaults = DBGeneratorPrefs.of(parent
                 .getPreferences()
                 .node("DbGenerator"));
 
@@ -75,7 +74,7 @@ public class DBGeneratorOptionsController extends ChildController<ProjectControl
 
         tables.updateTables(dataMaps);
         prepareGenerator();
-        generatorDefaults.configureGenerator(generators);
+        applyOptionsToGenerators();
         createSQL();
         refreshView();
     }
@@ -86,6 +85,8 @@ public class DBGeneratorOptionsController extends ChildController<ProjectControl
     }
 
     protected void initController() {
+
+        generatorDefaults.bind(view);
 
         DefaultComboBoxModel<String> adapterModel = new DefaultComboBoxModel<>(
                 DbAdapterInfo.getStandardAdapters());
@@ -99,11 +100,11 @@ public class DBGeneratorOptionsController extends ChildController<ProjectControl
             refreshSQLAction();
         });
 
-        view.getCreateFK().addActionListener(e -> { generatorDefaults.setCreateFK(view.getCreateFK().isSelected()); refreshSQLAction(); });
-        view.getCreatePK().addActionListener(e -> { generatorDefaults.setCreatePK(view.getCreatePK().isSelected()); refreshSQLAction(); });
-        view.getCreateTables().addActionListener(e -> { generatorDefaults.setCreateTables(view.getCreateTables().isSelected()); refreshSQLAction(); });
-        view.getDropPK().addActionListener(e -> { generatorDefaults.setDropPK(view.getDropPK().isSelected()); refreshSQLAction(); });
-        view.getDropTables().addActionListener(e -> { generatorDefaults.setDropTables(view.getDropTables().isSelected()); refreshSQLAction(); });
+        view.getCreateFK().addActionListener(e -> refreshSQLAction());
+        view.getCreatePK().addActionListener(e -> refreshSQLAction());
+        view.getCreateTables().addActionListener(e -> refreshSQLAction());
+        view.getDropPK().addActionListener(e -> refreshSQLAction());
+        view.getDropTables().addActionListener(e -> refreshSQLAction());
 
         view.getGenerateButton().addActionListener(e -> generateSchemaAction());
         view.getSaveSqlButton().addActionListener(e -> storeSQLAction());
@@ -116,6 +117,21 @@ public class DBGeneratorOptionsController extends ChildController<ProjectControl
                 refreshGeneratorAction();
             }
         });
+    }
+
+    private void applyOptionsToGenerators() {
+        boolean createFK = view.getCreateFK().isSelected();
+        boolean createPK = view.getCreatePK().isSelected();
+        boolean createTables = view.getCreateTables().isSelected();
+        boolean dropPK = view.getDropPK().isSelected();
+        boolean dropTables = view.getDropTables().isSelected();
+        for (DbGenerator generator : generators) {
+            generator.setShouldCreateFKConstraints(createFK);
+            generator.setShouldCreatePKSupport(createPK);
+            generator.setShouldCreateTables(createTables);
+            generator.setShouldDropPKSupport(dropPK);
+            generator.setShouldDropTables(dropTables);
+        }
     }
 
     /**
@@ -162,13 +178,6 @@ public class DBGeneratorOptionsController extends ChildController<ProjectControl
 
     protected void refreshView() {
         view.setEnabled(connectionInfo != null);
-
-        view.getCreateFK().setSelected(generatorDefaults.createFK);
-        view.getCreatePK().setSelected(generatorDefaults.createPK);
-        view.getCreateTables().setSelected(generatorDefaults.createTables);
-        view.getDropPK().setSelected(generatorDefaults.dropPK);
-        view.getDropTables().setSelected(generatorDefaults.dropTables);
-
         view.getSql().setText(textForSQL);
     }
 
@@ -207,7 +216,7 @@ public class DBGeneratorOptionsController extends ChildController<ProjectControl
         }
         connectionInfo.setDbAdapter((String) view.getAdapters().getSelectedItem());
         prepareGenerator();
-        generatorDefaults.configureGenerator(generators);
+        applyOptionsToGenerators();
         createSQL();
         view.getSql().setText(textForSQL);
     }

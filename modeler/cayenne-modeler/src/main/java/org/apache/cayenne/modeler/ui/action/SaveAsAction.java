@@ -109,7 +109,7 @@ public class SaveAsAction extends ModelerAbstractAction {
             Preferences oldPref = getProjectController().getPreferences();
             String projPath = oldPref.absolutePath().replace(oldName, "");
             Preferences newPref = getProjectController().getPreferences().node(projPath + newName);
-            RenamedPreferences.copyPreferences(newPref, getProjectController().getPreferences(), false);
+            RenamedPreferences.copyUntracked(newPref, getProjectController().getPreferences());
         } else if (isNewProject) {
             if (tempOldPref != null) {
 
@@ -122,7 +122,7 @@ public class SaveAsAction extends ModelerAbstractAction {
 
                     Preferences newPref = application.getMainPreferenceForProject().node(projPath + newName);
 
-                    RenamedPreferences.copyPreferences(newPref, tempOldPref, false);
+                    RenamedPreferences.copyUntracked(newPref, tempOldPref);
                     tempOldPref.removeNode();
                 }
             }

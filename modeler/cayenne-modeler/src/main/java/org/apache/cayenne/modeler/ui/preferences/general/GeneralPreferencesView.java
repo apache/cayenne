@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.modeler.ui.preferences.general;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -30,86 +29,47 @@ import java.awt.*;
 
 public class GeneralPreferencesView extends JPanel {
 
-    private final JRadioButton defaultEncoding;
-    private final JRadioButton otherEncoding;
-    private final JComboBox encodingChoices;
-    private final JLabel defaultEncodingLabel;
-    private final JPanel encodingSelector;
-    private final JLabel encodingSelectorLabel;
-    private final JCheckBox autoLoadProjectBox;
-    private final JCheckBox deletePromptBox;
+    private final JComboBox<String> encodingChoices;
+    private final JCheckBox autoLoadProject;
+    private final JCheckBox noDeletePrompt;
 
     public GeneralPreferencesView() {
-        this.defaultEncoding = new JRadioButton();
-        this.otherEncoding = new JRadioButton();
-        this.encodingChoices = new JComboBox();
-        this.defaultEncodingLabel = new JLabel();
-
-        ButtonGroup group = new ButtonGroup();
-        group.add(defaultEncoding);
-        group.add(otherEncoding);
-
-        FormLayout encodingLayout = new FormLayout("pref, 3dlu, pref", "");
-        DefaultFormBuilder encodingBuilder = new DefaultFormBuilder(encodingLayout);
-        encodingBuilder.append(defaultEncoding, defaultEncodingLabel);
-        encodingBuilder.append(otherEncoding, encodingChoices);
-        this.encodingSelector = encodingBuilder.getPanel();
-
-        this.encodingSelectorLabel = new JLabel("File Encoding:");
-        this.autoLoadProjectBox = new JCheckBox("Automatically Load Last Opened Project");
-        this.deletePromptBox = new JCheckBox("Always Delete Items Without Prompt");
+        this.encodingChoices = new JComboBox<>();
+        JLabel encodingSelectorLabel = new JLabel("File Encoding:");
+        JLabel autoLoadProjectLabel = new JLabel("Auto-Load Last Project:");
+        JLabel noDeletePromptLabel = new JLabel("Delete Without Prompt:");
+        this.autoLoadProject = new JCheckBox();
+        this.noDeletePrompt = new JCheckBox();
 
         FormLayout layout = new FormLayout(
-                "right:pref, 3dlu, 30dlu, 3dlu, fill:70dlu",
-                "p, 3dlu, p, 12dlu, p, 30dlu, p, 12dlu, p, 3dlu, p, fill:40dlu:grow");
+                "right:pref, 3dlu, fill:120dlu",
+                "p, 3dlu, p, 12dlu, p, 3dlu, p, fill:40dlu:grow");
 
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
-        builder.addSeparator("General Preferences", cc.xyw(1, 1, 5));
+        builder.addSeparator("General Preferences", cc.xyw(1, 1, 3));
 
-        builder.add(encodingSelectorLabel, cc.xy(1, 5));
-        builder.add(encodingSelector, cc.xywh(3, 5, 3, 3));
-        builder.add(autoLoadProjectBox, cc.xy(1, 7, CellConstraints.LEFT, CellConstraints.DEFAULT));
-
-        builder.addSeparator("Editor Preferences", cc.xyw(1, 9, 5));
-        builder.add(deletePromptBox, cc.xy(1, 11, CellConstraints.LEFT, CellConstraints.DEFAULT));
+        builder.add(encodingSelectorLabel, cc.xy(1, 3));
+        builder.add(encodingChoices, cc.xy(3, 3));
+        builder.add(autoLoadProjectLabel, cc.xy(1, 5));
+        builder.add(autoLoadProject, cc.xy(3, 5, CellConstraints.LEFT, CellConstraints.DEFAULT));
+        builder.add(noDeletePromptLabel, cc.xy(1, 7));
+        builder.add(noDeletePrompt, cc.xy(3, 7, CellConstraints.LEFT, CellConstraints.DEFAULT));
 
         this.setLayout(new BorderLayout());
         this.add(builder.getPanel(), BorderLayout.CENTER);
     }
 
-    @Override
-    public void setEnabled(boolean b) {
-        super.setEnabled(b);
-
-        encodingSelector.setEnabled(b);
-        encodingSelectorLabel.setEnabled(b);
-        autoLoadProjectBox.setEnabled(b);
-        deletePromptBox.setEnabled(b);
-    }
-
-    public JRadioButton getDefaultEncoding() {
-        return defaultEncoding;
-    }
-
-    public JLabel getDefaultEncodingLabel() {
-        return defaultEncodingLabel;
-    }
-
-    public JComboBox getEncodingChoices() {
+    public JComboBox<String> getEncodingChoices() {
         return encodingChoices;
     }
 
-    public JRadioButton getOtherEncoding() {
-        return otherEncoding;
-    }
-
     public JCheckBox getAutoLoadProject() {
-        return autoLoadProjectBox;
+        return autoLoadProject;
     }
 
-    public JCheckBox getDeletePrompt() {
-        return deletePromptBox;
+    public JCheckBox getNoDeletePrompt() {
+        return noDeletePrompt;
     }
 }
