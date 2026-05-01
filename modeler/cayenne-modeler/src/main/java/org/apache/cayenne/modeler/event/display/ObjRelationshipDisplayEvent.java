@@ -35,15 +35,7 @@ public class ObjRelationshipDisplayEvent extends DisplayEvent {
                                        DataChannelDescriptor domain,
                                        DataMap dataMap,
                                        ObjEntity entity,
-                                       ObjRelationship relationship) {
-        this(src, domain, dataMap, entity, new ObjRelationship[]{relationship});
-    }
-
-    public ObjRelationshipDisplayEvent(Object src,
-                                       DataChannelDescriptor domain,
-                                       DataMap dataMap,
-                                       ObjEntity entity,
-                                       ObjRelationship[] relationships) {
+                                       ObjRelationship... relationships) {
         super(src);
         this.domain = domain;
         this.dataMap = dataMap;

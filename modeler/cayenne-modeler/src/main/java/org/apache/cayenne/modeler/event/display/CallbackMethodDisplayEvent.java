@@ -24,7 +24,7 @@ public class CallbackMethodDisplayEvent extends DisplayEvent {
 
     private final ObjCallbackMethod[] callbackMethods;
 
-    public CallbackMethodDisplayEvent(Object src, ObjCallbackMethod[] callbackMethods) {
+    public CallbackMethodDisplayEvent(Object src, ObjCallbackMethod... callbackMethods) {
         super(src);
         this.callbackMethods = callbackMethods;
     }

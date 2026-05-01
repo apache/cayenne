@@ -35,15 +35,7 @@ public class ObjAttributeDisplayEvent extends DisplayEvent {
                                     DataChannelDescriptor domain,
                                     DataMap dataMap,
                                     ObjEntity entity,
-                                    ObjAttribute attribute) {
-        this(src, domain, dataMap, entity, new ObjAttribute[]{attribute});
-    }
-
-    public ObjAttributeDisplayEvent(Object src,
-                                    DataChannelDescriptor domain,
-                                    DataMap dataMap,
-                                    ObjEntity entity,
-                                    ObjAttribute[] attributes) {
+                                    ObjAttribute... attributes) {
         super(src);
         this.domain = domain;
         this.dataMap = dataMap;

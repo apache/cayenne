@@ -35,15 +35,7 @@ public class DbAttributeDisplayEvent extends DisplayEvent {
                                    DataChannelDescriptor domain,
                                    DataMap dataMap,
                                    DbEntity entity,
-                                   DbAttribute attribute) {
-        this(src, domain, dataMap, entity, new DbAttribute[]{attribute});
-    }
-
-    public DbAttributeDisplayEvent(Object src,
-                                   DataChannelDescriptor domain,
-                                   DataMap dataMap,
-                                   DbEntity entity,
-                                   DbAttribute[] attributes) {
+                                   DbAttribute... attributes) {
         super(src);
         this.domain = domain;
         this.dataMap = dataMap;

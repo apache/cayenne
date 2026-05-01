@@ -36,15 +36,7 @@ public class ProcedureParameterDisplayEvent extends DisplayEvent {
                                           DataChannelDescriptor domain,
                                           DataMap dataMap,
                                           Procedure procedure,
-                                          ProcedureParameter procedureParameter) {
-        this(src, domain, dataMap, procedure, new ProcedureParameter[]{procedureParameter});
-    }
-
-    public ProcedureParameterDisplayEvent(Object src,
-                                          DataChannelDescriptor domain,
-                                          DataMap dataMap,
-                                          Procedure procedure,
-                                          ProcedureParameter[] procedureParameters) {
+                                          ProcedureParameter... procedureParameters) {
         super(src);
         this.domain = domain;
         this.dataMap = dataMap;

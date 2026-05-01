@@ -34,20 +34,12 @@ public class EmbeddableAttributeDisplayEvent extends DisplayEvent {
                                            DataChannelDescriptor domain,
                                            DataMap dataMap,
                                            Embeddable embeddable,
-                                           EmbeddableAttribute attribute) {
-        this(src, domain, dataMap, embeddable, new EmbeddableAttribute[]{attribute});
-    }
-
-    public EmbeddableAttributeDisplayEvent(Object src,
-                                           DataChannelDescriptor domain,
-                                           DataMap dataMap,
-                                           Embeddable embeddable,
-                                           EmbeddableAttribute[] attributes) {
+                                           EmbeddableAttribute... embeddableAttributes) {
         super(src);
         this.domain = domain;
         this.dataMap = dataMap;
         this.embeddable = embeddable;
-        this.embeddableAttributes = attributes;
+        this.embeddableAttributes = embeddableAttributes;
     }
 
     public DataChannelDescriptor getDomain() {

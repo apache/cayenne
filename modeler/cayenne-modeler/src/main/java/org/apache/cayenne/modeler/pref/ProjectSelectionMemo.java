@@ -542,7 +542,7 @@ final class ProjectSelectionMemo {
             objects = lookupMultipleObjects(domain, prefs);
         }
 
-        controller.displayMultipleObjects(new MultipleObjectsDisplayEvent(ProjectSelectionMemo.class, objects, parent));
+        controller.displayMultipleObjects(new MultipleObjectsDisplayEvent(ProjectSelectionMemo.class, parent, objects));
     }
 
     // -------------------- name lookups --------------------

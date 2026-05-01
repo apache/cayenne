@@ -35,15 +35,7 @@ public class DbRelationshipDisplayEvent extends DisplayEvent {
                                       DataChannelDescriptor domain,
                                       DataMap dataMap,
                                       DbEntity entity,
-                                      DbRelationship relationship) {
-        this(src, domain, dataMap, entity, new DbRelationship[]{relationship});
-    }
-
-    public DbRelationshipDisplayEvent(Object src,
-                                      DataChannelDescriptor domain,
-                                      DataMap dataMap,
-                                      DbEntity entity,
-                                      DbRelationship[] relationships) {
+                                      DbRelationship... relationships) {
         super(src);
         this.domain = domain;
         this.dataMap = dataMap;

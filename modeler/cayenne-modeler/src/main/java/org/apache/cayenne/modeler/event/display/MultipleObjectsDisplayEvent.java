@@ -28,10 +28,10 @@ public class MultipleObjectsDisplayEvent extends DisplayEvent {
     private final ConfigurationNode[] nodes;
     private final ConfigurationNode parentNode;
 
-    public MultipleObjectsDisplayEvent(Object src, ConfigurationNode[] nodes, ConfigurationNode parentNode) {
+    public MultipleObjectsDisplayEvent(Object src, ConfigurationNode parentNode, ConfigurationNode... nodes) {
         super(src);
-        this.nodes = nodes;
         this.parentNode = parentNode;
+        this.nodes = nodes;
     }
 
     public ConfigurationNode[] getNodes() {

@@ -199,7 +199,7 @@ public class ProjectTreeController extends ChildController<ProjectController>
 
                         parent.displayMultipleObjects(new MultipleObjectsDisplayEvent(
                                 this,
-                                projectPaths, projectParentPath));
+                                projectParentPath, projectPaths));
                     } else if (paths.length == 1) {
                         processSelection(paths[0]);
                     }
