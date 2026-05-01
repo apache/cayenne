@@ -25,61 +25,54 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.mvc.RootController;
 
-import java.awt.*;
+import javax.swing.JOptionPane;
+import java.awt.Component;
 
 public class ClassNameUpdaterController extends ChildController<RootController> {
 
+    private static final String UPDATE = "Update";
+    private static final String CANCEL = "Cancel";
+
     private final ObjEntity entity;
-    private ClassNameUpdaterView view;
-    private boolean updatePerformed;
 
     public ClassNameUpdaterController(RootController parent, ObjEntity entity) {
         super(parent);
-
         this.entity = entity;
-
-        // don't init view here... we may simply skip update if there is nothing to do
     }
 
     /**
      * Executes entity class name update. Returns true if entity was changed, false otherwise.
      */
     public boolean doNameUpdate() {
-        this.view = null;
-        this.updatePerformed = false;
-
-        boolean askForUpdate = true;
-
         String oldName = entity.getClassName();
         String suggestedName = suggestedClassName();
 
         if (oldName == null || oldName.isEmpty()) {
             // generic entity...
-            askForUpdate = false;
-        } else if (suggestedName == null || suggestedName.equals(oldName)) {
-            askForUpdate = false;
-        } else if (oldName.contains("UntitledObjEntity")) {
+            return false;
+        }
+        if (suggestedName == null || suggestedName.equals(oldName)) {
+            return false;
+        }
+        if (oldName.contains("UntitledObjEntity")) {
             // update without user interaction
             entity.setClassName(suggestedName);
-            updatePerformed = true;
-            askForUpdate = false;
+            return true;
         }
 
-        if (askForUpdate) {
-            // start dialog
-            view = new ClassNameUpdaterView();
-            view.getClassName().setText("Update class name to " + suggestedName + " to match current entity name?");
+        JOptionPane pane = new JOptionPane(
+                "Update class name to '" + suggestedName + "' to match the current entity name?",
+                JOptionPane.QUESTION_MESSAGE);
+        pane.setOptions(new Object[]{UPDATE, CANCEL});
+        pane.setInitialValue(UPDATE);
 
-            initBindings(suggestedName);
+        pane.createDialog(parent.getView(), "Update Class Name").setVisible(true);
 
-            view.pack();
-            view.setModal(true);
-            centerView();
-            makeCloseableOnEscape();
-            view.setVisible(true);
+        if (UPDATE.equals(pane.getValue())) {
+            entity.setClassName(suggestedName);
+            return true;
         }
-
-        return this.updatePerformed;
+        return false;
     }
 
     private String suggestedClassName() {
@@ -111,18 +104,8 @@ public class ClassNameUpdaterController extends ChildController<RootController> 
         return DataMap.getNameWithPackage(pkg, entityName);
     }
 
-    protected void initBindings(final String suggestedName) {
-
-        view.getUpdateButton().addActionListener(e -> {
-            entity.setClassName(suggestedName);
-            updatePerformed = true;
-            view.dispose();
-        });
-
-        view.getCancelButton().addActionListener(e -> view.dispose());
-    }
-
+    @Override
     public Component getView() {
-        return view;
+        return null;
     }
 }
