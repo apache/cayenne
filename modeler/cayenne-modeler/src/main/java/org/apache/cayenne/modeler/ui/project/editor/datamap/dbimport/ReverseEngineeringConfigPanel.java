@@ -112,8 +112,8 @@ public class ReverseEngineeringConfigPanel extends JPanel {
                 "Multiple expressions divided by comma can be used.<br>" +
                 "Example: <b>^table1|^table2|^prefix.*|table_name</b></html>");
         meaningfulPk.addCommitListener(text -> {
-            getReverseEngineeringBySelectedMap().setMeaningfulPkTables(text);
             if (!dbImportView.isInitFromModel()) {
+                getReverseEngineeringBySelectedMap().setMeaningfulPkTables(text);
                 controller.setDirty(true);
             }
         });
@@ -122,8 +122,8 @@ public class ReverseEngineeringConfigPanel extends JPanel {
         stripFromTableNames.setToolTipText("<html>Regex that matches the part of the table name that needs to be stripped off " +
                 "when generating ObjEntity name</html>");
         stripFromTableNames.addCommitListener(text -> {
-            getReverseEngineeringBySelectedMap().setStripFromTableNames(text);
             if (!dbImportView.isInitFromModel()) {
+                getReverseEngineeringBySelectedMap().setStripFromTableNames(text);
                 controller.setDirty(true);
             }
         });
@@ -151,41 +151,41 @@ public class ReverseEngineeringConfigPanel extends JPanel {
 
     private void initListeners() {
         skipRelationshipsLoading.addActionListener(e -> {
-            getReverseEngineeringBySelectedMap().setSkipRelationshipsLoading(skipRelationshipsLoading.isSelected());
             if (!dbImportView.isInitFromModel()) {
+                getReverseEngineeringBySelectedMap().setSkipRelationshipsLoading(skipRelationshipsLoading.isSelected());
                 controller.setDirty(true);
             }
         });
         skipPrimaryKeyLoading.addActionListener(e -> {
-            getReverseEngineeringBySelectedMap().setSkipPrimaryKeyLoading(skipPrimaryKeyLoading.isSelected());
             if (!dbImportView.isInitFromModel()) {
+                getReverseEngineeringBySelectedMap().setSkipPrimaryKeyLoading(skipPrimaryKeyLoading.isSelected());
                 controller.setDirty(true);
             }
         });
         forceDataMapCatalog.addActionListener(e -> {
-            getReverseEngineeringBySelectedMap().setForceDataMapCatalog(forceDataMapCatalog.isSelected());
             if (!dbImportView.isInitFromModel()) {
+                getReverseEngineeringBySelectedMap().setForceDataMapCatalog(forceDataMapCatalog.isSelected());
                 controller.setDirty(true);
             }
         });
         forceDataMapSchema.addActionListener(e -> {
-            getReverseEngineeringBySelectedMap().setForceDataMapSchema(forceDataMapSchema.isSelected());
             if (!dbImportView.isInitFromModel()) {
+                getReverseEngineeringBySelectedMap().setForceDataMapSchema(forceDataMapSchema.isSelected());
                 controller.setDirty(true);
             }
         });
         useJava7Types.addActionListener(e -> {
-            getReverseEngineeringBySelectedMap().setUseJava7Types(useJava7Types.isSelected());
             if (!dbImportView.isInitFromModel()) {
+                getReverseEngineeringBySelectedMap().setUseJava7Types(useJava7Types.isSelected());
                 controller.setDirty(true);
             }
         });
         strategyCombo.addActionListener(e -> {
             String strategy = (String) ReverseEngineeringConfigPanel.this.getStrategyCombo().getSelectedItem();
             checkStrategy(strategy);
-            getReverseEngineeringBySelectedMap().setNamingStrategy(strategy);
-            NameGeneratorPreferences.getInstance().addToLastUsedStrategies(controller.getApplication(), strategy);
             if (!dbImportView.isInitFromModel()) {
+                getReverseEngineeringBySelectedMap().setNamingStrategy(strategy);
+                NameGeneratorPreferences.getInstance().addToLastUsedStrategies(controller.getApplication(), strategy);
                 controller.setDirty(true);
             }
         });

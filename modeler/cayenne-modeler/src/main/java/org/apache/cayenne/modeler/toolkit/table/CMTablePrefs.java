@@ -84,6 +84,20 @@ public final class CMTablePrefs {
         applyOrder(table, columnModel, columnCount);
         applySort(table, defaultSortColumn);
 
+        // Cache last value written per modelIndex to avoid hitting the native
+        // Preferences store on every margin / move event. Swing fires margin
+        // events in floods during layout and column drags; without this guard,
+        // a single resize triggers thousands of putInt() calls.
+
+        int[] lastWidth = new int[columnCount];
+        int[] lastOrder = new int[columnCount];
+        for (int i = 0; i < columnCount; i++) {
+            TableColumn c = columnModel.getColumn(i);
+            int modelIndex = c.getModelIndex();
+            lastWidth[modelIndex] = c.getPreferredWidth();
+            lastOrder[modelIndex] = i;
+        }
+
         TableColumnModelListener listener = new TableColumnModelListener() {
             @Override
             public void columnAdded(TableColumnModelEvent e) {
@@ -101,7 +115,12 @@ public final class CMTablePrefs {
             public void columnMarginChanged(ChangeEvent e) {
                 for (int i = 0; i < columnCount; i++) {
                     TableColumn c = columnModel.getColumn(i);
-                    prefs.putInt(WIDTH_KEY + c.getModelIndex(), c.getPreferredWidth());
+                    int modelIndex = c.getModelIndex();
+                    int w = c.getPreferredWidth();
+                    if (lastWidth[modelIndex] != w) {
+                        prefs.putInt(WIDTH_KEY + modelIndex, w);
+                        lastWidth[modelIndex] = w;
+                    }
                 }
             }
 
@@ -109,7 +128,11 @@ public final class CMTablePrefs {
             public void columnMoved(TableColumnModelEvent e) {
                 for (int i = 0; i < columnCount; i++) {
                     TableColumn c = columnModel.getColumn(i);
-                    prefs.putInt(ORDER_KEY + c.getModelIndex(), i);
+                    int modelIndex = c.getModelIndex();
+                    if (lastOrder[modelIndex] != i) {
+                        prefs.putInt(ORDER_KEY + modelIndex, i);
+                        lastOrder[modelIndex] = i;
+                    }
                 }
                 applySort(table, defaultSortColumn);
             }

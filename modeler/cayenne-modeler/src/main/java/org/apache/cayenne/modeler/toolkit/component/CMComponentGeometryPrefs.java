@@ -61,18 +61,39 @@ public final class CMComponentGeometryPrefs {
             c.setLocation(x, y);
         }
 
+        // Cache last value written to skip native Preferences writes when the
+        // value hasn't changed. componentResized / componentMoved fire on every
+        // pixel during a window drag.
+        int[] last = { c.getWidth(), c.getHeight(), c.getX(), c.getY() };
+
         c.addComponentListener(new ComponentAdapter() {
 
             @Override
             public void componentResized(ComponentEvent e) {
-                prefs.putInt(WIDTH_PROPERTY, c.getWidth());
-                prefs.putInt(HEIGHT_PROPERTY, c.getHeight());
+                int width = c.getWidth();
+                int height = c.getHeight();
+                if (last[0] != width) {
+                    prefs.putInt(WIDTH_PROPERTY, width);
+                    last[0] = width;
+                }
+                if (last[1] != height) {
+                    prefs.putInt(HEIGHT_PROPERTY, height);
+                    last[1] = height;
+                }
             }
 
             @Override
             public void componentMoved(ComponentEvent e) {
-                prefs.putInt(X_PROPERTY, c.getX());
-                prefs.putInt(Y_PROPERTY, c.getY());
+                int xPos = c.getX();
+                int yPos = c.getY();
+                if (last[2] != xPos) {
+                    prefs.putInt(X_PROPERTY, xPos);
+                    last[2] = xPos;
+                }
+                if (last[3] != yPos) {
+                    prefs.putInt(Y_PROPERTY, yPos);
+                    last[3] = yPos;
+                }
             }
         });
     }
