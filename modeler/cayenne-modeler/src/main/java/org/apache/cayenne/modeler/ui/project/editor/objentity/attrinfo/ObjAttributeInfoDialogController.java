@@ -88,7 +88,7 @@ public class ObjAttributeInfoDialogController extends ChildController<ProjectCon
         this.stringToEmbeddables = new HashMap<>();
         this.embeddableNames = new ArrayList<>();
 
-        for (Embeddable emb : mediator.getEmbeddablesInCurrentDataDomain()) {
+        for (Embeddable emb : mediator.getEntityResolver().getEmbeddables()) {
             stringToEmbeddables.put(emb.getClassName(), emb);
             embeddableNames.add(emb.getClassName());
         }
@@ -128,8 +128,8 @@ public class ObjAttributeInfoDialogController extends ChildController<ProjectCon
                 }
             }
 
-            if (isType || !mediator.getEmbeddableNamesInCurrentDataDomain()
-                    .contains((String) view.getTypeComboBox().getSelectedItem())) {
+            if (isType || mediator.getEntityResolver()
+                    .getEmbeddable((String) view.getTypeComboBox().getSelectedItem()) == null) {
                 ((CardLayout) view.getTypeManagerPane().getLayout()).show(view.getTypeManagerPane(), FLATTENED_PANEL);
             } else {
                 ((CardLayout) view.getTypeManagerPane().getLayout()).show(view.getTypeManagerPane(), EMBEDDABLE_PANEL);

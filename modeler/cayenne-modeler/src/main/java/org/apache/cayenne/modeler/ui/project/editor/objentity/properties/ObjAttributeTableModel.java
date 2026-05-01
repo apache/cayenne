@@ -248,7 +248,7 @@ public class ObjAttributeTableModel extends CMTableModel<ObjAttribute> {
         }
 
         ObjAttribute attributeNew;
-        if (controller.getEmbeddableNamesInCurrentDataDomain().contains(newType)) {
+        if (controller.getEntityResolver().getEmbeddable(newType) != null) {
             attributeNew = new EmbeddedAttribute();
             attributeNew.setDbAttributePath((String)null);
         } else {

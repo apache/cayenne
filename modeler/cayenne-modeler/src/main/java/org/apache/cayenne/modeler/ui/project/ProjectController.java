@@ -58,11 +58,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EventListener;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.prefs.Preferences;
 
 /**
@@ -1220,26 +1217,6 @@ public class ProjectController extends ChildController<ModelerController> {
         for (ProjectBeforeSaveListener listener : listeners.getListeners(ProjectBeforeSaveListener.class)) {
             listener.projectWillBeSaved(e);
         }
-    }
-
-    public ArrayList<Embeddable> getEmbeddablesInCurrentDataDomain() {
-        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) getProject().getRootNode();
-        Collection<DataMap> maps = dataChannelDescriptor.getDataMaps();
-        Iterator<DataMap> it = maps.iterator();
-        ArrayList<Embeddable> embs = new ArrayList<>();
-        while (it.hasNext()) {
-            embs.addAll(it.next().getEmbeddables());
-        }
-        return embs;
-    }
-
-    public Set<String> getEmbeddableNamesInCurrentDataDomain() {
-        ArrayList<Embeddable> embs = getEmbeddablesInCurrentDataDomain();
-        Set<String> embNames = new HashSet<>(embs.size());
-        for (Embeddable emb : embs) {
-            embNames.add(emb.getClassName());
-        }
-        return embNames;
     }
 
     private Preferences buildPreferences() {
