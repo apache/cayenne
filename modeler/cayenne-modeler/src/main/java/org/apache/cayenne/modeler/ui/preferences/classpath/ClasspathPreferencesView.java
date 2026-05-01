@@ -19,17 +19,12 @@
 
 package org.apache.cayenne.modeler.ui.preferences.classpath;
 
-import java.awt.BorderLayout;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
+
+import javax.swing.*;
+import java.awt.*;
 
 
 public class ClasspathPreferencesView extends JPanel {
@@ -51,6 +46,7 @@ public class ClasspathPreferencesView extends JPanel {
         table = new CMTable();
         table.setRowMargin(3);
         table.setRowHeight(25);
+        table.setTableHeader(null);
 
         // assemble
 
