@@ -41,7 +41,7 @@ import org.apache.cayenne.modeler.event.model.*;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.pref.DataNodeDefaults;
-import org.apache.cayenne.modeler.pref.ProjectStatePreferences;
+import org.apache.cayenne.modeler.pref.ProjectPrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.ModelerController;
 import org.apache.cayenne.modeler.ui.action.RevertAction;
@@ -61,6 +61,7 @@ import java.util.EventListener;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
@@ -112,10 +113,6 @@ public class ProjectController extends ChildController<ModelerController> {
         }
 
         return preferences;
-    }
-
-    public ProjectStatePreferences getProjectStatePreferences() {
-        return new ProjectStatePreferences(getDataDomainPreferences());
     }
 
     /**
@@ -272,11 +269,11 @@ public class ProjectController extends ChildController<ModelerController> {
         if (project == null) {
             return;
         }
-        getProjectStatePreferences().saveSelection(this);
+        ProjectPrefs.of(getDataDomainPreferences()).flush(this);
     }
 
     public void restoreSelectionFromPrefs() {
-        getProjectStatePreferences().restoreSelection(this);
+        ProjectPrefs.of(getDataDomainPreferences()).load(this);
     }
 
     public boolean isDirty() {
@@ -541,12 +538,10 @@ public class ProjectController extends ChildController<ModelerController> {
         }
 
         for (DomainListener listener : listeners.getListeners(DomainListener.class)) {
-            switch (e.getType()) {
-                case CHANGE:
-                    listener.domainChanged(e);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid DomainEvent type: " + e.getType());
+            if (Objects.requireNonNull(e.getType()) == ModelEvent.Type.CHANGE) {
+                listener.domainChanged(e);
+            } else {
+                throw new IllegalArgumentException("Invalid DomainEvent type: " + e.getType());
             }
         }
     }
