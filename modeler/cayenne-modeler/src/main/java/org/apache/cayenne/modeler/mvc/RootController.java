@@ -63,9 +63,7 @@ public abstract class RootController {
      */
     public FSPath getLastDirectory() {
 
-        FSPath path = application
-                .getProjectPreferences()
-                .getProjectDetailObject(FSPath.class, getViewPreferences().node("lastDir"));
+        FSPath path = new FSPath(getViewPreferences().node("lastDir"));
 
         if (path.getPath() == null) {
             path.setPath(System.getProperty("user.home"));

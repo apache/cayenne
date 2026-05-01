@@ -39,7 +39,4 @@ public class CayennePreference {
         Preferences pkgNode = Preferences.userNodeForPackage(aClass);
         return path == null || path.isEmpty() ? pkgNode : pkgNode.node(path);
     }
-
-    public void saveObjectPreference() {
-    }
 }

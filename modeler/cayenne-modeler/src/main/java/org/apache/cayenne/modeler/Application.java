@@ -29,7 +29,6 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.modeler.pref.CayennePreference;
 import org.apache.cayenne.modeler.dbconnector.DBConnectorPrefs;
 import org.apache.cayenne.modeler.dbconnector.DBConnectors;
-import org.apache.cayenne.modeler.pref.ProjectPreferences;
 import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
@@ -78,7 +77,6 @@ public class Application {
     protected ModelerController frameController;
     protected String name;
     protected CayenneUndoManager undoManager;
-    protected ProjectPreferences projectPreferences;
     protected DBConnectors dbConnectors;
     protected CayennePreference cayennePreference;
 
@@ -198,9 +196,6 @@ public class Application {
     public void startup(File initialProject) {
         this.logConsoleController = new LogConsoleController(this);
 
-        // TODO: should "project" preferences reside in ProjectController?
-        this.projectPreferences = new ProjectPreferences();
-
         this.dbConnectors = DBConnectorPrefs.loadAndBind();
 
         refreshClassLoader();
@@ -231,10 +226,6 @@ public class Application {
         if (initialProject != null) {
             getActionManager().getAction(OpenProjectAction.class).openProject(initialProject);
         }
-    }
-
-    public ProjectPreferences getProjectPreferences() {
-        return projectPreferences;
     }
 
     public DBConnectors getDbConnectors() {

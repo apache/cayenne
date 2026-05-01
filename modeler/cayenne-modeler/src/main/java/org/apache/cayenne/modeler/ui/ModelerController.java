@@ -85,9 +85,7 @@ public class ModelerController extends RootController {
     public FSPath getLastEOModelDirectory() {
         // find start directory in preferences
 
-        FSPath path = application
-                .getProjectPreferences()
-                .getProjectDetailObject(FSPath.class, getViewPreferences().node("lastEOMDir"));
+        FSPath path = new FSPath(getViewPreferences().node("lastEOMDir"));
 
         if (path.getPath() == null) {
             path.setPath(getLastDirectory().getPath());

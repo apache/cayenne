@@ -39,11 +39,7 @@ public abstract class ChildController<P extends RootController> extends RootCont
     @Override
     public FSPath getLastDirectory() {
         // find start directory in preferences
-        FSPath path = application
-                .getProjectPreferences()
-                .getProjectDetailObject(
-                        FSPath.class,
-                        getViewPreferences().node("lastDir"));
+        FSPath path = new FSPath(getViewPreferences().node("lastDir"));
 
         if (path.getPath() == null) {
             path.setPath(parent.getLastDirectory().getPath());

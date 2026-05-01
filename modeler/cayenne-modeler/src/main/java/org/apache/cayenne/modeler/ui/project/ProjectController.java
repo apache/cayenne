@@ -138,9 +138,7 @@ public class ProjectController extends ChildController<ModelerController> {
     }
 
     public ProjectStatePreferences getProjectStatePreferences() {
-        return application.getProjectPreferences().getProjectDetailObject(
-                ProjectStatePreferences.class,
-                getDataDomainPreferences());
+        return new ProjectStatePreferences(getDataDomainPreferences());
     }
 
     /**
@@ -175,12 +173,12 @@ public class ProjectController extends ChildController<ModelerController> {
         } else {
             pref = getDataDomainPreferences().node("DataMap").node(map.getName()).node(nameSuffix);
         }
-        return application.getProjectPreferences().getProjectDetailObject(DataMapDefaults.class, pref);
+        return new DataMapDefaults(pref);
     }
 
     public DataMapDefaults getSelectedDataMapPreferences(DataMap dataMap) {
         Preferences pref = getDataDomainPreferences().node("DataMap").node(dataMap.getName());
-        return application.getProjectPreferences().getProjectDetailObject(DataMapDefaults.class, pref);
+        return new DataMapDefaults(pref);
     }
 
     /**
@@ -193,10 +191,7 @@ public class ProjectController extends ChildController<ModelerController> {
             throw new CayenneRuntimeException("No DataNode selected");
         }
 
-        return application.getProjectPreferences().getProjectDetailObject(
-                DataNodeDefaults.class,
-                getDataDomainPreferences().node("DataNode").node(node.getName()));
-
+        return new DataNodeDefaults(getDataDomainPreferences().node("DataNode").node(node.getName()));
     }
 
     /**
