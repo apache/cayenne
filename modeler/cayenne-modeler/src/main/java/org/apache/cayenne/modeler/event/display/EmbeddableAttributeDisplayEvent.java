@@ -23,22 +23,46 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
 
-public class EmbeddableAttributeDisplayEvent extends EmbeddableDisplayEvent {
+public class EmbeddableAttributeDisplayEvent extends DisplayEvent {
 
-    protected final EmbeddableAttribute[] embeddableAttributes;
+    private final DataChannelDescriptor domain;
+    private final DataMap dataMap;
+    private final Embeddable embeddable;
+    private final EmbeddableAttribute[] embeddableAttributes;
 
-    public EmbeddableAttributeDisplayEvent(Object src, Embeddable embeddable, EmbeddableAttribute attr, DataMap dataMap, DataChannelDescriptor domain) {
-        super(src, embeddable, dataMap, domain);
-        embeddableAttributes = new EmbeddableAttribute[]{attr};
+    public EmbeddableAttributeDisplayEvent(Object src,
+                                           DataChannelDescriptor domain,
+                                           DataMap dataMap,
+                                           Embeddable embeddable,
+                                           EmbeddableAttribute attribute) {
+        this(src, domain, dataMap, embeddable, new EmbeddableAttribute[]{attribute});
     }
 
-    public EmbeddableAttributeDisplayEvent(Object src, Embeddable embeddable, EmbeddableAttribute[] attr, DataMap dataMap, DataChannelDescriptor domain) {
-        super(src, embeddable, dataMap, domain);
-        this.embeddableAttributes = attr;
+    public EmbeddableAttributeDisplayEvent(Object src,
+                                           DataChannelDescriptor domain,
+                                           DataMap dataMap,
+                                           Embeddable embeddable,
+                                           EmbeddableAttribute[] attributes) {
+        super(src);
+        this.domain = domain;
+        this.dataMap = dataMap;
+        this.embeddable = embeddable;
+        this.embeddableAttributes = attributes;
+    }
+
+    public DataChannelDescriptor getDomain() {
+        return domain;
+    }
+
+    public DataMap getDataMap() {
+        return dataMap;
+    }
+
+    public Embeddable getEmbeddable() {
+        return embeddable;
     }
 
     public EmbeddableAttribute[] getEmbeddableAttributes() {
         return embeddableAttributes;
     }
-
 }

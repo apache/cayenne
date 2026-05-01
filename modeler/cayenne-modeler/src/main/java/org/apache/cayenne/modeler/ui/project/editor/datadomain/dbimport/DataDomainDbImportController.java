@@ -50,7 +50,7 @@ public class DataDomainDbImportController extends DataDomainGeneratorsViewContro
     @Override
     public void showConfig(DataMap dataMap) {
         if (dataMap != null) {
-            DataMapDisplayEvent event = new DataMapDisplayEvent(getView(), dataMap, dataMap.getDataChannelDescriptor());
+            DataMapDisplayEvent event = new DataMapDisplayEvent(getView(), dataMap.getDataChannelDescriptor(), dataMap);
             getController().displayDataMap(event);
         }
     }

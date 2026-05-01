@@ -24,5 +24,5 @@ import java.util.EventListener;
 
 public interface DbAttributeDisplayListener extends EventListener {
 
-    void dbAttributeSelected(AttributeDisplayEvent e);
+    void dbAttributeSelected(DbAttributeDisplayEvent e);
 }

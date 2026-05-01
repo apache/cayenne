@@ -22,16 +22,42 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 
-public class EmbeddableDisplayEvent extends DataMapDisplayEvent {
+public class EmbeddableDisplayEvent extends DisplayEvent {
 
-    protected final Embeddable embeddable;
+    private final DataChannelDescriptor domain;
+    private final DataMap dataMap;
+    private final Embeddable embeddable;
+    private final boolean mainTabFocus;
 
-    public EmbeddableDisplayEvent(Object src, Embeddable embeddable, DataMap dataMap, DataChannelDescriptor dataChannelDescriptor) {
-        super(src, dataMap, dataChannelDescriptor);
+    public EmbeddableDisplayEvent(Object src, DataChannelDescriptor domain, DataMap dataMap, Embeddable embeddable) {
+        this(src, domain, dataMap, embeddable, false);
+    }
+
+    public EmbeddableDisplayEvent(Object src,
+                                  DataChannelDescriptor domain,
+                                  DataMap dataMap,
+                                  Embeddable embeddable,
+                                  boolean mainTabFocus) {
+        super(src);
+        this.domain = domain;
+        this.dataMap = dataMap;
         this.embeddable = embeddable;
+        this.mainTabFocus = mainTabFocus;
+    }
+
+    public DataChannelDescriptor getDomain() {
+        return domain;
+    }
+
+    public DataMap getDataMap() {
+        return dataMap;
     }
 
     public Embeddable getEmbeddable() {
         return embeddable;
+    }
+
+    public boolean isMainTabFocus() {
+        return mainTabFocus;
     }
 }

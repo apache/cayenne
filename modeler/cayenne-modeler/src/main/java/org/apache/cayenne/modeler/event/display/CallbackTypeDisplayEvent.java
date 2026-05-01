@@ -18,15 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.event.display;
 
-import org.apache.cayenne.event.CayenneEvent;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.CallbackType;
 
-public class CallbackTypeDisplayEvent extends CayenneEvent {
+public class CallbackTypeDisplayEvent extends DisplayEvent {
 
-    private CallbackType callbackType;
+    private final CallbackType callbackType;
 
-    public CallbackTypeDisplayEvent(Object source, CallbackType callbackType) {
-        super(source);
+    public CallbackTypeDisplayEvent(Object src, CallbackType callbackType) {
+        super(src);
         this.callbackType = callbackType;
     }
 
@@ -34,4 +33,3 @@ public class CallbackTypeDisplayEvent extends CayenneEvent {
         return callbackType;
     }
 }
-

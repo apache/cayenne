@@ -1,4 +1,3 @@
-package org.apache.cayenne.modeler.event.display;
 /*****************************************************************
  *   Licensed to the Apache Software Foundation (ASF) under one
  *  or more contributor license agreements.  See the NOTICE file
@@ -17,10 +16,11 @@ package org.apache.cayenne.modeler.event.display;
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.modeler.event.display;
+
 import java.util.EventListener;
 
 public interface ObjEntityDisplayListener extends EventListener {
 
-    void objEntitySelected(EntityDisplayEvent e);
+    void objEntitySelected(ObjEntityDisplayEvent e);
 }
-

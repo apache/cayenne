@@ -23,14 +23,35 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 
-public class ProcedureDisplayEvent extends DataMapDisplayEvent {
+public class ProcedureDisplayEvent extends DisplayEvent {
 
-    protected final Procedure procedure;
-    protected boolean tabReset;
+    private final DataChannelDescriptor domain;
+    private final DataMap dataMap;
+    private final Procedure procedure;
+    private final boolean tabReset;
 
-    public ProcedureDisplayEvent(Object src, Procedure procedure, DataMap map, DataChannelDescriptor domain) {
-        super(src, map, domain);
+    public ProcedureDisplayEvent(Object src, DataChannelDescriptor domain, DataMap dataMap, Procedure procedure) {
+        this(src, domain, dataMap, procedure, false);
+    }
+
+    public ProcedureDisplayEvent(Object src,
+                                 DataChannelDescriptor domain,
+                                 DataMap dataMap,
+                                 Procedure procedure,
+                                 boolean tabReset) {
+        super(src);
+        this.domain = domain;
+        this.dataMap = dataMap;
         this.procedure = procedure;
+        this.tabReset = tabReset;
+    }
+
+    public DataChannelDescriptor getDomain() {
+        return domain;
+    }
+
+    public DataMap getDataMap() {
+        return dataMap;
     }
 
     public Procedure getProcedure() {
@@ -39,9 +60,5 @@ public class ProcedureDisplayEvent extends DataMapDisplayEvent {
 
     public boolean isTabReset() {
         return tabReset;
-    }
-
-    public void setTabReset(boolean b) {
-        tabReset = b;
     }
 }

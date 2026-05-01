@@ -27,7 +27,7 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DbRelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.toolkit.table.CMTablePrefs;
@@ -384,8 +384,12 @@ public class DbRelationshipDialogController extends ChildController<ProjectContr
 
             projectController.fireDbRelationshipEvent(DbRelationshipEvent.ofAdd(this, relationship, dbEntity));
 
-            RelationshipDisplayEvent rde = new RelationshipDisplayEvent(this, relationship, dbEntity, projectController.getSelectedDataMap(),
-                    (DataChannelDescriptor) projectController.getProject().getRootNode());
+            DbRelationshipDisplayEvent rde = new DbRelationshipDisplayEvent(
+                    this,
+                    (DataChannelDescriptor) projectController.getProject().getRootNode(),
+                    projectController.getSelectedDataMap(),
+                    dbEntity,
+                    relationship);
 
             projectController.displayDbRelationship(rde);
             application.getUndoManager().addEdit(

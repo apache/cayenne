@@ -42,7 +42,7 @@ public class DataMapErrorMsg extends ValidationDisplayHandler {
 
     public void displayField(ProjectController mediator, JFrame frame) {
         DataMapDisplayEvent event;
-        event = new DataMapDisplayEvent(frame, map, domain);
+        event = new DataMapDisplayEvent(frame, domain, map);
         mediator.displayDataMap(event);
     }
 }

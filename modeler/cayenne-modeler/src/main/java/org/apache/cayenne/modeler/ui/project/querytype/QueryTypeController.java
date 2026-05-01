@@ -102,8 +102,9 @@ public class QueryTypeController extends ChildController<ProjectController> {
     public static void fireQueryEvent(Object src, ProjectController controller,
                                       DataMap dataMap, QueryDescriptor query) {
         controller.fireQueryEvent(QueryEvent.ofAdd(src, query, dataMap));
-        controller.displayQuery(new QueryDisplayEvent(src, query,
-                dataMap, (DataChannelDescriptor) controller.getProject().getRootNode()));
+        controller.displayQuery(new QueryDisplayEvent(src,
+                (DataChannelDescriptor) controller.getProject().getRootNode(),
+                dataMap, query));
     }
 
     public String getSelectedQuery() {

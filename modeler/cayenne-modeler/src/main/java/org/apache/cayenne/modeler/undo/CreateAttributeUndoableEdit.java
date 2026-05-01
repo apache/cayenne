@@ -30,7 +30,8 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeAction;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 
 public class CreateAttributeUndoableEdit extends CayenneUndoableEdit {
 
@@ -77,11 +78,11 @@ public class CreateAttributeUndoableEdit extends CayenneUndoableEdit {
                 objAttr
             });
 
-            controller.displayObjEntity(new EntityDisplayEvent(
+            controller.displayObjEntity(new ObjEntityDisplayEvent(
                     this,
-                    objEntity,
+                    domain,
                     dataMap,
-                    domain));
+                    objEntity));
         }
 
         if (dbEntity != null) {
@@ -89,11 +90,11 @@ public class CreateAttributeUndoableEdit extends CayenneUndoableEdit {
                 dbAttr
             });
 
-            controller.displayDbEntity(new EntityDisplayEvent(
+            controller.displayDbEntity(new DbEntityDisplayEvent(
                     this,
-                    dbEntity,
+                    domain,
                     dataMap,
-                    domain));
+                    dbEntity));
         }
     }
 

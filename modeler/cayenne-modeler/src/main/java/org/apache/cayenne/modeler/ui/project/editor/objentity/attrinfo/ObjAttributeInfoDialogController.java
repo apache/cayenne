@@ -27,8 +27,8 @@ import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjAttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
@@ -522,16 +522,16 @@ public class ObjAttributeInfoDialogController extends ChildController<ProjectCon
 
         mediator.fireObjEntityEvent(ObjEntityEvent.ofChange(this, model.getEntity()));
 
-        EntityDisplayEvent event = new EntityDisplayEvent(this, mediator.getSelectedObjEntity(),
-                mediator.getSelectedDataMap(), (DataChannelDescriptor) mediator.getProject().getRootNode());
+        DataChannelDescriptor domain = (DataChannelDescriptor) mediator.getProject().getRootNode();
+        ObjEntityDisplayEvent event = new ObjEntityDisplayEvent(this, domain,
+                mediator.getSelectedDataMap(), mediator.getSelectedObjEntity());
 
         mediator.displayObjEntity(event);
 
         mediator.fireObjAttributeEvent(ObjAttributeEvent.ofChange(this, attributeSaved, model.getEntity()));
 
-        AttributeDisplayEvent eventAttr = new AttributeDisplayEvent(this, attributeSaved,
-                mediator.getSelectedObjEntity(), mediator.getSelectedDataMap(), (DataChannelDescriptor) mediator
-                .getProject().getRootNode());
+        ObjAttributeDisplayEvent eventAttr = new ObjAttributeDisplayEvent(this, domain,
+                mediator.getSelectedDataMap(), mediator.getSelectedObjEntity(), attributeSaved);
 
         mediator.displayObjAttribute(eventAttr);
 

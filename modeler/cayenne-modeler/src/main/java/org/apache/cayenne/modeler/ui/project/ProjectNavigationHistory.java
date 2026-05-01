@@ -19,14 +19,13 @@
 
 package org.apache.cayenne.modeler.ui.project;
 
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DisplayEvent;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
@@ -97,13 +96,10 @@ public class ProjectNavigationHistory {
     }
 
     private void replay(ProjectController controller, DisplayEvent e) {
-        if (e instanceof EntityDisplayEvent) {
-            EntityDisplayEvent ede = (EntityDisplayEvent) e;
-            if (ede.getEntity() instanceof ObjEntity) {
-                controller.displayObjEntity(ede);
-            } else if (ede.getEntity() instanceof DbEntity) {
-                controller.displayDbEntity(ede);
-            }
+        if (e instanceof ObjEntityDisplayEvent) {
+            controller.displayObjEntity((ObjEntityDisplayEvent) e);
+        } else if (e instanceof DbEntityDisplayEvent) {
+            controller.displayDbEntity((DbEntityDisplayEvent) e);
         } else if (e instanceof EmbeddableDisplayEvent) {
             controller.displayEmbeddable((EmbeddableDisplayEvent) e);
         } else if (e instanceof ProcedureDisplayEvent) {
@@ -125,12 +121,12 @@ public class ProjectNavigationHistory {
             Iterator<DisplayEvent> it = list.iterator();
             while (it.hasNext()) {
                 DisplayEvent de = it.next();
-                if (e instanceof DbEntityEvent && de instanceof EntityDisplayEvent) {
-                    if (((DbEntityEvent) e).getEntity() == ((EntityDisplayEvent) de).getEntity()) {
+                if (e instanceof DbEntityEvent && de instanceof DbEntityDisplayEvent) {
+                    if (((DbEntityEvent) e).getEntity() == ((DbEntityDisplayEvent) de).getEntity()) {
                         it.remove();
                     }
-                } else if (e instanceof ObjEntityEvent && de instanceof EntityDisplayEvent) {
-                    if (((ObjEntityEvent) e).getEntity() == ((EntityDisplayEvent) de).getEntity()) {
+                } else if (e instanceof ObjEntityEvent && de instanceof ObjEntityDisplayEvent) {
+                    if (((ObjEntityEvent) e).getEntity() == ((ObjEntityDisplayEvent) de).getEntity()) {
                         it.remove();
                     }
                 } else if (e instanceof EmbeddableEvent && de instanceof EmbeddableDisplayEvent) {

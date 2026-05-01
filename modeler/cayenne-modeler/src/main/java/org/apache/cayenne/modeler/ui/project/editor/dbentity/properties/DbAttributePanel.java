@@ -29,9 +29,9 @@ import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.CutAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.PasteAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeRelationshipAction;
-import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DbAttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.toolkit.table.CMTablePrefs;
 import org.apache.cayenne.modeler.toolkit.table.BoardTableCellRenderer;
@@ -149,9 +149,9 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
     }
 
     @Override
-    public void dbEntitySelected(EntityDisplayEvent e) {
+    public void dbEntitySelected(DbEntityDisplayEvent e) {
 
-        DbEntity entity = (DbEntity) e.getEntity();
+        DbEntity entity = e.getEntity();
         if (entity != null) {
             rebuildTable(entity);
         }
@@ -232,12 +232,12 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
             }
         }
 
-        controller.displayDbAttribute(new AttributeDisplayEvent(
+        controller.displayDbAttribute(new DbAttributeDisplayEvent(
                 this,
-                attrs,
-                controller.getSelectedDbEntity(),
+                controller.getSelectedDataDomain(),
                 controller.getSelectedDataMap(),
-                controller.getSelectedDataDomain()));
+                controller.getSelectedDbEntity(),
+                attrs));
 
         parentPanel.updateActions(attrs);
     }

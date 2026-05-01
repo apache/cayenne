@@ -19,19 +19,15 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.dbentity;
 
-import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.event.display.DbAttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DbRelationshipDisplayEvent;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeAction;
 import org.apache.cayenne.modeler.ui.action.RemoveRelationshipAction;
-import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
-import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.dbentity.main.DbEntityMainView;
 import org.apache.cayenne.modeler.ui.project.editor.dbentity.properties.DbAttributePanel;
 import org.apache.cayenne.modeler.ui.project.editor.dbentity.properties.DbEntityPropertiesView;
@@ -78,9 +74,8 @@ public class DbEntityView extends JTabbedPane {
         lastTabIndex = getSelectedIndex();
     }
 
-    private void currentDbEntityChanged(EntityDisplayEvent e) {
-        Entity<?, ?, ?> entity = e.getEntity();
-        if (!(entity instanceof DbEntity)) {
+    private void currentDbEntityChanged(DbEntityDisplayEvent e) {
+        if (e.getEntity() == null) {
             return;
         }
 
@@ -92,47 +87,43 @@ public class DbEntityView extends JTabbedPane {
         }
 
         resetRemoveButtons();
-        setVisible(e.getEntity() != null);
+        setVisible(true);
         setSelectedIndex(lastTabIndex);
     }
 
-    private void currentDbRelationshipChanged(RelationshipDisplayEvent e) {
+    private void currentDbRelationshipChanged(DbRelationshipDisplayEvent e) {
         if (e.getEntity() == null) {
             return;
         }
 
         // update relationship selection
-        Relationship[] rels = e.getRelationships();
-        DbRelationship[] dbRels = new DbRelationship[rels.length];
-
-        System.arraycopy(rels, 0, dbRels, 0, rels.length);
+        DbRelationshipPanel relationshipPanel = (DbRelationshipPanel) attributeRelationshipTab.getSplitPane().getComponent(1);
+        DbRelationship[] dbRels = e.getRelationships();
 
         // reset tab to relationship
-        if (getSelectedComponent() != attributeRelationshipTab.getSplitPane().getComponent(1) && dbRels.length > 0) {
+        if (getSelectedComponent() != relationshipPanel && dbRels.length > 0) {
             setSelectedComponent(attributeRelationshipTab);
-            attributeRelationshipTab.getSplitPane().getComponent(1).setVisible(true);
+            relationshipPanel.setVisible(true);
         }
 
-        ((DbRelationshipPanel) attributeRelationshipTab.getSplitPane().getComponent(1)).selectRelationships(dbRels);
+        relationshipPanel.selectRelationships(dbRels);
         attributeRelationshipTab.updateActions(dbRels);
     }
 
-    private void currentDbAttributeChanged(AttributeDisplayEvent e) {
+    private void currentDbAttributeChanged(DbAttributeDisplayEvent e) {
         if (e.getEntity() == null)
             return;
 
         // update attribute selection
-        Attribute<?, ?, ?>[] attrs = e.getAttributes();
-        DbAttribute[] dbAttrs = new DbAttribute[attrs.length];
+        DbAttributePanel attributePanel = (DbAttributePanel) attributeRelationshipTab.getSplitPane().getComponent(0);
+        DbAttribute[] dbAttrs = e.getAttributes();
 
-        System.arraycopy(attrs, 0, dbAttrs, 0, attrs.length);
-
-        if (getSelectedComponent() != attributeRelationshipTab.getSplitPane().getComponent(0) && dbAttrs.length > 0) {
+        if (getSelectedComponent() != attributePanel && dbAttrs.length > 0) {
             setSelectedComponent(attributeRelationshipTab);
-            attributeRelationshipTab.getSplitPane().getComponent(0).setVisible(true);
+            attributePanel.setVisible(true);
         }
 
-        ((DbAttributePanel) attributeRelationshipTab.getSplitPane().getComponent(0)).selectAttributes(dbAttrs);
+        attributePanel.selectAttributes(dbAttrs);
         attributeRelationshipTab.updateActions(dbAttrs);
     }
 }

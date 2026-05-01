@@ -53,14 +53,15 @@ import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayListener;
 import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DataNodeDisplayListener;
+import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DomainDisplayListener;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayListener;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.MultipleObjectsDisplayEvent;
 import org.apache.cayenne.modeler.event.display.MultipleObjectsDisplayListener;
+import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ProcedureDisplayListener;
@@ -252,12 +253,12 @@ public class ProjectTreeController extends ChildController<ProjectController>
     }
 
     @Override
-    public void objEntitySelected(EntityDisplayEvent e) {
+    public void objEntitySelected(ObjEntityDisplayEvent e) {
         navigateTo(e.getDomain(), e.getDataMap(), e.getEntity());
     }
 
     @Override
-    public void dbEntitySelected(EntityDisplayEvent e) {
+    public void dbEntitySelected(DbEntityDisplayEvent e) {
         navigateTo(e.getDomain(), e.getDataMap(), e.getEntity());
     }
 
@@ -693,75 +694,64 @@ public class ProjectTreeController extends ChildController<ProjectController>
             return;
         }
 
+        DataChannelDescriptor domain = (DataChannelDescriptor) parent.getProject().getRootNode();
         Object obj = data[data.length - 1];
         if (obj instanceof DataChannelDescriptor) {
-            parent.displayDomain(new DomainDisplayEvent(
-                    this,
-                    (DataChannelDescriptor) obj));
+            parent.displayDomain(new DomainDisplayEvent(this, (DataChannelDescriptor) obj));
         } else if (obj instanceof DataMap) {
             if (data.length == 2) {
                 parent.displayDataMap(new DataMapDisplayEvent(
                         this,
+                        domain,
                         (DataMap) obj,
-                        (DataChannelDescriptor) parent.getProject().getRootNode(),
                         (DataNodeDescriptor) data[data.length - 2]));
             } else if (data.length == 1) {
                 parent.displayDataMap(new DataMapDisplayEvent(
                         this,
-                        (DataMap) obj,
-                        (DataChannelDescriptor) parent.getProject().getRootNode()));
+                        domain,
+                        (DataMap) obj));
             }
         } else if (obj instanceof DataNodeDescriptor) {
             if (data.length == 1) {
                 parent.displayDataNode(new DataNodeDisplayEvent(
                         this,
-                        (DataChannelDescriptor) parent.getProject().getRootNode(),
+                        domain,
                         (DataNodeDescriptor) obj));
             }
-        } else if (obj instanceof Entity) {
-
-            EntityDisplayEvent e = (data.length == 3)
-
-                    ? new EntityDisplayEvent(
+        } else if (obj instanceof ObjEntity) {
+            parent.displayObjEntity(new ObjEntityDisplayEvent(
                     this,
-                    (Entity) obj, (DataMap) data[data.length - 2],
-                    (DataNodeDescriptor) data[data.length - 3],
-                    (DataChannelDescriptor) parent.getProject().getRootNode())
-
-                    : new EntityDisplayEvent(
+                    domain,
+                    (DataMap) data[data.length - 2],
+                    (ObjEntity) obj,
+                    false,
+                    true));
+        } else if (obj instanceof DbEntity) {
+            parent.displayDbEntity(new DbEntityDisplayEvent(
                     this,
-                    (Entity) obj, (DataMap) data[data.length - 2],
-                    (DataChannelDescriptor) parent.getProject().getRootNode());
-
-
-            e.setUnselectAttributes(true);
-
-            if (obj instanceof ObjEntity) {
-                parent.displayObjEntity(e);
-            } else if (obj instanceof DbEntity) {
-                parent.displayDbEntity(e);
-            }
+                    domain,
+                    (DataMap) data[data.length - 2],
+                    (DbEntity) obj,
+                    false,
+                    true));
         } else if (obj instanceof Embeddable) {
-            EmbeddableDisplayEvent e = new EmbeddableDisplayEvent(
+            parent.displayEmbeddable(new EmbeddableDisplayEvent(
                     this,
-                    (Embeddable) obj,
+                    domain,
                     (DataMap) data[data.length - 2],
-                    (DataChannelDescriptor) parent.getProject().getRootNode());
-            parent.displayEmbeddable(e);
+                    (Embeddable) obj));
         } else if (obj instanceof Procedure) {
-            ProcedureDisplayEvent e = new ProcedureDisplayEvent(
+            parent.displayProcedure(new ProcedureDisplayEvent(
                     this,
-                    (Procedure) obj,
+                    domain,
                     (DataMap) data[data.length - 2],
-                    (DataChannelDescriptor) parent.getProject().getRootNode());
-            parent.displayProcedure(e);
+                    (Procedure) obj));
         } else if (obj instanceof QueryDescriptor) {
-            QueryDisplayEvent e = new QueryDisplayEvent(
+            parent.displayQuery(new QueryDisplayEvent(
                     this,
-                    (QueryDescriptor) obj,
+                    domain,
                     (DataMap) data[data.length - 2],
-                    (DataChannelDescriptor) parent.getProject().getRootNode());
-            parent.displayQuery(e);
+                    (QueryDescriptor) obj));
         }
 
         view.scrollPathToVisible(path);

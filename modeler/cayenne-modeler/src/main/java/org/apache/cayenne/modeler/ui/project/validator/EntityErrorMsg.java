@@ -25,13 +25,14 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.validation.ValidationFailure;
 
 /**
  * DataDomain validation message.
- * 
+ *
  */
 public class EntityErrorMsg extends ValidationDisplayHandler {
 
@@ -50,12 +51,10 @@ public class EntityErrorMsg extends ValidationDisplayHandler {
     }
 
     public void displayField(ProjectController mediator, JFrame frame) {
-        EntityDisplayEvent event = new EntityDisplayEvent(frame, entity, map, domain);
         if (entity instanceof ObjEntity) {
-            mediator.displayObjEntity(event);
-        }
-        else if (entity instanceof DbEntity) {
-            mediator.displayDbEntity(event);
+            mediator.displayObjEntity(new ObjEntityDisplayEvent(frame, domain, map, (ObjEntity) entity));
+        } else if (entity instanceof DbEntity) {
+            mediator.displayDbEntity(new DbEntityDisplayEvent(frame, domain, map, (DbEntity) entity));
         }
     }
 }

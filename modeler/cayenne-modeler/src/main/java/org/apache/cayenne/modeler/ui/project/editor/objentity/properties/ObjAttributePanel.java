@@ -23,8 +23,8 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjAttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
@@ -273,12 +273,12 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
         }
     }
 
-    public void objEntitySelected(EntityDisplayEvent e) {
+    public void objEntitySelected(ObjEntityDisplayEvent e) {
         if (e.getSource() == this) {
             return;
         }
 
-        ObjEntity entity = (ObjEntity) e.getEntity();
+        ObjEntity entity = e.getEntity();
 
         // Important: process event even if this is the same entity,
         // since the inheritance structure might have changed
@@ -478,12 +478,12 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
             editMenu.setEnabled(editEnabled);
         }
 
-        controller.displayObjAttribute(new AttributeDisplayEvent(
+        controller.displayObjAttribute(new ObjAttributeDisplayEvent(
                 this,
-                attrs,
-                controller.getSelectedObjEntity(),
+                controller.getSelectedDataDomain(),
                 controller.getSelectedDataMap(),
-                controller.getSelectedDataDomain()));
+                controller.getSelectedObjEntity(),
+                attrs));
 
         parentPanel.updateActions(attrs);
     }

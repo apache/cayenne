@@ -22,13 +22,19 @@ package org.apache.cayenne.modeler.event.display;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 
-public class DataNodeDisplayEvent extends DomainDisplayEvent {
+public class DataNodeDisplayEvent extends DisplayEvent {
 
-    protected final DataNodeDescriptor dataNode;
+    private final DataChannelDescriptor domain;
+    private final DataNodeDescriptor dataNode;
 
-    public DataNodeDisplayEvent(Object src, DataChannelDescriptor dataChannelDescriptor, DataNodeDescriptor node) {
-        super(src, dataChannelDescriptor);
-        this.dataNode = node;
+    public DataNodeDisplayEvent(Object src, DataChannelDescriptor domain, DataNodeDescriptor dataNode) {
+        super(src);
+        this.domain = domain;
+        this.dataNode = dataNode;
+    }
+
+    public DataChannelDescriptor getDomain() {
+        return domain;
     }
 
     public DataNodeDescriptor getDataNode() {

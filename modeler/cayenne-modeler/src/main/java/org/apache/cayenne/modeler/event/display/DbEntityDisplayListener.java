@@ -23,5 +23,5 @@ import java.util.EventListener;
 
 public interface DbEntityDisplayListener extends EventListener {
 
-    void dbEntitySelected(EntityDisplayEvent e);
+    void dbEntitySelected(DbEntityDisplayEvent e);
 }

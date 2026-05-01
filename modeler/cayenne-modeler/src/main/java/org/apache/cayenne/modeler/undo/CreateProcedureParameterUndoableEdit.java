@@ -57,7 +57,7 @@ public class CreateProcedureParameterUndoableEdit extends CayenneUndoableEdit {
                     parameter
             });
 
-            controller.displayProcedure(new ProcedureDisplayEvent(this, procedure, dataMap, domain));
+            controller.displayProcedure(new ProcedureDisplayEvent(this, domain, dataMap, procedure));
         }
     }
 

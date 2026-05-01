@@ -1,4 +1,3 @@
-package org.apache.cayenne.modeler.event.display;
 /*****************************************************************
  *   Licensed to the Apache Software Foundation (ASF) under one
  *  or more contributor license agreements.  See the NOTICE file
@@ -18,41 +17,60 @@ package org.apache.cayenne.modeler.event.display;
  *  under the License.
  ****************************************************************/
 
+package org.apache.cayenne.modeler.event.display;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 
-public class DataMapDisplayEvent extends DataNodeDisplayEvent {
+public class DataMapDisplayEvent extends DisplayEvent {
 
-    protected final DataMap dataMap;
-
+    private final DataChannelDescriptor domain;
+    private final DataMap dataMap;
+    private final DataNodeDescriptor dataNode;
     // True if the event should cause the editor to switch to the main DataMap tab
-    protected boolean mainTabFocus;
+    private final boolean mainTabFocus;
 
-    public DataMapDisplayEvent(Object src, DataMap map, DataChannelDescriptor dataChannelDescriptor) {
-        this(src, map, dataChannelDescriptor, null);
+    public DataMapDisplayEvent(Object src, DataChannelDescriptor domain, DataMap dataMap) {
+        this(src, domain, dataMap, null, false);
     }
 
-    public DataMapDisplayEvent(
-            Object src,
-            DataMap map,
-            DataChannelDescriptor dataChannelDescriptor,
-            DataNodeDescriptor node) {
+    public DataMapDisplayEvent(Object src, DataChannelDescriptor domain, DataMap dataMap, boolean mainTabFocus) {
+        this(src, domain, dataMap, null, mainTabFocus);
+    }
 
-        super(src, dataChannelDescriptor, node);
-        this.dataMap = map;
+    public DataMapDisplayEvent(Object src,
+                               DataChannelDescriptor domain,
+                               DataMap dataMap,
+                               DataNodeDescriptor dataNode) {
+        this(src, domain, dataMap, dataNode, false);
+    }
+
+    public DataMapDisplayEvent(Object src,
+                               DataChannelDescriptor domain,
+                               DataMap dataMap,
+                               DataNodeDescriptor dataNode,
+                               boolean mainTabFocus) {
+        super(src);
+        this.domain = domain;
+        this.dataMap = dataMap;
+        this.dataNode = dataNode;
+        this.mainTabFocus = mainTabFocus;
+    }
+
+    public DataChannelDescriptor getDomain() {
+        return domain;
     }
 
     public DataMap getDataMap() {
         return dataMap;
     }
 
-    public boolean isMainTabFocus() {
-        return mainTabFocus;
+    public DataNodeDescriptor getDataNode() {
+        return dataNode;
     }
 
-    public void setMainTabFocus(boolean mainTabFocus) {
-        this.mainTabFocus = mainTabFocus;
+    public boolean isMainTabFocus() {
+        return mainTabFocus;
     }
 }

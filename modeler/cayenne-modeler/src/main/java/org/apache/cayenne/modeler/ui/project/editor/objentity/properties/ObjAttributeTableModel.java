@@ -30,8 +30,8 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjAttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.project.DbEntityOps;
@@ -268,23 +268,23 @@ public class ObjAttributeTableModel extends CMTableModel<ObjAttribute> {
 
         controller.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
 
-        controller.displayObjEntity(new EntityDisplayEvent(
+        controller.displayObjEntity(new ObjEntityDisplayEvent(
                 this,
-                controller.getSelectedObjEntity(),
+                (DataChannelDescriptor) controller.getProject().getRootNode(),
                 controller.getSelectedDataMap(),
-                (DataChannelDescriptor) controller.getProject().getRootNode()));
+                controller.getSelectedObjEntity()));
 
         controller.fireObjAttributeEvent(ObjAttributeEvent.ofChange(
                 this,
                 attributeNew,
                 entity));
 
-        controller.displayObjAttribute(new AttributeDisplayEvent(
+        controller.displayObjAttribute(new ObjAttributeDisplayEvent(
                 this,
-                attributeNew,
-                controller.getSelectedObjEntity(),
+                (DataChannelDescriptor) controller.getProject().getRootNode(),
                 controller.getSelectedDataMap(),
-                (DataChannelDescriptor) controller.getProject().getRootNode()));
+                controller.getSelectedObjEntity(),
+                attributeNew));
     }
 
     private void setColumnLocking(ObjAttribute attribute, Object value) {

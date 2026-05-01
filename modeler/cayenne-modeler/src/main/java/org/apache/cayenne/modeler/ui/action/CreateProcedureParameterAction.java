@@ -49,8 +49,11 @@ public class CreateProcedureParameterAction extends ModelerAbstractAction {
             ProcedureParameter parameter) {
         controller.fireProcedureParameterEvent(ProcedureParameterEvent.ofAdd(src, parameter));
 
-        controller.displayProcedureParameter(new ProcedureParameterDisplayEvent(src, parameter, procedure,
-                controller.getSelectedDataMap(), (DataChannelDescriptor) controller.getProject().getRootNode()));
+        controller.displayProcedureParameter(new ProcedureParameterDisplayEvent(src,
+                (DataChannelDescriptor) controller.getProject().getRootNode(),
+                controller.getSelectedDataMap(),
+                procedure,
+                parameter));
     }
 
     @Override

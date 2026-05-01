@@ -28,11 +28,10 @@ import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
-import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateObjEntityUndoableEdit;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 
@@ -46,13 +45,13 @@ public class CreateObjEntityAction extends ModelerAbstractAction {
             DataMap dataMap,
             ObjEntity entity) {
         controller.fireObjEntityEvent(ObjEntityEvent.ofAdd(src, entity));
-        EntityDisplayEvent displayEvent = new EntityDisplayEvent(
+        ObjEntityDisplayEvent displayEvent = new ObjEntityDisplayEvent(
                 src,
-                entity,
+                (DataChannelDescriptor) controller.getProject().getRootNode(),
                 dataMap,
-                controller.getSelectedDataNode(),
-                (DataChannelDescriptor) controller.getProject().getRootNode());
-        displayEvent.setMainTabFocus(true);
+                entity,
+                true,
+                false);
         controller.displayObjEntity(displayEvent);
     }
 

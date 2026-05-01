@@ -1,4 +1,3 @@
-package org.apache.cayenne.modeler.event.display;
 /*****************************************************************
  *   Licensed to the Apache Software Foundation (ASF) under one
  *  or more contributor license agreements.  See the NOTICE file
@@ -17,7 +16,7 @@ package org.apache.cayenne.modeler.event.display;
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
+package org.apache.cayenne.modeler.event.display;
 
 import java.util.EventListener;
 
@@ -26,6 +25,5 @@ import java.util.EventListener;
  */
 public interface ObjRelationshipDisplayListener extends EventListener {
 
-    void currentObjRelationshipChanged(RelationshipDisplayEvent e);
+    void currentObjRelationshipChanged(ObjRelationshipDisplayEvent e);
 }
-

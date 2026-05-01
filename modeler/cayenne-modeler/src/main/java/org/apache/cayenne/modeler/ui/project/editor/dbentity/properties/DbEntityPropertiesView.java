@@ -20,8 +20,8 @@ package org.apache.cayenne.modeler.ui.project.editor.dbentity.properties;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.event.model.DbEntityListener;
 import org.apache.cayenne.modeler.toolkit.splitpane.CMSplitPanePrefs;
@@ -143,8 +143,8 @@ public class DbEntityPropertiesView extends JPanel implements DbEntityDisplayLis
         relationshipPanel.dbEntityRemoved(e);
     }
 
-    public void dbEntitySelected(EntityDisplayEvent e) {
-        DbEntity entity = (DbEntity) e.getEntity();
+    public void dbEntitySelected(DbEntityDisplayEvent e) {
+        DbEntity entity = e.getEntity();
         if (entity.getDataMap().getMappedEntities(entity).isEmpty()) {
             toolBar.getComponentAtIndex(4).setEnabled(false);
             toolBar.getComponentAtIndex(5).setEnabled(false);

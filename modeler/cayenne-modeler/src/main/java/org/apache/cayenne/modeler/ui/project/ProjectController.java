@@ -785,15 +785,14 @@ public class ProjectController extends ChildController<ModelerController> {
         navigationHistory.replayNextEvent(this);
     }
 
-    public void displayObjEntity(EntityDisplayEvent e) {
+    public void displayObjEntity(ObjEntityDisplayEvent e) {
         boolean changed = e.getEntity() != state.objEntity;
 
         if (changed) {
             state = new ControllerState();
             state.dataDomain = e.getDomain();
-            state.dataNode = e.getDataNode();
             state.dataMap = e.getDataMap();
-            state.objEntity = (ObjEntity) e.getEntity();
+            state.objEntity = e.getEntity();
 
             navigationHistory.recordEvent(e);
         }
@@ -813,7 +812,6 @@ public class ProjectController extends ChildController<ModelerController> {
         if (changed) {
             state = new ControllerState();
             state.dataDomain = e.getDomain();
-            state.dataNode = e.getDataNode();
             state.dataMap = e.getDataMap();
             state.embeddable = e.getEmbeddable();
             navigationHistory.recordEvent(e);
@@ -882,15 +880,14 @@ public class ProjectController extends ChildController<ModelerController> {
         }
     }
 
-    public void displayDbEntity(EntityDisplayEvent e) {
+    public void displayDbEntity(DbEntityDisplayEvent e) {
         boolean changed = e.getEntity() != state.dbEntity;
 
         if (changed) {
             state = new ControllerState();
             state.dataDomain = e.getDomain();
-            state.dataNode = e.getDataNode();
             state.dataMap = e.getDataMap();
-            state.dbEntity = (DbEntity) e.getEntity();
+            state.dbEntity = e.getEntity();
             navigationHistory.recordEvent(e);
         }
 
@@ -926,7 +923,7 @@ public class ProjectController extends ChildController<ModelerController> {
         }
     }
 
-    public void displayDbAttribute(AttributeDisplayEvent e) {
+    public void displayDbAttribute(DbAttributeDisplayEvent e) {
         boolean changed = !Arrays.equals(e.getAttributes(), state.dbAttributes);
 
         if (changed) {
@@ -934,7 +931,7 @@ public class ProjectController extends ChildController<ModelerController> {
                 state = new ControllerState();
                 state.dataDomain = e.getDomain();
                 state.dataMap = e.getDataMap();
-                state.dbEntity = (DbEntity) e.getEntity();
+                state.dbEntity = e.getEntity();
             }
             state.dbAttributes = new DbAttribute[e.getAttributes().length];
             System.arraycopy(e.getAttributes(), 0, state.dbAttributes, 0, state.dbAttributes.length);
@@ -968,7 +965,7 @@ public class ProjectController extends ChildController<ModelerController> {
         }
     }
 
-    public void displayObjAttribute(AttributeDisplayEvent e) {
+    public void displayObjAttribute(ObjAttributeDisplayEvent e) {
         boolean changed = !Arrays.equals(e.getAttributes(), state.objAttributes);
 
         if (changed) {
@@ -976,7 +973,7 @@ public class ProjectController extends ChildController<ModelerController> {
                 state = new ControllerState();
                 state.dataDomain = e.getDomain();
                 state.dataMap = e.getDataMap();
-                state.objEntity = (ObjEntity) e.getEntity();
+                state.objEntity = e.getEntity();
             }
             state.objAttributes = new ObjAttribute[e.getAttributes().length];
             System.arraycopy(e.getAttributes(), 0, state.objAttributes, 0, state.objAttributes.length);
@@ -1029,7 +1026,7 @@ public class ProjectController extends ChildController<ModelerController> {
         }
     }
 
-    public void displayDbRelationship(RelationshipDisplayEvent e) {
+    public void displayDbRelationship(DbRelationshipDisplayEvent e) {
         boolean changed = !Arrays.equals(e.getRelationships(), state.dbRelationships);
 
         if (changed) {
@@ -1037,7 +1034,7 @@ public class ProjectController extends ChildController<ModelerController> {
                 state = new ControllerState();
                 state.dataDomain = e.getDomain();
                 state.dataMap = e.getDataMap();
-                state.dbEntity = (DbEntity) e.getEntity();
+                state.dbEntity = e.getEntity();
             }
             state.dbRelationships = new DbRelationship[e.getRelationships().length];
             System.arraycopy(e.getRelationships(), 0, state.dbRelationships, 0, state.dbRelationships.length);
@@ -1081,7 +1078,7 @@ public class ProjectController extends ChildController<ModelerController> {
         }
     }
 
-    public void displayObjRelationship(RelationshipDisplayEvent e) {
+    public void displayObjRelationship(ObjRelationshipDisplayEvent e) {
         boolean changed = !Arrays.equals(e.getRelationships(), state.objRelationships);
 
         if (changed) {
@@ -1089,7 +1086,7 @@ public class ProjectController extends ChildController<ModelerController> {
                 state = new ControllerState();
                 state.dataDomain = e.getDomain();
                 state.dataMap = e.getDataMap();
-                state.objEntity = (ObjEntity) e.getEntity();
+                state.objEntity = e.getEntity();
             }
             state.objRelationships = new ObjRelationship[e.getRelationships().length];
             System.arraycopy(e.getRelationships(), 0, state.objRelationships, 0, state.objRelationships.length);

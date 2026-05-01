@@ -48,9 +48,9 @@ public abstract class BaseRemovePropertyUndoableEdit extends CayenneUndoableEdit
     protected void focusEmbeddable() {
         controller.displayEmbeddable(new EmbeddableDisplayEvent(
                 this,
-                embeddable,
+                (DataChannelDescriptor) controller.getProject().getRootNode(),
                 embeddable.getDataMap(),
-                (DataChannelDescriptor) controller.getProject().getRootNode()));
+                embeddable));
     }
 
 }

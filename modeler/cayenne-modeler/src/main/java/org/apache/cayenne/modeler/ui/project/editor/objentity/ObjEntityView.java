@@ -19,21 +19,17 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.objentity;
 
-import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
-import org.apache.cayenne.map.Attribute;
-import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.event.display.ObjAttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjRelationshipDisplayEvent;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeAction;
 import org.apache.cayenne.modeler.ui.action.RemoveCallbackMethodAction;
 import org.apache.cayenne.modeler.ui.action.RemoveRelationshipAction;
-import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
-import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjEntityCallbacksView;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.main.ObjEntityMainView;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.properties.ObjAttributePanel;
@@ -100,9 +96,8 @@ public class ObjEntityView extends JTabbedPane {
         globalActions.getAction(RemoveCallbackMethodAction.class).setEnabled(false);
     }
 
-    private void currentObjEntityChanged(EntityDisplayEvent e) {
-        Entity<?, ?, ?> entity = e.getEntity();
-        if (!(entity instanceof ObjEntity)) {
+    private void currentObjEntityChanged(ObjEntityDisplayEvent e) {
+        if (e.getEntity() == null) {
             return;
         }
 
@@ -114,49 +109,45 @@ public class ObjEntityView extends JTabbedPane {
         }
 
         resetRemoveButtons();
-        setVisible(e.getEntity() != null);
+        setVisible(true);
 
         if (getRootPane() != null) {
             setSelectedIndex(lastTabIndex);
         }
     }
 
-    private void currentObjRelationshipChanged(RelationshipDisplayEvent e) {
+    private void currentObjRelationshipChanged(ObjRelationshipDisplayEvent e) {
         if (e.getEntity() == null) {
             return;
         }
 
         // update relationship selection
-        Relationship<?, ?, ?>[] rels = e.getRelationships();
-        ObjRelationship[] objRels = new ObjRelationship[rels.length];
+        ObjRelationshipPanel relationshipPanel = (ObjRelationshipPanel) attributeRelationshipTab.getSplitPane().getComponent(1);
+        ObjRelationship[] objRels = e.getRelationships();
 
-        System.arraycopy(rels, 0, objRels, 0, rels.length);
-
-        if (getSelectedComponent() != attributeRelationshipTab.getSplitPane().getComponent(1) && objRels.length > 0) {
+        if (getSelectedComponent() != relationshipPanel && objRels.length > 0) {
             setSelectedComponent(attributeRelationshipTab);
-            attributeRelationshipTab.getSplitPane().getComponent(1).setVisible(true);
+            relationshipPanel.setVisible(true);
         }
 
-        ((ObjRelationshipPanel) attributeRelationshipTab.getSplitPane().getComponent(1)).selectRelationships(objRels);
+        relationshipPanel.selectRelationships(objRels);
         attributeRelationshipTab.updateActions(objRels);
     }
 
-    private void currentObjAttributeChanged(AttributeDisplayEvent e) {
+    private void currentObjAttributeChanged(ObjAttributeDisplayEvent e) {
         if (e.getEntity() == null)
             return;
 
         // update attribute selection
-        Attribute<?, ?, ?>[] attrs = e.getAttributes();
-        ObjAttribute[] objAttrs = new ObjAttribute[attrs.length];
+        ObjAttributePanel attributePanel = (ObjAttributePanel) attributeRelationshipTab.getSplitPane().getComponent(0);
+        ObjAttribute[] objAttrs = e.getAttributes();
 
-        System.arraycopy(attrs, 0, objAttrs, 0, attrs.length);
-
-        if (getSelectedComponent() != attributeRelationshipTab.getSplitPane().getComponent(0) && objAttrs.length > 0) {
+        if (getSelectedComponent() != attributePanel && objAttrs.length > 0) {
             setSelectedComponent(attributeRelationshipTab);
-            attributeRelationshipTab.getSplitPane().getComponent(0).setVisible(true);
+            attributePanel.setVisible(true);
         }
 
-        ((ObjAttributePanel) attributeRelationshipTab.getSplitPane().getComponent(0)).selectAttributes(objAttrs);
+        attributePanel.selectAttributes(objAttrs);
         attributeRelationshipTab.updateActions(objAttrs);
     }
 }

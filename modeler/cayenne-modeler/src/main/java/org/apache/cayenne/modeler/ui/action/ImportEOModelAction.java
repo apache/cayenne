@@ -298,10 +298,10 @@ public class ImportEOModelAction extends ModelerAbstractAction {
 
             controller.displayDataMap(new DataMapDisplayEvent(
                     application.getFrameController().getView(),
-                    map,
                     (DataChannelDescriptor) controller
                             .getProject()
                             .getRootNode(),
+                    map,
                     controller.getSelectedDataNode()));
         } else {
             // fix DataMap name, as there maybe a map with the same name already

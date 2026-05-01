@@ -63,6 +63,6 @@ public class CreateQueryAction extends ModelerAbstractAction {
     public static void fireQueryEvent(Object src, ProjectController mediator, DataChannelDescriptor domain,
             DataMap dataMap, QueryDescriptor query) {
         mediator.fireQueryEvent(QueryEvent.ofAdd(src, query, dataMap));
-        mediator.displayQuery(new QueryDisplayEvent(src, query, dataMap, domain));
+        mediator.displayQuery(new QueryDisplayEvent(src, domain, dataMap, query));
     }
 }

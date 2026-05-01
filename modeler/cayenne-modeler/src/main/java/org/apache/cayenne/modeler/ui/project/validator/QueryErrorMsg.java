@@ -42,7 +42,7 @@ public class QueryErrorMsg extends ValidationDisplayHandler {
         QueryDescriptor query = (QueryDescriptor) object;
         DataMap map = query.getDataMap();
 
-        QueryDisplayEvent event = new QueryDisplayEvent(frame, query, map, domain);
+        QueryDisplayEvent event = new QueryDisplayEvent(frame, domain, map, query);
         mediator.displayQuery(event);
     }
 }

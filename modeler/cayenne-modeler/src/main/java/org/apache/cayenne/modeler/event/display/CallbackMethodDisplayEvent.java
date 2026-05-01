@@ -20,9 +20,7 @@ package org.apache.cayenne.modeler.event.display;
 
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
 
-import java.util.EventObject;
-
-public class CallbackMethodDisplayEvent extends EventObject {
+public class CallbackMethodDisplayEvent extends DisplayEvent {
 
     private final ObjCallbackMethod[] callbackMethods;
 

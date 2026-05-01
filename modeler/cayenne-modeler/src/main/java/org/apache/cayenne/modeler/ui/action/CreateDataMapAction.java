@@ -53,8 +53,7 @@ public class CreateDataMapAction extends ModelerAbstractAction {
 
         controller.fireDataMapEvent(DataMapEvent.ofAdd(src, map));
 
-        DataMapDisplayEvent displayEvent = new DataMapDisplayEvent(src, map, domain, node);
-        displayEvent.setMainTabFocus(true);
+        DataMapDisplayEvent displayEvent = new DataMapDisplayEvent(src, domain, map, node, true);
         controller.displayDataMap(displayEvent);
     }
 

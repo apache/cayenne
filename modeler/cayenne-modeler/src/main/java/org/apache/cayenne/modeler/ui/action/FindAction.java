@@ -41,14 +41,17 @@ import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.SQLTemplateDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DbAttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DbRelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableAttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjAttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjRelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
-import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.ui.find.FindDialogController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
@@ -269,28 +272,30 @@ public class FindAction extends ModelerAbstractAction {
         }
         buildAndSelectTreePath(map, entity, projectView);
 
-        if (searchResultEntry.getObject() instanceof Attribute) {
-            AttributeDisplayEvent event = new AttributeDisplayEvent(projectView.getProjectTreeView(),
-                    (Attribute<?, ?, ?>) searchResultEntry.getObject(), entity, map, domain);
-            event.setMainTabFocus(true);
-            if (searchResultEntry.getObject() instanceof DbAttribute) {
-                controller.displayDbAttribute(event);
-                projectView.getEditorPanel().getDbDetailView().repaint();
-            } else {
-                controller.displayObjAttribute(event);
-                projectView.getEditorPanel().getObjDetailView().repaint();
-            }
-        } else if (searchResultEntry.getObject() instanceof Relationship) {
-            RelationshipDisplayEvent event = new RelationshipDisplayEvent(projectView.getProjectTreeView(),
-                    (Relationship<?, ?, ?>) searchResultEntry.getObject(), entity, map, domain);
-            event.setMainTabFocus(true);
-            if (searchResultEntry.getObject() instanceof DbRelationship) {
-                controller.displayDbRelationship(event);
-                projectView.getEditorPanel().getDbDetailView().repaint();
-            } else {
-                controller.displayObjRelationship(event);
-                projectView.getEditorPanel().getObjDetailView().repaint();
-            }
+        if (searchResultEntry.getObject() instanceof DbAttribute) {
+            DbAttributeDisplayEvent event = new DbAttributeDisplayEvent(
+                    projectView.getProjectTreeView(), domain, map, (DbEntity) entity,
+                    (DbAttribute) searchResultEntry.getObject());
+            controller.displayDbAttribute(event);
+            projectView.getEditorPanel().getDbDetailView().repaint();
+        } else if (searchResultEntry.getObject() instanceof ObjAttribute) {
+            ObjAttributeDisplayEvent event = new ObjAttributeDisplayEvent(
+                    projectView.getProjectTreeView(), domain, map, (ObjEntity) entity,
+                    (ObjAttribute) searchResultEntry.getObject());
+            controller.displayObjAttribute(event);
+            projectView.getEditorPanel().getObjDetailView().repaint();
+        } else if (searchResultEntry.getObject() instanceof DbRelationship) {
+            DbRelationshipDisplayEvent event = new DbRelationshipDisplayEvent(
+                    projectView.getProjectTreeView(), domain, map, (DbEntity) entity,
+                    (DbRelationship) searchResultEntry.getObject());
+            controller.displayDbRelationship(event);
+            projectView.getEditorPanel().getDbDetailView().repaint();
+        } else if (searchResultEntry.getObject() instanceof ObjRelationship) {
+            ObjRelationshipDisplayEvent event = new ObjRelationshipDisplayEvent(
+                    projectView.getProjectTreeView(), domain, map, (ObjEntity) entity,
+                    (ObjRelationship) searchResultEntry.getObject());
+            controller.displayObjRelationship(event);
+            projectView.getEditorPanel().getObjDetailView().repaint();
         }
     }
 
@@ -303,8 +308,8 @@ public class FindAction extends ModelerAbstractAction {
         Embeddable embeddable = attribute.getEmbeddable();
         DataMap map = embeddable.getDataMap();
         buildAndSelectTreePath(map, embeddable, projectView);
-        EmbeddableAttributeDisplayEvent event = new EmbeddableAttributeDisplayEvent(projectView.getProjectTreeView(), embeddable, attribute, map, domain);
-        event.setMainTabFocus(true);
+        EmbeddableAttributeDisplayEvent event = new EmbeddableAttributeDisplayEvent(
+                projectView.getProjectTreeView(), domain, map, embeddable, attribute);
         controller.displayEmbeddableAttribute(event);
         projectView.getEditorPanel().getEmbeddableView().repaint();
     }
@@ -313,27 +318,29 @@ public class FindAction extends ModelerAbstractAction {
                                                ProjectController controller) {
         DataMap map = embeddable.getDataMap();
         buildAndSelectTreePath(map, embeddable, projectView);
-        EmbeddableDisplayEvent event = new EmbeddableDisplayEvent(projectView.getProjectTreeView(), embeddable, map, domain);
-        event.setMainTabFocus(true);
+        EmbeddableDisplayEvent event = new EmbeddableDisplayEvent(
+                projectView.getProjectTreeView(), domain, map, embeddable, true);
         controller.displayEmbeddable(event);
     }
 
     private static void jumpToQueryResult(QueryDescriptor queryDescriptor, ProjectView projectView, DataChannelDescriptor domain, ProjectController controller) {
         DataMap map = queryDescriptor.getDataMap();
         buildAndSelectTreePath(map, queryDescriptor, projectView);
-        QueryDisplayEvent event = new QueryDisplayEvent(projectView.getProjectTreeView(), queryDescriptor, map, domain);
+        QueryDisplayEvent event = new QueryDisplayEvent(projectView.getProjectTreeView(), domain, map, queryDescriptor);
         controller.displayQuery(event);
     }
 
     private static void jumpToEntityResult(Entity<?, ?, ?> entity, ProjectView projectView, DataChannelDescriptor domain, ProjectController controller) {
         DataMap map = entity.getDataMap();
         buildAndSelectTreePath(map, entity, projectView);
-        EntityDisplayEvent event = new EntityDisplayEvent(projectView.getProjectTreeView(), entity, map, domain);
-        event.setMainTabFocus(true);
 
         if (entity instanceof ObjEntity) {
+            ObjEntityDisplayEvent event = new ObjEntityDisplayEvent(
+                    projectView.getProjectTreeView(), domain, map, (ObjEntity) entity, true, false);
             controller.displayObjEntity(event);
         } else if (entity instanceof DbEntity) {
+            DbEntityDisplayEvent event = new DbEntityDisplayEvent(
+                    projectView.getProjectTreeView(), domain, map, (DbEntity) entity, true, false);
             controller.displayDbEntity(event);
         }
     }
@@ -342,7 +349,7 @@ public class FindAction extends ModelerAbstractAction {
                                               ProjectController controller) {
         DataMap map = procedure.getDataMap();
         buildAndSelectTreePath(map, procedure, projectView);
-        ProcedureDisplayEvent event = new ProcedureDisplayEvent(projectView.getProjectTreeView(), procedure, map, domain);
+        ProcedureDisplayEvent event = new ProcedureDisplayEvent(projectView.getProjectTreeView(), domain, map, procedure);
         controller.displayProcedure(event);
         projectView.getEditorPanel().getProcedureView().repaint();
     }
@@ -353,7 +360,7 @@ public class FindAction extends ModelerAbstractAction {
         DataMap map = procedure.getDataMap();
         buildAndSelectTreePath(map, procedure, projectView);
         ProcedureParameterDisplayEvent event =
-                new ProcedureParameterDisplayEvent(projectView.getProjectTreeView(), parameter, procedure, map, domain);
+                new ProcedureParameterDisplayEvent(projectView.getProjectTreeView(), domain, map, procedure, parameter);
         controller.displayProcedureParameter(event);
         projectView.getEditorPanel().getProcedureView().repaint();
     }

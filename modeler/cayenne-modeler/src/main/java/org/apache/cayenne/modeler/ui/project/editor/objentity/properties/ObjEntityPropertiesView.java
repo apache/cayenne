@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.objentity.properties;
 
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityListener;
@@ -144,7 +144,7 @@ public class ObjEntityPropertiesView extends JPanel implements ObjEntityDisplayL
     }
 
     @Override
-    public void objEntitySelected(EntityDisplayEvent e) {
+    public void objEntitySelected(ObjEntityDisplayEvent e) {
         attributePanel.objEntitySelected(e);
         relationshipPanel.objEntitySelected(e);
     }

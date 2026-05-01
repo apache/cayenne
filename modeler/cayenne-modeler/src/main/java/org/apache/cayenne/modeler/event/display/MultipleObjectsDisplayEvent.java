@@ -20,20 +20,18 @@ package org.apache.cayenne.modeler.event.display;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 
-import java.util.EventObject;
-
 /**
  * Display event for several selected objects
  */
-public class MultipleObjectsDisplayEvent extends EventObject {
+public class MultipleObjectsDisplayEvent extends DisplayEvent {
 
-    private ConfigurationNode[] nodes;
-    private ConfigurationNode parentNode;
+    private final ConfigurationNode[] nodes;
+    private final ConfigurationNode parentNode;
 
-    public MultipleObjectsDisplayEvent(Object src, ConfigurationNode[] objects, ConfigurationNode parentObject) {
+    public MultipleObjectsDisplayEvent(Object src, ConfigurationNode[] nodes, ConfigurationNode parentNode) {
         super(src);
-        this.nodes = objects;
-        this.parentNode = parentObject;
+        this.nodes = nodes;
+        this.parentNode = parentNode;
     }
 
     public ConfigurationNode[] getNodes() {

@@ -25,11 +25,10 @@ import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.modeler.event.model.DbEntityEvent;
-import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
+import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateDbEntityUndoableEdit;
 
 import java.awt.event.ActionEvent;
@@ -38,9 +37,13 @@ public class CreateDbEntityAction extends ModelerAbstractAction {
 
     static void onDbEntityCreated(Object src, ProjectController controller, DbEntity entity) {
         controller.fireDbEntityEvent(DbEntityEvent.ofAdd(src, entity));
-        EntityDisplayEvent displayEvent = new EntityDisplayEvent(src, entity, controller.getSelectedDataMap(),
-                controller.getSelectedDataNode(), (DataChannelDescriptor) controller.getProject().getRootNode());
-        displayEvent.setMainTabFocus(true);
+        DbEntityDisplayEvent displayEvent = new DbEntityDisplayEvent(
+                src,
+                (DataChannelDescriptor) controller.getProject().getRootNode(),
+                controller.getSelectedDataMap(),
+                entity,
+                true,
+                false);
         controller.displayDbEntity(displayEvent);
     }
 

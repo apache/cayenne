@@ -223,10 +223,10 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
 
         ProcedureParameterDisplayEvent ppde = new ProcedureParameterDisplayEvent(
                 this,
-                parameters,
-                controller.getSelectedProcedure(),
+                (DataChannelDescriptor) controller.getProject().getRootNode(),
                 controller.getSelectedDataMap(),
-                (DataChannelDescriptor) controller.getProject().getRootNode());
+                controller.getSelectedProcedure(),
+                parameters);
         controller.displayProcedureParameter(ppde);
     }
 

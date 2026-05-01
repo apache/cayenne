@@ -144,10 +144,10 @@ public class EmbeddableAttributesView extends JPanel implements
 
         EmbeddableAttributeDisplayEvent ev = new EmbeddableAttributeDisplayEvent(
                 this,
-                controller.getSelectedEmbeddable(),
-                attrs,
+                (DataChannelDescriptor) controller.getProject().getRootNode(),
                 controller.getSelectedDataMap(),
-                (DataChannelDescriptor) controller.getProject().getRootNode());
+                controller.getSelectedEmbeddable(),
+                attrs);
 
         controller.displayEmbeddableAttribute(ev);
     }

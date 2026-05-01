@@ -21,13 +21,19 @@ package org.apache.cayenne.modeler.event.display;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.project.validation.Inspection;
 
-public class ValidationConfigDisplayEvent extends DomainDisplayEvent {
+public class ValidationConfigDisplayEvent extends DisplayEvent {
 
+    private final DataChannelDescriptor domain;
     private final Inspection inspection;
 
     public ValidationConfigDisplayEvent(Object src, DataChannelDescriptor domain, Inspection inspection) {
-        super(src, domain);
+        super(src);
+        this.domain = domain;
         this.inspection = inspection;
+    }
+
+    public DataChannelDescriptor getDomain() {
+        return domain;
     }
 
     public Inspection getInspection() {

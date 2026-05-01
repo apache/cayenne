@@ -22,14 +22,16 @@ import java.awt.event.ActionEvent;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 import org.apache.cayenne.modeler.ui.ModelerFrame;
+import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
-import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
-import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
 
 /**
  * Action that shows entity on the graph
@@ -81,11 +83,12 @@ public class ShowGraphEntityAction extends ModelerAbstractAction {
                         .getSelectionPath()
                         .getParentPath()
                         .getParentPath());
-        DomainDisplayEvent event = new EntityDisplayEvent(
-                editor.getProjectTreeView(),
-                entity,
-                entity.getDataMap(),
-                (DataChannelDescriptor) getProjectController().getProject().getRootNode());
-        getProjectController().displayDomain(event);
+
+        DataChannelDescriptor domain = (DataChannelDescriptor) getProjectController().getProject().getRootNode();
+        if (entity instanceof ObjEntity) {
+            getProjectController().displayObjEntity(new ObjEntityDisplayEvent(this, domain, entity.getDataMap(), (ObjEntity) entity));
+        } else if (entity instanceof DbEntity) {
+            getProjectController().displayDbEntity(new DbEntityDisplayEvent(this, domain, entity.getDataMap(), (DbEntity) entity));
+        }
     }
 }

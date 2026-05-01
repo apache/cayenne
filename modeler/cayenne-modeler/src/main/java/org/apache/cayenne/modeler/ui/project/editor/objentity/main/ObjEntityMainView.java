@@ -33,7 +33,8 @@ import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.ui.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.ObjEntityCounterpartAction;
 import org.apache.cayenne.modeler.ui.action.ObjEntitySyncAction;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
@@ -216,14 +217,14 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
                 dbEntityCombo.getModel().setSelectedItem(entity.getDbEntity());
                 superClassName.setText(entity.getSuperClassName());
 
-                // fire both EntityEvent and EntityDisplayEvent;
+                // fire both ObjEntityEvent and ObjEntityDisplayEvent;
                 // the latter is to update attribute and relationship display
 
                 DataChannelDescriptor domain = (DataChannelDescriptor) controller.getProject().getRootNode();
                 DataMap map = controller.getSelectedDataMap();
 
                 controller.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
-                controller.displayObjEntity(new EntityDisplayEvent(this, entity, map, domain));
+                controller.displayObjEntity(new ObjEntityDisplayEvent(this, domain, map, entity));
             }
         });
 
@@ -232,7 +233,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
             DbEntity entity = controller.getSelectedObjEntity().getDbEntity();
             if (entity != null) {
                 DataChannelDescriptor dom = (DataChannelDescriptor) controller.getProject().getRootNode();
-                controller.displayDbEntity(new EntityDisplayEvent(this, entity, entity.getDataMap(), dom));
+                controller.displayDbEntity(new DbEntityDisplayEvent(this, dom, entity.getDataMap(), entity));
             }
         });
 
@@ -405,16 +406,16 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
 
     public void processExistingSelection(EventObject e) {
 
-        EntityDisplayEvent ede = new EntityDisplayEvent(
+        ObjEntityDisplayEvent ede = new ObjEntityDisplayEvent(
                 this,
-                controller.getSelectedObjEntity(),
+                (DataChannelDescriptor) controller.getProject().getRootNode(),
                 controller.getSelectedDataMap(),
-                (DataChannelDescriptor) controller.getProject().getRootNode());
+                controller.getSelectedObjEntity());
         controller.displayObjEntity(ede);
     }
 
-    public void objEntitySelected(EntityDisplayEvent e) {
-        ObjEntity entity = (ObjEntity) e.getEntity();
+    public void objEntitySelected(ObjEntityDisplayEvent e) {
+        ObjEntity entity = e.getEntity();
         if (entity == null) {
             return;
         }

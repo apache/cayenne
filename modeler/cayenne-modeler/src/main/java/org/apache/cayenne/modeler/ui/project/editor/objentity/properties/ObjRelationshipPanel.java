@@ -36,9 +36,9 @@ import org.apache.cayenne.modeler.ui.action.ObjEntityToSuperEntityAction;
 import org.apache.cayenne.modeler.ui.action.PasteAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.relinfo.ObjRelationshipInfoController;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
-import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjRelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.toolkit.table.CMTablePrefs;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
@@ -163,12 +163,12 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
     /**
      * Loads obj relationships into table.
      */
-    public void objEntitySelected(EntityDisplayEvent e) {
+    public void objEntitySelected(ObjEntityDisplayEvent e) {
         if (e.getSource() == this) {
             return;
         }
 
-        ObjEntity entity = (ObjEntity) e.getEntity();
+        ObjEntity entity = e.getEntity();
 
         // Important: process event even if this is the same entity,
         // since the inheritance structure might have changed
@@ -430,12 +430,12 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
             editMenu.setEnabled(editEnabled);
         }
 
-        controller.displayObjRelationship(new RelationshipDisplayEvent(
+        controller.displayObjRelationship(new ObjRelationshipDisplayEvent(
                 this,
-                rels,
-                controller.getSelectedObjEntity(),
+                controller.getSelectedDataDomain(),
                 controller.getSelectedDataMap(),
-                controller.getSelectedDataDomain()));
+                controller.getSelectedObjEntity(),
+                rels));
 
         parentPanel.updateActions(rels);
     }

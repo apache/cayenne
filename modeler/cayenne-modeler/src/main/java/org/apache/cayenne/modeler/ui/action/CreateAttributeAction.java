@@ -38,8 +38,9 @@ import org.apache.cayenne.modeler.event.model.EmbeddableAttributeEvent;
 import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DbAttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableAttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjAttributeDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateAttributeUndoableEdit;
 import org.apache.cayenne.modeler.undo.CreateEmbAttributeUndoableEdit;
 
@@ -52,8 +53,9 @@ public class CreateAttributeAction extends ModelerAbstractAction {
 
         controller.fireEmbeddableAttributeEvent(EmbeddableAttributeEvent.ofAdd(src, attr, embeddable));
 
-        EmbeddableAttributeDisplayEvent e = new EmbeddableAttributeDisplayEvent(src, embeddable, attr,
-                controller.getSelectedDataMap(), (DataChannelDescriptor) controller.getProject().getRootNode());
+        DataChannelDescriptor domain = (DataChannelDescriptor) controller.getProject().getRootNode();
+        EmbeddableAttributeDisplayEvent e = new EmbeddableAttributeDisplayEvent(
+                src, domain, controller.getSelectedDataMap(), embeddable, attr);
 
         controller.displayEmbeddableAttribute(e);
     }
@@ -68,7 +70,7 @@ public class CreateAttributeAction extends ModelerAbstractAction {
 
         DataChannelDescriptor domain = (DataChannelDescriptor) controller.getProject().getRootNode();
 
-        AttributeDisplayEvent ade = new AttributeDisplayEvent(src, attr, objEntity, map, domain);
+        ObjAttributeDisplayEvent ade = new ObjAttributeDisplayEvent(src, domain, map, objEntity, attr);
 
         controller.displayObjAttribute(ade);
     }
@@ -80,8 +82,8 @@ public class CreateAttributeAction extends ModelerAbstractAction {
                                      DbAttribute attr) {
         controller.fireDbAttributeEvent(DbAttributeEvent.ofAdd(src, attr, dbEntity));
 
-        AttributeDisplayEvent ade = new AttributeDisplayEvent(src, attr, dbEntity, map,
-                (DataChannelDescriptor) controller.getProject().getRootNode());
+        DataChannelDescriptor domain = (DataChannelDescriptor) controller.getProject().getRootNode();
+        DbAttributeDisplayEvent ade = new DbAttributeDisplayEvent(src, domain, map, dbEntity, attr);
 
         controller.displayDbAttribute(ade);
     }

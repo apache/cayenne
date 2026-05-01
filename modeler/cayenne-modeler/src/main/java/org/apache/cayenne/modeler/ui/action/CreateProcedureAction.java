@@ -43,9 +43,12 @@ public class CreateProcedureAction extends ModelerAbstractAction {
      */
     static void fireProcedureEvent(Object src, ProjectController controller, DataMap dataMap, Procedure procedure) {
         controller.fireProcedureEvent(ProcedureEvent.ofAdd(src, procedure));
-        ProcedureDisplayEvent displayEvent = new ProcedureDisplayEvent(src, procedure, controller.getSelectedDataMap(),
-                (DataChannelDescriptor) controller.getProject().getRootNode());
-        displayEvent.setTabReset(true);
+        ProcedureDisplayEvent displayEvent = new ProcedureDisplayEvent(
+                src,
+                (DataChannelDescriptor) controller.getProject().getRootNode(),
+                controller.getSelectedDataMap(),
+                procedure,
+                true);
         controller.displayProcedure(displayEvent);
     }
 

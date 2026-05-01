@@ -21,35 +21,32 @@ package org.apache.cayenne.modeler.event.display;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.ProcedureParameter;
+import org.apache.cayenne.map.ObjEntity;
 
-
-public class ProcedureParameterDisplayEvent extends DisplayEvent {
+public class ObjEntityDisplayEvent extends DisplayEvent {
 
     private final DataChannelDescriptor domain;
     private final DataMap dataMap;
-    private final Procedure procedure;
-    private final ProcedureParameter[] procedureParameters;
+    private final ObjEntity entity;
+    private final boolean mainTabFocus;
+    private final boolean unselectAttributes;
 
-    public ProcedureParameterDisplayEvent(Object src,
-                                          DataChannelDescriptor domain,
-                                          DataMap dataMap,
-                                          Procedure procedure,
-                                          ProcedureParameter procedureParameter) {
-        this(src, domain, dataMap, procedure, new ProcedureParameter[]{procedureParameter});
+    public ObjEntityDisplayEvent(Object src, DataChannelDescriptor domain, DataMap dataMap, ObjEntity entity) {
+        this(src, domain, dataMap, entity, false, false);
     }
 
-    public ProcedureParameterDisplayEvent(Object src,
-                                          DataChannelDescriptor domain,
-                                          DataMap dataMap,
-                                          Procedure procedure,
-                                          ProcedureParameter[] procedureParameters) {
+    public ObjEntityDisplayEvent(Object src,
+                                 DataChannelDescriptor domain,
+                                 DataMap dataMap,
+                                 ObjEntity entity,
+                                 boolean mainTabFocus,
+                                 boolean unselectAttributes) {
         super(src);
         this.domain = domain;
         this.dataMap = dataMap;
-        this.procedure = procedure;
-        this.procedureParameters = procedureParameters;
+        this.entity = entity;
+        this.mainTabFocus = mainTabFocus;
+        this.unselectAttributes = unselectAttributes;
     }
 
     public DataChannelDescriptor getDomain() {
@@ -60,11 +57,15 @@ public class ProcedureParameterDisplayEvent extends DisplayEvent {
         return dataMap;
     }
 
-    public Procedure getProcedure() {
-        return procedure;
+    public ObjEntity getEntity() {
+        return entity;
     }
 
-    public ProcedureParameter[] getProcedureParameters() {
-        return procedureParameters;
+    public boolean isMainTabFocus() {
+        return mainTabFocus;
+    }
+
+    public boolean isUnselectAttributes() {
+        return unselectAttributes;
     }
 }

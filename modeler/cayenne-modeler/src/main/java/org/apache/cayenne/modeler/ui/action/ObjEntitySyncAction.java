@@ -27,7 +27,7 @@ import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.entitysync.EntitySyncController;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -80,11 +80,11 @@ public class ObjEntitySyncAction extends ModelerAbstractAction {
             if (merger.synchronizeWithDbEntity(entity)) {
                 mediator
                         .fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
-                mediator.displayObjEntity(new EntityDisplayEvent(
+                mediator.displayObjEntity(new ObjEntityDisplayEvent(
                         this,
-                        entity,
+                        (DataChannelDescriptor) mediator.getProject().getRootNode(),
                         entity.getDataMap(),
-                        (DataChannelDescriptor) mediator.getProject().getRootNode()));
+                        entity));
             }
         }
     }

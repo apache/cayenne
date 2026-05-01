@@ -18,16 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.datadomain;
 
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 import org.apache.cayenne.modeler.ui.action.GenerateCodeAction;
 import org.apache.cayenne.modeler.ui.action.ShowValidationConfigAction;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.cgen.DataDomainCgenController;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.dbimport.DataDomainDbImportController;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.DataDomainGraphTab;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ShowGraphEntityAction;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.main.DataDomainMainView;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.validation.ValidationTabController;
-import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
-import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.DataDomainGraphTab;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -69,6 +71,20 @@ public class DataDomainView extends JTabbedPane {
 
         addChangeListener(this::stateChanged);
         controller.addDomainDisplayListener(this::currentDomainChanged);
+        controller.addObjEntityDisplayListener(this::onEntitySelected);
+        controller.addDbEntityDisplayListener(this::onEntitySelected);
+    }
+
+    private void onEntitySelected(ObjEntityDisplayEvent e) {
+        if (e.getSource() instanceof ShowGraphEntityAction) {
+            setSelectedComponent(graphTab);
+        }
+    }
+
+    private void onEntitySelected(DbEntityDisplayEvent e) {
+        if (e.getSource() instanceof ShowGraphEntityAction) {
+            setSelectedComponent(graphTab);
+        }
     }
 
     private void stateChanged(ChangeEvent e) {
@@ -84,10 +100,6 @@ public class DataDomainView extends JTabbedPane {
     }
 
     private void currentDomainChanged(DomainDisplayEvent e) {
-        if (e instanceof EntityDisplayEvent) {
-            //need select an entity
-            setSelectedComponent(graphTab);
-        }
         if (getSelectedComponent() == cgenView) {
             fireStateChanged();
         }

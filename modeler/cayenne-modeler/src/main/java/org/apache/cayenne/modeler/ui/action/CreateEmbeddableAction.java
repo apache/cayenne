@@ -46,10 +46,10 @@ public class CreateEmbeddableAction extends ModelerAbstractAction {
                 dataMap);
         EmbeddableDisplayEvent displayEvent = new EmbeddableDisplayEvent(
                 src,
-                embeddable,
+                (DataChannelDescriptor) controller.getProject().getRootNode(),
                 dataMap,
-                (DataChannelDescriptor) controller.getProject().getRootNode());
-        displayEvent.setMainTabFocus(true);
+                embeddable,
+                true);
         controller.displayEmbeddable(displayEvent);
 
     }

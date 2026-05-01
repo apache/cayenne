@@ -23,7 +23,8 @@ import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 
 import javax.swing.undo.CannotRedoException;
@@ -77,7 +78,8 @@ public class ChangePKGeneratorUndoableEdit extends CayenneUndoableEdit {
 
     private void fireEvents() {
         controller.fireDbEntityEvent(DbEntityEvent.ofChange(this, dbEntity));
-        controller.displayDbEntity(new EntityDisplayEvent(this, dbEntity));
+        DataChannelDescriptor domain = (DataChannelDescriptor) controller.getProject().getRootNode();
+        controller.displayDbEntity(new DbEntityDisplayEvent(this, domain, dbEntity.getDataMap(), dbEntity));
     }
 
     public boolean hasRealChange() {

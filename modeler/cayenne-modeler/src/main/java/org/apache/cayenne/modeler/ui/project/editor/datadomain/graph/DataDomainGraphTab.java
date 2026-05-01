@@ -21,9 +21,10 @@ package org.apache.cayenne.modeler.ui.project.editor.datadomain.graph;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DomainDisplayListener;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 import org.apache.cayenne.modeler.graph.GraphBuilder;
 import org.apache.cayenne.modeler.graph.GraphRegistry;
 import org.apache.cayenne.modeler.graph.GraphType;
@@ -31,6 +32,7 @@ import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.RebuildGraphAction;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.SaveAsImageAction;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ShowGraphEntityAction;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ZoomInAction;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ZoomOutAction;
 import org.jgraph.JGraph;
@@ -58,6 +60,8 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
 
         needRebuild = true;
         controller.addDomainDisplayListener(this);
+        controller.addObjEntityDisplayListener(this::entityFocused);
+        controller.addDbEntityDisplayListener(this::entityFocused);
 
         setLayout(new BorderLayout());
         JToolBar toolbar = new JToolBar();
@@ -89,29 +93,50 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
     }
 
     public void domainSelected(DomainDisplayEvent e) {
-        if (e instanceof EntityDisplayEvent) {
-            // selecting an event
-
-            // choose type of diagram
-            Entity<?,?,?> entity = ((EntityDisplayEvent) e).getEntity();
-            diagramCombo.setSelectedIndex(entity instanceof ObjEntity ? 1 : 0);
-            refresh();
-
-            GraphBuilder builder = getGraphRegistry().getGraphMap(domain).get(getSelectedType());
-
-            Object cell = builder.getEntityCell(entity.getName());
-
-            if (cell != null) {
-                graph.setSelectionCell(cell);
-                graph.scrollCellToVisible(cell);
-            }
-        } else if (domain != e.getDomain()) {
+        if (domain != e.getDomain()) {
             needRebuild = true;
             domain = e.getDomain();
 
             if (isVisible()) {
                 refresh();
             }
+        }
+    }
+
+    private void entityFocused(ObjEntityDisplayEvent e) {
+        if (e.getSource() instanceof ShowGraphEntityAction) {
+            focusEntity(e.getEntity(), e.getDomain());
+        }
+    }
+
+    private void entityFocused(DbEntityDisplayEvent e) {
+        if (e.getSource() instanceof ShowGraphEntityAction) {
+            focusEntity(e.getEntity(), e.getDomain());
+        }
+    }
+
+    private void focusEntity(Entity<?, ?, ?> entity, DataChannelDescriptor entityDomain) {
+        if (entity == null) {
+            return;
+        }
+
+        // align graph domain to selection if needed
+        if (domain != entityDomain) {
+            domain = entityDomain;
+            needRebuild = true;
+        }
+
+        // choose type of diagram
+        diagramCombo.setSelectedIndex(entity instanceof ObjEntity ? 1 : 0);
+        refresh();
+
+        GraphBuilder builder = getGraphRegistry().getGraphMap(domain).get(getSelectedType());
+
+        Object cell = builder.getEntityCell(entity.getName());
+
+        if (cell != null) {
+            graph.setSelectionCell(cell);
+            graph.scrollCellToVisible(cell);
         }
     }
 

@@ -22,29 +22,33 @@ package org.apache.cayenne.modeler.pref;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
-import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.modeler.event.display.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DbAttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DbRelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableAttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.MultipleObjectsDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjAttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjRelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
-import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.util.CayenneMapEntry;
 
@@ -71,7 +75,7 @@ final class ProjectSelectionMemo {
     private ProjectSelectionMemo() {
     }
 
-    static void save(ProjectController controller, ProjectStatePreferences prefs) {
+    public static void save(ProjectController controller, ProjectStatePreferences prefs) {
         Kind kind = leafKind(controller);
         if (kind == null) {
             return;
@@ -90,23 +94,25 @@ final class ProjectSelectionMemo {
                 saveDataMapPath(controller, prefs);
                 break;
             case objEntity:
+                saveObjEntityPath(controller, prefs);
+                break;
             case dbEntity:
-                saveEntityPath(controller, prefs);
+                saveDbEntityPath(controller, prefs);
                 break;
             case objAttributes:
-                saveEntityPath(controller, prefs);
+                saveObjEntityPath(controller, prefs);
                 prefs.setObjAttrs(joinNames(controller.getSelectedObjAttributes()));
                 break;
             case dbAttributes:
-                saveEntityPath(controller, prefs);
+                saveDbEntityPath(controller, prefs);
                 prefs.setDbAttrs(joinNames(controller.getSelectedDbAttributes()));
                 break;
             case objRelationships:
-                saveEntityPath(controller, prefs);
+                saveObjEntityPath(controller, prefs);
                 prefs.setObjRels(joinNames(controller.getSelectedObjRelationships()));
                 break;
             case dbRelationships:
-                saveEntityPath(controller, prefs);
+                saveDbEntityPath(controller, prefs);
                 prefs.setDbRels(joinNames(controller.getSelectedDbRelationships()));
                 break;
             case embeddable:
@@ -132,7 +138,7 @@ final class ProjectSelectionMemo {
         }
     }
 
-    static void restore(ProjectController controller, ProjectStatePreferences prefs) {
+    public static void restore(ProjectController controller, ProjectStatePreferences prefs) {
         Kind kind = parseKind(prefs.getEvent());
         if (kind == null) {
             return;
@@ -154,16 +160,22 @@ final class ProjectSelectionMemo {
                 restoreDataMap(controller, domain, prefs);
                 break;
             case objEntity:
+                restoreObjEntity(controller, domain, prefs);
+                break;
             case dbEntity:
-                restoreEntity(controller, domain, prefs);
+                restoreDbEntity(controller, domain, prefs);
                 break;
             case objAttributes:
+                restoreObjAttributes(controller, domain, prefs);
+                break;
             case dbAttributes:
-                restoreAttributes(controller, domain, prefs);
+                restoreDbAttributes(controller, domain, prefs);
                 break;
             case objRelationships:
+                restoreObjRelationships(controller, domain, prefs);
+                break;
             case dbRelationships:
-                restoreRelationships(controller, domain, prefs);
+                restoreDbRelationships(controller, domain, prefs);
                 break;
             case embeddable:
                 restoreEmbeddable(controller, domain, prefs);
@@ -271,21 +283,16 @@ final class ProjectSelectionMemo {
         }
     }
 
-    private static void saveEntityPath(ProjectController controller, ProjectStatePreferences prefs) {
-        prefs.setDomain(controller.getSelectedDataDomain().getName());
-        DataNodeDescriptor node = controller.getSelectedDataNode();
-        prefs.setNode(node != null ? node.getName() : "");
-        prefs.setDataMap(controller.getSelectedDataMap().getName());
+    private static void saveObjEntityPath(ProjectController controller, ProjectStatePreferences prefs) {
+        saveDataMapPath(controller, prefs);
+        prefs.setObjEntity(controller.getSelectedObjEntity().getName());
+        prefs.setDbEntity(null);
+    }
 
-        ObjEntity objEntity = controller.getSelectedObjEntity();
-        DbEntity dbEntity = controller.getSelectedDbEntity();
-        if (objEntity != null) {
-            prefs.setObjEntity(objEntity.getName());
-            prefs.setDbEntity(null);
-        } else if (dbEntity != null) {
-            prefs.setDbEntity(dbEntity.getName());
-            prefs.setObjEntity(null);
-        }
+    private static void saveDbEntityPath(ProjectController controller, ProjectStatePreferences prefs) {
+        saveDataMapPath(controller, prefs);
+        prefs.setDbEntity(controller.getSelectedDbEntity().getName());
+        prefs.setObjEntity(null);
     }
 
     private static void saveEmbeddablePath(ProjectController controller, ProjectStatePreferences prefs) {
@@ -343,76 +350,103 @@ final class ProjectSelectionMemo {
             return;
         }
         DataNodeDescriptor node = domain.getNodeDescriptor(prefs.getNode());
-        controller.displayDataMap(new DataMapDisplayEvent(ProjectSelectionMemo.class, dataMap, domain, node));
+        controller.displayDataMap(new DataMapDisplayEvent(ProjectSelectionMemo.class, domain, dataMap, node));
     }
 
-    private static void restoreEntity(ProjectController controller, DataChannelDescriptor domain,
-                                      ProjectStatePreferences prefs) {
+    private static void restoreObjEntity(ProjectController controller, DataChannelDescriptor domain,
+                                         ProjectStatePreferences prefs) {
         DataMap dataMap = domain.getDataMap(prefs.getDataMap());
         if (dataMap == null) {
             return;
         }
-        Entity<?, ?, ?> entity = lookupEntity(dataMap, prefs);
+        ObjEntity entity = dataMap.getObjEntity(prefs.getObjEntity());
         if (entity == null) {
             return;
         }
-        DataNodeDescriptor node = domain.getNodeDescriptor(prefs.getNode());
-        EntityDisplayEvent event = new EntityDisplayEvent(ProjectSelectionMemo.class, entity, dataMap, node, domain);
-        if (entity instanceof ObjEntity) {
-            controller.displayObjEntity(event);
-        } else if (entity instanceof DbEntity) {
-            controller.displayDbEntity(event);
-        }
+        controller.displayObjEntity(new ObjEntityDisplayEvent(
+                ProjectSelectionMemo.class, domain, dataMap, entity));
     }
 
-    private static void restoreAttributes(ProjectController controller, DataChannelDescriptor domain,
-                                          ProjectStatePreferences prefs) {
+    private static void restoreDbEntity(ProjectController controller, DataChannelDescriptor domain,
+                                        ProjectStatePreferences prefs) {
         DataMap dataMap = domain.getDataMap(prefs.getDataMap());
         if (dataMap == null) {
             return;
         }
-        Entity<?, ?, ?> entity = lookupEntity(dataMap, prefs);
+        DbEntity entity = dataMap.getDbEntity(prefs.getDbEntity());
         if (entity == null) {
             return;
         }
-        DataNodeDescriptor node = domain.getNodeDescriptor(prefs.getNode());
-
-        EntityDisplayEvent entityEvent = new EntityDisplayEvent(ProjectSelectionMemo.class, entity, dataMap, node, domain);
-        Attribute<?, ?, ?>[] attrs = lookupEntityAttributes(entity, prefs);
-        AttributeDisplayEvent attrEvent = new AttributeDisplayEvent(ProjectSelectionMemo.class, attrs, entity, dataMap, domain);
-
-        if (entity instanceof ObjEntity) {
-            controller.displayObjEntity(entityEvent);
-            controller.displayObjAttribute(attrEvent);
-        } else if (entity instanceof DbEntity) {
-            controller.displayDbEntity(entityEvent);
-            controller.displayDbAttribute(attrEvent);
-        }
+        controller.displayDbEntity(new DbEntityDisplayEvent(
+                ProjectSelectionMemo.class, domain, dataMap, entity));
     }
 
-    private static void restoreRelationships(ProjectController controller, DataChannelDescriptor domain,
+    private static void restoreObjAttributes(ProjectController controller, DataChannelDescriptor domain,
                                              ProjectStatePreferences prefs) {
         DataMap dataMap = domain.getDataMap(prefs.getDataMap());
         if (dataMap == null) {
             return;
         }
-        Entity<?, ?, ?> entity = lookupEntity(dataMap, prefs);
+        ObjEntity entity = dataMap.getObjEntity(prefs.getObjEntity());
         if (entity == null) {
             return;
         }
-        DataNodeDescriptor node = domain.getNodeDescriptor(prefs.getNode());
+        ObjAttribute[] attrs = lookupObjAttributes(entity, prefs);
+        controller.displayObjEntity(new ObjEntityDisplayEvent(
+                ProjectSelectionMemo.class, domain, dataMap, entity));
+        controller.displayObjAttribute(new ObjAttributeDisplayEvent(
+                ProjectSelectionMemo.class, domain, dataMap, entity, attrs));
+    }
 
-        EntityDisplayEvent entityEvent = new EntityDisplayEvent(ProjectSelectionMemo.class, entity, dataMap, node, domain);
-        Relationship<?, ?, ?>[] rels = lookupEntityRelationships(entity, prefs);
-        RelationshipDisplayEvent relEvent = new RelationshipDisplayEvent(ProjectSelectionMemo.class, rels, entity, dataMap, domain);
-
-        if (entity instanceof ObjEntity) {
-            controller.displayObjEntity(entityEvent);
-            controller.displayObjRelationship(relEvent);
-        } else if (entity instanceof DbEntity) {
-            controller.displayDbEntity(entityEvent);
-            controller.displayDbRelationship(relEvent);
+    private static void restoreDbAttributes(ProjectController controller, DataChannelDescriptor domain,
+                                            ProjectStatePreferences prefs) {
+        DataMap dataMap = domain.getDataMap(prefs.getDataMap());
+        if (dataMap == null) {
+            return;
         }
+        DbEntity entity = dataMap.getDbEntity(prefs.getDbEntity());
+        if (entity == null) {
+            return;
+        }
+        DbAttribute[] attrs = lookupDbAttributes(entity, prefs);
+        controller.displayDbEntity(new DbEntityDisplayEvent(
+                ProjectSelectionMemo.class, domain, dataMap, entity));
+        controller.displayDbAttribute(new DbAttributeDisplayEvent(
+                ProjectSelectionMemo.class, domain, dataMap, entity, attrs));
+    }
+
+    private static void restoreObjRelationships(ProjectController controller, DataChannelDescriptor domain,
+                                                ProjectStatePreferences prefs) {
+        DataMap dataMap = domain.getDataMap(prefs.getDataMap());
+        if (dataMap == null) {
+            return;
+        }
+        ObjEntity entity = dataMap.getObjEntity(prefs.getObjEntity());
+        if (entity == null) {
+            return;
+        }
+        ObjRelationship[] rels = lookupObjRelationships(entity, prefs);
+        controller.displayObjEntity(new ObjEntityDisplayEvent(
+                ProjectSelectionMemo.class, domain, dataMap, entity));
+        controller.displayObjRelationship(new ObjRelationshipDisplayEvent(
+                ProjectSelectionMemo.class, domain, dataMap, entity, rels));
+    }
+
+    private static void restoreDbRelationships(ProjectController controller, DataChannelDescriptor domain,
+                                               ProjectStatePreferences prefs) {
+        DataMap dataMap = domain.getDataMap(prefs.getDataMap());
+        if (dataMap == null) {
+            return;
+        }
+        DbEntity entity = dataMap.getDbEntity(prefs.getDbEntity());
+        if (entity == null) {
+            return;
+        }
+        DbRelationship[] rels = lookupDbRelationships(entity, prefs);
+        controller.displayDbEntity(new DbEntityDisplayEvent(
+                ProjectSelectionMemo.class, domain, dataMap, entity));
+        controller.displayDbRelationship(new DbRelationshipDisplayEvent(
+                ProjectSelectionMemo.class, domain, dataMap, entity, rels));
     }
 
     private static void restoreEmbeddable(ProjectController controller, DataChannelDescriptor domain,
@@ -425,7 +459,7 @@ final class ProjectSelectionMemo {
         if (embeddable == null) {
             return;
         }
-        controller.displayEmbeddable(new EmbeddableDisplayEvent(ProjectSelectionMemo.class, embeddable, dataMap, domain));
+        controller.displayEmbeddable(new EmbeddableDisplayEvent(ProjectSelectionMemo.class, domain, dataMap, embeddable));
     }
 
     private static void restoreEmbeddableAttributes(ProjectController controller, DataChannelDescriptor domain,
@@ -438,11 +472,11 @@ final class ProjectSelectionMemo {
         if (embeddable == null) {
             return;
         }
-        controller.displayEmbeddable(new EmbeddableDisplayEvent(ProjectSelectionMemo.class, embeddable, dataMap, domain));
+        controller.displayEmbeddable(new EmbeddableDisplayEvent(ProjectSelectionMemo.class, domain, dataMap, embeddable));
 
         EmbeddableAttribute[] attrs = lookupEmbeddableAttributes(embeddable, prefs);
         controller.displayEmbeddableAttribute(new EmbeddableAttributeDisplayEvent(
-                ProjectSelectionMemo.class, embeddable, attrs, dataMap, domain));
+                ProjectSelectionMemo.class, domain, dataMap, embeddable, attrs));
     }
 
     private static void restoreProcedure(ProjectController controller, DataChannelDescriptor domain,
@@ -455,7 +489,7 @@ final class ProjectSelectionMemo {
         if (procedure == null) {
             return;
         }
-        controller.displayProcedure(new ProcedureDisplayEvent(ProjectSelectionMemo.class, procedure, dataMap, domain));
+        controller.displayProcedure(new ProcedureDisplayEvent(ProjectSelectionMemo.class, domain, dataMap, procedure));
     }
 
     private static void restoreProcedureParameters(ProjectController controller, DataChannelDescriptor domain,
@@ -468,11 +502,11 @@ final class ProjectSelectionMemo {
         if (procedure == null) {
             return;
         }
-        controller.displayProcedure(new ProcedureDisplayEvent(ProjectSelectionMemo.class, procedure, dataMap, domain));
+        controller.displayProcedure(new ProcedureDisplayEvent(ProjectSelectionMemo.class, domain, dataMap, procedure));
 
         ProcedureParameter[] params = lookupProcedureParameters(procedure, prefs);
         controller.displayProcedureParameter(new ProcedureParameterDisplayEvent(
-                ProjectSelectionMemo.class, params, procedure, dataMap, domain));
+                ProjectSelectionMemo.class, domain, dataMap, procedure, params));
     }
 
     private static void restoreQuery(ProjectController controller, DataChannelDescriptor domain,
@@ -485,7 +519,7 @@ final class ProjectSelectionMemo {
         if (query == null) {
             return;
         }
-        controller.displayQuery(new QueryDisplayEvent(ProjectSelectionMemo.class, query, dataMap, domain));
+        controller.displayQuery(new QueryDisplayEvent(ProjectSelectionMemo.class, domain, dataMap, query));
     }
 
     private static void restoreMultipleObjects(ProjectController controller, DataChannelDescriptor domain,
@@ -513,34 +547,48 @@ final class ProjectSelectionMemo {
 
     // -------------------- name lookups --------------------
 
-    private static Entity<?, ?, ?> lookupEntity(DataMap dataMap, ProjectStatePreferences prefs) {
-        return !prefs.getObjEntity().isEmpty()
-                ? dataMap.getObjEntity(prefs.getObjEntity())
-                : dataMap.getDbEntity(prefs.getDbEntity());
-    }
-
-    private static Attribute<?, ?, ?>[] lookupEntityAttributes(Entity<?, ?, ?> entity, ProjectStatePreferences prefs) {
-        String stored = (entity instanceof ObjEntity) ? prefs.getObjAttrs() : prefs.getDbAttrs();
-        List<Attribute<?, ?, ?>> result = new ArrayList<>();
-        for (String name : stored.split(",")) {
-            Attribute<?, ?, ?> attr = entity.getAttribute(name);
+    private static ObjAttribute[] lookupObjAttributes(ObjEntity entity, ProjectStatePreferences prefs) {
+        List<ObjAttribute> result = new ArrayList<>();
+        for (String name : prefs.getObjAttrs().split(",")) {
+            ObjAttribute attr = entity.getAttribute(name);
             if (attr != null) {
                 result.add(attr);
             }
         }
-        return result.toArray(new Attribute[0]);
+        return result.toArray(new ObjAttribute[0]);
     }
 
-    private static Relationship<?, ?, ?>[] lookupEntityRelationships(Entity<?, ?, ?> entity, ProjectStatePreferences prefs) {
-        String stored = (entity instanceof ObjEntity) ? prefs.getObjRels() : prefs.getDbRels();
-        List<Relationship<?, ?, ?>> result = new ArrayList<>();
-        for (String name : stored.split(",")) {
-            Relationship<?, ?, ?> rel = entity.getRelationship(name);
+    private static DbAttribute[] lookupDbAttributes(DbEntity entity, ProjectStatePreferences prefs) {
+        List<DbAttribute> result = new ArrayList<>();
+        for (String name : prefs.getDbAttrs().split(",")) {
+            DbAttribute attr = entity.getAttribute(name);
+            if (attr != null) {
+                result.add(attr);
+            }
+        }
+        return result.toArray(new DbAttribute[0]);
+    }
+
+    private static ObjRelationship[] lookupObjRelationships(ObjEntity entity, ProjectStatePreferences prefs) {
+        List<ObjRelationship> result = new ArrayList<>();
+        for (String name : prefs.getObjRels().split(",")) {
+            ObjRelationship rel = entity.getRelationship(name);
             if (rel != null) {
                 result.add(rel);
             }
         }
-        return result.toArray(new Relationship[0]);
+        return result.toArray(new ObjRelationship[0]);
+    }
+
+    private static DbRelationship[] lookupDbRelationships(DbEntity entity, ProjectStatePreferences prefs) {
+        List<DbRelationship> result = new ArrayList<>();
+        for (String name : prefs.getDbRels().split(",")) {
+            DbRelationship rel = entity.getRelationship(name);
+            if (rel != null) {
+                result.add(rel);
+            }
+        }
+        return result.toArray(new DbRelationship[0]);
     }
 
     private static EmbeddableAttribute[] lookupEmbeddableAttributes(Embeddable embeddable, ProjectStatePreferences prefs) {

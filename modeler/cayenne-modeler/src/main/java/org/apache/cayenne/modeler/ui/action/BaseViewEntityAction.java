@@ -24,7 +24,8 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
 import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeModel;
 
@@ -60,15 +61,13 @@ public abstract class BaseViewEntityAction extends ModelerAbstractAction {
         ProjectView view = application.getFrameController().getView().getProjectView();
         view.getProjectTreeView().getSelectionModel().setSelectionPath(path);
 
-        EntityDisplayEvent event = new EntityDisplayEvent(
-                view.getProjectTreeView(),
-                entity,
-                entity.getDataMap(),
-                (DataChannelDescriptor) getProjectController().getProject().getRootNode());
+        DataChannelDescriptor domain = (DataChannelDescriptor) getProjectController().getProject().getRootNode();
         if (entity instanceof DbEntity) {
-            getProjectController().displayDbEntity(event);
+            getProjectController().displayDbEntity(new DbEntityDisplayEvent(
+                    view.getProjectTreeView(), domain, entity.getDataMap(), (DbEntity) entity));
         } else if (entity instanceof ObjEntity) {
-            getProjectController().displayObjEntity(event);
+            getProjectController().displayObjEntity(new ObjEntityDisplayEvent(
+                    view.getProjectTreeView(), domain, entity.getDataMap(), (ObjEntity) entity));
         }
     }
 

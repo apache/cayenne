@@ -43,9 +43,9 @@ public class EmbeddableErrorMsg extends ValidationDisplayHandler {
     public void displayField(ProjectController mediator, JFrame frame) {
         EmbeddableDisplayEvent event = new EmbeddableDisplayEvent(
                 frame,
-                embeddable,
+                domain,
                 map,
-                domain);
+                embeddable);
         mediator.displayEmbeddable(event);
     }
 

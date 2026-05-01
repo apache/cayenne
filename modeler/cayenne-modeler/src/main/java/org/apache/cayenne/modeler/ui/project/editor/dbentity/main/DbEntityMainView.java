@@ -31,8 +31,8 @@ import org.apache.cayenne.modeler.ui.action.CreateObjEntityFromDbAction;
 import org.apache.cayenne.modeler.ui.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.DbEntityCounterpartAction;
 import org.apache.cayenne.modeler.ui.action.DbEntitySyncAction;
+import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.ExpressionConvertor;
@@ -162,13 +162,15 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
     }
 
     public void processExistingSelection(EventObject e) {
-        EntityDisplayEvent ede = new EntityDisplayEvent(this, controller.getSelectedDbEntity(),
-                controller.getSelectedDataMap(), (DataChannelDescriptor) controller.getProject().getRootNode());
+        DbEntityDisplayEvent ede = new DbEntityDisplayEvent(this,
+                (DataChannelDescriptor) controller.getProject().getRootNode(),
+                controller.getSelectedDataMap(),
+                controller.getSelectedDbEntity());
         controller.displayDbEntity(ede);
     }
 
-    public void dbEntitySelected(EntityDisplayEvent e) {
-        DbEntity entity = (DbEntity) e.getEntity();
+    public void dbEntitySelected(DbEntityDisplayEvent e) {
+        DbEntity entity = e.getEntity();
 
         if (entity == null) {
             return;

@@ -21,35 +21,34 @@ package org.apache.cayenne.modeler.event.display;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.ProcedureParameter;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
 
-
-public class ProcedureParameterDisplayEvent extends DisplayEvent {
+public class ObjAttributeDisplayEvent extends DisplayEvent {
 
     private final DataChannelDescriptor domain;
     private final DataMap dataMap;
-    private final Procedure procedure;
-    private final ProcedureParameter[] procedureParameters;
+    private final ObjEntity entity;
+    private final ObjAttribute[] attributes;
 
-    public ProcedureParameterDisplayEvent(Object src,
-                                          DataChannelDescriptor domain,
-                                          DataMap dataMap,
-                                          Procedure procedure,
-                                          ProcedureParameter procedureParameter) {
-        this(src, domain, dataMap, procedure, new ProcedureParameter[]{procedureParameter});
+    public ObjAttributeDisplayEvent(Object src,
+                                    DataChannelDescriptor domain,
+                                    DataMap dataMap,
+                                    ObjEntity entity,
+                                    ObjAttribute attribute) {
+        this(src, domain, dataMap, entity, new ObjAttribute[]{attribute});
     }
 
-    public ProcedureParameterDisplayEvent(Object src,
-                                          DataChannelDescriptor domain,
-                                          DataMap dataMap,
-                                          Procedure procedure,
-                                          ProcedureParameter[] procedureParameters) {
+    public ObjAttributeDisplayEvent(Object src,
+                                    DataChannelDescriptor domain,
+                                    DataMap dataMap,
+                                    ObjEntity entity,
+                                    ObjAttribute[] attributes) {
         super(src);
         this.domain = domain;
         this.dataMap = dataMap;
-        this.procedure = procedure;
-        this.procedureParameters = procedureParameters;
+        this.entity = entity;
+        this.attributes = attributes;
     }
 
     public DataChannelDescriptor getDomain() {
@@ -60,11 +59,11 @@ public class ProcedureParameterDisplayEvent extends DisplayEvent {
         return dataMap;
     }
 
-    public Procedure getProcedure() {
-        return procedure;
+    public ObjEntity getEntity() {
+        return entity;
     }
 
-    public ProcedureParameter[] getProcedureParameters() {
-        return procedureParameters;
+    public ObjAttribute[] getAttributes() {
+        return attributes;
     }
 }

@@ -33,9 +33,9 @@ import org.apache.cayenne.modeler.ui.action.CutAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.PasteAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.dbrelationship.DbRelationshipDialogController;
+import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
-import org.apache.cayenne.modeler.event.display.EntityDisplayEvent;
-import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DbRelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.toolkit.table.CMTablePrefs;
 import org.apache.cayenne.modeler.toolkit.table.BoardTableCellRenderer;
@@ -150,8 +150,8 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
     /**
      * Loads obj relationships into table.
      */
-    public void dbEntitySelected(EntityDisplayEvent e) {
-        DbEntity entity = (DbEntity) e.getEntity();
+    public void dbEntitySelected(DbEntityDisplayEvent e) {
+        DbEntity entity = e.getEntity();
         if (entity != null) {
             // TODO: this line seems to slow down the Modeler significantly sometimes
             // (esp. noticable if selected entity has no relationships!),
@@ -309,12 +309,12 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
             editMenu.setEnabled(editEnabled);
         }
 
-        controller.displayDbRelationship(new RelationshipDisplayEvent(
+        controller.displayDbRelationship(new DbRelationshipDisplayEvent(
                 this,
-                rels,
-                controller.getSelectedDbEntity(),
+                controller.getSelectedDataDomain(),
                 controller.getSelectedDataMap(),
-                controller.getSelectedDataDomain()));
+                controller.getSelectedDbEntity(),
+                rels));
 
         parentPanel.updateActions(rels);
     }

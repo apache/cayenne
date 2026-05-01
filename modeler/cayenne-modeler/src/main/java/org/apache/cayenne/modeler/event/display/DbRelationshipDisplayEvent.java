@@ -21,35 +21,34 @@ package org.apache.cayenne.modeler.event.display;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.ProcedureParameter;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 
-
-public class ProcedureParameterDisplayEvent extends DisplayEvent {
+public class DbRelationshipDisplayEvent extends DisplayEvent {
 
     private final DataChannelDescriptor domain;
     private final DataMap dataMap;
-    private final Procedure procedure;
-    private final ProcedureParameter[] procedureParameters;
+    private final DbEntity entity;
+    private final DbRelationship[] relationships;
 
-    public ProcedureParameterDisplayEvent(Object src,
-                                          DataChannelDescriptor domain,
-                                          DataMap dataMap,
-                                          Procedure procedure,
-                                          ProcedureParameter procedureParameter) {
-        this(src, domain, dataMap, procedure, new ProcedureParameter[]{procedureParameter});
+    public DbRelationshipDisplayEvent(Object src,
+                                      DataChannelDescriptor domain,
+                                      DataMap dataMap,
+                                      DbEntity entity,
+                                      DbRelationship relationship) {
+        this(src, domain, dataMap, entity, new DbRelationship[]{relationship});
     }
 
-    public ProcedureParameterDisplayEvent(Object src,
-                                          DataChannelDescriptor domain,
-                                          DataMap dataMap,
-                                          Procedure procedure,
-                                          ProcedureParameter[] procedureParameters) {
+    public DbRelationshipDisplayEvent(Object src,
+                                      DataChannelDescriptor domain,
+                                      DataMap dataMap,
+                                      DbEntity entity,
+                                      DbRelationship[] relationships) {
         super(src);
         this.domain = domain;
         this.dataMap = dataMap;
-        this.procedure = procedure;
-        this.procedureParameters = procedureParameters;
+        this.entity = entity;
+        this.relationships = relationships;
     }
 
     public DataChannelDescriptor getDomain() {
@@ -60,11 +59,11 @@ public class ProcedureParameterDisplayEvent extends DisplayEvent {
         return dataMap;
     }
 
-    public Procedure getProcedure() {
-        return procedure;
+    public DbEntity getEntity() {
+        return entity;
     }
 
-    public ProcedureParameter[] getProcedureParameters() {
-        return procedureParameters;
+    public DbRelationship[] getRelationships() {
+        return relationships;
     }
 }

@@ -34,7 +34,8 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.dbrelationship.DbRelationshipDialogController;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.relinfo.ObjRelationshipInfoController;
-import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DbRelationshipDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjRelationshipDisplayEvent;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 
 import java.awt.event.ActionEvent;
@@ -49,8 +50,8 @@ public class CreateRelationshipAction extends ModelerAbstractAction {
 
         mediator.fireObjRelationshipEvent(ObjRelationshipEvent.ofAdd(src, rel, objEntity));
 
-        RelationshipDisplayEvent rde = new RelationshipDisplayEvent(src, rel, objEntity, mediator.getSelectedDataMap(),
-                (DataChannelDescriptor) mediator.getProject().getRootNode());
+        DataChannelDescriptor domain = (DataChannelDescriptor) mediator.getProject().getRootNode();
+        ObjRelationshipDisplayEvent rde = new ObjRelationshipDisplayEvent(src, domain, mediator.getSelectedDataMap(), objEntity, rel);
 
         mediator.displayObjRelationship(rde);
     }
@@ -62,8 +63,8 @@ public class CreateRelationshipAction extends ModelerAbstractAction {
 
         mediator.fireDbRelationshipEvent(DbRelationshipEvent.ofAdd(src, rel, dbEntity));
 
-        RelationshipDisplayEvent rde = new RelationshipDisplayEvent(src, rel, dbEntity, mediator.getSelectedDataMap(),
-                (DataChannelDescriptor) mediator.getProject().getRootNode());
+        DataChannelDescriptor domain = (DataChannelDescriptor) mediator.getProject().getRootNode();
+        DbRelationshipDisplayEvent rde = new DbRelationshipDisplayEvent(src, domain, mediator.getSelectedDataMap(), dbEntity, rel);
 
         mediator.displayDbRelationship(rde);
     }

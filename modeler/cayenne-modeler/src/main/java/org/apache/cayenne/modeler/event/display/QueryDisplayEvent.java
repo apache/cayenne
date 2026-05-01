@@ -24,12 +24,25 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.QueryDescriptor;
 
-public class QueryDisplayEvent extends DataMapDisplayEvent {
-    protected final QueryDescriptor query;
+public class QueryDisplayEvent extends DisplayEvent {
 
-    public QueryDisplayEvent(Object src, QueryDescriptor query, DataMap map, DataChannelDescriptor domain) {
-        super(src, map, domain);
+    private final DataChannelDescriptor domain;
+    private final DataMap dataMap;
+    private final QueryDescriptor query;
+
+    public QueryDisplayEvent(Object src, DataChannelDescriptor domain, DataMap dataMap, QueryDescriptor query) {
+        super(src);
+        this.domain = domain;
+        this.dataMap = dataMap;
         this.query = query;
+    }
+
+    public DataChannelDescriptor getDomain() {
+        return domain;
+    }
+
+    public DataMap getDataMap() {
+        return dataMap;
     }
 
     public QueryDescriptor getQuery() {

@@ -30,7 +30,7 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.event.model.ObjRelationshipEvent;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.dbrelationship.DbRelationshipDialogController;
-import org.apache.cayenne.modeler.event.display.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ObjRelationshipDisplayEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.RelationshipUndoableEdit;
@@ -264,12 +264,12 @@ public class ObjRelationshipInfoController extends ChildController<ProjectContro
     private void fireObjRelationshipEvent(Object src) {
         parent.fireObjRelationshipEvent(ObjRelationshipEvent.ofAdd(src, relationship, relationship.getSourceEntity()));
 
-        RelationshipDisplayEvent rde = new RelationshipDisplayEvent(
+        ObjRelationshipDisplayEvent rde = new ObjRelationshipDisplayEvent(
                 src,
-                relationship,
+                (DataChannelDescriptor) parent.getProject().getRootNode(),
+                parent.getSelectedDataMap(),
                 relationship.getSourceEntity(),
-                parent.getSelectedDataMap(), (DataChannelDescriptor)
-                parent.getProject().getRootNode());
+                relationship);
 
         parent.displayObjRelationship(rde);
     }

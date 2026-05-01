@@ -55,21 +55,20 @@ public class ProcedureParameterErrorMsg extends ValidationDisplayHandler {
         // (E.g. DbAttributeErrorMsg)
         ProcedureDisplayEvent procedureEvent = new ProcedureDisplayEvent(
                 frame,
-                procedure,
+                domain,
                 map,
-                domain);
-        procedureEvent.setTabReset(true);
+                procedure,
+                true);
         mediator.displayProcedure(procedureEvent);
 
         // now show the failed parameter
         ProcedureParameterDisplayEvent event = new ProcedureParameterDisplayEvent(
                 frame,
-                procedureParameter,
-                procedure,
+                domain,
                 map,
-                domain);
+                procedure,
+                procedureParameter);
 
-        event.setTabReset(true);
         mediator.displayProcedureParameter(event);
     }
 
