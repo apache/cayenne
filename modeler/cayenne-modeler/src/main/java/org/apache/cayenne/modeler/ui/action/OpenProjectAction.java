@@ -93,12 +93,16 @@ public class OpenProjectAction extends ProjectAction {
 
         File f = null;
         if (e.getSource() instanceof JMenuItem) {
-            JMenuItem menu = (JMenuItem) e.getSource();
-
-            if (menu.getText() != null) {
-                f = new File(menu.getText());
+            // Recent-files sub-menu items carry an absolute path as their text;
+            // the top-level "Open Project" menu item carries the action label,
+            // so only treat the text as a path when it's absolute.
+            String text = ((JMenuItem) e.getSource()).getText();
+            if (text != null) {
+                File candidate = new File(text);
+                if (candidate.isAbsolute()) {
+                    f = candidate;
+                }
             }
-
         } else if (e.getSource() instanceof File) {
             f = (File) e.getSource();
         }
