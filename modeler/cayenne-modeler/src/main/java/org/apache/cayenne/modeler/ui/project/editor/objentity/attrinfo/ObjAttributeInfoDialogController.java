@@ -296,7 +296,7 @@ public class ObjAttributeInfoDialogController extends ChildController<ProjectCon
                 .getColumn(OverrideEmbeddableAttributeTableModel.DB_ATTRIBUTE_TYPE);
         dbAttrTypeColumn.setCellRenderer(renderer);
 
-        CMTablePrefs.of(ObjAttributeInfoDialogView.class, "overrideAttributeTable")
+        CMTablePrefs.of(getApplication().getPreferencesRepository(), "objEntity/overrideAttributeTable")
                 .bind(view.getOverrideAttributeTable(), null,
                         OverrideEmbeddableAttributeTableModel.OBJ_ATTRIBUTE);
 

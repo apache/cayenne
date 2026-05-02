@@ -64,7 +64,7 @@ public class ObjEntityPropertiesView extends JPanel implements ObjEntityDisplayL
         splitPane.setOneTouchExpandable(true);
         splitPane.setResizeWeight(0.5);
 
-        CMSplitPanePrefs.of(ObjEntityPropertiesView.class, "splitPane/divider").bind(splitPane, -1);
+        CMSplitPanePrefs.of(controller.getApplication().getPreferencesRepository(), "objEntity/splitPane").bind(splitPane, -1);
 
         add(splitPane);
 

@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.modeler.pref;
 
-import org.apache.cayenne.modeler.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,12 +28,11 @@ import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-public final class ClasspathPrefs {
+public final class ClasspathPrefs implements PreferenceAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClasspathPrefs.class);
 
     static final String NODE = "classpath";
-    static final String LAST_CLASSPATH_DIR = "lastClasspathDir";
 
     private final Preferences prefs;
 
@@ -42,12 +40,12 @@ public final class ClasspathPrefs {
         this.prefs = prefs;
     }
 
-    public static ClasspathPrefs of() {
-        return new ClasspathPrefs(Application.getInstance().getPreferencesRepository().app(NODE));
+    public static ClasspathPrefs of(PreferencesRepository repository) {
+        return new ClasspathPrefs(repository.appPref(NODE));
     }
 
-    // Returns classpath entries in numeric-key order. The prefs node is shared with
-    // other dialog panels (their keys are non-numeric); we only own the numeric keys.
+    // Returns classpath entries in numeric-key order. Defensive against any
+    // non-numeric sub-keys; we only own numeric keys.
     public List<String> getEntries() {
         List<int[]> indexed = new ArrayList<>();
         List<String> values = new ArrayList<>();
@@ -72,8 +70,6 @@ public final class ClasspathPrefs {
         return sorted;
     }
 
-    // Replaces all classpath entries with the given list, keyed sequentially.
-    // Non-numeric keys (owned by other dialog panels) are preserved.
     public void setEntries(List<String> paths) {
         for (String key : keys()) {
             try {
@@ -87,10 +83,6 @@ public final class ClasspathPrefs {
         for (String path : paths) {
             prefs.put(Integer.toString(i++), path);
         }
-    }
-
-    public Preferences lastClasspathDir() {
-        return prefs.node(LAST_CLASSPATH_DIR);
     }
 
     private String[] keys() {

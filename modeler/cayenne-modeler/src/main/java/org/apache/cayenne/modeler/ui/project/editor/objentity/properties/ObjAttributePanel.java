@@ -314,7 +314,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
         table.getColumnModel().getColumn(ObjAttributeTableModel.DB_ATTRIBUTE).setCellRenderer(new DbAttributePathComboBoxRenderer());
         table.getColumnModel().getColumn(ObjAttributeTableModel.DB_ATTRIBUTE).setCellEditor(new DbAttributePathComboBoxEditor());
 
-        CMTablePrefs.of(ObjAttributeTableModel.class, "objEntity/attributeTable")
+        CMTablePrefs.of(controller.getApplication().getPreferencesRepository(), "objEntity/attributeTable")
                 .bind(table, minSizes, ObjAttributeTableModel.OBJ_ATTRIBUTE);
     }
 

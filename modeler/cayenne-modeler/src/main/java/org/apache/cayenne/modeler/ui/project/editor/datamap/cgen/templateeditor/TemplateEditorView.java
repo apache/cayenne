@@ -22,6 +22,7 @@ package org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.modeler.pref.PreferencesRepository;
 import org.apache.cayenne.modeler.toolkit.component.CMComponentGeometryPrefs;
 import org.apache.cayenne.modeler.toolkit.splitpane.CMSplitPanePrefs;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
@@ -69,7 +70,10 @@ public class TemplateEditorView extends JFrame {
     private JPanel topPanel;
 
 
-    public TemplateEditorView(List<String> entityNames) {
+    private final PreferencesRepository preferencesRepository;
+
+    public TemplateEditorView(PreferencesRepository preferencesRepository, List<String> entityNames) {
+        this.preferencesRepository = preferencesRepository;
         this.setIconImage(modelerIcon.getImage());
         this.editingTemplatePane = new TextEditorPane();
         this.classPreviewPane = new RSyntaxTextArea();
@@ -149,8 +153,8 @@ public class TemplateEditorView extends JFrame {
     }
 
     private void bindGeometry() {
-        CMSplitPanePrefs.of(TemplateEditorView.class, "split/divider").bind(split, 600);
-        CMComponentGeometryPrefs.of(getClass()).bind(this, 1200, 700);
+        CMSplitPanePrefs.of(preferencesRepository, "templateEditor/splitPane").bind(split, 600);
+        CMComponentGeometryPrefs.of(preferencesRepository, "templateEditor/geometry").bind(this, 1200, 700);
     }
 
     private void mapVelocityTokenMaker() {

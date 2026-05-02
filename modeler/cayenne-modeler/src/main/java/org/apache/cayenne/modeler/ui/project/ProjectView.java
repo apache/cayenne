@@ -91,7 +91,7 @@ public class ProjectView extends JPanel {
 
         this.filterController = new TreeFilterController(treePanel);
 
-        CMSplitPanePrefs.of(ProjectView.class, "splitPane/divider").bind(splitPane, 300);
+        CMSplitPanePrefs.of(controller.getApplication().getPreferencesRepository(), "project/splitPane").bind(splitPane, 300);
     }
 
     public EditorPanelView getEditorPanel() {

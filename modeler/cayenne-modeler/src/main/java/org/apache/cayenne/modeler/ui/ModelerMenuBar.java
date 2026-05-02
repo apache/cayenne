@@ -35,10 +35,12 @@ import java.util.List;
 class ModelerMenuBar extends JMenuBar {
 
     private final JCheckBoxMenuItem logMenu;
+    private final ShowLogConsoleAction showLogConsoleAction;
     private final List<RecentFileListListener> recentFileListeners;
 
     ModelerMenuBar(GlobalActions globalActions) {
         this.recentFileListeners = new ArrayList<>();
+        this.showLogConsoleAction = globalActions.getAction(ShowLogConsoleAction.class);
 
         JMenu fileMenu = new JMenu("File");
         JMenu editMenu = new JMenu("Edit");
@@ -105,7 +107,7 @@ class ModelerMenuBar extends JMenuBar {
 
         // Menu for opening Log console
         toolMenu.addSeparator();
-        logMenu = globalActions.getAction(ShowLogConsoleAction.class).buildCheckBoxMenu();
+        logMenu = showLogConsoleAction.buildCheckBoxMenu();
         updateLogConsoleMenu();
         toolMenu.add(logMenu);
 
@@ -126,7 +128,7 @@ class ModelerMenuBar extends JMenuBar {
      * Selects/deselects menu item, depending on status of log console
      */
     void updateLogConsoleMenu() {
-        logMenu.setSelected(LogConsolePrefs.of().isShowConsole());
+        logMenu.setSelected(LogConsolePrefs.of(showLogConsoleAction.getApplication().getPreferencesRepository()).isShowConsole());
     }
 
     void addRecentFileListener(RecentFileListListener listener) {
@@ -153,7 +155,7 @@ class ModelerMenuBar extends JMenuBar {
          */
         public void rebuildFromPreferences() {
 
-            List<File> files = RecentProjectsPrefs.of().getFiles();
+            List<File> files = RecentProjectsPrefs.of(action.getApplication().getPreferencesRepository()).getFiles();
 
             // read menus
             Component[] comps = getMenuComponents();

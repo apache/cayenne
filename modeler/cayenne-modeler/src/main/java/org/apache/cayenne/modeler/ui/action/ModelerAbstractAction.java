@@ -40,6 +40,10 @@ public abstract class ModelerAbstractAction extends AbstractAction {
     protected boolean alwaysOn;
     protected Application application;
 
+    public Application getApplication() {
+        return application;
+    }
+
     protected ModelerAbstractAction(String name, Application application) {
         this(name, application, name);
     }

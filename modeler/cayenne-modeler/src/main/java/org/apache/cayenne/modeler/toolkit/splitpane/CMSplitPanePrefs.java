@@ -19,27 +19,24 @@
 
 package org.apache.cayenne.modeler.toolkit.splitpane;
 
-import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.pref.PreferenceAdapter;
+import org.apache.cayenne.modeler.pref.PreferencesRepository;
 
 import javax.swing.*;
 import java.beans.PropertyChangeListener;
 import java.util.prefs.Preferences;
 
-public final class CMSplitPanePrefs {
+public final class CMSplitPanePrefs implements PreferenceAdapter {
 
     private final Preferences prefs;
     private PropertyChangeListener listener;
 
+    public static CMSplitPanePrefs of(PreferencesRepository repository, String path) {
+        return new CMSplitPanePrefs(repository.uiPref(path));
+    }
+
     private CMSplitPanePrefs(Preferences prefs) {
         this.prefs = prefs;
-    }
-
-    public static CMSplitPanePrefs of(Class<?> anchor) {
-        return new CMSplitPanePrefs(Application.getInstance().getPreferencesRepository().ui(anchor));
-    }
-
-    public static CMSplitPanePrefs of(Class<?> anchor, String path) {
-        return new CMSplitPanePrefs(Application.getInstance().getPreferencesRepository().ui(anchor).node(path));
     }
 
     public void bind(JSplitPane pane, int defaultLocation) {

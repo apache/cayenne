@@ -57,7 +57,7 @@ public class TemplateEditorController extends ChildController<CgenConfigControll
 
     public void startupAction() {
         this.artefactsConfigurator = setupArtefactConfigurator();
-        this.view = new TemplateEditorView(artefactsConfigurator.getArtifactsNames(currentDataMap));
+        this.view = new TemplateEditorView(getApplication().getPreferencesRepository(), artefactsConfigurator.getArtifactsNames(currentDataMap));
         this.actionConfigurator = new PreviewActionConfigurator(this);
         this.isTemplateDefault = TemplateType.isDefault(configuration.getTemplateByType(templateType).getData());
         this.isTemplateModified = false;

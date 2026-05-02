@@ -249,7 +249,7 @@ public class DbRelationshipDialogController extends ChildController<ProjectContr
 
         targetColumn.setCellEditor(new CMComboBoxCellEditor(comboBox));
 
-        CMTablePrefs.of(DbRelationshipDialogView.class, "dbentity/dbjoinTable")
+        CMTablePrefs.of(application.getPreferencesRepository(), "dbEntity/dbjoinTable")
                 .bind(view.getTable(), null, DbJoinTableModel.SOURCE);
     }
 

@@ -84,7 +84,7 @@ public class DataSourceController extends ChildController<ProjectController> {
     }
 
     private void initFavouriteDataSource() {
-        String favouriteDataSource = GeneralPrefs.of().getFavouriteDataSource();
+        String favouriteDataSource = GeneralPrefs.of(parent.getApplication().getPreferencesRepository()).getFavouriteDataSource();
         if (favouriteDataSource != null && connectors.containsKey(favouriteDataSource)) {
             setDataSourceKey(favouriteDataSource);
             view.getDataSources().setSelectedItem(dataSourceKey);
@@ -92,7 +92,7 @@ public class DataSourceController extends ChildController<ProjectController> {
     }
 
     private DBConnector getConnectionInfoFromPreferences() {
-        DataMapPrefs dataMapPrefs = DataMapPrefs.of(parent.getApplication().getPreferencesRepository().dataMap(parent.getSelectedDataMap()));
+        DataMapPrefs dataMapPrefs = DataMapPrefs.of(parent.getApplication().getPreferencesRepository(), parent.getSelectedDataMap());
         DBConnector info = dataMapPrefs.getConnector();
         return info != null ? info : new DBConnector();
     }
@@ -119,7 +119,7 @@ public class DataSourceController extends ChildController<ProjectController> {
         refreshDataSources();
         initFavouriteDataSource();
 
-        final DataMapPrefs dataMapPrefs = DataMapPrefs.of(parent.getApplication().getPreferencesRepository().dataMap(parent.getSelectedDataMap()));
+        final DataMapPrefs dataMapPrefs = DataMapPrefs.of(parent.getApplication().getPreferencesRepository(), parent.getSelectedDataMap());
         if (dataMapPrefs.hasDbAdapter()) {
             getConnectionInfoFromPreferences().copyTo(connector);
         }
@@ -175,7 +175,7 @@ public class DataSourceController extends ChildController<ProjectController> {
         this.canceled = canceled;
         view.dispose();
         if (!canceled) {
-            GeneralPrefs.of().setFavouriteDataSource(dataSourceKey);
+            GeneralPrefs.of(parent.getApplication().getPreferencesRepository()).setFavouriteDataSource(dataSourceKey);
         }
     }
 

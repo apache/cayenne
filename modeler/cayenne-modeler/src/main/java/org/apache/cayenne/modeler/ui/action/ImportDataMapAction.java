@@ -38,7 +38,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.URL;
-import java.util.prefs.Preferences;
 
 /**
  * Modeler action that imports a DataMap into a project from an arbitrary
@@ -102,8 +101,7 @@ public class ImportDataMapAction extends ModelerAbstractAction {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-        Preferences prefs = application.getPreferencesRepository().ui(ImportDataMapAction.class).node("lastDataMapDir");
-        CMFileChooserPrefs.of(prefs).bind(chooser);
+        CMFileChooserPrefs.of(application.getPreferencesRepository(), "importDataMap/lastDir").bind(chooser);
 
         chooser.addChoosableFileFilter(FileFilters.getDataMapFilter());
 

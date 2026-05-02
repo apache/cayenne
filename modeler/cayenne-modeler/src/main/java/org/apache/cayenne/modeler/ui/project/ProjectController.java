@@ -198,14 +198,14 @@ public class ProjectController extends ChildController<ModelerController> {
         if (project == null) {
             return;
         }
-        ProjectPrefs.of(getApplication().getPreferencesRepository().project(project)).flush(this);
+        ProjectPrefs.of(getApplication().getPreferencesRepository(), project).flush(this);
     }
 
     public void restoreSelectionFromPrefs() {
         if (project == null) {
             return;
         }
-        ProjectPrefs.of(getApplication().getPreferencesRepository().project(project)).load(this);
+        ProjectPrefs.of(getApplication().getPreferencesRepository(), project).load(this);
     }
 
     public boolean isDirty() {
@@ -548,6 +548,7 @@ public class ProjectController extends ChildController<ModelerController> {
 
     public void fireProjectAfterSaveEvent(ProjectAfterSaveEvent e) {
         fileChangeTracker.reset();
+        getApplication().getPreferencesRepository().commitProject(project);
         for (ProjectAfterSaveListener eventListener : listeners.getListeners(ProjectAfterSaveListener.class)) {
             eventListener.projectSaved(e);
         }

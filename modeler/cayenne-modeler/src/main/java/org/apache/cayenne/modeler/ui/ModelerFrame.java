@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.ui;
 
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.splitpane.CMSplitPanePrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.border.TopBorder;
@@ -49,8 +50,8 @@ public class ModelerFrame extends JFrame {
     private ProjectView projectView;
     private Component dockComponent;
 
-    public ModelerFrame(GlobalActions globalActions) {
-        this.globalActions = globalActions;
+    public ModelerFrame(Application application) {
+        this.globalActions = application.getActionManager();
 
         setIconImage(IconFactory.buildIcon("CayenneModeler.png").getImage());
         getContentPane().setLayout(new BorderLayout());
@@ -67,7 +68,7 @@ public class ModelerFrame extends JFrame {
         splitPane.getInsets().right = 5;
         splitPane.setResizeWeight(0.7);
 
-        this.splitPanePrefs = CMSplitPanePrefs.of(ModelerFrame.class, "splitPane/divider");
+        this.splitPanePrefs = CMSplitPanePrefs.of(application.getPreferencesRepository(), "frame/splitPane");
 
         JPanel statusBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 1));
         statusBar.setBorder(TopBorder.create());
@@ -81,7 +82,7 @@ public class ModelerFrame extends JFrame {
         getContentPane().add(splitPane, BorderLayout.CENTER);
         getContentPane().add(statusBar, BorderLayout.SOUTH);
 
-        this.welcomePanel = new WelcomeScreen(globalActions);
+        this.welcomePanel = new WelcomeScreen(application);
         this.menuBar.addRecentFileListener(welcomePanel);
 
         fireRecentFileListChanged(); // start filling list in welcome screen and in menu

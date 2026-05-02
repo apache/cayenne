@@ -19,6 +19,7 @@
 package org.apache.cayenne.modeler.pref;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.prefs.Preferences;
@@ -29,7 +30,7 @@ import java.util.prefs.Preferences;
  * characters, well below {@link Preferences#MAX_NAME_LENGTH}. The original absolute
  * path is meant to be stored alongside the node as a {@code path} value.
  */
-public final class PreferenceNodeIds {
+final class PreferenceNodeIds {
 
     static final int MAX_LEN = 60;
     static final int HASH_LEN = 16;
@@ -93,7 +94,7 @@ public final class PreferenceNodeIds {
     static String sha256Hex(String s) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] digest = md.digest(s.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            byte[] digest = md.digest(s.getBytes(StandardCharsets.UTF_8));
             StringBuilder sb = new StringBuilder(digest.length * 2);
             for (byte b : digest) {
                 sb.append(Character.forDigit((b >> 4) & 0xF, 16));

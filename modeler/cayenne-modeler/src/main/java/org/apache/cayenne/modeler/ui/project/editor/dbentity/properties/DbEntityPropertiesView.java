@@ -66,7 +66,7 @@ public class DbEntityPropertiesView extends JPanel implements DbEntityDisplayLis
         splitPane.setOneTouchExpandable(true);
         splitPane.setResizeWeight(0.5);
 
-        CMSplitPanePrefs.of(DbEntityPropertiesView.class, "splitPane/divider").bind(splitPane, -1);
+        CMSplitPanePrefs.of(controller.getApplication().getPreferencesRepository(), "dbEntity/splitPane").bind(splitPane, -1);
 
         add(splitPane);
         toolBar = new JToolBar();

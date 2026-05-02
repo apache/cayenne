@@ -19,18 +19,20 @@
 
 package org.apache.cayenne.modeler.pref;
 
-import org.apache.cayenne.modeler.Application;
-
 import java.util.prefs.Preferences;
 
-public final class GeneralPrefs {
+public final class GeneralPrefs implements PreferenceAdapter {
 
     static final String NODE = "general";
 
-    static final String AUTO_LOAD_PROJECT     = "autoLoadProject";
-    static final String DELETE_PROMPT         = "deletePrompt";
-    static final String ENCODING              = "encoding";
+    static final String AUTO_LOAD_PROJECT = "autoLoadProject";
+    static final String DELETE_PROMPT = "deletePrompt";
+    static final String ENCODING = "encoding";
     static final String FAVOURITE_DATA_SOURCE = "favouriteDataSource";
+
+    public static GeneralPrefs of(PreferencesRepository repository) {
+        return new GeneralPrefs(repository.appPref(NODE));
+    }
 
     private final Preferences prefs;
 
@@ -38,9 +40,6 @@ public final class GeneralPrefs {
         this.prefs = prefs;
     }
 
-    public static GeneralPrefs of() {
-        return new GeneralPrefs(Application.getInstance().getPreferencesRepository().app(NODE));
-    }
 
     public boolean isAutoLoadProject() {
         return prefs.getBoolean(AUTO_LOAD_PROJECT, false);

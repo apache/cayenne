@@ -64,7 +64,7 @@ class ProjectOpener extends JFileChooser {
         // configure dialog
         setDialogTitle("Select Project Directory");
         setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-        setCurrentDirectory(getDefaultStartDir());
+        setCurrentDirectory(getDefaultStartDir(application));
 
         // preselect current directory
         if (getCurrentDirectory() != null) {
@@ -120,7 +120,7 @@ class ProjectOpener extends JFileChooser {
         // configure dialog
         setDialogTitle("Select Project File");
         setFileSelectionMode(JFileChooser.FILES_ONLY);
-        setCurrentDirectory(getDefaultStartDir());
+        setCurrentDirectory(getDefaultStartDir(application));
 
         // configure filters
         resetChoosableFileFilters();
@@ -137,8 +137,8 @@ class ProjectOpener extends JFileChooser {
         return getSelectedFile();
     }
 
-    private File getDefaultStartDir() {
-        List<File> recent = RecentProjectsPrefs.of().getFiles();
+    private File getDefaultStartDir(Application application) {
+        List<File> recent = RecentProjectsPrefs.of(application.getPreferencesRepository()).getFiles();
         if (!recent.isEmpty()) {
             File parent = recent.get(0).getParentFile();
             if (parent != null && parent.isDirectory()) {

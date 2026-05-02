@@ -153,7 +153,7 @@ public class LogConsoleController extends RootController {
      * Shows or hides the console window
      */
     public void toggle() {
-        if (LogConsolePrefs.of().toggleShowConsole()) {
+        if (LogConsolePrefs.of(application.getPreferencesRepository()).toggleShowConsole()) {
             appear();
         } else {
             disappear();
@@ -164,7 +164,7 @@ public class LogConsoleController extends RootController {
      * Shows the console if the show-console preference is set to true
      */
     public void showConsoleIfNeeded() {
-        if (LogConsolePrefs.of().isShowConsole()) {
+        if (LogConsolePrefs.of(application.getPreferencesRepository()).isShowConsole()) {
             appear();
         }
     }

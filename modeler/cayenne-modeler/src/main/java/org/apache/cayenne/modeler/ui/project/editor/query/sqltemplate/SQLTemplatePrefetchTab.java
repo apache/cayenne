@@ -92,7 +92,7 @@ public class SQLTemplatePrefetchTab extends JPanel {
 
         //As of CAY-888 #3 main pane is now a JSplitPane. Top component is a bit larger.
         JSplitPane mainPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        CMSplitPanePrefs.of(SQLTemplatePrefetchTab.class).bind(mainPanel, defLocation);
+        CMSplitPanePrefs.of(mediator.getApplication().getPreferencesRepository(), "sqlTemplate/prefetchSplit").bind(mainPanel, defLocation);
 
         mainPanel.setTopComponent(createEditorPanel());
         mainPanel.setBottomComponent(createSelectorPanel());

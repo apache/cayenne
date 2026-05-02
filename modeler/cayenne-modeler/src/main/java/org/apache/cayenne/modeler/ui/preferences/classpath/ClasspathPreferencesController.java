@@ -44,7 +44,7 @@ public class ClasspathPreferencesController extends ChildController<PreferenceDi
         super(parent);
 
         this.view = new ClasspathPreferencesView();
-        this.classPathEntries = new ArrayList<>(ClasspathPrefs.of().getEntries());
+        this.classPathEntries = new ArrayList<>(ClasspathPrefs.of(getApplication().getPreferencesRepository()).getEntries());
         this.tableModel = new ClasspathTableModel(classPathEntries);
 
         initBindings();
@@ -63,7 +63,7 @@ public class ClasspathPreferencesController extends ChildController<PreferenceDi
      * Modeler classloader. Called on dialog Save.
      */
     public void commit() {
-        ClasspathPrefs.of().setEntries(classPathEntries);
+        ClasspathPrefs.of(getApplication().getPreferencesRepository()).setEntries(classPathEntries);
         getApplication().refreshClassLoader();
     }
 
@@ -104,7 +104,7 @@ public class ClasspathPreferencesController extends ChildController<PreferenceDi
         chooser.setDialogType(JFileChooser.OPEN_DIALOG);
         chooser.setAcceptAllFileFilterUsed(true);
 
-        CMFileChooserPrefs.of(ClasspathPrefs.of().lastClasspathDir()).bind(chooser);
+        CMFileChooserPrefs.of(getApplication().getPreferencesRepository(), "classpath/lastDir").bind(chooser);
         if (filter != null) {
             chooser.addChoosableFileFilter(filter);
         }

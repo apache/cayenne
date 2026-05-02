@@ -19,23 +19,24 @@
 
 package org.apache.cayenne.modeler.ui.logconsole;
 
-import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.pref.PreferenceAdapter;
+import org.apache.cayenne.modeler.pref.PreferencesRepository;
 
 import java.util.prefs.Preferences;
 
-public final class LogConsolePrefs {
+public final class LogConsolePrefs implements PreferenceAdapter {
 
     static final String NODE = "logConsole";
     static final String SHOW_CONSOLE = "show.log.console";
+
+    public static LogConsolePrefs of(PreferencesRepository repository) {
+        return new LogConsolePrefs(repository.appPref(NODE));
+    }
 
     private final Preferences prefs;
 
     private LogConsolePrefs(Preferences prefs) {
         this.prefs = prefs;
-    }
-
-    public static LogConsolePrefs of() {
-        return new LogConsolePrefs(Application.getInstance().getPreferencesRepository().app(NODE));
     }
 
     public boolean isShowConsole() {

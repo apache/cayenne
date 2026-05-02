@@ -26,7 +26,6 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.modeler.dbconnector.DBConnectors;
-import org.apache.cayenne.modeler.event.model.ProjectAfterSaveListener;
 import org.apache.cayenne.modeler.pref.ClasspathPrefs;
 import org.apache.cayenne.modeler.pref.DBConnectorPrefs;
 import org.apache.cayenne.modeler.pref.GeneralPrefs;
@@ -161,7 +160,7 @@ public class Application {
 
         getPreferencesRepository().runMigrations();
 
-        this.dbConnectors = DBConnectorPrefs.loadAndBind();
+        this.dbConnectors = DBConnectorPrefs.loadAndBind(getPreferencesRepository());
 
         refreshClassLoader();
 
@@ -176,10 +175,6 @@ public class Application {
 
         this.undoManager = new CayenneUndoManager(this);
         this.frameController = new ModelerController(this);
-
-        ProjectAfterSaveListener saveListener = e -> getPreferencesRepository()
-                .commitProject(e.getSource().getProject());
-        frameController.getProjectController().addProjectSavedListener(saveListener);
 
         // open up
         frameController.onStartup();
@@ -209,7 +204,7 @@ public class Application {
      * Reinitializes ModelerClassLoader from preferences.
      */
     public void refreshClassLoader() {
-        List<String> values = ClasspathPrefs.of().getEntries();
+        List<String> values = ClasspathPrefs.of(getPreferencesRepository()).getEntries();
         if (!values.isEmpty()) {
             getClassLoader().setFiles(values.stream().map(File::new).collect(Collectors.toList()));
         }
@@ -217,8 +212,8 @@ public class Application {
 
     private File initialProjectFromPreferences() {
 
-        if (GeneralPrefs.of().isAutoLoadProject()) {
-            List<File> files = RecentProjectsPrefs.of().getFiles();
+        if (GeneralPrefs.of(getPreferencesRepository()).isAutoLoadProject()) {
+            List<File> files = RecentProjectsPrefs.of(getPreferencesRepository()).getFiles();
             if (!files.isEmpty()) {
                 return files.get(0);
             }

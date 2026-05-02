@@ -217,7 +217,7 @@ public class ObjEntityCallbacksView extends JPanel {
         }
 
         for (CMTable table : tables) {
-            CMTablePrefs.of(ObjEntityCallbacksView.class, "objEntity/callbackTable")
+            CMTablePrefs.of(controller.getApplication().getPreferencesRepository(), "objEntity/callbackTable")
                     .bind(table, MIN_SIZES);
         }
     }
@@ -511,7 +511,7 @@ public class ObjEntityCallbacksView extends JPanel {
 
         public void mouseDragged(MouseEvent e) {
             if (table.getColumnWidthChanged()) {
-                CMTablePrefs.of(ObjEntityCallbacksView.class, "objEntity/callbackTable")
+                CMTablePrefs.of(controller.getApplication().getPreferencesRepository(), "objEntity/callbackTable")
                         .bind(table, MIN_SIZES);
                 for (CMTable nextTable : tables) {
                     if (!table.equals(nextTable)) {

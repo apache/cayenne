@@ -31,7 +31,6 @@ import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.pref.DataNodePrefs;
-import org.apache.cayenne.modeler.pref.PreferencesCopier;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datanode.custom.CustomDataSourceEditorController;
 import org.apache.cayenne.modeler.ui.project.editor.datanode.jdbc.JDBCDataSourceController;
@@ -44,7 +43,6 @@ import java.awt.event.ComponentEvent;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.prefs.Preferences;
 
 public class DataNodeController extends ChildController<ProjectController> {
 
@@ -142,16 +140,9 @@ public class DataNodeController extends ChildController<ProjectController> {
         }
 
         // passed validation, set value, then move prefs subtree to the new name...
-        Preferences nodes = dataNodesPrefs();
-        Preferences oldPref = nodes.node(node.getName());
+        String oldName = node.getName();
         node.setName(newName);
-        PreferencesCopier.move(oldPref, nodes.node(newName));
-    }
-
-    private Preferences dataNodesPrefs() {
-        return getApplication().getPreferencesRepository()
-                .project(getApplication().getProject())
-                .node("DataNode");
+        DataNodePrefs.rename(getApplication().getPreferencesRepository(), getApplication().getProject(), oldName, newName);
     }
 
     private DataNodePrefs nodePrefs() {
@@ -159,7 +150,7 @@ public class DataNodeController extends ChildController<ProjectController> {
         if (selected == null) {
             throw new IllegalStateException("No DataNode selected");
         }
-        return DataNodePrefs.of(dataNodesPrefs().node(selected.getName()));
+        return DataNodePrefs.of(getApplication().getPreferencesRepository(), getApplication().getProject(), selected.getName());
     }
 
     protected void initController() {

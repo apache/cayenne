@@ -253,7 +253,7 @@ public class DataMapMainView extends JPanel {
         dataMap.setDefaultPackage(newDefaultPackage);
 
         // update class generation preferences
-        DataMapPrefs.of(controller.getApplication().getPreferencesRepository().dataMap(dataMap))
+        DataMapPrefs.of(controller.getApplication().getPreferencesRepository(), dataMap)
                 .setSuperclassPackage(newDefaultPackage, DataMapPrefs.DEFAULT_SUPERCLASS_PACKAGE_SUFFIX);
 
         controller.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));

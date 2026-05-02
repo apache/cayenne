@@ -59,63 +59,67 @@ public class PreferencesRepository {
     static final String UNSAVED_PREFIX = "unsaved-";
 
     private final Preferences root;
-    private final Map<Project, String> unsavedProjectIds = new IdentityHashMap<>();
-    private final Map<DataMap, String> unsavedDataMapIds = new IdentityHashMap<>();
+    private final Map<Project, String> unsavedProjectIds;
+    private final Map<DataMap, String> unsavedDataMapIds;
     private final List<PreferenceMigration> migrations;
 
     private static List<PreferenceMigration> defaultMigrations() {
-        List<PreferenceMigration> list = new ArrayList<>();
-        list.add(new DbConnectorsMigration());
-        return list;
+        return List.of(new DbConnectorsMigration());
     }
 
     public PreferencesRepository() {
         this.root = Preferences.userRoot().node(ROOT_PATH);
+
         this.migrations = new ArrayList<>(defaultMigrations());
         this.migrations.sort(Comparator.comparingInt(PreferenceMigration::version));
+
+        this.unsavedProjectIds = new IdentityHashMap<>();
+        this.unsavedDataMapIds = new IdentityHashMap<>();
     }
 
-    /**
-     * Application-wide node, e.g. {@code app("dbConnectors")} →
-     * {@code org/apache/cayenne/modeler/v5/app/dbConnectors}.
-     */
-    public Preferences app(String relativePath) {
+    public Preferences appPref(String relativePath) {
         Preferences appRoot = root.node(APP_NODE);
         return relativePath == null || relativePath.isEmpty() ? appRoot : appRoot.node(relativePath);
     }
 
     /**
-     * Per-class UI preferences node — replacement for
-     * {@code Preferences.userNodeForPackage(uiClass)}. The class FQN is flattened
-     * to a single sanitized segment.
+     * Per-component UI preferences node, addressed by a short stable path
+     * chosen by the caller (e.g. {@code "splitPane/templateEditor"}). Pass
+     * {@code null} or an empty string to get the {@code ui} base node itself.
      */
-    public Preferences ui(Class<?> uiClass) {
-        return app(UI_NODE).node(PreferenceNodeIds.sanitize(uiClass.getName()));
+    public Preferences uiPref(String relativePath) {
+        Preferences uiRoot = appPref(UI_NODE);
+        return relativePath == null || relativePath.isEmpty() ? uiRoot : uiRoot.node(relativePath);
     }
 
     /**
-     * Returns the preferences node for the given {@link Project}. If the project
-     * has been saved to disk, this is keyed by a stable hash of the project's
-     * configuration file path. Otherwise it's keyed by a per-runtime
-     * {@code unsaved-<ts>} id assigned on first lookup.
+     * Returns the preferences node for the given {@link Project}, optionally
+     * descending into a {@code relativePath} sub-tree within it. If the project
+     * has been saved to disk, the project's subtree is keyed by a stable hash
+     * of its configuration file path; otherwise by a per-runtime
+     * {@code unsaved-<ts>} id assigned on first lookup. Pass {@code null} or
+     * an empty {@code relativePath} to get the project base node itself.
      */
-    public Preferences project(Project project) {
+    public Preferences projectPref(Project project, String relativePath) {
         String id = projectId(project);
         Preferences node = root.node(PROJECT_NODE).node(id);
         recordPath(node, projectPath(project), PROJECT_INDEX_NODE, id);
-        return node;
+        return relativePath == null || relativePath.isEmpty() ? node : node.node(relativePath);
     }
 
     /**
-     * Returns the preferences node for the given {@link DataMap}. Like
-     * {@link #project(Project)}, keyed by file path when saved or by a
-     * {@code unsaved-<ts>} id otherwise.
+     * Returns the preferences node for the given {@link DataMap}, optionally
+     * descending into a {@code relativePath} sub-tree within it. Like
+     * {@link #projectPref(Project, String)}, the DataMap's subtree is keyed by
+     * file path when saved or by a {@code unsaved-<ts>} id otherwise. Pass
+     * {@code null} or an empty {@code relativePath} to get the DataMap base
+     * node itself.
      */
-    public Preferences dataMap(DataMap map) {
+    public Preferences dataMapPref(DataMap map, String relativePath) {
         String id = dataMapId(map);
         Preferences node = root.node(DATAMAP_NODE).node(id);
         recordPath(node, dataMapPath(map), DATAMAP_INDEX_NODE, id);
-        return node;
+        return relativePath == null || relativePath.isEmpty() ? node : node.node(relativePath);
     }
 
     private String projectId(Project project) {
@@ -161,7 +165,7 @@ public class PreferencesRepository {
      * version exceeds {@code app/_meta/migrations.appliedVersion}.
      */
     public void runMigrations() {
-        Preferences meta = app(META_NODE);
+        Preferences meta = appPref(META_NODE);
         int applied = meta.getInt(MIGRATIONS_VERSION_KEY, 0);
         int max = applied;
         for (PreferenceMigration m : migrations) {
@@ -221,7 +225,7 @@ public class PreferencesRepository {
             return;
         }
         node.put(PATH_KEY, path);
-        app(indexNode).put(id, path);
+        appPref(indexNode).put(id, path);
     }
 
     private static String projectPath(Project project) {

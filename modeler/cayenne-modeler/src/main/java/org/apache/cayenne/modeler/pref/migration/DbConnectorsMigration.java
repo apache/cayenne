@@ -56,7 +56,7 @@ public class DbConnectorsMigration implements PreferenceMigration {
             return;
         }
 
-        Preferences target = repo.app("dbConnectors");
+        Preferences target = repo.appPref("dbConnectors");
         PreferencesCopier.copy(legacy, target);
     }
 }

@@ -35,7 +35,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.prefs.Preferences;
 
 /**
  * Action for saving graph as image
@@ -61,8 +60,7 @@ public class SaveAsImageAction extends ModelerAbstractAction {
 		JFileChooser chooser = new JFileChooser();
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-		Preferences lastDir = application.getPreferencesRepository().ui(SaveAsImageAction.class).node("lastImageDir");
-		CMFileChooserPrefs.of(lastDir).bind(chooser);
+		CMFileChooserPrefs.of(application.getPreferencesRepository(), "saveAsImage/lastDir").bind(chooser);
 
 		chooser.setAcceptAllFileFilterUsed(false);
 

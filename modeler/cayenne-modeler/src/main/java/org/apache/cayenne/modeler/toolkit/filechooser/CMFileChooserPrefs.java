@@ -19,22 +19,25 @@
 
 package org.apache.cayenne.modeler.toolkit.filechooser;
 
+import org.apache.cayenne.modeler.pref.PreferenceAdapter;
+import org.apache.cayenne.modeler.pref.PreferencesRepository;
+
 import javax.swing.JFileChooser;
 import java.io.File;
 import java.util.prefs.Preferences;
 
-public final class CMFileChooserPrefs {
+public final class CMFileChooserPrefs implements PreferenceAdapter {
 
     private static final String PATH_PROPERTY = "path";
 
     private final Preferences prefs;
 
-    private CMFileChooserPrefs(Preferences prefs) {
-        this.prefs = prefs;
+    public static CMFileChooserPrefs of(PreferencesRepository repository, String path) {
+        return new CMFileChooserPrefs(repository.uiPref(path));
     }
 
-    public static CMFileChooserPrefs of(Preferences node) {
-        return new CMFileChooserPrefs(node);
+    private CMFileChooserPrefs(Preferences prefs) {
+        this.prefs = prefs;
     }
 
     public void bind(JFileChooser chooser) {

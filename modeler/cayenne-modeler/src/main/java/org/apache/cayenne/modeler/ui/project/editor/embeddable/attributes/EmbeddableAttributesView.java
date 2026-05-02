@@ -170,7 +170,7 @@ public class EmbeddableAttributesView extends JPanel implements
         AutoCompletion.enable(javaTypesCombo, false, true);
         typeColumn.setCellEditor(new CMComboBoxCellEditor(javaTypesCombo));
 
-        CMTablePrefs.of(getClass(), "embeddable/attributeTable")
+        CMTablePrefs.of(controller.getApplication().getPreferencesRepository(), "embeddable/attributeTable")
                 .bind(table, null, EmbeddableAttributeTableModel.OBJ_ATTRIBUTE);
 
     }

@@ -70,7 +70,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.prefs.Preferences;
 
 /**
  * Action handler for WebObjects EOModel import function.
@@ -327,8 +326,7 @@ public class ImportEOModelAction extends ModelerAbstractAction {
             eoModelChooser = new EOModelChooser("Select EOModel");
         }
 
-        Preferences prefs = application.getPreferencesRepository().ui(ImportEOModelAction.class).node("lastEOMDir");
-        CMFileChooserPrefs.of(prefs).bind(eoModelChooser);
+        CMFileChooserPrefs.of(application.getPreferencesRepository(), "importEOModel/lastDir").bind(eoModelChooser);
 
         return eoModelChooser;
     }

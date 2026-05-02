@@ -114,10 +114,10 @@ public class JDBCDataSourceController extends DataSourceEditorController {
 
         DataSourceDescriptor projectDataSourceDescriptor = getNode().getDataSourceDescriptor();
 
-        String key = DataNodePrefs.of(getApplication().getPreferencesRepository()
-                .project(getApplication().getProject())
-                .node("DataNode")
-                .node(getNode().getName())).getLocalDataSource();
+        String key = DataNodePrefs.of(
+                getApplication().getPreferencesRepository(),
+                getApplication().getProject(),
+                getNode().getName()).getLocalDataSource();
         if (key == null) {
             mainController.updateStatus("No Local DataSource selected for node...");
             return;

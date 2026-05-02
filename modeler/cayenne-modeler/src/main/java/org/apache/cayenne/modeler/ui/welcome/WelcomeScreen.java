@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.welcome;
 
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
@@ -40,14 +41,16 @@ public class WelcomeScreen extends JScrollPane implements RecentFileListListener
     private static final Color TOP_GRADIENT = new Color(153, 153, 153);
     private static final Color BOTTOM_GRADIENT = new Color(230, 230, 230);
 
+    private final Application application;
     private final GlobalActions actionManager;
 
     private JList<String> recentProjectsList;
     private JPanel buttonsPanel;
     private JPanel mainPanel;
 
-    public WelcomeScreen(GlobalActions actionManager) {
-        this.actionManager = actionManager;
+    public WelcomeScreen(Application application) {
+        this.application = application;
+        this.actionManager = application.getActionManager();
         initView();
     }
 
@@ -141,7 +144,7 @@ public class WelcomeScreen extends JScrollPane implements RecentFileListListener
 
     @Override
     public void recentFileListChanged() {
-        List<File> arr = RecentProjectsPrefs.of().getFiles();
+        List<File> arr = RecentProjectsPrefs.of(application.getPreferencesRepository()).getFiles();
         recentProjectsList.setModel(new RecentFileListModel(arr));
     }
 }

@@ -305,7 +305,7 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
         moveUp.setEnabled(false);
         moveDown.setEnabled(false);
 
-        CMTablePrefs.of(getClass(), "procedure/parameterTable").bind(table, null);
+        CMTablePrefs.of(controller.getApplication().getPreferencesRepository(), "procedure/parameterTable").bind(table, null);
     }
 
     public void procedureParameterAdded(ProcedureParameterEvent e) {

@@ -44,7 +44,7 @@ public class GeneralPreferencesController extends ChildController<PreferenceDial
     public GeneralPreferencesController(PreferenceDialogController parent) {
         super(parent);
 
-        GeneralPrefs prefs = GeneralPrefs.of();
+        GeneralPrefs prefs = GeneralPrefs.of(getApplication().getPreferencesRepository());
         this.systemEncoding = detectPlatformEncoding();
         this.defaultLabel = systemEncoding + " (default)";
 
@@ -64,7 +64,7 @@ public class GeneralPreferencesController extends ChildController<PreferenceDial
     }
 
     public void commit() {
-        GeneralPrefs prefs = GeneralPrefs.of();
+        GeneralPrefs prefs = GeneralPrefs.of(getApplication().getPreferencesRepository());
 
         Object selected = view.getEncodingChoices().getSelectedItem();
         String encoding = (selected == null || defaultLabel.equals(selected)) ? systemEncoding : selected.toString();

@@ -63,7 +63,7 @@ public class ModelerController extends RootController {
     public ModelerController(Application application) {
         super(application);
 
-        this.view = new ModelerFrame(application.getActionManager());
+        this.view = new ModelerFrame(application);
         application.getPlatformInitializer().setupMenus(view);
         this.projectController = new ProjectController(this);
         this.dbImportController = new DbImportController(this);
@@ -126,7 +126,7 @@ public class ModelerController extends RootController {
         });
 
 
-        CMComponentGeometryPrefs.of(view.getClass()).bind(view, 1200, 720);
+        CMComponentGeometryPrefs.of(application.getPreferencesRepository(), "frame/geometry").bind(view, 1200, 720);
 
         view.setVisible(true);
     }
@@ -203,11 +203,11 @@ public class ModelerController extends RootController {
      * Adds path to the list of last opened projects in preferences.
      */
     public void addToLastProjListAction(File file) {
-        RecentProjectsPrefs.of().addFile(file);
+        RecentProjectsPrefs.of(application.getPreferencesRepository()).addFile(file);
     }
 
     public void changePathInLastProjListAction(File oldFile, File newFile) {
-        RecentProjectsPrefs prefs = RecentProjectsPrefs.of();
+        RecentProjectsPrefs prefs = RecentProjectsPrefs.of(application.getPreferencesRepository());
         prefs.removeFile(oldFile);
         prefs.addFile(newFile);
 

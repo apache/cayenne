@@ -18,17 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.pref;
 
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
 
 import java.util.prefs.Preferences;
 
-public final class DataMapPrefs {
+public final class DataMapPrefs implements PreferenceAdapter {
 
     public static final String SUPERCLASS_PACKAGE_PROPERTY = "superclassPackage";
     public static final String DEFAULT_SUPERCLASS_PACKAGE_SUFFIX = "auto";
 
-    public static DataMapPrefs of(Preferences pref) {
-        return new DataMapPrefs(pref);
+    public static DataMapPrefs of(PreferencesRepository repository, DataMap dataMap) {
+        return new DataMapPrefs(repository.dataMapPref(dataMap, null));
     }
 
     private final Preferences pref;

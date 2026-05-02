@@ -81,7 +81,7 @@ public class SelectQueryOrderingTab extends JPanel {
 
         //As of CAY-888 #3 main pane is now a JSplitPane. Top component is a bit larger.
         JSplitPane mainPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        CMSplitPanePrefs.of(SelectQueryOrderingTab.class).bind(mainPanel, defLocation);
+        CMSplitPanePrefs.of(mediator.getApplication().getPreferencesRepository(), "selectQuery/orderingSplit").bind(mainPanel, defLocation);
 
         mainPanel.setTopComponent(createEditorPanel());
         mainPanel.setBottomComponent(createSelectorPanel());

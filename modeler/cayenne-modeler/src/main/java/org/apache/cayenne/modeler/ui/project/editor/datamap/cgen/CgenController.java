@@ -303,7 +303,7 @@ public class CgenController extends ChildController<ProjectController> implement
             configuration.setRootPath(Utils.getRootPathForDataMap(map));
             configuration.updateOutputPath(basePath);
         }
-        configuration.setEncoding(GeneralPrefs.of().getEncoding());
+        configuration.setEncoding(GeneralPrefs.of(application.getPreferencesRepository()).getEncoding());
         return configuration;
     }
 

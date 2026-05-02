@@ -19,32 +19,29 @@
 
 package org.apache.cayenne.modeler.toolkit.component;
 
-import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.pref.PreferenceAdapter;
+import org.apache.cayenne.modeler.pref.PreferencesRepository;
 
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.prefs.Preferences;
 
-public final class CMComponentGeometryPrefs {
+public final class CMComponentGeometryPrefs implements PreferenceAdapter {
 
     private static final String HEIGHT_PROPERTY = "height";
     private static final String WIDTH_PROPERTY = "width";
     private static final String X_PROPERTY = "x";
     private static final String Y_PROPERTY = "y";
 
+    public static CMComponentGeometryPrefs of(PreferencesRepository repository, String path) {
+        return new CMComponentGeometryPrefs(repository.uiPref(path));
+    }
+
     private final Preferences prefs;
 
     private CMComponentGeometryPrefs(Preferences prefs) {
         this.prefs = prefs;
-    }
-
-    public static CMComponentGeometryPrefs of(Class<?> anchor) {
-        return new CMComponentGeometryPrefs(Application.getInstance().getPreferencesRepository().ui(anchor));
-    }
-
-    public static CMComponentGeometryPrefs of(Class<?> anchor, String path) {
-        return new CMComponentGeometryPrefs(Application.getInstance().getPreferencesRepository().ui(anchor).node(path));
     }
 
     public void bind(Component c, int defaultWidth, int defaultHeight) {
@@ -66,7 +63,7 @@ public final class CMComponentGeometryPrefs {
         // Cache last value written to skip native Preferences writes when the
         // value hasn't changed. componentResized / componentMoved fire on every
         // pixel during a window drag.
-        int[] last = { c.getWidth(), c.getHeight(), c.getX(), c.getY() };
+        int[] last = {c.getWidth(), c.getHeight(), c.getX(), c.getY()};
 
         c.addComponentListener(new ComponentAdapter() {
 

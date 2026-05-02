@@ -87,7 +87,7 @@ public class DataDomainCgenController extends DataDomainGeneratorsViewController
         CgenConfiguration cgenConfiguration = new CgenConfiguration();
         cgenConfiguration.setDataMap(dataMap);
         cgenConfiguration.updateOutputPath(CgenOps.baseDir(controller.getApplication()));
-        cgenConfiguration.setEncoding(GeneralPrefs.of().getEncoding());
+        cgenConfiguration.setEncoding(GeneralPrefs.of(controller.getApplication().getPreferencesRepository()).getEncoding());
 
         cgenConfiguration.resolveExcludedEntities();
         cgenConfiguration.resolveExcludedEmbeddables();

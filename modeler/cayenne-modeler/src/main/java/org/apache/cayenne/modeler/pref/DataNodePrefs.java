@@ -18,17 +18,26 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.pref;
 
+import org.apache.cayenne.project.Project;
+
 import java.util.prefs.Preferences;
 
-public final class DataNodePrefs {
+public final class DataNodePrefs implements PreferenceAdapter {
 
     public static final String LOCAL_DATA_SOURCE_PROPERTY = "localDataSource";
+
+    static final String NODE = "DataNode";
 
     private final Preferences pref;
     private String localDataSource;
 
-    public static DataNodePrefs of(Preferences pref) {
-        return new DataNodePrefs(pref);
+    public static DataNodePrefs of(PreferencesRepository repository, Project project, String dataNodeName) {
+        return new DataNodePrefs(repository.projectPref(project, NODE + "/" + dataNodeName));
+    }
+
+    public static void rename(PreferencesRepository repository, Project project, String oldName, String newName) {
+        Preferences parent = repository.projectPref(project, NODE);
+        PreferencesCopier.move(parent.node(oldName), parent.node(newName));
     }
 
     private DataNodePrefs(Preferences pref) {
@@ -36,11 +45,9 @@ public final class DataNodePrefs {
     }
 
     public void setLocalDataSource(String localDataSource) {
-        if (pref != null) {
-            this.localDataSource = localDataSource;
-            if (localDataSource != null) {
-                pref.put(LOCAL_DATA_SOURCE_PROPERTY, localDataSource);
-            }
+        this.localDataSource = localDataSource;
+        if (localDataSource != null) {
+            pref.put(LOCAL_DATA_SOURCE_PROPERTY, localDataSource);
         }
     }
 

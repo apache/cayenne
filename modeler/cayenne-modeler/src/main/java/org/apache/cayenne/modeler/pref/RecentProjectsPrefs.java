@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.modeler.pref;
 
-import org.apache.cayenne.modeler.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +28,7 @@ import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-public final class RecentProjectsPrefs {
+public final class RecentProjectsPrefs implements PreferenceAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RecentProjectsPrefs.class);
 
@@ -37,15 +36,16 @@ public final class RecentProjectsPrefs {
 
     static final String NODE = "lastProjects";
 
+    public static RecentProjectsPrefs of(PreferencesRepository repository) {
+        return new RecentProjectsPrefs(repository.appPref(NODE));
+    }
+
     private final Preferences prefs;
 
     private RecentProjectsPrefs(Preferences prefs) {
         this.prefs = prefs;
     }
 
-    public static RecentProjectsPrefs of() {
-        return new RecentProjectsPrefs(Application.getInstance().getPreferencesRepository().app(NODE));
-    }
 
     public List<File> getFiles() {
         String[] keys = keys();

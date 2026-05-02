@@ -191,7 +191,7 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
         TableColumn scaleColumn = table.getColumnModel().getColumn(DbAttributeTableModel.DB_ATTRIBUTE_SCALE);
         scaleColumn.setCellEditor(new CMTextFieldCellEditor(new LimitedTextField(10)));
 
-        CMTablePrefs.of(DbAttributeTableModel.class, "attributeTable")
+        CMTablePrefs.of(controller.getApplication().getPreferencesRepository(), "dbEntity/attributeTable")
                 .bind(table, null, DbAttributeTableModel.DB_ATTRIBUTE_NAME);
     }
 

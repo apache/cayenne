@@ -18,6 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.dbgen;
 
+import org.apache.cayenne.modeler.pref.PreferenceAdapter;
+import org.apache.cayenne.modeler.pref.PreferencesRepository;
+import org.apache.cayenne.project.Project;
+
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.prefs.Preferences;
@@ -28,7 +32,9 @@ import java.util.prefs.Preferences;
  * closes. Holds no state of its own — the view is the source of truth while the dialog
  * is open.
  */
-public class DBGeneratorPrefs {
+public class DBGeneratorPrefs implements PreferenceAdapter {
+
+    static final String NODE = "DbGenerator";
 
     private static final String CREATE_FK_PROPERTY = "createFK";
     private static final String CREATE_PK_PROPERTY = "createPK";
@@ -36,14 +42,14 @@ public class DBGeneratorPrefs {
     private static final String DROP_PK_PROPERTY = "dropPK";
     private static final String DROP_TABLES_PROPERTY = "dropTables";
 
+    public static DBGeneratorPrefs of(PreferencesRepository repository, Project project) {
+        return new DBGeneratorPrefs(repository.projectPref(project, NODE));
+    }
+
     private final Preferences prefs;
 
     private DBGeneratorPrefs(Preferences prefs) {
         this.prefs = prefs;
-    }
-
-    public static DBGeneratorPrefs of(Preferences prefs) {
-        return new DBGeneratorPrefs(prefs);
     }
 
     public void bind(DBGeneratorOptionsView view) {

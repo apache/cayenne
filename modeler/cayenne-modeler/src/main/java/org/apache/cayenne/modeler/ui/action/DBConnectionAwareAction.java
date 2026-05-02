@@ -76,6 +76,6 @@ public abstract class DBConnectionAwareAction extends ModelerAbstractAction {
     }
 
     private DataMapPrefs dataMapPrefs(DataMap dataMap) {
-        return DataMapPrefs.of(application.getPreferencesRepository().dataMap(dataMap));
+        return DataMapPrefs.of(application.getPreferencesRepository(), dataMap);
     }
 }
