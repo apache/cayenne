@@ -144,15 +144,10 @@ class ErrorDialog extends CMDialog implements ActionListener {
             PrintWriter out = new PrintWriter(str);
 
             // first add extra diagnostics
-            String version = LocalizedStringsHandler.getString("cayenne.version");
-            version = (version != null) ? version : "(unknown)";
-
-            String buildDate = LocalizedStringsHandler.getString("cayenne.build.date");
-            buildDate = (buildDate != null) ? buildDate : "(unknown)";
 
             out.println("CayenneModeler Info");
-            out.println("Version: " + version);
-            out.println("Build Date: " + buildDate);
+            out.println("Version: " + LocalizedStringsHandler.getString("cayenne.version"));
+            out.println("Build Date: " + LocalizedStringsHandler.getString("cayenne.build.date"));
             out.println("Exception: ");
             out.println("=================================");
             buildStackTrace(out, throwable);

@@ -61,7 +61,7 @@ import java.util.stream.Collectors;
  * </ul>
  */
 public class Application {
-    
+
     private static final String APPLICATION_NAME_PROPERTY = "cayenne.modeler.application.name";
     private static final String DEFAULT_APPLICATION_NAME = "CayenneModeler";
 
