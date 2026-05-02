@@ -68,7 +68,8 @@
 		<module>cayenne-project-compatibility</module>
 		<module>cayenne-velocity</module>
 		<module>cayenne-osgi</module>
-		<module>maven-plugins</module>
+		<module>cayenne-maven-plugin</module>
+		<module>cayenne-maven-plugin-itest</module>
 		<module>modeler</module>
 		<module>tutorials</module>
 		<module>docs</module>

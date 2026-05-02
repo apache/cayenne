@@ -51,7 +51,7 @@ mvn test -Dtest=SomeTest -DcayenneTestConnection=h2
 - **cayenne-project** — Cayenne project/model file management
 - **cayenne-cgen** — Code generation from database schemas
 - **cayenne-dbsync** — Database schema synchronization
-- **cayenne-gradle-plugin**, **maven-plugins**, **cayenne-ant** — Build tool integrations
+- **cayenne-gradle-plugin**, **cayenne-maven-plugin**, **cayenne-ant** — Build tool integrations
 - **cayenne-crypto**, **cayenne-commitlog**, **cayenne-lifecycle**, **cayenne-jcache**, **cayenne-cache-invalidation** — Optional extension modules
 - **modeler** — CayenneModeler GUI application (Swing)
 
