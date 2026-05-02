@@ -42,9 +42,9 @@ import java.util.prefs.Preferences;
  * is made far from the rename itself, in {@code SaveAction} and {@code ExitAction}.
  * Access is implicitly single-threaded (Swing EDT).
  */
-public abstract class RenamedPreferences {
+public abstract class RenamedPrefs {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RenamedPreferences.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RenamedPrefs.class);
 
     private static final List<Preferences> newNodes = new ArrayList<>();
     private static final List<Preferences> oldNodes = new ArrayList<>();
@@ -92,12 +92,8 @@ public abstract class RenamedPreferences {
 
     protected Preferences pref;
 
-    public RenamedPreferences(Preferences pref) {
+    public RenamedPrefs(Preferences pref) {
         this.pref = pref;
-    }
-
-    public Preferences getPref() {
-        return pref;
     }
 
     public void copyPreferences(String newName) {

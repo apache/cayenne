@@ -44,7 +44,7 @@ public final class RecentProjectsPrefs {
     }
 
     public static RecentProjectsPrefs of() {
-        return new RecentProjectsPrefs(CayennePreference.getRoot().node(NODE_PATH));
+        return new RecentProjectsPrefs(RootPrefs.getRoot().node(NODE_PATH));
     }
 
     public List<File> getFiles() {

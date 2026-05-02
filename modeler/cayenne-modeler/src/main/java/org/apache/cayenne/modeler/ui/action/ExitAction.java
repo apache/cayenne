@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.pref.RenamedPreferences;
+import org.apache.cayenne.modeler.pref.RenamedPrefs;
 
 import java.awt.event.ActionEvent;
 
@@ -50,7 +50,7 @@ public class ExitAction extends ProjectAction {
         // stop logging before JVM shutdown to prevent hanging
         application.getLogConsoleController().stopLogging();
 
-        RenamedPreferences.removeNewPreferences();
+        RenamedPrefs.removeNewPreferences();
 
         // goodbye
         System.exit(0);

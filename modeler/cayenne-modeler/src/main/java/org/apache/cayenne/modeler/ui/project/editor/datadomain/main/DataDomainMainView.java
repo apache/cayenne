@@ -27,7 +27,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DomainDisplayListener;
 import org.apache.cayenne.modeler.event.model.DomainEvent;
-import org.apache.cayenne.modeler.pref.RenamedPreferences;
+import org.apache.cayenne.modeler.pref.RenamedPrefs;
 import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
@@ -211,7 +211,7 @@ public class DataDomainMainView extends JPanel implements DomainDisplayListener 
                 dataChannelDescriptor.getName());
         dataChannelDescriptor.setName(newName);
 
-        RenamedPreferences.copyPreferences(newName, prefs);
+        RenamedPrefs.copyPreferences(newName, prefs);
         controller.fireDomainEvent(e);
     }
 }

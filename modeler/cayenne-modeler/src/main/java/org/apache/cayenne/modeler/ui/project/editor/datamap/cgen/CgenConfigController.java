@@ -24,7 +24,7 @@ import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.modeler.project.CgenOps;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.TemplateEditorController;
 import org.apache.cayenne.modeler.mvc.ChildController;
-import org.apache.cayenne.modeler.pref.DataMapDefaults;
+import org.apache.cayenne.modeler.pref.DataMapPrefs;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.util.Util;
 
@@ -35,7 +35,7 @@ public class CgenConfigController extends ChildController<CgenController> {
 
     private CgenConfiguration cgenConfiguration;
     protected CgenConfigPanel view;
-    protected DataMapDefaults preferences;
+    protected DataMapPrefs preferences;
     protected CgenController cgenController;
     private boolean isEditorOpen;
     private static final String EDITED = " (edited)";

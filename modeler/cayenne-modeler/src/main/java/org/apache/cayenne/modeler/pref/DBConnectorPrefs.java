@@ -17,10 +17,11 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dbconnector;
+package org.apache.cayenne.modeler.pref;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.modeler.pref.CayennePreference;
+import org.apache.cayenne.modeler.dbconnector.DBConnector;
+import org.apache.cayenne.modeler.dbconnector.DBConnectors;
 
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -40,7 +41,7 @@ public class DBConnectorPrefs {
     private static final String USER_NAME_PROPERTY = "userName";
 
     public static DBConnectors loadAndBind() {
-        Preferences root = CayennePreference.getRoot().node(DB_CONNECTION_INFO);
+        Preferences root = RootPrefs.getRoot().node(DB_CONNECTION_INFO);
 
         DBConnectors connectors = new DBConnectors();
 

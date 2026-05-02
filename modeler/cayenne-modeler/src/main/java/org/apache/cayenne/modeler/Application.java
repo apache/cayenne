@@ -26,7 +26,7 @@ import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.modeler.dbconnector.DBConnectorPrefs;
+import org.apache.cayenne.modeler.pref.DBConnectorPrefs;
 import org.apache.cayenne.modeler.dbconnector.DBConnectors;
 import org.apache.cayenne.modeler.pref.ClasspathPrefs;
 import org.apache.cayenne.modeler.pref.GeneralPrefs;

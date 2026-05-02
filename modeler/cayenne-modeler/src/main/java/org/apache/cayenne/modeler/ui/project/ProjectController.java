@@ -39,8 +39,8 @@ import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.event.display.*;
 import org.apache.cayenne.modeler.event.model.*;
 import org.apache.cayenne.modeler.mvc.ChildController;
-import org.apache.cayenne.modeler.pref.DataMapDefaults;
-import org.apache.cayenne.modeler.pref.DataNodeDefaults;
+import org.apache.cayenne.modeler.pref.DataMapPrefs;
+import org.apache.cayenne.modeler.pref.DataNodePrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.ModelerController;
 import org.apache.cayenne.modeler.ui.action.RevertAction;
@@ -131,7 +131,7 @@ public class ProjectController extends ChildController<ModelerController> {
      * nameSuffix allows to address more than one defaults instance for a single
      * DataMap.
      */
-    public DataMapDefaults getSelectedDataMapPreferences(String nameSuffix) {
+    public DataMapPrefs getSelectedDataMapPreferences(String nameSuffix) {
         DataMap map = getSelectedDataMap();
         if (map == null) {
             throw new CayenneRuntimeException("No DataMap selected");
@@ -143,25 +143,25 @@ public class ProjectController extends ChildController<ModelerController> {
         } else {
             pref = getDataDomainPreferences().node("DataMap").node(map.getName()).node(nameSuffix);
         }
-        return new DataMapDefaults(pref);
+        return DataMapPrefs.of(pref);
     }
 
-    public DataMapDefaults getSelectedDataMapPreferences(DataMap dataMap) {
+    public DataMapPrefs getSelectedDataMapPreferences(DataMap dataMap) {
         Preferences pref = getDataDomainPreferences().node("DataMap").node(dataMap.getName());
-        return new DataMapDefaults(pref);
+        return DataMapPrefs.of(pref);
     }
 
     /**
      * Returns preferences object for the current DataMap, throwing an exception
      * if no DataMap is selected.
      */
-    public DataNodeDefaults getSelectedDataNodePreferences() {
+    public DataNodePrefs getSelectedDataNodePreferences() {
         DataNodeDescriptor node = getSelectedDataNode();
         if (node == null) {
             throw new CayenneRuntimeException("No DataNode selected");
         }
 
-        return new DataNodeDefaults(getDataDomainPreferences().node("DataNode").node(node.getName()));
+        return DataNodePrefs.of(getDataDomainPreferences().node("DataNode").node(node.getName()));
     }
 
     /**

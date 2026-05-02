@@ -29,7 +29,7 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.modeler.pref.DataNodeDefaults;
+import org.apache.cayenne.modeler.pref.DataNodePrefs;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.slf4j.Logger;
@@ -66,7 +66,7 @@ public abstract class ValidationDisplayHandler {
         else if (validatedObj instanceof Entity) {
             msg = new EntityErrorMsg(result);
         }
-        else if (validatedObj instanceof DataNodeDefaults) {
+        else if (validatedObj instanceof DataNodePrefs) {
             msg = new DataNodeErrorMsg(result);
         }
         else if (validatedObj instanceof DataMap) {

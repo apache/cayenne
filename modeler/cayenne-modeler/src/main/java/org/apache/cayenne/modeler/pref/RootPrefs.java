@@ -20,29 +20,9 @@ package org.apache.cayenne.modeler.pref;
 
 import java.util.prefs.Preferences;
 
-public class DataNodeDefaults extends RenamedPreferences {
+class RootPrefs {
 
-    private String localDataSource;
-
-    public static final String LOCAL_DATA_SOURCE_PROPERTY = "localDataSource";
-
-    public DataNodeDefaults(Preferences pref) {
-        super(pref);
-    }
-
-    public void setLocalDataSource(String localDataSource) {
-        if (pref != null) {
-            this.localDataSource = localDataSource;
-            if (localDataSource != null) {
-                pref.put(LOCAL_DATA_SOURCE_PROPERTY, localDataSource);
-            }
-        }
-    }
-
-    public String getLocalDataSource() {
-        if (localDataSource == null) {
-            localDataSource = pref.get(LOCAL_DATA_SOURCE_PROPERTY, "");
-        }
-        return localDataSource;
+    public static Preferences getRoot() {
+        return Preferences.userRoot().node("org/apache/cayenne");
     }
 }

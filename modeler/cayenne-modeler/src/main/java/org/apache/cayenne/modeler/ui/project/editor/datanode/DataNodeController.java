@@ -30,7 +30,7 @@ import org.apache.cayenne.modeler.ui.preferences.PreferenceDialogController;
 import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
-import org.apache.cayenne.modeler.pref.DataNodeDefaults;
+import org.apache.cayenne.modeler.pref.DataNodePrefs;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datanode.custom.CustomDataSourceEditorController;
 import org.apache.cayenne.modeler.ui.project.editor.datanode.jdbc.JDBCDataSourceController;
@@ -127,7 +127,7 @@ public class DataNodeController extends ChildController<ProjectController> {
             throw new ValidationException("Empty DataNode Name");
         }
 
-        DataNodeDefaults oldPref = parent.getSelectedDataNodePreferences();
+        DataNodePrefs oldPref = parent.getSelectedDataNodePreferences();
         DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) getApplication().getProject()
                 .getRootNode();
 

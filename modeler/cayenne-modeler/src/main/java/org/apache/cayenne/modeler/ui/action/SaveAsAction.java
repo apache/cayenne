@@ -24,7 +24,7 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.model.ProjectBeforeSaveEvent;
 import org.apache.cayenne.modeler.event.model.ProjectAfterSaveEvent;
-import org.apache.cayenne.modeler.pref.RenamedPreferences;
+import org.apache.cayenne.modeler.pref.RenamedPrefs;
 import org.apache.cayenne.modeler.ui.project.validator.ProjectValidatorDialogController;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
@@ -109,7 +109,7 @@ public class SaveAsAction extends ModelerAbstractAction {
             Preferences oldPref = getProjectController().getPreferences();
             String projPath = oldPref.absolutePath().replace(oldName, "");
             Preferences newPref = getProjectController().getPreferences().node(projPath + newName);
-            RenamedPreferences.copyUntracked(newPref, getProjectController().getPreferences());
+            RenamedPrefs.copyUntracked(newPref, getProjectController().getPreferences());
         } else if (isNewProject) {
             if (tempOldPref != null) {
 
@@ -122,13 +122,13 @@ public class SaveAsAction extends ModelerAbstractAction {
 
                     Preferences newPref = application.getMainPreferenceForProject().node(projPath + newName);
 
-                    RenamedPreferences.copyUntracked(newPref, tempOldPref);
+                    RenamedPrefs.copyUntracked(newPref, tempOldPref);
                     tempOldPref.removeNode();
                 }
             }
         }
 
-        RenamedPreferences.removeNewPreferences();
+        RenamedPrefs.removeNewPreferences();
 
         File file = new File(p.getConfigurationResource().getURL().toURI());
         application.getFrameController().addToLastProjListAction(file);

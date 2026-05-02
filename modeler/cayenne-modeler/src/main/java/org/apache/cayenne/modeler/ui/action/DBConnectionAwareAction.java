@@ -23,9 +23,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.datasource.DataSourceController;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
-import org.apache.cayenne.modeler.pref.DataMapDefaults;
-
-import static org.apache.cayenne.modeler.dbconnector.DBConnector.*;
+import org.apache.cayenne.modeler.pref.DataMapPrefs;
 
 /**
  * Base action that provides DBConnectionInfo for the current DataMap or calls {@link DataSourceController} dialog to
@@ -69,35 +67,13 @@ public abstract class DBConnectionAwareAction extends ModelerAbstractAction {
     }
 
     private DBConnector getConnectionInfoFromPreferences(DataMap dataMap) {
-
-        DataMapDefaults defaults = getProjectController().getSelectedDataMapPreferences(dataMap);
-        if (defaults == null
-                || defaults.getPref() == null
-                || defaults.getPref().get(URL_PROPERTY, null) == null) {
-            return null;
-        }
-
-        DBConnector connectionInfo = new DBConnector();
-        connectionInfo.setDbAdapter(defaults.getPref().get(DB_ADAPTER_PROPERTY, null));
-        connectionInfo.setUrl(defaults.getPref().get(URL_PROPERTY, null));
-        connectionInfo.setUserName(defaults.getPref().get(USER_NAME_PROPERTY, null));
-        connectionInfo.setPassword(defaults.getPref().get(PASSWORD_PROPERTY, null));
-        connectionInfo.setJdbcDriver(defaults.getPref().get(JDBC_DRIVER_PROPERTY, null));
-        return connectionInfo;
+        DataMapPrefs defaults = getProjectController().getSelectedDataMapPreferences(dataMap);
+        return defaults != null ? defaults.getConnector() : null;
     }
 
     protected void saveConnector(DataMap dataMap, DataSourceController controller) {
-        DataMapDefaults dataMapDefaults = getProjectController().getSelectedDataMapPreferences(dataMap);
-
-        String dbAdapter = controller.getConnector().getDbAdapter();
-        if (dbAdapter != null) {
-            dataMapDefaults.getPref().put(DB_ADAPTER_PROPERTY, dbAdapter);
-        } else {
-            dataMapDefaults.getPref().remove(DB_ADAPTER_PROPERTY);
-        }
-        dataMapDefaults.getPref().put(URL_PROPERTY, controller.getConnector().getUrl());
-        dataMapDefaults.getPref().put(USER_NAME_PROPERTY, controller.getConnector().getUserName());
-        dataMapDefaults.getPref().put(PASSWORD_PROPERTY, controller.getConnector().getPassword());
-        dataMapDefaults.getPref().put(JDBC_DRIVER_PROPERTY, controller.getConnector().getJdbcDriver());
+        getProjectController()
+                .getSelectedDataMapPreferences(dataMap)
+                .setConnector(controller.getConnector());
     }
 }

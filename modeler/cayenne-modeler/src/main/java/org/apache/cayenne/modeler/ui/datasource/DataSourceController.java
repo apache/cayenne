@@ -26,7 +26,7 @@ import org.apache.cayenne.modeler.ui.preferences.PreferenceDialogController;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.dbconnector.DBConnectors;
-import org.apache.cayenne.modeler.pref.DataMapDefaults;
+import org.apache.cayenne.modeler.pref.DataMapPrefs;
 import org.apache.cayenne.modeler.pref.GeneralPrefs;
 
 import javax.sql.DataSource;
@@ -39,8 +39,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-
-import static org.apache.cayenne.modeler.dbconnector.DBConnector.*;
 
 /**
  * A subclass of ConnectionWizard that tests configured DataSource, but does not
@@ -94,14 +92,9 @@ public class DataSourceController extends ChildController<ProjectController> {
     }
 
     private DBConnector getConnectionInfoFromPreferences() {
-        DBConnector connectionInfo = new DBConnector();
-        DataMapDefaults dataMapDefaults = parent.getSelectedDataMapPreferences(parent.getSelectedDataMap());
-        connectionInfo.setDbAdapter(dataMapDefaults.getPref().get(DB_ADAPTER_PROPERTY, null));
-        connectionInfo.setUrl(dataMapDefaults.getPref().get(URL_PROPERTY, null));
-        connectionInfo.setUserName(dataMapDefaults.getPref().get(USER_NAME_PROPERTY, null));
-        connectionInfo.setPassword(dataMapDefaults.getPref().get(PASSWORD_PROPERTY, null));
-        connectionInfo.setJdbcDriver(dataMapDefaults.getPref().get(JDBC_DRIVER_PROPERTY, null));
-        return connectionInfo;
+        DataMapPrefs dataMapPrefs = parent.getSelectedDataMapPreferences(parent.getSelectedDataMap());
+        DBConnector info = dataMapPrefs.getConnector();
+        return info != null ? info : new DBConnector();
     }
 
     private void setDataSourceKey(final String dataSourceKey) {
@@ -126,8 +119,8 @@ public class DataSourceController extends ChildController<ProjectController> {
         refreshDataSources();
         initFavouriteDataSource();
 
-        final DataMapDefaults dataMapDefaults = parent.getSelectedDataMapPreferences(parent.getSelectedDataMap());
-        if (dataMapDefaults.getPref().get(DB_ADAPTER_PROPERTY, null) != null) {
+        final DataMapPrefs dataMapPrefs = parent.getSelectedDataMapPreferences(parent.getSelectedDataMap());
+        if (dataMapPrefs.hasDbAdapter()) {
             getConnectionInfoFromPreferences().copyTo(connector);
         }
         view.pack();

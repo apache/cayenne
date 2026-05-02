@@ -18,14 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.pref;
 
+import org.apache.cayenne.modeler.dbconnector.DBConnector;
+
 import java.util.prefs.Preferences;
 
-public class DataMapDefaults extends RenamedPreferences {
+public final class DataMapPrefs extends RenamedPrefs {
 
     public static final String SUPERCLASS_PACKAGE_PROPERTY = "superclassPackage";
     public static final String DEFAULT_SUPERCLASS_PACKAGE_SUFFIX = "auto";
 
-    public DataMapDefaults(Preferences pref) {
+    public static DataMapPrefs of(Preferences pref) {
+        return new DataMapPrefs(pref);
+    }
+
+    private DataMapPrefs(Preferences pref) {
         super(pref);
     }
 
@@ -60,10 +66,39 @@ public class DataMapDefaults extends RenamedPreferences {
         }
     }
 
-    public String getProperty(String property) {
-        if (property != null && pref != null) {
-            return pref.get(property, null);
+    /**
+     * Returns connection info stored in this DataMap's preferences, or null if no
+     * connection has been configured (URL not set).
+     */
+    public DBConnector getConnector() {
+        if (pref == null || pref.get(DBConnector.URL_PROPERTY, null) == null) {
+            return null;
         }
-        return null;
+        DBConnector connector = new DBConnector();
+        connector.setDbAdapter(pref.get(DBConnector.DB_ADAPTER_PROPERTY, null));
+        connector.setUrl(pref.get(DBConnector.URL_PROPERTY, null));
+        connector.setUserName(pref.get(DBConnector.USER_NAME_PROPERTY, null));
+        connector.setPassword(pref.get(DBConnector.PASSWORD_PROPERTY, null));
+        connector.setJdbcDriver(pref.get(DBConnector.JDBC_DRIVER_PROPERTY, null));
+        return connector;
+    }
+
+    public void setConnector(DBConnector connector) {
+        if (pref == null) {
+            return;
+        }
+        if (connector.getDbAdapter() != null) {
+            pref.put(DBConnector.DB_ADAPTER_PROPERTY, connector.getDbAdapter());
+        } else {
+            pref.remove(DBConnector.DB_ADAPTER_PROPERTY);
+        }
+        pref.put(DBConnector.URL_PROPERTY, connector.getUrl());
+        pref.put(DBConnector.USER_NAME_PROPERTY, connector.getUserName());
+        pref.put(DBConnector.PASSWORD_PROPERTY, connector.getPassword());
+        pref.put(DBConnector.JDBC_DRIVER_PROPERTY, connector.getJdbcDriver());
+    }
+
+    public boolean hasDbAdapter() {
+        return pref != null && pref.get(DBConnector.DB_ADAPTER_PROPERTY, null) != null;
     }
 }

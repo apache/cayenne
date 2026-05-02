@@ -34,7 +34,7 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.main.pkg.PackageUpda
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.schema.SchemaUpdateController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.superclass.SuperclassUpdateController;
 import org.apache.cayenne.modeler.event.model.ProjectAfterSaveEvent;
-import org.apache.cayenne.modeler.pref.DataMapDefaults;
+import org.apache.cayenne.modeler.pref.DataMapPrefs;
 import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.util.Comparators;
@@ -255,7 +255,7 @@ public class DataMapMainView extends JPanel {
         // update class generation preferences
         controller.getSelectedDataMapPreferences("").setSuperclassPackage(
                 newDefaultPackage,
-                DataMapDefaults.DEFAULT_SUPERCLASS_PACKAGE_SUFFIX);
+                DataMapPrefs.DEFAULT_SUPERCLASS_PACKAGE_SUFFIX);
 
         controller.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
     }
@@ -345,7 +345,7 @@ public class DataMapMainView extends JPanel {
             return;
         }
         // completely new name, set new name for domain
-        DataMapDefaults pref = controller.getSelectedDataMapPreferences("");
+        DataMapPrefs pref = controller.getSelectedDataMapPreferences("");
         DataMapEvent e = DataMapEvent.ofChange(this, map, oldName);
         DataChannelDescriptor domain = (DataChannelDescriptor) controller.getProject().getRootNode();
 
