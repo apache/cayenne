@@ -38,7 +38,7 @@ public class LogConsoleWindow extends CMDialog {
 
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                controller.setConsoleProperty(LogConsoleController.SHOW_CONSOLE_PROPERTY, false);
+                LogConsolePrefs.of().setShowConsole(false);
                 controller.getApplication().getFrameController().getView().updateLogConsoleMenu();
             }
         });

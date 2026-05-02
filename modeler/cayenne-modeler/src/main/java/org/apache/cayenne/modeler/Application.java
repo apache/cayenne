@@ -123,7 +123,7 @@ public class Application {
         return getFrameController().getProjectController().getProject();
     }
 
-    public Preferences getPreferencesNode(Class<?> className, String path) {
+    private Preferences getPreferencesNode(Class<?> className, String path) {
         return cayennePreference.getNode(className, path);
     }
 

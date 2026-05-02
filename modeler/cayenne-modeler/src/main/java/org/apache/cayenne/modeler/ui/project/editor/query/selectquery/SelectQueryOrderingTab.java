@@ -25,6 +25,7 @@ import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.toolkit.MultiColumnBrowser;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
+import org.apache.cayenne.modeler.toolkit.splitpane.CMSplitPanePrefs;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
@@ -38,19 +39,12 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.tree.TreeModel;
 import java.awt.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.prefs.Preferences;
 
 /**
  * A panel for picking SelectQuery orderings.
- * 
+ *
  */
-public class SelectQueryOrderingTab extends JPanel implements PropertyChangeListener {
-
-
-    // property for split pane divider size
-    private static final String SPLIT_DIVIDER_LOCATION_PROPERTY = "query.orderings.divider.location";
+public class SelectQueryOrderingTab extends JPanel {
 
     static final Dimension BROWSER_CELL_DIM = new Dimension(150, 100);
     static final Dimension TABLE_DIM = new Dimension(460, 60);
@@ -83,17 +77,11 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
         messagePanel = new JPanel(new BorderLayout());
         cardLayout = new CardLayout();
 
-        Preferences detail = mediator.getApplication().getPreferencesNode(this.getClass(), "");
-
         int defLocation = mediator.getApplication().getFrameController().getView().getHeight() / 2;
-        int location = detail != null ? detail.getInt(
-                getDividerLocationProperty(),
-                defLocation) : defLocation;
 
         //As of CAY-888 #3 main pane is now a JSplitPane. Top component is a bit larger.
         JSplitPane mainPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        mainPanel.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, this);
-        mainPanel.setDividerLocation(location);
+        CMSplitPanePrefs.of(SelectQueryOrderingTab.class).bind(mainPanel, defLocation);
 
         mainPanel.setTopComponent(createEditorPanel());
         mainPanel.setBottomComponent(createSelectorPanel());
@@ -356,24 +344,5 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
 
             mediator.fireQueryEvent(QueryEvent.ofChange(SelectQueryOrderingTab.this, selectQuery));
         }
-    }
-
-    /**
-     * Updates split pane divider location in properties
-     */
-    public void propertyChange(PropertyChangeEvent evt) {
-        if (JSplitPane.DIVIDER_LOCATION_PROPERTY.equals(evt.getPropertyName())) {
-            int value = (Integer) evt.getNewValue();
-
-            Preferences detail = mediator.getApplication().getPreferencesNode(this.getClass(), "");
-            detail.putInt(getDividerLocationProperty(), value);
-        }
-    }
-
-    /**
-     * Returns name of a property for divider location.
-     */
-    protected String getDividerLocationProperty() {
-        return SPLIT_DIVIDER_LOCATION_PROPERTY;
     }
 }

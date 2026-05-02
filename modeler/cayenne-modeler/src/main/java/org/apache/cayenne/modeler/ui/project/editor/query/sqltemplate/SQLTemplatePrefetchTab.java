@@ -33,6 +33,7 @@ import org.apache.cayenne.modeler.util.EntityTreeFilter;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.toolkit.MultiColumnBrowser;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
+import org.apache.cayenne.modeler.toolkit.splitpane.CMSplitPanePrefs;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.util.CayenneMapEntry;
 
@@ -55,17 +56,11 @@ import javax.swing.tree.TreeModel;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.prefs.Preferences;
 
 /**
  * Class configured to work with prefetches.
  */
-public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeListener {
-
-    // property for split pane divider size
-    private static final String SPLIT_DIVIDER_LOCATION_PROPERTY = "query.orderings.divider.location";
+public class SQLTemplatePrefetchTab extends JPanel {
 
     private static final Dimension BROWSER_CELL_DIM = new Dimension(150, 100);
     private static final Dimension TABLE_DIM = new Dimension(460, 60);
@@ -93,17 +88,11 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
         messagePanel = new JPanel(new BorderLayout());
         cardLayout = new CardLayout();
 
-        Preferences detail = mediator.getApplication().getPreferencesNode(this.getClass(), "");
-
         int defLocation = mediator.getApplication().getFrameController().getView().getHeight() / 2;
-        int location = detail != null ? detail.getInt(
-                getDividerLocationProperty(),
-                defLocation) : defLocation;
 
         //As of CAY-888 #3 main pane is now a JSplitPane. Top component is a bit larger.
         JSplitPane mainPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        mainPanel.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, this);
-        mainPanel.setDividerLocation(location);
+        CMSplitPanePrefs.of(SQLTemplatePrefetchTab.class).bind(mainPanel, defLocation);
 
         mainPanel.setTopComponent(createEditorPanel());
         mainPanel.setBottomComponent(createSelectorPanel());
@@ -314,25 +303,6 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
         setUpPrefetchBox(table.getColumnModel().getColumn(2));
 
         mediator.fireQueryEvent(QueryEvent.ofChange(this, sqlTemplate));
-    }
-
-    /**
-     * Updates split pane divider location in properties
-     */
-    public void propertyChange(PropertyChangeEvent evt) {
-        if (JSplitPane.DIVIDER_LOCATION_PROPERTY.equals(evt.getPropertyName())) {
-            int value = (Integer) evt.getNewValue();
-
-            Preferences detail = mediator.getApplication().getPreferencesNode(this.getClass(), "");
-            detail.putInt(getDividerLocationProperty(), value);
-        }
-    }
-
-    /**
-     * Returns name of a property for divider location.
-     */
-    protected String getDividerLocationProperty() {
-        return SPLIT_DIVIDER_LOCATION_PROPERTY;
     }
 
 }

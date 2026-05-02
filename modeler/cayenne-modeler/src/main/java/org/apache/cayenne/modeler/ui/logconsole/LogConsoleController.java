@@ -47,16 +47,6 @@ public class LogConsoleController extends RootController {
     private static final int TEXT_MAX_LENGTH = 500000;
 
     /**
-     * Property to store user preference
-     */
-    public static final String SHOW_CONSOLE_PROPERTY = "show.log.console";
-
-    /**
-     * Property to store 'is-docked' preference
-     */
-    public static final String DOCKED_PROPERTY = "log.console.docked";
-
-    /**
      * Message date format
      */
     private static final DateFormat FORMAT = DateFormat.getDateTimeInstance();
@@ -122,7 +112,8 @@ public class LogConsoleController extends RootController {
         view.getDockItem().addActionListener(e -> {
             // Log console should be visible
             disappear();
-            setConsoleProperty(DOCKED_PROPERTY, !getConsoleProperty(DOCKED_PROPERTY));
+            LogConsolePrefs prefs = LogConsolePrefs.of();
+            prefs.setDocked(!prefs.isDocked());
             appear();
         });
     }
@@ -135,7 +126,7 @@ public class LogConsoleController extends RootController {
      * Shows the console, in separate window or in main frame
      */
     private void appear() {
-        if (!getConsoleProperty(DOCKED_PROPERTY)) {
+        if (!LogConsolePrefs.of().isDocked()) {
             view.setDocked(false);
 
             if (logWindow == null) {
@@ -156,7 +147,7 @@ public class LogConsoleController extends RootController {
      * Hides the console
      */
     private void disappear() {
-        if (!getConsoleProperty(DOCKED_PROPERTY)) {
+        if (!LogConsolePrefs.of().isDocked()) {
             logWindow.dispose();
             logWindow = null;
         } else {
@@ -190,8 +181,9 @@ public class LogConsoleController extends RootController {
      * Shows or hides the console window
      */
     public void toggle() {
-        boolean needShow = !getConsoleProperty(SHOW_CONSOLE_PROPERTY);
-        setConsoleProperty(SHOW_CONSOLE_PROPERTY, needShow);
+        LogConsolePrefs prefs = LogConsolePrefs.of();
+        boolean needShow = !prefs.isShowConsole();
+        prefs.setShowConsole(needShow);
 
         if (needShow) {
             appear();
@@ -201,26 +193,12 @@ public class LogConsoleController extends RootController {
     }
 
     /**
-     * Shows the console if the preference 'SHOW_CONSOLE_PROPERTY' is set to true
+     * Shows the console if the show-console preference is set to true
      */
     public void showConsoleIfNeeded() {
-        if (getConsoleProperty(SHOW_CONSOLE_PROPERTY)) {
+        if (LogConsolePrefs.of().isShowConsole()) {
             appear();
         }
-    }
-
-    /**
-     * Sets the property, depending on last user's choice
-     */
-    public void setConsoleProperty(String prop, boolean b) {
-        application.getPreferencesNode(getClass(), null).putBoolean(prop, b);
-    }
-
-    /**
-     * @return a boolean property
-     */
-    public boolean getConsoleProperty(String prop) {
-        return application.getPreferencesNode(getClass(), null).getBoolean(prop, false);
     }
 
     /**
@@ -277,8 +255,9 @@ public class LogConsoleController extends RootController {
      * Stop logging and don't print any more messages to text area
      */
     public void stopLogging() {
-        if (!getConsoleProperty(DOCKED_PROPERTY)) {
-            setConsoleProperty(SHOW_CONSOLE_PROPERTY, false);
+        LogConsolePrefs prefs = LogConsolePrefs.of();
+        if (!prefs.isDocked()) {
+            prefs.setShowConsole(false);
         }
         loggingStopped = true;
     }
