@@ -19,8 +19,10 @@
 
 package org.apache.cayenne.modeler.ui.preferences.all;
 
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.PreferencesRepository;
+import org.apache.cayenne.modeler.ui.action.ProjectAction;
 import org.apache.cayenne.modeler.ui.preferences.PreferenceDialogController;
 
 import javax.swing.*;
@@ -58,7 +60,7 @@ public class AllPreferencesController extends ChildController<PreferenceDialogCo
     private void deleteAll() {
         int answer = JOptionPane.showConfirmDialog(
                 view,
-                "This will erase all Modeler preferences. Continue?",
+                "Erasing all preferences requires closing and restarting CayenneModeler. Continue?",
                 "Delete All Preferences",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.WARNING_MESSAGE);
@@ -66,11 +68,29 @@ public class AllPreferencesController extends ChildController<PreferenceDialogCo
             return;
         }
 
-        getApplication().getPreferencesRepository().deleteAll();
-
-        Window dialog = SwingUtilities.getWindowAncestor(view);
-        if (dialog != null) {
-            dialog.dispose();
+        // Close the open project first (with the standard unsaved-changes
+        // prompt). closeProject is a no-op when no project is open. If the user
+        // cancels the save prompt, abort the wipe entirely.
+        ProjectAction projectAction = getApplication().getActionManager().getAction(ProjectAction.class);
+        if (!projectAction.closeProject(true)) {
+            return;
         }
+
+        Application application = getApplication();
+
+        // Tear down the visible UI: the preferences dialog and the main frame.
+        // The frame holds the docked log console, so disposing it cleans up
+        // both. Subsequent startup() will rebuild everything.
+        Window prefsDialog = SwingUtilities.getWindowAncestor(view);
+        if (prefsDialog != null) {
+            prefsDialog.dispose();
+        }
+        application.getFrameController().getView().dispose();
+
+        application.getPreferencesRepository().deleteAll();
+
+        // Defer the rebuild to a later EDT tick so the in-flight action handler
+        // (and any pending dispose events) drain first.
+        SwingUtilities.invokeLater(() -> application.startup(null));
     }
 }
