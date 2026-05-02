@@ -20,6 +20,7 @@
 package org.apache.cayenne.modeler.pref;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.dbconnector.DBConnectors;
 
@@ -32,7 +33,7 @@ import java.util.prefs.Preferences;
  */
 public class DBConnectorPrefs {
 
-    private static final String DB_CONNECTION_INFO = "dbConnectionInfo";
+    static final String NODE = "dbConnectors";
 
     private static final String DB_ADAPTER_PROPERTY = "dbAdapter";
     private static final String JDBC_DRIVER_PROPERTY = "jdbcDriver";
@@ -41,7 +42,7 @@ public class DBConnectorPrefs {
     private static final String USER_NAME_PROPERTY = "userName";
 
     public static DBConnectors loadAndBind() {
-        Preferences root = RootPrefs.getRoot().node(DB_CONNECTION_INFO);
+        Preferences root = Application.getInstance().getPreferencesRepository().app(NODE);
 
         DBConnectors connectors = new DBConnectors();
 

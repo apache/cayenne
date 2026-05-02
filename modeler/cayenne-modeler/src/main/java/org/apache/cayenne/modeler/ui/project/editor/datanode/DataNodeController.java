@@ -31,6 +31,7 @@ import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.pref.DataNodePrefs;
+import org.apache.cayenne.modeler.pref.PreferencesCopier;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datanode.custom.CustomDataSourceEditorController;
 import org.apache.cayenne.modeler.ui.project.editor.datanode.jdbc.JDBCDataSourceController;
@@ -43,6 +44,7 @@ import java.awt.event.ComponentEvent;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.prefs.Preferences;
 
 public class DataNodeController extends ChildController<ProjectController> {
 
@@ -127,7 +129,6 @@ public class DataNodeController extends ChildController<ProjectController> {
             throw new ValidationException("Empty DataNode Name");
         }
 
-        DataNodePrefs oldPref = parent.getSelectedDataNodePreferences();
         DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) getApplication().getProject()
                 .getRootNode();
 
@@ -140,10 +141,25 @@ public class DataNodeController extends ChildController<ProjectController> {
             }
         }
 
-        // passed validation, set value...
+        // passed validation, set value, then move prefs subtree to the new name...
+        Preferences nodes = dataNodesPrefs();
+        Preferences oldPref = nodes.node(node.getName());
         node.setName(newName);
+        PreferencesCopier.move(oldPref, nodes.node(newName));
+    }
 
-        oldPref.copyPreferences(newName);
+    private Preferences dataNodesPrefs() {
+        return getApplication().getPreferencesRepository()
+                .project(getApplication().getProject())
+                .node("DataNode");
+    }
+
+    private DataNodePrefs nodePrefs() {
+        DataNodeDescriptor selected = parent.getSelectedDataNode();
+        if (selected == null) {
+            throw new IllegalStateException("No DataNode selected");
+        }
+        return DataNodePrefs.of(dataNodesPrefs().node(selected.getName()));
     }
 
     protected void initController() {
@@ -169,7 +185,7 @@ public class DataNodeController extends ChildController<ProjectController> {
             if (refreshing) return;
             Object sel = view.getLocalDataSources().getSelectedItem();
             String key = (sel == null || NO_LOCAL_DATA_SOURCE.equals(sel)) ? null : sel.toString();
-            parent.getSelectedDataNodePreferences().setLocalDataSource(key);
+            nodePrefs().setLocalDataSource(key);
         });
 
         view.getDataNodeName().addCommitListener(v -> {
@@ -227,7 +243,7 @@ public class DataNodeController extends ChildController<ProjectController> {
         refreshing = true;
         try {
             view.getLocalDataSources().setModel(new DefaultComboBoxModel<>(keys));
-            String localDs = parent.getSelectedDataNodePreferences().getLocalDataSource();
+            String localDs = nodePrefs().getLocalDataSource();
             view.getLocalDataSources().setSelectedItem(localDs != null ? localDs : NO_LOCAL_DATA_SOURCE);
         } finally {
             refreshing = false;

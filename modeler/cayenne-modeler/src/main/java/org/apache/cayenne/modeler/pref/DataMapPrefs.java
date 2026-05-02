@@ -22,7 +22,7 @@ import org.apache.cayenne.modeler.dbconnector.DBConnector;
 
 import java.util.prefs.Preferences;
 
-public final class DataMapPrefs extends RenamedPrefs {
+public final class DataMapPrefs {
 
     public static final String SUPERCLASS_PACKAGE_PROPERTY = "superclassPackage";
     public static final String DEFAULT_SUPERCLASS_PACKAGE_SUFFIX = "auto";
@@ -31,8 +31,10 @@ public final class DataMapPrefs extends RenamedPrefs {
         return new DataMapPrefs(pref);
     }
 
+    private final Preferences pref;
+
     private DataMapPrefs(Preferences pref) {
-        super(pref);
+        this.pref = pref;
     }
 
     /**

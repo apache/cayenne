@@ -327,7 +327,7 @@ public class ImportEOModelAction extends ModelerAbstractAction {
             eoModelChooser = new EOModelChooser("Select EOModel");
         }
 
-        Preferences prefs = Preferences.userNodeForPackage(ImportEOModelAction.class).node("lastEOMDir");
+        Preferences prefs = application.getPreferencesRepository().ui(ImportEOModelAction.class).node("lastEOMDir");
         CMFileChooserPrefs.of(prefs).bind(eoModelChooser);
 
         return eoModelChooser;

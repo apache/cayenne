@@ -253,9 +253,8 @@ public class DataMapMainView extends JPanel {
         dataMap.setDefaultPackage(newDefaultPackage);
 
         // update class generation preferences
-        controller.getSelectedDataMapPreferences("").setSuperclassPackage(
-                newDefaultPackage,
-                DataMapPrefs.DEFAULT_SUPERCLASS_PACKAGE_SUFFIX);
+        DataMapPrefs.of(controller.getApplication().getPreferencesRepository().dataMap(dataMap))
+                .setSuperclassPackage(newDefaultPackage, DataMapPrefs.DEFAULT_SUPERCLASS_PACKAGE_SUFFIX);
 
         controller.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
     }
@@ -345,7 +344,6 @@ public class DataMapMainView extends JPanel {
             return;
         }
         // completely new name, set new name for domain
-        DataMapPrefs pref = controller.getSelectedDataMapPreferences("");
         DataMapEvent e = DataMapEvent.ofChange(this, map, oldName);
         DataChannelDescriptor domain = (DataChannelDescriptor) controller.getProject().getRootNode();
 
@@ -362,7 +360,6 @@ public class DataMapMainView extends JPanel {
             node.getDataMapNames().add(newName);
         }
 
-        pref.copyPreferences(newName);
         controller.fireDataMapEvent(e);
     }
 

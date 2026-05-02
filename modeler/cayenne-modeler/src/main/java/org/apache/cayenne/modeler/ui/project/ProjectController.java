@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.modeler.ui.project;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -39,8 +38,6 @@ import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.event.display.*;
 import org.apache.cayenne.modeler.event.model.*;
 import org.apache.cayenne.modeler.mvc.ChildController;
-import org.apache.cayenne.modeler.pref.DataMapPrefs;
-import org.apache.cayenne.modeler.pref.DataNodePrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.ModelerController;
 import org.apache.cayenne.modeler.ui.action.RevertAction;
@@ -59,7 +56,6 @@ import java.util.Collection;
 import java.util.EventListener;
 import java.util.List;
 import java.util.Objects;
-import java.util.prefs.Preferences;
 
 /**
  * A controller that works with the project tree, tracking selection and dispatching project events.
@@ -71,7 +67,6 @@ public class ProjectController extends ChildController<ModelerController> {
     private boolean dirty;
     private Project project;
     private ProjectView projectView;
-    private Preferences preferences;
     private ControllerState state;
     private EntityResolver entityResolver;
     private ProjectFileChangeTracker fileChangeTracker;
@@ -101,67 +96,6 @@ public class ProjectController extends ChildController<ModelerController> {
             entityResolver.addDataMap(dataMap);
             dataMap.setNamespace(entityResolver);
         }
-    }
-
-    public Preferences getPreferences() {
-        if (preferences == null) {
-            this.preferences = buildPreferences();
-        }
-
-        return preferences;
-    }
-
-    /**
-     * Returns top preferences for the current project, throwing an exception if no project is selected.
-     */
-    public Preferences getDataDomainPreferences() {
-
-        DataChannelDescriptor dataDomain = (DataChannelDescriptor) getProject().getRootNode();
-        if (dataDomain == null) {
-            throw new CayenneRuntimeException("No DataDomain selected");
-        }
-
-        return getPreferences().node(dataDomain.getName());
-    }
-
-    /**
-     * Returns preferences object for the current DataMap. If no preferences
-     * exist for the current DataMap, a new Preferences object is created. If no
-     * DataMap is currently selected, an exception is thrown. An optional
-     * nameSuffix allows to address more than one defaults instance for a single
-     * DataMap.
-     */
-    public DataMapPrefs getSelectedDataMapPreferences(String nameSuffix) {
-        DataMap map = getSelectedDataMap();
-        if (map == null) {
-            throw new CayenneRuntimeException("No DataMap selected");
-        }
-
-        Preferences pref;
-        if (nameSuffix == null || nameSuffix.isEmpty()) {
-            pref = getDataDomainPreferences().node("DataMap").node(map.getName());
-        } else {
-            pref = getDataDomainPreferences().node("DataMap").node(map.getName()).node(nameSuffix);
-        }
-        return DataMapPrefs.of(pref);
-    }
-
-    public DataMapPrefs getSelectedDataMapPreferences(DataMap dataMap) {
-        Preferences pref = getDataDomainPreferences().node("DataMap").node(dataMap.getName());
-        return DataMapPrefs.of(pref);
-    }
-
-    /**
-     * Returns preferences object for the current DataMap, throwing an exception
-     * if no DataMap is selected.
-     */
-    public DataNodePrefs getSelectedDataNodePreferences() {
-        DataNodeDescriptor node = getSelectedDataNode();
-        if (node == null) {
-            throw new CayenneRuntimeException("No DataNode selected");
-        }
-
-        return DataNodePrefs.of(getDataDomainPreferences().node("DataNode").node(node.getName()));
     }
 
     /**
@@ -248,7 +182,6 @@ public class ProjectController extends ChildController<ModelerController> {
 
         this.project = null;
         this.projectView = null;
-        this.preferences = null;
         this.entityResolver = null;
 
         if (fileChangeTracker != null) {
@@ -265,11 +198,14 @@ public class ProjectController extends ChildController<ModelerController> {
         if (project == null) {
             return;
         }
-        ProjectPrefs.of(getDataDomainPreferences()).flush(this);
+        ProjectPrefs.of(getApplication().getPreferencesRepository().project(project)).flush(this);
     }
 
     public void restoreSelectionFromPrefs() {
-        ProjectPrefs.of(getDataDomainPreferences()).load(this);
+        if (project == null) {
+            return;
+        }
+        ProjectPrefs.of(getApplication().getPreferencesRepository().project(project)).load(this);
     }
 
     public boolean isDirty() {
@@ -1104,8 +1040,6 @@ public class ProjectController extends ChildController<ModelerController> {
 
             if (dirty) {
                 parent.onProjectModified();
-            } else {
-                this.preferences = buildPreferences();
             }
         }
     }
@@ -1217,25 +1151,6 @@ public class ProjectController extends ChildController<ModelerController> {
             listener.projectWillBeSaved(e);
         }
     }
-
-    private Preferences buildPreferences() {
-
-        Preferences root = Preferences.userNodeForPackage(Project.class);
-        if (project == null) {
-            return root;
-        }
-
-        String resourcePath = project.getConfigurationResource() == null
-                ? null
-                : project.getConfigurationResource().getURL().getPath();
-
-        if (resourcePath == null || !resourcePath.contains(".xml")) {
-            return root.node(getApplication().getNewProjectTemporaryName());
-        }
-
-        return root.node(root.absolutePath() + resourcePath.replace(".xml", ""));
-    }
-
 
     static class ControllerState {
 

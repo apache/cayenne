@@ -102,7 +102,7 @@ public class ImportDataMapAction extends ModelerAbstractAction {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-        Preferences prefs = Preferences.userNodeForPackage(ImportDataMapAction.class).node("lastDataMapDir");
+        Preferences prefs = application.getPreferencesRepository().ui(ImportDataMapAction.class).node("lastDataMapDir");
         CMFileChooserPrefs.of(prefs).bind(chooser);
 
         chooser.addChoosableFileFilter(FileFilters.getDataMapFilter());

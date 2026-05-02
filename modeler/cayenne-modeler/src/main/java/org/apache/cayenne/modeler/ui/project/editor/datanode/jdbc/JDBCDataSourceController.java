@@ -25,6 +25,7 @@ import org.apache.cayenne.modeler.ui.ModelerController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datanode.DataSourceEditorController;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
+import org.apache.cayenne.modeler.pref.DataNodePrefs;
 import org.apache.cayenne.util.Util;
 
 import java.awt.*;
@@ -113,7 +114,10 @@ public class JDBCDataSourceController extends DataSourceEditorController {
 
         DataSourceDescriptor projectDataSourceDescriptor = getNode().getDataSourceDescriptor();
 
-        String key = parent.getSelectedDataNodePreferences().getLocalDataSource();
+        String key = DataNodePrefs.of(getApplication().getPreferencesRepository()
+                .project(getApplication().getProject())
+                .node("DataNode")
+                .node(getNode().getName())).getLocalDataSource();
         if (key == null) {
             mainController.updateStatus("No Local DataSource selected for node...");
             return;

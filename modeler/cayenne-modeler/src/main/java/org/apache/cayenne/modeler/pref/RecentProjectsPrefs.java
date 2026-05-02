@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.pref;
 
+import org.apache.cayenne.modeler.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +35,7 @@ public final class RecentProjectsPrefs {
 
     public static final int MAX_SIZE = 12;
 
-    // TODO: relocate this node from under "editor"
-    private static final String NODE_PATH = "editor/lastSeveralProjectFiles";
+    static final String NODE = "lastProjects";
 
     private final Preferences prefs;
 
@@ -44,7 +44,7 @@ public final class RecentProjectsPrefs {
     }
 
     public static RecentProjectsPrefs of() {
-        return new RecentProjectsPrefs(RootPrefs.getRoot().node(NODE_PATH));
+        return new RecentProjectsPrefs(Application.getInstance().getPreferencesRepository().app(NODE));
     }
 
     public List<File> getFiles() {

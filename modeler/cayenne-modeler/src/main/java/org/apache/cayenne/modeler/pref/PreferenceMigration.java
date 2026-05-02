@@ -18,11 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.pref;
 
-import java.util.prefs.Preferences;
+/**
+ * One-time data migration applied by {@link PreferencesRepository#runMigrations()}.
+ */
+public interface PreferenceMigration {
 
-class RootPrefs {
+    /**
+     * Strictly positive, monotonic version. The repository tracks the highest applied
+     * version under {@code app/_meta/migrations.appliedVersion} and runs every
+     * migration with a higher version, in ascending order.
+     */
+    int version();
 
-    public static Preferences getRoot() {
-        return Preferences.userRoot().node("org/apache/cayenne");
-    }
+    void apply(PreferencesRepository repo);
 }

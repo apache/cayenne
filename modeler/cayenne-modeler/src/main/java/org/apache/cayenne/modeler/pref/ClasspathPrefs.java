@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.pref;
 
-import org.apache.cayenne.modeler.ui.preferences.classpath.ClasspathPreferencesController;
+import org.apache.cayenne.modeler.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +33,7 @@ public final class ClasspathPrefs {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClasspathPrefs.class);
 
+    static final String NODE = "classpath";
     static final String LAST_CLASSPATH_DIR = "lastClasspathDir";
 
     private final Preferences prefs;
@@ -42,7 +43,7 @@ public final class ClasspathPrefs {
     }
 
     public static ClasspathPrefs of() {
-        return new ClasspathPrefs(Preferences.userNodeForPackage(ClasspathPreferencesController.class));
+        return new ClasspathPrefs(Application.getInstance().getPreferencesRepository().app(NODE));
     }
 
     // Returns classpath entries in numeric-key order. The prefs node is shared with

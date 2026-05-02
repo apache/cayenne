@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.modeler.toolkit.splitpane;
 
+import org.apache.cayenne.modeler.Application;
+
 import javax.swing.*;
 import java.beans.PropertyChangeListener;
 import java.util.prefs.Preferences;
@@ -33,11 +35,11 @@ public final class CMSplitPanePrefs {
     }
 
     public static CMSplitPanePrefs of(Class<?> anchor) {
-        return new CMSplitPanePrefs(Preferences.userNodeForPackage(anchor));
+        return new CMSplitPanePrefs(Application.getInstance().getPreferencesRepository().ui(anchor));
     }
 
     public static CMSplitPanePrefs of(Class<?> anchor, String path) {
-        return new CMSplitPanePrefs(Preferences.userNodeForPackage(anchor).node(path));
+        return new CMSplitPanePrefs(Application.getInstance().getPreferencesRepository().ui(anchor).node(path));
     }
 
     public void bind(JSplitPane pane, int defaultLocation) {

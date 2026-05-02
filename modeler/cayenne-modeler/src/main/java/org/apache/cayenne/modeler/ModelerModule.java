@@ -26,6 +26,7 @@ import org.apache.cayenne.dbsync.xml.DbImportExtension;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.gen.xml.CgenExtension;
+import org.apache.cayenne.modeler.pref.PreferencesRepository;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.service.graph.GraphExtension;
 import org.apache.cayenne.modeler.service.platform.DefaultPlatformInitializer;
@@ -53,6 +54,8 @@ public class ModelerModule implements Module {
         binder.bind(HandlerFactory.class).to(ExtensionAwareHandlerFactory.class);
         binder.bind(DataChannelMetaData.class).to(DefaultDataChannelMetaData.class);
         binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(true)).withoutScope();
+
+        binder.bind(PreferencesRepository.class).to(PreferencesRepository.class);
 
         ProjectModule.extend(binder)
                 .addExtension(InfoExtension.class)

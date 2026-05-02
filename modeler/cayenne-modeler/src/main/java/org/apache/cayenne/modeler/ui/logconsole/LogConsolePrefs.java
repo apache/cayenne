@@ -19,10 +19,13 @@
 
 package org.apache.cayenne.modeler.ui.logconsole;
 
+import org.apache.cayenne.modeler.Application;
+
 import java.util.prefs.Preferences;
 
 public final class LogConsolePrefs {
 
+    static final String NODE = "logConsole";
     static final String SHOW_CONSOLE = "show.log.console";
 
     private final Preferences prefs;
@@ -32,7 +35,7 @@ public final class LogConsolePrefs {
     }
 
     public static LogConsolePrefs of() {
-        return new LogConsolePrefs(Preferences.userNodeForPackage(LogConsoleController.class));
+        return new LogConsolePrefs(Application.getInstance().getPreferencesRepository().app(NODE));
     }
 
     public boolean isShowConsole() {

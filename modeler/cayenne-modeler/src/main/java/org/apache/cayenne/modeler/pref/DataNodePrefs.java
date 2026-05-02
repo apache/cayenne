@@ -20,10 +20,11 @@ package org.apache.cayenne.modeler.pref;
 
 import java.util.prefs.Preferences;
 
-public final class DataNodePrefs extends RenamedPrefs {
+public final class DataNodePrefs {
 
     public static final String LOCAL_DATA_SOURCE_PROPERTY = "localDataSource";
 
+    private final Preferences pref;
     private String localDataSource;
 
     public static DataNodePrefs of(Preferences pref) {
@@ -31,7 +32,7 @@ public final class DataNodePrefs extends RenamedPrefs {
     }
 
     private DataNodePrefs(Preferences pref) {
-        super(pref);
+        this.pref = pref;
     }
 
     public void setLocalDataSource(String localDataSource) {

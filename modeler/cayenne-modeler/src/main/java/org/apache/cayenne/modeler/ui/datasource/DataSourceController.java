@@ -92,7 +92,7 @@ public class DataSourceController extends ChildController<ProjectController> {
     }
 
     private DBConnector getConnectionInfoFromPreferences() {
-        DataMapPrefs dataMapPrefs = parent.getSelectedDataMapPreferences(parent.getSelectedDataMap());
+        DataMapPrefs dataMapPrefs = DataMapPrefs.of(parent.getApplication().getPreferencesRepository().dataMap(parent.getSelectedDataMap()));
         DBConnector info = dataMapPrefs.getConnector();
         return info != null ? info : new DBConnector();
     }
@@ -119,7 +119,7 @@ public class DataSourceController extends ChildController<ProjectController> {
         refreshDataSources();
         initFavouriteDataSource();
 
-        final DataMapPrefs dataMapPrefs = parent.getSelectedDataMapPreferences(parent.getSelectedDataMap());
+        final DataMapPrefs dataMapPrefs = DataMapPrefs.of(parent.getApplication().getPreferencesRepository().dataMap(parent.getSelectedDataMap()));
         if (dataMapPrefs.hasDbAdapter()) {
             getConnectionInfoFromPreferences().copyTo(connector);
         }

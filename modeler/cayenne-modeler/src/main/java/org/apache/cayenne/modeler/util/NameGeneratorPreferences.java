@@ -48,7 +48,7 @@ public class NameGeneratorPreferences {
     }
 
     Preferences getPreference(Application application) {
-        return application.getMainPreferenceForProject();
+        return application.getPreferencesRepository().project(application.getProject());
     }
 
     /**

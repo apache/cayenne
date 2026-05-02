@@ -61,7 +61,7 @@ public class SaveAsImageAction extends ModelerAbstractAction {
 		JFileChooser chooser = new JFileChooser();
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-		Preferences lastDir = Preferences.userNodeForPackage(SaveAsImageAction.class).node("lastImageDir");
+		Preferences lastDir = application.getPreferencesRepository().ui(SaveAsImageAction.class).node("lastImageDir");
 		CMFileChooserPrefs.of(lastDir).bind(chooser);
 
 		chooser.setAcceptAllFileFilterUsed(false);

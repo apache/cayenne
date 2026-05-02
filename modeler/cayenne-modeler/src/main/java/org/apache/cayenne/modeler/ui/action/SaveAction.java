@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.model.ProjectAfterSaveEvent;
-import org.apache.cayenne.modeler.pref.RenamedPrefs;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
 
@@ -56,25 +55,11 @@ public class SaveAction extends SaveAsAction {
             return super.saveAll();
         }
 
-        String oldPath = p.getConfigurationResource().getURL().getPath();
         File oldProjectFile = new File(p.getConfigurationResource().getURL().toURI());
 
         getProjectController().pauseFileChangeTracking();
         ProjectSaver saver = application.getProjectSaver();
         saver.save(p);
-
-        RenamedPrefs.removeOldPreferences();
-
-        // if change DataChanelDescriptor name - as result change name of xml file
-        // we will need change preferences path
-        String[] path = oldPath.split("/");
-        String[] newPath = p.getConfigurationResource().getURL().getPath().split("/");
-
-        if (!path[path.length - 1].equals(newPath[newPath.length - 1])) {
-            String newName = newPath[newPath.length - 1].replace(".xml", "");
-            RenamedPrefs.copyPreferences(newName, getProjectController().getPreferences());
-            RenamedPrefs.removeOldPreferences();
-        }
 
         File newProjectFile = new File(p.getConfigurationResource().getURL().toURI());
         application.getFrameController().changePathInLastProjListAction(oldProjectFile, newProjectFile);

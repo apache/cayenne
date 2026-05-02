@@ -19,17 +19,18 @@
 
 package org.apache.cayenne.modeler;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.modeler.pref.DBConnectorPrefs;
 import org.apache.cayenne.modeler.dbconnector.DBConnectors;
+import org.apache.cayenne.modeler.event.model.ProjectAfterSaveListener;
 import org.apache.cayenne.modeler.pref.ClasspathPrefs;
+import org.apache.cayenne.modeler.pref.DBConnectorPrefs;
 import org.apache.cayenne.modeler.pref.GeneralPrefs;
+import org.apache.cayenne.modeler.pref.PreferencesRepository;
 import org.apache.cayenne.modeler.pref.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
@@ -44,12 +45,10 @@ import org.apache.cayenne.project.ProjectLoader;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.project.upgrade.UpgradeService;
 import org.apache.cayenne.project.validation.ProjectValidator;
-import org.apache.cayenne.util.IDUtil;
 
 import javax.swing.*;
 import java.io.File;
 import java.util.List;
-import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
 /**
@@ -73,7 +72,6 @@ public class Application {
     private ModelerController frameController;
     private CayenneUndoManager undoManager;
     private DBConnectors dbConnectors;
-    private String newProjectTemporaryName;
 
     public static Application getInstance() {
         return instance;
@@ -88,20 +86,6 @@ public class Application {
 
         String configuredName = System.getProperty(APPLICATION_NAME_PROPERTY);
         this.name = (configuredName != null) ? configuredName : DEFAULT_APPLICATION_NAME;
-    }
-
-    public String getNewProjectTemporaryName() {
-
-        // TODO: andrus 4/4/2010 - should that be reset every time a new project is opened
-        if (newProjectTemporaryName == null) {
-            StringBuffer buffer = new StringBuffer("new_project_");
-            for (byte aKey : IDUtil.pseudoUniqueByteSequence(16)) {
-                IDUtil.appendFormattedByte(buffer, aKey);
-            }
-            newProjectTemporaryName = buffer.toString();
-        }
-
-        return newProjectTemporaryName;
     }
 
     public Project getProject() {
@@ -175,6 +159,8 @@ public class Application {
     public void startup(File initialProject) {
         this.logConsoleController = new LogConsoleController(this);
 
+        getPreferencesRepository().runMigrations();
+
         this.dbConnectors = DBConnectorPrefs.loadAndBind();
 
         refreshClassLoader();
@@ -190,6 +176,10 @@ public class Application {
 
         this.undoManager = new CayenneUndoManager(this);
         this.frameController = new ModelerController(this);
+
+        ProjectAfterSaveListener saveListener = e -> getPreferencesRepository()
+                .commitProject(e.getSource().getProject());
+        frameController.getProjectController().addProjectSavedListener(saveListener);
 
         // open up
         frameController.onStartup();
@@ -211,27 +201,8 @@ public class Application {
         return dbConnectors;
     }
 
-    public Preferences getMainPreferenceForProject() {
-
-        DataChannelDescriptor descriptor = (DataChannelDescriptor) getFrameController()
-                .getProjectController()
-                .getProject()
-                .getRootNode();
-
-        Preferences rootPrefs = Preferences.userNodeForPackage(getProject().getClass());
-
-        // if new project
-        if (descriptor.getConfigurationSource() == null) {
-            return rootPrefs.node(getNewProjectTemporaryName());
-        }
-
-        String path = descriptor
-                .getConfigurationSource()
-                .getURL()
-                .getPath()
-                .replace(".xml", "");
-
-        return rootPrefs.node(rootPrefs.absolutePath() + path);
+    public PreferencesRepository getPreferencesRepository() {
+        return injector.getInstance(PreferencesRepository.class);
     }
 
     /**

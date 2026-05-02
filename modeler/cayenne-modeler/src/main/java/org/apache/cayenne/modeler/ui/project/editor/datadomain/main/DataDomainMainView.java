@@ -27,7 +27,6 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DomainDisplayListener;
 import org.apache.cayenne.modeler.event.model.DomainEvent;
-import org.apache.cayenne.modeler.pref.RenamedPrefs;
 import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
@@ -37,7 +36,6 @@ import org.apache.cayenne.validation.ValidationException;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Map;
-import java.util.prefs.Preferences;
 
 /**
  * Panel for editing DataDomain.
@@ -203,15 +201,12 @@ public class DataDomainMainView extends JPanel implements DomainDisplayListener 
             throw new ValidationException("Enter name for DataDomain");
         }
 
-        Preferences prefs = controller.getDataDomainPreferences();
-
         DomainEvent e = DomainEvent.ofChange(
                 this,
                 dataChannelDescriptor,
                 dataChannelDescriptor.getName());
         dataChannelDescriptor.setName(newName);
 
-        RenamedPrefs.copyPreferences(newName, prefs);
         controller.fireDomainEvent(e);
     }
 }

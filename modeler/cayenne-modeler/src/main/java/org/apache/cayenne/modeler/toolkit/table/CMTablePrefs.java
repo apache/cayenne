@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.toolkit.table;
 
+import org.apache.cayenne.modeler.Application;
+
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.TableColumnModelEvent;
@@ -43,11 +45,11 @@ public final class CMTablePrefs {
     }
 
     public static CMTablePrefs of(Class<?> anchor) {
-        return new CMTablePrefs(Preferences.userNodeForPackage(anchor));
+        return new CMTablePrefs(Application.getInstance().getPreferencesRepository().ui(anchor));
     }
 
     public static CMTablePrefs of(Class<?> anchor, String path) {
-        return new CMTablePrefs(Preferences.userNodeForPackage(anchor).node(path));
+        return new CMTablePrefs(Application.getInstance().getPreferencesRepository().ui(anchor).node(path));
     }
 
     /**

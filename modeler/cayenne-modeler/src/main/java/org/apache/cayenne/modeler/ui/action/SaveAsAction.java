@@ -24,7 +24,6 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.model.ProjectBeforeSaveEvent;
 import org.apache.cayenne.modeler.event.model.ProjectAfterSaveEvent;
-import org.apache.cayenne.modeler.pref.RenamedPrefs;
 import org.apache.cayenne.modeler.ui.project.validator.ProjectValidatorDialogController;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
@@ -38,11 +37,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.util.prefs.Preferences;
 
 /**
  * A "Save As" action that allows user to pick save location.
- * 
  */
 public class SaveAsAction extends ModelerAbstractAction {
 
@@ -70,11 +67,6 @@ public class SaveAsAction extends ModelerAbstractAction {
     protected boolean saveAll() throws Exception {
         Project p = getCurrentProject();
 
-        String oldPath = null;
-        if (p.getConfigurationResource() != null) {
-            oldPath = p.getConfigurationResource().getURL().getPath();
-        }
-
         File projectDir = fileChooser.newProjectDir(application, p);
         if (projectDir == null) {
             return false;
@@ -89,46 +81,8 @@ public class SaveAsAction extends ModelerAbstractAction {
         getProjectController().pauseFileChangeTracking();
 
         URLResource res = new URLResource(projectDir.toURI().toURL());
-
         ProjectSaver saver = application.getProjectSaver();
-
-        boolean isNewProject = p.getConfigurationResource() == null;
-        Preferences tempOldPref = null;
-        if (isNewProject) {
-            tempOldPref = application.getMainPreferenceForProject();
-        }
-
         saver.saveAs(p, res);
-
-        if (oldPath != null && !oldPath.isEmpty()
-                && !oldPath.equals(p.getConfigurationResource().getURL().getPath())) {
-
-            String newName = p.getConfigurationResource().getURL().getPath().replace(".xml", "");
-            String oldName = oldPath.replace(".xml", "");
-
-            Preferences oldPref = getProjectController().getPreferences();
-            String projPath = oldPref.absolutePath().replace(oldName, "");
-            Preferences newPref = getProjectController().getPreferences().node(projPath + newName);
-            RenamedPrefs.copyUntracked(newPref, getProjectController().getPreferences());
-        } else if (isNewProject) {
-            if (tempOldPref != null) {
-
-                String newProjectName = application.getNewProjectTemporaryName();
-
-                if (tempOldPref.absolutePath().contains(newProjectName)) {
-
-                    String projPath = tempOldPref.absolutePath().replace("/" + newProjectName, "");
-                    String newName = p.getConfigurationResource().getURL().getPath().replace(".xml", "");
-
-                    Preferences newPref = application.getMainPreferenceForProject().node(projPath + newName);
-
-                    RenamedPrefs.copyUntracked(newPref, tempOldPref);
-                    tempOldPref.removeNode();
-                }
-            }
-        }
-
-        RenamedPrefs.removeNewPreferences();
 
         File file = new File(p.getConfigurationResource().getURL().toURI());
         application.getFrameController().addToLastProjListAction(file);
@@ -152,9 +106,9 @@ public class SaveAsAction extends ModelerAbstractAction {
 
         ProjectValidator projectValidator = application.getProjectValidator();
         ValidationResult validationResult = projectValidator.validate(getCurrentProject().getRootNode());
-        
+
         getProjectController().fireProjectBeforeSaveEvent(new ProjectBeforeSaveEvent(SaveAsAction.class));
-        
+
         try {
             if (!saveAll()) {
                 return;

@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.modeler.toolkit.component;
 
+import org.apache.cayenne.modeler.Application;
+
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -38,11 +40,11 @@ public final class CMComponentGeometryPrefs {
     }
 
     public static CMComponentGeometryPrefs of(Class<?> anchor) {
-        return new CMComponentGeometryPrefs(Preferences.userNodeForPackage(anchor));
+        return new CMComponentGeometryPrefs(Application.getInstance().getPreferencesRepository().ui(anchor));
     }
 
     public static CMComponentGeometryPrefs of(Class<?> anchor, String path) {
-        return new CMComponentGeometryPrefs(Preferences.userNodeForPackage(anchor).node(path));
+        return new CMComponentGeometryPrefs(Application.getInstance().getPreferencesRepository().ui(anchor).node(path));
     }
 
     public void bind(Component c, int defaultWidth, int defaultHeight) {

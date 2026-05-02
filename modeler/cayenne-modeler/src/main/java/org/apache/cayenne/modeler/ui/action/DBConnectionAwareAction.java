@@ -67,13 +67,15 @@ public abstract class DBConnectionAwareAction extends ModelerAbstractAction {
     }
 
     private DBConnector getConnectionInfoFromPreferences(DataMap dataMap) {
-        DataMapPrefs defaults = getProjectController().getSelectedDataMapPreferences(dataMap);
+        DataMapPrefs defaults = dataMapPrefs(dataMap);
         return defaults != null ? defaults.getConnector() : null;
     }
 
     protected void saveConnector(DataMap dataMap, DataSourceController controller) {
-        getProjectController()
-                .getSelectedDataMapPreferences(dataMap)
-                .setConnector(controller.getConnector());
+        dataMapPrefs(dataMap).setConnector(controller.getConnector());
+    }
+
+    private DataMapPrefs dataMapPrefs(DataMap dataMap) {
+        return DataMapPrefs.of(application.getPreferencesRepository().dataMap(dataMap));
     }
 }

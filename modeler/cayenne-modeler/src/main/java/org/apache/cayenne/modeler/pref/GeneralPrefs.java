@@ -19,11 +19,13 @@
 
 package org.apache.cayenne.modeler.pref;
 
-import org.apache.cayenne.modeler.ui.preferences.general.GeneralPreferencesController;
+import org.apache.cayenne.modeler.Application;
 
 import java.util.prefs.Preferences;
 
 public final class GeneralPrefs {
+
+    static final String NODE = "general";
 
     static final String AUTO_LOAD_PROJECT     = "autoLoadProject";
     static final String DELETE_PROMPT         = "deletePrompt";
@@ -37,7 +39,7 @@ public final class GeneralPrefs {
     }
 
     public static GeneralPrefs of() {
-        return new GeneralPrefs(Preferences.userNodeForPackage(GeneralPreferencesController.class));
+        return new GeneralPrefs(Application.getInstance().getPreferencesRepository().app(NODE));
     }
 
     public boolean isAutoLoadProject() {
