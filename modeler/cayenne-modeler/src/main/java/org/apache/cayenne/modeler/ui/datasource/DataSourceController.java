@@ -96,11 +96,11 @@ public class DataSourceController extends ChildController<ProjectController> {
     private DBConnector getConnectionInfoFromPreferences() {
         DBConnector connectionInfo = new DBConnector();
         DataMapDefaults dataMapDefaults = parent.getSelectedDataMapPreferences(parent.getSelectedDataMap());
-        connectionInfo.setDbAdapter(dataMapDefaults.getCurrentPreference().get(DB_ADAPTER_PROPERTY, null));
-        connectionInfo.setUrl(dataMapDefaults.getCurrentPreference().get(URL_PROPERTY, null));
-        connectionInfo.setUserName(dataMapDefaults.getCurrentPreference().get(USER_NAME_PROPERTY, null));
-        connectionInfo.setPassword(dataMapDefaults.getCurrentPreference().get(PASSWORD_PROPERTY, null));
-        connectionInfo.setJdbcDriver(dataMapDefaults.getCurrentPreference().get(JDBC_DRIVER_PROPERTY, null));
+        connectionInfo.setDbAdapter(dataMapDefaults.getPref().get(DB_ADAPTER_PROPERTY, null));
+        connectionInfo.setUrl(dataMapDefaults.getPref().get(URL_PROPERTY, null));
+        connectionInfo.setUserName(dataMapDefaults.getPref().get(USER_NAME_PROPERTY, null));
+        connectionInfo.setPassword(dataMapDefaults.getPref().get(PASSWORD_PROPERTY, null));
+        connectionInfo.setJdbcDriver(dataMapDefaults.getPref().get(JDBC_DRIVER_PROPERTY, null));
         return connectionInfo;
     }
 
@@ -127,7 +127,7 @@ public class DataSourceController extends ChildController<ProjectController> {
         initFavouriteDataSource();
 
         final DataMapDefaults dataMapDefaults = parent.getSelectedDataMapPreferences(parent.getSelectedDataMap());
-        if (dataMapDefaults.getCurrentPreference().get(DB_ADAPTER_PROPERTY, null) != null) {
+        if (dataMapDefaults.getPref().get(DB_ADAPTER_PROPERTY, null) != null) {
             getConnectionInfoFromPreferences().copyTo(connector);
         }
         view.pack();

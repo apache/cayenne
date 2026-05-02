@@ -72,17 +72,17 @@ public abstract class DBConnectionAwareAction extends ModelerAbstractAction {
 
         DataMapDefaults defaults = getProjectController().getSelectedDataMapPreferences(dataMap);
         if (defaults == null
-                || defaults.getCurrentPreference() == null
-                || defaults.getCurrentPreference().get(URL_PROPERTY, null) == null) {
+                || defaults.getPref() == null
+                || defaults.getPref().get(URL_PROPERTY, null) == null) {
             return null;
         }
 
         DBConnector connectionInfo = new DBConnector();
-        connectionInfo.setDbAdapter(defaults.getCurrentPreference().get(DB_ADAPTER_PROPERTY, null));
-        connectionInfo.setUrl(defaults.getCurrentPreference().get(URL_PROPERTY, null));
-        connectionInfo.setUserName(defaults.getCurrentPreference().get(USER_NAME_PROPERTY, null));
-        connectionInfo.setPassword(defaults.getCurrentPreference().get(PASSWORD_PROPERTY, null));
-        connectionInfo.setJdbcDriver(defaults.getCurrentPreference().get(JDBC_DRIVER_PROPERTY, null));
+        connectionInfo.setDbAdapter(defaults.getPref().get(DB_ADAPTER_PROPERTY, null));
+        connectionInfo.setUrl(defaults.getPref().get(URL_PROPERTY, null));
+        connectionInfo.setUserName(defaults.getPref().get(USER_NAME_PROPERTY, null));
+        connectionInfo.setPassword(defaults.getPref().get(PASSWORD_PROPERTY, null));
+        connectionInfo.setJdbcDriver(defaults.getPref().get(JDBC_DRIVER_PROPERTY, null));
         return connectionInfo;
     }
 
@@ -91,13 +91,13 @@ public abstract class DBConnectionAwareAction extends ModelerAbstractAction {
 
         String dbAdapter = controller.getConnector().getDbAdapter();
         if (dbAdapter != null) {
-            dataMapDefaults.getCurrentPreference().put(DB_ADAPTER_PROPERTY, dbAdapter);
+            dataMapDefaults.getPref().put(DB_ADAPTER_PROPERTY, dbAdapter);
         } else {
-            dataMapDefaults.getCurrentPreference().remove(DB_ADAPTER_PROPERTY);
+            dataMapDefaults.getPref().remove(DB_ADAPTER_PROPERTY);
         }
-        dataMapDefaults.getCurrentPreference().put(URL_PROPERTY, controller.getConnector().getUrl());
-        dataMapDefaults.getCurrentPreference().put(USER_NAME_PROPERTY, controller.getConnector().getUserName());
-        dataMapDefaults.getCurrentPreference().put(PASSWORD_PROPERTY, controller.getConnector().getPassword());
-        dataMapDefaults.getCurrentPreference().put(JDBC_DRIVER_PROPERTY, controller.getConnector().getJdbcDriver());
+        dataMapDefaults.getPref().put(URL_PROPERTY, controller.getConnector().getUrl());
+        dataMapDefaults.getPref().put(USER_NAME_PROPERTY, controller.getConnector().getUserName());
+        dataMapDefaults.getPref().put(PASSWORD_PROPERTY, controller.getConnector().getPassword());
+        dataMapDefaults.getPref().put(JDBC_DRIVER_PROPERTY, controller.getConnector().getJdbcDriver());
     }
 }

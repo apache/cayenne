@@ -31,17 +31,17 @@ public class DataNodeDefaults extends RenamedPreferences {
     }
 
     public void setLocalDataSource(String localDataSource) {
-        if (getCurrentPreference() != null) {
+        if (pref != null) {
             this.localDataSource = localDataSource;
             if (localDataSource != null) {
-                getCurrentPreference().put(LOCAL_DATA_SOURCE_PROPERTY, localDataSource);
+                pref.put(LOCAL_DATA_SOURCE_PROPERTY, localDataSource);
             }
         }
     }
 
     public String getLocalDataSource() {
         if (localDataSource == null) {
-            localDataSource = getCurrentPreference().get(LOCAL_DATA_SOURCE_PROPERTY, "");
+            localDataSource = pref.get(LOCAL_DATA_SOURCE_PROPERTY, "");
         }
         return localDataSource;
     }

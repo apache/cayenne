@@ -42,7 +42,7 @@ import java.util.prefs.Preferences;
  * is made far from the rename itself, in {@code SaveAction} and {@code ExitAction}.
  * Access is implicitly single-threaded (Swing EDT).
  */
-public abstract class RenamedPreferences extends CayennePreference {
+public abstract class RenamedPreferences {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RenamedPreferences.class);
 
@@ -90,12 +90,18 @@ public abstract class RenamedPreferences extends CayennePreference {
         newNodes.clear();
     }
 
+    protected Preferences pref;
+
     public RenamedPreferences(Preferences pref) {
-        this.currentPreference = pref;
+        this.pref = pref;
+    }
+
+    public Preferences getPref() {
+        return pref;
     }
 
     public void copyPreferences(String newName) {
-        this.currentPreference = copyPreferences(newName, getCurrentPreference());
+        this.pref = copyPreferences(newName, pref);
     }
 
     private static Preferences copy(Preferences newPref, Preferences oldPref, boolean track) {

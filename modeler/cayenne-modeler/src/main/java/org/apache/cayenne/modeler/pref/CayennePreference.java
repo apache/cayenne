@@ -22,15 +22,7 @@ import java.util.prefs.Preferences;
 
 public class CayennePreference {
 
-    private static final String CAYENNE_PREFERENCES_PATH = "org/apache/cayenne";
-
-    protected Preferences currentPreference;
-
     public static Preferences getRoot() {
-        return Preferences.userRoot().node(CAYENNE_PREFERENCES_PATH);
-    }
-
-    public Preferences getCurrentPreference() {
-        return currentPreference;
+        return Preferences.userRoot().node("org/apache/cayenne");
     }
 }

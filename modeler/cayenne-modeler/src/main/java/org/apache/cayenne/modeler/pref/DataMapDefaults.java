@@ -52,17 +52,17 @@ public class DataMapDefaults extends RenamedPreferences {
     }
 
     public void setSuperclassPackage(String superclassPackage) {
-        if (getCurrentPreference() != null) {
+        if (pref != null) {
             if(superclassPackage == null) {
                 superclassPackage = "";
             }
-            getCurrentPreference().put(SUPERCLASS_PACKAGE_PROPERTY, superclassPackage);
+            pref.put(SUPERCLASS_PACKAGE_PROPERTY, superclassPackage);
         }
     }
 
     public String getProperty(String property) {
-        if (property != null && getCurrentPreference() != null) {
-            return getCurrentPreference().get(property, null);
+        if (property != null && pref != null) {
+            return pref.get(property, null);
         }
         return null;
     }
