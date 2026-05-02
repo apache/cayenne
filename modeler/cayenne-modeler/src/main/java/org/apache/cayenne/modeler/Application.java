@@ -66,8 +66,8 @@ public class Application {
 
     private static final String DEFAULT_MESSAGE_BUNDLE = "org.apache.cayenne.modeler.cayennemodeler-strings";
 
-    public static final String APPLICATION_NAME_PROPERTY = "cayenne.modeler.application.name";
-    public static final String DEFAULT_APPLICATION_NAME = "CayenneModeler";
+    private static final String APPLICATION_NAME_PROPERTY = "cayenne.modeler.application.name";
+    private static final String DEFAULT_APPLICATION_NAME = "CayenneModeler";
 
     private static Application instance;
 
