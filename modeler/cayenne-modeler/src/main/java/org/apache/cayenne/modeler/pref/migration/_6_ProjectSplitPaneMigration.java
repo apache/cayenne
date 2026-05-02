@@ -19,7 +19,6 @@
 package org.apache.cayenne.modeler.pref.migration;
 
 import org.apache.cayenne.modeler.pref.PreferenceMigration;
-import org.apache.cayenne.modeler.pref.PreferencesCopier;
 import org.apache.cayenne.modeler.pref.PreferencesRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,19 +27,22 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
- * Copies legacy DB connection profiles from {@code org/apache/cayenne/dbConnectionInfo}
- * into the new {@code app/dbConnectors} layout. Leaves the legacy node intact so an
+ * Copies the legacy project tree / editor splitter position from
+ * {@code org/apache/cayenne/modeler/editor/splitPane/divider} into the new
+ * {@code app/ui/project/splitPane} layout. Leaves the legacy node intact so an
  * older Modeler installation on the same machine still works.
  */
-public class DbConnectorsMigration implements PreferenceMigration {
+public class _6_ProjectSplitPaneMigration implements PreferenceMigration {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DbConnectorsMigration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(_6_ProjectSplitPaneMigration.class);
 
-    private static final String LEGACY_PATH = "org/apache/cayenne/dbConnectionInfo";
+    private static final String LEGACY_PATH = "org/apache/cayenne/modeler/editor/splitPane/divider";
+
+    private static final String DIVIDER_LOCATION = "dividerLocation";
 
     @Override
     public int version() {
-        return 1;
+        return 6;
     }
 
     @Override
@@ -52,11 +54,13 @@ public class DbConnectorsMigration implements PreferenceMigration {
             }
             legacy = Preferences.userRoot().node(LEGACY_PATH);
         } catch (BackingStoreException e) {
-            LOGGER.warn("Error checking legacy dbConnectionInfo node", e);
+            LOGGER.warn("Error checking legacy project splitPane node", e);
             return;
         }
 
-        Preferences target = repo.appPref("dbConnectors");
-        PreferencesCopier.copy(legacy, target);
+        int dividerLocation = legacy.getInt(DIVIDER_LOCATION, Integer.MIN_VALUE);
+        if (dividerLocation != Integer.MIN_VALUE) {
+            repo.uiPref("project/splitPane").putInt(DIVIDER_LOCATION, dividerLocation);
+        }
     }
 }

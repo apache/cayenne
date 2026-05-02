@@ -53,9 +53,7 @@ public class GeneralPreferencesController extends ChildController<PreferenceDial
         view.getEncodingChoices().setModel(new DefaultComboBoxModel<>(supportedEncodings()));
         selectEncoding(prefs.getEncoding());
         view.getAutoLoadProject().setSelected(prefs.isAutoLoadProject());
-
-        // Note how the meaning of the preference is the opposite of the checkbox
-        view.getNoDeletePrompt().setSelected(!prefs.isDeletePrompt());
+        view.getNoDeletePrompt().setSelected(prefs.isNoDeletePrompt());
     }
 
     @Override
@@ -71,7 +69,7 @@ public class GeneralPreferencesController extends ChildController<PreferenceDial
 
         prefs.setEncoding(encoding);
         prefs.setAutoLoadProject(view.getAutoLoadProject().isSelected());
-        prefs.setDeletePrompt(!view.getNoDeletePrompt().isSelected());
+        prefs.setNoDeletePrompt(view.getNoDeletePrompt().isSelected());
     }
 
     /**

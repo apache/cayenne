@@ -20,7 +20,13 @@ package org.apache.cayenne.modeler.pref;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.pref.migration.DbConnectorsMigration;
+import org.apache.cayenne.modeler.pref.migration._1_DbConnectorsMigration;
+import org.apache.cayenne.modeler.pref.migration._2_ClasspathMigration;
+import org.apache.cayenne.modeler.pref.migration._3_GeneralPrefsMigration;
+import org.apache.cayenne.modeler.pref.migration._4_RecentProjectsMigration;
+import org.apache.cayenne.modeler.pref.migration._5_FrameGeometryMigration;
+import org.apache.cayenne.modeler.pref.migration._6_ProjectSplitPaneMigration;
+import org.apache.cayenne.modeler.pref.migration._7_EntityTablePrefsMigration;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.resource.Resource;
 import org.slf4j.Logger;
@@ -66,7 +72,14 @@ public class PreferencesRepository {
     private final List<PreferenceMigration> migrations;
 
     private static List<PreferenceMigration> defaultMigrations() {
-        return List.of(new DbConnectorsMigration());
+        return List.of(
+                new _1_DbConnectorsMigration(),
+                new _2_ClasspathMigration(),
+                new _3_GeneralPrefsMigration(),
+                new _4_RecentProjectsMigration(),
+                new _5_FrameGeometryMigration(),
+                new _6_ProjectSplitPaneMigration(),
+                new _7_EntityTablePrefsMigration());
     }
 
     public PreferencesRepository() {

@@ -23,12 +23,12 @@ import java.util.prefs.Preferences;
 
 public final class GeneralPrefs implements PreferenceAdapter {
 
-    static final String NODE = "general";
+    public static final String NODE = "general";
 
-    static final String AUTO_LOAD_PROJECT = "autoLoadProject";
-    static final String DELETE_PROMPT = "deletePrompt";
-    static final String ENCODING = "encoding";
-    static final String FAVOURITE_DATA_SOURCE = "favouriteDataSource";
+    public static final String AUTO_LOAD_PROJECT = "autoLoadProject";
+    public static final String NO_DELETE_PROMPT = "noDeletePrompt";
+    public static final String ENCODING = "encoding";
+    public static final String FAVOURITE_DATA_SOURCE = "favouriteDataSource";
 
     public static GeneralPrefs of(PreferencesRepository repository) {
         return new GeneralPrefs(repository.appPref(NODE));
@@ -49,12 +49,12 @@ public final class GeneralPrefs implements PreferenceAdapter {
         prefs.putBoolean(AUTO_LOAD_PROJECT, v);
     }
 
-    public boolean isDeletePrompt() {
-        return prefs.getBoolean(DELETE_PROMPT, false);
+    public boolean isNoDeletePrompt() {
+        return prefs.getBoolean(NO_DELETE_PROMPT, false);
     }
 
-    public void setDeletePrompt(boolean v) {
-        prefs.putBoolean(DELETE_PROMPT, v);
+    public void setNoDeletePrompt(boolean v) {
+        prefs.putBoolean(NO_DELETE_PROMPT, v);
     }
 
     public String getEncoding() {

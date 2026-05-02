@@ -34,7 +34,7 @@ public final class RecentProjectsPrefs implements PreferenceAdapter {
 
     public static final int MAX_SIZE = 12;
 
-    static final String NODE = "lastProjects";
+    public static final String NODE = "lastProjects";
 
     public static RecentProjectsPrefs of(PreferencesRepository repository) {
         return new RecentProjectsPrefs(repository.appPref(NODE));

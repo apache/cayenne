@@ -32,7 +32,7 @@ public final class ClasspathPrefs implements PreferenceAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClasspathPrefs.class);
 
-    static final String NODE = "classpath";
+    public static final String NODE = "classpath";
 
     private final Preferences prefs;
 
