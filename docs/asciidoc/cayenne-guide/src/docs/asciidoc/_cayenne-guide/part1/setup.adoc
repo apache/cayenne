@@ -79,48 +79,16 @@ configured to execute jars, by running from command-line:
 $ java -jar CayenneModeler.jar
 ----
 
-The Modeler can also be started from Maven. While it may look like an exotic way to start a GUI application, it has
-its benefits - no need to download Cayenne distribution, the version of the Modeler always matches the version of
-the framework, the plugin can find mapping files in the project automatically. So it is an attractive option to
-some developers. Maven option requires a declaration in the POM:
-[source,xml,subs="verbatim,attributes"]
-----
-<build>
-    <plugins>
-        <plugin>
-            <groupId>org.apache.cayenne.plugins</groupId>
-            <artifactId>cayenne-modeler-maven-plugin</artifactId>
-            <version>{version}</version>
-        </plugin>
-    </plugins>
-</build>
-----
-
-And then can be run as
+A path to an existing Cayenne project file can be passed as the only argument to open the project on startup:
 
 [source]
 ----
-$ mvn cayenne-modeler:run
+$ java -jar CayenneModeler.jar path/to/cayenne-project.xml
 ----
 
-[#pluginParameteres.table.table-bordered]
-.Modeler plugin parameters
-[cols="2,1,6"]
-|===
-|Name |Type|Description
+On macOS the same applies to the `.app` bundle:
 
-.^|modelFile
-.^|File
-a|Name of the model file to open. Here is some simple example:
-[source,xml]
+[source]
 ----
-<plugin>
-    <groupId>org.apache.cayenne.plugins</groupId>
-    <artifactId>cayenne-modeler-maven-plugin</artifactId>
-    <version>${cayenne.version}</version>
-    <configuration>
-        <modelFile>src/main/resources/cayenne.xml</modelFile>
-    </configuration>
-</plugin>
+$ open CayenneModeler.app --args path/to/cayenne-project.xml
 ----
-|===

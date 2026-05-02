@@ -56,9 +56,9 @@ You should see output similar to this:
 [INFO] Migration Complete Successfully.
 ----
 
-Let's run Modeler and check that all changes are present in our model: 
+Let's run Modeler and check that all changes are present in our model:
 ----
-$ mvn cayenne-modeler:run
+$ java -jar CayenneModeler.jar src/main/resources/cayenne-project.xml
 ----
 
 image::tutorial-update-model.png[align="center"]

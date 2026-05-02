@@ -28,10 +28,11 @@ This tutorial uses version 2017.1, but any recent IntelliJ IDEA version and edit
 
 ==== Maven
 
-Two Maven plugins are used:
+The *cayenne-maven-plugin* is used. Among other things, it allows to reverse-engineer the Cayenne model from the database and to update the model after the database has been changed.
 
-* *cayenne-maven-plugin* - among other things, allows to reverse-engineer the Cayenne model from the database and to update the model after the database has been changed.
-* *cayenne-modeler-maven-plugin* - provides a convenient way of starting the Cayenne Modeler
+==== CayenneModeler
+
+CayenneModeler is the GUI tool used in this tutorial to inspect and edit the model. Download the appropriate Cayenne distribution from the Cayenne web site and launch the Modeler from it (e.g. `java -jar CayenneModeler.jar`, or open `CayenneModeler.app` on macOS).
 
 ==== MySQL
 

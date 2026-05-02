@@ -107,25 +107,20 @@ Great! We now have Cayenne DataMap file that describe model from our database an
 
 NOTE: If you have some problems with configuration you can always delete `datamap.map.xml` file and try again.
 
-==== Setup Modeler Maven plugin
+==== Launching CayenneModeler
 
-Cayenne Modeler can be helpful in case you want to make some customizations to your model, though it's usage optional.
+CayenneModeler can be helpful in case you want to make some customizations to your model, though its usage is optional.
 
-To launch Modeler we'll use ``cayenne-modeler-maven-plugin``.
-Just include it in `pom.xml` like we did with ``cayenne-maven-plugin`` and tell where your project is:
-[source,xml]
+Launch the Modeler from your downloaded Cayenne distribution and pass the project file as an argument, for example:
+
 ----
-<plugin>
-    <groupId>org.apache.cayenne.plugins</groupId>
-    <artifactId>cayenne-modeler-maven-plugin</artifactId>
-    <version>${cayenne.version}</version>
-    <configuration>
-        <modelFile>${project.basedir}/src/main/resources/cayenne-project.xml</modelFile>
-    </configuration>
-</plugin>
+$ java -jar CayenneModeler.jar src/main/resources/cayenne-project.xml
 ----
 
-To launch it simply run:
+On macOS:
+
 ----
-$ mvn cayenne-modeler:run
+$ open CayenneModeler.app --args src/main/resources/cayenne-project.xml
 ----
+
+Alternatively, launch the Modeler with no arguments and open the project via the *File > Open Project...* menu.

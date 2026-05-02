@@ -12,15 +12,7 @@ import java.nio.file.Paths;
 
 public class CgenOps {
 
-    // TODO: "cayenne.cgen.destdir" is a Maven Modeler startup artifact. Should go away with CAY-2925 (or should be
-    // reimplemented as an app arg).
-
     public static Path baseDir(Application application) {
-        String propDir = System.getProperty("cayenne.cgen.destdir");
-        if (propDir != null) {
-            return Paths.get(propDir);
-        }
-
         Path projectRoot = projectRoot(application);
         if (projectRoot == null) {
             return Paths.get(".");
