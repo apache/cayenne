@@ -20,19 +20,18 @@ package org.apache.cayenne.modeler.pref;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.pref.migration._1_DbConnectorsMigration;
-import org.apache.cayenne.modeler.pref.migration._2_ClasspathMigration;
-import org.apache.cayenne.modeler.pref.migration._3_GeneralPrefsMigration;
-import org.apache.cayenne.modeler.pref.migration._4_RecentProjectsMigration;
-import org.apache.cayenne.modeler.pref.migration._5_FrameGeometryMigration;
-import org.apache.cayenne.modeler.pref.migration._6_ProjectSplitPaneMigration;
-import org.apache.cayenne.modeler.pref.migration._7_EntityTablePrefsMigration;
+import org.apache.cayenne.modeler.pref.migration.toV5._1_DbConnectorsMigration;
+import org.apache.cayenne.modeler.pref.migration.toV5._2_ClasspathMigration;
+import org.apache.cayenne.modeler.pref.migration.toV5._3_GeneralPrefsMigration;
+import org.apache.cayenne.modeler.pref.migration.toV5._4_RecentProjectsMigration;
+import org.apache.cayenne.modeler.pref.migration.toV5._5_FrameGeometryMigration;
+import org.apache.cayenne.modeler.pref.migration.toV5._6_ProjectSplitPaneMigration;
+import org.apache.cayenne.modeler.pref.migration.toV5._7_EntityTablePrefsMigration;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.IdentityHashMap;
@@ -40,6 +39,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * App-wide preferences service for the Modeler. Owns the layout under
@@ -71,23 +72,24 @@ public class PreferencesRepository {
     private final Map<DataMap, String> unsavedDataMapIds;
     private final List<PreferenceMigration> migrations;
 
-    private static List<PreferenceMigration> defaultMigrations() {
-        return List.of(
-                new _1_DbConnectorsMigration(),
-                new _2_ClasspathMigration(),
-                new _3_GeneralPrefsMigration(),
-                new _4_RecentProjectsMigration(),
-                new _5_FrameGeometryMigration(),
-                new _6_ProjectSplitPaneMigration(),
-                new _7_EntityTablePrefsMigration());
+    private static List<PreferenceMigration> toV5Migrations() {
+        return Stream.of(
+                        new _1_DbConnectorsMigration(),
+                        new _2_ClasspathMigration(),
+                        new _3_GeneralPrefsMigration(),
+                        new _4_RecentProjectsMigration(),
+                        new _5_FrameGeometryMigration(),
+                        new _6_ProjectSplitPaneMigration(),
+                        new _7_EntityTablePrefsMigration())
+
+                // just in case, sort to prevent any ordering issues with manual insertion
+                .sorted(Comparator.comparingInt(PreferenceMigration::version))
+                .collect(Collectors.toList());
     }
 
     public PreferencesRepository() {
         this.root = Preferences.userRoot().node(ROOT_PATH);
-
-        this.migrations = new ArrayList<>(defaultMigrations());
-        this.migrations.sort(Comparator.comparingInt(PreferenceMigration::version));
-
+        this.migrations = toV5Migrations();
         this.unsavedProjectIds = new IdentityHashMap<>();
         this.unsavedDataMapIds = new IdentityHashMap<>();
     }
@@ -352,13 +354,27 @@ public class PreferencesRepository {
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             switch (c) {
-                case '"':  sb.append("\\\""); break;
-                case '\\': sb.append("\\\\"); break;
-                case '\n': sb.append("\\n");  break;
-                case '\r': sb.append("\\r");  break;
-                case '\t': sb.append("\\t");  break;
-                case '\b': sb.append("\\b");  break;
-                case '\f': sb.append("\\f");  break;
+                case '"':
+                    sb.append("\\\"");
+                    break;
+                case '\\':
+                    sb.append("\\\\");
+                    break;
+                case '\n':
+                    sb.append("\\n");
+                    break;
+                case '\r':
+                    sb.append("\\r");
+                    break;
+                case '\t':
+                    sb.append("\\t");
+                    break;
+                case '\b':
+                    sb.append("\\b");
+                    break;
+                case '\f':
+                    sb.append("\\f");
+                    break;
                 default:
                     if (c < 0x20) {
                         sb.append(String.format("\\u%04x", (int) c));
@@ -371,8 +387,6 @@ public class PreferencesRepository {
     }
 
     private static void indent(StringBuilder sb, int level) {
-        for (int i = 0; i < level; i++) {
-            sb.append("  ");
-        }
+        sb.append("  ".repeat(Math.max(0, level)));
     }
 }

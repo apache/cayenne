@@ -16,8 +16,9 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.pref.migration;
+package org.apache.cayenne.modeler.pref.migration.toV5;
 
+import org.apache.cayenne.modeler.pref.GeneralPrefs;
 import org.apache.cayenne.modeler.pref.PreferenceMigration;
 import org.apache.cayenne.modeler.pref.PreferencesRepository;
 import org.slf4j.Logger;
@@ -27,22 +28,19 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
- * Copies legacy main-frame geometry (width / height / x / y) from
- * {@code org/apache/cayenne/modeler} into the new {@code app/ui/frame/geometry}
- * layout. The legacy node is the {@code userNodeForPackage} of the modeler
- * package and may hold unrelated keys, so only the four geometry keys are
- * copied. Leaves the legacy node intact so an older Modeler installation on the
- * same machine still works.
+ * Copies legacy general preferences from {@code org/apache/cayenne/modeler/dialog/pref}
+ * into the new {@code app/general} layout. Leaves the legacy node intact so an older
+ * Modeler installation on the same machine still works.
  */
-public class _5_FrameGeometryMigration implements PreferenceMigration {
+public class _3_GeneralPrefsMigration implements PreferenceMigration {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(_5_FrameGeometryMigration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(_3_GeneralPrefsMigration.class);
 
-    private static final String LEGACY_PATH = "org/apache/cayenne/modeler";
+    private static final String LEGACY_PATH = "org/apache/cayenne/modeler/dialog/pref";
 
     @Override
     public int version() {
-        return 5;
+        return 3;
     }
 
     @Override
@@ -54,21 +52,16 @@ public class _5_FrameGeometryMigration implements PreferenceMigration {
             }
             legacy = Preferences.userRoot().node(LEGACY_PATH);
         } catch (BackingStoreException e) {
-            LOGGER.warn("Error checking legacy frame geometry node", e);
+            LOGGER.warn("Error checking legacy general prefs node", e);
             return;
         }
 
-        Preferences target = repo.uiPref("frame/geometry");
-        copyInt(legacy, target, "width");
-        copyInt(legacy, target, "height");
-        copyInt(legacy, target, "x");
-        copyInt(legacy, target, "y");
-    }
+        Preferences target = repo.appPref(GeneralPrefs.NODE);
+        target.putBoolean(GeneralPrefs.AUTO_LOAD_PROJECT, legacy.getBoolean("autoLoadProject", false));
+        target.put(GeneralPrefs.ENCODING, legacy.get("encoding", ""));
+        target.put(GeneralPrefs.FAVOURITE_DATA_SOURCE, legacy.get("favouriteDataSource", ""));
 
-    private static void copyInt(Preferences src, Preferences dst, String key) {
-        int value = src.getInt(key, Integer.MIN_VALUE);
-        if (value != Integer.MIN_VALUE) {
-            dst.putInt(key, value);
-        }
+        // legacy used the wrong name - "deletePrompt", for what was meant to be "delete with no prompt"
+        target.putBoolean(GeneralPrefs.NO_DELETE_PROMPT, legacy.getBoolean("deletePrompt", false));
     }
 }

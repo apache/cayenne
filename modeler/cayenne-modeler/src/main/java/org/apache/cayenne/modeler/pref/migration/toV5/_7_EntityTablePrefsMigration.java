@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.pref.migration;
+package org.apache.cayenne.modeler.pref.migration.toV5;
 
 import org.apache.cayenne.modeler.pref.PreferenceMigration;
 import org.apache.cayenne.modeler.pref.PreferencesCopier;

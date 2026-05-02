@@ -16,12 +16,11 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.pref.migration;
+package org.apache.cayenne.modeler.pref.migration.toV5;
 
 import org.apache.cayenne.modeler.pref.PreferenceMigration;
 import org.apache.cayenne.modeler.pref.PreferencesCopier;
 import org.apache.cayenne.modeler.pref.PreferencesRepository;
-import org.apache.cayenne.modeler.pref.RecentProjectsPrefs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,20 +28,19 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
- * Copies the legacy "last opened projects" history from
- * {@code org/apache/cayenne/editor/lastSeveralProjectFiles} into the new
- * {@code app/lastProjects} layout. Leaves the legacy node intact so an older
- * Modeler installation on the same machine still works.
+ * Copies legacy DB connection profiles from {@code org/apache/cayenne/dbConnectionInfo}
+ * into the new {@code app/dbConnectors} layout. Leaves the legacy node intact so an
+ * older Modeler installation on the same machine still works.
  */
-public class _4_RecentProjectsMigration implements PreferenceMigration {
+public class _1_DbConnectorsMigration implements PreferenceMigration {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(_4_RecentProjectsMigration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(_1_DbConnectorsMigration.class);
 
-    private static final String LEGACY_PATH = "org/apache/cayenne/editor/lastSeveralProjectFiles";
+    private static final String LEGACY_PATH = "org/apache/cayenne/dbConnectionInfo";
 
     @Override
     public int version() {
-        return 4;
+        return 1;
     }
 
     @Override
@@ -54,11 +52,11 @@ public class _4_RecentProjectsMigration implements PreferenceMigration {
             }
             legacy = Preferences.userRoot().node(LEGACY_PATH);
         } catch (BackingStoreException e) {
-            LOGGER.warn("Error checking legacy lastSeveralProjectFiles node", e);
+            LOGGER.warn("Error checking legacy dbConnectionInfo node", e);
             return;
         }
 
-        Preferences target = repo.appPref(RecentProjectsPrefs.NODE);
+        Preferences target = repo.appPref("dbConnectors");
         PreferencesCopier.copy(legacy, target);
     }
 }

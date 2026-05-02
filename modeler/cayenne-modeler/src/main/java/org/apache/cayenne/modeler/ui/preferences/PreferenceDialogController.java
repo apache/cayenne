@@ -34,10 +34,10 @@ public class PreferenceDialogController extends ChildController<RootController> 
     private static final String GENERAL_KEY = "General";
     private static final String DATA_SOURCES_KEY = "DataSources";
     private static final String CLASSPATH_KEY = "Classpath";
-    private static final String ALL_KEY = "All";
+    private static final String MORE_KEY = "More...";
 
     private static final String[] preferenceMenus = new String[]{
-            GENERAL_KEY, DATA_SOURCES_KEY, CLASSPATH_KEY, ALL_KEY
+            GENERAL_KEY, DATA_SOURCES_KEY, CLASSPATH_KEY, MORE_KEY
     };
 
     private final PreferenceDialogView view;
@@ -75,7 +75,7 @@ public class PreferenceDialogController extends ChildController<RootController> 
         view.getDetailPanel().add(classpathPrefsController.getView(), CLASSPATH_KEY);
 
         this.allPrefsController = new AllPreferencesController(this);
-        view.getDetailPanel().add(allPrefsController.getView(), ALL_KEY);
+        view.getDetailPanel().add(allPrefsController.getView(), MORE_KEY);
     }
 
     public void updateSelection() {
