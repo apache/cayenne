@@ -38,6 +38,8 @@ import java.io.StringWriter;
 
 class ErrorDialog extends CMDialog implements ActionListener {
 
+    private static final String BUGREPORT_URL = "https://issues.apache.org/jira/browse/CAY";
+
     protected JButton close;
     protected JButton showHide;
     protected JTextArea exText = new JTextArea();
@@ -121,16 +123,15 @@ class ErrorDialog extends CMDialog implements ActionListener {
     }
 
     protected String infoHTML(Application application) {
-        String bugreportURL = application.getString("cayenne.bugreport.url");
         return "<b><font face='Arial,Helvetica' size='+1' color='red'>"
                 + getTitle()
                 + "</font></b><br>"
                 + "<font face='Arial,Helvetica' size='-1'>Please copy the message below and "
                 + "report this error by going to <br>"
                 + "<a href='"
-                + bugreportURL
+                + BUGREPORT_URL
                 + "'>"
-                + bugreportURL
+                + BUGREPORT_URL
                 + "</a></font>";
     }
 

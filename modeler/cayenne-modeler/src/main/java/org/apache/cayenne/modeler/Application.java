@@ -49,7 +49,6 @@ import org.apache.cayenne.util.IDUtil;
 import javax.swing.*;
 import java.io.File;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
@@ -62,9 +61,7 @@ import java.util.stream.Collectors;
  * </ul>
  */
 public class Application {
-
-    private static final String DEFAULT_MESSAGE_BUNDLE = "org.apache.cayenne.modeler.cayennemodeler-strings";
-
+    
     private static final String APPLICATION_NAME_PROPERTY = "cayenne.modeler.application.name";
     private static final String DEFAULT_APPLICATION_NAME = "CayenneModeler";
 
@@ -91,14 +88,6 @@ public class Application {
 
         String configuredName = System.getProperty(APPLICATION_NAME_PROPERTY);
         this.name = (configuredName != null) ? configuredName : DEFAULT_APPLICATION_NAME;
-    }
-
-    /**
-     * Retrieves strings from .properties file
-     */
-    public String getString(String key) {
-        ResourceBundle properties = ResourceBundle.getBundle(Application.DEFAULT_MESSAGE_BUNDLE);
-        return properties == null ? "" : properties.getString(key);
     }
 
     public String getNewProjectTemporaryName() {

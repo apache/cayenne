@@ -42,6 +42,8 @@ import java.time.LocalDate;
 // triad, though it might be beneficial to use strings file
 public class AboutDialog extends JFrame implements FocusListener, KeyListener, MouseListener {
 
+    private static final String ABOUT_STRING = "(c) 2001-%d Apache Software Foundation and individual authors.<br><br>https://cayenne.apache.org/<br>";
+
     private static String infoString;
     private static ImageIcon logoImage;
 
@@ -108,7 +110,7 @@ public class AboutDialog extends JFrame implements FocusListener, KeyListener, M
             StringBuilder buffer = new StringBuilder();
             buffer.append("<html>");
             buffer.append("<font size='-1' face='Arial,Helvetica'>");
-            buffer.append(String.format(application.getString("cayenne.modeler.about.info"), LocalDate.now().getYear()));
+            buffer.append(String.format(ABOUT_STRING, LocalDate.now().getYear()));
             buffer.append("</font>");
 
             buffer.append("<font size='-2' face='Arial,Helvetica'>");
