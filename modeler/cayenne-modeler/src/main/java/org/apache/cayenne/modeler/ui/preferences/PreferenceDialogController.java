@@ -40,6 +40,10 @@ public class PreferenceDialogController extends ChildController<RootController> 
             GENERAL_KEY, DATA_SOURCES_KEY, CLASSPATH_KEY, MORE_KEY
     };
 
+    // Session-only memory of which card the user last viewed. The dialog is
+    // recreated on every open, so an instance field would always reset to General.
+    private static String lastSelectedCard = GENERAL_KEY;
+
     private final PreferenceDialogView view;
 
     private final GeneralPreferencesController generalPrefsController;
@@ -82,6 +86,7 @@ public class PreferenceDialogController extends ChildController<RootController> 
         final String selection = view.getList().getSelectedValue();
         if (selection != null) {
             view.getDetailLayout().show(view.getDetailPanel(), selection);
+            lastSelectedCard = selection;
         }
     }
 
@@ -97,8 +102,8 @@ public class PreferenceDialogController extends ChildController<RootController> 
         view.dispose();
     }
 
-    public void showGeneralEditorAction() {
-        doShow(GENERAL_KEY, generalPrefsController);
+    public void showLastSelectedAction() {
+        doShow(lastSelectedCard, controllerFor(lastSelectedCard));
     }
 
     public void showClassPathEditorAction() {
@@ -108,6 +113,20 @@ public class PreferenceDialogController extends ChildController<RootController> 
     public void showDataSourceEditorAction(Object dataSourceKey) {
         dataSourcePrefsController.editDataSourceAction(dataSourceKey);
         doShow(DATA_SOURCES_KEY, dataSourcePrefsController);
+    }
+
+    private ChildController<?> controllerFor(String cardKey) {
+        switch (cardKey) {
+            case DATA_SOURCES_KEY:
+                return dataSourcePrefsController;
+            case CLASSPATH_KEY:
+                return classpathPrefsController;
+            case MORE_KEY:
+                return allPrefsController;
+            case GENERAL_KEY:
+            default:
+                return generalPrefsController;
+        }
     }
 
     private void doShow(String cardKey, ChildController<?> childController) {

@@ -40,7 +40,7 @@ public class ConfigurePreferencesAction extends ModelerAbstractAction {
     }
 
     public void showPreferencesDialog() {
-        new PreferenceDialogController(application.getFrameController()).showGeneralEditorAction();
+        new PreferenceDialogController(application.getFrameController()).showLastSelectedAction();
     }
     
 }
