@@ -26,12 +26,11 @@ import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.modeler.pref.CayennePreference;
 import org.apache.cayenne.modeler.dbconnector.DBConnectorPrefs;
 import org.apache.cayenne.modeler.dbconnector.DBConnectors;
 import org.apache.cayenne.modeler.pref.ClasspathPrefs;
 import org.apache.cayenne.modeler.pref.GeneralPrefs;
-import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
+import org.apache.cayenne.modeler.pref.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
 import org.apache.cayenne.modeler.service.platform.PlatformInitializer;
@@ -71,16 +70,12 @@ public class Application {
 
     private static Application instance;
 
-    protected LogConsoleController logConsoleController;
-    protected ModelerController frameController;
-    protected String name;
-    protected CayenneUndoManager undoManager;
-    protected DBConnectors dbConnectors;
-    protected CayennePreference cayennePreference;
-
-    @Inject
-    protected Injector injector;
-
+    private final Injector injector;
+    private final String name;
+    private LogConsoleController logConsoleController;
+    private ModelerController frameController;
+    private CayenneUndoManager undoManager;
+    private DBConnectors dbConnectors;
     private String newProjectTemporaryName;
 
     public static Application getInstance() {
@@ -91,10 +86,11 @@ public class Application {
         Application.instance = instance;
     }
 
-    public Application() {
+    public Application(@Inject Injector injector) {
+        this.injector = injector;
+
         String configuredName = System.getProperty(APPLICATION_NAME_PROPERTY);
         this.name = (configuredName != null) ? configuredName : DEFAULT_APPLICATION_NAME;
-        this.cayennePreference = new CayennePreference();
     }
 
     /**
@@ -121,10 +117,6 @@ public class Application {
 
     public Project getProject() {
         return getFrameController().getProjectController().getProject();
-    }
-
-    private Preferences getPreferencesNode(Class<?> className, String path) {
-        return cayennePreference.getNode(className, path);
     }
 
     public String getName() {
@@ -237,11 +229,11 @@ public class Application {
                 .getProject()
                 .getRootNode();
 
+        Preferences rootPrefs = Preferences.userNodeForPackage(getProject().getClass());
+
         // if new project
         if (descriptor.getConfigurationSource() == null) {
-            return getPreferencesNode(
-                    getProject().getClass(),
-                    getNewProjectTemporaryName());
+            return rootPrefs.node(getNewProjectTemporaryName());
         }
 
         String path = descriptor
@@ -250,8 +242,7 @@ public class Application {
                 .getPath()
                 .replace(".xml", "");
 
-        Preferences pref = getPreferencesNode(getProject().getClass(), "");
-        return pref.node(pref.absolutePath() + path);
+        return rootPrefs.node(rootPrefs.absolutePath() + path);
     }
 
     /**
@@ -267,7 +258,7 @@ public class Application {
     private File initialProjectFromPreferences() {
 
         if (GeneralPrefs.of().isAutoLoadProject()) {
-            List<File> files = LastProjectsPreferences.getFiles();
+            List<File> files = RecentProjectsPrefs.of().getFiles();
             if (!files.isEmpty()) {
                 return files.get(0);
             }

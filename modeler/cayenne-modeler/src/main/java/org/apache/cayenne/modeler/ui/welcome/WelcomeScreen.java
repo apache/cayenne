@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.welcome;
 
-import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
+import org.apache.cayenne.modeler.pref.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.action.NewProjectAction;
@@ -141,7 +141,7 @@ public class WelcomeScreen extends JScrollPane implements RecentFileListListener
 
     @Override
     public void recentFileListChanged() {
-        List<File> arr = LastProjectsPreferences.getFiles();
+        List<File> arr = RecentProjectsPrefs.of().getFiles();
         recentProjectsList.setModel(new RecentFileListModel(arr));
     }
 }

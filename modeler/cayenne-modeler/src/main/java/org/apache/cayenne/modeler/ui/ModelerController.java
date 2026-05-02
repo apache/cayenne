@@ -23,7 +23,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.mvc.RootController;
 import org.apache.cayenne.modeler.toolkit.component.CMComponentGeometryPrefs;
-import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
+import org.apache.cayenne.modeler.pref.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.service.os.OperatingSystem;
 import org.apache.cayenne.modeler.ui.action.ExitAction;
 import org.apache.cayenne.modeler.ui.action.OpenProjectAction;
@@ -50,9 +50,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
-import java.util.stream.Collectors;
 
 /**
  * Controller of the main application frame.
@@ -206,32 +203,13 @@ public class ModelerController extends RootController {
      * Adds path to the list of last opened projects in preferences.
      */
     public void addToLastProjListAction(File file) {
-        Preferences prefs = LastProjectsPreferences.getPrefs();
-        List<File> files = LastProjectsPreferences.getFiles();
-
-        files.remove(file);
-        files.add(0, file);
-
-        List<File> truncatedFiles = files.stream()
-                .limit(LastProjectsPreferences.LAST_PROJ_FILES_SIZE)
-                .collect(Collectors.toList());
-
-        try {
-            prefs.clear();
-        } catch (BackingStoreException ignored) {
-            // ignore exception
-        }
-
-        int size = truncatedFiles.size();
-        for (int i = 0; i < size; i++) {
-            prefs.put(String.valueOf(i), truncatedFiles.get(i).getAbsolutePath());
-        }
+        RecentProjectsPrefs.of().addFile(file);
     }
 
     public void changePathInLastProjListAction(File oldFile, File newFile) {
-        LastProjectsPreferences.getFiles().remove(oldFile);
-
-        addToLastProjListAction(newFile);
+        RecentProjectsPrefs prefs = RecentProjectsPrefs.of();
+        prefs.removeFile(oldFile);
+        prefs.addFile(newFile);
 
         view.fireRecentFileListChanged();
     }

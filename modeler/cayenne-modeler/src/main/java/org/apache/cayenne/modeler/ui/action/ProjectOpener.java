@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.action;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
+import org.apache.cayenne.modeler.pref.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.ui.project.overwrite.OverwriteDialog;
 import org.apache.cayenne.modeler.util.FileFilters;
 import org.apache.cayenne.project.Project;
@@ -138,7 +138,7 @@ class ProjectOpener extends JFileChooser {
     }
 
     private File getDefaultStartDir() {
-        List<File> recent = LastProjectsPreferences.getFiles();
+        List<File> recent = RecentProjectsPrefs.of().getFiles();
         if (!recent.isEmpty()) {
             File parent = recent.get(0).getParentFile();
             if (parent != null && parent.isDirectory()) {

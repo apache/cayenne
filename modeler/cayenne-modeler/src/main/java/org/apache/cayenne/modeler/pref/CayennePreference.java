@@ -33,10 +33,4 @@ public class CayennePreference {
     public Preferences getCurrentPreference() {
         return currentPreference;
     }
-
-
-    public Preferences getNode(Class<?> aClass, String path) {
-        Preferences pkgNode = Preferences.userNodeForPackage(aClass);
-        return path == null || path.isEmpty() ? pkgNode : pkgNode.node(path);
-    }
 }

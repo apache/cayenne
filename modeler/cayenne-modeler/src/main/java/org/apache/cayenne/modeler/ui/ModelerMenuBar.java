@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.ui;
 
 import org.apache.cayenne.modeler.event.model.RecentFileListListener;
-import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
+import org.apache.cayenne.modeler.pref.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.*;
 import org.apache.cayenne.modeler.ui.logconsole.LogConsolePrefs;
@@ -153,7 +153,7 @@ class ModelerMenuBar extends JMenuBar {
          */
         public void rebuildFromPreferences() {
 
-            List<File> files = LastProjectsPreferences.getFiles();
+            List<File> files = RecentProjectsPrefs.of().getFiles();
 
             // read menus
             Component[] comps = getMenuComponents();
