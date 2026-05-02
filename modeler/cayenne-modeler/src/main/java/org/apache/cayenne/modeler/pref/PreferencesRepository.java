@@ -27,10 +27,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
@@ -161,6 +163,37 @@ public class PreferencesRepository {
     }
 
     /**
+     * Serializes the entire preferences subtree owned by this repository as a
+     * pretty-printed JSON string. Each {@link Preferences} node becomes a JSON
+     * object whose own keys map to string values and whose child node names map
+     * to nested objects.
+     */
+    public String exportAsJson() {
+        StringBuilder sb = new StringBuilder();
+        appendNode(sb, root, 0);
+        return sb.toString();
+    }
+
+    /**
+     * Removes every child node of the repository root, wiping all Modeler
+     * preferences. Also clears in-memory unsaved-id bookkeeping so subsequent
+     * {@link #projectPref}/{@link #dataMapPref} lookups don't reference deleted
+     * subtrees.
+     */
+    public void deleteAll() {
+        try {
+            for (String childName : root.childrenNames()) {
+                root.node(childName).removeNode();
+            }
+            root.flush();
+        } catch (BackingStoreException e) {
+            LOGGER.warn("Error deleting all preferences under '{}'", root.absolutePath(), e);
+        }
+        unsavedProjectIds.clear();
+        unsavedDataMapIds.clear();
+    }
+
+    /**
      * Idempotent. Applies any registered {@link PreferenceMigration}s whose
      * version exceeds {@code app/_meta/migrations.appliedVersion}.
      */
@@ -252,5 +285,81 @@ public class PreferencesRepository {
 
     private static String newUnsavedId() {
         return UNSAVED_PREFIX + System.currentTimeMillis() + "-" + System.nanoTime();
+    }
+
+    private static void appendNode(StringBuilder sb, Preferences node, int indent) {
+        String[] keys;
+        String[] children;
+        try {
+            keys = node.keys();
+            children = node.childrenNames();
+        } catch (BackingStoreException e) {
+            LOGGER.warn("Error reading preferences node '{}'", node.absolutePath(), e);
+            sb.append("{}");
+            return;
+        }
+
+        if (keys.length == 0 && children.length == 0) {
+            sb.append("{}");
+            return;
+        }
+
+        Arrays.sort(keys);
+        Arrays.sort(children);
+
+        sb.append("{\n");
+        boolean first = true;
+        for (String key : keys) {
+            if (!first) {
+                sb.append(",\n");
+            }
+            indent(sb, indent + 1);
+            appendString(sb, key);
+            sb.append(": ");
+            appendString(sb, node.get(key, ""));
+            first = false;
+        }
+        for (String childName : children) {
+            if (!first) {
+                sb.append(",\n");
+            }
+            indent(sb, indent + 1);
+            appendString(sb, childName);
+            sb.append(": ");
+            appendNode(sb, node.node(childName), indent + 1);
+            first = false;
+        }
+        sb.append('\n');
+        indent(sb, indent);
+        sb.append('}');
+    }
+
+    private static void appendString(StringBuilder sb, String s) {
+        sb.append('"');
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            switch (c) {
+                case '"':  sb.append("\\\""); break;
+                case '\\': sb.append("\\\\"); break;
+                case '\n': sb.append("\\n");  break;
+                case '\r': sb.append("\\r");  break;
+                case '\t': sb.append("\\t");  break;
+                case '\b': sb.append("\\b");  break;
+                case '\f': sb.append("\\f");  break;
+                default:
+                    if (c < 0x20) {
+                        sb.append(String.format("\\u%04x", (int) c));
+                    } else {
+                        sb.append(c);
+                    }
+            }
+        }
+        sb.append('"');
+    }
+
+    private static void indent(StringBuilder sb, int level) {
+        for (int i = 0; i < level; i++) {
+            sb.append("  ");
+        }
     }
 }

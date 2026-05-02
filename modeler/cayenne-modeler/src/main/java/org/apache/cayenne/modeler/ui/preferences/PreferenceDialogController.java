@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.ui.preferences;
 
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.mvc.RootController;
+import org.apache.cayenne.modeler.ui.preferences.all.AllPreferencesController;
 import org.apache.cayenne.modeler.ui.preferences.classpath.ClasspathPreferencesController;
 import org.apache.cayenne.modeler.ui.preferences.datasource.DataSourcePreferencesController;
 import org.apache.cayenne.modeler.ui.preferences.general.GeneralPreferencesController;
@@ -33,9 +34,10 @@ public class PreferenceDialogController extends ChildController<RootController> 
     private static final String GENERAL_KEY = "General";
     private static final String DATA_SOURCES_KEY = "DataSources";
     private static final String CLASSPATH_KEY = "Classpath";
+    private static final String ALL_KEY = "All";
 
     private static final String[] preferenceMenus = new String[]{
-            GENERAL_KEY, DATA_SOURCES_KEY, CLASSPATH_KEY
+            GENERAL_KEY, DATA_SOURCES_KEY, CLASSPATH_KEY, ALL_KEY
     };
 
     private final PreferenceDialogView view;
@@ -43,6 +45,7 @@ public class PreferenceDialogController extends ChildController<RootController> 
     private final GeneralPreferencesController generalPrefsController;
     private final DataSourcePreferencesController dataSourcePrefsController;
     private final ClasspathPreferencesController classpathPrefsController;
+    private final AllPreferencesController allPrefsController;
 
     public PreferenceDialogController(final RootController parent) {
         super(parent);
@@ -70,6 +73,9 @@ public class PreferenceDialogController extends ChildController<RootController> 
 
         this.classpathPrefsController = new ClasspathPreferencesController(this);
         view.getDetailPanel().add(classpathPrefsController.getView(), CLASSPATH_KEY);
+
+        this.allPrefsController = new AllPreferencesController(this);
+        view.getDetailPanel().add(allPrefsController.getView(), ALL_KEY);
     }
 
     public void updateSelection() {
