@@ -29,6 +29,7 @@ CAY-2922 Modeler: remove support for upgrading from file-based preferences
 CAY-2923 Modeler: Restore table cell editor borders
 CAY-2924 Move MapEvent and subclasses from the core to the Modeler
 CAY-2927 Modeler: Better-looking "Update Entity Class Name" dialog
+CAY-2928 Modeler: remove floating log console modality
 
 Bug Fixes:
 

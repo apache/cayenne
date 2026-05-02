@@ -23,7 +23,6 @@ import org.apache.cayenne.modeler.event.model.RecentFileListListener;
 import org.apache.cayenne.modeler.pref.LastProjectsPreferences;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.*;
-import org.apache.cayenne.modeler.ui.logconsole.LogConsoleController;
 import org.apache.cayenne.modeler.ui.logconsole.LogConsolePrefs;
 
 import javax.swing.*;
@@ -35,12 +34,10 @@ import java.util.List;
 
 class ModelerMenuBar extends JMenuBar {
 
-    private final LogConsoleController logConsoleController;
     private final JCheckBoxMenuItem logMenu;
     private final List<RecentFileListListener> recentFileListeners;
 
-    ModelerMenuBar(GlobalActions globalActions, LogConsoleController logConsoleController) {
-        this.logConsoleController = logConsoleController;
+    ModelerMenuBar(GlobalActions globalActions) {
         this.recentFileListeners = new ArrayList<>();
 
         JMenu fileMenu = new JMenu("File");
@@ -109,12 +106,6 @@ class ModelerMenuBar extends JMenuBar {
         // Menu for opening Log console
         toolMenu.addSeparator();
         logMenu = globalActions.getAction(ShowLogConsoleAction.class).buildCheckBoxMenu();
-
-        LogConsolePrefs logConsolePrefs = LogConsolePrefs.of();
-        if (!logConsolePrefs.isDocked() && logConsolePrefs.isShowConsole()) {
-            logConsolePrefs.setShowConsole(false);
-        }
-
         updateLogConsoleMenu();
         toolMenu.add(logMenu);
 

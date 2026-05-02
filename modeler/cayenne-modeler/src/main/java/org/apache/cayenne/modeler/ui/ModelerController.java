@@ -66,7 +66,7 @@ public class ModelerController extends RootController {
     public ModelerController(Application application) {
         super(application);
 
-        this.view = new ModelerFrame(application.getActionManager(), application.getLogConsoleController());
+        this.view = new ModelerFrame(application.getActionManager());
         application.getPlatformInitializer().setupMenus(view);
         this.projectController = new ProjectController(this);
         this.dbImportController = new DbImportController(this);

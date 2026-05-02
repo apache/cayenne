@@ -23,7 +23,6 @@ import org.apache.cayenne.modeler.toolkit.splitpane.CMSplitPanePrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.border.TopBorder;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
-import org.apache.cayenne.modeler.ui.logconsole.LogConsoleController;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
 import org.apache.cayenne.modeler.ui.welcome.WelcomeScreen;
 
@@ -37,9 +36,12 @@ import java.awt.event.ComponentEvent;
  */
 public class ModelerFrame extends JFrame {
 
+    private static final int DEFAULT_DIVIDER_LOCATION = 400;
+
     private final GlobalActions globalActions;
 
     private final JSplitPane splitPane;
+    private final CMSplitPanePrefs splitPanePrefs;
     private final JLabel status;
     private final WelcomeScreen welcomePanel;
     private final ModelerMenuBar menuBar;
@@ -47,12 +49,12 @@ public class ModelerFrame extends JFrame {
     private ProjectView projectView;
     private Component dockComponent;
 
-    public ModelerFrame(GlobalActions globalActions, LogConsoleController logConsoleController) {
+    public ModelerFrame(GlobalActions globalActions) {
         this.globalActions = globalActions;
 
         setIconImage(IconFactory.buildIcon("CayenneModeler.png").getImage());
         getContentPane().setLayout(new BorderLayout());
-        this.menuBar = new ModelerMenuBar(globalActions, logConsoleController);
+        this.menuBar = new ModelerMenuBar(globalActions);
         setJMenuBar(menuBar);
         initToolbar();
 
@@ -65,7 +67,7 @@ public class ModelerFrame extends JFrame {
         splitPane.getInsets().right = 5;
         splitPane.setResizeWeight(0.7);
 
-        CMSplitPanePrefs.of(ModelerFrame.class, "splitPane/divider").bind(splitPane, 400);
+        this.splitPanePrefs = CMSplitPanePrefs.of(ModelerFrame.class, "splitPane/divider");
 
         JPanel statusBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 1));
         statusBar.setBorder(TopBorder.create());
@@ -88,31 +90,28 @@ public class ModelerFrame extends JFrame {
     }
 
     /**
-     * Selects/deselects menu item, depending on status of log console
-     */
-    public void updateLogConsoleMenu() {
-        menuBar.updateLogConsoleMenu();
-    }
-
-    /**
      * Plugs a component in the frame, between main area and status bar
      */
     public void setDockComponent(Component c) {
-        if (dockComponent == c) {
-            return;
+        if (this.dockComponent != c) {
+
+            if (c != null) {
+                // re-bind: re-applies the saved divider location so the dock
+                // component lands at the user's last position, then resumes tracking
+                splitPanePrefs.bind(splitPane, DEFAULT_DIVIDER_LOCATION);
+            } else {
+
+                // unbind divider prefs around the swap: while one side of the split pane
+                // is missing, Swing's layout shifts the divider to maxLocation, and we
+                // don't want that transient value persisted or applied on the way back
+
+                splitPanePrefs.unbind(splitPane);
+            }
+
+            this.dockComponent = c;
+            splitPane.setBottomComponent(c);
+            splitPane.validate();
         }
-
-        if (dockComponent != null) {
-            splitPane.setBottomComponent(null);
-        }
-
-        dockComponent = c;
-
-        if (dockComponent != null) {
-            splitPane.setBottomComponent(dockComponent);
-        }
-
-        splitPane.validate();
     }
 
     protected void initToolbar() {

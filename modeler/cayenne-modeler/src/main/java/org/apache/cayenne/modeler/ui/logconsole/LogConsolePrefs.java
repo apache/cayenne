@@ -24,7 +24,6 @@ import java.util.prefs.Preferences;
 public final class LogConsolePrefs {
 
     static final String SHOW_CONSOLE = "show.log.console";
-    static final String DOCKED       = "log.console.docked";
 
     private final Preferences prefs;
 
@@ -44,11 +43,9 @@ public final class LogConsolePrefs {
         prefs.putBoolean(SHOW_CONSOLE, v);
     }
 
-    public boolean isDocked() {
-        return prefs.getBoolean(DOCKED, false);
-    }
-
-    public void setDocked(boolean v) {
-        prefs.putBoolean(DOCKED, v);
+    public boolean toggleShowConsole() {
+        boolean v = !isShowConsole();
+        setShowConsole(v);
+        return v;
     }
 }

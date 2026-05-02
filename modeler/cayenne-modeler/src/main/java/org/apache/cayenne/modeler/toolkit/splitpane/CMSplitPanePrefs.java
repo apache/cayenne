@@ -20,11 +20,13 @@
 package org.apache.cayenne.modeler.toolkit.splitpane;
 
 import javax.swing.*;
+import java.beans.PropertyChangeListener;
 import java.util.prefs.Preferences;
 
 public final class CMSplitPanePrefs {
 
     private final Preferences prefs;
+    private PropertyChangeListener listener;
 
     private CMSplitPanePrefs(Preferences prefs) {
         this.prefs = prefs;
@@ -38,15 +40,22 @@ public final class CMSplitPanePrefs {
         return new CMSplitPanePrefs(Preferences.userNodeForPackage(anchor).node(path));
     }
 
-    public void bind(JSplitPane p, int defaultLocation) {
+    public void bind(JSplitPane pane, int defaultLocation) {
+        unbind(pane);
 
         int dividerLocation = prefs.getInt(JSplitPane.DIVIDER_LOCATION_PROPERTY, defaultLocation);
         if (dividerLocation > 0) {
-            p.setDividerLocation(dividerLocation);
+            pane.setDividerLocation(dividerLocation);
         }
 
-        p.addPropertyChangeListener(
-                JSplitPane.DIVIDER_LOCATION_PROPERTY,
-                e -> prefs.putInt(JSplitPane.DIVIDER_LOCATION_PROPERTY, p.getDividerLocation()));
+        this.listener = e -> prefs.putInt(JSplitPane.DIVIDER_LOCATION_PROPERTY, pane.getDividerLocation());
+        pane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, listener);
+    }
+
+    public void unbind(JSplitPane pane) {
+        if (listener != null) {
+            pane.removePropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, listener);
+            listener = null;
+        }
     }
 }

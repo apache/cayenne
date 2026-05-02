@@ -28,53 +28,25 @@ import org.apache.cayenne.modeler.toolkit.border.TopBorder;
 import java.awt.*;
 
 /**
- * LogConsole is a window with text area filled with log messages of the
- * application. 
+ * LogConsole is a panel with a text area filled with log messages of the
+ * application. Always docked into the main frame.
  */
 public class LogConsoleView extends JPanel {
 
-    static private final Icon DOCK_ICON = IconFactory.buildIcon("icon-down.png");
-    static private final Icon UNDOCK_ICON = IconFactory.buildIcon("icon-up.png");
-
-    /**
-     * Area to be filled with log messages
-     */
     private JTextComponent logView;
-    
-    /**
-     * Item which performs clearing the console output 
-     */
     private JButton clearItem;
-    
-    /**
-     * Item which performs copying the console output 
-     */
     private JButton copyItem;
-    
-    /**
-     * Item which performs docking the window, i.e. sticking it to parent 
-     */
-    private JButton dockItem;
 
-    private JToolBar buttonsBar;
-    
-    /**
-     * Constructs a new log console view component
-     */
     public LogConsoleView() {
-        //log console window must be non-modal
         super();
         init();
     }
-    
-    /**
-     * Initializes and lays out subcomponents
-     */
+
     protected void init() {
         setLayout(new BorderLayout());
 
-        buttonsBar = new JToolBar();
-        buttonsBar.setBorder(BorderFactory.createEmptyBorder());
+        JToolBar buttonsBar = new JToolBar();
+        buttonsBar.setBorder(TopBorder.create());
         buttonsBar.setFloatable(false);
 
         copyItem = new ModelerAbstractAction.CayenneToolbarButton(null, 0);
@@ -87,10 +59,6 @@ public class LogConsoleView extends JPanel {
         clearItem.setText("Clear");
         buttonsBar.add(clearItem);
 
-        dockItem = new ModelerAbstractAction.CayenneToolbarButton(null, 0);
-        setDocked(false);
-        buttonsBar.add(dockItem);
-
         add(buttonsBar, BorderLayout.NORTH);
 
         logView = new JEditorPane("text/html", "");
@@ -100,39 +68,17 @@ public class LogConsoleView extends JPanel {
         JScrollPane scrollPane = new JScrollPane(logView);
         scrollPane.setBorder(TopBorder.create());
         add(scrollPane, BorderLayout.CENTER);
-        
-        //no need to center log window
-        setLocation(100, 100);
     }
-    
-    /**
-     * @return area to be filled with log messages
-     */
+
     JTextComponent getLogView() {
         return logView;
     }
-    
+
     JButton getCopyItem() {
         return copyItem;
     }
-    
+
     JButton getClearItem() {
         return clearItem;
-    }
-    
-    JButton getDockItem() {
-        return dockItem;
-    }
-
-    void setDocked(boolean isDocked) {
-        if(isDocked) {
-            dockItem.setIcon(UNDOCK_ICON);
-            dockItem.setText("Undock");
-            buttonsBar.setBorder(TopBorder.create());
-        } else {
-            dockItem.setIcon(DOCK_ICON);
-            dockItem.setText("Dock");
-            buttonsBar.setBorder(BorderFactory.createEmptyBorder());
-        }
     }
 }

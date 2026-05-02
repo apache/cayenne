@@ -20,7 +20,6 @@ package org.apache.cayenne.modeler.ui.logconsole;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.mvc.RootController;
-import org.apache.cayenne.modeler.toolkit.component.CMComponentGeometryPrefs;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.text.AttributeSet;
@@ -95,7 +94,6 @@ public class LogConsoleController extends RootController {
     }
 
     private final LogConsoleView view;
-    private LogConsoleWindow logWindow;
     private boolean loggingStopped;
 
     public LogConsoleController(Application application) {
@@ -109,13 +107,6 @@ public class LogConsoleController extends RootController {
     protected void initBindings() {
         view.getClearItem().addActionListener(e -> clear());
         view.getCopyItem().addActionListener(e -> copy());
-        view.getDockItem().addActionListener(e -> {
-            // Log console should be visible
-            disappear();
-            LogConsolePrefs prefs = LogConsolePrefs.of();
-            prefs.setDocked(!prefs.isDocked());
-            appear();
-        });
     }
 
     public void clear() {
@@ -123,36 +114,17 @@ public class LogConsoleController extends RootController {
     }
 
     /**
-     * Shows the console, in separate window or in main frame
+     * Shows the console docked into the main frame.
      */
     private void appear() {
-        if (!LogConsolePrefs.of().isDocked()) {
-            view.setDocked(false);
-
-            if (logWindow == null) {
-                logWindow = new LogConsoleWindow(this);
-                CMComponentGeometryPrefs.of(logWindow.getClass()).bind(logWindow, 600, 300);
-            }
-
-            logWindow.setContentPane(view);
-            logWindow.validate();
-            logWindow.setVisible(true);
-        } else {
-            view.setDocked(true);
-            application.getFrameController().getView().setDockComponent(view);
-        }
+        application.getFrameController().getView().setDockComponent(view);
     }
 
     /**
-     * Hides the console
+     * Hides the console.
      */
     private void disappear() {
-        if (!LogConsolePrefs.of().isDocked()) {
-            logWindow.dispose();
-            logWindow = null;
-        } else {
-            application.getFrameController().getView().setDockComponent(null);
-        }
+        application.getFrameController().getView().setDockComponent(null);
     }
 
     /**
@@ -181,11 +153,7 @@ public class LogConsoleController extends RootController {
      * Shows or hides the console window
      */
     public void toggle() {
-        LogConsolePrefs prefs = LogConsolePrefs.of();
-        boolean needShow = !prefs.isShowConsole();
-        prefs.setShowConsole(needShow);
-
-        if (needShow) {
+        if (LogConsolePrefs.of().toggleShowConsole()) {
             appear();
         } else {
             disappear();
@@ -255,10 +223,6 @@ public class LogConsoleController extends RootController {
      * Stop logging and don't print any more messages to text area
      */
     public void stopLogging() {
-        LogConsolePrefs prefs = LogConsolePrefs.of();
-        if (!prefs.isDocked()) {
-            prefs.setShowConsole(false);
-        }
         loggingStopped = true;
     }
 }
