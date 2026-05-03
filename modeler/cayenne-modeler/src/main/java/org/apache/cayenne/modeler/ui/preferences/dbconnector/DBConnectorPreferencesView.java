@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.preferences.datasource;
+package org.apache.cayenne.modeler.ui.preferences.dbconnector;
 
 import java.awt.BorderLayout;
 
@@ -32,22 +32,22 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 
-public class DataSourcePreferencesView extends JPanel {
+public class DBConnectorPreferencesView extends JPanel {
 
-    protected JButton addDataSource;
-    protected JButton duplicateDataSource;
-    protected JButton removeDataSource;
-    protected JButton testDataSource;
-    protected JComboBox<Object> dataSources;
-    protected DBConnectionInfoEditorController dataSourceEditor;
+    protected JButton addConnector;
+    protected JButton duplicateConnector;
+    protected JButton removeConnector;
+    protected JButton testConnector;
+    protected JComboBox<Object> connectors;
+    protected DBConnectionInfoEditorController connectorEditor;
 
-    public DataSourcePreferencesView(RootController controller) {
-        this.addDataSource = new JButton("New...");
-        this.duplicateDataSource = new JButton("Duplicate...");
-        this.removeDataSource = new JButton("Delete");
-        this.testDataSource = new JButton("Test...");
-        this.dataSources = new JComboBox<>();
-        this.dataSourceEditor = new DBConnectionInfoEditorController(controller);
+    public DBConnectorPreferencesView(RootController controller) {
+        this.addConnector = new JButton("New...");
+        this.duplicateConnector = new JButton("Duplicate...");
+        this.removeConnector = new JButton("Delete");
+        this.testConnector = new JButton("Test...");
+        this.connectors = new JComboBox<>();
+        this.connectorEditor = new DBConnectionInfoEditorController(controller);
 
         // assemble
         CellConstraints cc = new CellConstraints();
@@ -56,45 +56,45 @@ public class DataSourcePreferencesView extends JPanel {
                 "p, 10dlu, p, 3dlu, p, 3dlu, p, 10dlu, p"));
         sidebar.setDefaultDialogBorder();
 
-        sidebar.add(dataSources, cc.xy(1, 1));
-        sidebar.add(addDataSource, cc.xy(1, 3));
-        sidebar.add(duplicateDataSource, cc.xy(1, 5));
-        sidebar.add(removeDataSource, cc.xy(1, 7));
-        sidebar.add(testDataSource, cc.xy(1, 9));
+        sidebar.add(connectors, cc.xy(1, 1));
+        sidebar.add(addConnector, cc.xy(1, 3));
+        sidebar.add(duplicateConnector, cc.xy(1, 5));
+        sidebar.add(removeConnector, cc.xy(1, 7));
+        sidebar.add(testConnector, cc.xy(1, 9));
 
         PanelBuilder editor = new PanelBuilder(new FormLayout(
                 "fill:default:grow",
                 "p, 3dlu, fill:default:grow"));
         editor.setDefaultDialogBorder();
         editor.addSeparator("Edit DB Connector", cc.xy(1, 1));
-        editor.add(dataSourceEditor.getView(), cc.xy(1, 3));
+        editor.add(connectorEditor.getView(), cc.xy(1, 3));
 
         setLayout(new BorderLayout());
         add(editor.getPanel(), BorderLayout.CENTER);
         add(sidebar.getPanel(), BorderLayout.EAST);
     }
 
-    public DBConnectionInfoEditorController getDataSourceEditor() {
-        return dataSourceEditor;
+    public DBConnectionInfoEditorController getConnectorEditor() {
+        return connectorEditor;
     }
 
-    public JComboBox<Object> getDataSources() {
-        return dataSources;
+    public JComboBox<Object> getConnectors() {
+        return connectors;
     }
 
-    public JButton getAddDataSource() {
-        return addDataSource;
+    public JButton getAddConnector() {
+        return addConnector;
     }
 
-    public JButton getRemoveDataSource() {
-        return removeDataSource;
+    public JButton getRemoveConnector() {
+        return removeConnector;
     }
 
-    public JButton getTestDataSource() {
-        return testDataSource;
+    public JButton getTestConnector() {
+        return testConnector;
     }
 
-    public JButton getDuplicateDataSource() {
-        return duplicateDataSource;
+    public JButton getDuplicateConnector() {
+        return duplicateConnector;
     }
 }

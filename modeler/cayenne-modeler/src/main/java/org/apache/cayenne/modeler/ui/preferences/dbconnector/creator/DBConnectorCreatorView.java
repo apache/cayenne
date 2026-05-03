@@ -17,12 +17,13 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.preferences.datasource.duplicator;
+package org.apache.cayenne.modeler.ui.preferences.dbconnector.creator;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -30,27 +31,32 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
 
-public class DataSourceDuplicatorView extends JDialog {
+public class DBConnectorCreatorView extends JDialog {
 
-    protected JTextField dataSourceName;
+    protected JTextField connectorName;
+    protected JComboBox adapters;
     protected JButton okButton;
     protected JButton cancelButton;
 
-    public DataSourceDuplicatorView(String title) {
-        setTitle(title);
+    public DBConnectorCreatorView(JDialog owner) {
+        super(owner);
 
-        this.dataSourceName = new JTextField();
+        this.connectorName = new JTextField();
+        this.adapters = new JComboBox();
         this.okButton = new JButton("Create");
         this.cancelButton = new JButton("Cancel");
 
         getRootPane().setDefaultButton(okButton);
 
         // assemble
-        FormLayout layout = new FormLayout("right:pref, 3dlu, fill:250", "");
+        FormLayout layout = new FormLayout(
+                "right:pref, 3dlu, fill:max(50dlu;pref):grow",
+                "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
 
-        builder.append("Name:", dataSourceName);
+        builder.append("Name:", connectorName);
+        builder.append("Adapter:", adapters);
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.add(cancelButton);
@@ -59,17 +65,23 @@ public class DataSourceDuplicatorView extends JDialog {
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(builder.getPanel(), BorderLayout.CENTER);
         getContentPane().add(buttons, BorderLayout.SOUTH);
+
+        setTitle("Create New DB Connector");
+    }
+
+    public JComboBox getAdapters() {
+        return adapters;
     }
 
     public JButton getCancelButton() {
         return cancelButton;
     }
 
-    public JTextField getDataSourceName() {
-        return dataSourceName;
-    }
-
     public JButton getOkButton() {
         return okButton;
+    }
+
+    public JTextField getConnectorName() {
+        return connectorName;
     }
 }

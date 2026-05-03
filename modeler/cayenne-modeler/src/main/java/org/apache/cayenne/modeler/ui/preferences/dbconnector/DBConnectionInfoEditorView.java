@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.preferences.datasource;
+package org.apache.cayenne.modeler.ui.preferences.dbconnector;
 
 import java.awt.BorderLayout;
 import java.util.ArrayList;

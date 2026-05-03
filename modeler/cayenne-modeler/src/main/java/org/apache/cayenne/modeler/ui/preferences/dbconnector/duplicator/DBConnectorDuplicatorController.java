@@ -17,46 +17,41 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.preferences.datasource.creator;
+package org.apache.cayenne.modeler.ui.preferences.dbconnector.duplicator;
 
 import org.apache.cayenne.modeler.mvc.ChildController;
-import org.apache.cayenne.modeler.ui.preferences.datasource.DataSourcePreferencesController;
+import org.apache.cayenne.modeler.ui.preferences.dbconnector.DBConnectorPreferencesController;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
-import org.apache.cayenne.modeler.util.DbAdapterInfo;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Map;
 
-public class DataSourceCreatorController extends ChildController<DataSourcePreferencesController> {
 
-    private static final String NO_ADAPTER = "Custom / Undefined";
+public class DBConnectorDuplicatorController extends ChildController<DBConnectorPreferencesController> {
 
-    protected DataSourceCreatorView view;
+    protected DBConnectorDuplicatorView view;
     protected boolean canceled;
-    protected Map<String, DBConnector> dataSources;
+    protected Map<String, DBConnector> connectors;
+    protected String prototypeKey;
 
-    public DataSourceCreatorController(DataSourcePreferencesController parent) {
+    public DBConnectorDuplicatorController(DBConnectorPreferencesController parent, String prototypeKey) {
         super(parent);
-        this.view = new DataSourceCreatorView((JDialog) SwingUtilities
-                .getWindowAncestor(parent.getView()));
-        this.dataSources = parent.getConnectors();
+        this.view = new DBConnectorDuplicatorView("Create a copy of \""
+                + prototypeKey
+                + "\"");
+        this.connectors = parent.getConnectors();
+        this.prototypeKey = prototypeKey;
 
-        DefaultComboBoxModel model = new DefaultComboBoxModel(DbAdapterInfo
-                .getStandardAdapters());
-        model.insertElementAt(NO_ADAPTER, 0);
-        this.view.getAdapters().setModel(model);
-        this.view.getAdapters().setSelectedIndex(0);
-
-        String suggestion = "DataSource0";
-        for (int i = 1; i <= dataSources.size(); i++) {
-            suggestion = "DataSource" + i;
-            if (!dataSources.containsKey(suggestion)) {
+        String suggestion = prototypeKey + "0";
+        for (int i = 1; i <= connectors.size(); i++) {
+            suggestion = prototypeKey + i;
+            if (!connectors.containsKey(suggestion)) {
                 break;
             }
         }
 
-        this.view.getDataSourceName().setText(suggestion);
+        this.view.getConnectorName().setText(suggestion);
         initBindings();
     }
 
@@ -73,11 +68,11 @@ public class DataSourceCreatorController extends ChildController<DataSourcePrefe
         if (getName() == null) {
             JOptionPane.showMessageDialog(
                     view,
-                    "Enter DataSource Name",
+                    "Enter Connector Name",
                     null,
                     JOptionPane.WARNING_MESSAGE);
         }
-        else if (dataSources.containsKey(getName())) {
+        else if (connectors.containsKey(getName())) {
             JOptionPane.showMessageDialog(
                     view,
                     "'" + getName() + "' is already in use, enter a different name",
@@ -109,35 +104,24 @@ public class DataSourceCreatorController extends ChildController<DataSourcePrefe
         centerView();
 
         view.setVisible(true);
-        return createDataSource();
+        return createConnector();
     }
 
     public String getName() {
-        String name = view.getDataSourceName().getText();
+        String name = view.getConnectorName().getText();
         return (name.length() > 0) ? name : null;
     }
 
-    protected DBConnector createDataSource() {
+    protected DBConnector createConnector() {
         if (canceled) {
             return null;
         }
 
-        DBConnector dataSource = parent.create(getName());
+        DBConnector prototype = connectors.get(prototypeKey);
+        DBConnector connector = parent.create(getName());
 
-        Object adapter = view.getAdapters().getSelectedItem();
-        if (NO_ADAPTER.equals(adapter)) {
-            adapter = null;
-        }
-
-        if (adapter != null) {
-            String adapterString = adapter.toString();
-            dataSource.setDbAdapter(adapterString);
-
-            // guess adapter defaults...
-            dataSource.setJdbcDriver(Adapters.driver(adapterString));
-            dataSource.setUrl(Adapters.jdbcURL(adapterString));
-        }
-
-        return dataSource;
+        prototype.copyTo(connector);
+        return connector;
     }
+
 }

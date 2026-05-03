@@ -23,7 +23,7 @@ import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.mvc.RootController;
 import org.apache.cayenne.modeler.ui.preferences.more.MorePreferencesController;
 import org.apache.cayenne.modeler.ui.preferences.classpath.ClasspathPreferencesController;
-import org.apache.cayenne.modeler.ui.preferences.datasource.DataSourcePreferencesController;
+import org.apache.cayenne.modeler.ui.preferences.dbconnector.DBConnectorPreferencesController;
 import org.apache.cayenne.modeler.ui.preferences.general.GeneralPreferencesController;
 
 import javax.swing.*;
@@ -32,12 +32,12 @@ import java.awt.*;
 public class PreferenceDialogController extends ChildController<RootController> {
 
     private static final String GENERAL_KEY = "General";
-    private static final String DATA_SOURCES_KEY = "DB Connectors";
+    private static final String DB_CONNECTORS_KEY = "DB Connectors";
     private static final String CLASSPATH_KEY = "Classpath";
     private static final String MORE_KEY = "More...";
 
     private static final String[] preferenceMenus = new String[]{
-            GENERAL_KEY, DATA_SOURCES_KEY, CLASSPATH_KEY, MORE_KEY
+            GENERAL_KEY, DB_CONNECTORS_KEY, CLASSPATH_KEY, MORE_KEY
     };
 
     // Session-only memory of which card the user last viewed. The dialog is
@@ -47,7 +47,7 @@ public class PreferenceDialogController extends ChildController<RootController> 
     private final PreferenceDialogView view;
 
     private final GeneralPreferencesController generalPrefsController;
-    private final DataSourcePreferencesController dataSourcePrefsController;
+    private final DBConnectorPreferencesController dbConnectorPrefsController;
     private final ClasspathPreferencesController classpathPrefsController;
     private final MorePreferencesController allPrefsController;
 
@@ -73,8 +73,8 @@ public class PreferenceDialogController extends ChildController<RootController> 
         this.generalPrefsController = new GeneralPreferencesController(this);
         view.getDetailPanel().add(generalPrefsController.getView(), GENERAL_KEY);
 
-        this.dataSourcePrefsController = new DataSourcePreferencesController(this);
-        view.getDetailPanel().add(dataSourcePrefsController.getView(), DATA_SOURCES_KEY);
+        this.dbConnectorPrefsController = new DBConnectorPreferencesController(this);
+        view.getDetailPanel().add(dbConnectorPrefsController.getView(), DB_CONNECTORS_KEY);
 
         this.classpathPrefsController = new ClasspathPreferencesController(this);
         view.getDetailPanel().add(classpathPrefsController.getView(), CLASSPATH_KEY);
@@ -92,12 +92,12 @@ public class PreferenceDialogController extends ChildController<RootController> 
     }
 
     private void cancelAction() {
-        dataSourcePrefsController.discard();
+        dbConnectorPrefsController.discard();
         view.dispose();
     }
 
     private void savePreferencesAction() {
-        dataSourcePrefsController.commit();
+        dbConnectorPrefsController.commit();
         generalPrefsController.commit();
         classpathPrefsController.commit();
         view.dispose();
@@ -111,15 +111,15 @@ public class PreferenceDialogController extends ChildController<RootController> 
         doShow(CLASSPATH_KEY, classpathPrefsController);
     }
 
-    public void showDataSourceEditorAction(Object dataSourceKey) {
-        dataSourcePrefsController.editDataSourceAction(dataSourceKey);
-        doShow(DATA_SOURCES_KEY, dataSourcePrefsController);
+    public void showDBConnectorEditorAction(Object connectorKey) {
+        dbConnectorPrefsController.editConnectorAction(connectorKey);
+        doShow(DB_CONNECTORS_KEY, dbConnectorPrefsController);
     }
 
     private ChildController<?> controllerFor(String cardKey) {
         switch (cardKey) {
-            case DATA_SOURCES_KEY:
-                return dataSourcePrefsController;
+            case DB_CONNECTORS_KEY:
+                return dbConnectorPrefsController;
             case CLASSPATH_KEY:
                 return classpathPrefsController;
             case MORE_KEY:

@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.preferences.datasource;
+package org.apache.cayenne.modeler.ui.preferences.dbconnector;
 
 import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.modeler.mvc.ChildController;
@@ -25,8 +25,8 @@ import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.dbconnector.DBConnectors;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
 import org.apache.cayenne.modeler.ui.preferences.PreferenceDialogController;
-import org.apache.cayenne.modeler.ui.preferences.datasource.creator.DataSourceCreatorController;
-import org.apache.cayenne.modeler.ui.preferences.datasource.duplicator.DataSourceDuplicatorController;
+import org.apache.cayenne.modeler.ui.preferences.dbconnector.creator.DBConnectorCreatorController;
+import org.apache.cayenne.modeler.ui.preferences.dbconnector.duplicator.DBConnectorDuplicatorController;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.*;
@@ -45,20 +45,20 @@ import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
 /**
- * Editor for the local DataSources configured in preferences.
+ * Editor for the local DB Connectors configured in preferences.
  */
-public class DataSourcePreferencesController extends ChildController<PreferenceDialogController> {
+public class DBConnectorPreferencesController extends ChildController<PreferenceDialogController> {
 
-	private final DataSourcePreferencesView view;
+	private final DBConnectorPreferencesView view;
 	private final DBConnectors registry;
 	private final Map<String, DBConnector> connectors;
 	private final Set<String> toRemove;
 	private String connectorName;
 
-	public DataSourcePreferencesController(PreferenceDialogController parent) {
+	public DBConnectorPreferencesController(PreferenceDialogController parent) {
 		super(parent);
 
-		this.view = new DataSourcePreferencesView(this);
+		this.view = new DBConnectorPreferencesView(this);
 
 		// init view data — work on a snapshot of the live registry; commit/discard on Save/Revert
 		this.registry = getApplication().getDbConnectors();
@@ -68,15 +68,15 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 
 		Object[] keys = connectors.keySet().toArray();
 		Arrays.sort(keys);
-		DefaultComboBoxModel<Object> dataSourceModel = new DefaultComboBoxModel<>(keys);
-		view.getDataSources().setModel(dataSourceModel);
+		DefaultComboBoxModel<Object> connectorModel = new DefaultComboBoxModel<>(keys);
+		view.getConnectors().setModel(connectorModel);
 
 		initBindings();
 
 		// show first item
 		if (keys.length > 0) {
-			view.getDataSources().setSelectedIndex(0);
-			editDataSourceAction();
+			view.getConnectors().setSelectedIndex(0);
+			editConnectorAction();
 		}
 	}
 
@@ -85,13 +85,13 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 	}
 
 	protected void initBindings() {
-		view.getAddDataSource().addActionListener(e -> newDataSourceAction());
-		view.getDuplicateDataSource().addActionListener(e -> duplicateDataSourceAction());
-		view.getRemoveDataSource().addActionListener(e -> removeDataSourceAction());
-		view.getTestDataSource().addActionListener(e -> testDataSourceAction());
+		view.getAddConnector().addActionListener(e -> newConnectorAction());
+		view.getDuplicateConnector().addActionListener(e -> duplicateConnectorAction());
+		view.getRemoveConnector().addActionListener(e -> removeConnectorAction());
+		view.getTestConnector().addActionListener(e -> testConnectorAction());
 
-		view.getDataSources().addActionListener(e -> {
-			Object sel = view.getDataSources().getSelectedItem();
+		view.getConnectors().addActionListener(e -> {
+			Object sel = view.getConnectors().getSelectedItem();
 			setConnectorName(sel != null ? sel.toString() : null);
 		});
 	}
@@ -106,7 +106,7 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 
 	public void setConnectorName(String connectorName) {
 		this.connectorName = connectorName;
-		editDataSourceAction();
+		editConnectorAction();
 	}
 
 	public DBConnector getConnectionInfo() {
@@ -150,44 +150,44 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 	}
 
 	/**
-	 * Shows a dialog to create new local DataSource configuration.
+	 * Shows a dialog to create a new local DB Connector configuration.
 	 */
-	public void newDataSourceAction() {
-		DataSourceCreatorController creatorWizard = new DataSourceCreatorController(this);
-		DBConnector dataSource = creatorWizard.startupAction();
+	public void newConnectorAction() {
+		DBConnectorCreatorController creatorWizard = new DBConnectorCreatorController(this);
+		DBConnector connector = creatorWizard.startupAction();
 
-		if (dataSource != null) {
+		if (connector != null) {
 			Object[] keys = connectors.keySet().toArray();
 			Arrays.sort(keys);
-			view.getDataSources().setModel(new DefaultComboBoxModel<>(keys));
-			view.getDataSources().setSelectedItem(creatorWizard.getName());
-			editDataSourceAction();
+			view.getConnectors().setModel(new DefaultComboBoxModel<>(keys));
+			view.getConnectors().setSelectedItem(creatorWizard.getName());
+			editConnectorAction();
 		}
 	}
 
 	/**
-	 * Shows a dialog to duplicate an existing local DataSource configuration.
+	 * Shows a dialog to duplicate an existing local DB Connector configuration.
 	 */
-	public void duplicateDataSourceAction() {
-		Object selected = view.getDataSources().getSelectedItem();
+	public void duplicateConnectorAction() {
+		Object selected = view.getConnectors().getSelectedItem();
 		if (selected != null) {
-			DataSourceDuplicatorController wizard = new DataSourceDuplicatorController(this, selected.toString());
-			DBConnector dataSource = wizard.startupAction();
+			DBConnectorDuplicatorController wizard = new DBConnectorDuplicatorController(this, selected.toString());
+			DBConnector connector = wizard.startupAction();
 
-			if (dataSource != null) {
+			if (connector != null) {
 				Object[] keys = connectors.keySet().toArray();
 				Arrays.sort(keys);
-				view.getDataSources().setModel(new DefaultComboBoxModel<>(keys));
-				view.getDataSources().setSelectedItem(wizard.getName());
-				editDataSourceAction();
+				view.getConnectors().setModel(new DefaultComboBoxModel<>(keys));
+				view.getConnectors().setSelectedItem(wizard.getName());
+				editConnectorAction();
 			}
 		}
 	}
 
 	/**
-	 * Removes current DataSource.
+	 * Removes current DB Connector.
 	 */
-	public void removeDataSourceAction() {
+	public void removeConnectorAction() {
 		String key = getConnectorName();
 		if (key != null) {
 			connectors.remove(key);
@@ -195,41 +195,41 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 
 			Object[] keys = connectors.keySet().toArray();
 			Arrays.sort(keys);
-			view.getDataSources().setModel(new DefaultComboBoxModel<>(keys));
-			editDataSourceAction(keys.length > 0 ? keys[0] : null);
+			view.getConnectors().setModel(new DefaultComboBoxModel<>(keys));
+			editConnectorAction(keys.length > 0 ? keys[0] : null);
 		}
 	}
 
 	/**
-	 * Opens specified DataSource in the editor.
+	 * Opens specified DB Connector in the editor.
 	 */
-	public void editDataSourceAction(Object dataSourceKey) {
-		view.getDataSources().setSelectedItem(dataSourceKey);
-		editDataSourceAction();
+	public void editConnectorAction(Object connectorKey) {
+		view.getConnectors().setSelectedItem(connectorKey);
+		editConnectorAction();
 	}
 
 	/**
-	 * Opens current DataSource in the editor.
+	 * Opens current DB Connector in the editor.
 	 */
-	public void editDataSourceAction() {
-		this.view.getDataSourceEditor().setConnectionInfo(getConnectionInfo());
+	public void editConnectorAction() {
+		this.view.getConnectorEditor().setConnectionInfo(getConnectionInfo());
 	}
 
 	/**
 	 * Tries to establish a DB connection, reporting the status of this operation.
 	 */
-	public void testDataSourceAction() {
-		DBConnector currentDataSource = getConnectionInfo();
-		if (currentDataSource == null) {
+	public void testConnectorAction() {
+		DBConnector currentConnector = getConnectionInfo();
+		if (currentConnector == null) {
 			return;
 		}
 
-		if (currentDataSource.getJdbcDriver() == null) {
+		if (currentConnector.getJdbcDriver() == null) {
 			JOptionPane.showMessageDialog(null, "No JDBC Driver specified", "Warning", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
-		if (currentDataSource.getUrl() == null) {
+		if (currentConnector.getUrl() == null) {
 			JOptionPane.showMessageDialog(null, "No Database URL specified", "Warning", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
@@ -243,14 +243,14 @@ public class DataSourcePreferencesController extends ChildController<PreferenceD
 				classLoader.setFiles(details.stream().map(File::new).collect(Collectors.toList()));
 			}
 
-			Class<Driver> driverClass = classLoader.loadClass(Driver.class, currentDataSource.getJdbcDriver());
+			Class<Driver> driverClass = classLoader.loadClass(Driver.class, currentConnector.getJdbcDriver());
 			Driver driver = driverClass.getDeclaredConstructor().newInstance();
 
 			// connect via Cayenne DriverDataSource - it addresses some driver
 			// issues...
 			// can't use try with resource here as we can loose meaningful exception
-			Connection c = new DriverDataSource(driver, currentDataSource.getUrl(),
-					currentDataSource.getUserName(), currentDataSource.getPassword()).getConnection();
+			Connection c = new DriverDataSource(driver, currentConnector.getUrl(),
+					currentConnector.getUserName(), currentConnector.getPassword()).getConnection();
 			try {
 				c.close();
 			} catch (SQLException ignored) {

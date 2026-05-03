@@ -187,7 +187,7 @@ public class DataSourceController extends ChildController<ProjectController> {
         Set<String> before = new HashSet<>(registry.getAll().keySet());
 
         PreferenceDialogController prefs = new PreferenceDialogController(this);
-        prefs.showDataSourceEditorAction(dataSourceKey);
+        prefs.showDBConnectorEditorAction(dataSourceKey);
 
         // auto-select any newly-added DataSource (last new wins, matching prior commit-order behavior)
         for (String name : registry.getAll().keySet()) {

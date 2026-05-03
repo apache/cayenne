@@ -70,13 +70,13 @@ public class ClasspathPreferencesController extends ChildController<PreferenceDi
     protected void initBindings() {
         view.getTable().setModel(tableModel);
         view.getAddDirButton().addActionListener(e -> addClassDirectoryAction());
-        view.getAddJarButton().addActionListener(e -> addJarOrZipAction());
+        view.getAddJarButton().addActionListener(e -> addJarAction());
         view.getAddMvnButton().addActionListener(e -> addMvnDependencyAction());
-        view.getRemoveEntryButton().addActionListener(e -> removeEntryAction());
+        view.getDeleteEntryButton().addActionListener(e -> removeEntryAction());
     }
 
-    protected void addJarOrZipAction() {
-        chooseClassEntry(FileFilters.getClassArchiveFilter(), "Select JAR or ZIP File.", JFileChooser.FILES_ONLY);
+    protected void addJarAction() {
+        chooseClassEntry(FileFilters.getExtensionFileFilter("jar", "JAR Files"), "Select JAR File.", JFileChooser.FILES_ONLY);
     }
 
     protected void addClassDirectoryAction() {
@@ -107,6 +107,7 @@ public class ClasspathPreferencesController extends ChildController<PreferenceDi
         CMFileChooserPrefs.of(getApplication().getPreferencesRepository(), "classpath/lastDir").bind(chooser);
         if (filter != null) {
             chooser.addChoosableFileFilter(filter);
+            chooser.setFileFilter(filter);
         }
         chooser.setDialogTitle(title);
 

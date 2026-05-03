@@ -214,7 +214,7 @@ public class DataNodeController extends ChildController<ProjectController> {
 
     public void dataSourceConfigAction() {
         PreferenceDialogController prefs = new PreferenceDialogController(this);
-        prefs.showDataSourceEditorAction(view.getLocalDataSources().getSelectedItem());
+        prefs.showDBConnectorEditorAction(view.getLocalDataSources().getSelectedItem());
         refreshLocalDataSources();
     }
 

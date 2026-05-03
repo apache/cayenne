@@ -31,19 +31,19 @@ import java.awt.*;
 
 public class ClasspathPreferencesView extends JPanel {
 
-    protected JButton addJarButton;
-    protected JButton addDirButton;
-    protected JButton addMvnButton;
-    protected JButton removeEntryButton;
-    protected JTable table;
+    private final JButton addJarButton;
+    private final JButton addDirButton;
+    private final JButton addMvnButton;
+    private final JButton deleteEntryButton;
+    private final JTable table;
 
     public ClasspathPreferencesView() {
 
         // create widgets
-        addJarButton = new JButton("Add Jar/Zip");
+        addJarButton = new JButton("Add Jar");
         addDirButton = new JButton("Add Class Folder");
         addMvnButton = new JButton("Get From Maven Central");
-        removeEntryButton = new JButton("Remove");
+        deleteEntryButton = new JButton("Delete");
 
         table = new CMTable();
         table.setRowMargin(3);
@@ -57,7 +57,7 @@ public class ClasspathPreferencesView extends JPanel {
         sidebar.append(addJarButton);
         sidebar.append(addDirButton);
         sidebar.append(addMvnButton);
-        sidebar.append(removeEntryButton);
+        sidebar.append(deleteEntryButton);
 
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -90,8 +90,8 @@ public class ClasspathPreferencesView extends JPanel {
         return addMvnButton;
     }
 
-    public JButton getRemoveEntryButton() {
-        return removeEntryButton;
+    public JButton getDeleteEntryButton() {
+        return deleteEntryButton;
     }
 
     public JTable getTable() {

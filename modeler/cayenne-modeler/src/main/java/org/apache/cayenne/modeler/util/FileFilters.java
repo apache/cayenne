@@ -32,16 +32,8 @@ public class FileFilters {
     protected static final FileFilter eomodelFilter = new EOModelFileFilter();
     protected static final FileFilter eomodelSelectFilter = new EOModelSelectFilter();
     protected static final FileFilter dataMapFilter = new DataMapFileFilter();
-    protected static final FileFilter classArchiveFilter = new JavaClassArchiveFilter();
 
     private static final String DATA_MAP_LOCATION_SUFFIX = ".map.xml";
-
-    /**
-     * Returns a FileFilter for java class archive files, such as JAR and ZIP.
-     */
-    public static FileFilter getClassArchiveFilter() {
-        return classArchiveFilter;
-    }
 
     /**
      * Returns a FileFilter used to select Cayenne Application project files.
@@ -92,22 +84,6 @@ public class FileFilters {
      */
     public static FileFilter getExtensionFileFilter(String ext, String description) {
         return new ExtensionFileFilter(ext, description);
-    }
-
-    static final class JavaClassArchiveFilter extends FileFilter {
-
-        public boolean accept(File f) {
-            if (f.isDirectory()) {
-                return true;
-            }
-
-            String name = f.getName().toLowerCase();
-            return (name.length() > 4 && (name.endsWith(".jar") || name.endsWith(".zip")));
-        }
-
-        public String getDescription() {
-            return "Java Class Archive (*.jar,*.zip)";
-        }
     }
 
     static final class VelotemplateFileFilter extends FileFilter {
