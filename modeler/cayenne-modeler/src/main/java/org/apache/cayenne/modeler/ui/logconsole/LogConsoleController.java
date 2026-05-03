@@ -20,6 +20,8 @@ package org.apache.cayenne.modeler.ui.logconsole;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.mvc.RootController;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
+import org.apache.cayenne.modeler.ui.action.ShowLogConsoleAction;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.text.AttributeSet;
@@ -107,6 +109,12 @@ public class LogConsoleController extends RootController {
     protected void initBindings() {
         view.getClearItem().addActionListener(e -> clear());
         view.getCopyItem().addActionListener(e -> copy());
+
+        // Bind to the same action as the "Show log console" menu item so the menu's
+        // checkbox state and the close button stay unified through Action.SELECTED_KEY.
+        view.getCloseItem().setAction(application.getActionManager().getAction(ShowLogConsoleAction.class));
+        view.getCloseItem().setIcon(IconFactory.buildIcon("icon-remove.png"));
+        view.getCloseItem().setText("Close");
     }
 
     public void clear() {

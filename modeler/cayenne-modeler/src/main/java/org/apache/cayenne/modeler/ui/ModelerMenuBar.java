@@ -23,7 +23,6 @@ import org.apache.cayenne.modeler.event.model.RecentFileListListener;
 import org.apache.cayenne.modeler.pref.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.*;
-import org.apache.cayenne.modeler.ui.logconsole.LogConsolePrefs;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,22 +33,21 @@ import java.util.List;
 
 class ModelerMenuBar extends JMenuBar {
 
-    private final JCheckBoxMenuItem logMenu;
-    private final ShowLogConsoleAction showLogConsoleAction;
     private final List<RecentFileListListener> recentFileListeners;
 
     ModelerMenuBar(GlobalActions globalActions) {
         this.recentFileListeners = new ArrayList<>();
-        this.showLogConsoleAction = globalActions.getAction(ShowLogConsoleAction.class);
 
         JMenu fileMenu = new JMenu("File");
         JMenu editMenu = new JMenu("Edit");
+        JMenu viewMenu = new JMenu("View");
         JMenu projectMenu = new JMenu("Project");
         JMenu toolMenu = new JMenu("Tools");
         JMenu helpMenu = new JMenu("Help");
 
         fileMenu.setMnemonic(KeyEvent.VK_F);
         editMenu.setMnemonic(KeyEvent.VK_E);
+        viewMenu.setMnemonic(KeyEvent.VK_V);
         projectMenu.setMnemonic(KeyEvent.VK_P);
         toolMenu.setMnemonic(KeyEvent.VK_T);
         helpMenu.setMnemonic(KeyEvent.VK_H);
@@ -98,19 +96,17 @@ class ModelerMenuBar extends JMenuBar {
         projectMenu.addSeparator();
         projectMenu.add(globalActions.getAction(RemoveAction.class).buildMenu());
 
+        // The action's Action.SELECTED_KEY drives the checkbox state, so it stays in sync
+        // no matter where the toggle originates (menu click, the close button on the
+        // docked panel, etc.).
+        viewMenu.add(globalActions.getAction(ShowLogConsoleAction.class).buildCheckBoxMenu());
+
         toolMenu.add(globalActions.getAction(InferRelationshipsAction.class).buildMenu());
         toolMenu.add(globalActions.getAction(ImportEOModelAction.class).buildMenu());
         toolMenu.addSeparator();
         toolMenu.add(globalActions.getAction(GenerateCodeAction.class).buildMenu());
         toolMenu.add(globalActions.getAction(GenerateDBAction.class).buildMenu());
         toolMenu.add(globalActions.getAction(MigrateAction.class).buildMenu());
-
-        // Menu for opening Log console
-        toolMenu.addSeparator();
-        logMenu = showLogConsoleAction.buildCheckBoxMenu();
-        updateLogConsoleMenu();
-        toolMenu.add(logMenu);
-
         toolMenu.addSeparator();
         toolMenu.add(globalActions.getAction(ConfigurePreferencesAction.class).buildMenu());
 
@@ -119,16 +115,10 @@ class ModelerMenuBar extends JMenuBar {
 
         add(fileMenu);
         add(editMenu);
+        add(viewMenu);
         add(projectMenu);
         add(toolMenu);
         add(helpMenu);
-    }
-
-    /**
-     * Selects/deselects menu item, depending on status of log console
-     */
-    void updateLogConsoleMenu() {
-        logMenu.setSelected(LogConsolePrefs.of(showLogConsoleAction.getApplication().getPreferencesRepository()).isShowConsole());
     }
 
     void addRecentFileListener(RecentFileListListener listener) {

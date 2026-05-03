@@ -36,6 +36,7 @@ public class LogConsoleView extends JPanel {
     private JTextComponent logView;
     private JButton clearItem;
     private JButton copyItem;
+    private JButton closeItem;
 
     public LogConsoleView() {
         super();
@@ -59,6 +60,13 @@ public class LogConsoleView extends JPanel {
         clearItem.setText("Clear");
         buttonsBar.add(clearItem);
 
+        buttonsBar.add(Box.createHorizontalGlue());
+
+        // Icon/tooltip and the bound action are configured by LogConsoleController, since the
+        // close button shares ShowLogConsoleAction with the Tools menu item.
+        closeItem = new ModelerAbstractAction.CayenneToolbarButton(null, 0);
+        buttonsBar.add(closeItem);
+
         add(buttonsBar, BorderLayout.NORTH);
 
         logView = new JEditorPane("text/html", "");
@@ -80,5 +88,9 @@ public class LogConsoleView extends JPanel {
 
     JButton getClearItem() {
         return clearItem;
+    }
+
+    JButton getCloseItem() {
+        return closeItem;
     }
 }

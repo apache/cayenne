@@ -19,20 +19,30 @@
 package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ui.logconsole.LogConsolePrefs;
 
+import javax.swing.Action;
 import java.awt.event.ActionEvent;
 
 /**
- * Action for opening log console window.
+ * Action for opening log console window. Tracks the show/hide state via
+ * {@link Action#SELECTED_KEY} so that any bound checkbox menu item or toggle
+ * stays in sync regardless of where the toggle originates.
  */
 public class ShowLogConsoleAction extends ModelerAbstractAction {
 
     public ShowLogConsoleAction(Application application) {
-        super("Show log console", application);
+        super("Show Log Console", application);
+        putValue(Action.SELECTED_KEY, isConsoleShown());
     }
 
     @Override
     public void performAction(ActionEvent e) {
         application.getLogConsoleController().toggle();
+        putValue(Action.SELECTED_KEY, isConsoleShown());
+    }
+
+    private Boolean isConsoleShown() {
+        return LogConsolePrefs.of(application.getPreferencesRepository()).isShowConsole();
     }
 }
