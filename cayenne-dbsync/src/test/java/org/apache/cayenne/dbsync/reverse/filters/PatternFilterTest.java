@@ -18,10 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.reverse.filters;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class PatternFilterTest extends TestCase {
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+public class PatternFilterTest {
+
+    @Test
     public void testInclude() throws Exception {
         PatternFilter filter = new PatternFilter()
                 .include("aaa")
@@ -40,6 +44,7 @@ public class PatternFilterTest extends TestCase {
         assertFalse(filter.isIncluded("girl"));
     }
 
+    @Test
     public void testExclude() throws Exception {
         PatternFilter filter = new PatternFilter()
                 .exclude("aaa")
@@ -52,6 +57,7 @@ public class PatternFilterTest extends TestCase {
         assertTrue(filter.isIncluded("abb"));
     }
 
+    @Test
     public void testIncludeExclude() throws Exception {
         PatternFilter filter = new PatternFilter()
                 .include("aa.*")
@@ -64,12 +70,14 @@ public class PatternFilterTest extends TestCase {
         assertFalse(filter.isIncluded("abb"));
     }
 
+    @Test
     public void testIncludeAllFilter() {
         assertTrue(PatternFilter.INCLUDE_EVERYTHING.isIncluded("qwe"));
         assertTrue(PatternFilter.INCLUDE_EVERYTHING.isIncluded(""));
         assertTrue(PatternFilter.INCLUDE_EVERYTHING.isIncluded(null));
     }
 
+    @Test
     public void testIncludeNoneFilter() {
         assertFalse(PatternFilter.INCLUDE_NOTHING.isIncluded("qwe"));
         assertFalse(PatternFilter.INCLUDE_NOTHING.isIncluded(""));

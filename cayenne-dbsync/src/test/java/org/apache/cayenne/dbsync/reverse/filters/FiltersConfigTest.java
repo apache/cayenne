@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.dbsync.reverse.filters;
 
-import junit.framework.TestCase;
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeProcedure;
@@ -29,20 +28,25 @@ import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 
-public class FiltersConfigTest extends TestCase {
+public class FiltersConfigTest {
 
     private FiltersConfig filtersConfig;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         ReverseEngineering engineering = new ReverseEngineering();
         Catalog catalog = new Catalog("catalog");
         Schema schema = new Schema("schema");
@@ -74,6 +78,7 @@ public class FiltersConfigTest extends TestCase {
         filtersConfig = configBuilder.build();
     }
 
+    @Test
     public void testToString_01() {
         FiltersConfig config = FiltersConfig.create(null, null,
                 TableFilter.everything(), PatternFilter.INCLUDE_EVERYTHING);
@@ -85,6 +90,7 @@ public class FiltersConfigTest extends TestCase {
                      "    Procedures: ALL\n", config.toString());
     }
 
+    @Test
     public void testToString_02() {
         FiltersConfig config = new FiltersConfig(
                 new CatalogFilter("catalog_01",
@@ -121,6 +127,7 @@ public class FiltersConfigTest extends TestCase {
                      "    Procedures: NONE\n", config.toString());
     }
 
+    @Test
     public void testTableFilter(){
         assertNull(filtersConfig.tableFilter(null,null));
 
@@ -130,6 +137,7 @@ public class FiltersConfigTest extends TestCase {
         assertEquals(2,tableFilter.getExcludes().size());
     }
 
+    @Test
     public void testProceduresFilter(){
         assertNull(filtersConfig.proceduresFilter(null,null));
 
@@ -139,12 +147,14 @@ public class FiltersConfigTest extends TestCase {
         assertEquals(2,patternFilter.getExcludes().size());
     }
 
+    @Test
     public void testGetCatalogs(){
         CatalogFilter[] catalogs = filtersConfig.getCatalogs();
         assertNotNull(catalogs);
         assertEquals(1,catalogs.length);
     }
 
+    @Test
     public void testGetCatalog(){
         assertNull(filtersConfig.getCatalog(null));
         CatalogFilter catalog = filtersConfig.getCatalog("catalog");
@@ -153,6 +163,7 @@ public class FiltersConfigTest extends TestCase {
         assertEquals(1,catalog.schemas.length);
     }
 
+    @Test
     public void testGetSchemaFilter()  {
         assertNull(filtersConfig.getSchemaFilter(null,null));
 
@@ -163,11 +174,13 @@ public class FiltersConfigTest extends TestCase {
         assertEquals(2,schemaFilter.procedures.getExcludes().size());
     }
 
+    @Test
     public void testNullArgumentBuild() {
         FiltersConfigBuilder configBuilder = new FiltersConfigBuilder(null);
         assertThrows(NullPointerException.class, configBuilder::build);
     }
 
+    @Test
     public void testKeepingOrder()  {
         SchemaFilter schemaFilter = filtersConfig.getCatalog("catalog").getSchema("schema");
 

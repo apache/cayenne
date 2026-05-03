@@ -42,6 +42,7 @@
 		<testcontainers.version>1.21.4</testcontainers.version>
 		<mysql.connector.version>9.5.0</mysql.connector.version>
         <xmlunit.version>2.9.1</xmlunit.version>
+        <junit.version>5.14.4</junit.version>
 
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.source>11</maven.compiler.source>
@@ -385,10 +386,11 @@
 				<version>0.7.0</version>
 			</dependency>
 			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>4.13.2</version>
-				<scope>test</scope>
+				<groupId>org.junit</groupId>
+				<artifactId>junit-bom</artifactId>
+				<version>${junit.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.mockito</groupId>
@@ -715,7 +717,7 @@
 				</plugin>
 				<plugin>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.22.2</version>
+					<version>3.5.2</version>
 				</plugin>
 				<plugin>   
 					<groupId>org.apache.felix</groupId>
@@ -724,7 +726,7 @@
 				</plugin>
 				<plugin>
 					<artifactId>maven-surefire-report-plugin</artifactId>
-					<version>2.22.2</version>
+					<version>3.5.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
@@ -786,7 +788,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>2.22.2</version>
+                    <version>3.5.2</version>
                     <executions>
                         <execution>
                             <id>integration-test</id>
