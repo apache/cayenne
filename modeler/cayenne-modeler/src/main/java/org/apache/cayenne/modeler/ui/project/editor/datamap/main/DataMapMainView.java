@@ -57,6 +57,7 @@ public class DataMapMainView extends JPanel {
     private final ProjectController controller;
 
     private final CMUndoableTextField name;
+    private final JLabel nodeSelectorLabel;
     private final JComboBox<DataNodeDescriptor> nodeSelector;
     private final JCheckBox defaultLockType;
     private final CMUndoableTextField defaultCatalog;
@@ -74,6 +75,7 @@ public class DataMapMainView extends JPanel {
         name = new CMUndoableTextField(controller.getApplication().getUndoManager());
         name.addCommitListener(this::setDataMapName);
 
+        nodeSelectorLabel = new JLabel("DataNode:");
         nodeSelector = new CMUndoableComboBox<>(controller.getApplication().getUndoManager());
         nodeSelector.setRenderer(Renderers.listRendererWithIcons());
 
@@ -110,7 +112,6 @@ public class DataMapMainView extends JPanel {
 
         builder.appendSeparator("DataMap Configuration");
         builder.append("DataMap Name:", name, 2);
-        builder.append("DataNode:", nodeSelector, 2);
         builder.append("Quote SQL Identifiers:", quoteSQLIdentifiers, 3);
         builder.append("Comment:", comment, 2);
 
@@ -126,6 +127,10 @@ public class DataMapMainView extends JPanel {
                 defaultSuperclass,
                 updateDefaultSuperclass);
         builder.append("Optimistic Locking:", defaultLockType, updateDefaultLockType);
+
+        builder.appendSeparator("Linked DataNode");
+        builder.append(nodeSelectorLabel);
+        builder.append(nodeSelector, 2);
 
         this.setLayout(new BorderLayout());
         add(builder.getPanel(), BorderLayout.CENTER);
@@ -183,6 +188,9 @@ public class DataMapMainView extends JPanel {
         }
 
         nodeSelector.setModel(model);
+        boolean hasNodes = nodes.length > 0;
+        nodeSelector.setEnabled(hasNodes);
+        nodeSelectorLabel.setEnabled(hasNodes);
 
         // init default fields
         defaultLockType.setSelected(map.getDefaultLockType() != ObjEntity.LOCK_TYPE_NONE);
