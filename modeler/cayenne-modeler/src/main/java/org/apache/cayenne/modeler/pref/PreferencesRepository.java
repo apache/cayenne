@@ -63,7 +63,7 @@ public class PreferencesRepository {
     static final String PROJECT_INDEX_NODE = "projectIndex";
     static final String DATAMAP_INDEX_NODE = "dataMapIndex";
 
-    static final String MIGRATIONS_VERSION_KEY = "migrations.appliedVersion";
+    static final String MIGRATIONS_VERSION_KEY = "migrationsAppliedVersion";
     static final String PATH_KEY = "path";
     static final String UNSAVED_PREFIX = "unsaved-";
 
@@ -196,13 +196,13 @@ public class PreferencesRepository {
      * subtrees.
      *
      * <p>If {@code importLegacyPreferences} is {@code true}, the wipe includes
-     * {@code app/_meta/migrations.appliedVersion}, so {@link #runMigrations()}
+     * {@code app/_meta/migrationsAppliedVersion}, so {@link #runMigrations()}
      * will re-run every registered migration on next startup and import
      * preferences from earlier Cayenne versions.
      *
      * <p>If {@code false}, after the wipe the repository writes the highest
      * registered migration version under
-     * {@code app/_meta/migrations.appliedVersion}, marking all migrations as
+     * {@code app/_meta/migrationsAppliedVersion}, marking all migrations as
      * already applied so legacy preferences are not re-imported on next startup.
      */
     public void resetToDefaults(boolean importLegacyPreferences) {
@@ -231,7 +231,7 @@ public class PreferencesRepository {
 
     /**
      * Idempotent. Applies any registered {@link PreferenceMigration}s whose
-     * version exceeds {@code app/_meta/migrations.appliedVersion}.
+     * version exceeds {@code app/_meta/migrationsAppliedVersion}.
      */
     public void runMigrations() {
         Preferences meta = appPref(META_NODE);

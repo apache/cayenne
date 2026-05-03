@@ -34,7 +34,7 @@ import java.util.prefs.Preferences;
  */
 public class DBGeneratorPrefs implements PreferenceAdapter {
 
-    static final String NODE = "DbGenerator";
+    static final String NODE = "dbGenerator";
 
     private static final String CREATE_FK_PROPERTY = "createFK";
     private static final String CREATE_PK_PROPERTY = "createPK";

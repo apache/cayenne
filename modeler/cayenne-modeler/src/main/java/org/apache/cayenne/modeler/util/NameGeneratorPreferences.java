@@ -31,7 +31,7 @@ import java.util.prefs.Preferences;
  */
 public class NameGeneratorPreferences {
 
-    private static final String STRATEGIES_PREFERENCE = "name.generators.recent";
+    private static final String STRATEGIES_PREFERENCE = "recentNameGenerators";
 
     /**
      * Naming strategies to appear in combobox by default

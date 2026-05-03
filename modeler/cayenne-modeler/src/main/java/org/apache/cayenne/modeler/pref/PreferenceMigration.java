@@ -25,7 +25,7 @@ public interface PreferenceMigration {
 
     /**
      * Strictly positive, monotonic version. The repository tracks the highest applied
-     * version under {@code app/_meta/migrations.appliedVersion} and runs every
+     * version under {@code app/_meta/migrationsAppliedVersion} and runs every
      * migration with a higher version, in ascending order.
      */
     int version();

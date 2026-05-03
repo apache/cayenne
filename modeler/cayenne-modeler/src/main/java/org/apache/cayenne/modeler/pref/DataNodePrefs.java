@@ -26,7 +26,7 @@ public final class DataNodePrefs implements PreferenceAdapter {
 
     public static final String LOCAL_DATA_SOURCE_PROPERTY = "localDataSource";
 
-    static final String NODE = "DataNode";
+    static final String NODE = "dataNode";
 
     private final Preferences pref;
     private String localDataSource;

@@ -33,10 +33,10 @@ import java.util.prefs.Preferences;
 
 public final class CMTablePrefs implements PreferenceAdapter {
 
-    private static final String SORT_COLUMN_KEY = "sort_column";
-    private static final String SORT_ORDER_KEY = "sort_order";
-    private static final String WIDTH_KEY = "width_";
-    private static final String ORDER_KEY = "order_";
+    private static final String SORT_COLUMN_KEY = "sortColumn";
+    private static final String SORT_ORDER_KEY = "sortOrder";
+    private static final String WIDTH_KEY = "colWidth";
+    private static final String ORDER_KEY = "colOrder";
     private static final String LISTENER_PROPERTY = "TablePrefs.listener";
 
     private final Preferences prefs;

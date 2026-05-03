@@ -27,7 +27,7 @@ import java.util.prefs.Preferences;
 public final class LogConsolePrefs implements PreferenceAdapter {
 
     static final String NODE = "logConsole";
-    static final String SHOW_CONSOLE = "show.log.console";
+    static final String SHOW_CONSOLE = "showLogConsole";
 
     public static LogConsolePrefs of(PreferencesRepository repository) {
         return new LogConsolePrefs(repository.appPref(NODE));

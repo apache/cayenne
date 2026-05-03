@@ -19,7 +19,6 @@
 package org.apache.cayenne.modeler.pref.migration.toV5;
 
 import org.apache.cayenne.modeler.pref.PreferenceMigration;
-import org.apache.cayenne.modeler.pref.PreferencesCopier;
 import org.apache.cayenne.modeler.pref.PreferencesRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,12 +29,11 @@ import java.util.prefs.Preferences;
 /**
  * Copies legacy column widths / order / sort prefs for the four primary entity
  * tables (ObjAttribute, ObjRelationship, DbAttribute, DbRelationship) into the
- * new {@code app/ui/...} layout. Legacy nodes were derived from
- * {@code userNodeForPackage(<table-model class>).node(<sub-path>)}; the
- * {@code width_*}, {@code order_*}, {@code sort_column}, and {@code sort_order}
- * key formats are identical to the new layout, so a recursive subtree copy
- * suffices. Leaves the legacy nodes intact so an older Modeler installation on
- * the same machine still works.
+ * new {@code app/ui/...} layout. Legacy keys used snake_case (sort_column,
+ * sort_order, width_&lt;n&gt;, order_&lt;n&gt;); the new layout uses camelCase
+ * (sortColumn, sortOrder, colWidth&lt;n&gt;, colOrder&lt;n&gt;), so each key is
+ * renamed during the copy. Leaves the legacy nodes intact so an older Modeler
+ * installation on the same machine still works.
  */
 public class _7_EntityTablePrefsMigration implements PreferenceMigration {
 
@@ -48,6 +46,11 @@ public class _7_EntityTablePrefsMigration implements PreferenceMigration {
             {"org/apache/cayenne/modeler/editor/dbentity/attributeTable", "dbEntity/attributeTable"},
             {"org/apache/cayenne/modeler/editor/dbentity/relationshipTable", "dbEntity/relationshipTable"},
     };
+
+    private static final String LEGACY_SORT_COLUMN = "sort_column";
+    private static final String LEGACY_SORT_ORDER = "sort_order";
+    private static final String LEGACY_WIDTH_PREFIX = "width_";
+    private static final String LEGACY_ORDER_PREFIX = "order_";
 
     @Override
     public int version() {
@@ -63,16 +66,42 @@ public class _7_EntityTablePrefsMigration implements PreferenceMigration {
 
     private static void copyTable(PreferencesRepository repo, String legacyPath, String uiPath) {
         Preferences legacy;
+        String[] legacyKeys;
         try {
             if (!Preferences.userRoot().nodeExists(legacyPath)) {
                 return;
             }
             legacy = Preferences.userRoot().node(legacyPath);
+            legacyKeys = legacy.keys();
         } catch (BackingStoreException e) {
             LOGGER.warn("Error checking legacy table prefs node '{}'", legacyPath, e);
             return;
         }
 
-        PreferencesCopier.copy(legacy, repo.uiPref(uiPath));
+        Preferences target = repo.uiPref(uiPath);
+        for (String key : legacyKeys) {
+            switch (key) {
+                case LEGACY_SORT_COLUMN:
+                    target.putInt("sortColumn", legacy.getInt(key, 0));
+                    break;
+                case LEGACY_SORT_ORDER:
+                    target.putBoolean("sortOrder", legacy.getBoolean(key, true));
+                    break;
+                default:
+                    if (key.startsWith(LEGACY_WIDTH_PREFIX)) {
+                        int v = legacy.getInt(key, -1);
+                        if (v >= 0) {
+                            target.putInt("colWidth" + key.substring(LEGACY_WIDTH_PREFIX.length()), v);
+                        }
+                    } else if (key.startsWith(LEGACY_ORDER_PREFIX)) {
+                        int v = legacy.getInt(key, -1);
+                        if (v >= 0) {
+                            target.putInt("colOrder" + key.substring(LEGACY_ORDER_PREFIX.length()), v);
+                        }
+                    }
+                    // unknown legacy key — silently skip
+                    break;
+            }
+        }
     }
 }
