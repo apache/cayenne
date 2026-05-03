@@ -23,26 +23,31 @@ import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.ui.preferences.dbconnector.DBConnectorPreferencesController;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JOptionPane;
+import java.awt.Component;
 import java.util.Map;
 
 
 public class DBConnectorDuplicatorController extends ChildController<DBConnectorPreferencesController> {
 
-    protected DBConnectorDuplicatorView view;
+    protected final DBConnectorDuplicatorView view;
+    protected final Map<String, DBConnector> connectors;
+    protected final String prototypeKey;
     protected boolean canceled;
-    protected Map<String, DBConnector> connectors;
-    protected String prototypeKey;
+
+    private String enteredName;
 
     public DBConnectorDuplicatorController(DBConnectorPreferencesController parent, String prototypeKey) {
         super(parent);
-        this.view = new DBConnectorDuplicatorView("Create a copy of \""
-                + prototypeKey
-                + "\"");
         this.connectors = parent.getConnectors();
         this.prototypeKey = prototypeKey;
+        this.view = new DBConnectorDuplicatorView(
+                "Create a copy of \"" + prototypeKey + "\"",
+                this,
+                suggestName());
+    }
 
+    private String suggestName() {
         String suggestion = prototypeKey + "0";
         for (int i = 1; i <= connectors.size(); i++) {
             suggestion = prototypeKey + i;
@@ -50,42 +55,36 @@ public class DBConnectorDuplicatorController extends ChildController<DBConnector
                 break;
             }
         }
-
-        this.view.getConnectorName().setText(suggestion);
-        initBindings();
+        return suggestion;
     }
 
     public Component getView() {
         return view;
     }
 
-    protected void initBindings() {
-        view.getCancelButton().addActionListener(e -> cancelAction());
-        view.getOkButton().addActionListener(e -> okAction());
-    }
-
-    public void okAction() {
-        if (getName() == null) {
+    void okClicked(String name) {
+        if (name == null || name.isEmpty()) {
             JOptionPane.showMessageDialog(
                     view,
                     "Enter Connector Name",
                     null,
                     JOptionPane.WARNING_MESSAGE);
+            return;
         }
-        else if (connectors.containsKey(getName())) {
+        if (connectors.containsKey(name)) {
             JOptionPane.showMessageDialog(
                     view,
-                    "'" + getName() + "' is already in use, enter a different name",
+                    "'" + name + "' is already in use, enter a different name",
                     null,
                     JOptionPane.WARNING_MESSAGE);
+            return;
         }
-        else {
-            canceled = false;
-            view.dispose();
-        }
+        this.enteredName = name;
+        this.canceled = false;
+        view.dispose();
     }
 
-    public void cancelAction() {
+    void cancelClicked() {
         canceled = true;
         view.dispose();
     }
@@ -108,8 +107,7 @@ public class DBConnectorDuplicatorController extends ChildController<DBConnector
     }
 
     public String getName() {
-        String name = view.getConnectorName().getText();
-        return (name.length() > 0) ? name : null;
+        return enteredName;
     }
 
     protected DBConnector createConnector() {
@@ -118,7 +116,7 @@ public class DBConnectorDuplicatorController extends ChildController<DBConnector
         }
 
         DBConnector prototype = connectors.get(prototypeKey);
-        DBConnector connector = parent.create(getName());
+        DBConnector connector = parent.create(enteredName);
 
         prototype.copyTo(connector);
         return connector;

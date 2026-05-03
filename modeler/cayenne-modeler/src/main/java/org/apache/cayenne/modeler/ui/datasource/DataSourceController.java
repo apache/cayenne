@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.ui.datasource;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
+import org.apache.cayenne.modeler.ui.preferences.dbconnector.DBConnectorEditorController;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.preferences.PreferenceDialogController;
 import org.apache.cayenne.modeler.mvc.ChildController;
@@ -40,14 +41,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * A subclass of ConnectionWizard that tests configured DataSource, but does not
- * keep an open connection.
- *
- */
 public class DataSourceController extends ChildController<ProjectController> {
 
     private final DataSourceView view;
+    private final DBConnectorEditorController editorController;
 
     private Map<String, DBConnector> connectors;
     private String dataSourceKey;
@@ -58,46 +55,32 @@ public class DataSourceController extends ChildController<ProjectController> {
     private boolean canceled;
 
     public DataSourceController(ProjectController parent, String title) {
-        this(parent, title, new String[]{"Continue", "Cancel"});
-    }
-
-    public DataSourceController(ProjectController parent, String title, String[] buttons) {
         super(parent);
 
         this.connector = new DBConnector();
-
-        this.view = new DataSourceView(this, buttons);
+        this.editorController = new DBConnectorEditorController(this);
+        this.view = new DataSourceView(
+                this,
+                getApplication().getFrameController().getView(),
+                editorController.getView());
         this.view.setTitle(title);
-
-        initBindings();
-    }
-
-    protected void initBindings() {
-        view.getDataSources().addActionListener(e -> {
-            Object sel = view.getDataSources().getSelectedItem();
-            setDataSourceKey(sel != null ? sel.toString() : null);
-        });
-
-        view.getCancelButton().addActionListener(e -> cancelAction());
-        view.getOkButton().addActionListener(e -> okAction());
-        view.getConfigButton().addActionListener(e -> dataSourceConfigAction());
     }
 
     private void initFavouriteDataSource() {
         String favouriteDataSource = GeneralPrefs.of(parent.getApplication().getPreferencesRepository()).getFavouriteDataSource();
         if (favouriteDataSource != null && connectors.containsKey(favouriteDataSource)) {
-            setDataSourceKey(favouriteDataSource);
-            view.getDataSources().setSelectedItem(dataSourceKey);
+            setSelectedDataSource(favouriteDataSource);
+            view.selectDataSource(dataSourceKey);
         }
     }
 
     private DBConnector getConnectionInfoFromPreferences() {
         DataMapPrefs dataMapPrefs = DataMapPrefs.of(parent.getApplication().getPreferencesRepository(), parent.getSelectedDataMap());
-        DBConnector info = dataMapPrefs.getConnector();
-        return info != null ? info : new DBConnector();
+        DBConnector connector = dataMapPrefs.getConnector();
+        return connector != null ? connector : new DBConnector();
     }
 
-    private void setDataSourceKey(final String dataSourceKey) {
+    void setSelectedDataSource(String dataSourceKey) {
         this.dataSourceKey = dataSourceKey;
 
         // update a clone object that will be used to obtain connection...
@@ -107,7 +90,7 @@ public class DataSourceController extends ChildController<ProjectController> {
         } else {
             connector = new DBConnector();
         }
-        view.getConnectionInfo().setConnectionInfo(connector);
+        editorController.setConnector(connector);
     }
 
     /**
@@ -126,7 +109,7 @@ public class DataSourceController extends ChildController<ProjectController> {
         view.pack();
         view.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         view.setModal(true);
-        view.connectionInfo.setConnectionInfo(connector);
+        editorController.setConnector(connector);
         makeCloseableOnEscape();
         centerView();
         view.setVisible(true);
@@ -142,7 +125,7 @@ public class DataSourceController extends ChildController<ProjectController> {
      * Tests that the entered information is valid and can be used to open a
      * connection. Does not store the open connection.
      */
-    public void okAction() {
+    void okClicked() {
         DBConnector info = getConnector();
         ModelerClassLoader classLoader = getApplication().getClassLoader();
 
@@ -166,7 +149,7 @@ public class DataSourceController extends ChildController<ProjectController> {
         onClose(false);
     }
 
-    public void cancelAction() {
+    void cancelClicked() {
         onClose(true);
     }
 
@@ -182,7 +165,7 @@ public class DataSourceController extends ChildController<ProjectController> {
     /**
      * Opens preferences panel to allow configuration of DataSource presets.
      */
-    public void dataSourceConfigAction() {
+    void dataSourceConfigClicked() {
         DBConnectors registry = getApplication().getDbConnectors();
         Set<String> before = new HashSet<>(registry.getAll().keySet());
 
@@ -202,7 +185,7 @@ public class DataSourceController extends ChildController<ProjectController> {
      * Opens preferences panel to allow configuration of classpath.
      */
     public void classPathConfigAction() {
-        final PreferenceDialogController prefs = new PreferenceDialogController(this);
+        PreferenceDialogController prefs = new PreferenceDialogController(this);
         prefs.showClassPathEditorAction();
         refreshDataSources();
     }
@@ -228,7 +211,7 @@ public class DataSourceController extends ChildController<ProjectController> {
 
         final String[] keys = connectors.keySet().toArray(new String[0]);
         Arrays.sort(keys);
-        view.getDataSources().setModel(new DefaultComboBoxModel<>(keys));
+        view.setDataSources(keys);
 
         String key = null;
         if (dataSourceKey == null || !connectors.containsKey(dataSourceKey)) {
@@ -237,8 +220,8 @@ public class DataSourceController extends ChildController<ProjectController> {
             }
         }
 
-        setDataSourceKey(key != null ? key : dataSourceKey);
-        view.getDataSources().setSelectedItem(dataSourceKey);
+        setSelectedDataSource(key != null ? key : dataSourceKey);
+        view.selectDataSource(dataSourceKey);
     }
 
     protected void showNoConnectorDialog(String message) {

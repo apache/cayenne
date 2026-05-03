@@ -28,7 +28,6 @@ import org.apache.cayenne.modeler.ui.validation.ValidationController;
 import org.apache.cayenne.modeler.ui.datasource.DataSourceController;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
-import org.apache.cayenne.modeler.util.DbAdapterInfo;
 import org.apache.cayenne.validation.ValidationResult;
 
 import javax.swing.*;
@@ -44,10 +43,11 @@ import java.util.Iterator;
 
 public class DBGeneratorOptionsController extends ChildController<ProjectController> {
 
-    protected DBGeneratorOptionsView view;
-    private boolean updatingAdapterCombo;
+    private static final String JDBC_ADAPTER = "org.apache.cayenne.dba.JdbcAdapter";
 
-    protected DBConnector connectionInfo;
+    protected final DBGeneratorOptionsView view;
+
+    protected DBConnector connector;
     protected Collection<DataMap> dataMaps;
     protected DBGeneratorPrefs generatorDefaults;
     protected Collection<DbGenerator> generators;
@@ -60,17 +60,23 @@ public class DBGeneratorOptionsController extends ChildController<ProjectControl
 
         this.dataMaps = dataMaps;
         this.tables = new TableSelectorController(parent);
-        this.view = new DBGeneratorOptionsView(tables.getView());
-        this.connectionInfo = new DBConnector();
-        // DataSource may not be initialized, so warn connection wizard
-        this.connectionInfo.setAllowDataSourceFailure(true);
+        this.connector = new DBConnector();
+        this.connector.setAllowDataSourceFailure(true);
         this.generatorDefaults = DBGeneratorPrefs.of(
                 parent.getApplication().getPreferencesRepository(),
                 parent.getProject());
 
+        this.view = new DBGeneratorOptionsView(
+                this,
+                tables.getView(),
+                generatorDefaults.getCreateFK(),
+                generatorDefaults.getCreatePK(),
+                generatorDefaults.getCreateTables(),
+                generatorDefaults.getDropPK(),
+                generatorDefaults.getDropTables());
         this.view.setTitle(title);
-        initController();
-        connectionInfo.setDbAdapter((String) view.getAdapters().getSelectedItem());
+
+        connector.setDbAdapter(view.getSelectedAdapter());
 
         tables.updateTables(dataMaps);
         prepareGenerator();
@@ -84,47 +90,12 @@ public class DBGeneratorOptionsController extends ChildController<ProjectControl
         return view;
     }
 
-    protected void initController() {
-
-        generatorDefaults.bind(view);
-
-        DefaultComboBoxModel<String> adapterModel = new DefaultComboBoxModel<>(
-                DbAdapterInfo.getStandardAdapters());
-        view.getAdapters().setModel(adapterModel);
-        view.getAdapters().setSelectedIndex(0);
-
-        view.getAdapters().addActionListener(e -> {
-            if (updatingAdapterCombo) return;
-            Object sel = view.getAdapters().getSelectedItem();
-            connectionInfo.setDbAdapter("org.apache.cayenne.dba.JdbcAdapter".equals(sel) ? null : (String) sel);
-            refreshSQLAction();
-        });
-
-        view.getCreateFK().addActionListener(e -> refreshSQLAction());
-        view.getCreatePK().addActionListener(e -> refreshSQLAction());
-        view.getCreateTables().addActionListener(e -> refreshSQLAction());
-        view.getDropPK().addActionListener(e -> refreshSQLAction());
-        view.getDropTables().addActionListener(e -> refreshSQLAction());
-
-        view.getGenerateButton().addActionListener(e -> generateSchemaAction());
-        view.getSaveSqlButton().addActionListener(e -> storeSQLAction());
-        view.getCancelButton().addActionListener(e -> closeAction());
-
-        // refresh SQL if different tables were selected
-        view.getTabs().addChangeListener(e -> {
-            if (view.getTabs().getSelectedIndex() == 0) {
-                // this assumes that some tables where checked/unchecked... not very efficient
-                refreshGeneratorAction();
-            }
-        });
-    }
-
     private void applyOptionsToGenerators() {
-        boolean createFK = view.getCreateFK().isSelected();
-        boolean createPK = view.getCreatePK().isSelected();
-        boolean createTables = view.getCreateTables().isSelected();
-        boolean dropPK = view.getDropPK().isSelected();
-        boolean dropTables = view.getDropTables().isSelected();
+        boolean createFK = view.isCreateFkSelected();
+        boolean createPK = view.isCreatePkSelected();
+        boolean createTables = view.isCreateTablesSelected();
+        boolean dropPK = view.isDropPkSelected();
+        boolean dropTables = view.isDropTablesSelected();
         for (DbGenerator generator : generators) {
             generator.setShouldCreateFKConstraints(createFK);
             generator.setShouldCreatePKSupport(createPK);
@@ -139,7 +110,7 @@ public class DBGeneratorOptionsController extends ChildController<ProjectControl
      */
     protected void prepareGenerator() {
         try {
-            DbAdapter adapter = connectionInfo.makeAdapter(getApplication().getClassLoader(), getApplication().getDbAdapterFactory());
+            DbAdapter adapter = connector.makeAdapter(getApplication().getClassLoader(), getApplication().getDbAdapterFactory());
             generators = new ArrayList<>();
             for (DataMap dataMap : dataMaps) {
                 this.generators.add(new DbGenerator(
@@ -177,8 +148,47 @@ public class DBGeneratorOptionsController extends ChildController<ProjectControl
     }
 
     protected void refreshView() {
-        view.setEnabled(connectionInfo != null);
-        view.getSql().setText(textForSQL);
+        view.setEnabled(connector != null);
+        view.setSqlPreview(textForSQL);
+    }
+
+    // ===============
+    // View callbacks
+    // ===============
+
+    void refreshSqlClicked() {
+        refreshSQLAction();
+    }
+
+    void adapterChanged(String adapter) {
+        connector.setDbAdapter(adapter);
+        refreshSQLAction();
+    }
+
+    void sqlTabSelected() {
+        // assumes that some tables were checked/unchecked... not very efficient
+        refreshGeneratorAction();
+    }
+
+    void generateClicked() {
+        generateSchemaAction();
+    }
+
+    void saveSqlClicked() {
+        storeSQLAction();
+    }
+
+    void cancelClicked() {
+        view.dispose();
+    }
+
+    void windowClosed() {
+        generatorDefaults.save(
+                view.isCreateFkSelected(),
+                view.isCreatePkSelected(),
+                view.isCreateTablesSelected(),
+                view.isDropPkSelected(),
+                view.isDropTablesSelected());
     }
 
     // ===============
@@ -207,18 +217,14 @@ public class DBGeneratorOptionsController extends ChildController<ProjectControl
      */
     public void refreshSQLAction() {
         // sync combo to reflect current connectionInfo (e.g. after generateSchemaAction replaces it)
-        updatingAdapterCombo = true;
-        try {
-            String adapter = connectionInfo.getDbAdapter();
-            view.getAdapters().setSelectedItem(adapter != null ? adapter : "org.apache.cayenne.dba.JdbcAdapter");
-        } finally {
-            updatingAdapterCombo = false;
-        }
-        connectionInfo.setDbAdapter((String) view.getAdapters().getSelectedItem());
+        String adapter = connector.getDbAdapter();
+        view.selectAdapter(adapter);
+        // mirror the displayed value back to the model (was: setSelectedItem returns "JdbcAdapter" placeholder when null)
+        connector.setDbAdapter(adapter != null ? adapter : JDBC_ADAPTER);
         prepareGenerator();
         applyOptionsToGenerators();
         createSQL();
-        view.getSql().setText(textForSQL);
+        view.setSqlPreview(textForSQL);
     }
 
     /**
@@ -231,7 +237,7 @@ public class DBGeneratorOptionsController extends ChildController<ProjectControl
             return;
         }
 
-        this.connectionInfo = connectWizard.getConnector();
+        this.connector = connectWizard.getConnector();
 
         refreshGeneratorAction();
 
@@ -290,9 +296,5 @@ public class DBGeneratorOptionsController extends ChildController<ProjectControl
                 reportError("Error Saving SQL", ex);
             }
         }
-    }
-
-    public void closeAction() {
-        view.dispose();
     }
 }

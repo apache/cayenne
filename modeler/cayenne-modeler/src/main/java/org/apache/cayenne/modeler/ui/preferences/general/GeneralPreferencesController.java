@@ -23,13 +23,7 @@ import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.pref.GeneralPrefs;
 import org.apache.cayenne.modeler.ui.preferences.PreferenceDialogController;
 
-import javax.swing.*;
 import java.awt.*;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 public class GeneralPreferencesController extends ChildController<PreferenceDialogController> {
 
@@ -38,22 +32,16 @@ public class GeneralPreferencesController extends ChildController<PreferenceDial
     };
 
     private final GeneralPreferencesView view;
-    private final String systemEncoding;
-    private final String defaultLabel;
 
     public GeneralPreferencesController(PreferenceDialogController parent) {
         super(parent);
 
         GeneralPrefs prefs = GeneralPrefs.of(getApplication().getPreferencesRepository());
-        this.systemEncoding = detectPlatformEncoding();
-        this.defaultLabel = systemEncoding + " (default)";
-
-        this.view = new GeneralPreferencesView();
-
-        view.getEncodingChoices().setModel(new DefaultComboBoxModel<>(supportedEncodings()));
-        selectEncoding(prefs.getEncoding());
-        view.getAutoLoadProject().setSelected(prefs.isAutoLoadProject());
-        view.getNoDeletePrompt().setSelected(prefs.isNoDeletePrompt());
+        this.view = new GeneralPreferencesView(
+                STANDARD_ENCODINGS,
+                prefs.getEncoding(),
+                prefs.isAutoLoadProject(),
+                prefs.isNoDeletePrompt());
     }
 
     @Override
@@ -63,43 +51,8 @@ public class GeneralPreferencesController extends ChildController<PreferenceDial
 
     public void commit() {
         GeneralPrefs prefs = GeneralPrefs.of(getApplication().getPreferencesRepository());
-
-        Object selected = view.getEncodingChoices().getSelectedItem();
-        String encoding = (selected == null || defaultLabel.equals(selected)) ? systemEncoding : selected.toString();
-
-        prefs.setEncoding(encoding);
-        prefs.setAutoLoadProject(view.getAutoLoadProject().isSelected());
-        prefs.setNoDeletePrompt(view.getNoDeletePrompt().isSelected());
-    }
-
-    /**
-     * Returns the canonical name of the platform's default charset. Canonicalizing
-     * (vs. e.g. {@code OutputStreamWriter.getEncoding()}, which returns historical
-     * aliases like "UTF8") ensures the value compares cleanly against
-     * {@link #STANDARD_ENCODINGS}.
-     */
-    static String detectPlatformEncoding() {
-        return Charset.defaultCharset().name();
-    }
-
-    /**
-     * Returns charsets that all JVMs must support cross-platform, sorted
-     * alphabetically, with the platform default labeled in place. See
-     * java.nio.charset.Charset for the list of "standard" charsets.
-     */
-    private String[] supportedEncodings() {
-        List<String> charsets = new ArrayList<>(Arrays.asList(STANDARD_ENCODINGS));
-        charsets.remove(systemEncoding);
-        charsets.add(defaultLabel);
-        Collections.sort(charsets);
-        return charsets.toArray(new String[0]);
-    }
-
-    private void selectEncoding(String encoding) {
-        if (encoding == null || encoding.isEmpty() || encoding.equals(systemEncoding)) {
-            view.getEncodingChoices().setSelectedItem(defaultLabel);
-        } else {
-            view.getEncodingChoices().setSelectedItem(encoding);
-        }
+        prefs.setEncoding(view.getSelectedEncoding());
+        prefs.setAutoLoadProject(view.isAutoLoadProjectSelected());
+        prefs.setNoDeletePrompt(view.isNoDeletePromptSelected());
     }
 }

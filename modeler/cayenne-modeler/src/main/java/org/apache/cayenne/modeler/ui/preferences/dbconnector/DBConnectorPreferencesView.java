@@ -19,37 +19,37 @@
 
 package org.apache.cayenne.modeler.ui.preferences.dbconnector;
 
-import java.awt.BorderLayout;
-
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
-
-import org.apache.cayenne.modeler.mvc.RootController;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import javax.swing.*;
+import java.awt.*;
+
 
 public class DBConnectorPreferencesView extends JPanel {
 
-    protected JButton addConnector;
-    protected JButton duplicateConnector;
-    protected JButton removeConnector;
-    protected JButton testConnector;
-    protected JComboBox<Object> connectors;
-    protected DBConnectionInfoEditorController connectorEditor;
+    private final JComboBox<Object> connectors;
 
-    public DBConnectorPreferencesView(RootController controller) {
-        this.addConnector = new JButton("New...");
-        this.duplicateConnector = new JButton("Duplicate...");
-        this.removeConnector = new JButton("Delete");
-        this.testConnector = new JButton("Test...");
+    public DBConnectorPreferencesView(DBConnectorPreferencesController controller, Component editorView) {
+        JButton addConnector = new JButton("New...");
+        JButton duplicateConnector = new JButton("Duplicate...");
+        JButton removeConnector = new JButton("Delete");
+        JButton testConnector = new JButton("Test...");
         this.connectors = new JComboBox<>();
-        this.connectorEditor = new DBConnectionInfoEditorController(controller);
 
-        // assemble
+        addConnector.addActionListener(e -> controller.addConnectorClicked());
+        duplicateConnector.addActionListener(e -> {
+            Object selected = connectors.getSelectedItem();
+            controller.duplicateConnectorClicked(selected != null ? selected.toString() : null);
+        });
+        removeConnector.addActionListener(e -> controller.removeConnectorClicked());
+        testConnector.addActionListener(e -> controller.testConnectorClicked());
+        connectors.addActionListener(e -> {
+            Object sel = connectors.getSelectedItem();
+            controller.connectorSelected(sel != null ? sel.toString() : null);
+        });
+
         CellConstraints cc = new CellConstraints();
         PanelBuilder sidebar = new PanelBuilder(new FormLayout(
                 "fill:min(150dlu;pref)",
@@ -67,34 +67,18 @@ public class DBConnectorPreferencesView extends JPanel {
                 "p, 3dlu, fill:default:grow"));
         editor.setDefaultDialogBorder();
         editor.addSeparator("Edit DB Connector", cc.xy(1, 1));
-        editor.add(connectorEditor.getView(), cc.xy(1, 3));
+        editor.add(editorView, cc.xy(1, 3));
 
         setLayout(new BorderLayout());
         add(editor.getPanel(), BorderLayout.CENTER);
         add(sidebar.getPanel(), BorderLayout.EAST);
     }
 
-    public DBConnectionInfoEditorController getConnectorEditor() {
-        return connectorEditor;
+    public void setConnectors(Object[] keys) {
+        connectors.setModel(new DefaultComboBoxModel<>(keys));
     }
 
-    public JComboBox<Object> getConnectors() {
-        return connectors;
-    }
-
-    public JButton getAddConnector() {
-        return addConnector;
-    }
-
-    public JButton getRemoveConnector() {
-        return removeConnector;
-    }
-
-    public JButton getTestConnector() {
-        return testConnector;
-    }
-
-    public JButton getDuplicateConnector() {
-        return duplicateConnector;
+    public void selectConnector(Object key) {
+        connectors.setSelectedItem(key);
     }
 }

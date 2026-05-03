@@ -21,7 +21,9 @@ package org.apache.cayenne.modeler.ui.preferences.dbconnector.creator;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.modeler.util.DbAdapterInfo;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -33,22 +35,31 @@ import java.awt.FlowLayout;
 
 public class DBConnectorCreatorView extends JDialog {
 
-    protected JTextField connectorName;
-    protected JComboBox adapters;
-    protected JButton okButton;
-    protected JButton cancelButton;
+    private static final String NO_ADAPTER = "Custom / Undefined";
 
-    public DBConnectorCreatorView(JDialog owner) {
+    public DBConnectorCreatorView(JDialog owner, DBConnectorCreatorController controller, String suggestedName) {
         super(owner);
 
-        this.connectorName = new JTextField();
-        this.adapters = new JComboBox();
-        this.okButton = new JButton("Create");
-        this.cancelButton = new JButton("Cancel");
+        JTextField connectorName = new JTextField(suggestedName);
+        JComboBox adapters = new JComboBox();
+        DefaultComboBoxModel model = new DefaultComboBoxModel(DbAdapterInfo.getStandardAdapters());
+        model.insertElementAt(NO_ADAPTER, 0);
+        adapters.setModel(model);
+        adapters.setSelectedIndex(0);
+
+        JButton okButton = new JButton("Create");
+        JButton cancelButton = new JButton("Cancel");
 
         getRootPane().setDefaultButton(okButton);
 
-        // assemble
+        cancelButton.addActionListener(e -> controller.cancelClicked());
+        okButton.addActionListener(e -> {
+            Object adapter = adapters.getSelectedItem();
+            controller.okClicked(
+                    connectorName.getText(),
+                    NO_ADAPTER.equals(adapter) ? null : (String) adapter);
+        });
+
         FormLayout layout = new FormLayout(
                 "right:pref, 3dlu, fill:max(50dlu;pref):grow",
                 "");
@@ -67,21 +78,5 @@ public class DBConnectorCreatorView extends JDialog {
         getContentPane().add(buttons, BorderLayout.SOUTH);
 
         setTitle("Create New DB Connector");
-    }
-
-    public JComboBox getAdapters() {
-        return adapters;
-    }
-
-    public JButton getCancelButton() {
-        return cancelButton;
-    }
-
-    public JButton getOkButton() {
-        return okButton;
-    }
-
-    public JTextField getConnectorName() {
-        return connectorName;
     }
 }

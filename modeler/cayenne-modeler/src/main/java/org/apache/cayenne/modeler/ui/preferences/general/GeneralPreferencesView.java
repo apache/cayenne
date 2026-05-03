@@ -25,6 +25,11 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 
 public class GeneralPreferencesView extends JPanel {
@@ -32,14 +37,30 @@ public class GeneralPreferencesView extends JPanel {
     private final JComboBox<String> encodingChoices;
     private final JCheckBox autoLoadProject;
     private final JCheckBox noDeletePrompt;
+    private final String systemEncoding;
+    private final String defaultLabel;
 
-    public GeneralPreferencesView() {
-        this.encodingChoices = new JComboBox<>();
+    public GeneralPreferencesView(
+            String[] supportedEncodings,
+            String currentEncoding,
+            boolean autoLoadProject,
+            boolean noDeletePrompt) {
+
+        this.systemEncoding = Charset.defaultCharset().name();
+        this.defaultLabel = systemEncoding + " (default)";
+
+        String[] encodingLabels = createEncodingLabels(supportedEncodings);
+        this.encodingChoices = new JComboBox<>(new DefaultComboBoxModel<>(encodingLabels));
+        selectEncoding(currentEncoding);
+
+        this.autoLoadProject = new JCheckBox();
+        this.autoLoadProject.setSelected(autoLoadProject);
+        this.noDeletePrompt = new JCheckBox();
+        this.noDeletePrompt.setSelected(noDeletePrompt);
+
         JLabel encodingSelectorLabel = new JLabel("File Encoding:");
         JLabel autoLoadProjectLabel = new JLabel("Auto-Load Last Project:");
         JLabel noDeletePromptLabel = new JLabel("Delete Without Prompt:");
-        this.autoLoadProject = new JCheckBox();
-        this.noDeletePrompt = new JCheckBox();
 
         FormLayout layout = new FormLayout(
                 "right:pref, 3dlu, fill:120dlu, default:grow",
@@ -53,23 +74,40 @@ public class GeneralPreferencesView extends JPanel {
         builder.add(encodingSelectorLabel, cc.xy(1, 3));
         builder.add(encodingChoices, cc.xy(3, 3));
         builder.add(autoLoadProjectLabel, cc.xy(1, 5));
-        builder.add(autoLoadProject, cc.xy(3, 5, CellConstraints.LEFT, CellConstraints.DEFAULT));
+        builder.add(this.autoLoadProject, cc.xy(3, 5, CellConstraints.LEFT, CellConstraints.DEFAULT));
         builder.add(noDeletePromptLabel, cc.xy(1, 7));
-        builder.add(noDeletePrompt, cc.xy(3, 7, CellConstraints.LEFT, CellConstraints.DEFAULT));
+        builder.add(this.noDeletePrompt, cc.xy(3, 7, CellConstraints.LEFT, CellConstraints.DEFAULT));
 
-        this.setLayout(new BorderLayout());
-        this.add(builder.getPanel(), BorderLayout.CENTER);
+        setLayout(new BorderLayout());
+        add(builder.getPanel(), BorderLayout.CENTER);
     }
 
-    public JComboBox<String> getEncodingChoices() {
-        return encodingChoices;
+    public String getSelectedEncoding() {
+        Object selected = encodingChoices.getSelectedItem();
+        return (selected == null || defaultLabel.equals(selected)) ? systemEncoding : selected.toString();
     }
 
-    public JCheckBox getAutoLoadProject() {
-        return autoLoadProject;
+    public boolean isAutoLoadProjectSelected() {
+        return autoLoadProject.isSelected();
     }
 
-    public JCheckBox getNoDeletePrompt() {
-        return noDeletePrompt;
+    public boolean isNoDeletePromptSelected() {
+        return noDeletePrompt.isSelected();
+    }
+
+    private String[] createEncodingLabels(String[] supportedEncodings) {
+        List<String> labels = new ArrayList<>(Arrays.asList(supportedEncodings));
+        labels.remove(systemEncoding);
+        labels.add(defaultLabel);
+        Collections.sort(labels);
+        return labels.toArray(new String[0]);
+    }
+
+    private void selectEncoding(String encoding) {
+        if (encoding == null || encoding.isEmpty() || encoding.equals(systemEncoding)) {
+            encodingChoices.setSelectedItem(defaultLabel);
+        } else {
+            encodingChoices.setSelectedItem(encoding);
+        }
     }
 }

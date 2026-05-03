@@ -46,61 +46,50 @@ public class MavenDependencyDialogController extends ChildController<ClasspathPr
     private volatile boolean closing;
 
     public MavenDependencyDialogController(ClasspathPreferencesController preferencesController) {
-
         super(preferencesController);
 
         Window parentView = preferencesController.getView() instanceof Window
                 ? (Window) preferencesController.getView()
                 : SwingUtilities.getWindowAncestor(preferencesController.getView());
-        if (parentView instanceof Dialog) {
-            view = new MavenDependencyDialogView((Dialog) parentView);
-        } else {
-            view = new MavenDependencyDialogView((Frame) parentView);
-        }
-        initBindings();
+        this.view = (parentView instanceof Dialog)
+                ? new MavenDependencyDialogView((Dialog) parentView, this)
+                : new MavenDependencyDialogView((Frame) parentView, this);
     }
 
-    private void initBindings() {
-        view.getDownloadButton().addActionListener(e -> loadArtifact());
-        view.getCancelButton().addActionListener(e -> close());
-    }
-
-    private void loadArtifact() {
+    void downloadClicked(String groupId, String artifactId, String version) {
         // url template: https://repo1.maven.org/maven2/org/apache/cayenne/cayenne-server/4.2.M1/cayenne-server-4.2.M1.jar
-        String groupPath = view.getGroupId().getText().replace('.', '/').trim();
-        String artifactIdText = view.getArtifactId().getText().trim();
-        String versionText = view.getVersion().getText().trim();
+        String groupPath = groupId.replace('.', '/');
 
         if (groupPath.isEmpty()) {
             JOptionPane.showMessageDialog(view, "Empty group Id", "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        if (artifactIdText.isEmpty()) {
+        if (artifactId.isEmpty()) {
             JOptionPane.showMessageDialog(view, "Empty artifact Id", "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        if (versionText.isEmpty()) {
+        if (version.isEmpty()) {
             JOptionPane.showMessageDialog(view, "Empty version", "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         String urlText = "https://repo1.maven.org/maven2/" + groupPath + "/"
-                + artifactIdText + "/" + versionText + "/"
-                + artifactIdText + "-" + versionText + ".jar";
+                + artifactId + "/" + version + "/"
+                + artifactId + "-" + version + ".jar";
 
         application.getFrameController().updateStatus("Loading " + urlText);
 
         String localPath = System.getProperty("user.home") + "/.cayenne/modeler/"
-                + groupPath + "/" + artifactIdText + "-" + versionText + ".jar";
+                + groupPath + "/" + artifactId + "-" + version + ".jar";
         File targetFile = new File(localPath);
 
-        view.getDownloadButton().setEnabled(false);
+        view.setDownloadEnabled(false);
         new Thread(() -> download(urlText, targetFile)).start();
     }
 
-    private void close() {
+    void cancelClicked() {
         this.closing = true;
         view.close();
     }
@@ -130,16 +119,16 @@ public class MavenDependencyDialogController extends ChildController<ClasspathPr
     private void finalizeDownload(File dstFile, String status, boolean success, boolean shouldClose) {
         SwingUtilities.invokeLater(() -> {
             if (success) {
-                parent.addClasspathEntry(dstFile);
+                parent.entryAdded(dstFile);
             } else {
                 JOptionPane.showMessageDialog(view, status, "Error", JOptionPane.ERROR_MESSAGE);
             }
 
-            view.getDownloadButton().setEnabled(true);
+            view.setDownloadEnabled(true);
             application.getFrameController().updateStatus(status);
 
             if (shouldClose) {
-                close();
+                cancelClicked();
             }
         });
     }

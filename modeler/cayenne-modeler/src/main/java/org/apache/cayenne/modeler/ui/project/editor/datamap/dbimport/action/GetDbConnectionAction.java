@@ -42,7 +42,7 @@ public class GetDbConnectionAction extends DBConnectionAwareAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        DataSourceController connectWizard = getDataSourceController(DIALOG_TITLE, new String[]{"Continue", "Cancel"});
+        DataSourceController connectWizard = getDataSourceController(DIALOG_TITLE);
         if (connectWizard == null) {
             return;
         }

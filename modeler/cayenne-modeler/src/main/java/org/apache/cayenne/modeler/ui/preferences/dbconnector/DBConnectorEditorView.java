@@ -19,37 +19,37 @@
 
 package org.apache.cayenne.modeler.ui.preferences.dbconnector;
 
-import java.awt.BorderLayout;
-import java.util.ArrayList;
-import java.util.Collection;
-
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.toolkit.text.CMPasswordField;
 import org.apache.cayenne.modeler.toolkit.text.CMTextField;
+import org.apache.cayenne.modeler.util.DbAdapterInfo;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * A generic panel for entering DataSource information.
  */
-public class DBConnectionInfoEditorView extends JPanel {
+public class DBConnectorEditorView extends JPanel {
 
-    protected JComboBox adapters;
-    protected CMTextField driver;
-    protected CMTextField url;
-    protected CMTextField userName;
-    protected CMPasswordField password;
+    private static final String AUTOMATIC = "Automatic";
 
-    protected Collection<JLabel> labels;
+    private final JComboBox<String> adapters;
+    private final CMTextField driver;
+    private final CMTextField url;
+    private final CMTextField userName;
+    private final CMPasswordField password;
 
-    protected DefaultFormBuilder builder;
+    private final Collection<JLabel> labels;
 
-    public DBConnectionInfoEditorView() {
-        adapters = new JComboBox();
+    public DBConnectorEditorView(DBConnectorEditorController controller) {
+        adapters = new JComboBox<>();
         adapters.setEditable(true);
+        adapters.setModel(new DefaultComboBoxModel<>(DbAdapterInfo.getStandardAdapters()));
+        adapters.setSelectedIndex(0);
 
         driver = new CMTextField();
         url = new CMTextField();
@@ -57,9 +57,18 @@ public class DBConnectionInfoEditorView extends JPanel {
         password = new CMPasswordField();
         labels = new ArrayList<>();
 
-        // assemble
+        // bindings — controller is captured by lambdas; not stored on the view
+        userName.addCommitListener(controller::userNameChanged);
+        password.addCommitListener(controller::passwordChanged);
+        driver.addCommitListener(controller::driverChanged);
+        url.addCommitListener(controller::urlChanged);
+        adapters.addActionListener(e -> {
+            Object sel = adapters.getSelectedItem();
+            controller.adapterChanged(AUTOMATIC.equals(sel) ? null : (String) sel);
+        });
+
         FormLayout layout = new FormLayout("right:pref, 3dlu, fill:160dlu:grow", "");
-        builder = new DefaultFormBuilder(layout);
+        DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
 
         labels.add(builder.append("JDBC Driver:", driver));
@@ -68,44 +77,36 @@ public class DBConnectionInfoEditorView extends JPanel {
         labels.add(builder.append("Password:", password));
         labels.add(builder.append("Adapter (optional):", adapters));
 
-        this.setLayout(new BorderLayout());
-        this.add(builder.getPanel(), BorderLayout.CENTER);
+        setLayout(new BorderLayout());
+        add(builder.getPanel(), BorderLayout.CENTER);
+        setEnabled(false);
     }
 
-    public JComboBox getAdapters() {
-        return adapters;
+    public void showConnector(String userName, String password, String driver, String url, String adapter) {
+        this.userName.setText(userName != null ? userName : "");
+        this.password.setText(password != null ? password : "");
+        this.driver.setText(driver != null ? driver : "");
+        this.url.setText(url != null ? url : "");
+        this.adapters.setSelectedItem(adapter != null ? adapter : AUTOMATIC);
+        setEnabled(true);
     }
 
-    public CMTextField getDriver() {
-        return driver;
+    public void clear() {
+        userName.setText("");
+        password.setText("");
+        driver.setText("");
+        url.setText("");
+        adapters.setSelectedItem(AUTOMATIC);
+        setEnabled(false);
     }
 
-    public CMPasswordField getPassword() {
-        return password;
-    }
-
-    public CMTextField getUrl() {
-        return url;
-    }
-
-    public CMTextField getUserName() {
-        return userName;
-    }
-
-    /**
-     * @return Builder of the view (to allow dynamic extending of the component)
-     */
-    public DefaultFormBuilder getBuilder() {
-        return builder;
-    }
-
+    @Override
     public void setEnabled(boolean enabled) {
         if (isEnabled() != enabled) {
             super.setEnabled(enabled);
             for (JLabel label : labels) {
                 label.setEnabled(enabled);
             }
-
             adapters.setEnabled(enabled);
             driver.setEnabled(enabled);
             url.setEnabled(enabled);

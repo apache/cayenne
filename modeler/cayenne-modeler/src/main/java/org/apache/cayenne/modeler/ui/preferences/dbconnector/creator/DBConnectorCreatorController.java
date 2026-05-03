@@ -22,35 +22,31 @@ package org.apache.cayenne.modeler.ui.preferences.dbconnector.creator;
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.ui.preferences.dbconnector.DBConnectorPreferencesController;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
-import org.apache.cayenne.modeler.util.DbAdapterInfo;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import java.awt.Component;
 import java.util.Map;
 
 public class DBConnectorCreatorController extends ChildController<DBConnectorPreferencesController> {
 
-    private static final String NO_ADAPTER = "Custom / Undefined";
     private static final String NAME_PREFIX = "Connector";
 
-    protected DBConnectorCreatorView view;
+    protected final DBConnectorCreatorView view;
+    protected final Map<String, DBConnector> connectors;
     protected boolean canceled;
-    protected Map<String, DBConnector> connectors;
+
+    private String enteredName;
+    private String enteredAdapter;
 
     public DBConnectorCreatorController(DBConnectorPreferencesController parent) {
         super(parent);
-        this.view = new DBConnectorCreatorView((JDialog) SwingUtilities
-                .getWindowAncestor(parent.getView()));
         this.connectors = parent.getConnectors();
-
-        DefaultComboBoxModel model = new DefaultComboBoxModel(DbAdapterInfo
-                .getStandardAdapters());
-        model.insertElementAt(NO_ADAPTER, 0);
-        this.view.getAdapters().setModel(model);
-        this.view.getAdapters().setSelectedIndex(0);
-
-        this.view.getConnectorName().setText(suggestName());
-        initBindings();
+        this.view = new DBConnectorCreatorView(
+                (JDialog) SwingUtilities.getWindowAncestor(parent.getView()),
+                this,
+                suggestName());
     }
 
     private String suggestName() {
@@ -67,33 +63,30 @@ public class DBConnectorCreatorController extends ChildController<DBConnectorPre
         return view;
     }
 
-    protected void initBindings() {
-        view.getCancelButton().addActionListener(e -> cancelAction());
-        view.getOkButton().addActionListener(e -> okAction());
-    }
-
-    public void okAction() {
-        if (getName() == null) {
+    void okClicked(String name, String adapter) {
+        if (name == null || name.isEmpty()) {
             JOptionPane.showMessageDialog(
                     view,
                     "Enter Connector Name",
                     null,
                     JOptionPane.WARNING_MESSAGE);
+            return;
         }
-        else if (connectors.containsKey(getName())) {
+        if (connectors.containsKey(name)) {
             JOptionPane.showMessageDialog(
                     view,
-                    "'" + getName() + "' is already in use, enter a different name",
+                    "'" + name + "' is already in use, enter a different name",
                     null,
                     JOptionPane.WARNING_MESSAGE);
+            return;
         }
-        else {
-            canceled = false;
-            view.dispose();
-        }
+        this.enteredName = name;
+        this.enteredAdapter = adapter;
+        this.canceled = false;
+        view.dispose();
     }
 
-    public void cancelAction() {
+    void cancelClicked() {
         canceled = true;
         view.dispose();
     }
@@ -116,8 +109,7 @@ public class DBConnectorCreatorController extends ChildController<DBConnectorPre
     }
 
     public String getName() {
-        String name = view.getConnectorName().getText();
-        return (name.length() > 0) ? name : null;
+        return enteredName;
     }
 
     protected DBConnector createConnector() {
@@ -125,20 +117,13 @@ public class DBConnectorCreatorController extends ChildController<DBConnectorPre
             return null;
         }
 
-        DBConnector connector = parent.create(getName());
+        DBConnector connector = parent.create(enteredName);
 
-        Object adapter = view.getAdapters().getSelectedItem();
-        if (NO_ADAPTER.equals(adapter)) {
-            adapter = null;
-        }
-
-        if (adapter != null) {
-            String adapterString = adapter.toString();
-            connector.setDbAdapter(adapterString);
-
+        if (enteredAdapter != null) {
+            connector.setDbAdapter(enteredAdapter);
             // guess adapter defaults...
-            connector.setJdbcDriver(Adapters.driver(adapterString));
-            connector.setUrl(Adapters.jdbcURL(adapterString));
+            connector.setJdbcDriver(Adapters.driver(enteredAdapter));
+            connector.setUrl(Adapters.jdbcURL(enteredAdapter));
         }
 
         return connector;

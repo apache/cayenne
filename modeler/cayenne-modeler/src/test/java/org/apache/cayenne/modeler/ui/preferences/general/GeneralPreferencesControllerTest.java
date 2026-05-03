@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.charset.Charset;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
@@ -38,13 +37,5 @@ public class GeneralPreferencesControllerTest {
             assertTrue(Charset.isSupported(encoding),
                     "Charset not supported by JVM: " + encoding);
         }
-    }
-
-    @Test
-    public void detectPlatformEncodingReturnsCanonicalName() {
-        // Must return the canonical Charset name (e.g. "UTF-8"), not a historical
-        // alias (e.g. "UTF8"), so it matches entries in STANDARD_ENCODINGS.
-        String encoding = GeneralPreferencesController.detectPlatformEncoding();
-        assertEquals(Charset.forName(encoding).name(), encoding);
     }
 }

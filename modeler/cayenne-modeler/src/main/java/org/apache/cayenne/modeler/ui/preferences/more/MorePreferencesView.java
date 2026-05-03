@@ -28,15 +28,16 @@ import java.awt.*;
 
 public class MorePreferencesView extends JPanel {
 
-    private final JButton copyAllButton;
-    private final JButton resetToDefaultsButton;
-    private final JCheckBox importLegacyPreferencesCheckBox;
+    public MorePreferencesView(MorePreferencesController controller) {
+        JButton copyAllButton = new JButton("Copy All to Clipboard");
+        JButton resetToDefaultsButton = new JButton("Reset to Defaults");
+        JCheckBox importLegacyPreferencesCheckBox =
+                new JCheckBox("Import older Modeler preferences if available", true);
+        importLegacyPreferencesCheckBox.setBorder(BorderFactory.createEmptyBorder(0, 12, 0, 0));
 
-    public MorePreferencesView() {
-        this.copyAllButton = new JButton("Copy All to Clipboard");
-        this.resetToDefaultsButton = new JButton("Reset to Defaults");
-        this.importLegacyPreferencesCheckBox = new JCheckBox("Import older Modeler preferences if available", true);
-        this.importLegacyPreferencesCheckBox.setBorder(BorderFactory.createEmptyBorder(0, 12, 0, 0));
+        copyAllButton.addActionListener(e -> controller.copyAllClicked());
+        resetToDefaultsButton.addActionListener(
+                e -> controller.resetToDefaultsClicked(importLegacyPreferencesCheckBox.isSelected()));
 
         FormLayout layout = new FormLayout(
                 "12dlu, default:grow",
@@ -53,19 +54,7 @@ public class MorePreferencesView extends JPanel {
         builder.add(resetToDefaultsButton, cc.xy(2, 7, CellConstraints.LEFT, CellConstraints.DEFAULT));
         builder.add(importLegacyPreferencesCheckBox, cc.xy(2, 9, CellConstraints.LEFT, CellConstraints.DEFAULT));
 
-        this.setLayout(new BorderLayout());
-        this.add(builder.getPanel(), BorderLayout.CENTER);
-    }
-
-    public JButton getCopyAllButton() {
-        return copyAllButton;
-    }
-
-    public JButton getResetToDefaultsButton() {
-        return resetToDefaultsButton;
-    }
-
-    public JCheckBox getImportLegacyPreferencesCheckBox() {
-        return importLegacyPreferencesCheckBox;
+        setLayout(new BorderLayout());
+        add(builder.getPanel(), BorderLayout.CENTER);
     }
 }

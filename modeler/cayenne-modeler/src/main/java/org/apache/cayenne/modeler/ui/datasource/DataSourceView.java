@@ -22,8 +22,6 @@ package org.apache.cayenne.modeler.ui.datasource;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.ui.preferences.dbconnector.DBConnectionInfoEditorController;
-import org.apache.cayenne.modeler.mvc.RootController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,27 +29,26 @@ import java.awt.*;
 
 public class DataSourceView extends JDialog {
 
-    private static final byte OK_BUTTON_INDEX = 0;
-    private static final byte CANCEL_BUTTON_INDEX = 1;
+    private final JComboBox<String> dataSources;
 
-    protected JComboBox<String> dataSources;
-    protected JButton configButton;
-    protected JButton okButton;
-    protected JButton cancelButton;
-    protected DBConnectionInfoEditorController connectionInfo;
+    public DataSourceView(DataSourceController controller, Frame parent, Component editorView) {
+        super(parent);
 
-    public DataSourceView(RootController controller, String[] labels) {
-        super(controller.getApplication().getFrameController().getView());
-        
         this.dataSources = new JComboBox<>();
-
-        this.configButton = new JButton("...");
-        this.configButton.setToolTipText("configure local DataSource");
-        this.okButton = new JButton(labels[OK_BUTTON_INDEX]);
-        this.cancelButton = new JButton(labels[CANCEL_BUTTON_INDEX]);
-        this.connectionInfo = new DBConnectionInfoEditorController(controller);
+        JButton configButton = new JButton("...");
+        configButton.setToolTipText("configure local DataSource");
+        JButton okButton = new JButton("Continue");
+        JButton cancelButton = new JButton("Cancel");
 
         getRootPane().setDefaultButton(okButton);
+
+        dataSources.addActionListener(e -> {
+            Object sel = dataSources.getSelectedItem();
+            controller.setSelectedDataSource(sel != null ? sel.toString() : null);
+        });
+        cancelButton.addActionListener(e -> controller.cancelClicked());
+        okButton.addActionListener(e -> controller.okClicked());
+        configButton.addActionListener(e -> controller.dataSourceConfigClicked());
 
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(new FormLayout(
@@ -69,29 +66,17 @@ public class DataSourceView extends JDialog {
 
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(builder.getPanel(), BorderLayout.NORTH);
-        getContentPane().add(connectionInfo.getView(), BorderLayout.CENTER);
+        getContentPane().add(editorView, BorderLayout.CENTER);
         getContentPane().add(buttons, BorderLayout.SOUTH);
 
         setTitle("DB Connection Info");
     }
 
-    public JComboBox<String> getDataSources() {
-        return dataSources;
+    public void setDataSources(String[] keys) {
+        dataSources.setModel(new DefaultComboBoxModel<>(keys));
     }
 
-    public JButton getCancelButton() {
-        return cancelButton;
-    }
-
-    public JButton getConfigButton() {
-        return configButton;
-    }
-
-    public JButton getOkButton() {
-        return okButton;
-    }
-
-    public DBConnectionInfoEditorController getConnectionInfo() {
-        return connectionInfo;
+    public void selectDataSource(String key) {
+        dataSources.setSelectedItem(key);
     }
 }

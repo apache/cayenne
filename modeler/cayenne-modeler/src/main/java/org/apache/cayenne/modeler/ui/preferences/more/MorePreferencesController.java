@@ -35,11 +35,7 @@ public class MorePreferencesController extends ChildController<PreferenceDialogC
 
     public MorePreferencesController(PreferenceDialogController parent) {
         super(parent);
-
-        this.view = new MorePreferencesView();
-
-        view.getCopyAllButton().addActionListener(e -> copyAllToClipboard());
-        view.getResetToDefaultsButton().addActionListener(e -> resetToDefaults());
+        this.view = new MorePreferencesView(this);
     }
 
     @Override
@@ -47,17 +43,13 @@ public class MorePreferencesController extends ChildController<PreferenceDialogC
         return view;
     }
 
-    public void commit() {
-        // no-op: this card has no deferred state
-    }
-
-    private void copyAllToClipboard() {
+    void copyAllClicked() {
         PreferencesRepository repository = getApplication().getPreferencesRepository();
         String json = repository.exportAsJson();
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(json), null);
     }
 
-    private void resetToDefaults() {
+    void resetToDefaultsClicked(boolean importLegacy) {
         int answer = JOptionPane.showConfirmDialog(
                 view,
                 "Resetting preferences to defaults requires closing and restarting CayenneModeler. Continue?",
@@ -67,8 +59,6 @@ public class MorePreferencesController extends ChildController<PreferenceDialogC
         if (answer != JOptionPane.YES_OPTION) {
             return;
         }
-
-        boolean importLegacy = view.getImportLegacyPreferencesCheckBox().isSelected();
 
         // Close the open project first (with the standard unsaved-changes
         // prompt). closeProject is a no-op when no project is open. If the user

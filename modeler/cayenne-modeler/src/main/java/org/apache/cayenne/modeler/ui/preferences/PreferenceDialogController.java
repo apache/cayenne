@@ -51,7 +51,7 @@ public class PreferenceDialogController extends ChildController<RootController> 
     private final ClasspathPreferencesController classpathPrefsController;
     private final MorePreferencesController allPrefsController;
 
-    public PreferenceDialogController(final RootController parent) {
+    public PreferenceDialogController(RootController parent) {
         super(parent);
 
         Window parentView = parent.getView() instanceof Window
@@ -59,44 +59,35 @@ public class PreferenceDialogController extends ChildController<RootController> 
                 : SwingUtilities.getWindowAncestor(parent.getView());
 
         this.view = (parentView instanceof Dialog)
-                ? new PreferenceDialogView((Dialog) parentView)
-                : new PreferenceDialogView((Frame) parentView);
+                ? new PreferenceDialogView(this, (Dialog) parentView)
+                : new PreferenceDialogView(this, (Frame) parentView);
 
-        JList<String> list = view.getList();
-        list.setListData(preferenceMenus);
-        list.addListSelectionListener(e -> updateSelection());
-        view.sizeListToLabels();
-
-        view.getCancelButton().addActionListener(e -> cancelAction());
-        view.getSaveButton().addActionListener(e -> savePreferencesAction());
+        view.setMenuItems(preferenceMenus);
 
         this.generalPrefsController = new GeneralPreferencesController(this);
-        view.getDetailPanel().add(generalPrefsController.getView(), GENERAL_KEY);
+        view.addCard(GENERAL_KEY, generalPrefsController.getView());
 
         this.dbConnectorPrefsController = new DBConnectorPreferencesController(this);
-        view.getDetailPanel().add(dbConnectorPrefsController.getView(), DB_CONNECTORS_KEY);
+        view.addCard(DB_CONNECTORS_KEY, dbConnectorPrefsController.getView());
 
         this.classpathPrefsController = new ClasspathPreferencesController(this);
-        view.getDetailPanel().add(classpathPrefsController.getView(), CLASSPATH_KEY);
+        view.addCard(CLASSPATH_KEY, classpathPrefsController.getView());
 
         this.allPrefsController = new MorePreferencesController(this);
-        view.getDetailPanel().add(allPrefsController.getView(), MORE_KEY);
+        view.addCard(MORE_KEY, allPrefsController.getView());
     }
 
-    public void updateSelection() {
-        final String selection = view.getList().getSelectedValue();
-        if (selection != null) {
-            view.getDetailLayout().show(view.getDetailPanel(), selection);
-            lastSelectedCard = selection;
-        }
+    void cardSelected(String name) {
+        lastSelectedCard = name;
+        view.showCard(name);
     }
 
-    private void cancelAction() {
+    void cancelClicked() {
         dbConnectorPrefsController.discard();
         view.dispose();
     }
 
-    private void savePreferencesAction() {
+    void saveClicked() {
         dbConnectorPrefsController.commit();
         generalPrefsController.commit();
         classpathPrefsController.commit();
@@ -131,7 +122,7 @@ public class PreferenceDialogController extends ChildController<RootController> 
     }
 
     private void doShow(String cardKey, ChildController<?> childController) {
-        view.getDetailLayout().show(view.getDetailPanel(), GENERAL_KEY);
+        view.showCard(GENERAL_KEY);
         view.pack();
 
         centerView();
@@ -140,8 +131,7 @@ public class PreferenceDialogController extends ChildController<RootController> 
         view.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         view.setModalityType(Dialog.ModalityType.MODELESS);
 
-        view.getDetailLayout().show(view.getDetailPanel(), cardKey);
-        view.getList().setSelectedValue(cardKey, true);
+        view.showCard(cardKey);
         childController.getView().setEnabled(true);
         view.setVisible(true);
     }

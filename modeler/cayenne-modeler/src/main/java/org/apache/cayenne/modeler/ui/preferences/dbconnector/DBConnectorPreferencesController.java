@@ -50,6 +50,7 @@ import java.util.stream.Collectors;
 public class DBConnectorPreferencesController extends ChildController<PreferenceDialogController> {
 
 	private final DBConnectorPreferencesView view;
+	private final DBConnectorEditorController editorController;
 	private final DBConnectors registry;
 	private final Map<String, DBConnector> connectors;
 	private final Set<String> toRemove;
@@ -58,7 +59,8 @@ public class DBConnectorPreferencesController extends ChildController<Preference
 	public DBConnectorPreferencesController(PreferenceDialogController parent) {
 		super(parent);
 
-		this.view = new DBConnectorPreferencesView(this);
+		this.editorController = new DBConnectorEditorController(this);
+		this.view = new DBConnectorPreferencesView(this, editorController.getView());
 
 		// init view data — work on a snapshot of the live registry; commit/discard on Save/Revert
 		this.registry = getApplication().getDbConnectors();
@@ -68,32 +70,17 @@ public class DBConnectorPreferencesController extends ChildController<Preference
 
 		Object[] keys = connectors.keySet().toArray();
 		Arrays.sort(keys);
-		DefaultComboBoxModel<Object> connectorModel = new DefaultComboBoxModel<>(keys);
-		view.getConnectors().setModel(connectorModel);
-
-		initBindings();
+		view.setConnectors(keys);
 
 		// show first item
 		if (keys.length > 0) {
-			view.getConnectors().setSelectedIndex(0);
+			view.selectConnector(keys[0]);
 			editConnectorAction();
 		}
 	}
 
 	public Component getView() {
 		return view;
-	}
-
-	protected void initBindings() {
-		view.getAddConnector().addActionListener(e -> newConnectorAction());
-		view.getDuplicateConnector().addActionListener(e -> duplicateConnectorAction());
-		view.getRemoveConnector().addActionListener(e -> removeConnectorAction());
-		view.getTestConnector().addActionListener(e -> testConnectorAction());
-
-		view.getConnectors().addActionListener(e -> {
-			Object sel = view.getConnectors().getSelectedItem();
-			setConnectorName(sel != null ? sel.toString() : null);
-		});
 	}
 
 	public Map<String, DBConnector> getConnectors() {
@@ -104,8 +91,8 @@ public class DBConnectorPreferencesController extends ChildController<Preference
 		return connectorName;
 	}
 
-	public void setConnectorName(String connectorName) {
-		this.connectorName = connectorName;
+	void connectorSelected(String name) {
+		this.connectorName = name;
 		editConnectorAction();
 	}
 
@@ -152,15 +139,15 @@ public class DBConnectorPreferencesController extends ChildController<Preference
 	/**
 	 * Shows a dialog to create a new local DB Connector configuration.
 	 */
-	public void newConnectorAction() {
+	void addConnectorClicked() {
 		DBConnectorCreatorController creatorWizard = new DBConnectorCreatorController(this);
 		DBConnector connector = creatorWizard.startupAction();
 
 		if (connector != null) {
 			Object[] keys = connectors.keySet().toArray();
 			Arrays.sort(keys);
-			view.getConnectors().setModel(new DefaultComboBoxModel<>(keys));
-			view.getConnectors().setSelectedItem(creatorWizard.getName());
+			view.setConnectors(keys);
+			view.selectConnector(creatorWizard.getName());
 			editConnectorAction();
 		}
 	}
@@ -168,26 +155,26 @@ public class DBConnectorPreferencesController extends ChildController<Preference
 	/**
 	 * Shows a dialog to duplicate an existing local DB Connector configuration.
 	 */
-	public void duplicateConnectorAction() {
-		Object selected = view.getConnectors().getSelectedItem();
-		if (selected != null) {
-			DBConnectorDuplicatorController wizard = new DBConnectorDuplicatorController(this, selected.toString());
-			DBConnector connector = wizard.startupAction();
+	void duplicateConnectorClicked(String prototypeKey) {
+		if (prototypeKey == null) {
+			return;
+		}
+		DBConnectorDuplicatorController wizard = new DBConnectorDuplicatorController(this, prototypeKey);
+		DBConnector connector = wizard.startupAction();
 
-			if (connector != null) {
-				Object[] keys = connectors.keySet().toArray();
-				Arrays.sort(keys);
-				view.getConnectors().setModel(new DefaultComboBoxModel<>(keys));
-				view.getConnectors().setSelectedItem(wizard.getName());
-				editConnectorAction();
-			}
+		if (connector != null) {
+			Object[] keys = connectors.keySet().toArray();
+			Arrays.sort(keys);
+			view.setConnectors(keys);
+			view.selectConnector(wizard.getName());
+			editConnectorAction();
 		}
 	}
 
 	/**
 	 * Removes current DB Connector.
 	 */
-	public void removeConnectorAction() {
+	void removeConnectorClicked() {
 		String key = getConnectorName();
 		if (key != null) {
 			connectors.remove(key);
@@ -195,7 +182,7 @@ public class DBConnectorPreferencesController extends ChildController<Preference
 
 			Object[] keys = connectors.keySet().toArray();
 			Arrays.sort(keys);
-			view.getConnectors().setModel(new DefaultComboBoxModel<>(keys));
+			view.setConnectors(keys);
 			editConnectorAction(keys.length > 0 ? keys[0] : null);
 		}
 	}
@@ -204,7 +191,7 @@ public class DBConnectorPreferencesController extends ChildController<Preference
 	 * Opens specified DB Connector in the editor.
 	 */
 	public void editConnectorAction(Object connectorKey) {
-		view.getConnectors().setSelectedItem(connectorKey);
+		view.selectConnector(connectorKey);
 		editConnectorAction();
 	}
 
@@ -212,13 +199,13 @@ public class DBConnectorPreferencesController extends ChildController<Preference
 	 * Opens current DB Connector in the editor.
 	 */
 	public void editConnectorAction() {
-		this.view.getConnectorEditor().setConnectionInfo(getConnectionInfo());
+		editorController.setConnector(getConnectionInfo());
 	}
 
 	/**
 	 * Tries to establish a DB connection, reporting the status of this operation.
 	 */
-	public void testConnectorAction() {
+	void testConnectorClicked() {
 		DBConnector currentConnector = getConnectionInfo();
 		if (currentConnector == null) {
 			return;

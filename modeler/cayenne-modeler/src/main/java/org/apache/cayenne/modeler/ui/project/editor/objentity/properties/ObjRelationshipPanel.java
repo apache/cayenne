@@ -172,9 +172,8 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
 
         // Important: process event even if this is the same entity,
         // since the inheritance structure might have changed
-        if (entity != null) {
-            rebuildTable(entity);
-        }
+        rebuildTable(entity);
+
 
         // if an entity was selected on a tree,
         // unselect currently selected row
@@ -182,8 +181,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
             table.clearSelection();
         }
 
-        ObjEntity objEntity = (ObjEntity) e.getEntity();
-        parentPanel.getToolBar().getComponentAtIndex(2).setEnabled(objEntity.getSuperEntity() == null);
+        parentPanel.getToolBar().getComponentAtIndex(2).setEnabled(entity.getSuperEntity() == null);
     }
 
     public void objEntityChanged(ObjEntityEvent e) {

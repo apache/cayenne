@@ -50,14 +50,6 @@ public abstract class DBConnectionAwareAction extends ModelerAbstractAction {
         return connector;
     }
 
-    protected DataSourceController getDataSourceController(String title, String[] buttons) {
-        DataSourceController connectWizard = new DataSourceController(getProjectController(), title, buttons);
-        if (!connectWizard.startupAction()) {
-            return null;
-        }
-        return connectWizard;
-    }
-
     protected DataSourceController getDataSourceController(String title) {
         DataSourceController connectWizard = new DataSourceController(getProjectController(), title);
         if (!connectWizard.startupAction()) {

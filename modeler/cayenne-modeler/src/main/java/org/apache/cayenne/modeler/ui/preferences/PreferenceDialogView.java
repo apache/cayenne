@@ -49,25 +49,30 @@ public class PreferenceDialogView extends JDialog {
     private static final int LIST_MIN_WIDTH = 120;
     private static final int LIST_HEIGHT = 400;
 
-    protected JList<String> list;
-    protected JPanel leftContainer;
-    protected CardLayout detailLayout;
-    protected Container detailPanel;
-    protected JButton cancelButton;
-    protected JButton saveButton;
+    private final JList<String> list;
+    private final JPanel leftContainer;
+    private final CardLayout detailLayout;
+    private final Container detailPanel;
 
-    public PreferenceDialogView(Dialog parent) {
+    public PreferenceDialogView(PreferenceDialogController controller, Dialog parent) {
         super(parent);
-        init();
+        this.list = new JList<>();
+        this.detailLayout = new CardLayout();
+        this.detailPanel = new JPanel(detailLayout);
+        this.leftContainer = new JPanel(new BorderLayout());
+        init(controller);
     }
 
-    public PreferenceDialogView(Frame parent) {
+    public PreferenceDialogView(PreferenceDialogController controller, Frame parent) {
         super(parent);
-        init();
+        this.list = new JList<>();
+        this.detailLayout = new CardLayout();
+        this.detailPanel = new JPanel(detailLayout);
+        this.leftContainer = new JPanel(new BorderLayout());
+        init(controller);
     }
 
-    private void init() {
-        list = new JList<>();
+    private void init(PreferenceDialogController controller) {
         list.setCellRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -77,14 +82,20 @@ public class PreferenceDialogView extends JDialog {
             }
         });
         list.setFont(new JLabel().getFont().deriveFont(Font.BOLD, 12));
-        detailLayout = new CardLayout();
-        detailPanel = new JPanel(detailLayout);
-        saveButton = new JButton("Save");
-        cancelButton = new JButton("Cancel");
 
-        // assemble
+        list.addListSelectionListener(e -> {
+            String selection = list.getSelectedValue();
+            if (selection != null) {
+                controller.cardSelected(selection);
+            }
+        });
 
-        leftContainer = new JPanel(new BorderLayout());
+        JButton saveButton = new JButton("Save");
+        JButton cancelButton = new JButton("Cancel");
+
+        cancelButton.addActionListener(e -> controller.cancelClicked());
+        saveButton.addActionListener(e -> controller.saveClicked());
+
         JScrollPane scrollPane = new JScrollPane(list);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         leftContainer.add(scrollPane);
@@ -108,11 +119,21 @@ public class PreferenceDialogView extends JDialog {
         setTitle("Edit Preferences");
     }
 
-    /**
-     * Sets the left list to a fixed width that fits the longest label. This
-     * keeps labels fully visible regardless of how the user resizes the dialog.
-     */
-    public void sizeListToLabels() {
+    public void setMenuItems(String[] items) {
+        list.setListData(items);
+        sizeListToLabels();
+    }
+
+    public void addCard(String name, Component card) {
+        detailPanel.add(card, name);
+    }
+
+    public void showCard(String name) {
+        detailLayout.show(detailPanel, name);
+        list.setSelectedValue(name, true);
+    }
+
+    private void sizeListToLabels() {
         FontMetrics fm = list.getFontMetrics(list.getFont());
         int maxText = 0;
         for (int i = 0; i < list.getModel().getSize(); i++) {
@@ -121,25 +142,5 @@ public class PreferenceDialogView extends JDialog {
         int width = Math.max(LIST_MIN_WIDTH, maxText + LIST_CELL_LEFT_PAD + LIST_CELL_RIGHT_PAD);
         leftContainer.setPreferredSize(new Dimension(width, LIST_HEIGHT));
         leftContainer.setMinimumSize(new Dimension(width, 0));
-    }
-
-    public JList<String> getList() {
-        return list;
-    }
-
-    public Container getDetailPanel() {
-        return detailPanel;
-    }
-
-    public CardLayout getDetailLayout() {
-        return detailLayout;
-    }
-
-    public JButton getCancelButton() {
-        return cancelButton;
-    }
-
-    public JButton getSaveButton() {
-        return saveButton;
     }
 }

@@ -22,15 +22,10 @@ import org.apache.cayenne.modeler.pref.PreferenceAdapter;
 import org.apache.cayenne.modeler.pref.PreferencesRepository;
 import org.apache.cayenne.project.Project;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.prefs.Preferences;
 
 /**
- * Binds the DB Generator dialog's checkboxes to {@link Preferences}: seeds the
- * checkboxes from prefs on {@link #bind} and writes them back when the dialog window
- * closes. Holds no state of its own — the view is the source of truth while the dialog
- * is open.
+ * Persistence for the DB Generator dialog's checkbox options.
  */
 public class DBGeneratorPrefs implements PreferenceAdapter {
 
@@ -52,22 +47,32 @@ public class DBGeneratorPrefs implements PreferenceAdapter {
         this.prefs = prefs;
     }
 
-    public void bind(DBGeneratorOptionsView view) {
-        view.getCreateFK().setSelected(prefs.getBoolean(CREATE_FK_PROPERTY, true));
-        view.getCreatePK().setSelected(prefs.getBoolean(CREATE_PK_PROPERTY, true));
-        view.getCreateTables().setSelected(prefs.getBoolean(CREATE_TABLES_PROPERTY, true));
-        view.getDropPK().setSelected(prefs.getBoolean(DROP_PK_PROPERTY, false));
-        view.getDropTables().setSelected(prefs.getBoolean(DROP_TABLES_PROPERTY, false));
+    public boolean getCreateFK() {
+        return prefs.getBoolean(CREATE_FK_PROPERTY, true);
+    }
 
-        view.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosed(WindowEvent e) {
-                prefs.putBoolean(CREATE_FK_PROPERTY, view.getCreateFK().isSelected());
-                prefs.putBoolean(CREATE_PK_PROPERTY, view.getCreatePK().isSelected());
-                prefs.putBoolean(CREATE_TABLES_PROPERTY, view.getCreateTables().isSelected());
-                prefs.putBoolean(DROP_PK_PROPERTY, view.getDropPK().isSelected());
-                prefs.putBoolean(DROP_TABLES_PROPERTY, view.getDropTables().isSelected());
-            }
-        });
+    public boolean getCreatePK() {
+        return prefs.getBoolean(CREATE_PK_PROPERTY, true);
+    }
+
+    public boolean getCreateTables() {
+        return prefs.getBoolean(CREATE_TABLES_PROPERTY, true);
+    }
+
+    public boolean getDropPK() {
+        return prefs.getBoolean(DROP_PK_PROPERTY, false);
+    }
+
+    public boolean getDropTables() {
+        return prefs.getBoolean(DROP_TABLES_PROPERTY, false);
+    }
+
+    public void save(boolean createFK, boolean createPK, boolean createTables,
+                     boolean dropPK, boolean dropTables) {
+        prefs.putBoolean(CREATE_FK_PROPERTY, createFK);
+        prefs.putBoolean(CREATE_PK_PROPERTY, createPK);
+        prefs.putBoolean(CREATE_TABLES_PROPERTY, createTables);
+        prefs.putBoolean(DROP_PK_PROPERTY, dropPK);
+        prefs.putBoolean(DROP_TABLES_PROPERTY, dropTables);
     }
 }

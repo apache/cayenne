@@ -30,61 +30,59 @@ import java.awt.*;
 
 public class MavenDependencyDialogView extends CMDialog {
 
-    private JButton downloadButton;
-    private JButton cancelButton;
-    private JTextField groupId;
-    private JTextField artifactId;
-    private JTextField version;
+    private final JButton downloadButton;
 
-    public MavenDependencyDialogView(Dialog parentDialog) {
-        super(parentDialog, "Download artifact", true);
-        this.initView();
-        this.pack();
+    public MavenDependencyDialogView(Dialog parent, MavenDependencyDialogController controller) {
+        super(parent, "Download artifact", true);
+        this.downloadButton = init(controller);
+        pack();
         centerWindow();
     }
 
-    public MavenDependencyDialogView(Frame parentFrame) {
-        super(parentFrame, "Download artifact", true);
-        this.initView();
-        this.pack();
+    public MavenDependencyDialogView(Frame parent, MavenDependencyDialogController controller) {
+        super(parent, "Download artifact", true);
+        this.downloadButton = init(controller);
+        pack();
         centerWindow();
     }
 
-    private void initView() {
+    private JButton init(MavenDependencyDialogController controller) {
         getContentPane().setLayout(new BorderLayout());
 
-        {
-            groupId = new JTextField(25);
-            artifactId = new JTextField(25);
-            version = new JTextField(25);
+        JTextField groupId = new JTextField(25);
+        JTextField artifactId = new JTextField(25);
+        JTextField version = new JTextField(25);
 
-            CellConstraints cc = new CellConstraints();
-            PanelBuilder builder = new PanelBuilder(
-                    new FormLayout(
-                            "right:max(50dlu;pref), 3dlu, fill:min(100dlu;pref)",
-                            "p, 3dlu, p, 3dlu, p, 3dlu"
-                    ));
-            builder.setDefaultDialogBorder();
+        CellConstraints cc = new CellConstraints();
+        PanelBuilder builder = new PanelBuilder(
+                new FormLayout(
+                        "right:max(50dlu;pref), 3dlu, fill:min(100dlu;pref)",
+                        "p, 3dlu, p, 3dlu, p, 3dlu"));
+        builder.setDefaultDialogBorder();
 
-            builder.addLabel("group id:", cc.xy(1, 1));
-            builder.add(groupId, cc.xy(3, 1));
+        builder.addLabel("group id:", cc.xy(1, 1));
+        builder.add(groupId, cc.xy(3, 1));
 
-            builder.addLabel("artifact id:", cc.xy(1, 3));
-            builder.add(artifactId, cc.xy(3, 3));
+        builder.addLabel("artifact id:", cc.xy(1, 3));
+        builder.add(artifactId, cc.xy(3, 3));
 
-            builder.addLabel("version:", cc.xy(1, 5));
-            builder.add(version, cc.xy(3, 5));
+        builder.addLabel("version:", cc.xy(1, 5));
+        builder.add(version, cc.xy(3, 5));
 
-            getContentPane().add(builder.getPanel(), BorderLayout.NORTH);
-        }
+        getContentPane().add(builder.getPanel(), BorderLayout.NORTH);
 
-        {
-            downloadButton = new JButton("Download");
-            cancelButton = new JButton("Cancel");
-            getRootPane().setDefaultButton(downloadButton);
+        JButton download = new JButton("Download");
+        JButton cancel = new JButton("Cancel");
+        getRootPane().setDefaultButton(download);
 
-            getContentPane().add(new CMButtonPanel(cancelButton, downloadButton), BorderLayout.SOUTH);
-        }
+        download.addActionListener(e -> controller.downloadClicked(
+                groupId.getText().trim(),
+                artifactId.getText().trim(),
+                version.getText().trim()));
+        cancel.addActionListener(e -> controller.cancelClicked());
+
+        getContentPane().add(new CMButtonPanel(cancel, download), BorderLayout.SOUTH);
+        return download;
     }
 
     public void close() {
@@ -92,23 +90,7 @@ public class MavenDependencyDialogView extends CMDialog {
         dispose();
     }
 
-    public JButton getCancelButton() {
-        return cancelButton;
-    }
-
-    public JButton getDownloadButton() {
-        return downloadButton;
-    }
-
-    public JTextField getArtifactId() {
-        return artifactId;
-    }
-
-    public JTextField getGroupId() {
-        return groupId;
-    }
-
-    public JTextField getVersion() {
-        return version;
+    public void setDownloadEnabled(boolean enabled) {
+        downloadButton.setEnabled(enabled);
     }
 }

@@ -32,20 +32,18 @@ import java.awt.FlowLayout;
 
 public class DBConnectorDuplicatorView extends JDialog {
 
-    protected JTextField connectorName;
-    protected JButton okButton;
-    protected JButton cancelButton;
-
-    public DBConnectorDuplicatorView(String title) {
+    public DBConnectorDuplicatorView(String title, DBConnectorDuplicatorController controller, String suggestedName) {
         setTitle(title);
 
-        this.connectorName = new JTextField();
-        this.okButton = new JButton("Create");
-        this.cancelButton = new JButton("Cancel");
+        JTextField connectorName = new JTextField(suggestedName);
+        JButton okButton = new JButton("Create");
+        JButton cancelButton = new JButton("Cancel");
 
         getRootPane().setDefaultButton(okButton);
 
-        // assemble
+        cancelButton.addActionListener(e -> controller.cancelClicked());
+        okButton.addActionListener(e -> controller.okClicked(connectorName.getText()));
+
         FormLayout layout = new FormLayout("right:pref, 3dlu, fill:250", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
@@ -59,17 +57,5 @@ public class DBConnectorDuplicatorView extends JDialog {
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(builder.getPanel(), BorderLayout.CENTER);
         getContentPane().add(buttons, BorderLayout.SOUTH);
-    }
-
-    public JButton getCancelButton() {
-        return cancelButton;
-    }
-
-    public JTextField getConnectorName() {
-        return connectorName;
-    }
-
-    public JButton getOkButton() {
-        return okButton;
     }
 }

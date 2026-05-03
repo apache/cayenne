@@ -26,31 +26,33 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 
 import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 
 
 public class ClasspathPreferencesView extends JPanel {
 
-    private final JButton addJarButton;
-    private final JButton addDirButton;
-    private final JButton addMvnButton;
-    private final JButton deleteEntryButton;
-    private final JTable table;
+    private final ClasspathTableModel tableModel;
 
-    public ClasspathPreferencesView() {
+    public ClasspathPreferencesView(ClasspathPreferencesController controller) {
 
-        // create widgets
-        addJarButton = new JButton("Add Jar");
-        addDirButton = new JButton("Add Class Folder");
-        addMvnButton = new JButton("Get From Maven Central");
-        deleteEntryButton = new JButton("Delete");
+        this.tableModel = new ClasspathTableModel(controller);
 
-        table = new CMTable();
+        JButton addJarButton = new JButton("Add Jar");
+        JButton addDirButton = new JButton("Add Class Folder");
+        JButton addMvnButton = new JButton("Get From Maven Central");
+        JButton deleteEntryButton = new JButton("Delete");
+
+        JTable table = new CMTable();
         table.setRowMargin(3);
         table.setRowHeight(25);
         table.setTableHeader(null);
+        table.setModel(tableModel);
 
-        // assemble
+        addJarButton.addActionListener(e -> controller.addJarClicked());
+        addDirButton.addActionListener(e -> controller.addClassDirectoryClicked());
+        addMvnButton.addActionListener(e -> controller.addMvnDependencyClicked());
+        deleteEntryButton.addActionListener(e -> removeEntryClicked(controller, table, tableModel));
 
         DefaultFormBuilder sidebar = new DefaultFormBuilder(
                 new FormLayout("fill:min(150dlu;pref)", ""));
@@ -78,23 +80,48 @@ public class ClasspathPreferencesView extends JPanel {
         add(outer.getPanel(), BorderLayout.CENTER);
     }
 
-    public JButton getAddDirButton() {
-        return addDirButton;
+    public void entryAdded() {
+        int len = tableModel.getRowCount();
+
+        tableModel.fireTableRowsInserted(len, len);
     }
 
-    public JButton getAddJarButton() {
-        return addJarButton;
+    private void removeEntryClicked(ClasspathPreferencesController controller, JTable table, AbstractTableModel tableModel) {
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow < 0) {
+            return;
+        }
+
+        controller.entryRemoved(selectedRow);
+        tableModel.fireTableRowsDeleted(selectedRow, selectedRow);
     }
 
-    public JButton getAddMvnButton() {
-        return addMvnButton;
-    }
+    private static class ClasspathTableModel extends AbstractTableModel {
 
-    public JButton getDeleteEntryButton() {
-        return deleteEntryButton;
-    }
+        private final ClasspathPreferencesController controller;
 
-    public JTable getTable() {
-        return table;
+        ClasspathTableModel(ClasspathPreferencesController controller) {
+            this.controller = controller;
+        }
+
+        @Override
+        public int getColumnCount() {
+            return 1;
+        }
+
+        @Override
+        public int getRowCount() {
+            return controller.getEntries().size();
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            return controller.getEntries().get(rowIndex);
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            return "Custom ClassPath";
+        }
     }
 }
