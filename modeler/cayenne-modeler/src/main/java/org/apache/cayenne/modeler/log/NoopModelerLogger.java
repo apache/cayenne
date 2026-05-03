@@ -16,33 +16,29 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.slf4j.impl;
+package org.apache.cayenne.modeler.log;
 
-import org.slf4j.ILoggerFactory;
+import javax.swing.text.AttributeSet;
 
-import java.util.HashMap;
-import java.util.Map;
+class NoopModelerLogger extends ModelerLogger {
 
-/**
- * Factory for creating ModelerLogger instances.
- */
-public class ModelerLogFactory implements ILoggerFactory {
-
-    private static final String ignoreVelocity = "org.apache.velocity";
-
-    private final Map<String, ModelerLogger> localCache;
-
-    public ModelerLogFactory() {
-        localCache = new HashMap<>();
+    NoopModelerLogger(String name) {
+        super(name);
     }
 
     @Override
-    public ModelerLogger getLogger(String name) {
-        ModelerLogger local = localCache.get(name);
-        if (local == null) {
-            local = name.contains(ignoreVelocity) ? new NoopModelerLogger(name) : new ModelerLogger(name);
-            localCache.put(name, local);
+    protected void log(String level, String message, Throwable throwable, AttributeSet style, Object... parameters) {
+        // TODO: this makes no sense for a "Noop" logger or even reduced verbosity logger
+        if (level.equals(INFO_LOG_NAME)) {
+            super.log(level, message, throwable, style, parameters);
         }
-        return local;
+    }
+
+    @Override
+    protected void log(String level, Object message, Throwable throwable, AttributeSet style) {
+        // TODO: this makes no sense for a "Noop" logger or even reduced verbosity logger
+        if (level.equals(INFO_LOG_NAME)) {
+            super.log(level, message, throwable, style);
+        }
     }
 }
