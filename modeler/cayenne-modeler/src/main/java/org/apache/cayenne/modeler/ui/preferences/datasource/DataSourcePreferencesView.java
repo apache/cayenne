@@ -23,7 +23,6 @@ import java.awt.BorderLayout;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.apache.cayenne.modeler.mvc.RootController;
@@ -52,21 +51,27 @@ public class DataSourcePreferencesView extends JPanel {
 
         // assemble
         CellConstraints cc = new CellConstraints();
-        PanelBuilder builder = new PanelBuilder(new FormLayout(
+        PanelBuilder sidebar = new PanelBuilder(new FormLayout(
                 "fill:min(150dlu;pref)",
-                "p, 3dlu, p, 10dlu, p, 3dlu, p, 3dlu, p, 10dlu, p"));
-        builder.setDefaultDialogBorder();
+                "p, 10dlu, p, 3dlu, p, 3dlu, p, 10dlu, p"));
+        sidebar.setDefaultDialogBorder();
 
-        builder.add(new JLabel("Select DataSource"), cc.xy(1, 1));
-        builder.add(dataSources, cc.xy(1, 3));
-        builder.add(addDataSource, cc.xy(1, 5));
-        builder.add(duplicateDataSource, cc.xy(1, 7));
-        builder.add(removeDataSource, cc.xy(1, 9));
-        builder.add(testDataSource, cc.xy(1, 11));
+        sidebar.add(dataSources, cc.xy(1, 1));
+        sidebar.add(addDataSource, cc.xy(1, 3));
+        sidebar.add(duplicateDataSource, cc.xy(1, 5));
+        sidebar.add(removeDataSource, cc.xy(1, 7));
+        sidebar.add(testDataSource, cc.xy(1, 9));
+
+        PanelBuilder editor = new PanelBuilder(new FormLayout(
+                "fill:default:grow",
+                "p, 3dlu, fill:default:grow"));
+        editor.setDefaultDialogBorder();
+        editor.addSeparator("Edit DB Connector", cc.xy(1, 1));
+        editor.add(dataSourceEditor.getView(), cc.xy(1, 3));
 
         setLayout(new BorderLayout());
-        add(dataSourceEditor.getView(), BorderLayout.CENTER);
-        add(builder.getPanel(), BorderLayout.EAST);
+        add(editor.getPanel(), BorderLayout.CENTER);
+        add(sidebar.getPanel(), BorderLayout.EAST);
     }
 
     public DBConnectionInfoEditorController getDataSourceEditor() {

@@ -42,13 +42,13 @@ public class GeneralPreferencesView extends JPanel {
         this.noDeletePrompt = new JCheckBox();
 
         FormLayout layout = new FormLayout(
-                "right:pref, 3dlu, fill:120dlu",
-                "p, 3dlu, p, 12dlu, p, 3dlu, p, fill:40dlu:grow");
+                "right:pref, 3dlu, fill:120dlu, default:grow",
+                "p, 3dlu, p, 3dlu, p, 3dlu, p, fill:40dlu:grow");
 
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
-        builder.addSeparator("General Preferences", cc.xyw(1, 1, 3));
+        builder.addSeparator("General Preferences", cc.xyw(1, 1, 4));
 
         builder.add(encodingSelectorLabel, cc.xy(1, 3));
         builder.add(encodingChoices, cc.xy(3, 3));

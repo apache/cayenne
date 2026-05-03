@@ -32,7 +32,7 @@ import java.awt.*;
 public class PreferenceDialogController extends ChildController<RootController> {
 
     private static final String GENERAL_KEY = "General";
-    private static final String DATA_SOURCES_KEY = "DataSources";
+    private static final String DATA_SOURCES_KEY = "DB Connectors";
     private static final String CLASSPATH_KEY = "Classpath";
     private static final String MORE_KEY = "More...";
 
@@ -65,6 +65,7 @@ public class PreferenceDialogController extends ChildController<RootController> 
         JList<String> list = view.getList();
         list.setListData(preferenceMenus);
         list.addListSelectionListener(e -> updateSelection());
+        view.sizeListToLabels();
 
         view.getCancelButton().addActionListener(e -> cancelAction());
         view.getSaveButton().addActionListener(e -> savePreferencesAction());

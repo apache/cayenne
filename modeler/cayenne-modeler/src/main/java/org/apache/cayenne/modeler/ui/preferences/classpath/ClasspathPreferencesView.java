@@ -20,6 +20,8 @@
 package org.apache.cayenne.modeler.ui.preferences.classpath;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 
@@ -50,20 +52,30 @@ public class ClasspathPreferencesView extends JPanel {
 
         // assemble
 
-        FormLayout layout = new FormLayout("fill:min(150dlu;pref)", "");
-        DefaultFormBuilder builder = new DefaultFormBuilder(layout);
-        builder.setDefaultDialogBorder();
+        DefaultFormBuilder sidebar = new DefaultFormBuilder(
+                new FormLayout("fill:min(150dlu;pref)", ""));
+        sidebar.append(addJarButton);
+        sidebar.append(addDirButton);
+        sidebar.append(addMvnButton);
+        sidebar.append(removeEntryButton);
 
-        builder.append(addJarButton);
-        builder.append(addDirButton);
-        builder.append(addMvnButton);
-        builder.append(removeEntryButton);
-
-        setLayout(new BorderLayout());
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        add(scrollPane, BorderLayout.CENTER);
-        add(builder.getPanel(), BorderLayout.EAST);
+
+        JPanel content = new JPanel(new BorderLayout());
+        content.add(scrollPane, BorderLayout.CENTER);
+        content.add(sidebar.getPanel(), BorderLayout.EAST);
+
+        CellConstraints cc = new CellConstraints();
+        PanelBuilder outer = new PanelBuilder(new FormLayout(
+                "fill:default:grow",
+                "p, 3dlu, fill:default:grow"));
+        outer.setDefaultDialogBorder();
+        outer.addSeparator("Extra Classpath", cc.xy(1, 1));
+        outer.add(content, cc.xy(1, 3));
+
+        setLayout(new BorderLayout());
+        add(outer.getPanel(), BorderLayout.CENTER);
     }
 
     public JButton getAddDirButton() {

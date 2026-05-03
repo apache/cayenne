@@ -29,22 +29,28 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Frame;
 
 
 public class PreferenceDialogView extends JDialog {
 
-    protected JSplitPane split;
+    private static final int LIST_CELL_LEFT_PAD = 8;
+    private static final int LIST_CELL_RIGHT_PAD = 12;
+    private static final int LIST_MIN_WIDTH = 120;
+    private static final int LIST_HEIGHT = 400;
+
     protected JList<String> list;
+    protected JPanel leftContainer;
     protected CardLayout detailLayout;
     protected Container detailPanel;
     protected JButton cancelButton;
@@ -61,14 +67,12 @@ public class PreferenceDialogView extends JDialog {
     }
 
     private void init() {
-        split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        split.setBorder(TopBorder.create());
         list = new JList<>();
         list.setCellRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                setBorder(BorderFactory.createEmptyBorder(5, 8, 5, 0));
+                setBorder(BorderFactory.createEmptyBorder(5, LIST_CELL_LEFT_PAD, 5, LIST_CELL_RIGHT_PAD));
                 return this;
             }
         });
@@ -80,15 +84,16 @@ public class PreferenceDialogView extends JDialog {
 
         // assemble
 
-        Container leftContainer = new JPanel(new BorderLayout());
+        leftContainer = new JPanel(new BorderLayout());
         JScrollPane scrollPane = new JScrollPane(list);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         leftContainer.add(scrollPane);
-        leftContainer.setPreferredSize(new Dimension(180, 400));
+        leftContainer.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.LIGHT_GRAY));
 
-        split.setLeftComponent(leftContainer);
-        split.setRightComponent(detailPanel);
-        split.setDividerSize(3);
+        JPanel center = new JPanel(new BorderLayout());
+        center.setBorder(TopBorder.create());
+        center.add(leftContainer, BorderLayout.WEST);
+        center.add(detailPanel, BorderLayout.CENTER);
 
         getRootPane().setDefaultButton(saveButton);
 
@@ -98,17 +103,28 @@ public class PreferenceDialogView extends JDialog {
         buttons.setBorder(TopBorder.create());
 
         getContentPane().setLayout(new BorderLayout());
-        getContentPane().add(split, BorderLayout.CENTER);
+        getContentPane().add(center, BorderLayout.CENTER);
         getContentPane().add(buttons, BorderLayout.SOUTH);
         setTitle("Edit Preferences");
     }
 
-    public JList<String> getList() {
-        return list;
+    /**
+     * Sets the left list to a fixed width that fits the longest label. This
+     * keeps labels fully visible regardless of how the user resizes the dialog.
+     */
+    public void sizeListToLabels() {
+        FontMetrics fm = list.getFontMetrics(list.getFont());
+        int maxText = 0;
+        for (int i = 0; i < list.getModel().getSize(); i++) {
+            maxText = Math.max(maxText, fm.stringWidth(list.getModel().getElementAt(i)));
+        }
+        int width = Math.max(LIST_MIN_WIDTH, maxText + LIST_CELL_LEFT_PAD + LIST_CELL_RIGHT_PAD);
+        leftContainer.setPreferredSize(new Dimension(width, LIST_HEIGHT));
+        leftContainer.setMinimumSize(new Dimension(width, 0));
     }
 
-    public JSplitPane getSplit() {
-        return split;
+    public JList<String> getList() {
+        return list;
     }
 
     public Container getDetailPanel() {
