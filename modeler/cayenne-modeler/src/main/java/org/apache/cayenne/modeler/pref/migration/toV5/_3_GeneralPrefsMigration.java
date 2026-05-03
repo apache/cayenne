@@ -24,6 +24,9 @@ import org.apache.cayenne.modeler.pref.PreferencesRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -58,10 +61,33 @@ public class _3_GeneralPrefsMigration implements PreferenceMigration {
 
         Preferences target = repo.appPref(GeneralPrefs.NODE);
         target.putBoolean(GeneralPrefs.AUTO_LOAD_PROJECT, legacy.getBoolean("autoLoadProject", false));
-        target.put(GeneralPrefs.ENCODING, legacy.get("encoding", ""));
+        String encoding = normalizeEncoding(legacy.get("encoding", ""));
+        if (encoding != null) {
+            target.put(GeneralPrefs.ENCODING, encoding);
+        }
         target.put(GeneralPrefs.FAVOURITE_DATA_SOURCE, legacy.get("favouriteDataSource", ""));
 
         // legacy used the wrong name - "deletePrompt", for what was meant to be "delete with no prompt"
         target.putBoolean(GeneralPrefs.NO_DELETE_PROMPT, legacy.getBoolean("deletePrompt", false));
+    }
+
+    /**
+     * Converts a legacy encoding name to its canonical Charset form. Older Modeler
+     * versions wrote whatever {@code OutputStreamWriter.getEncoding()} returned —
+     * historical aliases like "UTF8" — which no longer match the canonical names
+     * ("UTF-8") shown in the encoding dropdown. Returns {@code null} for empty
+     * or unrecognized values to signal that nothing should be written to the new
+     * prefs node.
+     */
+    static String normalizeEncoding(String encoding) {
+        if (encoding == null || encoding.isEmpty()) {
+            return null;
+        }
+        try {
+            return Charset.forName(encoding).name();
+        } catch (IllegalCharsetNameException | UnsupportedCharsetException e) {
+            LOGGER.warn("Dropping unsupported legacy encoding '{}'", encoding);
+            return null;
+        }
     }
 }

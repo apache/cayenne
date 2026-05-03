@@ -25,15 +25,15 @@ import org.apache.cayenne.modeler.ui.preferences.PreferenceDialogController;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class GeneralPreferencesController extends ChildController<PreferenceDialogController> {
 
-    private static final String[] STANDARD_ENCODINGS = {
+    static final String[] STANDARD_ENCODINGS = {
             "ISO-8859-1", "US-ASCII", "UTF-8", "UTF-16", "UTF-16BE", "UTF-16LE"
     };
 
@@ -73,21 +73,25 @@ public class GeneralPreferencesController extends ChildController<PreferenceDial
     }
 
     /**
-     * Returns default encoding on the current platform.
+     * Returns the canonical name of the platform's default charset. Canonicalizing
+     * (vs. e.g. {@code OutputStreamWriter.getEncoding()}, which returns historical
+     * aliases like "UTF8") ensures the value compares cleanly against
+     * {@link #STANDARD_ENCODINGS}.
      */
-    protected String detectPlatformEncoding() {
-        return new OutputStreamWriter(new ByteArrayOutputStream()).getEncoding();
+    static String detectPlatformEncoding() {
+        return Charset.defaultCharset().name();
     }
 
     /**
-     * Returns charsets that all JVMs must support cross-platform, with the platform
-     * default placed first and labeled. See java.nio.charset.Charset for the list of
-     * "standard" charsets.
+     * Returns charsets that all JVMs must support cross-platform, sorted
+     * alphabetically, with the platform default labeled in place. See
+     * java.nio.charset.Charset for the list of "standard" charsets.
      */
     private String[] supportedEncodings() {
         List<String> charsets = new ArrayList<>(Arrays.asList(STANDARD_ENCODINGS));
         charsets.remove(systemEncoding);
-        charsets.add(0, defaultLabel);
+        charsets.add(defaultLabel);
+        Collections.sort(charsets);
         return charsets.toArray(new String[0]);
     }
 
