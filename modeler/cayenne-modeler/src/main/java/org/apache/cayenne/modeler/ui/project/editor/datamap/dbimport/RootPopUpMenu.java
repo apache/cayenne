@@ -45,7 +45,6 @@ public class RootPopUpMenu extends DefaultPopUpMenu {
         initListeners();
         this.add(addItem, FIRST_POSITION);
         delete.setVisible(false);
-        rename.setVisible(false);
     }
 
     private void initListeners() {

@@ -50,11 +50,6 @@ public class EditNodeAction extends TreeManipulationAction {
         if (tree.isEditing()) {
             return;
         }
-        if (e != null) {
-            if (tree.getSelectionPath() != null) {
-                tree.startEditingAtPath(tree.getSelectionPath());
-            }
-        }
         if (actionName == null) {
             return;
         }

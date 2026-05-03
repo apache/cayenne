@@ -26,7 +26,6 @@ public class CatalogPopUpMenu extends RootPopUpMenu {
     public CatalogPopUpMenu(DbImportActions actions) {
         super(actions);
         delete.setVisible(true);
-        rename.setVisible(true);
         addCatalog.setVisible(false);
     }
 

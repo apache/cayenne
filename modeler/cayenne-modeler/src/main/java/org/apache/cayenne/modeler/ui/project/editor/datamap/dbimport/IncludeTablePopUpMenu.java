@@ -25,7 +25,6 @@ public class IncludeTablePopUpMenu extends RootPopUpMenu {
 
     public IncludeTablePopUpMenu(DbImportActions actions) {
         super(actions);
-        rename.setVisible(true);
         delete.setVisible(true);
         addCatalog.setVisible(false);
         addSchema.setVisible(false);

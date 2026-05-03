@@ -28,7 +28,6 @@ import javax.swing.JTree;
 
 public class DefaultPopUpMenu extends JPopupMenu {
 
-    protected JMenuItem rename;
     protected JMenuItem delete;
     protected DbImportTreeNode selectedElement;
     protected DbImportTreeNode parentElement;
@@ -37,19 +36,12 @@ public class DefaultPopUpMenu extends JPopupMenu {
 
     public DefaultPopUpMenu(DbImportActions actions) {
         this.actions = actions;
-        rename = new JMenuItem("Rename");
         delete = new JMenuItem("Delete");
-        this.add(rename);
         this.add(delete);
         initListeners();
     }
 
     private void initListeners() {
-        rename.addActionListener(e -> {
-            if ((selectedElement != null) && (parentElement != null)) {
-                actions.getEditNodeAction().actionPerformed(e);
-            }
-        });
         delete.addActionListener(e -> {
             if ((selectedElement != null) && (parentElement != null)) {
                 actions.getDeleteNodeAction().actionPerformed(e);

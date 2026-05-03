@@ -44,7 +44,6 @@ class TreeToolbarPanel extends JToolBar {
     private final JButton excludeColumnButton;
     private final JButton includeProcedureButton;
     private final JButton excludeProcedureButton;
-    private final JButton editButton;
     private final JButton deleteButton;
     private final JButton configureButton;
     private final JButton sortButton;
@@ -64,7 +63,6 @@ class TreeToolbarPanel extends JToolBar {
         this.includeProcedureButton = actions.getAddIncludeProcedureAction().buildButton(2);
         this.excludeProcedureButton = actions.getAddExcludeProcedureAction().buildButton(3);
         this.sortButton = actions.getSortNodesAction().buildButton(0);
-        this.editButton = actions.getEditNodeAction().buildButton(0);
         this.deleteButton = actions.getDeleteNodeAction().buildButton(0);
         this.configureButton = actions.getGetDbConnectionAction().buildButton(0);
 
@@ -75,7 +73,6 @@ class TreeToolbarPanel extends JToolBar {
 
     void unlockButtons() {
         changeToolbarButtonsState(true);
-        editButton.setEnabled(false);
         deleteButton.setEnabled(false);
     }
 
@@ -98,7 +95,6 @@ class TreeToolbarPanel extends JToolBar {
             }
         } else {
             changeToolbarButtonsState(true);
-            editButton.setEnabled(false);
             deleteButton.setEnabled(false);
         }
         if (reverseEngineeringTree.getSelectionPaths() != null) {
@@ -161,7 +157,6 @@ class TreeToolbarPanel extends JToolBar {
         this.add(excludeColumnButton);
         this.add(includeProcedureButton);
         this.add(excludeProcedureButton);
-        this.add(editButton);
         this.add(sortButton);
         this.addSeparator();
         this.add(deleteButton);
@@ -177,7 +172,6 @@ class TreeToolbarPanel extends JToolBar {
         excludeColumnButton.setEnabled(state);
         includeProcedureButton.setEnabled(state);
         excludeProcedureButton.setEnabled(state);
-        editButton.setEnabled(state);
         deleteButton.setEnabled(state);
     }
 
@@ -187,7 +181,6 @@ class TreeToolbarPanel extends JToolBar {
         for (JButton button : buttons) {
             button.setEnabled(true);
         }
-        editButton.setEnabled(true);
         deleteButton.setEnabled(true);
     }
 }

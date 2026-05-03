@@ -25,7 +25,6 @@ public class SchemaPopUpMenu extends RootPopUpMenu {
 
     public SchemaPopUpMenu(DbImportActions actions) {
         super(actions);
-        rename.setVisible(true);
         delete.setVisible(true);
         addSchema.setVisible(false);
         addCatalog.setVisible(false);
