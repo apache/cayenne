@@ -17,11 +17,9 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.configuration.event;
+package org.apache.cayenne.modeler.event.model;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.modeler.event.model.ModelEvent;
-import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,19 +30,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class DataNodeEventTest {
 
     @Test
-    public void testNewName() throws Exception {
+    public void testNewName() {
         ModelEvent event = DataNodeEvent.ofChange(new Object(), new DataNodeDescriptor("someName"));
         assertEquals("someName", event.getNewName());
     }
 
     @Test
-    public void testNoNameChange() throws Exception {
+    public void testNoNameChange() {
         ModelEvent event = DataNodeEvent.ofChange(new Object(), new DataNodeDescriptor("someName"));
         assertFalse(event.isNameChange());
     }
 
     @Test
-    public void testNameChange() throws Exception {
+    public void testNameChange() {
         ModelEvent event = DataNodeEvent.ofChange(
                 new Object(),
                 new DataNodeDescriptor("someName"),
