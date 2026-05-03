@@ -30,17 +30,17 @@ import org.apache.cayenne.project.validation.Inspection;
 import org.apache.cayenne.project.validation.ProjectValidator;
 import org.apache.cayenne.project.validation.ValidationConfig;
 import org.apache.cayenne.resource.URLResource;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.EnumSet;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CayenneModelerValidationIT {
 
@@ -49,7 +49,7 @@ public class CayenneModelerValidationIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(CayenneModelerValidationIT.class);
     private static Injector injector;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() {
         injector = DIBootstrap.createInjector(List.of(
                 new ToolsModule(LOGGER),

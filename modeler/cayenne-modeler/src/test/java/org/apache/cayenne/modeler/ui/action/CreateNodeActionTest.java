@@ -22,10 +22,10 @@ package org.apache.cayenne.modeler.ui.action;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class CreateNodeActionTest {
 
@@ -51,6 +51,6 @@ public class CreateNodeActionTest {
         DataSourceDescriptor ds1 = new DataSourceDescriptor();
         node.setDataSourceDescriptor(ds1);
 
-        assertSame("Project DataNode must not wrap the DataSource", ds1, node.getDataSourceDescriptor());
+        assertSame(ds1, node.getDataSourceDescriptor(), "Project DataNode must not wrap the DataSource");
     }
 }

@@ -24,14 +24,14 @@ import org.apache.cayenne.gen.CgenTemplate;
 import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.EditorTemplateLoader;
 import org.apache.velocity.exception.ResourceNotFoundException;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class EditorTemplateLoaderTest {
 
@@ -39,7 +39,7 @@ public class EditorTemplateLoaderTest {
     private EditorTemplateLoader loader;
     private static final String CUSTOM_TPL = "Custom tpl";
 
-    @Before
+    @BeforeEach
     public void createCgenConfiguration (){
         this.configuration = new CgenConfiguration();
         this.loader = new EditorTemplateLoader(configuration,null);

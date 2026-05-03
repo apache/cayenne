@@ -23,12 +23,12 @@ import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.TemplateEditorView;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.EditorTemplateSaver;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class EditorTemplateSaverTest {
 
@@ -36,7 +36,7 @@ public class EditorTemplateSaverTest {
     private EditorTemplateSaver saver;
     private static final String CUSTOM_TPL = "Custom tpl";
 
-    @Before
+    @BeforeEach
     public void config(){
         this.configuration = new CgenConfiguration();
         this.saver = new EditorTemplateSaver(configuration);

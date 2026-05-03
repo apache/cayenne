@@ -33,9 +33,9 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.EntityArtefactsConfigurator;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.PreviewActionConfigurator;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.TemplateEditorController;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.io.Writer;
@@ -48,7 +48,7 @@ public class PreviewActionConfiguratorTest {
     private TemplateEditorController editorController;
 
 
-    @Before
+    @BeforeEach
     public void config() {
         DataMap dataMap = configureDataMap();
 
@@ -103,7 +103,7 @@ public class PreviewActionConfiguratorTest {
         ClassGenerationAction action = actionConfigurator.preparePreviewAction(TEST_TEMPLATE_TEXT);
         action.execute();
         Writer writer = actionConfigurator.getWriter();
-        Assert.assertEquals(TEST_TEMPLATE_TEXT, writer.toString());
+        Assertions.assertEquals(TEST_TEMPLATE_TEXT, writer.toString());
     }
 
 }

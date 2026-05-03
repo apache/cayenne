@@ -29,7 +29,7 @@ import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class BaseNodeTest {
 

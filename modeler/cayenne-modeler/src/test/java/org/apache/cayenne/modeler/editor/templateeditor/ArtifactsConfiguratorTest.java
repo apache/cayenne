@@ -30,15 +30,15 @@ import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.DataMapArtefactsConfigurator;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.EmbeddableArtefactsConfigurator;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.EntityArtefactsConfigurator;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ArtifactsConfiguratorTest {
     private DataMap dataMap;
@@ -47,7 +47,7 @@ public class ArtifactsConfiguratorTest {
     private EmbeddableArtefactsConfigurator embeddableArtefactsConfigurator;
     private DataMapArtefactsConfigurator dataMapArtefactsConfigurator;
 
-    @Before
+    @BeforeEach
     public void config(){
         this.dataMap = configureDataMap();
         this.action = new ClassGenerationAction(createCgenConfiguration());
@@ -70,7 +70,7 @@ public class ArtifactsConfiguratorTest {
         artifactsField.setAccessible(true);
         Collection<Artifact> artifacts = (Collection<Artifact>) artifactsField.get(configuration);
 
-        Assert.assertEquals(3, artifacts.size());
+        Assertions.assertEquals(3, artifacts.size());
 
     }
 

@@ -19,24 +19,24 @@
 
 package org.apache.cayenne.modeler.ui.preferences.general;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.nio.charset.Charset;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class GeneralPreferencesControllerTest {
 
     @Test
     public void standardEncodingsAreSupportedByJVM() {
-        assertTrue("STANDARD_ENCODINGS must not be empty",
-                GeneralPreferencesController.STANDARD_ENCODINGS.length > 0);
+        assertTrue(GeneralPreferencesController.STANDARD_ENCODINGS.length > 0,
+                "STANDARD_ENCODINGS must not be empty");
 
         for (String encoding : GeneralPreferencesController.STANDARD_ENCODINGS) {
-            assertTrue("Charset not supported by JVM: " + encoding,
-                    Charset.isSupported(encoding));
+            assertTrue(Charset.isSupported(encoding),
+                    "Charset not supported by JVM: " + encoding);
         }
     }
 

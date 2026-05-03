@@ -24,16 +24,16 @@ import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DbImportSorterTest {
 
     private DbImportTreeNode node;
 
-    @Before
+    @BeforeEach
     public void createNode(){
         node = new DbImportTreeNode(new Catalog());
 

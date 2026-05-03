@@ -22,11 +22,11 @@ package org.apache.cayenne.configuration.event;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.event.model.DataNodeEvent;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class DataNodeEventTest {

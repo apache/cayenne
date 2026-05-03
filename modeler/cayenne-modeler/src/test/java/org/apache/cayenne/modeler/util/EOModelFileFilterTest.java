@@ -19,21 +19,21 @@
 
 package org.apache.cayenne.modeler.util;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class EOModelFileFilterTest {
 
     protected FileFilter filter;
 
-    @Before
+    @BeforeEach
 	public void setUp() throws Exception {
 		filter = FileFilters.getEOModelFilter();
 	}

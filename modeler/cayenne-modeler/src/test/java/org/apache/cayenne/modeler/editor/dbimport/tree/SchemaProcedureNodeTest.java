@@ -19,14 +19,14 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class SchemaProcedureNodeTest extends BaseNodeTest {
 
     private SchemaProcedureNode node;
 
-    @Before
+    @BeforeEach
     public void createNode() {
         CatalogNode catalogNode = new CatalogNode("catalog");
         SchemaNode schemaNode = new SchemaNode("schema", catalogNode);

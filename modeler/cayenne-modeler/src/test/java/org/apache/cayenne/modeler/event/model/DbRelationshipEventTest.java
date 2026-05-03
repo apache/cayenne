@@ -21,9 +21,9 @@ package org.apache.cayenne.modeler.event.model;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 
 public class DbRelationshipEventTest {
