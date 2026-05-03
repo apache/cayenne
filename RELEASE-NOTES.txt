@@ -33,6 +33,7 @@ CAY-2927 Modeler: Better-looking "Update Entity Class Name" dialog
 CAY-2928 Modeler: remove floating log console modality
 CAY-2929 Modeler: Prefrences management UI
 CAY-2930 Modeler: remove "rename" button from DB Import toolbar
+CAY-2932 Remove "Generate Classes" menu
 
 Bug Fixes:
 

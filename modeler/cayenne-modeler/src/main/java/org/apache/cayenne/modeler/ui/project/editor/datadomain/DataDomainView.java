@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.ui.project.editor.datadomain;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
-import org.apache.cayenne.modeler.ui.action.GenerateCodeAction;
 import org.apache.cayenne.modeler.ui.action.ShowValidationConfigAction;
 import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.cgen.DataDomainCgenController;
@@ -102,9 +101,6 @@ public class DataDomainView extends JTabbedPane {
     private void currentDomainChanged(DomainDisplayEvent e) {
         if (getSelectedComponent() == cgenView) {
             fireStateChanged();
-        }
-        if (e.getSource() instanceof GenerateCodeAction) {
-            setSelectedComponent(cgenView);
         }
         if (getSelectedComponent() == dbImportView) {
             fireStateChanged();

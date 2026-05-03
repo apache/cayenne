@@ -104,7 +104,6 @@ class ModelerMenuBar extends JMenuBar {
         toolMenu.add(globalActions.getAction(InferRelationshipsAction.class).buildMenu());
         toolMenu.add(globalActions.getAction(ImportEOModelAction.class).buildMenu());
         toolMenu.addSeparator();
-        toolMenu.add(globalActions.getAction(GenerateCodeAction.class).buildMenu());
         toolMenu.add(globalActions.getAction(GenerateDBAction.class).buildMenu());
         toolMenu.add(globalActions.getAction(MigrateAction.class).buildMenu());
         toolMenu.addSeparator();

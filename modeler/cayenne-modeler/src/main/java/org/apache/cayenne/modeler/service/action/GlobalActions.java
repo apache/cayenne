@@ -84,7 +84,6 @@ public class GlobalActions {
                 CreateDataMapAction.class.getName(),
                 CreateNodeAction.class.getName(),
                 ImportEOModelAction.class.getName(),
-                GenerateCodeAction.class.getName(),
                 GenerateDBAction.class.getName(),
                 PasteAction.class.getName(),
                 ShowValidationConfigAction.class.getName(),
@@ -161,7 +160,6 @@ public class GlobalActions {
         registerAction(new RemoveAction(application));
         registerAction(new CreateNodeAction(application));
         registerAction(new CreateDataMapAction(application));
-        registerAction(new GenerateCodeAction(application));
         registerAction(new CreateObjEntityAction(application));
         registerAction(new CreateObjEntityFromDbAction(application));
         registerAction(new CreateDbEntityAction(application));
