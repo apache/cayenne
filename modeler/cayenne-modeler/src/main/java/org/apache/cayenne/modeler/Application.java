@@ -158,7 +158,7 @@ public class Application {
 
     public void startup(File initialProject) {
         this.logConsoleController = new LogConsoleController(this);
-        ModelerLogFactory.setLogAppender(logConsoleController);
+        ModelerLogFactory.setAppender(logConsoleController);
 
         getPreferencesRepository().runMigrations();
 

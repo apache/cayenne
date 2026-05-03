@@ -49,7 +49,7 @@ public class ExitAction extends ProjectAction {
 
         // detach the UI appender before JVM shutdown so any lingering log calls
         // fall back to System.out instead of pushing into a torn-down Swing console
-        ModelerLogFactory.setLogAppender(null);
+        ModelerLogFactory.setAppender(null);
 
         // goodbye
         System.exit(0);

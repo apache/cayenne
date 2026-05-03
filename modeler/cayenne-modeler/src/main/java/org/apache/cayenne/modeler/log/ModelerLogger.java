@@ -31,8 +31,7 @@ import java.time.format.DateTimeFormatter;
 /**
  * ModelerLogger is a Logger implementation, which performs output to the LogConsole.
  */
-// TODO: log channels and log level checking is all pver the place. Requires cleanup
-public class ModelerLogger implements Logger {
+class ModelerLogger implements Logger {
 
     private static final byte LOG_LEVEL_TRACE = 0;
     private static final byte LOG_LEVEL_DEBUG = 1;
@@ -46,8 +45,7 @@ public class ModelerLogger implements Logger {
     private static final String WARN_LOG_NAME = "WARN";
     private static final String ERROR_LOG_NAME = "ERROR";
 
-    // fixed width: 4 fractional digits = tenth-of-millisecond precision
-    private static final DateTimeFormatter TIMESTAMP = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSS");
+    private static final DateTimeFormatter TIMESTAMP = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
     private final String name;
     private final int currentLogLevel;
@@ -59,17 +57,23 @@ public class ModelerLogger implements Logger {
 
     private String getLevelName(byte level) {
         switch (level) {
-            case LOG_LEVEL_INFO:  return INFO_LOG_NAME;
-            case LOG_LEVEL_DEBUG: return DEBUG_LOG_NAME;
-            case LOG_LEVEL_TRACE: return TRACE_LOG_NAME;
-            case LOG_LEVEL_WARN:  return WARN_LOG_NAME;
-            case LOG_LEVEL_ERROR: return ERROR_LOG_NAME;
-            default: throw new IllegalStateException("Unregistered log level - " + level);
+            case LOG_LEVEL_INFO:
+                return INFO_LOG_NAME;
+            case LOG_LEVEL_DEBUG:
+                return DEBUG_LOG_NAME;
+            case LOG_LEVEL_TRACE:
+                return TRACE_LOG_NAME;
+            case LOG_LEVEL_WARN:
+                return WARN_LOG_NAME;
+            case LOG_LEVEL_ERROR:
+                return ERROR_LOG_NAME;
+            default:
+                throw new IllegalStateException("Unregistered log level - " + level);
         }
     }
 
     private boolean isLevelEnabled(int logLevel) {
-        return logLevel >= this.currentLogLevel;
+        return this.currentLogLevel <= logLevel;
     }
 
     private void output(byte level, String format, Object... arguments) {
@@ -79,7 +83,7 @@ public class ModelerLogger implements Logger {
         FormattingTuple tuple = MessageFormatter.arrayFormat(format, arguments);
         String levelName = getLevelName(level);
         String formatted = formatLine(levelName, tuple.getMessage(), tuple.getThrowable());
-        ModelerLogFactory.getLogAppender().appendMessage(levelName, formatted);
+        ModelerLogFactory.getAppender().appendMessage(levelName, formatted);
     }
 
     private static String formatLine(String level, String message, Throwable throwable) {
