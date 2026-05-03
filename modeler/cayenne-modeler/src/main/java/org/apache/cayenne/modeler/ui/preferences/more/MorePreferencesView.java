@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.preferences.all;
+package org.apache.cayenne.modeler.ui.preferences.more;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -26,12 +26,12 @@ import com.jgoodies.forms.layout.FormLayout;
 import javax.swing.*;
 import java.awt.*;
 
-public class AllPreferencesView extends JPanel {
+public class MorePreferencesView extends JPanel {
 
     private final JButton copyAllButton;
     private final JButton deleteAllButton;
 
-    public AllPreferencesView() {
+    public MorePreferencesView() {
         this.copyAllButton = new JButton("Copy All to Clipboard");
         this.deleteAllButton = new JButton("Delete All");
 

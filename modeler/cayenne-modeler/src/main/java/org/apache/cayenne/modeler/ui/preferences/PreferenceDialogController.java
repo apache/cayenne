@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.preferences;
 
 import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.mvc.RootController;
-import org.apache.cayenne.modeler.ui.preferences.all.AllPreferencesController;
+import org.apache.cayenne.modeler.ui.preferences.more.MorePreferencesController;
 import org.apache.cayenne.modeler.ui.preferences.classpath.ClasspathPreferencesController;
 import org.apache.cayenne.modeler.ui.preferences.datasource.DataSourcePreferencesController;
 import org.apache.cayenne.modeler.ui.preferences.general.GeneralPreferencesController;
@@ -49,7 +49,7 @@ public class PreferenceDialogController extends ChildController<RootController> 
     private final GeneralPreferencesController generalPrefsController;
     private final DataSourcePreferencesController dataSourcePrefsController;
     private final ClasspathPreferencesController classpathPrefsController;
-    private final AllPreferencesController allPrefsController;
+    private final MorePreferencesController allPrefsController;
 
     public PreferenceDialogController(final RootController parent) {
         super(parent);
@@ -78,7 +78,7 @@ public class PreferenceDialogController extends ChildController<RootController> 
         this.classpathPrefsController = new ClasspathPreferencesController(this);
         view.getDetailPanel().add(classpathPrefsController.getView(), CLASSPATH_KEY);
 
-        this.allPrefsController = new AllPreferencesController(this);
+        this.allPrefsController = new MorePreferencesController(this);
         view.getDetailPanel().add(allPrefsController.getView(), MORE_KEY);
     }
 

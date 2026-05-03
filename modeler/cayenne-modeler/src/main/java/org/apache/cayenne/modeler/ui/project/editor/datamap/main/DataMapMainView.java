@@ -136,7 +136,7 @@ public class DataMapMainView extends JPanel {
                 initFromModel(map);
             }
         });
-        
+
         nodeSelector.addActionListener(e -> setDataNode());
         quoteSQLIdentifiers.addItemListener(e -> setQuoteSQLIdentifiers(quoteSQLIdentifiers.isSelected()));
         defaultLockType.addItemListener(e -> setDefaultLockType(defaultLockType.isSelected()

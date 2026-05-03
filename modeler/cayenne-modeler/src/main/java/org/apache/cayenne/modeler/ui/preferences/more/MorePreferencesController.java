@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.preferences.all;
+package org.apache.cayenne.modeler.ui.preferences.more;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.mvc.ChildController;
@@ -29,14 +29,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 
-public class AllPreferencesController extends ChildController<PreferenceDialogController> {
+public class MorePreferencesController extends ChildController<PreferenceDialogController> {
 
-    private final AllPreferencesView view;
+    private final MorePreferencesView view;
 
-    public AllPreferencesController(PreferenceDialogController parent) {
+    public MorePreferencesController(PreferenceDialogController parent) {
         super(parent);
 
-        this.view = new AllPreferencesView();
+        this.view = new MorePreferencesView();
 
         view.getCopyAllButton().addActionListener(e -> copyAllToClipboard());
         view.getDeleteAllButton().addActionListener(e -> deleteAll());
