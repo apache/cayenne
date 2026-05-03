@@ -39,7 +39,7 @@ public class MorePreferencesController extends ChildController<PreferenceDialogC
         this.view = new MorePreferencesView();
 
         view.getCopyAllButton().addActionListener(e -> copyAllToClipboard());
-        view.getDeleteAllButton().addActionListener(e -> deleteAll());
+        view.getResetToDefaultsButton().addActionListener(e -> resetToDefaults());
     }
 
     @Override
@@ -57,16 +57,18 @@ public class MorePreferencesController extends ChildController<PreferenceDialogC
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(json), null);
     }
 
-    private void deleteAll() {
+    private void resetToDefaults() {
         int answer = JOptionPane.showConfirmDialog(
                 view,
-                "Erasing all preferences requires closing and restarting CayenneModeler. Continue?",
-                "Delete All Preferences",
+                "Resetting preferences to defaults requires closing and restarting CayenneModeler. Continue?",
+                "Reset Preferences to Defaults",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.WARNING_MESSAGE);
         if (answer != JOptionPane.YES_OPTION) {
             return;
         }
+
+        boolean importLegacy = view.getImportLegacyPreferencesCheckBox().isSelected();
 
         // Close the open project first (with the standard unsaved-changes
         // prompt). closeProject is a no-op when no project is open. If the user
@@ -87,7 +89,7 @@ public class MorePreferencesController extends ChildController<PreferenceDialogC
         }
         application.getFrameController().getView().dispose();
 
-        application.getPreferencesRepository().deleteAll();
+        application.getPreferencesRepository().resetToDefaults(importLegacy);
 
         // Defer the rebuild to a later EDT tick so the in-flight action handler
         // (and any pending dispose events) drain first.

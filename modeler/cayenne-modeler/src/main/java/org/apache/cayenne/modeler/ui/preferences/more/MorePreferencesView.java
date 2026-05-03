@@ -29,21 +29,29 @@ import java.awt.*;
 public class MorePreferencesView extends JPanel {
 
     private final JButton copyAllButton;
-    private final JButton deleteAllButton;
+    private final JButton resetToDefaultsButton;
+    private final JCheckBox importLegacyPreferencesCheckBox;
 
     public MorePreferencesView() {
         this.copyAllButton = new JButton("Copy All to Clipboard");
-        this.deleteAllButton = new JButton("Delete All");
+        this.resetToDefaultsButton = new JButton("Reset to Defaults");
+        this.importLegacyPreferencesCheckBox = new JCheckBox("Import older Modeler preferences if available", true);
+        this.importLegacyPreferencesCheckBox.setBorder(BorderFactory.createEmptyBorder(0, 12, 0, 0));
 
         FormLayout layout = new FormLayout(
-                "fill:default:grow, center:pref, fill:default:grow",
-                "fill:default:grow, p, 6dlu, p, fill:default:grow");
+                "12dlu, default:grow",
+                "p, 6dlu, p, 12dlu, p, 6dlu, p, 3dlu, p, fill:default:grow");
 
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
-        builder.add(copyAllButton, cc.xy(2, 2));
-        builder.add(deleteAllButton, cc.xy(2, 4));
+
+        builder.addSeparator("Export Preferences", cc.xyw(1, 1, 2));
+        builder.add(copyAllButton, cc.xy(2, 3, CellConstraints.LEFT, CellConstraints.DEFAULT));
+
+        builder.addSeparator("Reset Preferences", cc.xyw(1, 5, 2));
+        builder.add(resetToDefaultsButton, cc.xy(2, 7, CellConstraints.LEFT, CellConstraints.DEFAULT));
+        builder.add(importLegacyPreferencesCheckBox, cc.xy(2, 9, CellConstraints.LEFT, CellConstraints.DEFAULT));
 
         this.setLayout(new BorderLayout());
         this.add(builder.getPanel(), BorderLayout.CENTER);
@@ -53,7 +61,11 @@ public class MorePreferencesView extends JPanel {
         return copyAllButton;
     }
 
-    public JButton getDeleteAllButton() {
-        return deleteAllButton;
+    public JButton getResetToDefaultsButton() {
+        return resetToDefaultsButton;
+    }
+
+    public JCheckBox getImportLegacyPreferencesCheckBox() {
+        return importLegacyPreferencesCheckBox;
     }
 }

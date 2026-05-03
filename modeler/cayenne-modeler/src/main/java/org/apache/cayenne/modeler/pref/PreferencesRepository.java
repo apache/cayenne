@@ -194,8 +194,18 @@ public class PreferencesRepository {
      * preferences. Also clears in-memory unsaved-id bookkeeping so subsequent
      * {@link #projectPref}/{@link #dataMapPref} lookups don't reference deleted
      * subtrees.
+     *
+     * <p>If {@code importLegacyPreferences} is {@code true}, the wipe includes
+     * {@code app/_meta/migrations.appliedVersion}, so {@link #runMigrations()}
+     * will re-run every registered migration on next startup and import
+     * preferences from earlier Cayenne versions.
+     *
+     * <p>If {@code false}, after the wipe the repository writes the highest
+     * registered migration version under
+     * {@code app/_meta/migrations.appliedVersion}, marking all migrations as
+     * already applied so legacy preferences are not re-imported on next startup.
      */
-    public void deleteAll() {
+    public void resetToDefaults(boolean importLegacyPreferences) {
         try {
             for (String childName : root.childrenNames()) {
                 root.node(childName).removeNode();
@@ -206,6 +216,17 @@ public class PreferencesRepository {
         }
         unsavedProjectIds.clear();
         unsavedDataMapIds.clear();
+
+        if (!importLegacyPreferences && !migrations.isEmpty()) {
+            int highest = migrations.get(migrations.size() - 1).version();
+            Preferences meta = appPref(META_NODE);
+            meta.putInt(MIGRATIONS_VERSION_KEY, highest);
+            try {
+                meta.flush();
+            } catch (BackingStoreException e) {
+                LOGGER.warn("Error flushing migration version under '{}'", meta.absolutePath(), e);
+            }
+        }
     }
 
     /**
