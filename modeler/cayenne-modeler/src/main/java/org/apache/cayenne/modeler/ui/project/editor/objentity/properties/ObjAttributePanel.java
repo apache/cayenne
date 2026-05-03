@@ -162,7 +162,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
         TableColumn typeColumn = table.getColumnModel().getColumn(ObjAttributeTableModel.OBJ_ATTRIBUTE_TYPE);
 
         JComboBox<String> javaTypesCombo = new CMComboBox<>(typeNames);
-        AutoCompletion.enable(javaTypesCombo, false, true);
+        AutoCompletion.enable(javaTypesCombo, false, true, controller::getSelectedDataMap);
         typeColumn.setCellEditor(new CMComboBoxCellEditor(javaTypesCombo));
     }
 
@@ -312,7 +312,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
         initComboBoxes();
 
         table.getColumnModel().getColumn(ObjAttributeTableModel.DB_ATTRIBUTE).setCellRenderer(new DbAttributePathComboBoxRenderer());
-        table.getColumnModel().getColumn(ObjAttributeTableModel.DB_ATTRIBUTE).setCellEditor(new DbAttributePathComboBoxEditor());
+        table.getColumnModel().getColumn(ObjAttributeTableModel.DB_ATTRIBUTE).setCellEditor(new DbAttributePathComboBoxEditor(controller::getSelectedDataMap));
 
         CMTablePrefs.of(controller.getApplication().getPreferencesRepository(), "objEntity/attributeTable")
                 .bind(table, minSizes, ObjAttributeTableModel.OBJ_ATTRIBUTE);

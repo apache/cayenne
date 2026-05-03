@@ -104,7 +104,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
 
     private void initFormElements() {
         strategyCombo = new CMComboBox<>();
-        AutoCompletion.enable(strategyCombo, false, true);
+        AutoCompletion.enable(strategyCombo, false, true, controller::getSelectedDataMap);
         strategyCombo.setToolTipText("Naming strategy to use");
 
         meaningfulPk = new CMUndoableTextField(controller.getApplication().getUndoManager());

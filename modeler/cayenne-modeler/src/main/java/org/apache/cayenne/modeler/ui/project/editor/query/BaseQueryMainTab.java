@@ -47,7 +47,7 @@ public abstract class BaseQueryMainTab extends JPanel {
 
     protected void initQueryRoot() {
         queryRoot = new CMComboBox<>();
-        AutoCompletion.enable(queryRoot);
+        AutoCompletion.enable(queryRoot, controller::getSelectedDataMap);
         queryRoot.setRenderer(Renderers.listRendererWithIcons());
 
         RootSelectionHandler rootHandler = new RootSelectionHandler(this);

@@ -111,8 +111,8 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
         dbEntityCombo = new CMComboBox<>();
         superEntityCombo = new CMComboBox<>();
 
-        AutoCompletion.enable(dbEntityCombo);
-        AutoCompletion.enable(superEntityCombo);
+        AutoCompletion.enable(dbEntityCombo, controller::getSelectedDataMap);
+        AutoCompletion.enable(superEntityCombo, controller::getSelectedDataMap);
 
         readOnly = new CMCheckBox(controller.getApplication().getUndoManager());
 

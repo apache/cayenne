@@ -167,7 +167,7 @@ public class EmbeddableAttributesView extends JPanel implements
 
         TableColumn typeColumn = table.getColumnModel().getColumn(EmbeddableAttributeTableModel.OBJ_ATTRIBUTE_TYPE);
         JComboBox javaTypesCombo = new CMComboBox<>(ValueTypes.getTypes());
-        AutoCompletion.enable(javaTypesCombo, false, true);
+        AutoCompletion.enable(javaTypesCombo, false, true, controller::getSelectedDataMap);
         typeColumn.setCellEditor(new CMComboBoxCellEditor(javaTypesCombo));
 
         CMTablePrefs.of(controller.getApplication().getPreferencesRepository(), "embeddable/attributeTable")

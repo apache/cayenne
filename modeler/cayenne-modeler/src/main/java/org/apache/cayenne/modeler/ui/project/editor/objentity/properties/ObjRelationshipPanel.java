@@ -256,7 +256,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
         table.setRowMargin(3);
 
         TableColumn col = table.getColumnModel().getColumn(ObjRelationshipTableModel.REL_TARGET_PATH);
-        col.setCellEditor(new DbRelationshipPathComboBoxEditor(controller.getApplication()));
+        col.setCellEditor(new DbRelationshipPathComboBoxEditor(controller));
         col.setCellRenderer(new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {

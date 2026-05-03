@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.toolkit.combobox;
 
-import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.modeler.toolkit.Renderers;
 
 import javax.swing.*;
@@ -28,6 +28,7 @@ import java.awt.*;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.function.Supplier;
 
 /**
  * SuggestionList is a combo-popup displaying all items matching for
@@ -42,10 +43,13 @@ public class SuggestionList extends BasicComboPopup {
      */
     protected boolean strict;
 
-    public SuggestionList(JComboBox cb, boolean strict) {
+    private final Supplier<MappingNamespace> namespaceSupplier;
+
+    public SuggestionList(JComboBox cb, boolean strict, Supplier<MappingNamespace> namespaceSupplier) {
         super(cb);
 
         this.strict = strict;
+        this.namespaceSupplier = namespaceSupplier;
         list.addMouseListener(new MouseHandler());
         setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
     }
@@ -60,10 +64,7 @@ public class SuggestionList extends BasicComboPopup {
         DefaultListModel lm = new DefaultListModel();
 
         for (int i = 0; i < model.getSize(); i++) {
-            String item = Renderers.asString(
-                    model.getElementAt(i),
-                    // TODO: Application should not be accessed in this scope
-                    Application.getInstance().getFrameController().getProjectController().getSelectedDataMap());
+            String item = Renderers.asString(model.getElementAt(i), namespaceSupplier.get());
 
             if (matches(item, prefix)) {
                 lm.addElement(model.getElementAt(i));

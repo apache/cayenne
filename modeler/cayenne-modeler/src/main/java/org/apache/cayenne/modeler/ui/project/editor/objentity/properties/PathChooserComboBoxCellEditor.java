@@ -19,6 +19,10 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.objentity.properties;
 
+import org.apache.cayenne.map.MappingNamespace;
+
+import java.util.function.Supplier;
+
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
@@ -52,6 +56,11 @@ abstract class PathChooserComboBoxCellEditor<T extends CMTableModel<?>> extends 
     protected EntityTreeModel treeModel;
     protected int row;
     private JTable table;
+    private final Supplier<MappingNamespace> namespaceSupplier;
+
+    protected PathChooserComboBoxCellEditor(Supplier<MappingNamespace> namespaceSupplier) {
+        this.namespaceSupplier = namespaceSupplier;
+    }
 
     protected abstract void enterPressed(JTable table);
 
@@ -77,7 +86,7 @@ abstract class PathChooserComboBoxCellEditor<T extends CMTableModel<?>> extends 
                 parsePathString(event.getKeyChar());
             }
         });
-        AutoCompletion.enable(comboBoxPathChooser, true, true);
+        AutoCompletion.enable(comboBoxPathChooser, true, true, namespaceSupplier);
         ((JComponent) comboBoxPathChooser.getEditor().getEditorComponent()).setBorder(null);
         comboBoxPathChooser.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
         comboBoxPathChooser.setRenderer(new PathChooserComboBoxCellRenderer());

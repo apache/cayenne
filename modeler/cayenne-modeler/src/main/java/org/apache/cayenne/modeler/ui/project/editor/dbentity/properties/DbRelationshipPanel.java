@@ -178,7 +178,7 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
         table.setRowMargin(3);
 
         targetCombo = new CMComboBox<>();
-        AutoCompletion.enable(targetCombo);
+        AutoCompletion.enable(targetCombo, controller::getSelectedDataMap);
 
         targetCombo.setRenderer(Renderers.entityListRendererWithIcons(entity.getDataMap()));
         targetCombo.setModel(createComboModel());

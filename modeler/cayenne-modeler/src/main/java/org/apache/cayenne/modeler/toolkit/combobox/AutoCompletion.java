@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.modeler.toolkit.combobox;
 
+import org.apache.cayenne.map.MappingNamespace;
+
 import javax.swing.JComboBox;
 import javax.swing.JList;
 import javax.swing.SwingUtilities;
@@ -27,6 +29,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.function.Supplier;
 
 /**
  * AutoCompletion class handles user input and suggests matching variants (see CAY-911)
@@ -52,11 +55,11 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
     
     private final boolean allowsUserValues;
     
-    protected AutoCompletion(final JComboBox comboBox, boolean strict, boolean allowsUserValues) {
+    protected AutoCompletion(final JComboBox comboBox, boolean strict, boolean allowsUserValues, Supplier<MappingNamespace> namespaceSupplier) {
         this.comboBox = comboBox;
         textEditor = ((JTextComponent)comboBox.getEditor().getEditorComponent());
         this.allowsUserValues = allowsUserValues;
-        suggestionList = new SuggestionList(comboBox, strict);
+        suggestionList = new SuggestionList(comboBox, strict, namespaceSupplier);
 
         // Marking combobox as auto-completing
         comboBox.putClientProperty(AUTOCOMPLETION_PROPERTY, Boolean.TRUE);
@@ -67,30 +70,32 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
      *
      * @param comboBox Combo to be featured
      * @param strict Whether strict matching (check 'startWith' or 'contains') should be used
-     * @param allowsUserValues Whether non-present items are allowed 
+     * @param allowsUserValues Whether non-present items are allowed
+     * @param namespaceSupplier Supplies the {@link MappingNamespace} (typically the currently selected DataMap)
+     *                          used to render entity labels.
      */
-    public static void enable(JComboBox comboBox, boolean strict, boolean allowsUserValues) {
+    public static void enable(JComboBox comboBox, boolean strict, boolean allowsUserValues, Supplier<MappingNamespace> namespaceSupplier) {
         comboBox.setEditable(true);
         KeyListener[] listeners = comboBox.getEditor().getEditorComponent().getListeners(KeyListener.class);
-        comboBox.setEditor(new CustomTypeComboBoxEditor(comboBox, allowsUserValues));
+        comboBox.setEditor(new CustomTypeComboBoxEditor(comboBox, allowsUserValues, namespaceSupplier));
         for (KeyListener listener : listeners) {
             comboBox.getEditor().getEditorComponent().addKeyListener(listener);
         }
 
 
-        AutoCompletion ac = new AutoCompletion(comboBox, strict, allowsUserValues);
+        AutoCompletion ac = new AutoCompletion(comboBox, strict, allowsUserValues, namespaceSupplier);
         comboBox.addFocusListener(ac);
         ac.textEditor.addKeyListener(ac);
 
         //original keys would not work properly
         SwingUtilities.replaceUIActionMap(comboBox, null);
     }
-    
+
     /**
      * Enables auto-completion for specified combobox
      */
-    public static void enable(JComboBox comboBox) {
-        enable(comboBox, true, false);
+    public static void enable(JComboBox comboBox, Supplier<MappingNamespace> namespaceSupplier) {
+        enable(comboBox, true, false, namespaceSupplier);
     }
 
     public void focusGained(FocusEvent e) {}

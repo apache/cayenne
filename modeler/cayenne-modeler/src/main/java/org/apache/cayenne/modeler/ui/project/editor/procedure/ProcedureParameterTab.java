@@ -283,7 +283,7 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
         String[] dbTypes = TypesMapping.getDatabaseTypes();
         Arrays.sort(dbTypes);
         JComboBox typesEditor = new CMComboBox<>(dbTypes);
-        AutoCompletion.enable(typesEditor);
+        AutoCompletion.enable(typesEditor, controller::getSelectedDataMap);
         typesColumn.setCellEditor(new CMComboBoxCellEditor(typesEditor));
 
         // direction column tweaking

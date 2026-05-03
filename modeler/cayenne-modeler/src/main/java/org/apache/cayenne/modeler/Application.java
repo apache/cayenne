@@ -64,22 +64,12 @@ public class Application {
     private static final String APPLICATION_NAME_PROPERTY = "cayenne.modeler.application.name";
     private static final String DEFAULT_APPLICATION_NAME = "CayenneModeler";
 
-    private static Application instance;
-
     private final Injector injector;
     private final String name;
     private LogConsoleController logConsoleController;
     private ModelerController frameController;
     private CayenneUndoManager undoManager;
     private DBConnectors dbConnectors;
-
-    public static Application getInstance() {
-        return instance;
-    }
-
-    public static void setInstance(Application instance) {
-        Application.instance = instance;
-    }
 
     public Application(@Inject Injector injector) {
         this.injector = injector;

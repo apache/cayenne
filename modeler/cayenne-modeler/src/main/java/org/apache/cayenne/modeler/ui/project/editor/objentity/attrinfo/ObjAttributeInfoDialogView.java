@@ -22,6 +22,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
+import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.toolkit.ValueTypes;
 import org.apache.cayenne.modeler.toolkit.MultiColumnBrowser;
@@ -43,6 +44,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.util.function.Supplier;
 
 public class ObjAttributeInfoDialogView extends JDialog {
 
@@ -71,7 +73,7 @@ public class ObjAttributeInfoDialogView extends JDialog {
     private final JTextField commentField;
 
 
-    public ObjAttributeInfoDialogView() {
+    public ObjAttributeInfoDialogView(Supplier<MappingNamespace> namespaceSupplier) {
         // create widgets
         this.cancelButton = new JButton("Cancel");
         this.saveButton = new JButton("Done");
@@ -82,7 +84,7 @@ public class ObjAttributeInfoDialogView extends JDialog {
         this.sourceEntityLabel = new JLabel();
 
         this.typeComboBox = new CMComboBox<>(ValueTypes.getTypes());
-        AutoCompletion.enable(typeComboBox, false, true);
+        AutoCompletion.enable(typeComboBox, false, true, namespaceSupplier);
         typeComboBox.getRenderer();
 
         this.usedForLockingCheckBox = new JCheckBox();

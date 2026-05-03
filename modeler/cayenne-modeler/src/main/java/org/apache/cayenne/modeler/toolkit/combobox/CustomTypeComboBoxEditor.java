@@ -18,13 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.toolkit.combobox;
 
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.modeler.toolkit.Renderers;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
 import java.lang.reflect.Method;
+import java.util.function.Supplier;
 
 /**
  * CustomTypeComboBoxEditor is used as an editor of a combobox, when
@@ -38,17 +38,19 @@ class CustomTypeComboBoxEditor extends BasicComboBoxEditor {
     protected Object localOldValue;
     protected final JComboBox<?> combo;
     protected final boolean allowsUserValues;
+    private final Supplier<MappingNamespace> namespaceSupplier;
 
-    public CustomTypeComboBoxEditor(JComboBox<?> combo, boolean allowsUserValues) {
+    public CustomTypeComboBoxEditor(JComboBox<?> combo, boolean allowsUserValues, Supplier<MappingNamespace> namespaceSupplier) {
         this.editor = new EditorTextField(combo);
         this.combo = combo;
         this.allowsUserValues = allowsUserValues;
+        this.namespaceSupplier = namespaceSupplier;
     }
 
     @Override
     public void setItem(Object anObject) {
         localOldValue = anObject;
-        super.setItem(anObject == null ? null : Renderers.asString(anObject, selectedDataMap()));
+        super.setItem(anObject == null ? null : Renderers.asString(anObject, namespaceSupplier.get()));
     }
 
     @Override
@@ -112,16 +114,11 @@ class CustomTypeComboBoxEditor extends BasicComboBoxEditor {
          */
         ComboBoxModel<?> model = combo.getModel();
         for (int i = 0; i < model.getSize(); i++) {
-            if (value.equals(Renderers.asString(model.getElementAt(i), selectedDataMap()))) {
+            if (value.equals(Renderers.asString(model.getElementAt(i), namespaceSupplier.get()))) {
                 return model.getElementAt(i);
             }
         }
 
         return null;
-    }
-
-    // TODO: dependency on Application is out of place
-    private static DataMap selectedDataMap() {
-        return Application.getInstance().getFrameController().getProjectController().getSelectedDataMap();
     }
 }

@@ -81,7 +81,7 @@ public class ObjAttributeInfoDialogController extends ChildController<ProjectCon
 
     public ObjAttributeInfoDialogController(ProjectController mediator, int row, ObjAttributeTableModel model) {
         super(mediator);
-        this.view = new ObjAttributeInfoDialogView();
+        this.view = new ObjAttributeInfoDialogView(mediator::getSelectedDataMap);
         this.mediator = mediator;
         this.model = model;
         this.row = row;

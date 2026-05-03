@@ -23,6 +23,7 @@ import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.toolkit.Renderers;
@@ -30,6 +31,8 @@ import org.apache.cayenne.modeler.util.EntityTreeAttributeRelationshipFilter;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
+
+import java.util.function.Supplier;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
@@ -46,6 +49,10 @@ class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor<ObjAtt
 
     private String savePath;
     private ObjAttributeTableModel model;
+
+    DbAttributePathComboBoxEditor(Supplier<MappingNamespace> namespaceSupplier) {
+        super(namespaceSupplier);
+    }
 
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {

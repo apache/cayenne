@@ -73,7 +73,6 @@ public class Main {
 
         SwingUtilities.invokeLater(() -> {
             Application application = injector.getInstance(Application.class);
-            Application.setInstance(application);
             application.startup(initialProjectFromArgs());
         });
 

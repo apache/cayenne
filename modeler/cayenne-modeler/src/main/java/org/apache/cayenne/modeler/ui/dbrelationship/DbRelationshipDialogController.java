@@ -239,13 +239,13 @@ public class DbRelationshipDialogController extends ChildController<ProjectContr
         JComboBox comboBox = new CMComboBox<>(
                 dbAttributeNames(relationship.getSourceEntity()).stream().sorted().toArray(String[]::new));
 
-        AutoCompletion.enable(comboBox);
+        AutoCompletion.enable(comboBox, projectController::getSelectedDataMap);
         sourceColumn.setCellEditor(new CMComboBoxCellEditor(comboBox));
 
         TableColumn targetColumn = view.getTable().getColumnModel().getColumn(DbJoinTableModel.TARGET);
         comboBox = new CMComboBox<>(
                 dbAttributeNames(relationship.getTargetEntity()).stream().sorted().toArray(String[]::new));
-        AutoCompletion.enable(comboBox);
+        AutoCompletion.enable(comboBox, projectController::getSelectedDataMap);
 
         targetColumn.setCellEditor(new CMComboBoxCellEditor(comboBox));
 

@@ -180,7 +180,7 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
 
         // Types.NULL makes no sense as a column type
         comboBox.removeItem("NULL");
-        AutoCompletion.enable(comboBox);
+        AutoCompletion.enable(comboBox, controller::getSelectedDataMap);
 
         TableColumn typeColumn = table.getColumnModel().getColumn(DbAttributeTableModel.DB_ATTRIBUTE_TYPE);
         typeColumn.setCellEditor(new CMComboBoxCellEditor(comboBox));

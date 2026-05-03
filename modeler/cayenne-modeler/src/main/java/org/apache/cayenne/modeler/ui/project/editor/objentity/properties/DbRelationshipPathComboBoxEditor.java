@@ -22,8 +22,8 @@ package org.apache.cayenne.modeler.ui.project.editor.objentity.properties;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.Renderers;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.EntityTreeRelationshipFilter;
 
@@ -39,13 +39,14 @@ class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEditor<Obj
 
     private static final int REL_TARGET_PATH_COLUMN = 2;
     private static int enterPressedCount = 0;
-    private final Application application;
+    private final ProjectController controller;
     private JTable table;
     private String savePath;
     private ObjRelationshipTableModel model;
 
-    DbRelationshipPathComboBoxEditor(Application application) {
-        this.application = application;
+    DbRelationshipPathComboBoxEditor(ProjectController controller) {
+        super(controller::getSelectedDataMap);
+        this.controller = controller;
     }
 
     @Override
@@ -189,7 +190,7 @@ class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEditor<Obj
         String path = model.getRelationship(row).getDbRelationshipPath().value();
         if (!changeObjEntity(path)) {
             JOptionPane.showMessageDialog(
-                    application.getFrameController().getView(),
+                    controller.getApplication().getFrameController().getView(),
                     "Can't set dbAttribute path. At first set target entity in dbEntity.",
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
