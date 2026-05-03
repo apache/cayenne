@@ -69,8 +69,8 @@ public class LogConsoleView extends JPanel {
 
         add(buttonsBar, BorderLayout.NORTH);
 
-        logView = new JEditorPane("text/html", "");
-        logView.setFont(new JLabel().getFont().deriveFont(12f));
+        logView = new JTextPane();
+        logView.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         logView.setEditable(false);
 
         JScrollPane scrollPane = new JScrollPane(logView);

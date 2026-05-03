@@ -19,6 +19,7 @@
 package org.apache.cayenne.modeler.ui.logconsole;
 
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.log.LogAppender;
 import org.apache.cayenne.modeler.mvc.RootController;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.action.ShowLogConsoleAction;
@@ -33,49 +34,21 @@ import javax.swing.text.StyleConstants;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.text.DateFormat;
-import java.util.Date;
 
 /**
  * Implementation for modeler log console functionality
  */
-public class LogConsoleController extends RootController {
+public class LogConsoleController extends RootController implements LogAppender {
     /**
-     * How much characters are allowed in console
+     * How many characters are allowed in console
      */
     private static final int TEXT_MAX_LENGTH = 500000;
 
-    /**
-     * Message date format
-     */
-    private static final DateFormat FORMAT = DateFormat.getDateTimeInstance();
-
-    /**
-     * Red color style for severe messages
-     */
-    public static final MutableAttributeSet ERROR_STYLE;
-
-    /**
-     * Red bold color style for fatal messages
-     */
-    public static final MutableAttributeSet FATAL_STYLE;
-
-    /**
-     * Dark red color style for warn messages
-     */
-    public static final MutableAttributeSet WARN_STYLE;
-
-    /**
-     * Blue color style for info messages
-     */
-    public static final MutableAttributeSet INFO_STYLE;
-
-    /**
-     * Style for debug messages
-     */
-    public static final MutableAttributeSet DEBUG_STYLE;
+    private static final MutableAttributeSet ERROR_STYLE;
+    private static final MutableAttributeSet FATAL_STYLE;
+    private static final MutableAttributeSet WARN_STYLE;
+    private static final MutableAttributeSet INFO_STYLE;
+    private static final MutableAttributeSet DEBUG_STYLE;
 
     static {
         ERROR_STYLE = new SimpleAttributeSet();
@@ -96,7 +69,6 @@ public class LogConsoleController extends RootController {
     }
 
     private final LogConsoleView view;
-    private boolean loggingStopped;
 
     public LogConsoleController(Application application) {
         super(application);
@@ -177,14 +149,8 @@ public class LogConsoleController extends RootController {
         }
     }
 
-    /**
-     * Appends a message and/or an exception
-     */
-    public void appendMessage(String level, String message, Throwable ex, AttributeSet style) {
-
-        if (loggingStopped) {
-            return;
-        }
+    @Override
+    public void appendMessage(String level, String formattedMessage) {
 
         Document doc = view.getLogView().getDocument();
 
@@ -193,28 +159,8 @@ public class LogConsoleController extends RootController {
             clear();
         }
 
-        StringBuilder newText = new StringBuilder(FORMAT.format(new Date()))
-                //.append(System.getProperty("line.separator"))
-                .append(" ").append(level.toUpperCase()).append(": ");
-
-        if (message != null) {
-            // Append the message
-            newText.append(message).append(System.lineSeparator());
-        }
-
-        if (ex != null) {
-            // Append the stack trace
-            StringWriter out = new StringWriter();
-            PrintWriter printer = new PrintWriter(out);
-
-            ex.printStackTrace(printer);
-            printer.flush();
-
-            newText.append(out).append(System.lineSeparator());
-        }
-
         try {
-            doc.insertString(doc.getLength(), newText.toString(), style);
+            doc.insertString(doc.getLength(), formattedMessage, styleFor(level));
             view.getLogView().setCaretPosition(doc.getLength() - 1);
 
         } catch (BadLocationException ignored) {
@@ -222,15 +168,18 @@ public class LogConsoleController extends RootController {
         }
     }
 
+    private static AttributeSet styleFor(String level) {
+        switch (level) {
+            case "ERROR": return ERROR_STYLE;
+            case "FATAL": return FATAL_STYLE;
+            case "WARN":  return WARN_STYLE;
+            case "INFO":  return INFO_STYLE;
+            default:      return DEBUG_STYLE;
+        }
+    }
+
     @Override
     public Component getView() {
         return view;
-    }
-
-    /**
-     * Stop logging and don't print any more messages to text area
-     */
-    public void stopLogging() {
-        loggingStopped = true;
     }
 }

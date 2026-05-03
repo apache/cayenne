@@ -28,7 +28,32 @@ import java.util.Map;
  */
 public class ModelerLogFactory implements ILoggerFactory {
 
-    private static final String ignoreVelocity = "org.apache.velocity";
+    private static final LogAppender SYSTEM_ERR_APPENDER = (level, formattedMessage) -> {
+        System.err.print(formattedMessage);
+        System.err.flush();
+    };
+
+    private static volatile LogAppender logAppender = SYSTEM_ERR_APPENDER;
+
+    /**
+     * Installs a UI-side appender. Calls are mirrored to {@code System.err} via a synthetic
+     * composite, so the consumer never has to worry about the dual-sink behavior. Passing
+     * {@code null} reverts to the {@code System.err}-only default.
+     */
+    public static void setLogAppender(LogAppender uiAppender) {
+        if (uiAppender == null) {
+            logAppender = SYSTEM_ERR_APPENDER;
+        } else {
+            logAppender = (level, formattedMessage) -> {
+                uiAppender.appendMessage(level, formattedMessage);
+                SYSTEM_ERR_APPENDER.appendMessage(level, formattedMessage);
+            };
+        }
+    }
+
+    public static LogAppender getLogAppender() {
+        return logAppender;
+    }
 
     private final Map<String, ModelerLogger> localCache;
 
@@ -38,11 +63,6 @@ public class ModelerLogFactory implements ILoggerFactory {
 
     @Override
     public ModelerLogger getLogger(String name) {
-        ModelerLogger local = localCache.get(name);
-        if (local == null) {
-            local = name.contains(ignoreVelocity) ? new NoopModelerLogger(name) : new ModelerLogger(name);
-            localCache.put(name, local);
-        }
-        return local;
+        return localCache.computeIfAbsent(name, ModelerLogger::new);
     }
 }

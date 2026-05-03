@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.log.ModelerLogFactory;
 
 import java.awt.event.ActionEvent;
 
@@ -46,8 +47,9 @@ public class ExitAction extends ProjectAction {
             return false;
         }
 
-        // stop logging before JVM shutdown to prevent hanging
-        application.getLogConsoleController().stopLogging();
+        // detach the UI appender before JVM shutdown so any lingering log calls
+        // fall back to System.out instead of pushing into a torn-down Swing console
+        ModelerLogFactory.setLogAppender(null);
 
         // goodbye
         System.exit(0);

@@ -18,27 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.log;
 
-import javax.swing.text.AttributeSet;
+/**
+ * A sink for log messages emitted by {@link ModelerLogger}. Implementations decide how to render
+ * the pre-formatted message (e.g. into a Swing log console). Decouples the logger from the UI
+ * layer. The {@code level} is provided separately so renderers can apply level-specific styling.
+ */
+public interface LogAppender {
 
-class NoopModelerLogger extends ModelerLogger {
-
-    NoopModelerLogger(String name) {
-        super(name);
-    }
-
-    @Override
-    protected void log(String level, String message, Throwable throwable, AttributeSet style, Object... parameters) {
-        // TODO: this makes no sense for a "Noop" logger or even reduced verbosity logger
-        if (level.equals(INFO_LOG_NAME)) {
-            super.log(level, message, throwable, style, parameters);
-        }
-    }
-
-    @Override
-    protected void log(String level, Object message, Throwable throwable, AttributeSet style) {
-        // TODO: this makes no sense for a "Noop" logger or even reduced verbosity logger
-        if (level.equals(INFO_LOG_NAME)) {
-            super.log(level, message, throwable, style);
-        }
-    }
+    void appendMessage(String level, String formattedMessage);
 }
