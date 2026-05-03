@@ -23,34 +23,28 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.event.model.DataMapEvent;
+import org.apache.cayenne.modeler.pref.DataMapPrefs;
+import org.apache.cayenne.modeler.toolkit.Renderers;
+import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
+import org.apache.cayenne.modeler.toolkit.combobox.CMUndoableComboBox;
+import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.ui.action.LinkDataMapAction;
+import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.catalog.CatalogUpdateController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.locking.LockingUpdateController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.pkg.PackageUpdateController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.schema.SchemaUpdateController;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.superclass.SuperclassUpdateController;
-import org.apache.cayenne.modeler.event.model.ProjectAfterSaveEvent;
-import org.apache.cayenne.modeler.pref.DataMapPrefs;
-import org.apache.cayenne.modeler.toolkit.Renderers;
-import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
-import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
-import org.apache.cayenne.modeler.toolkit.combobox.CMUndoableComboBox;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -63,7 +57,6 @@ public class DataMapMainView extends JPanel {
     private final ProjectController controller;
 
     private final CMUndoableTextField name;
-    private final JLabel location;
     private final JComboBox<DataNodeDescriptor> nodeSelector;
     private final JCheckBox defaultLockType;
     private final CMUndoableTextField defaultCatalog;
@@ -81,7 +74,6 @@ public class DataMapMainView extends JPanel {
         name = new CMUndoableTextField(controller.getApplication().getUndoManager());
         name.addCommitListener(this::setDataMapName);
 
-        location = new JLabel();
         nodeSelector = new CMUndoableComboBox<>(controller.getApplication().getUndoManager());
         nodeSelector.setRenderer(Renderers.listRendererWithIcons());
 
@@ -118,7 +110,6 @@ public class DataMapMainView extends JPanel {
 
         builder.appendSeparator("DataMap Configuration");
         builder.append("DataMap Name:", name, 2);
-        builder.append("File:", location, 3);
         builder.append("DataNode:", nodeSelector, 2);
         builder.append("Quote SQL Identifiers:", quoteSQLIdentifiers, 3);
         builder.append("Comment:", comment, 2);
@@ -145,9 +136,7 @@ public class DataMapMainView extends JPanel {
                 initFromModel(map);
             }
         });
-
-        controller.addProjectSavedListener(this::updateNamesAfterSaving);
-
+        
         nodeSelector.addActionListener(e -> setDataNode());
         quoteSQLIdentifiers.addItemListener(e -> setQuoteSQLIdentifiers(quoteSQLIdentifiers.isSelected()));
         defaultLockType.addItemListener(e -> setDefaultLockType(defaultLockType.isSelected()
@@ -166,7 +155,6 @@ public class DataMapMainView extends JPanel {
      */
     private void initFromModel(DataMap map) {
         name.setText(map.getName());
-        location.setText((map.getLocation() != null) ? map.getLocation() : "(no file)");
         quoteSQLIdentifiers.setSelected(map.isQuotingSQLIdentifiers());
         comment.setText(getComment(map));
 
@@ -447,12 +435,5 @@ public class DataMapMainView extends JPanel {
 
     private String getComment(DataMap dataMap) {
         return ObjectInfo.getFromMetaData(controller.getApplication().getMetaData(), dataMap, ObjectInfo.COMMENT);
-    }
-
-    public void updateNamesAfterSaving(ProjectAfterSaveEvent e) {
-        DataMap currentDataMap = controller.getSelectedDataMap();
-        if (currentDataMap != null && !currentDataMap.getLocation().equals(location.getText())) {
-            location.setText(currentDataMap.getLocation());
-        }
     }
 }
