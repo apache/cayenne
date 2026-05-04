@@ -92,3 +92,48 @@ On macOS the same applies to the `.app` bundle:
 ----
 $ open CayenneModeler.app --args path/to/cayenne-project.xml
 ----
+
+===== Running from Maven
+
+The Modeler can also be started from Maven. While it may look like an exotic way to start a GUI application, it has
+its benefits - no need to download Cayenne distribution, and the version of the Modeler always matches the version of
+the framework. Add the `cayenne-modeler` dependency and an `exec-maven-plugin` execution to the project POM:
+
+[source,xml,subs="verbatim,attributes"]
+----
+<dependencies>
+    <dependency>
+        <groupId>org.apache.cayenne.modeler</groupId>
+        <artifactId>cayenne-modeler</artifactId>
+        <version>{version}</version>
+    </dependency>
+</dependencies>
+
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.5.0</version>
+            <executions>
+                <execution>
+                    <id>run-modeler</id>
+                    <goals>
+                        <goal>java</goal>
+                    </goals>
+                </execution>
+            </executions>
+            <configuration>
+                <mainClass>org.apache.cayenne.modeler.Main</mainClass>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+----
+
+Then run:
+
+[source]
+----
+$ mvn exec:java@run-modeler
+----
