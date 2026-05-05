@@ -39,14 +39,21 @@ public class ProcedureTabbedView extends ProjectTabbedPane {
 
     public ProcedureTabbedView(ProjectSession session) {
         super(session);
-        setTabPlacement(JTabbedPane.TOP);
         procedurePanel = new ProcedureTab(session);
-        addTab("Procedure", new JScrollPane(procedurePanel));
         procedureParameterPanel = new ProcedureParameterTab(session);
-        addTab("Parameters", procedureParameterPanel);
+        initLayout();
+        initBindings();
+    }
 
-        session.addProcedureDisplayListener(this::currentProcedureChanged);
-        session.addProcedureParameterDisplayListener(this::currentProcedureParameterChanged);
+    private void initLayout() {
+        setTabPlacement(JTabbedPane.TOP);
+        addTab("Procedure", new JScrollPane(procedurePanel));
+        addTab("Parameters", procedureParameterPanel);
+    }
+
+    private void initBindings() {
+        session().addProcedureDisplayListener(this::currentProcedureChanged);
+        session().addProcedureParameterDisplayListener(this::currentProcedureParameterChanged);
         addChangeListener(this::stateChanged);
     }
 

@@ -28,27 +28,20 @@ import org.apache.cayenne.access.dbsync.ThrowOnPartialSchemaStrategy;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.modeler.pref.DataNodePrefs;
+import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.toolkit.combobox.CMUndoableComboBox;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
-import org.apache.cayenne.modeler.toolkit.AppPanel;
 import org.apache.cayenne.modeler.ui.preferences.PreferenceDialog;
-import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.datanode.custom.CustomDataSourcePanel;
 import org.apache.cayenne.modeler.ui.project.editor.datanode.jdbc.JDBCDataSourcePanel;
 import org.apache.cayenne.validation.ValidationException;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Font;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.Collection;
@@ -61,7 +54,7 @@ import java.util.Map;
  * delegates to a sub-editor selected by the chosen DataSource factory (Cayenne JDBC
  * pooling vs custom).
  */
-public class DataNodeEditorPanel extends AppPanel {
+public class DataNodeEditorPanel extends ProjectPanel {
 
     static final String NO_LOCAL_DATA_SOURCE = "Select DataSource for Local Work...";
     private static final String XML_POOLING_DATA_SOURCE_FACTORY = XMLPoolingDataSourceFactory.class.getName();
@@ -78,7 +71,6 @@ public class DataNodeEditorPanel extends AppPanel {
             ThrowOnPartialOrCreateSchemaStrategy.class.getName()
     };
 
-    private final ProjectSession session;
     private final Runnable nodeChangeProcessor;
     private final Map<String, DataSourcePanel> datasourceEditors = new HashMap<>();
     private final CustomDataSourcePanel defaultSubeditor;
@@ -95,19 +87,19 @@ public class DataNodeEditorPanel extends AppPanel {
     private DataNodeDescriptor node;
     private boolean refreshing;
 
-    public DataNodeEditorPanel(Application app, ProjectSession session) {
-        super(app);
-        this.session = session;
-        this.nodeChangeProcessor = () -> session.fireDataNodeEvent(DataNodeEvent.ofChange(this, node));
-        this.defaultSubeditor = new CustomDataSourcePanel(app, nodeChangeProcessor);
+    public DataNodeEditorPanel(ProjectSession session) {
+        super(session);
 
-        this.dataNodeName = new CMUndoableTextField(app.getUndoManager());
-        this.factories = new CMUndoableComboBox<>(app.getUndoManager());
-        this.localDataSources = new CMUndoableComboBox<>(app.getUndoManager());
-        this.schemaUpdateStrategy = new CMUndoableComboBox<>(app.getUndoManager());
+        this.nodeChangeProcessor = () -> session.fireDataNodeEvent(DataNodeEvent.ofChange(this, node));
+        this.defaultSubeditor = new CustomDataSourcePanel(app(), nodeChangeProcessor);
+
+        this.dataNodeName = new CMUndoableTextField(app().getUndoManager());
+        this.factories = new CMUndoableComboBox<>(app().getUndoManager());
+        this.localDataSources = new CMUndoableComboBox<>(app().getUndoManager());
+        this.schemaUpdateStrategy = new CMUndoableComboBox<>(app().getUndoManager());
         this.dataSourceDetailLayout = new CardLayout();
         this.dataSourceDetail = new JPanel(dataSourceDetailLayout);
-        this.customAdapter = new CMUndoableTextField(app.getUndoManager());
+        this.customAdapter = new CMUndoableTextField(app().getUndoManager());
         this.configLocalDataSources = new JButton("...");
         this.configLocalDataSources.setToolTipText("configure local DataSource");
 
@@ -148,12 +140,12 @@ public class DataNodeEditorPanel extends AppPanel {
     }
 
     private void initBindings() {
-        session.addDataNodeDisplayListener(e -> refreshView(e.getDataNode()));
+        session().addDataNodeDisplayListener(e -> refreshView(e.getDataNode()));
 
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentShown(ComponentEvent e) {
-                refreshView(node != null ? node : session.getSelectedDataNode());
+                refreshView(node != null ? node : session().getSelectedDataNode());
             }
         });
 

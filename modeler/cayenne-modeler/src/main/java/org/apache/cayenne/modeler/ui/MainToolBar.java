@@ -1,75 +1,94 @@
 package org.apache.cayenne.modeler.ui;
 
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
-import org.apache.cayenne.modeler.ui.action.*;
+import org.apache.cayenne.modeler.toolkit.AppToolBar;
+import org.apache.cayenne.modeler.ui.action.CopyAction;
+import org.apache.cayenne.modeler.ui.action.CreateDataMapAction;
+import org.apache.cayenne.modeler.ui.action.CreateDbEntityAction;
+import org.apache.cayenne.modeler.ui.action.CreateEmbeddableAction;
+import org.apache.cayenne.modeler.ui.action.CreateNodeAction;
+import org.apache.cayenne.modeler.ui.action.CreateObjEntityAction;
+import org.apache.cayenne.modeler.ui.action.CreateProcedureAction;
+import org.apache.cayenne.modeler.ui.action.CreateQueryAction;
+import org.apache.cayenne.modeler.ui.action.CutAction;
+import org.apache.cayenne.modeler.ui.action.NavigateBackwardAction;
+import org.apache.cayenne.modeler.ui.action.NavigateForwardAction;
+import org.apache.cayenne.modeler.ui.action.NewProjectAction;
+import org.apache.cayenne.modeler.ui.action.OpenProjectAction;
+import org.apache.cayenne.modeler.ui.action.PasteAction;
+import org.apache.cayenne.modeler.ui.action.RedoAction;
+import org.apache.cayenne.modeler.ui.action.RemoveAction;
+import org.apache.cayenne.modeler.ui.action.SaveAction;
+import org.apache.cayenne.modeler.ui.action.UndoAction;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 
-class MainToolBar extends JToolBar {
+class MainToolBar extends AppToolBar {
 
-    private final JButton backButton;
-    private final JButton removeButton;
+    public MainToolBar(Application app) {
+        super(app);
+        initLayout();
+    }
 
-    public MainToolBar(GlobalActions globalActions) {
+    private void initLayout() {
         setFloatable(false);
 
+        GlobalActions actions = app.getActionManager();
+
         Dimension smallBtnDim = new Dimension(30, 30);
-        backButton = globalActions.getAction(NavigateBackwardAction.class).buildButton(1);
+
+        JButton backButton = actions.getAction(NavigateBackwardAction.class).buildButton(1);
         backButton.setMinimumSize(smallBtnDim);
         backButton.setPreferredSize(smallBtnDim);
         add(backButton);
 
-        JButton forwardButton = globalActions.getAction(NavigateForwardAction.class).buildButton(3);
+        JButton forwardButton = actions.getAction(NavigateForwardAction.class).buildButton(3);
         forwardButton.setMinimumSize(smallBtnDim);
         forwardButton.setPreferredSize(smallBtnDim);
         add(forwardButton);
 
         addSeparator(new Dimension(30, 0));
 
-        add(globalActions.getAction(NewProjectAction.class).buildButton(1));
-        add(globalActions.getAction(OpenProjectAction.class).buildButton(2));
-        add(globalActions.getAction(SaveAction.class).buildButton(3));
+        add(actions.getAction(NewProjectAction.class).buildButton(1));
+        add(actions.getAction(OpenProjectAction.class).buildButton(2));
+        add(actions.getAction(SaveAction.class).buildButton(3));
 
         addSeparator();
 
-        removeButton = globalActions.getAction(RemoveAction.class).buildButton();
+        JButton removeButton = actions.getAction(RemoveAction.class).buildButton();
         add(removeButton);
 
         addSeparator();
 
-        add(globalActions.getAction(CutAction.class).buildButton(1));
-        add(globalActions.getAction(CopyAction.class).buildButton(2));
-        add(globalActions.getAction(PasteAction.class).buildButton(3));
+        add(actions.getAction(CutAction.class).buildButton(1));
+        add(actions.getAction(CopyAction.class).buildButton(2));
+        add(actions.getAction(PasteAction.class).buildButton(3));
 
         addSeparator();
 
-        add(globalActions.getAction(UndoAction.class).buildButton(1));
-        add(globalActions.getAction(RedoAction.class).buildButton(3));
+        add(actions.getAction(UndoAction.class).buildButton(1));
+        add(actions.getAction(RedoAction.class).buildButton(3));
 
         addSeparator();
 
-        add(globalActions.getAction(CreateNodeAction.class).buildButton(1));
-        add(globalActions.getAction(CreateDataMapAction.class).buildButton(3));
+        add(actions.getAction(CreateNodeAction.class).buildButton(1));
+        add(actions.getAction(CreateDataMapAction.class).buildButton(3));
 
         addSeparator();
 
-        add(globalActions.getAction(CreateDbEntityAction.class).buildButton(1));
-        add(globalActions.getAction(CreateProcedureAction.class).buildButton(3));
+        add(actions.getAction(CreateDbEntityAction.class).buildButton(1));
+        add(actions.getAction(CreateProcedureAction.class).buildButton(3));
 
         addSeparator();
 
-        add(globalActions.getAction(CreateObjEntityAction.class).buildButton(1));
-        add(globalActions.getAction(CreateEmbeddableAction.class).buildButton(2));
-        add(globalActions.getAction(CreateQueryAction.class).buildButton(3));
+        add(actions.getAction(CreateObjEntityAction.class).buildButton(1));
+        add(actions.getAction(CreateEmbeddableAction.class).buildButton(2));
+        add(actions.getAction(CreateQueryAction.class).buildButton(3));
 
-        // is used to place search feature components the most right on a toolbar
-        add(new SearchPanel(globalActions.getAction(FindAction.class)));
-    }
-
-    int getDefaultButtonWidth() {
-        return removeButton.getUI().getPreferredSize(backButton).width;
+        add(new SearchPanel(app));
     }
 
     @Override

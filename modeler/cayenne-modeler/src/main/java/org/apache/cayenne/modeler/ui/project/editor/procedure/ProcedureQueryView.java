@@ -79,12 +79,11 @@ public class ProcedureQueryView extends ProjectPanel {
 
     public ProcedureQueryView(ProjectSession session) {
         super(session);
-
-        initView();
-        initController();
+        initLayout();
+        initBindings();
     }
 
-    private void initView() {
+    private void initLayout() {
         // create widgets
         name = new CMUndoableTextField(app().getUndoManager());
         name.addCommitListener(this::setQueryName);
@@ -117,7 +116,7 @@ public class ProcedureQueryView extends ProjectPanel {
         this.add(properties, BorderLayout.CENTER);
     }
 
-    private void initController() {
+    private void initBindings() {
 
         queryRoot.addActionListener(new ActionListener() {
 

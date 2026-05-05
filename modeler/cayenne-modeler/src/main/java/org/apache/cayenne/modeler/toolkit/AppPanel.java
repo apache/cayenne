@@ -30,7 +30,7 @@ import javax.swing.JPanel;
  */
 public abstract class AppPanel extends JPanel {
 
-    private final Application app;
+    protected final Application app;
 
     protected AppPanel(Application app) {
         this.app = app;

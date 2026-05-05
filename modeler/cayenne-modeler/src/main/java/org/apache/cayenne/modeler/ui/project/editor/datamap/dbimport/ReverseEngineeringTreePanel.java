@@ -51,7 +51,7 @@ class ReverseEngineeringTreePanel extends JScrollPane {
     private final ProjectSession session;
     private final DbImportActions actions;
     private TreeToolbarPanel treeToolbar;
-    private Map<Class<?>, DefaultPopUpMenu> popups;
+    private final Map<Class<?>, DefaultPopUpMenu> popups;
 
     ReverseEngineeringTreePanel(ProjectSession session, DbImportTree reverseEngineeringTree,
                                 DbImportTree dbSchemaTree, DbImportActions actions) {
@@ -60,22 +60,21 @@ class ReverseEngineeringTreePanel extends JScrollPane {
         this.reverseEngineeringTree = reverseEngineeringTree;
         this.dbSchemaTree = dbSchemaTree;
         this.actions = actions;
-        reverseEngineeringTree.setEditable(true);
-        reverseEngineeringTree.setCellRenderer(new DbImportTreeCellRenderer());
-        DbImportTreeCellEditor editor = new DbImportTreeCellEditor(reverseEngineeringTree,
-                (DefaultTreeCellRenderer) reverseEngineeringTree.getCellRenderer(), actions);
-        reverseEngineeringTree.setCellEditor(editor);
-        initListeners();
-        initPopupMenus();
-        changeIcons();
+        this.popups = new HashMap<>();
+        initLayout();
+        initBindings();
     }
 
     void updateTree() {
         reverseEngineeringTree.translateReverseEngineeringToTree(getReverseEngineeringBySelectedMap(), false);
     }
 
-    private void initPopupMenus() {
-        popups = new HashMap<>();
+    private void initLayout() {
+        reverseEngineeringTree.setEditable(true);
+        reverseEngineeringTree.setCellRenderer(new DbImportTreeCellRenderer());
+        DbImportTreeCellEditor editor = new DbImportTreeCellEditor(reverseEngineeringTree,
+                (DefaultTreeCellRenderer) reverseEngineeringTree.getCellRenderer(), actions);
+        reverseEngineeringTree.setCellEditor(editor);
         popups.put(Catalog.class, new CatalogPopUpMenu(actions));
         popups.put(Schema.class, new SchemaPopUpMenu(actions));
         popups.put(ReverseEngineering.class, new RootPopUpMenu(actions));
@@ -86,9 +85,10 @@ class ReverseEngineeringTreePanel extends JScrollPane {
         popups.put(ExcludeColumn.class, new DefaultPopUpMenu(actions));
         popups.put(IncludeProcedure.class, new DefaultPopUpMenu(actions));
         popups.put(ExcludeProcedure.class, new DefaultPopUpMenu(actions));
+        changeIcons();
     }
 
-    private void initListeners() {
+    private void initBindings() {
         reverseEngineeringTree.addTreeSelectionListener(e -> treeToolbar.lockButtons());
         reverseEngineeringTree.addMouseListener(new MouseAdapter() {
             @Override

@@ -23,6 +23,7 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
@@ -30,126 +31,95 @@ import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.Vector;
 
-public class ReverseEngineeringConfigPanel extends JPanel {
+public class ReverseEngineeringConfigPanel extends ProjectPanel {
 
     private static final String DATA_FIELDS_LAYOUT = "right:pref, 3dlu, fill:235dlu";
 
-    private JComboBox<String> strategyCombo;
-    private CMUndoableTextField meaningfulPk;
-    private CMUndoableTextField stripFromTableNames;
-    private JCheckBox skipRelationshipsLoading;
-    private JCheckBox skipPrimaryKeyLoading;
-    private JCheckBox forceDataMapCatalog;
-    private JCheckBox forceDataMapSchema;
-    private JCheckBox useJava7Types;
+    private final JComboBox<String> strategyCombo;
+    private final CMUndoableTextField meaningfulPk;
+    private final CMUndoableTextField stripFromTableNames;
+    private final JCheckBox skipRelationshipsLoading;
+    private final JCheckBox skipPrimaryKeyLoading;
+    private final JCheckBox forceDataMapCatalog;
+    private final JCheckBox forceDataMapSchema;
+    private final JCheckBox useJava7Types;
+    private final CMUndoableTextField tableTypes;
 
-    private CMUndoableTextField tableTypes;
-
-    private final ProjectSession session;
     private final DbImportView dbImportView;
 
-    ReverseEngineeringConfigPanel(ProjectSession session, DbImportView dbImportView) {
-        this.session = session;
+    public ReverseEngineeringConfigPanel(ProjectSession session, DbImportView dbImportView) {
+        super(session);
+
         this.dbImportView = dbImportView;
-        initFormElements();
-        initListeners();
-        buildView();
+        this.strategyCombo = new CMComboBox<>();
+        this.meaningfulPk = new CMUndoableTextField(session.app().getUndoManager());
+        this.stripFromTableNames = new CMUndoableTextField(session.app().getUndoManager());
+        this.tableTypes = new CMUndoableTextField(session.app().getUndoManager());
+        this.skipRelationshipsLoading = new JCheckBox();
+        this.skipPrimaryKeyLoading = new JCheckBox();
+        this.forceDataMapCatalog = new JCheckBox();
+        this.forceDataMapSchema = new JCheckBox();
+        this.useJava7Types = new JCheckBox();
+
+        initLayout();
+        initBindings();
     }
 
-    private void buildView() {
-        FormLayout panelLayout = new FormLayout(DATA_FIELDS_LAYOUT);
-        DefaultFormBuilder panelBuilder = new DefaultFormBuilder(panelLayout);
-        panelBuilder.setDefaultDialogBorder();
-
-        panelBuilder.append("Tables with Meaningful PK Pattern:", meaningfulPk);
-        panelBuilder.append("Strip from table names:", stripFromTableNames);
-        panelBuilder.append("Skip relationships loading:", skipRelationshipsLoading);
-        panelBuilder.append("Skip primary key loading:", skipPrimaryKeyLoading);
-        panelBuilder.append("Force datamap catalog:", forceDataMapCatalog);
-        panelBuilder.append("Force datamap schema:", forceDataMapSchema);
-        panelBuilder.append("Use java.util.Date type:", useJava7Types);
-        panelBuilder.append("Naming strategy:", strategyCombo);
-        panelBuilder.append("Table types:", tableTypes);
-
-        add(panelBuilder.getPanel());
-    }
-
-    void fillCheckboxes(ReverseEngineering reverseEngineering) {
-        skipRelationshipsLoading.setSelected(reverseEngineering.getSkipRelationshipsLoading());
-        skipPrimaryKeyLoading.setSelected(reverseEngineering.getSkipPrimaryKeyLoading());
-        forceDataMapCatalog.setSelected(reverseEngineering.isForceDataMapCatalog());
-        forceDataMapSchema.setSelected(reverseEngineering.isForceDataMapSchema());
-        useJava7Types.setSelected(reverseEngineering.isUseJava7Types());
-    }
-
-    void initializeTextFields(ReverseEngineering reverseEngineering) {
-        meaningfulPk.setText(reverseEngineering.getMeaningfulPkTables());
-        stripFromTableNames.setText(reverseEngineering.getStripFromTableNames());
-    }
-
-    ReverseEngineering getReverseEngineeringBySelectedMap() {
-        DataMap dataMap = session.getSelectedDataMap();
-        return session.app().getMetaData().get(dataMap, ReverseEngineering.class);
-    }
-
-    void initStrategy(ReverseEngineering reverseEngineering) {
-        Vector<String> arr = NameGeneratorPreferences
-                .getInstance()
-                .getLastUsedStrategies(session.app());
-        strategyCombo.setModel(new DefaultComboBoxModel<>(arr));
-        strategyCombo.setSelectedItem(reverseEngineering.getNamingStrategy());
-    }
-
-    private void initFormElements() {
-        strategyCombo = new CMComboBox<>();
+    private void initLayout() {
         AutoCompletion.enable(strategyCombo, false, true, session::getSelectedDataMap);
         strategyCombo.setToolTipText("Naming strategy to use");
 
-        meaningfulPk = new CMUndoableTextField(session.app().getUndoManager());
         meaningfulPk.setToolTipText("<html>Regular expression to filter tables with meaningful primary keys.<br>" +
                 "Multiple expressions divided by comma can be used.<br>" +
                 "Example: <b>^table1|^table2|^prefix.*|table_name</b></html>");
+        stripFromTableNames.setToolTipText("<html>Regex that matches the part of the table name that needs to be stripped off " +
+                "when generating ObjEntity name</html>");
+        tableTypes.setToolTipText("<html>Default types to import is TABLE and VIEW.");
+
+        skipRelationshipsLoading.setToolTipText("<html>Whether to load relationships.</html>");
+        skipPrimaryKeyLoading.setToolTipText("<html>Whether to load primary keys.</html>");
+        forceDataMapCatalog.setToolTipText("<html>Automatically tagging each DbEntity with the actual DB catalog/schema" +
+                "(default behavior) may sometimes be undesirable.<br>  If this is the case then setting <b>forceDataMapCatalog</b> " +
+                "to <b>true</b> will set DbEntity catalog to one in the DataMap.</html>");
+        forceDataMapSchema.setToolTipText("<html>Automatically tagging each DbEntity with the actual DB catalog/schema " +
+                "(default behavior) may sometimes be undesirable.<br> If this is the case then setting <b>forceDataMapSchema</b> " +
+                "to <b>true</b> will set DbEntity schema to one in the DataMap.</html>");
+        useJava7Types.setToolTipText("<html>Use <b>java.util.Date</b> for all columns with <i>DATE/TIME/TIMESTAMP</i> types.<br>" +
+                "By default <b>java.time.*</b> types will be used.</html>");
+
+        setLayout(new BorderLayout());
+        FormLayout formLayout = new FormLayout(DATA_FIELDS_LAYOUT, "");
+        DefaultFormBuilder builder = new DefaultFormBuilder(formLayout);
+        builder.setDefaultDialogBorder();
+        builder.append("Naming Strategy:", strategyCombo);
+        builder.append("Meaningful PK:", meaningfulPk);
+        builder.append("Strip From Table Names:", stripFromTableNames);
+        builder.append("Table Types:", tableTypes);
+        builder.append("Skip Relationships:", skipRelationshipsLoading);
+        builder.append("Skip Primary Keys:", skipPrimaryKeyLoading);
+        builder.append("Force DataMap Catalog:", forceDataMapCatalog);
+        builder.append("Force DataMap Schema:", forceDataMapSchema);
+        builder.append("Use Java 7 Types:", useJava7Types);
+        add(builder.getPanel(), BorderLayout.CENTER);
+    }
+
+    private void initBindings() {
         meaningfulPk.addCommitListener(text -> {
             if (!dbImportView.isInitFromModel()) {
                 getReverseEngineeringBySelectedMap().setMeaningfulPkTables(text);
                 session.setDirty(true);
             }
         });
-
-        stripFromTableNames = new CMUndoableTextField(session.app().getUndoManager());
-        stripFromTableNames.setToolTipText("<html>Regex that matches the part of the table name that needs to be stripped off " +
-                "when generating ObjEntity name</html>");
         stripFromTableNames.addCommitListener(text -> {
             if (!dbImportView.isInitFromModel()) {
                 getReverseEngineeringBySelectedMap().setStripFromTableNames(text);
                 session.setDirty(true);
             }
         });
-
-        tableTypes = new CMUndoableTextField(session.app().getUndoManager());
-        tableTypes.setToolTipText("<html>Default types to import is TABLE and VIEW.");
         tableTypes.addCommitListener(this::applyTableTypes);
-
-        skipRelationshipsLoading = new JCheckBox();
-        skipRelationshipsLoading.setToolTipText("<html>Whether to load relationships.</html>");
-        skipPrimaryKeyLoading = new JCheckBox();
-        skipPrimaryKeyLoading.setToolTipText("<html>Whether to load primary keys.</html>");
-        forceDataMapCatalog = new JCheckBox();
-        forceDataMapCatalog.setToolTipText("<html>Automatically tagging each DbEntity with the actual DB catalog/schema" +
-                "(default behavior) may sometimes be undesirable.<br>  If this is the case then setting <b>forceDataMapCatalog</b> " +
-                "to <b>true</b> will set DbEntity catalog to one in the DataMap.</html>");
-        forceDataMapSchema = new JCheckBox();
-        forceDataMapSchema.setToolTipText("<html>Automatically tagging each DbEntity with the actual DB catalog/schema " +
-                "(default behavior) may sometimes be undesirable.<br> If this is the case then setting <b>forceDataMapSchema</b> " +
-                "to <b>true</b> will set DbEntity schema to one in the DataMap.</html>");
-        useJava7Types = new JCheckBox();
-        useJava7Types.setToolTipText("<html>Use <b>java.util.Date</b> for all columns with <i>DATE/TIME/TIMESTAMP</i> types.<br>" +
-                "By default <b>java.time.*</b> types will be used.</html>");
-    }
-
-    private void initListeners() {
         skipRelationshipsLoading.addActionListener(e -> {
             if (!dbImportView.isInitFromModel()) {
                 getReverseEngineeringBySelectedMap().setSkipRelationshipsLoading(skipRelationshipsLoading.isSelected());
@@ -181,7 +151,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
             }
         });
         strategyCombo.addActionListener(e -> {
-            String strategy = (String) ReverseEngineeringConfigPanel.this.getStrategyCombo().getSelectedItem();
+            String strategy = (String) strategyCombo.getSelectedItem();
             checkStrategy(strategy);
             if (!dbImportView.isInitFromModel()) {
                 getReverseEngineeringBySelectedMap().setNamingStrategy(strategy);
@@ -190,6 +160,34 @@ public class ReverseEngineeringConfigPanel extends JPanel {
             }
         });
     }
+
+    void fillCheckboxes(ReverseEngineering reverseEngineering) {
+        skipRelationshipsLoading.setSelected(reverseEngineering.getSkipRelationshipsLoading());
+        skipPrimaryKeyLoading.setSelected(reverseEngineering.getSkipPrimaryKeyLoading());
+        forceDataMapCatalog.setSelected(reverseEngineering.isForceDataMapCatalog());
+        forceDataMapSchema.setSelected(reverseEngineering.isForceDataMapSchema());
+        useJava7Types.setSelected(reverseEngineering.isUseJava7Types());
+    }
+
+    void initializeTextFields(ReverseEngineering reverseEngineering) {
+        meaningfulPk.setText(reverseEngineering.getMeaningfulPkTables());
+        stripFromTableNames.setText(reverseEngineering.getStripFromTableNames());
+    }
+
+    ReverseEngineering getReverseEngineeringBySelectedMap() {
+        DataMap dataMap = session.getSelectedDataMap();
+        return session.app().getMetaData().get(dataMap, ReverseEngineering.class);
+    }
+
+    void initStrategy(ReverseEngineering reverseEngineering) {
+        Vector<String> arr = NameGeneratorPreferences
+                .getInstance()
+                .getLastUsedStrategies(session.app());
+        strategyCombo.setModel(new DefaultComboBoxModel<>(arr));
+        strategyCombo.setSelectedItem(reverseEngineering.getNamingStrategy());
+    }
+
+
 
     private void checkStrategy(String strategy) {
         try {

@@ -71,23 +71,25 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
     public DbRelationshipPanel(ProjectSession session, DbEntityPropertiesView parentPanel) {
         this.session = session;
         this.parentPanel = parentPanel;
+        this.table = new CMTable();
+        this.editMenu = new JMenuItem("Edit Relationship", IconFactory.buildIcon("icon-edit.png"));
+        initLayout();
+        initBindings();
+    }
 
-        this.setLayout(new BorderLayout());
+    private void initLayout() {
+        setLayout(new BorderLayout());
 
         GlobalActions globalActions = session.app().getActionManager();
 
-        table = new CMTable();
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.setDefaultRenderer(DbEntity.class, Renderers.entityTableRendererWithIcons(session));
         table.setDefaultRenderer(String.class, new BoardTableCellRenderer());
 
-        editMenu = new JMenuItem("Edit Relationship", IconFactory.buildIcon("icon-edit.png"));
-
         JPopupMenu popup = new JPopupMenu();
         popup.add(editMenu);
         popup.add(globalActions.getAction(RemoveAttributeRelationshipAction.class).buildMenu());
-
         popup.addSeparator();
         popup.add(globalActions.getAction(CutAttributeRelationshipAction.class).buildMenu());
         popup.add(globalActions.getAction(CopyAttributeRelationshipAction.class).buildMenu());
@@ -95,10 +97,12 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
 
         TablePopupHandler.install(table, popup);
         add(new CMTablePanel(table), BorderLayout.CENTER);
+    }
 
-        this.session.addDbEntityDisplayListener(this);
-        this.session.addDbEntityListener(this);
-        this.session.addDbRelationshipListener(this);
+    private void initBindings() {
+        session.addDbEntityDisplayListener(this);
+        session.addDbEntityListener(this);
+        session.addDbRelationshipListener(this);
 
         editMenu.addActionListener(this::edit);
 

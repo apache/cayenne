@@ -72,8 +72,8 @@ public class DraggableTreePanel extends JScrollPane {
     private final Map<Class<?>, Integer> levels;
     private final Map<Class<?>, List<Class<?>>> insertableLevels;
 
-    private ModelerAbstractAction.CayenneToolbarButton moveButton;
-    private ModelerAbstractAction.CayenneToolbarButton moveInvertButton;
+    private final ModelerAbstractAction.CayenneToolbarButton moveButton;
+    private final ModelerAbstractAction.CayenneToolbarButton moveInvertButton;
     private ImportSourceTree importSourceTree;
 
     public DraggableTreePanel(DbImportTree sourceTree, DbImportTree targetTree, DbImportActions actions) {
@@ -84,10 +84,10 @@ public class DraggableTreePanel extends JScrollPane {
         this.databaseStructures = new HashMap<>();
         this.levels = new HashMap<>();
         this.insertableLevels = new HashMap<>();
-
-        initLevels();
-        initElement();
-        initListeners();
+        this.moveButton = (ModelerAbstractAction.CayenneToolbarButton) actions.getMoveImportNodeAction().buildButton();
+        this.moveInvertButton = (ModelerAbstractAction.CayenneToolbarButton) actions.getMoveInvertNodeAction().buildButton();
+        initLayout();
+        initBindings();
     }
 
     public void updateTree(DataMap dataMap) {
@@ -102,7 +102,7 @@ public class DraggableTreePanel extends JScrollPane {
         }
     }
 
-    private void initListeners() {
+    private void initBindings() {
         sourceTree.addKeyListener(new SourceTreeKeyListener());
         sourceTree.setTransferHandler(new SourceTreeTransferHandler());
         sourceTree.addTreeSelectionListener(new SourceTreeSelectionListener());
@@ -123,15 +123,13 @@ public class DraggableTreePanel extends JScrollPane {
         return levels.get(selectedElement.getUserObject().getClass()) < SECOND_LEVEL;
     }
 
-    private void initElement() {
+    private void initLayout() {
+        initLevels();
         sourceTree.setDragEnabled(true);
         sourceTree.setCellRenderer(new ColorTreeRenderer());
         sourceTree.setDropMode(DropMode.INSERT);
-
-        moveButton = (ModelerAbstractAction.CayenneToolbarButton) actions.getMoveImportNodeAction().buildButton();
         moveButton.setShowingText(true);
         moveButton.setText(MOVE_BUTTON_LABEL);
-        moveInvertButton = (ModelerAbstractAction.CayenneToolbarButton) actions.getMoveInvertNodeAction().buildButton();
         moveInvertButton.setShowingText(true);
         moveInvertButton.setText(MOVE_INV_BUTTON_LABEL);
     }

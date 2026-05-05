@@ -36,16 +36,15 @@ import java.util.Collection;
 
 public class PKDBGeneratorPanel extends PKGeneratorPanel {
 
-    private JComboBox<Object> attributes;
+    private final JComboBox<Object> attributes;
 
     public PKDBGeneratorPanel(ProjectSession session) {
         super(session);
-        initView();
+        this.attributes = new JComboBox<>();
+        initLayout();
     }
 
-    private void initView() {
-
-        attributes = new JComboBox<>();
+    private void initLayout() {
         attributes.setEditable(false);
         attributes.setRenderer(new AttributeRenderer());
 

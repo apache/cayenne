@@ -91,7 +91,14 @@ public class ObjEntityCallbacksView extends ProjectPanel {
 
     public ObjEntityCallbacksView(ProjectSession session) {
         super(session);
-        this.setLayout(new BorderLayout());
+        this.auxPanel = new JPanel();
+        this.popupMenu = createPopup();
+        initLayout();
+        initBindings();
+    }
+
+    private void initLayout() {
+        setLayout(new BorderLayout());
 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
@@ -100,19 +107,15 @@ public class ObjEntityCallbacksView extends ProjectPanel {
         toolBar.add(getCopyCallbackMethodAction().buildButton(1));
         toolBar.add(getCutCallbackMethodAction().buildButton(2));
         toolBar.add(getPasteCallbackMethodAction().buildButton(3));
-
         add(toolBar, BorderLayout.NORTH);
 
-        auxPanel = new JPanel();
         auxPanel.setOpaque(false);
         auxPanel.setLayout(new BorderLayout());
-
-        popupMenu = createPopup();
-
         createTables();
-
         add(new JScrollPane(auxPanel), BorderLayout.CENTER);
+    }
 
+    private void initBindings() {
         session().addCallbackMethodListener(new CallbackMethodListener() {
 
             public void callbackMethodChanged(CallbackMethodEvent e) {

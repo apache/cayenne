@@ -63,22 +63,22 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
     public DbAttributePanel(ProjectSession session, DbEntityPropertiesView parentPanel) {
         this.session = session;
         this.parentPanel = parentPanel;
+        this.table = new CMTable();
+        initLayout();
+        initBindings();
+    }
 
-        this.setLayout(new BorderLayout());
+    private void initLayout() {
+        setLayout(new BorderLayout());
 
         GlobalActions globalActions = session.app().getActionManager();
 
-        // Create table with two columns and no rows.
-        table = new CMTable();
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.setDefaultRenderer(String.class, new BoardTableCellRenderer());
 
-        // TODO: There is no edit panel for DbAttributes, so for now no edit contextual menu and the edit button is disabled
-
         JPopupMenu popup = new JPopupMenu();
         popup.add(globalActions.getAction(RemoveAttributeRelationshipAction.class).buildMenu());
-
         popup.addSeparator();
         popup.add(globalActions.getAction(CutAttributeRelationshipAction.class).buildMenu());
         popup.add(globalActions.getAction(CopyAttributeRelationshipAction.class).buildMenu());
@@ -86,13 +86,15 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
 
         TablePopupHandler.install(table, popup);
         add(new CMTablePanel(table), BorderLayout.CENTER);
+    }
 
+    private void initBindings() {
         session.addDbEntityDisplayListener(this);
         session.addDbAttributeListener(this);
 
         table.getSelectionModel().addListSelectionListener(this::valueChanged);
 
-        globalActions.setupCutCopyPaste(
+        session.app().getActionManager().setupCutCopyPaste(
                 table,
                 CutAttributeRelationshipAction.class,
                 CopyAttributeRelationshipAction.class);

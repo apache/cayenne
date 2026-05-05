@@ -47,19 +47,22 @@ public class DbEntityView extends ProjectTabbedPane {
 
     public DbEntityView(ProjectSession session) {
         super(session);
-
-        setTabPlacement(JTabbedPane.TOP);
-
         this.entityPanel = new JScrollPane(new DbEntityMainView(session));
-        addTab("Entity", entityPanel);
-
         this.attributeRelationshipTab = new DbEntityPropertiesView(session);
+        initLayout();
+        initBindings();
+    }
+
+    private void initLayout() {
+        setTabPlacement(JTabbedPane.TOP);
+        addTab("Entity", entityPanel);
         addTab("Properties", attributeRelationshipTab);
+    }
 
-        session.addDbEntityDisplayListener(this::currentDbEntityChanged);
-        session.addDbAttributeDisplayListener(this::currentDbAttributeChanged);
-        session.addDbRelationshipDisplayListener(this::currentDbRelationshipChanged);
-
+    private void initBindings() {
+        session().addDbEntityDisplayListener(this::currentDbEntityChanged);
+        session().addDbAttributeDisplayListener(this::currentDbAttributeChanged);
+        session().addDbRelationshipDisplayListener(this::currentDbRelationshipChanged);
         addChangeListener(this::stateChanged);
     }
 

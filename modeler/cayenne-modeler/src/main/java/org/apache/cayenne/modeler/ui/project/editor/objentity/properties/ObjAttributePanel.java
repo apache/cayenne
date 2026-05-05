@@ -86,17 +86,34 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
     public ObjAttributePanel(ProjectSession session, ObjEntityPropertiesView parentPanel) {
         this.session = session;
         this.parentPanel = parentPanel;
+        this.table = new CMTable();
+        this.editMenu = new JMenuItem("Edit Attribute", IconFactory.buildIcon("icon-edit.png"));
+        initLayout();
+        initBindings();
+    }
 
-        this.setLayout(new BorderLayout());
+    private void initLayout() {
+        setLayout(new BorderLayout());
 
         GlobalActions globalActions = session.app().getActionManager();
 
-        table = new CMTable();
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.setDefaultRenderer(String.class, new CellRenderer(session));
 
-        // go to SuperEntity from ObjEntity by inheritance icon
+        JPopupMenu popup = new JPopupMenu();
+        popup.add(editMenu);
+        popup.add(globalActions.getAction(RemoveAttributeRelationshipAction.class).buildMenu());
+        popup.addSeparator();
+        popup.add(globalActions.getAction(CutAttributeRelationshipAction.class).buildMenu());
+        popup.add(globalActions.getAction(CopyAttributeRelationshipAction.class).buildMenu());
+        popup.add(globalActions.getAction(PasteAction.class).buildMenu());
+
+        TablePopupHandler.install(table, popup);
+        add(new CMTablePanel(table), BorderLayout.CENTER);
+    }
+
+    private void initBindings() {
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -114,20 +131,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
             }
         });
 
-        this.editMenu = new JMenuItem("Edit Attribute", IconFactory.buildIcon("icon-edit.png"));
         editMenu.addActionListener(this::edit);
-
-        JPopupMenu popup = new JPopupMenu();
-        popup.add(editMenu);
-        popup.add(globalActions.getAction(RemoveAttributeRelationshipAction.class).buildMenu());
-
-        popup.addSeparator();
-        popup.add(globalActions.getAction(CutAttributeRelationshipAction.class).buildMenu());
-        popup.add(globalActions.getAction(CopyAttributeRelationshipAction.class).buildMenu());
-        popup.add(globalActions.getAction(PasteAction.class).buildMenu());
-
-        TablePopupHandler.install(table, popup);
-        add(new CMTablePanel(table), BorderLayout.CENTER);
 
         session.addObjEntityDisplayListener(this);
         session.addObjEntityListener(this);
@@ -135,7 +139,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
 
         table.getSelectionModel().addListSelectionListener(this::valueChanged);
 
-        globalActions.setupCutCopyPaste(
+        session.app().getActionManager().setupCutCopyPaste(
                 table,
                 CutAttributeRelationshipAction.class,
                 CopyAttributeRelationshipAction.class);

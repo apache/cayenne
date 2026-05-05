@@ -78,6 +78,7 @@ import java.util.List;
  */
 public class MainFrame extends AppFrame {
 
+    private static final int DEFAULT_BUTTON_WIDTH = 30;
     private static final int DEFAULT_DIVIDER_LOCATION = 400;
 
     private final GlobalActions globalActions;
@@ -386,11 +387,10 @@ public class MainFrame extends AppFrame {
 
     private void initToolbar() {
 
-        MainToolBar toolBar = new MainToolBar(globalActions);
+        MainToolBar toolBar = new MainToolBar(app());
         getContentPane().add(toolBar, BorderLayout.NORTH);
 
         // Hide some buttons when frame is too small
-        int defaultBtnWidth = toolBar.getDefaultButtonWidth();
         addComponentListener(new ComponentAdapter() {
             private final int[] empty = {};
             private final int[] all = {6, 7, 8, 9, 10, 11, 12, 13, 14};
@@ -402,13 +402,13 @@ public class MainFrame extends AppFrame {
             @Override
             public void componentResized(ComponentEvent e) {
                 int[] hidden, shown;
-                if (getSize().width < (13 * defaultBtnWidth + 300)) {
+                if (getSize().width < (13 * DEFAULT_BUTTON_WIDTH + 300)) {
                     hidden = all;
                     shown = empty;
-                } else if (getSize().width < (16 * defaultBtnWidth + 300)) {
+                } else if (getSize().width < (16 * DEFAULT_BUTTON_WIDTH + 300)) {
                     hidden = removeAndCopy;
                     shown = undo;
-                } else if (getSize().width < (18 * defaultBtnWidth + 300)) {
+                } else if (getSize().width < (18 * DEFAULT_BUTTON_WIDTH + 300)) {
                     hidden = remove;
                     shown = undoAndCopy;
                 } else {

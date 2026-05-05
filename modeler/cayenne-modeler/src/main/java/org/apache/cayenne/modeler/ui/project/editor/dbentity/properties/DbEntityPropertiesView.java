@@ -57,22 +57,23 @@ public class DbEntityPropertiesView extends ProjectPanel implements DbEntityDisp
 
     public DbEntityPropertiesView(ProjectSession session) {
         super(session);
+        this.editButton = new ModelerAbstractAction.CayenneToolbarButton(null, 0);
+        this.attributePanel = new DbAttributePanel(session, this);
+        this.relationshipPanel = new DbRelationshipPanel(session, this);
+        this.splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, attributePanel, relationshipPanel);
+        this.toolBar = new JToolBar();
+        initLayout();
+        initBindings();
+    }
 
-        this.setLayout(new BorderLayout());
+    private void initLayout() {
+        setLayout(new BorderLayout());
 
-        editButton = new ModelerAbstractAction.CayenneToolbarButton(null, 0);
-
-        attributePanel = new DbAttributePanel(session, this);
-        relationshipPanel = new DbRelationshipPanel(session, this);
-
-        splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, attributePanel, relationshipPanel);
         splitPane.setOneTouchExpandable(true);
         splitPane.setResizeWeight(0.5);
-
         CMSplitPanePrefs.of(app().getPreferencesRepository(), "dbEntity/splitPane").bind(splitPane, -1);
-
         add(splitPane);
-        toolBar = new JToolBar();
+
         toolBar.setFloatable(false);
         GlobalActions globalActions = app().getActionManager();
 
@@ -99,6 +100,9 @@ public class DbEntityPropertiesView extends ProjectPanel implements DbEntityDisp
         toolBar.add(globalActions.getAction(PasteAction.class).buildButton(3));
 
         add(toolBar, BorderLayout.NORTH);
+    }
+
+    private void initBindings() {
         session().addDbEntityDisplayListener(this);
     }
 

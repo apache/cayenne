@@ -62,14 +62,14 @@ public class DbImportResultDialog extends AppDialog {
         this.revertButton = new JButton("Revert");
         this.okButton = new JButton("OK");
 
-        buildElements();
+        initLayout();
 
         setResizable(true);
         setPreferredSize(new Dimension(400, 400));
         pack();
     }
 
-    public void buildElements() {
+    private void initLayout() {
         buttonPanel.add(revertButton);
         buttonPanel.add(okButton);
 

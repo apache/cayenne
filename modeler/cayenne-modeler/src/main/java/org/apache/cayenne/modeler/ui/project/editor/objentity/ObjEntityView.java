@@ -50,26 +50,25 @@ public class ObjEntityView extends ProjectTabbedPane {
 
     public ObjEntityView(ProjectSession session) {
         super(session);
-
-        setTabPlacement(JTabbedPane.TOP);
-
-        // add panels to tabs
-        // note that those panels that have no internal scrollable tables
-        // must be wrapped in a scroll pane
-
+        // note that those panels that have no internal scrollable tables must be wrapped in a scroll pane
         entityPanel = new JScrollPane(new ObjEntityMainView(session));
-        addTab("Entity", entityPanel);
-
         attributeRelationshipTab = new ObjEntityPropertiesView(session);
-        addTab("Properties", attributeRelationshipTab);
-
         callbacksPanel = new ObjEntityCallbacksView(session);
+        initLayout();
+        initBindings();
+    }
+
+    private void initLayout() {
+        setTabPlacement(JTabbedPane.TOP);
+        addTab("Entity", entityPanel);
+        addTab("Properties", attributeRelationshipTab);
         addTab("Callbacks", callbacksPanel);
+    }
 
-        session.addObjEntityDisplayListener(this::currentObjEntityChanged);
-        session.addObjAttributeDisplayListener(this::currentObjAttributeChanged);
-        session.addObjRelationshipDisplayListener(this::currentObjRelationshipChanged);
-
+    private void initBindings() {
+        session().addObjEntityDisplayListener(this::currentObjEntityChanged);
+        session().addObjAttributeDisplayListener(this::currentObjAttributeChanged);
+        session().addObjRelationshipDisplayListener(this::currentObjRelationshipChanged);
         addChangeListener(this::stateChanged);
     }
 

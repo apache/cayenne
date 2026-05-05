@@ -22,6 +22,7 @@ package org.apache.cayenne.modeler.ui.project.editor;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.DataDomainView;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.DataMapView;
 import org.apache.cayenne.modeler.ui.project.editor.datanode.DataNodeEditorPanel;
@@ -40,7 +41,7 @@ import java.awt.*;
 /**
  * Card-layout panel that shows the editor matching the currently selected project object.
  */
-public class EditorPanelView extends JPanel {
+public class EditorPanelView extends ProjectPanel {
 
     private static final String EMPTY_VIEW = "Empty";
     private static final String DOMAIN_VIEW = "Domain";
@@ -67,49 +68,43 @@ public class EditorPanelView extends JPanel {
     private final EjbqlTabbedView ejbqlQueryView;
 
     public EditorPanelView(ProjectSession session) {
+        super(session);
 
-        detailLayout = new CardLayout();
+        this.detailLayout = new CardLayout();
+        this.dataDomainView = new DataDomainView(session);
+        this.dataMapView = new DataMapView(session);
+        this.procedureView = new ProcedureTabbedView(session);
+        this.sqlTemplateView = new SQLTemplateTabbedView(session);
+        this.ejbqlQueryView = new EjbqlTabbedView(session);
+        this.embeddableView = new EmbeddableView(session);
+        this.objDetailView = new ObjEntityView(session);
+        this.dbDetailView = new DbEntityView(session);
+
+        initLayout();
+        initBindings();
+    }
+
+    private void initLayout() {
         setLayout(detailLayout);
 
         // some but not all panels must be wrapped in a scroll pane
         // those that are not wrapped usually have their own scrollers
         // in subpanels...
-
         add(new JPanel(), EMPTY_VIEW);
-
-        dataDomainView = new DataDomainView(session);
         add(dataDomainView, DOMAIN_VIEW);
-
-        DataNodeEditorPanel nodeEditor = new DataNodeEditorPanel(session.app(), session);
-        add(new JScrollPane(nodeEditor), NODE_VIEW);
-
-        dataMapView = new DataMapView(session);
+        add(new JScrollPane(new DataNodeEditorPanel(session())), NODE_VIEW);
         add(dataMapView, DATA_MAP_VIEW);
-
-        procedureView = new ProcedureTabbedView(session);
         add(procedureView, PROCEDURE_VIEW);
-
-        SelectQueryTabbedView selectQueryView = new SelectQueryTabbedView(session);
-        add(selectQueryView, SELECT_QUERY_VIEW);
-
-        sqlTemplateView = new SQLTemplateTabbedView(session);
+        add(new SelectQueryTabbedView(session), SELECT_QUERY_VIEW);
         add(sqlTemplateView, SQL_TEMPLATE_VIEW);
-
-        Component procedureQueryView = new ProcedureQueryView(session);
-        add(new JScrollPane(procedureQueryView), PROCEDURE_QUERY_VIEW);
-
-        ejbqlQueryView = new EjbqlTabbedView(session);
+        add(new JScrollPane(new ProcedureQueryView(session)), PROCEDURE_QUERY_VIEW);
         add(ejbqlQueryView, EJBQL_QUERY_VIEW);
-
-        embeddableView = new EmbeddableView(session);
         add(embeddableView, EMBEDDABLE_VIEW);
-
-        objDetailView = new ObjEntityView(session);
         add(objDetailView, OBJ_VIEW);
-
-        dbDetailView = new DbEntityView(session);
         add(dbDetailView, DB_VIEW);
+    }
 
+    private void initBindings() {
         session.addDomainDisplayListener(e -> detailLayout.show(this, e.getDomain() == null ? EMPTY_VIEW : DOMAIN_VIEW));
         session.addDataNodeDisplayListener(e -> detailLayout.show(this, e.getDataNode() == null ? EMPTY_VIEW : NODE_VIEW));
         session.addDataMapDisplayListener(e -> detailLayout.show(this, e.getDataMap() == null ? EMPTY_VIEW : DATA_MAP_VIEW));

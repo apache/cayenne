@@ -64,45 +64,37 @@ public class DataMapMainView extends ProjectPanel {
     private final CMUndoableTextField defaultPackage;
     private final CMUndoableTextField defaultSuperclass;
     private final JCheckBox quoteSQLIdentifiers;
-
     private final CMUndoableTextField comment;
+    private final JButton updateDefaultCatalog;
+    private final JButton updateDefaultSchema;
+    private final JButton updateDefaultPackage;
+    private final JButton updateDefaultSuperclass;
+    private final JButton updateDefaultLockType;
 
     public DataMapMainView(ProjectSession session) {
         super(session);
-
-        // create widgets
         name = new CMUndoableTextField(app().getUndoManager());
-        name.addCommitListener(this::setDataMapName);
-
         nodeSelectorLabel = new JLabel("DataNode:");
         nodeSelector = new CMUndoableComboBox<>(app().getUndoManager());
+        defaultCatalog = new CMUndoableTextField(app().getUndoManager());
+        defaultSchema = new CMUndoableTextField(app().getUndoManager());
+        quoteSQLIdentifiers = new CMCheckBox(app().getUndoManager());
+        comment = new CMUndoableTextField(app().getUndoManager());
+        defaultPackage = new CMUndoableTextField(app().getUndoManager());
+        defaultSuperclass = new CMUndoableTextField(app().getUndoManager());
+        defaultLockType = new CMCheckBox(app().getUndoManager());
+        updateDefaultCatalog = new JButton("Update...");
+        updateDefaultSchema = new JButton("Update...");
+        updateDefaultPackage = new JButton("Update...");
+        updateDefaultSuperclass = new JButton("Update...");
+        updateDefaultLockType = new JButton("Update...");
+        initLayout();
+        initBindings();
+    }
+
+    private void initLayout() {
         nodeSelector.setRenderer(Renderers.listRendererWithIcons());
 
-        JButton updateDefaultCatalog = new JButton("Update...");
-        defaultCatalog = new CMUndoableTextField(app().getUndoManager());
-        defaultCatalog.addCommitListener(this::setDefaultCatalog);
-
-        JButton updateDefaultSchema = new JButton("Update...");
-        defaultSchema = new CMUndoableTextField(app().getUndoManager());
-        defaultSchema.addCommitListener(this::setDefaultSchema);
-
-        quoteSQLIdentifiers = new CMCheckBox(app().getUndoManager());
-
-        comment = new CMUndoableTextField(app().getUndoManager());
-        comment.addCommitListener(this::updateComment);
-
-        JButton updateDefaultPackage = new JButton("Update...");
-        defaultPackage = new CMUndoableTextField(app().getUndoManager());
-        defaultPackage.addCommitListener(this::setDefaultPackage);
-
-        JButton updateDefaultSuperclass = new JButton("Update...");
-        defaultSuperclass = new CMUndoableTextField(app().getUndoManager());
-        defaultSuperclass.addCommitListener(this::setDefaultSuperclass);
-
-        JButton updateDefaultLockType = new JButton("Update...");
-        defaultLockType = new CMCheckBox(app().getUndoManager());
-
-        // assemble
         FormLayout layout = new FormLayout(
                 "right:70dlu, 3dlu, fill:180dlu, 3dlu, fill:120",
                 "");
@@ -117,30 +109,25 @@ public class DataMapMainView extends ProjectPanel {
         builder.appendSeparator("Entity Defaults");
         builder.append("DB Catalog:", defaultCatalog, updateDefaultCatalog);
         builder.append("DB Schema:", defaultSchema, updateDefaultSchema);
-        builder.append(
-                "Java Package:",
-                defaultPackage,
-                updateDefaultPackage);
-        builder.append(
-                "Custom Superclass:",
-                defaultSuperclass,
-                updateDefaultSuperclass);
+        builder.append("Java Package:", defaultPackage, updateDefaultPackage);
+        builder.append("Custom Superclass:", defaultSuperclass, updateDefaultSuperclass);
         builder.append("Optimistic Locking:", defaultLockType, updateDefaultLockType);
 
         builder.appendSeparator("Linked DataNode");
         builder.append(nodeSelectorLabel);
         builder.append(nodeSelector, 2);
 
-        this.setLayout(new BorderLayout());
+        setLayout(new BorderLayout());
         add(builder.getPanel(), BorderLayout.CENTER);
+    }
 
-        session().addDataMapDisplayListener(e -> {
-            DataMap map = e.getDataMap();
-            if (map != null) {
-                initFromModel(map);
-            }
-        });
-
+    private void initBindings() {
+        name.addCommitListener(this::setDataMapName);
+        defaultCatalog.addCommitListener(this::setDefaultCatalog);
+        defaultSchema.addCommitListener(this::setDefaultSchema);
+        comment.addCommitListener(this::updateComment);
+        defaultPackage.addCommitListener(this::setDefaultPackage);
+        defaultSuperclass.addCommitListener(this::setDefaultSuperclass);
         nodeSelector.addActionListener(e -> setDataNode());
         quoteSQLIdentifiers.addItemListener(e -> setQuoteSQLIdentifiers(quoteSQLIdentifiers.isSelected()));
         defaultLockType.addItemListener(e -> setDefaultLockType(defaultLockType.isSelected()
@@ -151,6 +138,12 @@ public class DataMapMainView extends ProjectPanel {
         updateDefaultPackage.addActionListener(e -> updateDefaultPackage());
         updateDefaultSuperclass.addActionListener(e -> updateDefaultSuperclass());
         updateDefaultLockType.addActionListener(e -> updateDefaultLockType());
+        session().addDataMapDisplayListener(e -> {
+            DataMap map = e.getDataMap();
+            if (map != null) {
+                initFromModel(map);
+            }
+        });
     }
 
     /**

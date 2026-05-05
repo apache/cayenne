@@ -65,16 +65,17 @@ public class EmbeddableAttributesView extends ProjectPanel implements
         EmbeddableAttributeListener, EmbeddableDisplayListener, EmbeddableListener,
         ExistingSelectionProcessor {
 
-    private CMTable table;
+    private final CMTable table;
 
     public EmbeddableAttributesView(ProjectSession session) {
         super(session);
-        init();
-        initController();
+        this.table = new CMTable();
+        initLayout();
+        initBindings();
     }
 
-    private void init() {
-        this.setLayout(new BorderLayout());
+    private void initLayout() {
+        setLayout(new BorderLayout());
 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
@@ -92,16 +93,12 @@ public class EmbeddableAttributesView extends ProjectPanel implements
 
         add(toolBar, BorderLayout.NORTH);
 
-        table = new CMTable();
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        // Create and install a popup
         JPopupMenu popup = new JPopupMenu();
         popup.add(globalActions.getAction(RemoveAttributeAction.class).buildMenu());
-
         popup.addSeparator();
-
         popup.add(globalActions.getAction(CutAttributeAction.class).buildMenu());
         popup.add(globalActions.getAction(CopyAttributeAction.class).buildMenu());
         popup.add(globalActions.getAction(PasteAction.class).buildMenu());
@@ -110,7 +107,7 @@ public class EmbeddableAttributesView extends ProjectPanel implements
         add(new CMTablePanel(table), BorderLayout.CENTER);
     }
 
-    private void initController() {
+    private void initBindings() {
         session().addEmbeddableAttributeListener(this);
         session().addEmbeddableDisplayListener(this);
         session().addEmbeddableListener(this);

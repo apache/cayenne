@@ -43,17 +43,21 @@ public class EmbeddableView extends ProjectTabbedPane {
 
     public EmbeddableView(ProjectSession session) {
         super(session);
-
-        setTabPlacement(JTabbedPane.TOP);
-
         embeddablePanel = new JScrollPane(new EmbeddableMainView(session));
-        addTab("Embeddable", embeddablePanel);
-
         attributesPanel = new EmbeddableAttributesView(session);
-        addTab("Attributes", attributesPanel);
+        initLayout();
+        initBindings();
+    }
 
-        session.addEmbeddableAttributeDisplayListener(this::currentEmbeddableAttributeChanged);
-        session.addEmbeddableDisplayListener(this::currentEmbeddableChanged);
+    private void initLayout() {
+        setTabPlacement(JTabbedPane.TOP);
+        addTab("Embeddable", embeddablePanel);
+        addTab("Attributes", attributesPanel);
+    }
+
+    private void initBindings() {
+        session().addEmbeddableAttributeDisplayListener(this::currentEmbeddableAttributeChanged);
+        session().addEmbeddableDisplayListener(this::currentEmbeddableChanged);
         addChangeListener(this::stateChanged);
     }
 

@@ -38,34 +38,34 @@ class DataDomainGeneratorsPanel extends JPanel {
     private final Class<?> type;
     private final String icon;
 
-    private JCheckBox checkConfig;
-    private JButton toConfigButton;
+    private final JCheckBox checkConfig;
+    private final JButton toConfigButton;
 
     DataDomainGeneratorsPanel(Application application, DataMap dataMap, String icon, Class<?> type) {
         this.type = type;
         this.icon = icon;
         this.dataMap = dataMap;
-        initView(application);
+        this.checkConfig = new JCheckBox();
+        this.toConfigButton = new JButton("Edit Config");
+        initLayout(application);
     }
 
-    private void initView(Application application){
+    private void initLayout(Application application) {
         setLayout(new BorderLayout());
         FormLayout layout = new FormLayout(
                 "left:pref, 4dlu, fill:70dlu, 3dlu, fill:120, 3dlu, fill:120", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
-        this.checkConfig = new JCheckBox();
         JLabel dataMapLabel = new JLabel(dataMap.getName());
         dataMapLabel.setToolTipText(dataMap.getName());
         DataChannelMetaData metaData = application.getMetaData();
-        this.toConfigButton = new JButton("Edit Config");
-        if(metaData.get(dataMap, type) == null) {
-            if(type == ReverseEngineering.class) {
+        if (metaData.get(dataMap, type) == null) {
+            if (type == ReverseEngineering.class) {
                 checkConfig.setEnabled(false);
             }
         }
-        this.toConfigButton.setIcon(IconFactory.buildIcon(icon));
+        toConfigButton.setIcon(IconFactory.buildIcon(icon));
         builder.append(checkConfig, dataMapLabel, toConfigButton);
-        this.add(builder.getPanel(), BorderLayout.CENTER);
+        add(builder.getPanel(), BorderLayout.CENTER);
     }
 
     JCheckBox getCheckConfig() {

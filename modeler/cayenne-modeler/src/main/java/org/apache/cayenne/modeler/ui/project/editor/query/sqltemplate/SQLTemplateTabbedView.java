@@ -36,19 +36,22 @@ public class SQLTemplateTabbedView extends ProjectTabbedPane {
 
     public SQLTemplateTabbedView(ProjectSession session) {
         super(session);
-
-        setTabPlacement(JTabbedPane.TOP);
-
         this.mainTab = new SQLTemplateMainTab(session);
-        addTab("General", new JScrollPane(mainTab));
-
         this.scriptsTab = new SQLTemplateScriptsTab(session);
-        addTab("SQL Scripts", scriptsTab);
-
         this.prefetchTab = new SQLTemplatePrefetchTab(session);
-        addTab("Prefetches", prefetchTab);
+        initLayout();
+        initBindings();
+    }
 
-        session.addQueryDisplayListener(e -> initFromModel());
+    private void initLayout() {
+        setTabPlacement(JTabbedPane.TOP);
+        addTab("General", new JScrollPane(mainTab));
+        addTab("SQL Scripts", scriptsTab);
+        addTab("Prefetches", prefetchTab);
+    }
+
+    private void initBindings() {
+        session().addQueryDisplayListener(e -> initFromModel());
         addChangeListener(this::stateChanged);
     }
 

@@ -78,17 +78,35 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
     public ObjRelationshipPanel(ProjectSession session, ObjEntityPropertiesView parentPanel) {
         this.session = session;
         this.parentPanel = parentPanel;
+        this.table = new CMTable();
+        this.editMenu = new JMenuItem("Edit Relationship", IconFactory.buildIcon("icon-edit.png"));
+        initLayout();
+        initBindings();
+    }
 
-        this.setLayout(new BorderLayout());
+    private void initLayout() {
+        setLayout(new BorderLayout());
 
         GlobalActions globalActions = session.app().getActionManager();
 
-        table = new CMTable();
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.setDefaultRenderer(String.class, new StringRenderer());
         table.setDefaultRenderer(ObjEntity.class, new EntityRenderer());
 
+        JPopupMenu popup = new JPopupMenu();
+        popup.add(editMenu);
+        popup.add(globalActions.getAction(RemoveAttributeRelationshipAction.class).buildMenu());
+        popup.addSeparator();
+        popup.add(globalActions.getAction(CutAttributeRelationshipAction.class).buildMenu());
+        popup.add(globalActions.getAction(CopyAttributeRelationshipAction.class).buildMenu());
+        popup.add(globalActions.getAction(PasteAction.class).buildMenu());
+
+        TablePopupHandler.install(table, popup);
+        add(new CMTablePanel(table), BorderLayout.CENTER);
+    }
+
+    private void initBindings() {
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -107,27 +125,11 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
             }
         });
 
-        // Create and install a popup
-        Icon ico = IconFactory.buildIcon("icon-edit.png");
-        editMenu = new JMenuItem("Edit Relationship", ico);
-
-        JPopupMenu popup = new JPopupMenu();
-        popup.add(editMenu);
-        popup.add(globalActions.getAction(RemoveAttributeRelationshipAction.class).buildMenu());
-
-        popup.addSeparator();
-        popup.add(globalActions.getAction(CutAttributeRelationshipAction.class).buildMenu());
-        popup.add(globalActions.getAction(CopyAttributeRelationshipAction.class).buildMenu());
-        popup.add(globalActions.getAction(PasteAction.class).buildMenu());
-
-        TablePopupHandler.install(table, popup);
-        add(new CMTablePanel(table), BorderLayout.CENTER);
+        editMenu.addActionListener(this::edit);
 
         session.addObjEntityDisplayListener(this);
         session.addObjEntityListener(this);
         session.addObjRelationshipListener(this);
-
-        editMenu.addActionListener(this::edit);
 
         table.getSelectionModel().addListSelectionListener(this::valueChanged);
 

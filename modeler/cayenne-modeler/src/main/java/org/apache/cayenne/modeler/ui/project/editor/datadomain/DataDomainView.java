@@ -45,33 +45,30 @@ public class DataDomainView extends ProjectTabbedPane {
 
     public DataDomainView(ProjectSession session) {
         super(session);
+        this.dbImportTab = new DataDomainDbImportTab(session);
+        this.dbImportView = new JScrollPane(dbImportTab);
+        this.cgenTab = new DataDomainCgenTab(session);
+        this.cgenView = new JScrollPane(cgenTab);
+        this.graphTab = new DataDomainGraphTab(session);
+        this.validationTab = new ValidationTab(session);
+        initLayout();
+        initBindings();
+    }
 
+    private void initLayout() {
         setTabPlacement(JTabbedPane.TOP);
-
-        // add panels to tabs
-        // note that those panels that have no internal scrollable tables
-        // must be wrapped in a scroll pane
-        JScrollPane domainView = new JScrollPane(new DataDomainMainView(session));
-        addTab("Main", domainView);
-
-        dbImportTab = new DataDomainDbImportTab(session);
-        dbImportView = new JScrollPane(dbImportTab);
+        addTab("Main", new JScrollPane(new DataDomainMainView(session())));
         addTab("Db Import", dbImportView);
-
-        cgenTab = new DataDomainCgenTab(session);
-        cgenView = new JScrollPane(cgenTab);
         addTab("Class Generation", cgenView);
-
-        graphTab = new DataDomainGraphTab(session);
         addTab("Graph", graphTab);
-
-        validationTab = new ValidationTab(session);
         addTab("Validation", validationTab);
+    }
 
+    private void initBindings() {
         addChangeListener(this::stateChanged);
-        session.addDomainDisplayListener(this::currentDomainChanged);
-        session.addObjEntityDisplayListener(this::onEntitySelected);
-        session.addDbEntityDisplayListener(this::onEntitySelected);
+        session().addDomainDisplayListener(this::currentDomainChanged);
+        session().addObjEntityDisplayListener(this::onEntitySelected);
+        session().addDbEntityDisplayListener(this::onEntitySelected);
     }
 
     private void onEntitySelected(ObjEntityDisplayEvent e) {

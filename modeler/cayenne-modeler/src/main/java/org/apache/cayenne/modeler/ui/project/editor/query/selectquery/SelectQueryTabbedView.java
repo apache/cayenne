@@ -36,19 +36,22 @@ public class SelectQueryTabbedView extends ProjectTabbedPane {
 
     public SelectQueryTabbedView(ProjectSession session) {
         super(session);
-
-        setTabPlacement(JTabbedPane.TOP);
-
         this.mainTab = new SelectQueryMainTab(session);
-        addTab("General", new JScrollPane(mainTab));
-
         this.orderingTab = new SelectQueryOrderingTab(session);
-        addTab("Orderings", orderingTab);
-
         this.prefetchTab = new SelectQueryPrefetchTab(session);
-        addTab("Prefetches", prefetchTab);
+        initLayout();
+        initBindings();
+    }
 
-        session.addQueryDisplayListener(e -> initFromModel());
+    private void initLayout() {
+        setTabPlacement(JTabbedPane.TOP);
+        addTab("General", new JScrollPane(mainTab));
+        addTab("Orderings", orderingTab);
+        addTab("Prefetches", prefetchTab);
+    }
+
+    private void initBindings() {
+        session().addQueryDisplayListener(e -> initFromModel());
         addChangeListener(this::stateChanged);
     }
 

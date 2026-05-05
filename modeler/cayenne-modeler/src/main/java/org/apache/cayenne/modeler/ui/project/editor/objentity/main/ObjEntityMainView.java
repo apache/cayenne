@@ -68,7 +68,7 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
     private final CMUndoableTextField name;
     private final CMUndoableTextField className;
 
-    private final JLabel superclassLabel;
+    private JLabel superclassLabel;
     private final CMUndoableTextField superClassName;
     private final CMUndoableTextField qualifier;
     private final CMComboBox<DbEntity> dbEntityCombo;
@@ -77,17 +77,33 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
     private final CMCheckBox optimisticLocking;
     private final CMCheckBox isAbstract;
     private final CMUndoableTextField comment;
+    // borderless clickable button used as a label; needs to be a field to wire its listener in initBindings()
+    private final JButton tableLabel;
 
     public ObjEntityMainView(ProjectSession session) {
         super(session);
+        name = new CMUndoableTextField(app().getUndoManager());
+        superClassName = new CMUndoableTextField(app().getUndoManager());
+        className = new CMUndoableTextField(app().getUndoManager());
+        qualifier = new CMUndoableTextField(app().getUndoManager());
+        dbEntityCombo = new CMComboBox<>();
+        superEntityCombo = new CMComboBox<>();
+        readOnly = new CMCheckBox(app().getUndoManager());
+        optimisticLocking = new CMCheckBox(app().getUndoManager());
+        isAbstract = new CMCheckBox(app().getUndoManager());
+        comment = new CMUndoableTextField(app().getUndoManager());
+        tableLabel = new JButton("Table/View:");
+        initLayout();
+        initBindings();
+    }
 
-        this.setLayout(new BorderLayout());
+    private void initLayout() {
+        setLayout(new BorderLayout());
 
         JToolBar toolBar = new JToolBar();
         toolBar.setBorder(BorderFactory.createEmptyBorder());
         toolBar.setFloatable(false);
         GlobalActions globalActions = app().getActionManager();
-
         toolBar.add(globalActions.getAction(CreateAttributeAction.class).buildButton(1));
         toolBar.add(globalActions.getAction(CreateRelationshipAction.class).buildButton(3));
         toolBar.addSeparator();
@@ -95,44 +111,14 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
         toolBar.add(globalActions.getAction(ObjEntityCounterpartAction.class).buildButton(3));
         toolBar.addSeparator();
         toolBar.add(globalActions.getAction(ShowGraphEntityAction.class).buildButton());
-
         add(toolBar, BorderLayout.NORTH);
 
-        // create widgets
-        name = new CMUndoableTextField(app().getUndoManager());
-        name.addCommitListener(this::setEntityName);
-        superClassName = new CMUndoableTextField(app().getUndoManager());
-        superClassName.addCommitListener(this::setSuperClassName);
-        className = new CMUndoableTextField(app().getUndoManager());
-        className.addCommitListener(this::setClassName);
-        qualifier = new CMUndoableTextField(app().getUndoManager());
-        qualifier.addCommitListener(this::setQualifier);
-
-        dbEntityCombo = new CMComboBox<>();
-        superEntityCombo = new CMComboBox<>();
-
-        AutoCompletion.enable(dbEntityCombo, session()::getSelectedDataMap);
-        AutoCompletion.enable(superEntityCombo, session()::getSelectedDataMap);
-
-        readOnly = new CMCheckBox(app().getUndoManager());
-
-        optimisticLocking = new CMCheckBox(app().getUndoManager());
-
-        // borderless clickable button used as a label
-        JButton tableLabel = new JButton("Table/View:");
         tableLabel.setBorderPainted(false);
         tableLabel.setHorizontalAlignment(SwingConstants.LEFT);
         tableLabel.setFocusPainted(false);
         tableLabel.setMargin(new Insets(0, 0, 0, 0));
         tableLabel.setBorder(null);
 
-
-        isAbstract = new CMCheckBox(app().getUndoManager());
-
-        comment = new CMUndoableTextField(app().getUndoManager());
-        comment.addCommitListener(this::setComment);
-
-        // assemble
         FormLayout layout = new FormLayout("right:pref, 3dlu, fill:200dlu", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
@@ -143,17 +129,24 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
         builder.append(tableLabel, dbEntityCombo);
         builder.append("Comment:", comment);
         builder.appendSeparator();
-
         builder.append("Java Class:", className);
-
         superclassLabel = builder.append("Superclass:", superClassName);
         builder.append("Qualifier:", qualifier);
         builder.append("Read-Only:", readOnly);
         builder.append("Optimistic Locking:", optimisticLocking);
 
         add(builder.getPanel(), BorderLayout.CENTER);
+    }
 
-        // initialize events processing and tracking of UI updates...
+    private void initBindings() {
+        AutoCompletion.enable(dbEntityCombo, session()::getSelectedDataMap);
+        AutoCompletion.enable(superEntityCombo, session()::getSelectedDataMap);
+
+        name.addCommitListener(this::setEntityName);
+        superClassName.addCommitListener(this::setSuperClassName);
+        className.addCommitListener(this::setClassName);
+        qualifier.addCommitListener(this::setQualifier);
+        comment.addCommitListener(this::setComment);
 
         session().addObjEntityDisplayListener(this);
 
@@ -161,8 +154,6 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
             // Change DbEntity for current ObjEntity
             ObjEntity entity = session().getSelectedObjEntity();
             DbEntity dbEntity = (DbEntity) dbEntityCombo.getSelectedItem();
-
-
             if (dbEntity != entity.getDbEntity()) {
                 entity.setDbEntity(dbEntity);
                 session().fireObjEntityEvent(ObjEntityEvent.ofChange(ObjEntityMainView.this, entity));
@@ -221,10 +212,8 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
 
                 // fire both ObjEntityEvent and ObjEntityDisplayEvent;
                 // the latter is to update attribute and relationship display
-
                 DataChannelDescriptor domain = (DataChannelDescriptor) session().project().getRootNode();
                 DataMap map = session().getSelectedDataMap();
-
                 session().fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
                 session().displayObjEntity(new ObjEntityDisplayEvent(this, domain, map, entity));
             }

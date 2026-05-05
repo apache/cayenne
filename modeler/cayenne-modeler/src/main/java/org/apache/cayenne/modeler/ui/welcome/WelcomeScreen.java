@@ -38,37 +38,24 @@ import java.util.List;
  */
 public class WelcomeScreen extends JScrollPane implements RecentFileListListener, RecentFileListRenderer.OnFileClickListener {
 
-    private static final Color TOP_GRADIENT = new Color(153, 153, 153);
-    private static final Color BOTTOM_GRADIENT = new Color(230, 230, 230);
-
     private final Application application;
     private final GlobalActions actionManager;
 
-    private JList<String> recentProjectsList;
-    private JPanel buttonsPanel;
-    private JPanel mainPanel;
+    private final JList<String> recentProjectsList;
+    private final JPanel buttonsPanel;
+    private final JPanel mainPanel;
 
     public WelcomeScreen(Application application) {
         this.application = application;
         this.actionManager = application.getActionManager();
-        initView();
+        this.mainPanel = new WelcomeScreenMainPanel();
+        this.buttonsPanel = new BackgroundPanel("welcome/welcome-screen-left-bg.jpg");
+        this.recentProjectsList = new JList<>();
+
+        initLayout();
     }
 
-    /**
-     * Creates all necessary components
-     */
-    protected void initView() {
-        mainPanel = new JPanel(new GridBagLayout()) {
-            @Override
-            public void paintComponent(Graphics g) {
-                // paint gradient background
-                Graphics2D g2 = (Graphics2D) g.create();
-                Paint paint = new GradientPaint(0, 0, TOP_GRADIENT, 0, getHeight(), BOTTOM_GRADIENT);
-                g2.setPaint(paint);
-                g2.fillRect(0, 0, getWidth(), getHeight());
-                g2.dispose();
-            }
-        };
+    private void initLayout() {
         setBorder(BorderFactory.createEmptyBorder());
         initButtonsPane();
         initFileListPane();
@@ -78,8 +65,7 @@ public class WelcomeScreen extends JScrollPane implements RecentFileListListener
     private void initFileListPane() {
         JPanel fileListPanel = new BackgroundPanel("welcome/welcome-screen-right-bg.jpg");
 
-        final int padding = 20;
-        recentProjectsList = new JList<>();
+        int padding = 20;
         recentProjectsList.setOpaque(false);
         recentProjectsList.setLocation(padding, padding);
         recentProjectsList.setSize(
@@ -93,10 +79,9 @@ public class WelcomeScreen extends JScrollPane implements RecentFileListListener
     }
 
     private void initButtonsPane() {
-        final int padding = 24; // bottom padding for buttons
-        final int buttonHeight = 36;
+        int padding = 24;
+        int buttonHeight = 36;
 
-        buttonsPanel = new BackgroundPanel("welcome/welcome-screen-left-bg.jpg");
         int openButtonY = buttonsPanel.getHeight() - padding - buttonHeight; // buttons layout from bottom
         int newButtonY = openButtonY - 10 - buttonHeight; // 10px - space between buttons
         initButton("open", openButtonY, OpenProjectAction.class);
@@ -105,9 +90,9 @@ public class WelcomeScreen extends JScrollPane implements RecentFileListListener
         mainPanel.add(buttonsPanel);
     }
 
-    private void initButton(String name, int y,  Class<? extends Action> actionClass) {
-        ImageIcon icon = IconFactory.buildIcon("welcome/welcome-screen-"+name+"-btn.png");
-        ImageIcon hoverIcon = IconFactory.buildIcon("welcome/welcome-screen-"+name+"-btn-hover.png");
+    private void initButton(String name, int y, Class<? extends Action> actionClass) {
+        ImageIcon icon = IconFactory.buildIcon("welcome/welcome-screen-" + name + "-btn.png");
+        ImageIcon hoverIcon = IconFactory.buildIcon("welcome/welcome-screen-" + name + "-btn-hover.png");
         JButton button = createButton(icon, hoverIcon);
         button.setLocation(24, y); // 24px - button left & right padding
         button.addActionListener(actionManager.getAction(actionClass));
@@ -116,14 +101,9 @@ public class WelcomeScreen extends JScrollPane implements RecentFileListListener
 
     @Override
     public void onFileSelect(File file) {
-        ActionEvent event = new ActionEvent(file, 0, null);
-        // Fire an action with the file as source
-        actionManager.getAction(OpenProjectAction.class).performAction(event);
+        actionManager.getAction(OpenProjectAction.class).performAction(new ActionEvent(file, 0, null));
     }
 
-    /**
-     * Creates welcome screen-specific button
-     */
     private JButton createButton(Icon outIcon, Icon overIcon) {
         JButton button = new JButton();
 

@@ -29,7 +29,7 @@ import org.apache.cayenne.modeler.project.ProjectSession;
  */
 public abstract class ProjectPanel extends AppPanel {
 
-    private final ProjectSession session;
+    protected final ProjectSession session;
 
     protected ProjectPanel(ProjectSession session) {
         super(session.app());

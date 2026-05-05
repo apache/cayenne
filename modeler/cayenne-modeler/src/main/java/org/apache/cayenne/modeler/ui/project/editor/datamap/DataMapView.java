@@ -32,14 +32,19 @@ public class DataMapView extends ProjectTabbedPane {
 
     public DataMapView(ProjectSession session) {
         super(session);
+        initLayout();
+        initBindings();
+    }
 
+    private void initLayout() {
         setTabPlacement(JTabbedPane.TOP);
+        addTab("DataMap", new JScrollPane(new DataMapMainView(session())));
+        addTab("DB Import", new JScrollPane(new DbImportView(session())));
+        addTab("Class Generation", new JScrollPane(new CgenPanel(app(), session())));
+    }
 
-        addTab("DataMap", new JScrollPane(new DataMapMainView(session)));
-        addTab("DB Import", new JScrollPane(new DbImportView(session)));
-        addTab("Class Generation", new JScrollPane(new CgenPanel(app(), session)));
-
-        session.addDataMapDisplayListener(this::currentDataMapChanged);
+    private void initBindings() {
+        session().addDataMapDisplayListener(this::currentDataMapChanged);
     }
 
     private void currentDataMapChanged(DataMapDisplayEvent e) {

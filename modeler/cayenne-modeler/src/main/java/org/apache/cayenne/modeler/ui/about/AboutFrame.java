@@ -19,9 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.about;
 
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
-import org.apache.cayenne.modeler.toolkit.AppFrame;
 import org.apache.cayenne.util.LocalizedStringsHandler;
 import org.apache.cayenne.util.Util;
 
@@ -38,10 +36,7 @@ import java.time.LocalDate;
 /**
  * Displays the Cayenne license and build information.
  */
-// Implementation note - the data displayed here is
-// static and very simple, so there is no need to implement complex Scope MVC
-// triad, though it might be beneficial to use strings file
-public class AboutDialog extends AppFrame implements FocusListener, KeyListener, MouseListener {
+public class AboutFrame extends JFrame implements FocusListener, KeyListener, MouseListener {
 
     private static final String ABOUT_STRING = "(c) 2001-%d Apache Software Foundation and individual authors.<br><br>https://cayenne.apache.org/<br>";
 
@@ -55,8 +50,7 @@ public class AboutDialog extends AppFrame implements FocusListener, KeyListener,
         return logoImage;
     }
 
-    public AboutDialog(Application application) {
-        super(application);
+    public AboutFrame() {
         initLayout();
         initBindings();
         pack();
@@ -96,7 +90,7 @@ public class AboutDialog extends AppFrame implements FocusListener, KeyListener,
         gbc2.gridy = 2;
         gbc2.insets = new Insets(6, 12, 12, 12);
         panel.add(info, gbc2);
-        info.setText(getInfoString(app()));
+        info.setText(getInfoString());
     }
 
     private void initBindings() {
@@ -105,7 +99,7 @@ public class AboutDialog extends AppFrame implements FocusListener, KeyListener,
         addKeyListener(this);
     }
 
-    private static String getInfoString(Application application) {
+    private static String getInfoString() {
         if (infoString == null) {
 
             double maxMemory = (double) Runtime.getRuntime().maxMemory() / 1024 / 1024;

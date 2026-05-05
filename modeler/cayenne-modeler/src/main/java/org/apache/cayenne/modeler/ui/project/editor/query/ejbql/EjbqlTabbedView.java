@@ -34,16 +34,20 @@ public class EjbqlTabbedView extends ProjectTabbedPane {
 
     public EjbqlTabbedView(ProjectSession session) {
         super(session);
-
-        setTabPlacement(JTabbedPane.TOP);
-
         this.mainTab = new EjbqlQueryMainTab(session);
-        addTab("General", new JScrollPane(mainTab));
-
         this.scriptsTab = new EjbqlQueryScriptsTab(session);
-        addTab("EJBQL", scriptsTab);
+        initLayout();
+        initBindings();
+    }
 
-        session.addQueryDisplayListener(e -> initFromModel());
+    private void initLayout() {
+        setTabPlacement(JTabbedPane.TOP);
+        addTab("General", new JScrollPane(mainTab));
+        addTab("EJBQL", scriptsTab);
+    }
+
+    private void initBindings() {
+        session().addQueryDisplayListener(e -> initFromModel());
         addChangeListener(this::stateChanged);
     }
 

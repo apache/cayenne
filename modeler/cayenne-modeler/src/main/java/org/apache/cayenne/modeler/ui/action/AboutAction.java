@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.about.AboutDialog;
+import org.apache.cayenne.modeler.ui.about.AboutFrame;
 
 import java.awt.event.ActionEvent;
 
@@ -36,6 +36,6 @@ public class AboutAction extends ModelerAbstractAction {
     }
 
     public void showAboutDialog() {
-        new AboutDialog(application);
+        new AboutFrame();
     }
 }

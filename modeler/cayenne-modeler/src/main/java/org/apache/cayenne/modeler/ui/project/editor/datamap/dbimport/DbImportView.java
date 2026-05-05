@@ -65,7 +65,6 @@ public class DbImportView extends ProjectPanel {
         model.setCanBeCleaned(true);
         DbImportModel draggableTreeModel = new DbImportModel(draggableTreeRoot);
         draggableTreeModel.setCanBeCleaned(false);
-
         draggableTree.setRootVisible(false);
         draggableTree.setShowsRootHandles(true);
         draggableTree.setModel(draggableTreeModel);
@@ -74,22 +73,28 @@ public class DbImportView extends ProjectPanel {
         reverseEngineeringTree.setShowsRootHandles(true);
 
         DbImportActions actions = new DbImportActions(app(), this, reverseEngineeringTree, draggableTree);
-
         this.draggableTreePanel = new DraggableTreePanel(draggableTree, reverseEngineeringTree, actions);
-
         draggableTree.setLoadDbSchemaAction(actions.getLoadDbSchemaAction());
-        treeToolbar = new TreeToolbarPanel(reverseEngineeringTree, actions);
-        treePanel = new ReverseEngineeringTreePanel(session, reverseEngineeringTree, draggableTree, actions);
+        this.treeToolbar = new TreeToolbarPanel(reverseEngineeringTree, actions);
+        this.treePanel = new ReverseEngineeringTreePanel(session, reverseEngineeringTree, draggableTree, actions);
         treePanel.setTreeToolbar(treeToolbar);
         model.setDbSchemaTree(draggableTree);
         draggableTreeModel.setDbSchemaTree(draggableTree);
-        ((ColorTreeRenderer) draggableTreePanel.getSourceTree().getCellRenderer()).
-                setReverseEngineeringTree(reverseEngineeringTree);
+        ((ColorTreeRenderer) draggableTreePanel.getSourceTree().getCellRenderer())
+                .setReverseEngineeringTree(reverseEngineeringTree);
+        this.configPanel = new ReverseEngineeringConfigPanel(session, this);
+        this.loadDbSchemaProgress = new JProgressBar();
+        this.reverseEngineeringProgress = new JProgressBar();
+        this.loadDbSchemaButton = (ModelerAbstractAction.CayenneToolbarButton)
+                actions.getLoadDbSchemaAction().buildButton(0);
 
-        configPanel = new ReverseEngineeringConfigPanel(session, this);
+        initLayout(actions);
+        initBindings();
+    }
+
+    private void initLayout(DbImportActions actions) {
         configPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         configPanel.setVisible(false);
-
 
         FormLayout buttonPanelLayout = new FormLayout("fill:50dlu");
         DefaultFormBuilder buttonBuilder = new DefaultFormBuilder(buttonPanelLayout);
@@ -99,8 +104,8 @@ public class DbImportView extends ProjectPanel {
         FormLayout layout = new FormLayout("fill:160dlu:grow, 5dlu, fill:50dlu, 5dlu, fill:160dlu:grow");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.append(treeToolbar, ALL_LINE_SPAN);
-        FormLayout headerLayout = new FormLayout("fill:80dlu:grow");
 
+        FormLayout headerLayout = new FormLayout("fill:80dlu:grow");
         DefaultFormBuilder reverseEngineeringHeaderBuilder = new DefaultFormBuilder(headerLayout);
         JLabel importLabel = new JLabel("Database Import Configuration");
         importLabel.setBorder(new EmptyBorder(0, 5, 0, 0));
@@ -111,15 +116,14 @@ public class DbImportView extends ProjectPanel {
         JLabel schemaLabel = new JLabel("Database Schema");
         schemaLabel.setBorder(new EmptyBorder(0, 5, 0, 0));
         databaseHeaderBuilder.append(schemaLabel);
-        LoadDbSchemaAction loadDbSchemaAction = actions.getLoadDbSchemaAction();
-        loadDbSchemaButton = (ModelerAbstractAction.CayenneToolbarButton) loadDbSchemaAction.buildButton(0);
+
         loadDbSchemaButton.setShowingText(false);
         loadDbSchemaButton.setText("Refresh DB Schema");
         treeToolbar.add(loadDbSchemaButton);
 
         ModelerDbImportAction dbImportAction = actions.getReverseEngineeringAction();
-        ModelerAbstractAction.CayenneToolbarButton reverseEngineeringButton = (ModelerAbstractAction.CayenneToolbarButton)
-                dbImportAction.buildButton(0);
+        ModelerAbstractAction.CayenneToolbarButton reverseEngineeringButton =
+                (ModelerAbstractAction.CayenneToolbarButton) dbImportAction.buildButton(0);
         reverseEngineeringButton.setShowingText(true);
         reverseEngineeringButton.setText("Run Import");
         JPanel reverseEngineeringButtonPanel = new JPanel();
@@ -130,13 +134,10 @@ public class DbImportView extends ProjectPanel {
 
         builder.append("");
         builder.append(databaseHeaderBuilder.getPanel());
-
         builder.append(treePanel);
         builder.append(buttonBuilder.getPanel());
         builder.append(draggableTreePanel);
 
-        loadDbSchemaProgress = new JProgressBar();
-        reverseEngineeringProgress = new JProgressBar();
         loadDbSchemaProgress.setIndeterminate(true);
         loadDbSchemaProgress.setVisible(false);
         reverseEngineeringProgress.setIndeterminate(true);
@@ -150,16 +151,18 @@ public class DbImportView extends ProjectPanel {
         createAdvancedOptionsHiderPanel(builder);
 
         builder.append(configPanel, ALL_LINE_SPAN);
-        this.setLayout(new BorderLayout());
+        setLayout(new BorderLayout());
         add(builder.getPanel(), BorderLayout.CENTER);
+        draggableTreePanel.getSourceTree().repaint();
+    }
 
+    private void initBindings() {
         session().addDataMapDisplayListener(e -> {
             DataMap map = e.getDataMap();
             if (map != null) {
                 initFromModel(map);
             }
         });
-        draggableTreePanel.getSourceTree().repaint();
     }
 
     private void createAdvancedOptionsHiderPanel(DefaultFormBuilder builder) {

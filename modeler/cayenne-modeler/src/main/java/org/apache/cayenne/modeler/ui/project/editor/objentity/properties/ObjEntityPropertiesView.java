@@ -54,21 +54,22 @@ public class ObjEntityPropertiesView extends ProjectPanel implements ObjEntityDi
 
     public ObjEntityPropertiesView(ProjectSession session) {
         super(session);
-        this.setLayout(new BorderLayout());
-
         this.editButton = new ModelerAbstractAction.CayenneToolbarButton(null, 0);
-        attributePanel = new ObjAttributePanel(session, this);
-        relationshipPanel = new ObjRelationshipPanel(session, this);
+        this.attributePanel = new ObjAttributePanel(session, this);
+        this.relationshipPanel = new ObjRelationshipPanel(session, this);
+        this.splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, attributePanel, relationshipPanel);
+        this.toolBar = new JToolBar();
+        initLayout();
+    }
 
-        splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, attributePanel, relationshipPanel);
+    private void initLayout() {
+        setLayout(new BorderLayout());
+
         splitPane.setOneTouchExpandable(true);
         splitPane.setResizeWeight(0.5);
-
         CMSplitPanePrefs.of(app().getPreferencesRepository(), "objEntity/splitPane").bind(splitPane, -1);
-
         add(splitPane);
 
-        toolBar = new JToolBar();
         toolBar.setFloatable(false);
         GlobalActions globalActions = app().getActionManager();
 

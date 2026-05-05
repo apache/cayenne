@@ -78,84 +78,72 @@ public class DbEntityMainView extends ProjectPanel implements ExistingSelectionP
 
     public DbEntityMainView(ProjectSession session) {
         super(session);
-
         toolBar = new JToolBar();
+        name = new CMUndoableTextField(app().getUndoManager());
+        catalogLabel = new JLabel("Catalog:");
+        catalog = new CMUndoableTextField(app().getUndoManager());
+        schemaLabel = new JLabel("Schema:");
+        schema = new CMUndoableTextField(app().getUndoManager());
+        qualifier = new CMUndoableTextField(app().getUndoManager());
+        comment = new CMUndoableTextField(app().getUndoManager());
+        pkGeneratorType = new JComboBox<>();
+        pkGeneratorDetailLayout = new CardLayout();
+        pkGeneratorDetail = new JPanel(pkGeneratorDetailLayout);
+        initLayout();
+        initBindings();
+    }
+
+    private void initLayout() {
         toolBar.setBorder(BorderFactory.createEmptyBorder());
         toolBar.setFloatable(false);
         GlobalActions globalActions = app().getActionManager();
-
         toolBar.add(globalActions.getAction(CreateAttributeAction.class).buildButton(1));
         toolBar.add(globalActions.getAction(CreateRelationshipAction.class).buildButton(3));
         toolBar.addSeparator();
-
         toolBar.add(globalActions.getAction(CreateObjEntityFromDbAction.class).buildButton(1));
         toolBar.add(globalActions.getAction(DbEntitySyncAction.class).buildButton(2));
         toolBar.add(globalActions.getAction(DbEntityCounterpartAction.class).buildButton(3));
         toolBar.addSeparator();
-
         toolBar.add(globalActions.getAction(ShowGraphEntityAction.class).buildButton());
 
-        // create widgets
-        name = new CMUndoableTextField(app().getUndoManager());
-        name.addCommitListener(this::setEntityName);
-
-        catalogLabel = new JLabel("Catalog:");
-        catalog = new CMUndoableTextField(app().getUndoManager());
-        catalog.addCommitListener(this::setCatalog);
-
-        schemaLabel = new JLabel("Schema:");
-        schema = new CMUndoableTextField(app().getUndoManager());
-        schema.addCommitListener(this::setSchema);
-
-        qualifier = new CMUndoableTextField(app().getUndoManager());
-        qualifier.addCommitListener(this::setQualifier);
-
-        comment = new CMUndoableTextField(app().getUndoManager());
-        comment.addCommitListener(this::setComment);
-
-        pkGeneratorType = new JComboBox<>();
         pkGeneratorType.setEditable(false);
         pkGeneratorType.setModel(new DefaultComboBoxModel<>(PK_GENERATOR_TYPES));
+        pkGeneratorDetail.add(new PKDefaultGeneratorPanel(session()), PK_DEFAULT_GENERATOR);
+        pkGeneratorDetail.add(new PKDBGeneratorPanel(session()), PK_DB_GENERATOR);
+        pkGeneratorDetail.add(new PKCustomSequenceGeneratorPanel(session()), PK_CUSTOM_SEQUENCE_GENERATOR);
 
-        pkGeneratorDetailLayout = new CardLayout();
-        pkGeneratorDetail = new JPanel(pkGeneratorDetailLayout);
-        pkGeneratorDetail.add(new PKDefaultGeneratorPanel(session), PK_DEFAULT_GENERATOR);
-        pkGeneratorDetail.add(new PKDBGeneratorPanel(session), PK_DB_GENERATOR);
-        pkGeneratorDetail.add(new PKCustomSequenceGeneratorPanel(session), PK_CUSTOM_SEQUENCE_GENERATOR);
-
-        // assemble
         FormLayout layout = new FormLayout("right:pref, 3dlu, fill:200dlu", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
-
         builder.appendSeparator("DbEntity Configuration");
         builder.append("DbEntity Name:", name);
         builder.append(catalogLabel, catalog);
         builder.append(schemaLabel, schema);
         builder.append("Qualifier:", qualifier);
         builder.append("Comment:", comment);
-
         builder.appendSeparator("Primary Key");
         builder.append("PK Generation Strategy:", pkGeneratorType);
 
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BorderLayout());
-
+        JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(builder.getPanel(), BorderLayout.NORTH);
         mainPanel.add(pkGeneratorDetail, BorderLayout.CENTER);
 
         setLayout(new BorderLayout());
         add(toolBar, BorderLayout.NORTH);
         add(mainPanel, BorderLayout.CENTER);
+    }
 
+    private void initBindings() {
+        name.addCommitListener(this::setEntityName);
+        catalog.addCommitListener(this::setCatalog);
+        schema.addCommitListener(this::setSchema);
+        qualifier.addCommitListener(this::setQualifier);
+        comment.addCommitListener(this::setComment);
         session().addDbEntityDisplayListener(this);
-
         pkGeneratorType.addItemListener(e -> {
             pkGeneratorDetailLayout.show(pkGeneratorDetail, (String) pkGeneratorType.getSelectedItem());
-
             for (int i = 0; i < pkGeneratorDetail.getComponentCount(); i++) {
                 if (pkGeneratorDetail.getComponent(i).isVisible()) {
-
                     DbEntity entity = session().getSelectedDbEntity();
                     PKGeneratorPanel panel = (PKGeneratorPanel) pkGeneratorDetail.getComponent(i);
                     panel.onInit(entity);
