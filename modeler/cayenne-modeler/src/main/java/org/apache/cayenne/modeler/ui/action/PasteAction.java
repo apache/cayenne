@@ -130,12 +130,12 @@ public class PasteAction extends ModelerAbstractAction implements FlavorListener
                     undoableEdit = new PasteUndoableEdit(getProjectSession(), domain, map, currentObject, content);
                 }
 
-                application.getUndoManager().addEdit(undoableEdit);
+                app.getUndoManager().addEdit(undoableEdit);
             }
         } catch (UnsupportedFlavorException ufe) {
             // do nothing
         } catch (Exception ex) {
-            ErrorsController.guiException(application, ex);
+            ErrorsController.guiException(app, ex);
         }
     }
 

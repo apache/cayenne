@@ -64,19 +64,19 @@ public class ProcedureTab extends ProjectPanel implements ProcedureDisplayListen
     private void initView() {
         // create widgets
 
-        this.name = new CMUndoableTextField(app().getUndoManager());
+        this.name = new CMUndoableTextField(app.getUndoManager());
         this.name.addCommitListener(this::setProcedureName);
 
-        this.schema = new CMUndoableTextField(app().getUndoManager());
+        this.schema = new CMUndoableTextField(app.getUndoManager());
         this.schema.addCommitListener(this::setSchema);
 
-        this.catalog = new CMUndoableTextField(app().getUndoManager());
+        this.catalog = new CMUndoableTextField(app.getUndoManager());
         this.catalog.addCommitListener(this::setCatalog);
 
-        this.comment = new CMUndoableTextField(app().getUndoManager());
+        this.comment = new CMUndoableTextField(app.getUndoManager());
         this.comment.addCommitListener(this::setComment);
 
-        this.returnsValue = new CMCheckBox(app().getUndoManager());
+        this.returnsValue = new CMCheckBox(app.getUndoManager());
         this.returnsValue.setToolTipText("first parameter will be used as return value");
 
         FormLayout layout = new FormLayout("right:pref, 3dlu, fill:200dlu", "");
@@ -96,22 +96,22 @@ public class ProcedureTab extends ProjectPanel implements ProcedureDisplayListen
 
     private void initController() {
         returnsValue.addItemListener(e -> {
-            Procedure procedure = session().getSelectedProcedure();
+            Procedure procedure = session.getSelectedProcedure();
             if (procedure != null && !ignoreChange) {
                 procedure.setReturningValue(returnsValue.isSelected());
-                session().fireProcedureEvent(ProcedureEvent.ofChange(ProcedureTab.this, procedure));
+                session.fireProcedureEvent(ProcedureEvent.ofChange(ProcedureTab.this, procedure));
             }
         });
 
-        session().addProcedureDisplayListener(this);
+        session.addProcedureDisplayListener(this);
     }
 
     public void processExistingSelection(EventObject e) {
         ProcedureDisplayEvent pde = new ProcedureDisplayEvent(this,
-                (DataChannelDescriptor) session().project().getRootNode(),
-                session().getSelectedDataMap(),
-                session().getSelectedProcedure());
-        session().displayProcedure(pde);
+                (DataChannelDescriptor) session.project().getRootNode(),
+                session.getSelectedDataMap(),
+                session.getSelectedProcedure());
+        session.displayProcedure(pde);
     }
 
     /**
@@ -138,7 +138,7 @@ public class ProcedureTab extends ProjectPanel implements ProcedureDisplayListen
             newName = null;
         }
 
-        Procedure procedure = session().getSelectedProcedure();
+        Procedure procedure = session.getSelectedProcedure();
 
         if (procedure == null || Util.nullSafeEquals(newName, procedure.getName())) {
             return;
@@ -158,7 +158,7 @@ public class ProcedureTab extends ProjectPanel implements ProcedureDisplayListen
             if (ns instanceof EntityResolver) {
                 ((EntityResolver) ns).refreshMappingCache();
             }
-            session().fireProcedureEvent(e);
+            session.fireProcedureEvent(e);
         } else {
             // there is an entity with the same name
             throw new ValidationException("There is another procedure with name '" + newName + "'.");
@@ -170,11 +170,11 @@ public class ProcedureTab extends ProjectPanel implements ProcedureDisplayListen
             text = null;
         }
 
-        Procedure procedure = session().getSelectedProcedure();
+        Procedure procedure = session.getSelectedProcedure();
 
         if (procedure != null && !Util.nullSafeEquals(procedure.getSchema(), text)) {
             procedure.setSchema(text);
-            session().fireProcedureEvent(ProcedureEvent.ofChange(this, procedure));
+            session.fireProcedureEvent(ProcedureEvent.ofChange(this, procedure));
         }
     }
 
@@ -183,26 +183,26 @@ public class ProcedureTab extends ProjectPanel implements ProcedureDisplayListen
             text = null;
         }
 
-        Procedure procedure = session().getSelectedProcedure();
+        Procedure procedure = session.getSelectedProcedure();
 
         if (procedure != null && !Util.nullSafeEquals(procedure.getCatalog(), text)) {
             procedure.setCatalog(text);
-            session().fireProcedureEvent(ProcedureEvent.ofChange(this, procedure));
+            session.fireProcedureEvent(ProcedureEvent.ofChange(this, procedure));
         }
     }
 
     void setComment(String comment) {
-        Procedure procedure = session().getSelectedProcedure();
+        Procedure procedure = session.getSelectedProcedure();
 
         if (procedure == null) {
             return;
         }
 
-        ObjectInfo.putToMetaData(app().getMetaData(), procedure, ObjectInfo.COMMENT, comment);
-        session().fireProcedureEvent(ProcedureEvent.ofChange(this, procedure));
+        ObjectInfo.putToMetaData(app.getMetaData(), procedure, ObjectInfo.COMMENT, comment);
+        session.fireProcedureEvent(ProcedureEvent.ofChange(this, procedure));
     }
 
     String getComment(Procedure procedure) {
-        return ObjectInfo.getFromMetaData(app().getMetaData(), procedure, ObjectInfo.COMMENT);
+        return ObjectInfo.getFromMetaData(app.getMetaData(), procedure, ObjectInfo.COMMENT);
     }
 }

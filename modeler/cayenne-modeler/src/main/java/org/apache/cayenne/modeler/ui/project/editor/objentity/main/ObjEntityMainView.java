@@ -82,16 +82,16 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
 
     public ObjEntityMainView(ProjectSession session) {
         super(session);
-        name = new CMUndoableTextField(app().getUndoManager());
-        superClassName = new CMUndoableTextField(app().getUndoManager());
-        className = new CMUndoableTextField(app().getUndoManager());
-        qualifier = new CMUndoableTextField(app().getUndoManager());
+        name = new CMUndoableTextField(app.getUndoManager());
+        superClassName = new CMUndoableTextField(app.getUndoManager());
+        className = new CMUndoableTextField(app.getUndoManager());
+        qualifier = new CMUndoableTextField(app.getUndoManager());
         dbEntityCombo = new CMComboBox<>();
         superEntityCombo = new CMComboBox<>();
-        readOnly = new CMCheckBox(app().getUndoManager());
-        optimisticLocking = new CMCheckBox(app().getUndoManager());
-        isAbstract = new CMCheckBox(app().getUndoManager());
-        comment = new CMUndoableTextField(app().getUndoManager());
+        readOnly = new CMCheckBox(app.getUndoManager());
+        optimisticLocking = new CMCheckBox(app.getUndoManager());
+        isAbstract = new CMCheckBox(app.getUndoManager());
+        comment = new CMUndoableTextField(app.getUndoManager());
         tableLabel = new JButton("Table/View:");
         initLayout();
         initBindings();
@@ -103,7 +103,7 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
         JToolBar toolBar = new JToolBar();
         toolBar.setBorder(BorderFactory.createEmptyBorder());
         toolBar.setFloatable(false);
-        GlobalActions globalActions = app().getActionManager();
+        GlobalActions globalActions = app.getActionManager();
         toolBar.add(globalActions.getAction(CreateAttributeAction.class).buildButton(1));
         toolBar.add(globalActions.getAction(CreateRelationshipAction.class).buildButton(3));
         toolBar.addSeparator();
@@ -139,8 +139,8 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
     }
 
     private void initBindings() {
-        AutoCompletion.enable(dbEntityCombo, session()::getSelectedDataMap);
-        AutoCompletion.enable(superEntityCombo, session()::getSelectedDataMap);
+        AutoCompletion.enable(dbEntityCombo, session::getSelectedDataMap);
+        AutoCompletion.enable(superEntityCombo, session::getSelectedDataMap);
 
         name.addCommitListener(this::setEntityName);
         superClassName.addCommitListener(this::setSuperClassName);
@@ -148,15 +148,15 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
         qualifier.addCommitListener(this::setQualifier);
         comment.addCommitListener(this::setComment);
 
-        session().addObjEntityDisplayListener(this);
+        session.addObjEntityDisplayListener(this);
 
         dbEntityCombo.addActionListener(e -> {
             // Change DbEntity for current ObjEntity
-            ObjEntity entity = session().getSelectedObjEntity();
+            ObjEntity entity = session.getSelectedObjEntity();
             DbEntity dbEntity = (DbEntity) dbEntityCombo.getSelectedItem();
             if (dbEntity != entity.getDbEntity()) {
                 entity.setDbEntity(dbEntity);
-                session().fireObjEntityEvent(ObjEntityEvent.ofChange(ObjEntityMainView.this, entity));
+                session.fireObjEntityEvent(ObjEntityEvent.ofChange(ObjEntityMainView.this, entity));
             }
         });
 
@@ -167,7 +167,7 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
                     ? null
                     : superEntity.getName();
 
-            ObjEntity entity = session().getSelectedObjEntity();
+            ObjEntity entity = session.getSelectedObjEntity();
 
             if (!Util.nullSafeEquals(name, entity.getSuperEntityName())) {
                 List<ObjAttribute> duplicateAttributes = null;
@@ -177,9 +177,9 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
 
                 if (duplicateAttributes != null && !duplicateAttributes.isEmpty()) {
                     DuplicatedAttributesDialog.showDialog(
-                            app(),
-                            app().getFrame(),
-                            session(), duplicateAttributes, superEntity, entity);
+                            app,
+                            app.getFrame(),
+                            session, duplicateAttributes, superEntity, entity);
                     if (DuplicatedAttributesDialog.getResult().equals(DuplicatedAttributesDialog.CANCEL_RESULT)) {
                         superEntityCombo.setSelectedItem(entity.getSuperEntity());
                         superClassName.setText(entity.getSuperClassName());
@@ -212,45 +212,45 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
 
                 // fire both ObjEntityEvent and ObjEntityDisplayEvent;
                 // the latter is to update attribute and relationship display
-                DataChannelDescriptor domain = (DataChannelDescriptor) session().project().getRootNode();
-                DataMap map = session().getSelectedDataMap();
-                session().fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
-                session().displayObjEntity(new ObjEntityDisplayEvent(this, domain, map, entity));
+                DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
+                DataMap map = session.getSelectedDataMap();
+                session.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
+                session.displayObjEntity(new ObjEntityDisplayEvent(this, domain, map, entity));
             }
         });
 
         tableLabel.addActionListener(e -> {
             // Jump to DbEntity of the current ObjEntity
-            DbEntity entity = session().getSelectedObjEntity().getDbEntity();
+            DbEntity entity = session.getSelectedObjEntity().getDbEntity();
             if (entity != null) {
-                DataChannelDescriptor dom = (DataChannelDescriptor) session().project().getRootNode();
-                session().displayDbEntity(new DbEntityDisplayEvent(this, dom, entity.getDataMap(), entity));
+                DataChannelDescriptor dom = (DataChannelDescriptor) session.project().getRootNode();
+                session.displayDbEntity(new DbEntityDisplayEvent(this, dom, entity.getDataMap(), entity));
             }
         });
 
         readOnly.addItemListener(e -> {
-            ObjEntity entity = session().getSelectedObjEntity();
+            ObjEntity entity = session.getSelectedObjEntity();
             if (entity != null) {
                 entity.setReadOnly(readOnly.isSelected());
-                session().fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
+                session.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
             }
         });
 
         optimisticLocking.addItemListener(e -> {
-            ObjEntity entity = session().getSelectedObjEntity();
+            ObjEntity entity = session.getSelectedObjEntity();
             if (entity != null) {
                 entity.setDeclaredLockType(optimisticLocking.isSelected()
                         ? ObjEntity.LOCK_TYPE_OPTIMISTIC
                         : ObjEntity.LOCK_TYPE_NONE);
-                session().fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
+                session.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
             }
         });
 
         isAbstract.addItemListener(e -> {
-            ObjEntity entity = session().getSelectedObjEntity();
+            ObjEntity entity = session.getSelectedObjEntity();
             if (entity != null) {
                 entity.setAbstract(isAbstract.isSelected());
-                session().fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
+                session.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
             }
         });
     }
@@ -278,8 +278,8 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
         optimisticLocking.setSelected(entity.getDeclaredLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC);
 
         // init DbEntities
-        EntityResolver resolver = session().entityResolver();
-        DataMap map = session().getSelectedDataMap();
+        EntityResolver resolver = session.entityResolver();
+        DataMap map = session.getSelectedDataMap();
         DbEntity[] dbEntities = resolver.getDbEntities().toArray(new DbEntity[0]);
         Arrays.sort(dbEntities, Comparators.forDataMapChildren());
 
@@ -312,12 +312,12 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
             className = null;
         }
 
-        ObjEntity entity = session().getSelectedObjEntity();
+        ObjEntity entity = session.getSelectedObjEntity();
 
         // "ent" may be null if we quit editing by changing tree selection
         if (entity != null && !Util.nullSafeEquals(entity.getClassName(), className)) {
             entity.setClassName(className);
-            session().fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
+            session.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
         }
     }
 
@@ -327,11 +327,11 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
             text = null;
         }
 
-        ObjEntity ent = session().getSelectedObjEntity();
+        ObjEntity ent = session.getSelectedObjEntity();
 
         if (ent != null && !Util.nullSafeEquals(ent.getSuperClassName(), text)) {
             ent.setSuperClassName(text);
-            session().fireObjEntityEvent(ObjEntityEvent.ofChange(this, ent));
+            session.fireObjEntityEvent(ObjEntityEvent.ofChange(this, ent));
         }
     }
 
@@ -340,13 +340,13 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
             text = null;
         }
 
-        ObjEntity entity = session().getSelectedObjEntity();
+        ObjEntity entity = session.getSelectedObjEntity();
         if (entity != null) {
             try {
                 String oldQualifier = ExpressionConvertor.asString(entity.getDeclaredQualifier());
                 if (!Util.nullSafeEquals(oldQualifier, text)) {
                     entity.setDeclaredQualifier(ExpressionConvertor.fromString(text));
-                    session().fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
+                    session.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
                 }
             } catch (IllegalArgumentException ex) {
                 // unparsable qualifier
@@ -360,7 +360,7 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
             newName = null;
         }
 
-        ObjEntity entity = session().getSelectedObjEntity();
+        ObjEntity entity = session.getSelectedObjEntity();
         if (entity == null) {
             return;
         }
@@ -376,7 +376,7 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
             ObjEntityEvent e = ObjEntityEvent.ofChange(this, entity, entity.getName());
             entity.getDataMap().renameObjEntity(entity, newName);
 
-            session().fireObjEntityEvent(e);
+            session.fireObjEntityEvent(e);
 
             // suggest to update class name
             ClassNameUpdaterController nameUpdater = new ClassNameUpdaterController(this, entity);
@@ -399,10 +399,10 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
 
         ObjEntityDisplayEvent ede = new ObjEntityDisplayEvent(
                 this,
-                (DataChannelDescriptor) session().project().getRootNode(),
-                session().getSelectedDataMap(),
-                session().getSelectedObjEntity());
-        session().displayObjEntity(ede);
+                (DataChannelDescriptor) session.project().getRootNode(),
+                session.getSelectedDataMap(),
+                session.getSelectedObjEntity());
+        session.displayObjEntity(ede);
     }
 
     public void objEntitySelected(ObjEntityDisplayEvent e) {
@@ -417,7 +417,7 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
     private List<ObjAttribute> getDuplicatedAttributes(ObjEntity superEntity) {
         List<ObjAttribute> result = new LinkedList<>();
 
-        ObjEntity entity = session().getSelectedObjEntity();
+        ObjEntity entity = session.getSelectedObjEntity();
 
         for (ObjAttribute attribute : entity.getAttributes()) {
             if (superEntity.getAttribute(attribute.getName()) != null) {
@@ -429,17 +429,17 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
     }
 
     private void setComment(String value) {
-        ObjEntity entity = session().getSelectedObjEntity();
+        ObjEntity entity = session.getSelectedObjEntity();
         if (entity == null) {
             return;
         }
 
-        ObjectInfo.putToMetaData(app().getMetaData(), entity, ObjectInfo.COMMENT, value);
-        session().fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
+        ObjectInfo.putToMetaData(app.getMetaData(), entity, ObjectInfo.COMMENT, value);
+        session.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
     }
 
     private String getComment(ObjEntity entity) {
-        return ObjectInfo.getFromMetaData(app().getMetaData(), entity, ObjectInfo.COMMENT);
+        return ObjectInfo.getFromMetaData(app.getMetaData(), entity, ObjectInfo.COMMENT);
     }
 
 }

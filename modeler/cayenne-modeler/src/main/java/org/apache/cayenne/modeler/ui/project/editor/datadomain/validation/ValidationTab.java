@@ -26,25 +26,24 @@ import org.apache.cayenne.modeler.event.display.ValidationConfigDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ValidationConfigDisplayListener;
 import org.apache.cayenne.modeler.event.model.DomainEvent;
 import org.apache.cayenne.modeler.event.model.DomainListener;
-import org.apache.cayenne.modeler.toolkit.tree.CheckBoxNodeData;
-import org.apache.cayenne.modeler.toolkit.AppPanel;
-import org.apache.cayenne.modeler.ui.action.UpdateValidationConfigAction;
 import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
+import org.apache.cayenne.modeler.toolkit.tree.CheckBoxNodeData;
+import org.apache.cayenne.modeler.ui.action.UpdateValidationConfigAction;
 import org.apache.cayenne.project.validation.Inspection;
 import org.apache.cayenne.project.validation.ValidationConfig;
 
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.EnumSet;
 import java.util.Set;
 
-public class ValidationTab extends AppPanel
+public class ValidationTab extends ProjectPanel
         implements DomainDisplayListener, DomainListener, ValidationConfigDisplayListener {
 
-    private final ProjectSession session;
     private final DataChannelMetaData metaData;
     private final InspectionCheckBoxTree inspectionTree;
     private final InspectionTreeModelListener inspectionTreeModelListener;
@@ -52,9 +51,8 @@ public class ValidationTab extends AppPanel
     private Set<Inspection> enabledInspections;
 
     public ValidationTab(ProjectSession session) {
-        super(session.app());
-        this.session = session;
-        this.metaData = session.app().getMetaData();
+        super(session);
+        this.metaData = app.getMetaData();
         this.inspectionTree = InspectionCheckBoxTree.build();
         this.inspectionTreeModelListener = new InspectionTreeModelListener();
 
@@ -159,7 +157,7 @@ public class ValidationTab extends AppPanel
                 }
             }
             if (inspectionsUpdated) {
-                app().getActionManager()
+                app.getActionManager()
                         .getAction(UpdateValidationConfigAction.class)
                         .putConfig(new ValidationConfig(enabledInspections))
                         .setUndoable(true)

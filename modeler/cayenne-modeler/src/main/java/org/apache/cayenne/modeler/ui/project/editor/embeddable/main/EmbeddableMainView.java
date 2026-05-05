@@ -56,7 +56,7 @@ public class EmbeddableMainView extends ProjectPanel implements EmbeddableDispla
     }
 
     private void initController() {
-        session().addEmbeddableDisplayListener(this);
+        session.addEmbeddableDisplayListener(this);
     }
 
     private void initView() {
@@ -65,15 +65,15 @@ public class EmbeddableMainView extends ProjectPanel implements EmbeddableDispla
         JToolBar toolBar = new JToolBar();
         toolBar.setBorder(BorderFactory.createEmptyBorder());
         toolBar.setFloatable(false);
-        GlobalActions globalActions = app().getActionManager();
+        GlobalActions globalActions = app.getActionManager();
         toolBar.add(globalActions.getAction(CreateAttributeAction.class).buildButton());
 
         add(toolBar, BorderLayout.NORTH);
 
-        className = new CMUndoableTextField(app().getUndoManager());
+        className = new CMUndoableTextField(app.getUndoManager());
         className.addCommitListener(this::setClassName);
 
-        comment = new CMUndoableTextField(app().getUndoManager());
+        comment = new CMUndoableTextField(app.getUndoManager());
         comment.addCommitListener(this::setComment);
 
         FormLayout layout = new FormLayout(
@@ -92,7 +92,7 @@ public class EmbeddableMainView extends ProjectPanel implements EmbeddableDispla
             newClassName = null;
         }
 
-        Embeddable embeddable = session().getSelectedEmbeddable();
+        Embeddable embeddable = session.getSelectedEmbeddable();
 
         if (embeddable == null) {
             return;
@@ -108,7 +108,7 @@ public class EmbeddableMainView extends ProjectPanel implements EmbeddableDispla
         else if (embeddable.getDataMap().getEmbeddable(newClassName) == null) {
 
             // if newClassName dupliucates in other DataMaps
-            DataChannelDescriptor domain = (DataChannelDescriptor) session().project().getRootNode();
+            DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
             if (domain != null) {
                 for (DataMap nextMap : domain.getDataMaps()) {
                     if (nextMap == embeddable.getDataMap()) {
@@ -131,9 +131,9 @@ public class EmbeddableMainView extends ProjectPanel implements EmbeddableDispla
             String oldName = embeddable.getClassName();
             embeddable.setClassName(newClassName);
 
-            session().fireEmbeddableEvent(e, session().getSelectedDataMap());
+            session.fireEmbeddableEvent(e, session.getSelectedDataMap());
 
-            Iterator it = ((DataChannelDescriptor) session().project().getRootNode()).getDataMaps().iterator();
+            Iterator it = ((DataChannelDescriptor) session.project().getRootNode()).getDataMaps().iterator();
             while (it.hasNext()) {
                 DataMap dataMap = (DataMap) it.next();
                 Iterator<ObjEntity> ent = dataMap.getObjEntities().stream()
@@ -151,7 +151,7 @@ public class EmbeddableMainView extends ProjectPanel implements EmbeddableDispla
                             atribute.setType(newClassName);
                             ObjAttributeEvent ev = ObjAttributeEvent.ofChange(this, atribute, atribute
                                     .getEntity());
-                            session().fireObjAttributeEvent(ev);
+                            session.fireObjAttributeEvent(ev);
                         }
                     }
 
@@ -182,17 +182,17 @@ public class EmbeddableMainView extends ProjectPanel implements EmbeddableDispla
     }
 
     void setComment(String comment) {
-        Embeddable embeddable = session().getSelectedEmbeddable();
+        Embeddable embeddable = session.getSelectedEmbeddable();
 
         if (embeddable == null) {
             return;
         }
 
-        ObjectInfo.putToMetaData(app().getMetaData(), embeddable, ObjectInfo.COMMENT, comment);
-        session().fireEmbeddableEvent(EmbeddableEvent.ofChange(this, embeddable), session().getSelectedDataMap());
+        ObjectInfo.putToMetaData(app.getMetaData(), embeddable, ObjectInfo.COMMENT, comment);
+        session.fireEmbeddableEvent(EmbeddableEvent.ofChange(this, embeddable), session.getSelectedDataMap());
     }
 
     String getComment(Embeddable embeddable) {
-        return ObjectInfo.getFromMetaData(app().getMetaData(), embeddable, ObjectInfo.COMMENT);
+        return ObjectInfo.getFromMetaData(app.getMetaData(), embeddable, ObjectInfo.COMMENT);
     }
 }

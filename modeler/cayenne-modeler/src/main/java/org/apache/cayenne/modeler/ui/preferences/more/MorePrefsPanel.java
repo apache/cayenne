@@ -81,7 +81,7 @@ public class MorePrefsPanel extends AppPanel {
     }
 
     private void copyAllClicked() {
-        PreferencesRepository repository = app().getPreferencesRepository();
+        PreferencesRepository repository = app.getPreferencesRepository();
         String json = repository.exportAsJson();
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(json), null);
     }
@@ -100,7 +100,7 @@ public class MorePrefsPanel extends AppPanel {
         // Close the open project first (with the standard unsaved-changes
         // prompt). closeProject is a no-op when no project is open. If the user
         // cancels the save prompt, abort the wipe entirely.
-        ProjectAction projectAction = app().getActionManager().getAction(ProjectAction.class);
+        ProjectAction projectAction = app.getActionManager().getAction(ProjectAction.class);
         if (!projectAction.closeProject(true)) {
             return;
         }
@@ -112,12 +112,12 @@ public class MorePrefsPanel extends AppPanel {
         if (prefsDialog != null) {
             prefsDialog.dispose();
         }
-        app().getFrame().dispose();
+        app.getFrame().dispose();
 
-        app().getPreferencesRepository().resetToDefaults(importLegacy);
+        app.getPreferencesRepository().resetToDefaults(importLegacy);
 
         // Defer the rebuild to a later EDT tick so the in-flight action handler
         // (and any pending dispose events) drain first.
-        SwingUtilities.invokeLater(() -> app().startup(null));
+        SwingUtilities.invokeLater(() -> app.startup(null));
     }
 }

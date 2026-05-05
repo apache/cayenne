@@ -120,9 +120,8 @@ public class TemplateEditor extends AppFrame {
         setVisible(true);
     }
 
-    @Override
     public Application app() {
-        return super.app();
+        return app;
     }
 
     public TemplateType getTemplateType() {
@@ -224,8 +223,8 @@ public class TemplateEditor extends AppFrame {
     private void initBindings() {
         saveButton.addActionListener(e -> saveAction());
         previewButton.addActionListener(e -> generatePreviewAction());
-        findButton.addActionListener(e -> new TemplateEditorFindDialog(app(), this).open());
-        findAndReplaceButton.addActionListener(e -> new TemplateEditorFindAndReplaceDialog(app(), this).open());
+        findButton.addActionListener(e -> new TemplateEditorFindDialog(app, this).open());
+        findAndReplaceButton.addActionListener(e -> new TemplateEditorFindAndReplaceDialog(app, this).open());
         resetToDefaultButton.addActionListener(e -> resetToDefaultAction());
 
         editingTemplatePane.getDocument().addDocumentListener(new TemplateChangeListener());
@@ -257,8 +256,8 @@ public class TemplateEditor extends AppFrame {
     }
 
     private void bindGeometry() {
-        CMSplitPanePrefs.of(app().getPreferencesRepository(), "templateEditor/splitPane").bind(split, 600);
-        CMComponentGeometryPrefs.of(app().getPreferencesRepository(), "templateEditor/geometry").bind(this, 1200, 700);
+        CMSplitPanePrefs.of(app.getPreferencesRepository(), "templateEditor/splitPane").bind(split, 600);
+        CMComponentGeometryPrefs.of(app.getPreferencesRepository(), "templateEditor/geometry").bind(this, 1200, 700);
     }
 
     private void mapVelocityTokenMaker() {

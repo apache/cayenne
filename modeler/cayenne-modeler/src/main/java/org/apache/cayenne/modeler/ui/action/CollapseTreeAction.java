@@ -40,6 +40,6 @@ public class CollapseTreeAction extends ModelerAbstractAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        application.getFrame().getProjectView().getFilterPopup().treeExpOrCollPath(COLLAPSE);
+        app.getFrame().getProjectView().getFilterPopup().treeExpOrCollPath(COLLAPSE);
     }
 }

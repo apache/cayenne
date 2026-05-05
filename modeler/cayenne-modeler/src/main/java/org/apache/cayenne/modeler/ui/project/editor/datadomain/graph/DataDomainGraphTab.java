@@ -77,11 +77,11 @@ public class DataDomainGraphTab extends ProjectPanel implements DomainDisplayLis
         diagramCombo = new CMComboBox<>(names);
         diagramCombo.addItemListener(this);
 
-        toolbar.add(new RebuildGraphAction(this,app()).buildButton(1));
-        toolbar.add(new SaveAsImageAction(this, app()).buildButton(3));
+        toolbar.add(new RebuildGraphAction(this,app).buildButton(1));
+        toolbar.add(new SaveAsImageAction(this, app).buildButton(3));
         toolbar.addSeparator();
-        toolbar.add(new ZoomInAction(this, app()).buildButton(1));
-        toolbar.add(new ZoomOutAction(this, app()).buildButton(3));
+        toolbar.add(new ZoomInAction(this, app).buildButton(1));
+        toolbar.add(new ZoomOutAction(this, app).buildButton(3));
 
         toolbar.addSeparator();
         toolbar.add(new JLabel("Diagram: "));
@@ -146,7 +146,7 @@ public class DataDomainGraphTab extends ProjectPanel implements DomainDisplayLis
      */
     public void refresh() {
         if (needRebuild && domain != null) {
-            graph = getGraphRegistry().loadGraph(session(), domain, getSelectedType());
+            graph = getGraphRegistry().loadGraph(session, domain, getSelectedType());
             scrollPane.setViewportView(graph);
 
             needRebuild = false;
@@ -165,7 +165,7 @@ public class DataDomainGraphTab extends ProjectPanel implements DomainDisplayLis
             JOptionPane pane = new JOptionPane("Rebuilding graph from domain will cause all user"
                     + " changes to be lost. Continue?", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
 
-            JDialog dialog = pane.createDialog(app().getFrame(), "Confirm Rebuild");
+            JDialog dialog = pane.createDialog(app.getFrame(), "Confirm Rebuild");
             dialog.setVisible(true);
 
             if (pane.getValue().equals(JOptionPane.YES_OPTION)) {
@@ -185,10 +185,10 @@ public class DataDomainGraphTab extends ProjectPanel implements DomainDisplayLis
     }
 
     GraphRegistry getGraphRegistry() {
-        graphRegistry = app().getMetaData().get(domain, GraphRegistry.class);
+        graphRegistry = app.getMetaData().get(domain, GraphRegistry.class);
         if (graphRegistry == null) {
             graphRegistry = new GraphRegistry();
-            app().getMetaData().add(domain, graphRegistry);
+            app.getMetaData().add(domain, graphRegistry);
         }
 
         return graphRegistry;

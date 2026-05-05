@@ -47,7 +47,7 @@ public class GetDbConnectionAction extends DBConnectionAwareAction {
             return;
         }
         saveConnector(
-                application.getFrame().getProjectSession().getSelectedDataMap(),
+                app.getFrame().getProjectSession().getSelectedDataMap(),
                 connectWizard);
     }
 }

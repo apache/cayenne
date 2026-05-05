@@ -69,18 +69,18 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
 
     private void initView() {
         // create widgets
-        name = new CMUndoableTextField(app().getUndoManager());
+        name = new CMUndoableTextField(app.getUndoManager());
         name.addCommitListener(this::setQueryName);
 
-        qualifier = new CMUndoableTextField(app().getUndoManager());
+        qualifier = new CMUndoableTextField(app.getUndoManager());
         qualifier.addCommitListener(this::setQueryQualifier);
 
-        comment = new CMUndoableTextField(app().getUndoManager());
+        comment = new CMUndoableTextField(app.getUndoManager());
         comment.addCommitListener(this::setQueryComment);
 
-        distinct = new CMCheckBox(app().getUndoManager());
+        distinct = new CMCheckBox(app.getUndoManager());
 
-        properties = new ObjectQueryPropertiesPanel(session());
+        properties = new ObjectQueryPropertiesPanel(session);
 
         // assemble
         CellConstraints cc = new CellConstraints();
@@ -112,7 +112,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
             QueryDescriptor query = getQuery();
             if (query != null) {
                 query.setProperty(SelectQueryDescriptor.DISTINCT_PROPERTY, Boolean.toString(distinct.isSelected()));
-                session().fireQueryEvent(QueryEvent.ofChange(this, query));
+                session.fireQueryEvent(QueryEvent.ofChange(this, query));
             }
         });
     }
@@ -122,7 +122,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
      * query is changed.
      */
     void initFromModel() {
-        QueryDescriptor descriptor = session().getSelectedQuery();
+        QueryDescriptor descriptor = session.getSelectedQuery();
 
         if (descriptor == null || !QueryDescriptor.SELECT_QUERY.equals(descriptor.getType())) {
             setVisible(false);
@@ -146,7 +146,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
         // since query root is fully resolved during map loading,
         // making it impossible to reference other DataMaps.
 
-        DataMap map = session().getSelectedDataMap();
+        DataMap map = session.getSelectedDataMap();
         ObjEntity[] roots = map.getObjEntities().toArray(new ObjEntity[0]);
 
         if (roots.length > 1) {
@@ -164,11 +164,11 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
 
     @Override
     protected SelectQueryDescriptor getQuery() {
-        if(session().getSelectedQuery() == null) {
+        if(session.getSelectedQuery() == null) {
             return null;
         }
-        return QueryDescriptor.SELECT_QUERY.equals(session().getSelectedQuery().getType())
-                ? (SelectQueryDescriptor) session().getSelectedQuery()
+        return QueryDescriptor.SELECT_QUERY.equals(session.getSelectedQuery().getType())
+                ? (SelectQueryDescriptor) session.getSelectedQuery()
                 : null;
     }
 
@@ -178,7 +178,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
         }
 
         getQuery().setQualifier(createQualifier(text));
-        session().fireQueryEvent(QueryEvent.ofChange(this, getQuery()));
+        session.fireQueryEvent(QueryEvent.ofChange(this, getQuery()));
     }
 
     /**
@@ -259,11 +259,11 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
         if (query == null) {
             return;
         }
-        ObjectInfo.putToMetaData(app().getMetaData(), query, ObjectInfo.COMMENT, text);
-        session().fireQueryEvent(QueryEvent.ofChange(this, query));
+        ObjectInfo.putToMetaData(app.getMetaData(), query, ObjectInfo.COMMENT, text);
+        session.fireQueryEvent(QueryEvent.ofChange(this, query));
     }
 
     private String getQueryComment(QueryDescriptor queryDescriptor) {
-        return ObjectInfo.getFromMetaData(app().getMetaData(), queryDescriptor, ObjectInfo.COMMENT);
+        return ObjectInfo.getFromMetaData(app.getMetaData(), queryDescriptor, ObjectInfo.COMMENT);
     }
 }

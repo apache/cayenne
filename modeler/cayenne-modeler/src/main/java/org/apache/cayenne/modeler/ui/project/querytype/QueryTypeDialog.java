@@ -128,9 +128,9 @@ public class QueryTypeDialog extends ProjectDialog {
 
         dataMap.addQueryDescriptor(query);
 
-        app().getUndoManager().addEdit(new CreateQueryUndoableEdit(session(), domain, dataMap, query));
+        app.getUndoManager().addEdit(new CreateQueryUndoableEdit(session, domain, dataMap, query));
 
-        fireQueryEvent(this, session(), dataMap, query);
+        fireQueryEvent(this, session, dataMap, query);
         dispose();
     }
 

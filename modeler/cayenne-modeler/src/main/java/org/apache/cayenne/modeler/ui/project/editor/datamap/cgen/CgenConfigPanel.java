@@ -24,22 +24,18 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.TemplateType;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.project.CgenOps;
+import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
-import org.apache.cayenne.modeler.toolkit.AppPanel;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.TemplateEditor;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
+import javax.swing.*;
 import javax.swing.border.Border;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.io.File;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -49,7 +45,7 @@ import java.nio.file.Paths;
  * Right-side options form of the cgen editor — output folder, advanced switches, and the
  * six template-edit buttons that launch a {@link TemplateEditor} on click.
  */
-public class CgenConfigPanel extends AppPanel {
+public class CgenConfigPanel extends ProjectPanel {
 
     static final Border CGEN_PANEL_BORDER = BorderFactory.createEmptyBorder(5, 13, 5, 13);
 
@@ -87,8 +83,8 @@ public class CgenConfigPanel extends AppPanel {
     private boolean isDataValid;
     private boolean isEditorOpen;
 
-    public CgenConfigPanel(Application app, CgenPanel cgen) {
-        super(app);
+    public CgenConfigPanel(ProjectSession session, CgenPanel cgen) {
+        super(session);
         this.cgen = cgen;
 
         this.selectOutputFolder = new JButton("..");
@@ -321,22 +317,22 @@ public class CgenConfigPanel extends AppPanel {
         });
 
         editSubclassTemplateBtn.addActionListener(val ->
-                new TemplateEditor(app(), this, TemplateType.ENTITY_SUBCLASS).open());
+                new TemplateEditor(app, this, TemplateType.ENTITY_SUBCLASS).open());
 
         editSuperclassTemplateBtn.addActionListener(val ->
-                new TemplateEditor(app(), this, TemplateType.ENTITY_SUPERCLASS).open());
+                new TemplateEditor(app, this, TemplateType.ENTITY_SUPERCLASS).open());
 
         editEmbeddableTemplateBtn.addActionListener(val ->
-                new TemplateEditor(app(), this, TemplateType.EMBEDDABLE_SUBCLASS).open());
+                new TemplateEditor(app, this, TemplateType.EMBEDDABLE_SUBCLASS).open());
 
         editEmbeddableSuperTemplateBtn.addActionListener(val ->
-                new TemplateEditor(app(), this, TemplateType.EMBEDDABLE_SUPERCLASS).open());
+                new TemplateEditor(app, this, TemplateType.EMBEDDABLE_SUPERCLASS).open());
 
         editDataMapTemplateBtn.addActionListener(val ->
-                new TemplateEditor(app(), this, TemplateType.DATAMAP_SUBCLASS).open());
+                new TemplateEditor(app, this, TemplateType.DATAMAP_SUBCLASS).open());
 
         editDataMapSuperTemplateBtn.addActionListener(val ->
-                new TemplateEditor(app(), this, TemplateType.DATAMAP_SUPERCLASS).open());
+                new TemplateEditor(app, this, TemplateType.DATAMAP_SUPERCLASS).open());
 
         selectOutputFolder.addActionListener(e -> selectOutputFolderAction());
     }
@@ -409,7 +405,7 @@ public class CgenConfigPanel extends AppPanel {
         if (!Util.isEmptyString(currentDir)) {
             chooser.setCurrentDirectory(new File(currentDir));
         } else {
-            chooser.setCurrentDirectory(CgenOps.baseDir(app()).toFile());
+            chooser.setCurrentDirectory(CgenOps.baseDir(session).toFile());
         }
 
         int result = chooser.showOpenDialog(this);

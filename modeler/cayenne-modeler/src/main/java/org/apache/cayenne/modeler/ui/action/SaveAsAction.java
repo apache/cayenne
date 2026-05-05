@@ -66,13 +66,13 @@ public class SaveAsAction extends ModelerAbstractAction {
     protected boolean saveAll() throws Exception {
         Project p = getCurrentProject();
 
-        File projectDir = fileChooser.newProjectDir(application, p);
+        File projectDir = fileChooser.newProjectDir(app, p);
         if (projectDir == null) {
             return false;
         }
 
         if (projectDir.exists() && !projectDir.canWrite()) {
-            JOptionPane.showMessageDialog(application.getFrame(), "Can't save project - unable to write to file \""
+            JOptionPane.showMessageDialog(app.getFrame(), "Can't save project - unable to write to file \""
                     + projectDir.getPath() + "\"", "Can't Save Project", JOptionPane.ERROR_MESSAGE);
             return false;
         }
@@ -80,12 +80,12 @@ public class SaveAsAction extends ModelerAbstractAction {
         getProjectSession().pauseFileChangeTracking();
 
         URLResource res = new URLResource(projectDir.toURI().toURL());
-        ProjectSaver saver = application.getProjectSaver();
+        ProjectSaver saver = app.getProjectSaver();
         saver.saveAs(p, res);
 
         File file = new File(p.getConfigurationResource().getURL().toURI());
-        application.getFrame().addToLastProjListAction(file);
-        application.getFrame().fireRecentFileListChanged();
+        app.getFrame().addToLastProjListAction(file);
+        app.getFrame().fireRecentFileListChanged();
 
         getProjectSession().fireProjectAfterSaveEvent(new ProjectAfterSaveEvent(getProjectSession()));
 
@@ -103,7 +103,7 @@ public class SaveAsAction extends ModelerAbstractAction {
 
     public void performAction() {
 
-        ProjectValidator projectValidator = application.getProjectValidator();
+        ProjectValidator projectValidator = app.getProjectValidator();
         ValidationResult validationResult = projectValidator.validate(getCurrentProject().getRootNode());
 
         getProjectSession().fireProjectBeforeSaveEvent(new ProjectBeforeSaveEvent(SaveAsAction.class));
@@ -116,11 +116,11 @@ public class SaveAsAction extends ModelerAbstractAction {
             throw new CayenneRuntimeException("Error on save", ex);
         }
 
-        application.getFrame().onProjectSaved();
+        app.getFrame().onProjectSaved();
 
         // If there were errors or warnings at validation, display them
         if (!validationResult.getFailures().isEmpty()) {
-            application.getActionManager().getAction(ValidateAction.class)
+            app.getActionManager().getAction(ValidateAction.class)
                     .showFailures(validationResult.getFailures());
         }
     }
@@ -135,7 +135,7 @@ public class SaveAsAction extends ModelerAbstractAction {
             return false;
         }
 
-        Project project = application.getFrame().getProjectSession().project();
+        Project project = app.getFrame().getProjectSession().project();
         return project != null && project.isModified();
     }
 }

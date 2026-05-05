@@ -79,13 +79,13 @@ public class DbEntityMainView extends ProjectPanel implements ExistingSelectionP
     public DbEntityMainView(ProjectSession session) {
         super(session);
         toolBar = new JToolBar();
-        name = new CMUndoableTextField(app().getUndoManager());
+        name = new CMUndoableTextField(app.getUndoManager());
         catalogLabel = new JLabel("Catalog:");
-        catalog = new CMUndoableTextField(app().getUndoManager());
+        catalog = new CMUndoableTextField(app.getUndoManager());
         schemaLabel = new JLabel("Schema:");
-        schema = new CMUndoableTextField(app().getUndoManager());
-        qualifier = new CMUndoableTextField(app().getUndoManager());
-        comment = new CMUndoableTextField(app().getUndoManager());
+        schema = new CMUndoableTextField(app.getUndoManager());
+        qualifier = new CMUndoableTextField(app.getUndoManager());
+        comment = new CMUndoableTextField(app.getUndoManager());
         pkGeneratorType = new JComboBox<>();
         pkGeneratorDetailLayout = new CardLayout();
         pkGeneratorDetail = new JPanel(pkGeneratorDetailLayout);
@@ -96,7 +96,7 @@ public class DbEntityMainView extends ProjectPanel implements ExistingSelectionP
     private void initLayout() {
         toolBar.setBorder(BorderFactory.createEmptyBorder());
         toolBar.setFloatable(false);
-        GlobalActions globalActions = app().getActionManager();
+        GlobalActions globalActions = app.getActionManager();
         toolBar.add(globalActions.getAction(CreateAttributeAction.class).buildButton(1));
         toolBar.add(globalActions.getAction(CreateRelationshipAction.class).buildButton(3));
         toolBar.addSeparator();
@@ -108,9 +108,9 @@ public class DbEntityMainView extends ProjectPanel implements ExistingSelectionP
 
         pkGeneratorType.setEditable(false);
         pkGeneratorType.setModel(new DefaultComboBoxModel<>(PK_GENERATOR_TYPES));
-        pkGeneratorDetail.add(new PKDefaultGeneratorPanel(session()), PK_DEFAULT_GENERATOR);
-        pkGeneratorDetail.add(new PKDBGeneratorPanel(session()), PK_DB_GENERATOR);
-        pkGeneratorDetail.add(new PKCustomSequenceGeneratorPanel(session()), PK_CUSTOM_SEQUENCE_GENERATOR);
+        pkGeneratorDetail.add(new PKDefaultGeneratorPanel(session), PK_DEFAULT_GENERATOR);
+        pkGeneratorDetail.add(new PKDBGeneratorPanel(session), PK_DB_GENERATOR);
+        pkGeneratorDetail.add(new PKCustomSequenceGeneratorPanel(session), PK_CUSTOM_SEQUENCE_GENERATOR);
 
         FormLayout layout = new FormLayout("right:pref, 3dlu, fill:200dlu", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
@@ -139,12 +139,12 @@ public class DbEntityMainView extends ProjectPanel implements ExistingSelectionP
         schema.addCommitListener(this::setSchema);
         qualifier.addCommitListener(this::setQualifier);
         comment.addCommitListener(this::setComment);
-        session().addDbEntityDisplayListener(this);
+        session.addDbEntityDisplayListener(this);
         pkGeneratorType.addItemListener(e -> {
             pkGeneratorDetailLayout.show(pkGeneratorDetail, (String) pkGeneratorType.getSelectedItem());
             for (int i = 0; i < pkGeneratorDetail.getComponentCount(); i++) {
                 if (pkGeneratorDetail.getComponent(i).isVisible()) {
-                    DbEntity entity = session().getSelectedDbEntity();
+                    DbEntity entity = session.getSelectedDbEntity();
                     PKGeneratorPanel panel = (PKGeneratorPanel) pkGeneratorDetail.getComponent(i);
                     panel.onInit(entity);
                     break;
@@ -155,10 +155,10 @@ public class DbEntityMainView extends ProjectPanel implements ExistingSelectionP
 
     public void processExistingSelection(EventObject e) {
         DbEntityDisplayEvent ede = new DbEntityDisplayEvent(this,
-                (DataChannelDescriptor) session().project().getRootNode(),
-                session().getSelectedDataMap(),
-                session().getSelectedDbEntity());
-        session().displayDbEntity(ede);
+                (DataChannelDescriptor) session.project().getRootNode(),
+                session.getSelectedDataMap(),
+                session.getSelectedDbEntity());
+        session.displayDbEntity(ede);
     }
 
     public void dbEntitySelected(DbEntityDisplayEvent e) {
@@ -217,7 +217,7 @@ public class DbEntityMainView extends ProjectPanel implements ExistingSelectionP
             newName = null;
         }
 
-        DbEntity entity = session().getSelectedDbEntity();
+        DbEntity entity = session.getSelectedDbEntity();
 
         if (entity == null || Util.nullSafeEquals(newName, entity.getName())) {
             return;
@@ -229,7 +229,7 @@ public class DbEntityMainView extends ProjectPanel implements ExistingSelectionP
             // completely new name, set new name for entity
             DbEntityEvent e = DbEntityEvent.ofChange(this, entity, entity.getName());
             entity.getDataMap().renameDbEntity(entity, newName);
-            session().fireDbEntityEvent(e);
+            session.fireDbEntityEvent(e);
         } else {
             // there is an entity with the same name
             throw new ValidationException("There is another entity with name '" + newName + "'.");
@@ -242,11 +242,11 @@ public class DbEntityMainView extends ProjectPanel implements ExistingSelectionP
             text = null;
         }
 
-        DbEntity ent = session().getSelectedDbEntity();
+        DbEntity ent = session.getSelectedDbEntity();
 
         if (ent != null && !Util.nullSafeEquals(ent.getCatalog(), text)) {
             ent.setCatalog(text);
-            session().fireDbEntityEvent(DbEntityEvent.ofChange(this, ent));
+            session.fireDbEntityEvent(DbEntityEvent.ofChange(this, ent));
         }
     }
 
@@ -256,11 +256,11 @@ public class DbEntityMainView extends ProjectPanel implements ExistingSelectionP
             text = null;
         }
 
-        DbEntity ent = session().getSelectedDbEntity();
+        DbEntity ent = session.getSelectedDbEntity();
 
         if (ent != null && !Util.nullSafeEquals(ent.getSchema(), text)) {
             ent.setSchema(text);
-            session().fireDbEntityEvent(DbEntityEvent.ofChange(this, ent));
+            session.fireDbEntityEvent(DbEntityEvent.ofChange(this, ent));
         }
     }
 
@@ -270,14 +270,14 @@ public class DbEntityMainView extends ProjectPanel implements ExistingSelectionP
             qualifier = null;
         }
 
-        DbEntity ent = session().getSelectedDbEntity();
+        DbEntity ent = session.getSelectedDbEntity();
 
         if (ent != null && !Util.nullSafeEquals(ent.getQualifier(), qualifier)) {
             try {
                 String oldQualifier = ExpressionConvertor.asString(ent.getQualifier());
                 if (!Util.nullSafeEquals(oldQualifier, qualifier)) {
                     ent.setQualifier(ExpressionConvertor.fromString(qualifier));
-                    session().fireDbEntityEvent(DbEntityEvent.ofChange(this, ent));
+                    session.fireDbEntityEvent(DbEntityEvent.ofChange(this, ent));
                 }
             } catch (IllegalArgumentException ex) {
                 // unparsable qualifier
@@ -288,17 +288,17 @@ public class DbEntityMainView extends ProjectPanel implements ExistingSelectionP
     }
 
     private String getComment(DbEntity entity) {
-        return ObjectInfo.getFromMetaData(app().getMetaData(), entity, ObjectInfo.COMMENT);
+        return ObjectInfo.getFromMetaData(app.getMetaData(), entity, ObjectInfo.COMMENT);
     }
 
     private void setComment(String value) {
-        DbEntity entity = session().getSelectedDbEntity();
+        DbEntity entity = session.getSelectedDbEntity();
 
         if(entity == null) {
             return;
         }
 
-        ObjectInfo.putToMetaData(app().getMetaData(), entity, ObjectInfo.COMMENT, value);
-        session().fireDbEntityEvent(DbEntityEvent.ofChange(this, entity));
+        ObjectInfo.putToMetaData(app.getMetaData(), entity, ObjectInfo.COMMENT, value);
+        session.fireDbEntityEvent(DbEntityEvent.ofChange(this, entity));
     }
 }

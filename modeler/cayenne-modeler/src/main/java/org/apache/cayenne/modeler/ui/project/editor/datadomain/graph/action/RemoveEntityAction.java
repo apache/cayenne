@@ -53,13 +53,13 @@ public class RemoveEntityAction extends RemoveAction {
         
         if (entity instanceof ObjEntity) {
             if (dialog.shouldDelete("ObjEntity", entity.getName())) {
-                application.getUndoManager().addEdit(new RemoveUndoableEdit(getProjectSession(), entity.getDataMap(), (ObjEntity) entity));
+                app.getUndoManager().addEdit(new RemoveUndoableEdit(getProjectSession(), entity.getDataMap(), (ObjEntity) entity));
                 removeObjEntity(entity.getDataMap(), (ObjEntity) entity);
             }
         }
         else {
             if (dialog.shouldDelete("DbEntity", entity.getName())) {
-                application.getUndoManager().addEdit(new RemoveUndoableEdit(getProjectSession(), entity.getDataMap(), (DbEntity) entity));
+                app.getUndoManager().addEdit(new RemoveUndoableEdit(getProjectSession(), entity.getDataMap(), (DbEntity) entity));
                 removeDbEntity(entity.getDataMap(), (DbEntity) entity);
             }
         }

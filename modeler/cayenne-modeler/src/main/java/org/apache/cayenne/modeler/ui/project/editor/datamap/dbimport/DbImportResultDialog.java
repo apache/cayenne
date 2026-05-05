@@ -83,7 +83,7 @@ public class DbImportResultDialog extends AppDialog {
 
     public void showDialog() {
         pack();
-        setLocationRelativeTo(app().getFrame().getProjectView());
+        setLocationRelativeTo(app.getFrame().getProjectView());
         setVisible(true);
     }
 

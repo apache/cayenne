@@ -134,7 +134,7 @@ public class MavenDependencyDialog extends AppDialog {
                 + artifactId + "/" + version + "/"
                 + artifactId + "-" + version + ".jar";
 
-        app().getFrame().updateStatus("Loading " + urlText);
+        app.getFrame().updateStatus("Loading " + urlText);
 
         String localPath = System.getProperty("user.home") + "/.cayenne/modeler/"
                 + groupPath + "/" + artifactId + "-" + version + ".jar";
@@ -180,7 +180,7 @@ public class MavenDependencyDialog extends AppDialog {
             }
 
             downloadButton.setEnabled(true);
-            app().getFrame().updateStatus(status);
+            app.getFrame().updateStatus(status);
 
             if (shouldClose) {
                 close();

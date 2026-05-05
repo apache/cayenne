@@ -88,11 +88,11 @@ public class SQLTemplatePrefetchTab extends ProjectPanel {
         messagePanel = new JPanel(new BorderLayout());
         cardLayout = new CardLayout();
 
-        int defLocation = app().getFrame().getHeight() / 2;
+        int defLocation = app.getFrame().getHeight() / 2;
 
         //As of CAY-888 #3 main pane is now a JSplitPane. Top component is a bit larger.
         JSplitPane mainPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        CMSplitPanePrefs.of(app().getPreferencesRepository(), "sqlTemplate/prefetchSplit").bind(mainPanel, defLocation);
+        CMSplitPanePrefs.of(app.getPreferencesRepository(), "sqlTemplate/prefetchSplit").bind(mainPanel, defLocation);
 
         mainPanel.setTopComponent(createEditorPanel());
         mainPanel.setBottomComponent(createSelectorPanel());
@@ -112,7 +112,7 @@ public class SQLTemplatePrefetchTab extends ProjectPanel {
     }
 
     protected void initFromModel() {
-        QueryDescriptor query = session().getSelectedQuery();
+        QueryDescriptor query = session.getSelectedQuery();
 
         if (query == null || !QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) {
             processInvalidModel("Unknown query.");
@@ -150,7 +150,7 @@ public class SQLTemplatePrefetchTab extends ProjectPanel {
         prefetchBox.addItem(SelectQueryPrefetchTab.JOINT_PREFETCH_SEMANTICS);
         prefetchBox.addItem(SelectQueryPrefetchTab.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
 
-        prefetchBox.addActionListener(e -> session().setDirty(true));
+        prefetchBox.addActionListener(e -> session.setDirty(true));
 
         column.setCellEditor(new DefaultCellEditor(prefetchBox));
 
@@ -209,7 +209,7 @@ public class SQLTemplatePrefetchTab extends ProjectPanel {
 
             addPrefetch(prefetch);
 
-            app().getUndoManager().addEdit(new AddPrefetchUndoableEditForSqlTemplate(prefetch, SQLTemplatePrefetchTab.this));
+            app.getUndoManager().addEdit(new AddPrefetchUndoableEditForSqlTemplate(prefetch, SQLTemplatePrefetchTab.this));
         });
 
         JButton remove = new ModelerAbstractAction.CayenneToolbarButton(null, 3);
@@ -292,7 +292,7 @@ public class SQLTemplatePrefetchTab extends ProjectPanel {
         table.setModel(createTableModel());
         setUpPrefetchBox(table.getColumnModel().getColumn(2));
 
-        session().fireQueryEvent(QueryEvent.ofChange(this, sqlTemplate));
+        session.fireQueryEvent(QueryEvent.ofChange(this, sqlTemplate));
     }
 
     public void removePrefetch(String prefetch) {
@@ -302,7 +302,7 @@ public class SQLTemplatePrefetchTab extends ProjectPanel {
         table.setModel(createTableModel());
         setUpPrefetchBox(table.getColumnModel().getColumn(2));
 
-        session().fireQueryEvent(QueryEvent.ofChange(this, sqlTemplate));
+        session.fireQueryEvent(QueryEvent.ofChange(this, sqlTemplate));
     }
 
 }

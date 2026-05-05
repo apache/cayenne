@@ -56,7 +56,7 @@ public class GenerateDBAction extends ModelerAbstractAction {
         }
         new DBGeneratorOptionsDialog(
                 getProjectSession(),
-                application.getFrame(),
+                app.getFrame(),
                 "Generate DB Schema: Options",
                 dataMaps).startupAction();
     }

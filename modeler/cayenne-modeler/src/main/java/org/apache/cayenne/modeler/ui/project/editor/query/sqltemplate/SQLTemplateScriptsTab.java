@@ -79,7 +79,7 @@ public class SQLTemplateScriptsTab extends ProjectPanel {
 
     private void prepareScriptAreas() {
         for(String key : DbAdapterInfo.getStandardAdapters()) {
-            CMTextPane currPane = new CMUndoableTextPane(app().getUndoManager(), new SQLSyntax());
+            CMTextPane currPane = new CMUndoableTextPane(app.getUndoManager(), new SQLSyntax());
             currPane.setName(key);
             currPane.getDocument().addDocumentListener(new CustomListener(currPane.getName()));
             builder.add(currPane.getScrollPane(), cc.xy(3, 2));
@@ -112,7 +112,7 @@ public class SQLTemplateScriptsTab extends ProjectPanel {
         // assemble
         cc = new CellConstraints();
 
-        textPane = new CMUndoableTextPane(app().getUndoManager(), new SQLSyntax());
+        textPane = new CMUndoableTextPane(app.getUndoManager(), new SQLSyntax());
         textPane.setName(DEFAULT_LABEL);
         textPane.getDocument().addDocumentListener(new CustomListener(textPane.getName()));
 
@@ -137,7 +137,7 @@ public class SQLTemplateScriptsTab extends ProjectPanel {
     }
 
     void initFromModel() {
-        QueryDescriptor query = session().getSelectedQuery();
+        QueryDescriptor query = session.getSelectedQuery();
 
         if (query == null || !QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) {
             setVisible(false);
@@ -171,7 +171,7 @@ public class SQLTemplateScriptsTab extends ProjectPanel {
     }
 
     SQLTemplateDescriptor getQuery() {
-        QueryDescriptor query = session().getSelectedQuery();
+        QueryDescriptor query = session.getSelectedQuery();
         return (query != null && QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) ?
                 (SQLTemplateDescriptor) query : null;
     }
@@ -236,12 +236,12 @@ public class SQLTemplateScriptsTab extends ProjectPanel {
         if (key.equals(DEFAULT_LABEL)) {
             if (!Util.nullSafeEquals(text, query.getSql())) {
                 query.setSql(text);
-                session().fireQueryEvent(QueryEvent.ofChange(this, query));
+                session.fireQueryEvent(QueryEvent.ofChange(this, query));
             }
         } else {
             if (!Util.nullSafeEquals(text, query.getAdapterSql().get(key))) {
                 query.getAdapterSql().put(key, text);
-                session().fireQueryEvent(QueryEvent.ofChange(this, query));
+                session.fireQueryEvent(QueryEvent.ofChange(this, query));
             }
         }
     }

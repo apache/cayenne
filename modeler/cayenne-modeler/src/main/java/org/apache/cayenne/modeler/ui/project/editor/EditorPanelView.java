@@ -92,7 +92,7 @@ public class EditorPanelView extends ProjectPanel {
         // in subpanels...
         add(new JPanel(), EMPTY_VIEW);
         add(dataDomainView, DOMAIN_VIEW);
-        add(new JScrollPane(new DataNodeEditorPanel(session())), NODE_VIEW);
+        add(new JScrollPane(new DataNodeEditorPanel(session)), NODE_VIEW);
         add(dataMapView, DATA_MAP_VIEW);
         add(procedureView, PROCEDURE_VIEW);
         add(new SelectQueryTabbedView(session), SELECT_QUERY_VIEW);

@@ -49,13 +49,13 @@ public class EjbqlQueryMainTab extends ProjectPanel {
 
     private void initView() {
         // create widgets
-        name = new CMUndoableTextField(app().getUndoManager());
+        name = new CMUndoableTextField(app.getUndoManager());
         name.addCommitListener(this::setQueryName);
 
-        comment = new CMUndoableTextField(app().getUndoManager());
+        comment = new CMUndoableTextField(app.getUndoManager());
         comment.addCommitListener(this::setQueryComment);
 
-        properties = new EjbqlQueryPropertiesPanel(session());
+        properties = new EjbqlQueryPropertiesPanel(session);
         // assemble
         CellConstraints cc = new CellConstraints();
         FormLayout layout = new FormLayout(
@@ -79,7 +79,7 @@ public class EjbqlQueryMainTab extends ProjectPanel {
      * query is changed.
      */
     void initFromModel() {
-        QueryDescriptor query = session().getSelectedQuery();
+        QueryDescriptor query = session.getSelectedQuery();
 
         if (query == null || !QueryDescriptor.EJBQL_QUERY.equals(query.getType())) {
             setVisible(false);
@@ -93,7 +93,7 @@ public class EjbqlQueryMainTab extends ProjectPanel {
     }
 
     protected QueryDescriptor getQuery() {
-        QueryDescriptor query = session().getSelectedQuery();
+        QueryDescriptor query = session.getSelectedQuery();
         return (query != null && QueryDescriptor.EJBQL_QUERY.equals(query.getType())) ? query : null;
     }
 
@@ -119,7 +119,7 @@ public class EjbqlQueryMainTab extends ProjectPanel {
             throw new ValidationException("Query name is required.");
         }
 
-        DataMap map = session().getSelectedDataMap();
+        DataMap map = session.getSelectedDataMap();
 
         if (map.getQueryDescriptor(newName) == null) {
             // completely new name, set new name for entity
@@ -133,7 +133,7 @@ public class EjbqlQueryMainTab extends ProjectPanel {
             if (ns instanceof EntityResolver) {
                 ((EntityResolver) ns).refreshMappingCache();
             }
-            session().fireQueryEvent(e);
+            session.fireQueryEvent(e);
         }
         else {
             // there is a query with the same name
@@ -148,11 +148,11 @@ public class EjbqlQueryMainTab extends ProjectPanel {
         if (query == null) {
             return;
         }
-        ObjectInfo.putToMetaData(app().getMetaData(), query, ObjectInfo.COMMENT, text);
-        session().fireQueryEvent(QueryEvent.ofChange(this, query));
+        ObjectInfo.putToMetaData(app.getMetaData(), query, ObjectInfo.COMMENT, text);
+        session.fireQueryEvent(QueryEvent.ofChange(this, query));
     }
 
     private String getQueryComment(QueryDescriptor queryDescriptor) {
-        return ObjectInfo.getFromMetaData(app().getMetaData(), queryDescriptor, ObjectInfo.COMMENT);
+        return ObjectInfo.getFromMetaData(app.getMetaData(), queryDescriptor, ObjectInfo.COMMENT);
     }
 }

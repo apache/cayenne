@@ -30,13 +30,9 @@ import javax.swing.JFrame;
  */
 public abstract class AppFrame extends JFrame {
 
-    private final Application app;
+    protected final Application app;
 
     protected AppFrame(Application app) {
         this.app = app;
-    }
-
-    protected Application app() {
-        return app;
     }
 }

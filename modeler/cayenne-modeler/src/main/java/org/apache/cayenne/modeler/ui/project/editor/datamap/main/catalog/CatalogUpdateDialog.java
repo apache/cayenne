@@ -48,7 +48,7 @@ public class CatalogUpdateDialog extends DefaultsUpdateDialog {
                 if (!Util.nullSafeEquals(defaultCatalog, entity.getCatalog())) {
                     entity.setCatalog(defaultCatalog);
                     // any way to batch events, a big change will flood the app with entity events?
-                    session().fireDbEntityEvent(DbEntityEvent.ofChange(this, entity));
+                    session.fireDbEntityEvent(DbEntityEvent.ofChange(this, entity));
                 }
             }
         }
@@ -58,7 +58,7 @@ public class CatalogUpdateDialog extends DefaultsUpdateDialog {
                 if (!Util.nullSafeEquals(defaultCatalog, procedure.getCatalog())) {
                     procedure.setCatalog(defaultCatalog);
                     // any way to batch events, a big change will flood the app with procedure events?
-                    session().fireProcedureEvent(ProcedureEvent.ofChange(this, procedure));
+                    session.fireProcedureEvent(ProcedureEvent.ofChange(this, procedure));
                 }
             }
         }

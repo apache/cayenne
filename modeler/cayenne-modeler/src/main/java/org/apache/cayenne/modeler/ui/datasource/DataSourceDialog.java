@@ -91,7 +91,7 @@ public class DataSourceDialog extends ProjectDialog {
         refreshDataSources();
         initFavouriteDataSource();
 
-        DataMapPrefs dataMapPrefs = DataMapPrefs.of(app().getPreferencesRepository(), session().getSelectedDataMap());
+        DataMapPrefs dataMapPrefs = DataMapPrefs.of(app.getPreferencesRepository(), session.getSelectedDataMap());
         if (dataMapPrefs.hasDbAdapter()) {
             getConnectionInfoFromPreferences().copyTo(connector);
         }
@@ -164,7 +164,7 @@ public class DataSourceDialog extends ProjectDialog {
     }
 
     private void initFavouriteDataSource() {
-        String favourite = GeneralPrefs.of(app().getPreferencesRepository()).getFavouriteDataSource();
+        String favourite = GeneralPrefs.of(app.getPreferencesRepository()).getFavouriteDataSource();
         if (favourite != null && connectors.containsKey(favourite)) {
             setSelectedDataSource(favourite);
             dataSources.setSelectedItem(dataSourceKey);
@@ -172,19 +172,19 @@ public class DataSourceDialog extends ProjectDialog {
     }
 
     private DBConnector getConnectionInfoFromPreferences() {
-        DataMapPrefs dataMapPrefs = DataMapPrefs.of(app().getPreferencesRepository(), session().getSelectedDataMap());
+        DataMapPrefs dataMapPrefs = DataMapPrefs.of(app.getPreferencesRepository(), session.getSelectedDataMap());
         DBConnector c = dataMapPrefs.getConnector();
         return c != null ? c : new DBConnector();
     }
 
     private void okClicked() {
         DBConnector info = getConnector();
-        ModelerClassLoader classLoader = app().getClassLoader();
+        ModelerClassLoader classLoader = app.getClassLoader();
 
         // doing connection testing...
         try {
             try {
-                this.adapter = info.makeAdapter(classLoader, app().getDbAdapterFactory());
+                this.adapter = info.makeAdapter(classLoader, app.getDbAdapterFactory());
                 this.dataSource = info.makeDataSource(classLoader);
             } catch (SQLException ignore) {
                 showNoConnectorDialog("Unable to load driver '" + info.getJdbcDriver() + "'");
@@ -206,15 +206,15 @@ public class DataSourceDialog extends ProjectDialog {
         this.canceled = canceled;
         dispose();
         if (!canceled) {
-            GeneralPrefs.of(app().getPreferencesRepository()).setFavouriteDataSource(dataSourceKey);
+            GeneralPrefs.of(app.getPreferencesRepository()).setFavouriteDataSource(dataSourceKey);
         }
     }
 
     private void dataSourceConfigClicked() {
-        DBConnectors registry = app().getDbConnectors();
+        DBConnectors registry = app.getDbConnectors();
         java.util.Set<String> before = new java.util.HashSet<>(registry.getAll().keySet());
 
-        new PreferenceDialog(app(), app().getFrame()).showDBConnectorEditorAction(dataSourceKey);
+        new PreferenceDialog(app, app.getFrame()).showDBConnectorEditorAction(dataSourceKey);
 
         // auto-select any newly-added DataSource (last new wins, matching prior commit-order behavior)
         for (String name : registry.getAll().keySet()) {
@@ -226,12 +226,12 @@ public class DataSourceDialog extends ProjectDialog {
     }
 
     private void classPathConfigAction() {
-        new PreferenceDialog(app(), app().getFrame()).showClassPathEditorAction();
+        new PreferenceDialog(app, app.getFrame()).showClassPathEditorAction();
         refreshDataSources();
     }
 
     private void refreshDataSources() {
-        DBConnectors registry = app().getDbConnectors();
+        DBConnectors registry = app.getDbConnectors();
         this.connectors = registry.getAll();
 
         // 1.2 migration fix - update data source adapter names

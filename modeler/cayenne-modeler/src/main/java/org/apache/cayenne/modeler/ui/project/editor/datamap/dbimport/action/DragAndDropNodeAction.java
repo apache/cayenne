@@ -81,7 +81,7 @@ public class DragAndDropNodeAction extends TreeManipulationAction {
             int duplicateIndex = dropLocationParentNode.getChildNodes().indexOf(node);
             if (duplicateIndex >= 0) {
                 JOptionPane.showMessageDialog(
-                        application.getFrame(),
+                        app.getFrame(),
                         dropLocationParentNode.getSimpleNodeName() + " already contains " + node.getSimpleNodeName(),
                         "Error moving",
                         JOptionPane.ERROR_MESSAGE);

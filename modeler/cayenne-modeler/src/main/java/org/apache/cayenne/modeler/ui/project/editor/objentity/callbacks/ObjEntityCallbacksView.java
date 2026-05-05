@@ -116,7 +116,7 @@ public class ObjEntityCallbacksView extends ProjectPanel {
     }
 
     private void initBindings() {
-        session().addCallbackMethodListener(new CallbackMethodListener() {
+        session.addCallbackMethodListener(new CallbackMethodListener() {
 
             public void callbackMethodChanged(CallbackMethodEvent e) {
                 rebuildTables();
@@ -131,7 +131,7 @@ public class ObjEntityCallbacksView extends ProjectPanel {
                 int row = -1, i;
 
                 for (i = 0; i < callbackTypes.length; i++) {
-                    if (callbackTypes[i] == session().getSelectedCallbackType()) {
+                    if (callbackTypes[i] == session.getSelectedCallbackType()) {
                         row = tables[i].getSelectedRow();
                         break;
                     }
@@ -152,7 +152,7 @@ public class ObjEntityCallbacksView extends ProjectPanel {
         });
 
         for (CMTable table : tables) {
-            app().getActionManager().setupCutCopyPaste(
+            app.getActionManager().setupCutCopyPaste(
                     table,
                     CutCallbackMethodAction.class,
                     CopyCallbackMethodAction.class);
@@ -164,7 +164,7 @@ public class ObjEntityCallbacksView extends ProjectPanel {
             }
         });
 
-        session().addObjEntityDisplayListener(e -> {
+        session.addObjEntityDisplayListener(e -> {
             if (ObjEntityCallbacksView.this.isVisible()) {
                 rebuildTables();
             }
@@ -172,30 +172,30 @@ public class ObjEntityCallbacksView extends ProjectPanel {
     }
 
     private CallbackMap getCallbackMap() {
-        if (session().getSelectedObjEntity() != null) {
-            return session().getSelectedObjEntity().getCallbackMap();
+        if (session.getSelectedObjEntity() != null) {
+            return session.getSelectedObjEntity().getCallbackMap();
         }
         return null;
     }
 
     private ModelerAbstractAction getCreateCallbackMethodAction() {
-        return app().getActionManager().getAction(CreateCallbackMethodAction.class);
+        return app.getActionManager().getAction(CreateCallbackMethodAction.class);
     }
 
     private RemoveCallbackMethodAction getRemoveCallbackMethodAction() {
-        return app().getActionManager().getAction(RemoveCallbackMethodAction.class);
+        return app.getActionManager().getAction(RemoveCallbackMethodAction.class);
     }
 
     private CopyCallbackMethodAction getCopyCallbackMethodAction() {
-        return app().getActionManager().getAction(CopyCallbackMethodAction.class);
+        return app.getActionManager().getAction(CopyCallbackMethodAction.class);
     }
 
     private CutCallbackMethodAction getCutCallbackMethodAction() {
-        return app().getActionManager().getAction(CutCallbackMethodAction.class);
+        return app.getActionManager().getAction(CutCallbackMethodAction.class);
     }
 
     private PasteAction getPasteCallbackMethodAction() {
-        return app().getActionManager().getAction(PasteAction.class);
+        return app.getActionManager().getAction(PasteAction.class);
     }
 
     private void rebuildTables() {
@@ -213,13 +213,13 @@ public class ObjEntityCallbacksView extends ProjectPanel {
             }
 
             CallbackDescriptorTableModel model = new CallbackDescriptorTableModel(
-                    session(), this, methods, descriptor, callbackType);
+                    session, this, methods, descriptor, callbackType);
 
             tables[i].setModel(model);
         }
 
         for (CMTable table : tables) {
-            CMTablePrefs.of(app().getPreferencesRepository(), "objEntity/callbackTable")
+            CMTablePrefs.of(app.getPreferencesRepository(), "objEntity/callbackTable")
                     .bind(table, MIN_SIZES);
         }
     }
@@ -307,7 +307,7 @@ public class ObjEntityCallbacksView extends ProjectPanel {
 
     private void selectAdded() {
         for (int i = 0; i < callbackTypes.length; i++) {
-            if (callbackTypes[i] == session().getSelectedCallbackType()) {
+            if (callbackTypes[i] == session.getSelectedCallbackType()) {
                 if (tables[i].editCellAt(tables[i].getRowCount() - 1, CallbackDescriptorTableModel.METHOD_NAME)
                         && tables[i].getEditorComponent() != null) {
                     tables[i].changeSelection(tables[i].getRowCount() - 1, 0, false, false);
@@ -336,7 +336,7 @@ public class ObjEntityCallbacksView extends ProjectPanel {
         }
 
         public void actionPerformed(ActionEvent e) {
-            session().displayCallbackType(new CallbackTypeDisplayEvent(this, callbackType));
+            session.displayCallbackType(new CallbackTypeDisplayEvent(this, callbackType));
         }
     }
 
@@ -374,7 +374,7 @@ public class ObjEntityCallbacksView extends ProjectPanel {
                 int rowIndex = table.getSelectedRow();
                 CallbackDescriptor callbackDescriptor =
                         ((CallbackDescriptorTableModel) table.getCayenneModel()).getCallbackDescriptor();
-                session().setDirty(callbackDescriptor.moveMethod(callbackMethod, rowIndex));
+                session.setDirty(callbackDescriptor.moveMethod(callbackMethod, rowIndex));
                 rebuildTables();
                 return true;
             }
@@ -413,13 +413,13 @@ public class ObjEntityCallbacksView extends ProjectPanel {
                         }
                     }
 
-                    session().displayCallbackType(new CallbackTypeDisplayEvent(this,
+                    session.displayCallbackType(new CallbackTypeDisplayEvent(this,
                             ((CallbackDescriptorTableModel) table.getCayenneModel()).getCallbackType()));
                 }
 
                 if (table.getSelectedRow() != -1) {
                     int[] sel = table.getSelectedRows();
-                    CallbackType callbackType = session().getSelectedCallbackType();
+                    CallbackType callbackType = session.getSelectedCallbackType();
 
                     methods = new ObjCallbackMethod[sel.length];
 
@@ -430,7 +430,7 @@ public class ObjEntityCallbacksView extends ProjectPanel {
                     }
                 }
 
-                session().displayCallbackMethod(new CallbackMethodDisplayEvent(this, methods));
+                session.displayCallbackMethod(new CallbackMethodDisplayEvent(this, methods));
                 boolean enabled = methods.length > 0;
                 boolean multiple = methods.length > 1;
 
@@ -493,7 +493,7 @@ public class ObjEntityCallbacksView extends ProjectPanel {
         public void mousePressed(MouseEvent e) {
             if (e.isPopupTrigger() && e.getComponent() instanceof JTableHeader) {
                 unselectAll();
-                session().displayCallbackType(new CallbackTypeDisplayEvent(this,
+                session.displayCallbackType(new CallbackTypeDisplayEvent(this,
                         ((CallbackDescriptorTableModel) table.getCayenneModel()).getCallbackType()));
                 popupMenu.show(e.getComponent(), e.getX(), e.getY());
             }
@@ -513,7 +513,7 @@ public class ObjEntityCallbacksView extends ProjectPanel {
 
         public void mouseDragged(MouseEvent e) {
             if (table.getColumnWidthChanged()) {
-                CMTablePrefs.of(app().getPreferencesRepository(), "objEntity/callbackTable")
+                CMTablePrefs.of(app.getPreferencesRepository(), "objEntity/callbackTable")
                         .bind(table, MIN_SIZES);
                 for (CMTable nextTable : tables) {
                     if (!table.equals(nextTable)) {

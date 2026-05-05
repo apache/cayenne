@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.ui.action;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.LifecycleEvent;
-import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.CallbackType;
 import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
@@ -61,7 +60,7 @@ public class CreateCallbackMethodAction extends ModelerAbstractAction {
                 .name();
 
         createCallbackMethod(callbackType, methodName);
-        application.getUndoManager().addEdit(
+        app.getUndoManager().addEdit(
                 new CreateCallbackMethodUndoableEdit(
                         getProjectSession(),
                         callbackType,

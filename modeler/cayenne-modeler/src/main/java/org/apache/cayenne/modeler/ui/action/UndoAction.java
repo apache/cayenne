@@ -48,6 +48,6 @@ public class UndoAction extends ModelerAbstractAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        application.getUndoManager().undo();
+        app.getUndoManager().undo();
     }
 }

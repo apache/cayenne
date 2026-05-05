@@ -159,7 +159,7 @@ public class FindDialog extends AppDialog {
             JTable source = (JTable) e.getSource();
             int selected = source.getSelectionModel().getLeadSelectionIndex();
             if (selected >= 0 && selected < results.size()) {
-                FindAction.jumpToResult(results.get(selected), app());
+                FindAction.jumpToResult(results.get(selected), app);
             }
         }
 

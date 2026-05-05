@@ -58,11 +58,11 @@ public class CutCallbackMethodAction extends CutAction implements MultipleObject
      */
     @Override
     public void performAction(ActionEvent e) {
-        application
+        app
                 .getActionManager()
                 .getAction(CopyCallbackMethodAction.class)
                 .performAction(e);
-        application
+        app
                 .getActionManager()
                 .getAction(RemoveCallbackMethodAction.class)
                 .performAction(e, false);

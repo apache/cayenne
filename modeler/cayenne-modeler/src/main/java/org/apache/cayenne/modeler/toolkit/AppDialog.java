@@ -43,15 +43,11 @@ public abstract class AppDialog extends JDialog {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AppDialog.class);
 
-    private final Application app;
+    protected final Application app;
 
     protected AppDialog(Application app, Window owner, String title, ModalityType modality) {
         super(owner, title, modality);
         this.app = app;
-    }
-
-    protected Application app() {
-        return app;
     }
 
     protected void centerOnOwner() {

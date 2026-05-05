@@ -79,7 +79,7 @@ public class EntityDisplayAction extends ModelerAbstractAction {
         }
 
         // reusing logic from FindAction
-        FindAction.jumpToResult(new FindAction.SearchResultEntry(entity, entity.getName()), application);
+        FindAction.jumpToResult(new FindAction.SearchResultEntry(entity, entity.getName()), app);
         return true;
     }
 

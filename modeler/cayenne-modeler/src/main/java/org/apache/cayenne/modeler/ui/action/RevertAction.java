@@ -20,7 +20,6 @@
 package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.MainFrame;
 import org.apache.cayenne.project.Project;
 
 import java.awt.event.ActionEvent;
@@ -42,10 +41,8 @@ public class RevertAction extends ModelerAbstractAction {
 
         boolean isNew = project.getConfigurationResource() == null;
 
-        MainFrame controller = application.getFrame();
-
         // close ... don't use OpenProjectAction close method as it will ask for save, we don't want that here
-        controller.onProjectClosed();
+        app.getFrame().onProjectClosed();
 
         File fileDirectory = new File(project
                 .getConfigurationResource()
@@ -54,17 +51,16 @@ public class RevertAction extends ModelerAbstractAction {
 
         // reopen existing
         if (!isNew && fileDirectory.isFile()) {
-            controller
-                    .getApplication()
+            app
                     .getActionManager()
                     .getAction(OpenProjectAction.class).openProject(fileDirectory);
         }
 
         // create new
         else {
-            controller.getApplication().getActionManager().getAction(NewProjectAction.class).performAction(e);
+            app.getActionManager().getAction(NewProjectAction.class).performAction(e);
         }
 
-        application.getUndoManager().discardAllEdits();
+        app.getUndoManager().discardAllEdits();
     }
 }

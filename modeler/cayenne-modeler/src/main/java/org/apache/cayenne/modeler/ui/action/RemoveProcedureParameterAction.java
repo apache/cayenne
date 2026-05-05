@@ -91,7 +91,7 @@ public class RemoveProcedureParameterAction extends RemoveAction implements Mult
 
             procedure.removeCallParameter(parameter.getName());
 
-            ProcedureParameterEvent e = ProcedureParameterEvent.ofRemove(application.getFrame(), parameter);
+            ProcedureParameterEvent e = ProcedureParameterEvent.ofRemove(app.getFrame(), parameter);
 
             session.fireProcedureParameterEvent(e);
         }

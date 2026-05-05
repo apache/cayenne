@@ -65,7 +65,7 @@ public class PackageUpdateDialog extends DefaultsUpdateDialog {
                 String newClassName = dataMap.getNameWithDefaultPackage(className);
                 oldNameEmbeddableToNewName.put(oldName, newClassName);
                 embeddable.setClassName(newClassName);
-                session().fireEmbeddableEvent(e, session().getSelectedDataMap());
+                session.fireEmbeddableEvent(e, session.getSelectedDataMap());
             }
         }
 
@@ -77,7 +77,7 @@ public class PackageUpdateDialog extends DefaultsUpdateDialog {
                 String newName = dataMap.getNameWithDefaultPackage(className);
                 if (!Util.nullSafeEquals(newName, entity.getClassName())) {
                     entity.setClassName(newName);
-                    session().fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
+                    session.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
                 }
             }
 
@@ -86,7 +86,7 @@ public class PackageUpdateDialog extends DefaultsUpdateDialog {
                         && !oldNameEmbeddableToNewName.isEmpty()
                         && oldNameEmbeddableToNewName.containsKey(attribute.getType())) {
                     attribute.setType(oldNameEmbeddableToNewName.get(attribute.getType()));
-                    session().fireObjAttributeEvent(ObjAttributeEvent.ofChange(this, attribute, entity));
+                    session.fireObjAttributeEvent(ObjAttributeEvent.ofChange(this, attribute, entity));
                 }
             }
         }

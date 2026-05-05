@@ -95,7 +95,7 @@ public class EntitySyncDialog extends AppDialog {
 
         ObjectNameGenerator namingStrategy;
         try {
-            namingStrategy = NameGeneratorPreferences.getInstance().createNamingStrategy(app());
+            namingStrategy = NameGeneratorPreferences.getInstance().createNamingStrategy(app);
         } catch (Throwable e) {
             namingStrategy = new DefaultObjectNameGenerator(NoStemStemmer.getInstance());
         }

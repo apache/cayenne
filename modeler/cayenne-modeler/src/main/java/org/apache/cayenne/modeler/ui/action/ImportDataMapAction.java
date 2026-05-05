@@ -63,7 +63,7 @@ public class ImportDataMapAction extends ModelerAbstractAction {
     }
 
     protected void importDataMap() {
-        File dataMapFile = selectDataMap(application.getFrame());
+        File dataMapFile = selectDataMap(app.getFrame());
         if (dataMapFile == null) {
             return;
         }
@@ -72,7 +72,7 @@ public class ImportDataMapAction extends ModelerAbstractAction {
 
         try {
             URL url = dataMapFile.toURI().toURL();
-            DataMapLoader loader = application.getDataMapLoader();
+            DataMapLoader loader = app.getDataMapLoader();
             newMap = loader.load(new URLResource(url));
 
             ConfigurationNode root = getProjectSession().project().getRootNode();
@@ -88,10 +88,10 @@ public class ImportDataMapAction extends ModelerAbstractAction {
                 newMap.setConfigurationSource(dataMapResource);
             }
 
-            CreateDataMapAction.onMapCreated(application.getFrame(), getProjectSession(), newMap);
+            CreateDataMapAction.onMapCreated(app.getFrame(), getProjectSession(), newMap);
         } catch (Exception ex) {
             LOGGER.info("Error importing DataMap.", ex);
-            JOptionPane.showMessageDialog(application.getFrame(), "Error reading DataMap: " + ex.getMessage(),
+            JOptionPane.showMessageDialog(app.getFrame(), "Error reading DataMap: " + ex.getMessage(),
                     "Can't Open DataMap", JOptionPane.OK_OPTION);
         }
     }
@@ -101,7 +101,7 @@ public class ImportDataMapAction extends ModelerAbstractAction {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-        CMFileChooserPrefs.of(application.getPreferencesRepository(), "importDataMap/lastDir").bind(chooser);
+        CMFileChooserPrefs.of(app.getPreferencesRepository(), "importDataMap/lastDir").bind(chooser);
 
         chooser.addChoosableFileFilter(FileFilters.getDataMapFilter());
 

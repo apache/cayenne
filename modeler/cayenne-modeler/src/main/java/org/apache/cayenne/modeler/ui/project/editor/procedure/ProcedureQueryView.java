@@ -85,15 +85,15 @@ public class ProcedureQueryView extends ProjectPanel {
 
     private void initLayout() {
         // create widgets
-        name = new CMUndoableTextField(app().getUndoManager());
+        name = new CMUndoableTextField(app.getUndoManager());
         name.addCommitListener(this::setQueryName);
 
-        comment = new CMUndoableTextField(app().getUndoManager());
+        comment = new CMUndoableTextField(app.getUndoManager());
         comment.addCommitListener(this::setQueryComment);
 
-        queryRoot = new CMUndoableComboBox<>(app().getUndoManager());
+        queryRoot = new CMUndoableComboBox<>(app.getUndoManager());
         queryRoot.setRenderer(Renderers.listRendererWithIcons());
-        properties = new ProcedureQueryPropertiesPanel(session());
+        properties = new ProcedureQueryPropertiesPanel(session);
 
         // assemble
         CellConstraints cc = new CellConstraints();
@@ -121,15 +121,15 @@ public class ProcedureQueryView extends ProjectPanel {
         queryRoot.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent event) {
-                QueryDescriptor query = session().getSelectedQuery();
+                QueryDescriptor query = session.getSelectedQuery();
                 if (query != null) {
                     query.setRoot(queryRoot.getModel().getSelectedItem());
-                    session().fireQueryEvent(QueryEvent.ofChange(this, query));
+                    session.fireQueryEvent(QueryEvent.ofChange(this, query));
                 }
             }
         });
 
-        session().addQueryDisplayListener(e -> initFromModel());
+        session.addQueryDisplayListener(e -> initFromModel());
     }
 
     /**
@@ -137,7 +137,7 @@ public class ProcedureQueryView extends ProjectPanel {
      * query is changed.
      */
     void initFromModel() {
-        QueryDescriptor query = session().getSelectedQuery();
+        QueryDescriptor query = session.getSelectedQuery();
 
         if (query == null || !QueryDescriptor.PROCEDURE_QUERY.equals(query.getType())) {
             setVisible(false);
@@ -156,7 +156,7 @@ public class ProcedureQueryView extends ProjectPanel {
         // since query root is fully resolved during map loading,
         // making it impossible to reference other DataMaps.
 
-        DataMap map = session().getSelectedDataMap();
+        DataMap map = session.getSelectedDataMap();
         Procedure[] roots = map.getProcedures().toArray(new Procedure[0]);
 
         if (roots.length > 1) {
@@ -179,7 +179,7 @@ public class ProcedureQueryView extends ProjectPanel {
             newName = null;
         }
 
-        QueryDescriptor query = session().getSelectedQuery();
+        QueryDescriptor query = session.getSelectedQuery();
         if (query == null) {
             return;
         }
@@ -192,7 +192,7 @@ public class ProcedureQueryView extends ProjectPanel {
             throw new ValidationException("Query name is required.");
         }
 
-        DataMap map = session().getSelectedDataMap();
+        DataMap map = session.getSelectedDataMap();
 
         if (map.getQueryDescriptor(newName) == null) {
             // completely new name, set new name for entity
@@ -206,7 +206,7 @@ public class ProcedureQueryView extends ProjectPanel {
             if (ns instanceof EntityResolver) {
                 ((EntityResolver) ns).refreshMappingCache();
             }
-            session().fireQueryEvent(e);
+            session.fireQueryEvent(e);
         } else {
             // there is a query with the same name
             throw new ValidationException("There is another query named '" + newName + "'. Use a different name.");
@@ -222,7 +222,7 @@ public class ProcedureQueryView extends ProjectPanel {
             return null;
         }
 
-        DataMap map = session().getSelectedDataMap();
+        DataMap map = session.getSelectedDataMap();
         if (map == null) {
             return null;
         }
@@ -231,24 +231,24 @@ public class ProcedureQueryView extends ProjectPanel {
     }
 
     void setEntity(ObjEntity entity) {
-        QueryDescriptor query = session().getSelectedQuery();
+        QueryDescriptor query = session.getSelectedQuery();
         if (query != null && QueryDescriptor.PROCEDURE_QUERY.equals(query.getType())) {
             ((ProcedureQueryDescriptor) query).setResultEntityName(entity != null ? entity.getName() : null);
-            session().fireQueryEvent(QueryEvent.ofChange(this, query));
+            session.fireQueryEvent(QueryEvent.ofChange(this, query));
         }
     }
 
     private void setQueryComment(String text) {
-        QueryDescriptor query = session().getSelectedQuery();
+        QueryDescriptor query = session.getSelectedQuery();
         if (query == null) {
             return;
         }
-        ObjectInfo.putToMetaData(app().getMetaData(), query, ObjectInfo.COMMENT, text);
-        session().fireQueryEvent(QueryEvent.ofChange(this, query));
+        ObjectInfo.putToMetaData(app.getMetaData(), query, ObjectInfo.COMMENT, text);
+        session.fireQueryEvent(QueryEvent.ofChange(this, query));
     }
 
     private String getQueryComment(QueryDescriptor queryDescriptor) {
-        return ObjectInfo.getFromMetaData(app().getMetaData(), queryDescriptor, ObjectInfo.COMMENT);
+        return ObjectInfo.getFromMetaData(app.getMetaData(), queryDescriptor, ObjectInfo.COMMENT);
     }
 
     final class LabelCapsRenderer extends DefaultListCellRenderer {
@@ -273,7 +273,7 @@ public class ProcedureQueryView extends ProjectPanel {
         }
 
         protected PanelBuilder createPanelBuilder() {
-            labelCase = new CMUndoableComboBox<>(app().getUndoManager());
+            labelCase = new CMUndoableComboBox<>(app.getUndoManager());
             labelCase.setRenderer(new LabelCapsRenderer());
             labelCase.addActionListener(event -> {
                 String value = labelCase.getModel().getSelectedItem().toString();

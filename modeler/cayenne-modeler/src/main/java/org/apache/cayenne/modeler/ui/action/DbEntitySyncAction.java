@@ -76,8 +76,8 @@ public class DbEntitySyncAction extends ModelerAbstractAction {
             }
 
             EntityMergeSupport merger = new EntitySyncDialog(
-                    application,
-                    application.getFrame(),
+                    app,
+                    app.getFrame(),
                     dbEntity).createMerger();
 
             if (merger == null) {
@@ -118,7 +118,7 @@ public class DbEntitySyncAction extends ModelerAbstractAction {
             }
 
             if (hasChanges) {
-                application.getUndoManager().addEdit(undoableEdit);
+                app.getUndoManager().addEdit(undoableEdit);
             }
         }
     }

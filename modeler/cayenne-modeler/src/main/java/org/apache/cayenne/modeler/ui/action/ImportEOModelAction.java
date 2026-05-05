@@ -125,7 +125,7 @@ public class ImportEOModelAction extends ModelerAbstractAction {
      */
     protected void importEOModel() {
         JFileChooser fileChooser = getEOModelChooser();
-        int status = fileChooser.showOpenDialog(application.getFrame());
+        int status = fileChooser.showOpenDialog(app.getFrame());
 
         if (status == JFileChooser.APPROVE_OPTION) {
 
@@ -152,7 +152,7 @@ public class ImportEOModelAction extends ModelerAbstractAction {
 
             } catch (Exception ex) {
                 LOGGER.info("EOModel Loading Exception", ex);
-                ErrorsController.guiException(application, ex);
+                ErrorsController.guiException(app, ex);
             }
 
         }
@@ -167,7 +167,7 @@ public class ImportEOModelAction extends ModelerAbstractAction {
         Map<?, ?> connection = (Map) eomodelIndex.get("connectionDictionary");
 
         if (adapter != null && connection != null) {
-            CreateNodeAction nodeBuilder = application.getActionManager().getAction(CreateNodeAction.class);
+            CreateNodeAction nodeBuilder = app.getActionManager().getAction(CreateNodeAction.class);
 
             // this should make created node current, resulting in the new map being added
             // to the node automatically once it is loaded
@@ -187,7 +187,7 @@ public class ImportEOModelAction extends ModelerAbstractAction {
 
                 if (cayenneAdapter != null) {
                     try {
-                        Class<DbAdapter> adapterClass = application
+                        Class<DbAdapter> adapterClass = app
                                 .getClassLoader()
                                 .loadClass(DbAdapter.class, cayenneAdapter);
                         node.setAdapterType(adapterClass.toString());
@@ -253,7 +253,7 @@ public class ImportEOModelAction extends ModelerAbstractAction {
             Collection<DbEntity> newDE = new ArrayList<>(currentMap.getDbEntities());
             Collection<QueryDescriptor> newQueries = new ArrayList<>(currentMap.getQueryDescriptors());
 
-            Object src = application.getFrame();
+            Object src = app.getFrame();
 
             // 1. ObjEntities
             Collection<ObjEntity> addedOE = new ArrayList<>(newOE);
@@ -295,7 +295,7 @@ public class ImportEOModelAction extends ModelerAbstractAction {
             }
 
             session.displayDataMap(new DataMapDisplayEvent(
-                    application.getFrame(),
+                    app.getFrame(),
                     (DataChannelDescriptor) session
                             .project()
                             .getRootNode(),
@@ -311,7 +311,7 @@ public class ImportEOModelAction extends ModelerAbstractAction {
 
             // side effect of this operation is that if a node was created, this DataMap
             // will be linked with it...
-            CreateDataMapAction.onMapCreated(application.getFrame(), getProjectSession(), map);
+            CreateDataMapAction.onMapCreated(app.getFrame(), getProjectSession(), map);
 
         }
     }
@@ -325,7 +325,7 @@ public class ImportEOModelAction extends ModelerAbstractAction {
             eoModelChooser = new EOModelChooser("Select EOModel");
         }
 
-        CMFileChooserPrefs.of(application.getPreferencesRepository(), "importEOModel/lastDir").bind(eoModelChooser);
+        CMFileChooserPrefs.of(app.getPreferencesRepository(), "importEOModel/lastDir").bind(eoModelChooser);
 
         return eoModelChooser;
     }

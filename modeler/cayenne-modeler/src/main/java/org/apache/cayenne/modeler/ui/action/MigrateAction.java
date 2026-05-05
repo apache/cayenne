@@ -74,12 +74,12 @@ public class MigrateAction extends DBConnectionAwareAction {
         String selectedCatalog = optionsDialog == null ? null : optionsDialog.getSelectedCatalog();
         String selectedSchema = optionsDialog == null ? null : optionsDialog.getSelectedSchema();
 
-        MergerTokenFactoryProvider mergerTokenFactoryProvider = application.getMergerTokenFactoryProvider();
+        MergerTokenFactoryProvider mergerTokenFactoryProvider = app.getMergerTokenFactoryProvider();
 
         // ... show dialog...
         new MergerOptionsDialog(
                 getProjectSession(),
-                application.getFrame(),
+                app.getFrame(),
                 "Migrate DB Schema: Options",
                 connectWizard.getConnector(),
                 map, selectedCatalog, selectedSchema, mergerTokenFactoryProvider).startupAction();
@@ -89,7 +89,7 @@ public class MigrateAction extends DBConnectionAwareAction {
                                                  String currentCatalog, String currentSchema, int command) {
         dialogShown = true;
         if (command == DbActionOptionsDialog.SELECT) {
-            return new DbActionOptionsDialog(application, application.getFrame(),
+            return new DbActionOptionsDialog(app, app.getFrame(),
                     "Migrate DB Schema: Select Catalog and Schema",
                     catalogs, schemas, currentCatalog, currentSchema);
         }
@@ -118,7 +118,7 @@ public class MigrateAction extends DBConnectionAwareAction {
             }
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(
-                    application.getFrame(),
+                    app.getFrame(),
                     ex.getMessage(),
                     "Error loading schemas dialog",
                     JOptionPane.ERROR_MESSAGE);

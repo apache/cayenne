@@ -70,8 +70,8 @@ public class ClasspathPrefsPanel extends AppPanel {
     }
 
     public void commit() {
-        ClasspathPrefs.of(app().getPreferencesRepository()).setEntries(entries);
-        app().refreshClassLoader();
+        ClasspathPrefs.of(app.getPreferencesRepository()).setEntries(entries);
+        app.refreshClassLoader();
     }
 
     /**
@@ -104,7 +104,7 @@ public class ClasspathPrefsPanel extends AppPanel {
         addDirButton.addActionListener(e ->
                 chooseClassEntry(null, "Select Java Class Directory.", JFileChooser.DIRECTORIES_ONLY));
         addMvnButton.addActionListener(e ->
-                new MavenDependencyDialog(app(), SwingUtilities.getWindowAncestor(this), this).setVisible(true));
+                new MavenDependencyDialog(app, SwingUtilities.getWindowAncestor(this), this).setVisible(true));
         deleteEntryButton.addActionListener(e -> removeEntryClicked());
 
         DefaultFormBuilder sidebar = new DefaultFormBuilder(
@@ -139,7 +139,7 @@ public class ClasspathPrefsPanel extends AppPanel {
         chooser.setDialogType(JFileChooser.OPEN_DIALOG);
         chooser.setAcceptAllFileFilterUsed(true);
 
-        CMFileChooserPrefs.of(app().getPreferencesRepository(), "classpath/lastDir").bind(chooser);
+        CMFileChooserPrefs.of(app.getPreferencesRepository(), "classpath/lastDir").bind(chooser);
         if (filter != null) {
             chooser.addChoosableFileFilter(filter);
             chooser.setFileFilter(filter);

@@ -31,7 +31,7 @@ import javax.swing.JTabbedPane;
  */
 public abstract class ProjectTabbedPane extends JTabbedPane {
 
-    private final ProjectSession session;
+    protected final ProjectSession session;
 
     protected ProjectTabbedPane(ProjectSession session) {
         this.session = session;

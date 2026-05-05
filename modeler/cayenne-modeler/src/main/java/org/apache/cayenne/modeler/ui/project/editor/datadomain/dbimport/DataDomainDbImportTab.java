@@ -34,7 +34,7 @@ public class DataDomainDbImportTab extends DataDomainGeneratorsTab<ReverseEngine
     public DataDomainDbImportTab(ProjectSession session) {
         super(session, ReverseEngineering.class, false,
                 "icon-dbi-runImport.png", "Run reverse engineering on selected datamaps.");
-        this.dbImportAction = new ModelerDbImportAction(session.app());
+        this.dbImportAction = new ModelerDbImportAction(app);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class DataDomainDbImportTab extends DataDomainGeneratorsTab<ReverseEngine
             showEmptyMessage();
             return;
         }
-        session.app().getFrame().getDbImportResultDialog().setGlobalImport(true);
+        app.getFrame().getDbImportResultDialog().setGlobalImport(true);
         dbImportAction.performAction(dataMaps);
     }
 

@@ -79,7 +79,7 @@ public class EmbeddableAttributesView extends ProjectPanel implements
 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
-        GlobalActions globalActions = app().getActionManager();
+        GlobalActions globalActions = app.getActionManager();
 
         toolBar.add(globalActions.getAction(CreateAttributeAction.class).buildButton());
         toolBar.addSeparator();
@@ -108,13 +108,13 @@ public class EmbeddableAttributesView extends ProjectPanel implements
     }
 
     private void initBindings() {
-        session().addEmbeddableAttributeListener(this);
-        session().addEmbeddableDisplayListener(this);
-        session().addEmbeddableListener(this);
+        session.addEmbeddableAttributeListener(this);
+        session.addEmbeddableDisplayListener(this);
+        session.addEmbeddableListener(this);
 
         table.getSelectionModel().addListSelectionListener(this::processExistingSelection);
 
-        app().getActionManager().setupCutCopyPaste(
+        app.getActionManager().setupCutCopyPaste(
                 table,
                 CutAttributeAction.class,
                 CopyAttributeAction.class);
@@ -145,18 +145,18 @@ public class EmbeddableAttributesView extends ProjectPanel implements
 
         EmbeddableAttributeDisplayEvent ev = new EmbeddableAttributeDisplayEvent(
                 this,
-                (DataChannelDescriptor) session().project().getRootNode(),
-                session().getSelectedDataMap(),
-                session().getSelectedEmbeddable(),
+                (DataChannelDescriptor) session.project().getRootNode(),
+                session.getSelectedDataMap(),
+                session.getSelectedEmbeddable(),
                 attrs);
 
-        session().displayEmbeddableAttribute(ev);
+        session.displayEmbeddableAttribute(ev);
     }
 
     private void rebuildTable(Embeddable emb) {
         EmbeddableAttributeTableModel model = new EmbeddableAttributeTableModel(
                 emb,
-                session(),
+                session,
                 this);
         table.setModel(model);
         table.setRowHeight(25);
@@ -168,10 +168,10 @@ public class EmbeddableAttributesView extends ProjectPanel implements
 
         TableColumn typeColumn = table.getColumnModel().getColumn(EmbeddableAttributeTableModel.OBJ_ATTRIBUTE_TYPE);
         JComboBox javaTypesCombo = new CMComboBox<>(ValueTypes.getTypes());
-        AutoCompletion.enable(javaTypesCombo, false, true, session()::getSelectedDataMap);
+        AutoCompletion.enable(javaTypesCombo, false, true, session::getSelectedDataMap);
         typeColumn.setCellEditor(new CMComboBoxCellEditor(javaTypesCombo));
 
-        CMTablePrefs.of(app().getPreferencesRepository(), "embeddable/attributeTable")
+        CMTablePrefs.of(app.getPreferencesRepository(), "embeddable/attributeTable")
                 .bind(table, null, EmbeddableAttributeTableModel.OBJ_ATTRIBUTE);
 
     }
@@ -180,7 +180,7 @@ public class EmbeddableAttributesView extends ProjectPanel implements
      * Selects a specified attribute.
      */
     public void selectAttributes(EmbeddableAttribute[] embAttrs) {
-        GlobalActions actions = app().getActionManager();
+        GlobalActions actions = app.getActionManager();
         actions.getAction(RemoveAttributeRelationshipAction.class).updateForSelection(embAttrs.length);
         actions.getAction(CutAttributeRelationshipAction.class).updateForSelection(embAttrs.length);
         actions.getAction(CopyAttributeRelationshipAction.class).updateForSelection(embAttrs.length);

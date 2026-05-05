@@ -42,7 +42,7 @@ public class FilterAction extends ModelerAbstractAction {
     @Override
     public void performAction(ActionEvent e) {
         JButton source = (JButton) e.getSource();
-        TreeFilterPopup dialog = application
+        TreeFilterPopup dialog = app
                 .getFrame()
                 .getProjectView()
                 .getFilterPopup();

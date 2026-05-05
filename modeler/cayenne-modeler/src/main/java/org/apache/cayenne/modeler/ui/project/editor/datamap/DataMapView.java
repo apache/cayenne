@@ -40,7 +40,7 @@ public class DataMapView extends ProjectTabbedPane {
         setTabPlacement(JTabbedPane.TOP);
         addTab("DataMap", new JScrollPane(new DataMapMainView(session())));
         addTab("DB Import", new JScrollPane(new DbImportView(session())));
-        addTab("Class Generation", new JScrollPane(new CgenPanel(app(), session())));
+        addTab("Class Generation", new JScrollPane(new CgenPanel(session)));
     }
 
     private void initBindings() {

@@ -110,7 +110,7 @@ public class ProcedureParameterTab extends ProjectPanel implements ProcedurePara
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        GlobalActions globalActions = app().getActionManager();
+        GlobalActions globalActions = app.getActionManager();
         toolBar.add(globalActions.getAction(CreateProcedureParameterAction.class).buildButton(1));
         removeParameterButton = globalActions.getAction(RemoveProcedureParameterAction.class).buildButton(3);
         toolBar.add(removeParameterButton);
@@ -222,11 +222,11 @@ public class ProcedureParameterTab extends ProjectPanel implements ProcedurePara
 
         ProcedureParameterDisplayEvent ppde = new ProcedureParameterDisplayEvent(
                 this,
-                (DataChannelDescriptor) session().project().getRootNode(),
-                session().getSelectedDataMap(),
-                session().getSelectedProcedure(),
+                (DataChannelDescriptor) session.project().getRootNode(),
+                session.getSelectedDataMap(),
+                session.getSelectedProcedure(),
                 parameters);
-        session().displayProcedureParameter(ppde);
+        session.displayProcedureParameter(ppde);
     }
 
     /**
@@ -243,7 +243,7 @@ public class ProcedureParameterTab extends ProjectPanel implements ProcedurePara
      * Selects a specified parameters.
      */
     public void selectParameters(ProcedureParameter[] params) {
-        GlobalActions actions = app().getActionManager();
+        GlobalActions actions = app.getActionManager();
         actions.getAction(RemoveAttributeRelationshipAction.class).updateForSelection(params.length);
         actions.getAction(CutAttributeRelationshipAction.class).updateForSelection(params.length);
         actions.getAction(CopyAttributeRelationshipAction.class).updateForSelection(params.length);
@@ -263,7 +263,7 @@ public class ProcedureParameterTab extends ProjectPanel implements ProcedurePara
     protected void rebuildTable(Procedure procedure) {
         ProcedureParameterTableModel model = new ProcedureParameterTableModel(
                 procedure,
-                session(),
+                session,
                 this);
 
         table.setModel(model);
@@ -282,7 +282,7 @@ public class ProcedureParameterTab extends ProjectPanel implements ProcedurePara
         String[] dbTypes = TypesMapping.getDatabaseTypes();
         Arrays.sort(dbTypes);
         JComboBox typesEditor = new CMComboBox<>(dbTypes);
-        AutoCompletion.enable(typesEditor, session()::getSelectedDataMap);
+        AutoCompletion.enable(typesEditor, session::getSelectedDataMap);
         typesColumn.setCellEditor(new CMComboBoxCellEditor(typesEditor));
 
         // direction column tweaking
@@ -304,7 +304,7 @@ public class ProcedureParameterTab extends ProjectPanel implements ProcedurePara
         moveUp.setEnabled(false);
         moveDown.setEnabled(false);
 
-        CMTablePrefs.of(app().getPreferencesRepository(), "procedure/parameterTable").bind(table, null);
+        CMTablePrefs.of(app.getPreferencesRepository(), "procedure/parameterTable").bind(table, null);
     }
 
     public void procedureParameterAdded(ProcedureParameterEvent e) {
@@ -340,7 +340,7 @@ public class ProcedureParameterTab extends ProjectPanel implements ProcedurePara
 
             // note that 'setCallParameters' is donw by copy internally
             parameter.getProcedure().setCallParameters(model.getObjectList());
-            session().fireProcedureEvent(
+            session.fireProcedureEvent(
                     ProcedureEvent.ofChange(this, parameter.getProcedure())
             );
         }

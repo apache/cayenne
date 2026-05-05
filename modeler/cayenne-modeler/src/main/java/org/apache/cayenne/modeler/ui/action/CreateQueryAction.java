@@ -47,7 +47,7 @@ public class CreateQueryAction extends ModelerAbstractAction {
     }
 
     protected void createQuery() {
-        new QueryTypeDialog(getProjectSession(), application.getFrame()).open();
+        new QueryTypeDialog(getProjectSession(), app.getFrame()).open();
     }
     
     public void createQuery(DataChannelDescriptor domain, DataMap dataMap, QueryDescriptor query) {

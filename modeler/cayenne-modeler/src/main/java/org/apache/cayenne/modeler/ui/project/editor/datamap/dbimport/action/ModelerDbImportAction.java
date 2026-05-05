@@ -72,7 +72,7 @@ public class ModelerDbImportAction extends DBConnectionAwareAction {
     private void startImport(DataMap dataMap, AtomicInteger dataMapCount) {
         ModelerDbLoaderContext context = new ModelerDbLoaderContext(
                 getProjectSession(),
-                application,
+                app,
                 dataMap);
 
         DBConnector connectionInfo = getConnector(DIALOG_TITLE, dataMap);
@@ -81,10 +81,10 @@ public class ModelerDbImportAction extends DBConnectionAwareAction {
         }
 
         try {
-            context.setConnection(connectionInfo.makeDataSource(application.getClassLoader()).getConnection());
+            context.setConnection(connectionInfo.makeDataSource(app.getClassLoader()).getConnection());
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(
-                    application.getFrame(),
+                    app.getFrame(),
                     ex.getMessage(),
                     "Error loading schemas dialog",
                     JOptionPane.ERROR_MESSAGE);
@@ -99,10 +99,10 @@ public class ModelerDbImportAction extends DBConnectionAwareAction {
             return;
         }
 
-        DbImportResultDialog dbImportResultDialog = application.getFrame().getDbImportResultDialog();
+        DbImportResultDialog dbImportResultDialog = app.getFrame().getDbImportResultDialog();
 
         runLoaderInThread(context, () -> {
-            application.getUndoManager().discardAllEdits();
+            app.getUndoManager().discardAllEdits();
             try {
                 context.getConnection().close();
 
@@ -123,12 +123,12 @@ public class ModelerDbImportAction extends DBConnectionAwareAction {
      */
     @Override
     public void performAction(ActionEvent event) {
-        startImport(application.getFrame().getProjectSession().getSelectedDataMap(), new AtomicInteger(1));
+        startImport(app.getFrame().getProjectSession().getSelectedDataMap(), new AtomicInteger(1));
     }
 
     private void runLoaderInThread(ModelerDbLoaderContext context, Runnable callback) {
         Thread th = new Thread(() -> {
-            new DbImportTask(application, "Reengineering DB", context).startAndWait();
+            new DbImportTask(app, "Reengineering DB", context).startAndWait();
             SwingUtilities.invokeLater(callback);
         });
         th.start();

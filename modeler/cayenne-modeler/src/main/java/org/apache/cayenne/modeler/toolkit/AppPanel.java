@@ -35,16 +35,4 @@ public abstract class AppPanel extends JPanel {
     protected AppPanel(Application app) {
         this.app = app;
     }
-
-    /**
-     * Convenience constructor for nested panels — copies the {@link Application} reference
-     * from a parent {@link AppPanel}.
-     */
-    protected AppPanel(AppPanel parent) {
-        this(parent.app);
-    }
-
-    protected Application app() {
-        return app;
-    }
 }

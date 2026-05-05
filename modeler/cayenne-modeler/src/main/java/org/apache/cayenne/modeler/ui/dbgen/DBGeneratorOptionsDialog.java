@@ -102,11 +102,11 @@ public class DBGeneratorOptionsDialog extends ProjectDialog {
                                     String title, Collection<DataMap> dataMaps) {
         super(session, owner, title, ModalityType.APPLICATION_MODAL);
         this.dataMaps = dataMaps;
-        this.tables = new TableSelectorPanel(app());
+        this.tables = new TableSelectorPanel(app);
 
         this.connector = new DBConnector();
         this.connector.setAllowDataSourceFailure(true);
-        this.generatorDefaults = DBGeneratorPrefs.of(app().getPreferencesRepository(), session.project());
+        this.generatorDefaults = DBGeneratorPrefs.of(app.getPreferencesRepository(), session.project());
 
         // create widgets — set initial state before wiring listeners so we
         // don't fire spurious refresh events during construction.
@@ -267,7 +267,7 @@ public class DBGeneratorOptionsDialog extends ProjectDialog {
 
     private void prepareGenerator() {
         try {
-            DbAdapter adapter = connector.makeAdapter(app().getClassLoader(), app().getDbAdapterFactory());
+            DbAdapter adapter = connector.makeAdapter(app.getClassLoader(), app.getDbAdapterFactory());
             generators = new ArrayList<>();
             for (DataMap dataMap : dataMaps) {
                 generators.add(new DbGenerator(
@@ -317,8 +317,8 @@ public class DBGeneratorOptionsDialog extends ProjectDialog {
 
     private void generateSchemaAction() {
         DataSourceDialog connectWizard = new DataSourceDialog(
-                session(),
-                app().getFrame(),
+                session,
+                app.getFrame(),
                 "Generate DB Schema: Connect to Database");
         if (!connectWizard.startupAction()) {
             return;
@@ -347,8 +347,8 @@ public class DBGeneratorOptionsDialog extends ProjectDialog {
             JOptionPane.showMessageDialog(this, "Schema Generation Complete.");
         } else {
             new ValidationDialog(
-                    app(),
-                    app().getFrame(),
+                    app,
+                    app.getFrame(),
                     "Schema Generation Complete",
                     "Schema generation finished. The following problem(s) were ignored.",
                     failures).open();
@@ -360,7 +360,7 @@ public class DBGeneratorOptionsDialog extends ProjectDialog {
         fc.setDialogType(JFileChooser.SAVE_DIALOG);
         fc.setDialogTitle("Save SQL Script");
 
-        File projectDir = new File(app()
+        File projectDir = new File(app
                 .getFrame().getProjectSession().project()
                 .getConfigurationResource()
                 .getURL()

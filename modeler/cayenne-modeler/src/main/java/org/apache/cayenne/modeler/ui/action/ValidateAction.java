@@ -56,7 +56,7 @@ public class ValidateAction extends ModelerAbstractAction {
     @Override
     public void performAction(ActionEvent e) {
 
-        ProjectValidator projectValidator = application.getProjectValidator();
+        ProjectValidator projectValidator = app.getProjectValidator();
         ValidationResult validationResult = projectValidator.validate(getCurrentProject()
                 .getRootNode());
 
@@ -65,7 +65,7 @@ public class ValidateAction extends ModelerAbstractAction {
         }
         else {
             disposeDialog();
-            ProjectValidatorDialog.showOnSuccess(application);
+            ProjectValidatorDialog.showOnSuccess(app);
         }
     }
 
@@ -76,7 +76,7 @@ public class ValidateAction extends ModelerAbstractAction {
      */
     public void showFailures(List<ValidationFailure> failures) {
         if (dialog == null || !dialog.isDisplayable()) {
-            dialog = new ProjectValidatorDialog(getProjectSession(), application.getFrame());
+            dialog = new ProjectValidatorDialog(getProjectSession(), app.getFrame());
             dialog.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosed(WindowEvent e) {

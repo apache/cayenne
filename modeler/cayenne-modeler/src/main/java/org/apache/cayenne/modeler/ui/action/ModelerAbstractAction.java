@@ -37,22 +37,18 @@ import java.awt.event.ActionEvent;
  */
 public abstract class ModelerAbstractAction extends AbstractAction {
 
+    protected final Application app;
     protected boolean alwaysOn;
-    protected Application application;
 
-    public Application getApplication() {
-        return application;
+    protected ModelerAbstractAction(String name, Application app) {
+        this(name, app, name);
     }
 
-    protected ModelerAbstractAction(String name, Application application) {
-        this(name, application, name);
-    }
-
-    protected ModelerAbstractAction(String name, Application application, String shortDescription) {
+    protected ModelerAbstractAction(String name, Application app, String shortDescription) {
         super(name);
         super.putValue(Action.DEFAULT, name);
 
-        this.application = application;
+        this.app = app;
 
         Icon icon = createIcon();
         if (icon != null) {
@@ -72,7 +68,7 @@ public abstract class ModelerAbstractAction extends AbstractAction {
     }
 
     protected Project getCurrentProject() {
-        return application.getFrame().getProjectSession().project();
+        return app.getFrame().getProjectSession().project();
     }
 
     /**
@@ -138,7 +134,7 @@ public abstract class ModelerAbstractAction extends AbstractAction {
      * Returns the current {@link ProjectSession}.
      */
     public ProjectSession getProjectSession() {
-        return application.getFrame().getProjectSession();
+        return app.getFrame().getProjectSession();
     }
 
     /**
@@ -150,7 +146,7 @@ public abstract class ModelerAbstractAction extends AbstractAction {
             performAction(e);
         }
         catch (Throwable th) {
-            ErrorsController.guiException(application, th);
+            ErrorsController.guiException(app, th);
         }
     }
 

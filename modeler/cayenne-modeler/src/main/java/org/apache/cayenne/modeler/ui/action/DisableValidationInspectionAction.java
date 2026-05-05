@@ -39,15 +39,15 @@ public class DisableValidationInspectionAction extends UpdateValidationConfigAct
     @Override
     public void performAction(ActionEvent e) {
         Inspection inspection = (Inspection) getValue(INSPECTION_PARAM);
-        DataChannelDescriptor dataChannel = (DataChannelDescriptor) application.getFrame().getProjectSession().project().getRootNode();
-        ValidationConfig config = ValidationConfig.fromMetadata(application.getMetaData(), dataChannel);
+        DataChannelDescriptor dataChannel = (DataChannelDescriptor) app.getFrame().getProjectSession().project().getRootNode();
+        ValidationConfig config = ValidationConfig.fromMetadata(app.getMetaData(), dataChannel);
 
         EnumSet<Inspection> enabledInspections = EnumSet.copyOf(config.getEnabledInspections());
         enabledInspections.remove(inspection);
         putConfig(new ValidationConfig(enabledInspections));
         super.performAction(e);
 
-        application.getActionManager().getAction(ValidateAction.class).performAction(e);
+        app.getActionManager().getAction(ValidateAction.class).performAction(e);
     }
 
     public DisableValidationInspectionAction putInspection(Inspection inspection) {

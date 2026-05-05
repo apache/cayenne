@@ -56,7 +56,7 @@ public class CreateNodeAction extends ModelerAbstractAction {
     public void performAction(ActionEvent e) {
         DataNodeDescriptor node = buildDataNode();
         createDataNode(this, getProjectSession(), node);
-        application.getUndoManager().addEdit(new CreateNodeUndoableEdit(getProjectSession(), node));
+        app.getUndoManager().addEdit(new CreateNodeUndoableEdit(getProjectSession(), node));
     }
 
 

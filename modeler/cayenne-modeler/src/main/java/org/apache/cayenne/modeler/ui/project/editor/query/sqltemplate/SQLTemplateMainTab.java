@@ -83,13 +83,13 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
 
     private void initView() {
         // create widgets
-        name = new CMUndoableTextField(app().getUndoManager());
+        name = new CMUndoableTextField(app.getUndoManager());
         name.addCommitListener(this::setQueryName);
 
-        comment = new CMUndoableTextField(app().getUndoManager());
+        comment = new CMUndoableTextField(app.getUndoManager());
         comment.addCommitListener(this::setQueryComment);
 
-        properties = new SQLTemplateQueryPropertiesPanel(session());
+        properties = new SQLTemplateQueryPropertiesPanel(session);
 
         // assemble
         CellConstraints cc = new CellConstraints();
@@ -117,7 +117,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
      * query is changed.
      */
     void initFromModel() {
-        QueryDescriptor query = session().getSelectedQuery();
+        QueryDescriptor query = session.getSelectedQuery();
 
         if (query == null || !QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) {
             setVisible(false);
@@ -128,7 +128,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
         properties.initFromModel(query);
         comment.setText(getQueryComment(query));
 
-        DataMap map = session().getSelectedDataMap();
+        DataMap map = session.getSelectedDataMap();
         ObjEntity[] roots = map.getObjEntities().toArray(new ObjEntity[0]);
 
         if (roots.length > 1) {
@@ -144,7 +144,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
 
     @Override
     protected QueryDescriptor getQuery() {
-        QueryDescriptor query = session().getSelectedQuery();
+        QueryDescriptor query = session.getSelectedQuery();
         return (query != null && QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) ? query : null;
     }
 
@@ -160,10 +160,10 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
         QueryDescriptor template = getQuery();
         if (template != null) {
             // in case of null entity, set root to DataMap
-            Object root = entity != null ? entity : session().getSelectedDataMap();
+            Object root = entity != null ? entity : session.getSelectedDataMap();
             template.setRoot(root);
 
-            session().fireQueryEvent(QueryEvent.ofChange(this, template));
+            session.fireQueryEvent(QueryEvent.ofChange(this, template));
         }
     }
 
@@ -172,12 +172,12 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
         if (query == null) {
             return;
         }
-        ObjectInfo.putToMetaData(app().getMetaData(), query, ObjectInfo.COMMENT, text);
-        session().fireQueryEvent(QueryEvent.ofChange(this, query));
+        ObjectInfo.putToMetaData(app.getMetaData(), query, ObjectInfo.COMMENT, text);
+        session.fireQueryEvent(QueryEvent.ofChange(this, query));
     }
 
     private String getQueryComment(QueryDescriptor queryDescriptor) {
-        return ObjectInfo.getFromMetaData(app().getMetaData(), queryDescriptor, ObjectInfo.COMMENT);
+        return ObjectInfo.getFromMetaData(app.getMetaData(), queryDescriptor, ObjectInfo.COMMENT);
     }
 
     final class LabelCapsRenderer extends DefaultListCellRenderer {
@@ -203,7 +203,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
 
         @Override
         protected PanelBuilder createPanelBuilder() {
-            labelCase = new CMUndoableComboBox<>(app().getUndoManager());
+            labelCase = new CMUndoableComboBox<>(app.getUndoManager());
             labelCase.setRenderer(new LabelCapsRenderer());
 
             labelCase.addActionListener(event -> {

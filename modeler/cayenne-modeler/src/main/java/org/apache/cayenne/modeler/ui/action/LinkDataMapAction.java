@@ -69,7 +69,7 @@ public class LinkDataMapAction extends ModelerAbstractAction {
             session.fireDataNodeEvent(DataNodeEvent.ofChange(this, node));
         }
 
-        application.getUndoManager().addEdit(
+        app.getUndoManager().addEdit(
                 new LinkDataMapUndoableEdit(session, map, node, unlinkedNodes));
     }
 

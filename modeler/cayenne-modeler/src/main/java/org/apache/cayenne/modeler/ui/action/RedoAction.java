@@ -62,6 +62,6 @@ public class RedoAction extends ModelerAbstractAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        application.getUndoManager().redo();
+        app.getUndoManager().redo();
     }
 }

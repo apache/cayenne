@@ -131,7 +131,7 @@ public class LogConsole extends AppPanel implements LogAppender {
 
         // Bind to the same action as the "Show log console" menu item so the menu's
         // checkbox state and the close button stay unified through Action.SELECTED_KEY.
-        closeItem.setAction(app().getActionManager().getAction(ShowLogConsoleAction.class));
+        closeItem.setAction(app.getActionManager().getAction(ShowLogConsoleAction.class));
         closeItem.setIcon(IconFactory.buildIcon("icon-remove.png"));
         closeItem.setText("Close");
     }
@@ -158,7 +158,7 @@ public class LogConsole extends AppPanel implements LogAppender {
     }
 
     public void toggle() {
-        if (LogConsolePrefs.of(app().getPreferencesRepository()).toggleShowConsole()) {
+        if (LogConsolePrefs.of(app.getPreferencesRepository()).toggleShowConsole()) {
             appear();
         } else {
             disappear();
@@ -166,17 +166,17 @@ public class LogConsole extends AppPanel implements LogAppender {
     }
 
     public void showConsoleIfNeeded() {
-        if (LogConsolePrefs.of(app().getPreferencesRepository()).isShowConsole()) {
+        if (LogConsolePrefs.of(app.getPreferencesRepository()).isShowConsole()) {
             appear();
         }
     }
 
     private void appear() {
-        app().getFrame().setDockComponent(this);
+        app.getFrame().setDockComponent(this);
     }
 
     private void disappear() {
-        app().getFrame().setDockComponent(null);
+        app.getFrame().setDockComponent(null);
     }
 
     @Override

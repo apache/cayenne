@@ -45,7 +45,7 @@ public class DataDomainCgenTab extends DataDomainGeneratorsTab<CgenConfiguration
 
     @Override
     public void runGenerators(Set<DataMap> dataMaps) {
-        DataChannelMetaData metaData = session.app().getMetaData();
+        DataChannelMetaData metaData = app.getMetaData();
         if (dataMaps.isEmpty()) {
             showEmptyMessage();
             return;
@@ -87,8 +87,8 @@ public class DataDomainCgenTab extends DataDomainGeneratorsTab<CgenConfiguration
     public CgenConfiguration createConfiguration(DataMap dataMap) {
         CgenConfiguration cgenConfiguration = new CgenConfiguration();
         cgenConfiguration.setDataMap(dataMap);
-        cgenConfiguration.updateOutputPath(CgenOps.baseDir(session.app()));
-        cgenConfiguration.setEncoding(GeneralPrefs.of(session.app().getPreferencesRepository()).getEncoding());
+        cgenConfiguration.updateOutputPath(CgenOps.baseDir(session));
+        cgenConfiguration.setEncoding(GeneralPrefs.of(app.getPreferencesRepository()).getEncoding());
 
         cgenConfiguration.resolveExcludedEntities();
         cgenConfiguration.resolveExcludedEmbeddables();

@@ -54,8 +54,8 @@ public class CutAction extends ModelerAbstractAction {
      */
     @Override
     public void performAction(ActionEvent e) {
-        application.getActionManager().getAction(CopyAction.class).performAction(e);
-        application.getActionManager().getAction(RemoveAction.class).performAction(
+        app.getActionManager().getAction(CopyAction.class).performAction(e);
+        app.getActionManager().getAction(RemoveAction.class).performAction(
                 e,
                 false);
     }
@@ -65,7 +65,7 @@ public class CutAction extends ModelerAbstractAction {
      */
     @Override
     public boolean enableForPath(ConfigurationNode object) {
-        return application.getActionManager().getAction(CopyAction.class).enableForPath(
+        return app.getActionManager().getAction(CopyAction.class).enableForPath(
                 object);
     }
 }

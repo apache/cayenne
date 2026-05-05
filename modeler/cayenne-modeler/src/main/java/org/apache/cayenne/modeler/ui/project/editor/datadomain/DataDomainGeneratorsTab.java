@@ -24,19 +24,15 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.modeler.event.model.DataMapListener;
-import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
-import org.apache.cayenne.modeler.toolkit.AppPanel;
 import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.project.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.util.Collection;
 import java.util.HashSet;
@@ -53,11 +49,9 @@ import java.util.concurrent.ConcurrentMap;
  * lived in two parallel hierarchies. Subclasses implement {@link #runGenerators(Set)} and
  * {@link #showConfig(DataMap)}.
  */
-public abstract class DataDomainGeneratorsTab<T> extends AppPanel implements DataMapListener {
+public abstract class DataDomainGeneratorsTab<T> extends ProjectPanel implements DataMapListener {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(DataDomainGeneratorsTab.class);
-
-    protected final ProjectSession session;
 
     private final ConcurrentMap<DataMap, DataDomainGeneratorsPanel> generatorsPanels;
     private final Set<DataMap> selectedDataMaps;
@@ -65,11 +59,14 @@ public abstract class DataDomainGeneratorsTab<T> extends AppPanel implements Dat
     private final boolean selectAllByDefault;
     private final TopGeneratorPanel generationPanel;
 
-    protected DataDomainGeneratorsTab(ProjectSession session, Class<T> type, boolean selectAllByDefault,
-                                      String icon, String runTooltip) {
-        super(session.app());
+    protected DataDomainGeneratorsTab(
+            ProjectSession session,
+            Class<T> type, boolean selectAllByDefault,
+            String icon,
+            String runTooltip) {
 
-        this.session = session;
+        super(session);
+
         this.type = type;
         this.selectAllByDefault = selectAllByDefault;
         this.generatorsPanels = new ConcurrentHashMap<>();
@@ -118,7 +115,7 @@ public abstract class DataDomainGeneratorsTab<T> extends AppPanel implements Dat
         generatorsPanels.clear();
         for (DataMap dataMap : dataMaps) {
             DataDomainGeneratorsPanel generatorPanel = new DataDomainGeneratorsPanel(
-                    session.app(), dataMap, "icon-datamap.png", type);
+                    app, dataMap, "icon-datamap.png", type);
             initListenersForPanel(generatorPanel);
             generatorsPanels.put(dataMap, generatorPanel);
         }
@@ -188,7 +185,7 @@ public abstract class DataDomainGeneratorsTab<T> extends AppPanel implements Dat
     @Override
     public void dataMapAdded(DataMapEvent e) {
         DataDomainGeneratorsPanel generatorPanel = new DataDomainGeneratorsPanel(
-                session.app(), e.getDataMap(), "icon-datamap.png", type);
+                app, e.getDataMap(), "icon-datamap.png", type);
         initListenersForPanel(generatorPanel);
         generatorsPanels.put(e.getDataMap(), generatorPanel);
         if (generationPanel.selectAll.isSelected()) {

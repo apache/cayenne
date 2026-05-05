@@ -69,8 +69,8 @@ public class ObjEntitySyncAction extends ModelerAbstractAction {
 
         if (entity != null && entity.getDbEntity() != null) {
             EntityMergeSupport merger = new EntitySyncDialog(
-                    application,
-                    application.getFrame(),
+                    app,
+                    app.getFrame(),
                     entity).createMerger();
 
             if (merger == null) {

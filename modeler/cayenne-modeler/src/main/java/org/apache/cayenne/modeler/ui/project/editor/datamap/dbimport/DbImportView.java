@@ -71,7 +71,7 @@ public class DbImportView extends ProjectPanel {
         reverseEngineeringTree.setModel(model);
         reverseEngineeringTree.setShowsRootHandles(true);
 
-        DbImportActions actions = new DbImportActions(app(), this, reverseEngineeringTree, draggableTree);
+        DbImportActions actions = new DbImportActions(app, this, reverseEngineeringTree, draggableTree);
         this.sourceTargetPanel = new SourceTargetPanel(draggableTree, reverseEngineeringTree, actions);
         draggableTree.setLoadDbSchemaAction(actions.getLoadDbSchemaAction());
         this.treeToolbar = new TreeToolbarPanel(reverseEngineeringTree, actions);
@@ -156,7 +156,7 @@ public class DbImportView extends ProjectPanel {
     }
 
     private void initBindings() {
-        session().addDataMapDisplayListener(e -> {
+        session.addDataMapDisplayListener(e -> {
             DataMap map = e.getDataMap();
             if (map != null) {
                 initFromModel(map);
@@ -187,12 +187,12 @@ public class DbImportView extends ProjectPanel {
         if (map != null) {
             initFromModel = true;
             treeToolbar.unlockButtons();
-            ReverseEngineering reverseEngineering = DbImportView.this.app()
+            ReverseEngineering reverseEngineering = DbImportView.this.app
                     .getMetaData().get(map, ReverseEngineering.class);
             if (reverseEngineering == null) {
                 // create config with default values
                 reverseEngineering = new ReverseEngineering();
-                DbImportView.this.app().getMetaData().add(map, reverseEngineering);
+                DbImportView.this.app.getMetaData().add(map, reverseEngineering);
             }
             configPanel.fillCheckboxes(reverseEngineering);
             configPanel.initializeTextFields(reverseEngineering);
@@ -207,7 +207,7 @@ public class DbImportView extends ProjectPanel {
             treePanel.updateTree();
             DbImportTreeNode root = sourceTargetPanel.getSourceTree().getRootNode();
             root.removeAllChildren();
-            sourceTargetPanel.updateTree(session().getSelectedDataMap());
+            sourceTargetPanel.updateTree(session.getSelectedDataMap());
             sourceTargetPanel.getMoveButton().setEnabled(false);
             sourceTargetPanel.getMoveInvertButton().setEnabled(false);
         }

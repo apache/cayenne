@@ -48,7 +48,7 @@ public class SchemaUpdateDialog extends DefaultsUpdateDialog {
             if (doAll || Util.isEmptyString(entity.getSchema())) {
                 if (!Util.nullSafeEquals(defaultSchema, entity.getSchema())) {
                     entity.setSchema(defaultSchema);
-                    session().fireDbEntityEvent(DbEntityEvent.ofChange(this, entity));
+                    session.fireDbEntityEvent(DbEntityEvent.ofChange(this, entity));
                 }
             }
         }
@@ -57,7 +57,7 @@ public class SchemaUpdateDialog extends DefaultsUpdateDialog {
             if (doAll || Util.isEmptyString(procedure.getSchema())) {
                 if (!Util.nullSafeEquals(defaultSchema, procedure.getSchema())) {
                     procedure.setSchema(defaultSchema);
-                    session().fireProcedureEvent(ProcedureEvent.ofChange(this, procedure));
+                    session.fireProcedureEvent(ProcedureEvent.ofChange(this, procedure));
                 }
             }
         }

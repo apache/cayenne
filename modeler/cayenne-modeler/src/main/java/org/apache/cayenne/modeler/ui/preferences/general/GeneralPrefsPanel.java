@@ -70,7 +70,7 @@ public class GeneralPrefsPanel extends AppPanel {
     }
 
     public void commit() {
-        GeneralPrefs prefs = GeneralPrefs.of(app().getPreferencesRepository());
+        GeneralPrefs prefs = GeneralPrefs.of(app.getPreferencesRepository());
         prefs.setEncoding(selectedEncoding());
         prefs.setAutoLoadProject(autoLoadProject.isSelected());
         prefs.setNoDeletePrompt(noDeletePrompt.isSelected());

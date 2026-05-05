@@ -60,14 +60,14 @@ public class SaveAsImageAction extends ModelerAbstractAction {
 		JFileChooser chooser = new JFileChooser();
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-		CMFileChooserPrefs.of(application.getPreferencesRepository(), "saveAsImage/lastDir").bind(chooser);
+		CMFileChooserPrefs.of(app.getPreferencesRepository(), "saveAsImage/lastDir").bind(chooser);
 
 		chooser.setAcceptAllFileFilterUsed(false);
 
 		String ext = "png";
 		chooser.addChoosableFileFilter(FileFilters.getExtensionFileFilter(ext, "PNG Images"));
 
-		int status = chooser.showSaveDialog(application.getFrame());
+		int status = chooser.showSaveDialog(app.getFrame());
 		if (status == JFileChooser.APPROVE_OPTION) {
 			String path = chooser.getSelectedFile().getPath();
 			if (!path.endsWith("." + ext)) {
@@ -97,7 +97,7 @@ public class SaveAsImageAction extends ModelerAbstractAction {
 
 			} catch (IOException ex) {
 				LOGGER.error("Could not save image", ex);
-				JOptionPane.showMessageDialog(application.getFrame(), "Could not save image.", "Error saving image",
+				JOptionPane.showMessageDialog(app.getFrame(), "Could not save image.", "Error saving image",
 						JOptionPane.ERROR_MESSAGE);
 			}
 		}

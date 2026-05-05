@@ -71,11 +71,11 @@ public class DbEntityPropertiesView extends ProjectPanel implements DbEntityDisp
 
         splitPane.setOneTouchExpandable(true);
         splitPane.setResizeWeight(0.5);
-        CMSplitPanePrefs.of(app().getPreferencesRepository(), "dbEntity/splitPane").bind(splitPane, -1);
+        CMSplitPanePrefs.of(app.getPreferencesRepository(), "dbEntity/splitPane").bind(splitPane, -1);
         add(splitPane);
 
         toolBar.setFloatable(false);
-        GlobalActions globalActions = app().getActionManager();
+        GlobalActions globalActions = app.getActionManager();
 
         toolBar.add(globalActions.getAction(CreateAttributeAction.class).buildButton(1));
         toolBar.add(globalActions.getAction(CreateRelationshipAction.class).buildButton(3));
@@ -103,11 +103,11 @@ public class DbEntityPropertiesView extends ProjectPanel implements DbEntityDisp
     }
 
     private void initBindings() {
-        session().addDbEntityDisplayListener(this);
+        session.addDbEntityDisplayListener(this);
     }
 
     public void updateActions(Object[] params) {
-        GlobalActions actions = app().getActionManager();
+        GlobalActions actions = app.getActionManager();
         actions.getAction(RemoveAttributeRelationshipAction.class).updateForSelection(params.length);
         actions.getAction(CutAttributeRelationshipAction.class).updateForSelection(params.length);
         actions.getAction(CopyAttributeRelationshipAction.class).updateForSelection(params.length);

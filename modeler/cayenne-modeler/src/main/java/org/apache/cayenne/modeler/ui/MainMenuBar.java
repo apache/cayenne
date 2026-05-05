@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.ui;
 
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.model.RecentFileListListener;
 import org.apache.cayenne.modeler.pref.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
@@ -34,11 +35,11 @@ import java.util.List;
 class MainMenuBar extends JMenuBar {
 
     private final List<RecentFileListListener> recentFileListeners;
-    private final GlobalActions globalActions;
+    private final Application app;
 
-    MainMenuBar(GlobalActions globalActions) {
+    MainMenuBar(Application app) {
         this.recentFileListeners = new ArrayList<>();
-        this.globalActions = globalActions;
+        this.app = app;
         initLayout();
     }
 
@@ -57,65 +58,67 @@ class MainMenuBar extends JMenuBar {
         toolMenu.setMnemonic(KeyEvent.VK_T);
         helpMenu.setMnemonic(KeyEvent.VK_H);
 
-        fileMenu.add(globalActions.getAction(NewProjectAction.class).buildMenu());
-        fileMenu.add(globalActions.getAction(OpenProjectAction.class).buildMenu());
-        fileMenu.add(globalActions.getAction(ProjectAction.class).buildMenu());
-        fileMenu.add(globalActions.getAction(ImportDataMapAction.class).buildMenu());
+        GlobalActions actions = app.getActionManager();
+
+        fileMenu.add(actions.getAction(NewProjectAction.class).buildMenu());
+        fileMenu.add(actions.getAction(OpenProjectAction.class).buildMenu());
+        fileMenu.add(actions.getAction(ProjectAction.class).buildMenu());
+        fileMenu.add(actions.getAction(ImportDataMapAction.class).buildMenu());
         fileMenu.addSeparator();
-        fileMenu.add(globalActions.getAction(SaveAction.class).buildMenu());
-        fileMenu.add(globalActions.getAction(SaveAsAction.class).buildMenu());
-        fileMenu.add(globalActions.getAction(RevertAction.class).buildMenu());
+        fileMenu.add(actions.getAction(SaveAction.class).buildMenu());
+        fileMenu.add(actions.getAction(SaveAsAction.class).buildMenu());
+        fileMenu.add(actions.getAction(RevertAction.class).buildMenu());
         fileMenu.addSeparator();
 
-        editMenu.add(globalActions.getAction(UndoAction.class).buildMenu());
-        editMenu.add(globalActions.getAction(RedoAction.class).buildMenu());
-        editMenu.add(globalActions.getAction(CutAction.class).buildMenu());
-        editMenu.add(globalActions.getAction(CopyAction.class).buildMenu());
-        editMenu.add(globalActions.getAction(PasteAction.class).buildMenu());
+        editMenu.add(actions.getAction(UndoAction.class).buildMenu());
+        editMenu.add(actions.getAction(RedoAction.class).buildMenu());
+        editMenu.add(actions.getAction(CutAction.class).buildMenu());
+        editMenu.add(actions.getAction(CopyAction.class).buildMenu());
+        editMenu.add(actions.getAction(PasteAction.class).buildMenu());
 
         RecentFileMenu recentFileMenu = new RecentFileMenu(
                 "Recent Projects",
-                globalActions.getAction(OpenProjectAction.class));
+                actions.getAction(OpenProjectAction.class));
         recentFileListeners.add(recentFileMenu);
         fileMenu.add(recentFileMenu);
 
         fileMenu.addSeparator();
-        fileMenu.add(globalActions.getAction(ExitAction.class).buildMenu());
+        fileMenu.add(actions.getAction(ExitAction.class).buildMenu());
 
-        projectMenu.add(globalActions.getAction(ValidateAction.class).buildMenu());
-        projectMenu.add(globalActions.getAction(ShowValidationConfigAction.class).buildMenu());
+        projectMenu.add(actions.getAction(ValidateAction.class).buildMenu());
+        projectMenu.add(actions.getAction(ShowValidationConfigAction.class).buildMenu());
         projectMenu.addSeparator();
-        projectMenu.add(globalActions.getAction(CreateNodeAction.class).buildMenu());
-        projectMenu.add(globalActions.getAction(CreateDataMapAction.class).buildMenu());
+        projectMenu.add(actions.getAction(CreateNodeAction.class).buildMenu());
+        projectMenu.add(actions.getAction(CreateDataMapAction.class).buildMenu());
 
-        projectMenu.add(globalActions.getAction(CreateObjEntityAction.class).buildMenu());
-        projectMenu.add(globalActions.getAction(CreateEmbeddableAction.class).buildMenu());
-        projectMenu.add(globalActions.getAction(CreateDbEntityAction.class).buildMenu());
+        projectMenu.add(actions.getAction(CreateObjEntityAction.class).buildMenu());
+        projectMenu.add(actions.getAction(CreateEmbeddableAction.class).buildMenu());
+        projectMenu.add(actions.getAction(CreateDbEntityAction.class).buildMenu());
 
-        projectMenu.add(globalActions.getAction(CreateProcedureAction.class).buildMenu());
-        projectMenu.add(globalActions.getAction(CreateQueryAction.class).buildMenu());
+        projectMenu.add(actions.getAction(CreateProcedureAction.class).buildMenu());
+        projectMenu.add(actions.getAction(CreateQueryAction.class).buildMenu());
 
         projectMenu.addSeparator();
-        projectMenu.add(globalActions.getAction(ObjEntitySyncAction.class).buildMenu());
-        projectMenu.add(globalActions.getAction(DbEntitySyncAction.class).buildMenu());
+        projectMenu.add(actions.getAction(ObjEntitySyncAction.class).buildMenu());
+        projectMenu.add(actions.getAction(DbEntitySyncAction.class).buildMenu());
         projectMenu.addSeparator();
-        projectMenu.add(globalActions.getAction(RemoveAction.class).buildMenu());
+        projectMenu.add(actions.getAction(RemoveAction.class).buildMenu());
 
         // The action's Action.SELECTED_KEY drives the checkbox state, so it stays in sync
         // no matter where the toggle originates (menu click, the close button on the
         // docked panel, etc.).
-        viewMenu.add(globalActions.getAction(ShowLogConsoleAction.class).buildCheckBoxMenu());
+        viewMenu.add(actions.getAction(ShowLogConsoleAction.class).buildCheckBoxMenu());
 
-        toolMenu.add(globalActions.getAction(InferRelationshipsAction.class).buildMenu());
-        toolMenu.add(globalActions.getAction(ImportEOModelAction.class).buildMenu());
+        toolMenu.add(actions.getAction(InferRelationshipsAction.class).buildMenu());
+        toolMenu.add(actions.getAction(ImportEOModelAction.class).buildMenu());
         toolMenu.addSeparator();
-        toolMenu.add(globalActions.getAction(GenerateDBAction.class).buildMenu());
-        toolMenu.add(globalActions.getAction(MigrateAction.class).buildMenu());
+        toolMenu.add(actions.getAction(GenerateDBAction.class).buildMenu());
+        toolMenu.add(actions.getAction(MigrateAction.class).buildMenu());
         toolMenu.addSeparator();
-        toolMenu.add(globalActions.getAction(ConfigurePreferencesAction.class).buildMenu());
+        toolMenu.add(actions.getAction(ConfigurePreferencesAction.class).buildMenu());
 
-        helpMenu.add(globalActions.getAction(AboutAction.class).buildMenu());
-        helpMenu.add(globalActions.getAction(DocumentationAction.class).buildMenu());
+        helpMenu.add(actions.getAction(AboutAction.class).buildMenu());
+        helpMenu.add(actions.getAction(DocumentationAction.class).buildMenu());
 
         add(fileMenu);
         add(editMenu);
@@ -135,7 +138,7 @@ class MainMenuBar extends JMenuBar {
         }
     }
 
-    static class RecentFileMenu extends JMenu implements RecentFileListListener {
+    class RecentFileMenu extends JMenu implements RecentFileListListener {
 
         private final OpenProjectAction action;
 
@@ -149,7 +152,7 @@ class MainMenuBar extends JMenuBar {
          */
         public void rebuildFromPreferences() {
 
-            List<File> files = RecentProjectsPrefs.of(action.getApplication().getPreferencesRepository()).getFiles();
+            List<File> files = RecentProjectsPrefs.of(app.getPreferencesRepository()).getFiles();
 
             // read menus
             Component[] comps = getMenuComponents();

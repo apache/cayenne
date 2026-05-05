@@ -55,9 +55,9 @@ public class ReverseEngineeringConfigPanel extends ProjectPanel {
 
         this.dbImportView = dbImportView;
         this.strategyCombo = new CMComboBox<>();
-        this.meaningfulPk = new CMUndoableTextField(session.app().getUndoManager());
-        this.stripFromTableNames = new CMUndoableTextField(session.app().getUndoManager());
-        this.tableTypes = new CMUndoableTextField(session.app().getUndoManager());
+        this.meaningfulPk = new CMUndoableTextField(app.getUndoManager());
+        this.stripFromTableNames = new CMUndoableTextField(app.getUndoManager());
+        this.tableTypes = new CMUndoableTextField(app.getUndoManager());
         this.skipRelationshipsLoading = new JCheckBox();
         this.skipPrimaryKeyLoading = new JCheckBox();
         this.forceDataMapCatalog = new JCheckBox();
@@ -155,7 +155,7 @@ public class ReverseEngineeringConfigPanel extends ProjectPanel {
             checkStrategy(strategy);
             if (!dbImportView.isInitFromModel()) {
                 getReverseEngineeringBySelectedMap().setNamingStrategy(strategy);
-                NameGeneratorPreferences.getInstance().addToLastUsedStrategies(session.app(), strategy);
+                NameGeneratorPreferences.getInstance().addToLastUsedStrategies(app, strategy);
                 session.setDirty(true);
             }
         });
@@ -176,13 +176,13 @@ public class ReverseEngineeringConfigPanel extends ProjectPanel {
 
     ReverseEngineering getReverseEngineeringBySelectedMap() {
         DataMap dataMap = session.getSelectedDataMap();
-        return session.app().getMetaData().get(dataMap, ReverseEngineering.class);
+        return app.getMetaData().get(dataMap, ReverseEngineering.class);
     }
 
     void initStrategy(ReverseEngineering reverseEngineering) {
         Vector<String> arr = NameGeneratorPreferences
                 .getInstance()
-                .getLastUsedStrategies(session.app());
+                .getLastUsedStrategies(app);
         strategyCombo.setModel(new DefaultComboBoxModel<>(arr));
         strategyCombo.setSelectedItem(reverseEngineering.getNamingStrategy());
     }
@@ -207,7 +207,7 @@ public class ReverseEngineeringConfigPanel extends ProjectPanel {
             String[] tableTypesFromReverseEngineering = reverseEngineering.getTableTypes();
             tableTypes.setText(String.join(",", tableTypesFromReverseEngineering));
             JOptionPane.showMessageDialog(
-                    session.app().getFrame(),
+                    app.getFrame(),
                     "Table types field can't be empty.",
                     "Error setting table types",
                     JOptionPane.ERROR_MESSAGE);

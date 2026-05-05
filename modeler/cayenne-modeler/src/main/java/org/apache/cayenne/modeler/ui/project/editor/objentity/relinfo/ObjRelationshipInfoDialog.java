@@ -161,7 +161,7 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
 
     public ObjRelationshipInfoDialog modifyRelationship(ObjRelationship rel) {
         this.relationship = rel;
-        this.undo = new RelationshipUndoableEdit(session(), rel);
+        this.undo = new RelationshipUndoableEdit(session, rel);
 
         // current limitation is that an ObjRelationship must have source
         // and target entities present, with DbEntities chosen.
@@ -261,7 +261,7 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
         }
         usedForLocking.setSelected(relationship.isUsedForLocking());
         deleteRule.setSelectedItem(DeleteRule.deleteRuleName(relationship.getDeleteRule()));
-        comment.setText(ObjectInfo.getFromMetaData(app().getMetaData(), relationship, ObjectInfo.COMMENT));
+        comment.setText(ObjectInfo.getFromMetaData(app.getMetaData(), relationship, ObjectInfo.COMMENT));
 
         setSemantics();
         // setup path
@@ -340,12 +340,12 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
         if (isCreate) {
             relationship.getSourceEntity().addRelationship(relationship);
             fireObjRelationshipEvent(this);
-            app().getUndoManager().addEdit(new CreateRelationshipUndoableEdit(
-                    session(), relationship.getSourceEntity(), new ObjRelationship[]{relationship}));
+            app.getUndoManager().addEdit(new CreateRelationshipUndoableEdit(
+                    session, relationship.getSourceEntity(), new ObjRelationship[]{relationship}));
         } else {
-            session().fireObjRelationshipEvent(ObjRelationshipEvent.ofChange(this, relationship,
+            session.fireObjRelationshipEvent(ObjRelationshipEvent.ofChange(this, relationship,
                     relationship.getSourceEntity()));
-            app().getUndoManager().addEdit(undo);
+            app.getUndoManager().addEdit(undo);
         }
 
         sourceEntityLabel.setText(relationship.getSourceEntity().getName());
@@ -353,16 +353,16 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
     }
 
     private void fireObjRelationshipEvent(Object src) {
-        session().fireObjRelationshipEvent(ObjRelationshipEvent.ofAdd(src, relationship, relationship.getSourceEntity()));
+        session.fireObjRelationshipEvent(ObjRelationshipEvent.ofAdd(src, relationship, relationship.getSourceEntity()));
 
         ObjRelationshipDisplayEvent rde = new ObjRelationshipDisplayEvent(
                 src,
-                (DataChannelDescriptor) session().project().getRootNode(),
-                session().getSelectedDataMap(),
+                (DataChannelDescriptor) session.project().getRootNode(),
+                session.getSelectedDataMap(),
                 relationship.getSourceEntity(),
                 relationship);
 
-        session().displayObjRelationship(rde);
+        session.displayObjRelationship(rde);
     }
 
     /**
@@ -373,7 +373,7 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
         DbEntity dbEntity = relationship.getSourceEntity().getDbEntity();
 
         DbRelationshipDialog dialog =
-                new DbRelationshipDialog(session(), this).createNewRelationship(dbEntity);
+                new DbRelationshipDialog(session, this).createNewRelationship(dbEntity);
         dialog.startUp();
 
         Optional<DbRelationship> dbRelationship = dialog.getRelationship();
@@ -403,7 +403,7 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
     }
 
     private void setComment() {
-        ObjectInfo.putToMetaData(app().getMetaData(), relationship, ObjectInfo.COMMENT, comment.getText());
+        ObjectInfo.putToMetaData(app.getMetaData(), relationship, ObjectInfo.COMMENT, comment.getText());
     }
 
     private void setSemantics() {

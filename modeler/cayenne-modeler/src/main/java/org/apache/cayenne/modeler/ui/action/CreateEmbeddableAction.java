@@ -72,7 +72,7 @@ public class CreateEmbeddableAction extends ModelerAbstractAction {
         embeddable.setClassName(nameWithPackage);
         createEmbeddable(dataMap, embeddable);
 
-        application.getUndoManager().addEdit(new CreateEmbeddableUndoableEdit(getProjectSession(), dataMap, embeddable));
+        app.getUndoManager().addEdit(new CreateEmbeddableUndoableEdit(getProjectSession(), dataMap, embeddable));
     }
 
     public void createEmbeddable(DataMap dataMap, Embeddable embeddable) {

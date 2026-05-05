@@ -135,7 +135,7 @@ public class DbRelationshipDialog extends ProjectDialog {
     }
 
     public DbRelationshipDialog modifyRelationship(DbRelationship dbRelationship) {
-        this.undo = new RelationshipUndoableEdit(session(), dbRelationship);
+        this.undo = new RelationshipUndoableEdit(session, dbRelationship);
         this.relationship = dbRelationship;
         this.reverseRelationship = relationship.getReverseRelationship();
 
@@ -214,7 +214,7 @@ public class DbRelationshipDialog extends ProjectDialog {
 
     private void initFromModel() {
         TargetComboBoxModel targetComboBoxModel =
-                new TargetComboBoxModel(session().entityResolver().getDbEntities());
+                new TargetComboBoxModel(session.entityResolver().getDbEntities());
         targetEntities.setModel(targetComboBoxModel);
 
         sourceName.setText(relationship.getSourceEntityName());
@@ -232,7 +232,7 @@ public class DbRelationshipDialog extends ProjectDialog {
             enableInfo();
         }
 
-        comment.setText(ObjectInfo.getFromMetaData(app().getMetaData(), relationship, ObjectInfo.COMMENT));
+        comment.setText(ObjectInfo.getFromMetaData(app.getMetaData(), relationship, ObjectInfo.COMMENT));
     }
 
     private void initBindings() {
@@ -241,7 +241,7 @@ public class DbRelationshipDialog extends ProjectDialog {
             if (relationship.getTargetEntityName() == null) {
                 relationship.setTargetEntityName(selectedItem.getName());
             } else if (!relationship.getTargetEntityName().equals(selectedItem.getName())) {
-                if (showWarningDialog(session(), relationship)) {
+                if (showWarningDialog(relationship)) {
                     relationship.removeAllJoins();
                     relationship.setTargetEntityName(selectedItem.getName());
                 } else {
@@ -249,7 +249,7 @@ public class DbRelationshipDialog extends ProjectDialog {
                 }
                 relationship.setToDependentPK(false);
                 toDepPk.setSelected(relationship.isValidForDepPk());
-                session().fireDbRelationshipEvent(DbRelationshipEvent.ofChange(this, relationship, relationship.getSourceEntity()));
+                session.fireDbRelationshipEvent(DbRelationshipEvent.ofChange(this, relationship, relationship.getSourceEntity()));
             }
             enableInfo();
         });
@@ -305,7 +305,7 @@ public class DbRelationshipDialog extends ProjectDialog {
             DbRelationship reverse = relationship.getReverseRelationship();
             if (reverse != null && reverse.isToDependentPK() && isSelected) {
                 boolean setToDepPk = JOptionPane.showConfirmDialog(
-                        app().getFrame(),
+                        app.getFrame(),
                         "Unset reverse relationship's \"To Dep PK\" setting?",
                         "Warning", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION;
                 relationship.setToDependentPK(setToDepPk);
@@ -319,7 +319,7 @@ public class DbRelationshipDialog extends ProjectDialog {
     private void enableInfo() {
         enableOptions(true);
 
-        table.setModel(new DbJoinTableModel(relationship, session(), this, true));
+        table.setModel(new DbJoinTableModel(relationship, session, this, true));
         table.getModel().addTableModelListener(change -> {
             if (change.getLastRow() != Integer.MAX_VALUE) {
                 toDepPk.setEnabled(relationship.isValidForDepPk());
@@ -329,16 +329,16 @@ public class DbRelationshipDialog extends ProjectDialog {
         TableColumn sourceColumn = table.getColumnModel().getColumn(DbJoinTableModel.SOURCE);
         JComboBox<String> sourceCombo = new CMComboBox<>(
                 dbAttributeNames(relationship.getSourceEntity()).stream().sorted().toArray(String[]::new));
-        AutoCompletion.enable(sourceCombo, session()::getSelectedDataMap);
+        AutoCompletion.enable(sourceCombo, session::getSelectedDataMap);
         sourceColumn.setCellEditor(new CMComboBoxCellEditor(sourceCombo));
 
         TableColumn targetColumn = table.getColumnModel().getColumn(DbJoinTableModel.TARGET);
         JComboBox<String> targetCombo = new CMComboBox<>(
                 dbAttributeNames(relationship.getTargetEntity()).stream().sorted().toArray(String[]::new));
-        AutoCompletion.enable(targetCombo, session()::getSelectedDataMap);
+        AutoCompletion.enable(targetCombo, session::getSelectedDataMap);
         targetColumn.setCellEditor(new CMComboBoxCellEditor(targetCombo));
 
-        CMTablePrefs.of(app().getPreferencesRepository(), "dbEntity/dbjoinTable")
+        CMTablePrefs.of(app.getPreferencesRepository(), "dbEntity/dbjoinTable")
                 .bind(table, null, DbJoinTableModel.SOURCE);
     }
 
@@ -369,7 +369,7 @@ public class DbRelationshipDialog extends ProjectDialog {
 
         relationship.setToMany(toMany.isSelected());
 
-        ObjectInfo.putToMetaData(app().getMetaData(), relationship, ObjectInfo.COMMENT, comment.getText());
+        ObjectInfo.putToMetaData(app.getMetaData(), relationship, ObjectInfo.COMMENT, comment.getText());
 
         // If new reverse DbRelationship was created, add it to the target.
         // Don't create reverse with no joins - makes no sense...
@@ -389,7 +389,7 @@ public class DbRelationshipDialog extends ProjectDialog {
 
                 // fire only if the relationship is to the same entity (needed to update entity view)
                 if (relationship.getSourceEntity() == relationship.getTargetEntity()) {
-                    session().fireDbRelationshipEvent(DbRelationshipEvent.ofAdd(
+                    session.fireDbRelationshipEvent(DbRelationshipEvent.ofAdd(
                             this, reverseRelationship, reverseRelationship.getSourceEntity()));
                 }
             } else {
@@ -423,7 +423,7 @@ public class DbRelationshipDialog extends ProjectDialog {
         String oldName = rel.getName();
         rel.setName(sourceEntityName);
 
-        session().fireDbRelationshipEvent(DbRelationshipEvent.ofChange(this, rel, rel.getSourceEntity(), oldName));
+        session.fireDbRelationshipEvent(DbRelationshipEvent.ofChange(this, rel, rel.getSourceEntity(), oldName));
     }
 
     private Collection<DbJoin> getReverseJoins() {
@@ -448,39 +448,39 @@ public class DbRelationshipDialog extends ProjectDialog {
 
     private void fireDbRelationshipEvent(boolean isCreate) {
         if (!isCreate) {
-            session().fireDbRelationshipEvent(
+            session.fireDbRelationshipEvent(
                     DbRelationshipEvent.ofChange(this, relationship, relationship.getSourceEntity()));
-            app().getUndoManager().addEdit(undo);
+            app.getUndoManager().addEdit(undo);
         } else {
             DbEntity dbEntity = relationship.getSourceEntity();
             if (dbEntity.getRelationship(relationship.getName()) == null) {
                 dbEntity.addRelationship(relationship);
             }
 
-            session().fireDbRelationshipEvent(DbRelationshipEvent.ofAdd(this, relationship, dbEntity));
+            session.fireDbRelationshipEvent(DbRelationshipEvent.ofAdd(this, relationship, dbEntity));
 
             DbRelationshipDisplayEvent rde = new DbRelationshipDisplayEvent(
                     this,
-                    (DataChannelDescriptor) session().project().getRootNode(),
-                    session().getSelectedDataMap(),
+                    (DataChannelDescriptor) session.project().getRootNode(),
+                    session.getSelectedDataMap(),
                     dbEntity,
                     relationship);
 
-            session().displayDbRelationship(rde);
-            app().getUndoManager().addEdit(
-                    new CreateRelationshipUndoableEdit(session(), relationship.getSourceEntity(),
+            session.displayDbRelationship(rde);
+            app.getUndoManager().addEdit(
+                    new CreateRelationshipUndoableEdit(session, relationship.getSourceEntity(),
                             new DbRelationship[]{relationship}));
         }
     }
 
-    private static boolean showWarningDialog(ProjectSession session, DbRelationship relationship) {
+    private boolean showWarningDialog(DbRelationship relationship) {
         DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
         Collection<ObjRelationship> objRelationships = DbRelationshipOps.objRelationshipsUsingDbRelationship(domain, relationship);
         Collection<ObjAttribute> objAttributes = DbRelationshipOps.objAttributesUsingDbRelationship(domain, relationship);
 
         if (objAttributes.isEmpty() && objRelationships.isEmpty()) {
             int result = JOptionPane.showConfirmDialog(
-                    session.app().getFrame(),
+                    app.getFrame(),
                     "Changing target entity will reset all joins.",
                     "Warning", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
             return (result == JOptionPane.OK_OPTION);
@@ -512,7 +512,7 @@ public class DbRelationshipDialog extends ProjectDialog {
 
         dialogPanel.add(scrollPane, BorderLayout.SOUTH);
         int result = JOptionPane.showConfirmDialog(
-                session.app().getFrame(),
+                app.getFrame(),
                 dialogPanel,
                 "Warning", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         return result == JOptionPane.OK_OPTION;
@@ -574,7 +574,7 @@ public class DbRelationshipDialog extends ProjectDialog {
                     title = title.substring(0, spacer);
                 }
             }
-            selected = session().entityResolver().getDbEntity(title);
+            selected = session.entityResolver().getDbEntity(title);
         }
 
         @Override

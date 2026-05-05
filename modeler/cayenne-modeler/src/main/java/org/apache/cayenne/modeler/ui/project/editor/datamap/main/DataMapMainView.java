@@ -73,16 +73,16 @@ public class DataMapMainView extends ProjectPanel {
 
     public DataMapMainView(ProjectSession session) {
         super(session);
-        name = new CMUndoableTextField(app().getUndoManager());
+        name = new CMUndoableTextField(app.getUndoManager());
         nodeSelectorLabel = new JLabel("DataNode:");
-        nodeSelector = new CMUndoableComboBox<>(app().getUndoManager());
-        defaultCatalog = new CMUndoableTextField(app().getUndoManager());
-        defaultSchema = new CMUndoableTextField(app().getUndoManager());
-        quoteSQLIdentifiers = new CMCheckBox(app().getUndoManager());
-        comment = new CMUndoableTextField(app().getUndoManager());
-        defaultPackage = new CMUndoableTextField(app().getUndoManager());
-        defaultSuperclass = new CMUndoableTextField(app().getUndoManager());
-        defaultLockType = new CMCheckBox(app().getUndoManager());
+        nodeSelector = new CMUndoableComboBox<>(app.getUndoManager());
+        defaultCatalog = new CMUndoableTextField(app.getUndoManager());
+        defaultSchema = new CMUndoableTextField(app.getUndoManager());
+        quoteSQLIdentifiers = new CMCheckBox(app.getUndoManager());
+        comment = new CMUndoableTextField(app.getUndoManager());
+        defaultPackage = new CMUndoableTextField(app.getUndoManager());
+        defaultSuperclass = new CMUndoableTextField(app.getUndoManager());
+        defaultLockType = new CMCheckBox(app.getUndoManager());
         updateDefaultCatalog = new JButton("Update...");
         updateDefaultSchema = new JButton("Update...");
         updateDefaultPackage = new JButton("Update...");
@@ -138,7 +138,7 @@ public class DataMapMainView extends ProjectPanel {
         updateDefaultPackage.addActionListener(e -> updateDefaultPackage());
         updateDefaultSuperclass.addActionListener(e -> updateDefaultSuperclass());
         updateDefaultLockType.addActionListener(e -> updateDefaultLockType());
-        session().addDataMapDisplayListener(e -> {
+        session.addDataMapDisplayListener(e -> {
             DataMap map = e.getDataMap();
             if (map != null) {
                 initFromModel(map);
@@ -157,7 +157,7 @@ public class DataMapMainView extends ProjectPanel {
 
         // rebuild data node list
 
-        DataNodeDescriptor[] nodes = ((DataChannelDescriptor) session().project().getRootNode())
+        DataNodeDescriptor[] nodes = ((DataChannelDescriptor) session.project().getRootNode())
                 .getNodeDescriptors().toArray(new DataNodeDescriptor[0]);
 
         // add an empty item to the front
@@ -193,7 +193,7 @@ public class DataMapMainView extends ProjectPanel {
     }
 
     void setDefaultLockType(int lockType) {
-        DataMap dataMap = session().getSelectedDataMap();
+        DataMap dataMap = session.getSelectedDataMap();
 
         if (dataMap == null) {
             return;
@@ -205,11 +205,11 @@ public class DataMapMainView extends ProjectPanel {
         }
 
         dataMap.setDefaultLockType(lockType);
-        session().fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
+        session.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
     }
 
     void setQuoteSQLIdentifiers(boolean flag) {
-        DataMap dataMap = session().getSelectedDataMap();
+        DataMap dataMap = session.getSelectedDataMap();
 
         if (dataMap == null) {
             return;
@@ -218,12 +218,12 @@ public class DataMapMainView extends ProjectPanel {
         if (dataMap.isQuotingSQLIdentifiers() != flag) {
             dataMap.setQuotingSQLIdentifiers(flag);
 
-            session().fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
+            session.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
         }
     }
 
     void setDefaultPackage(String newDefaultPackage) {
-        DataMap dataMap = session().getSelectedDataMap();
+        DataMap dataMap = session.getSelectedDataMap();
 
         if (dataMap == null) {
             return;
@@ -241,14 +241,14 @@ public class DataMapMainView extends ProjectPanel {
         dataMap.setDefaultPackage(newDefaultPackage);
 
         // update class generation preferences
-        DataMapPrefs.of(app().getPreferencesRepository(), dataMap)
+        DataMapPrefs.of(app.getPreferencesRepository(), dataMap)
                 .setSuperclassPackage(newDefaultPackage, DataMapPrefs.DEFAULT_SUPERCLASS_PACKAGE_SUFFIX);
 
-        session().fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
+        session.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
     }
 
     void setDefaultCatalog(String newCatalog) {
-        DataMap dataMap = session().getSelectedDataMap();
+        DataMap dataMap = session.getSelectedDataMap();
 
         if (dataMap == null) {
             return;
@@ -264,11 +264,11 @@ public class DataMapMainView extends ProjectPanel {
         }
 
         dataMap.setDefaultCatalog(newCatalog);
-        session().fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
+        session.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
     }
 
     void setDefaultSchema(String newSchema) {
-        DataMap dataMap = session().getSelectedDataMap();
+        DataMap dataMap = session.getSelectedDataMap();
 
         if (dataMap == null) {
             return;
@@ -284,11 +284,11 @@ public class DataMapMainView extends ProjectPanel {
         }
 
         dataMap.setDefaultSchema(newSchema);
-        session().fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
+        session.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
     }
 
     void setDefaultSuperclass(String newSuperclass) {
-        DataMap dataMap = session().getSelectedDataMap();
+        DataMap dataMap = session.getSelectedDataMap();
 
         if (dataMap == null) {
             return;
@@ -304,7 +304,7 @@ public class DataMapMainView extends ProjectPanel {
         }
 
         dataMap.setDefaultSuperclass(newSuperclass);
-        session().fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
+        session.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
     }
 
     void setDataMapName(String newName) {
@@ -312,11 +312,11 @@ public class DataMapMainView extends ProjectPanel {
             throw new ValidationException("Enter name for DataMap");
         }
 
-        DataMap map = session().getSelectedDataMap();
+        DataMap map = session.getSelectedDataMap();
 
         // search for matching map name across domains, as currently they have to be
         // unique globally
-        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) session().project().getRootNode();
+        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) session.project().getRootNode();
 
         DataMap matchingMap = dataChannelDescriptor.getDataMap(newName);
 
@@ -333,7 +333,7 @@ public class DataMapMainView extends ProjectPanel {
         }
         // completely new name, set new name for domain
         DataMapEvent e = DataMapEvent.ofChange(this, map, oldName);
-        DataChannelDescriptor domain = (DataChannelDescriptor) session().project().getRootNode();
+        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
 
         // must fully relink renamed map across node descriptors
         List<DataNodeDescriptor> nodesUsingMap = new ArrayList<>();
@@ -348,78 +348,78 @@ public class DataMapMainView extends ProjectPanel {
             node.getDataMapNames().add(newName);
         }
 
-        session().fireDataMapEvent(e);
+        session.fireDataMapEvent(e);
     }
 
     void setDataNode() {
         DataNodeDescriptor node = (DataNodeDescriptor) nodeSelector.getSelectedItem();
-        DataMap map = session().getSelectedDataMap();
-        LinkDataMapAction action = app().getActionManager().getAction(LinkDataMapAction.class);
+        DataMap map = session.getSelectedDataMap();
+        LinkDataMapAction action = app.getActionManager().getAction(LinkDataMapAction.class);
         action.linkDataMap(map, node);
     }
 
     void updateDefaultCatalog() {
-        DataMap dataMap = session().getSelectedDataMap();
+        DataMap dataMap = session.getSelectedDataMap();
 
         if (dataMap == null) {
             return;
         }
 
         if (!dataMap.getDbEntities().isEmpty() || !dataMap.getProcedures().isEmpty()) {
-            new CatalogUpdateDialog(session(), app().getFrame(), dataMap).open();
+            new CatalogUpdateDialog(session, app.getFrame(), dataMap).open();
         }
     }
 
     void updateDefaultSchema() {
-        DataMap dataMap = session().getSelectedDataMap();
+        DataMap dataMap = session.getSelectedDataMap();
 
         if (dataMap == null) {
             return;
         }
 
         if (!dataMap.getDbEntities().isEmpty() || !dataMap.getProcedures().isEmpty()) {
-            new SchemaUpdateDialog(session(), app().getFrame(), dataMap).open();
+            new SchemaUpdateDialog(session, app.getFrame(), dataMap).open();
         }
     }
 
     void updateDefaultSuperclass() {
-        DataMap dataMap = session().getSelectedDataMap();
+        DataMap dataMap = session.getSelectedDataMap();
 
         if (dataMap == null) {
             return;
         }
 
         if (!dataMap.getObjEntities().isEmpty()) {
-            new SuperclassUpdateDialog(session(), app().getFrame(), dataMap).open();
+            new SuperclassUpdateDialog(session, app.getFrame(), dataMap).open();
         }
     }
 
     void updateDefaultPackage() {
-        DataMap dataMap = session().getSelectedDataMap();
+        DataMap dataMap = session.getSelectedDataMap();
 
         if (dataMap == null) {
             return;
         }
 
         if (!dataMap.getObjEntities().isEmpty() || !dataMap.getEmbeddables().isEmpty()) {
-            new PackageUpdateDialog(session(), app().getFrame(), dataMap).open();
+            new PackageUpdateDialog(session, app.getFrame(), dataMap).open();
         }
     }
 
     void updateDefaultLockType() {
-        DataMap dataMap = session().getSelectedDataMap();
+        DataMap dataMap = session.getSelectedDataMap();
 
         if (dataMap == null) {
             return;
         }
 
         if (!dataMap.getObjEntities().isEmpty()) {
-            new LockingUpdateDialog(session(), app().getFrame(), dataMap).open();
+            new LockingUpdateDialog(session, app.getFrame(), dataMap).open();
         }
     }
 
     void updateComment(String comment) {
-        DataMap dataMap = session().getSelectedDataMap();
+        DataMap dataMap = session.getSelectedDataMap();
         if (dataMap == null) {
             return;
         }
@@ -428,12 +428,12 @@ public class DataMapMainView extends ProjectPanel {
             currentComment = "";
         }
         if (!currentComment.equals(comment)) {
-            ObjectInfo.putToMetaData(app().getMetaData(), dataMap, ObjectInfo.COMMENT, comment);
-            session().fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
+            ObjectInfo.putToMetaData(app.getMetaData(), dataMap, ObjectInfo.COMMENT, comment);
+            session.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
         }
     }
 
     private String getComment(DataMap dataMap) {
-        return ObjectInfo.getFromMetaData(app().getMetaData(), dataMap, ObjectInfo.COMMENT);
+        return ObjectInfo.getFromMetaData(app.getMetaData(), dataMap, ObjectInfo.COMMENT);
     }
 }

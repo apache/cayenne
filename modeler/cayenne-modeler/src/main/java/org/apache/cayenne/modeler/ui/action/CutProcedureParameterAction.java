@@ -62,11 +62,11 @@ public class CutProcedureParameterAction extends CutAction implements MultipleOb
      */
     @Override
     public void performAction(ActionEvent e) {
-        application
+        app
                 .getActionManager()
                 .getAction(CopyProcedureParameterAction.class)
                 .performAction(e);
-        application
+        app
                 .getActionManager()
                 .getAction(RemoveProcedureParameterAction.class)
                 .performAction(e, false);

@@ -36,7 +36,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.modeler.event.model.DataMapListener;
 import org.apache.cayenne.modeler.event.model.EmbeddableEvent;
@@ -46,23 +45,16 @@ import org.apache.cayenne.modeler.event.model.ObjEntityListener;
 import org.apache.cayenne.modeler.event.model.ProjectAfterSaveEvent;
 import org.apache.cayenne.modeler.pref.GeneralPrefs;
 import org.apache.cayenne.modeler.project.CgenOps;
-import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
-import org.apache.cayenne.modeler.toolkit.AppPanel;
 import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportResultDialog;
 import org.apache.cayenne.tools.ToolsInjectorBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.ScrollPaneConstants;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Comparator;
@@ -76,12 +68,11 @@ import java.util.stream.Collectors;
  * the body splits into the per-class artefact selector (left) and the cgen options form (right).
  * Subscribes to project events to keep its model snapshot in sync with mapping edits.
  */
-public class CgenPanel extends AppPanel
+public class CgenPanel extends ProjectPanel
         implements ObjEntityListener, EmbeddableListener, DataMapListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CgenPanel.class);
 
-    private final ProjectSession session;
     private final Set<ConfigurationNode> classes;
     private final SelectionModel selectionModel;
     private final CgenArtefactSelectorPanel classesSelector;
@@ -99,9 +90,8 @@ public class CgenPanel extends AppPanel
 
     private boolean initFromModel;
 
-    public CgenPanel(Application app, ProjectSession session) {
-        super(app);
-        this.session = session;
+    public CgenPanel(ProjectSession session) {
+        super(session);
 
         this.classes = new TreeSet<>(
                 Comparator.comparing((ConfigurationNode o) -> o.acceptVisitor(TYPE_GETTER))
@@ -120,7 +110,7 @@ public class CgenPanel extends AppPanel
         this.removeConfigBtn = new JButton(IconFactory.buildIcon("icon-trash.png"));
         this.removeConfigBtn.setToolTipText("Remove configuration");
 
-        this.cgenConfigPanel = new CgenConfigPanel(app, this);
+        this.cgenConfigPanel = new CgenConfigPanel(session, this);
         this.classesSelector = new CgenArtefactSelectorPanel(this);
 
         initLayout();
@@ -135,28 +125,12 @@ public class CgenPanel extends AppPanel
         });
     }
 
-    JComboBox<String> getConfigurationsComboBox() {
-        return configurationsComboBox;
-    }
-
-    JButton getGenerateButton() {
-        return generateButton;
-    }
-
     public CgenConfiguration getCgenConfiguration() {
         return cgenConfiguration;
     }
 
     public CgenConfigPanel getStandardModeController() {
         return cgenConfigPanel;
-    }
-
-    public ProjectSession getSession() {
-        return session;
-    }
-
-    public Application getApplication() {
-        return app();
     }
 
     public Set<?> getClasses() {
@@ -245,10 +219,10 @@ public class CgenPanel extends AppPanel
         }
 
         DataMap map = session.getSelectedDataMap();
-        CgenConfigList existingConfigurations = app().getMetaData().get(map, CgenConfigList.class);
+        CgenConfigList existingConfigurations = app.getMetaData().get(map, CgenConfigList.class);
         if (existingConfigurations == null) {
             cgenConfigList.add(cgenConfiguration);
-            app().getMetaData().add(map, cgenConfigList);
+            app.getMetaData().add(map, cgenConfigList);
         }
 
         session.setDirty(true);
@@ -339,11 +313,11 @@ public class CgenPanel extends AppPanel
     }
 
     private void initCgenConfigurations(DataMap dataMap) {
-        cgenConfigList = app().getMetaData().get(dataMap, CgenConfigList.class);
+        cgenConfigList = app.getMetaData().get(dataMap, CgenConfigList.class);
         if (cgenConfigList == null) {
             cgenConfigList = new CgenConfigList();
             cgenConfigList.add(createDefaultCgenConfiguration(dataMap));
-            app().getMetaData().add(dataMap, cgenConfigList);
+            app.getMetaData().add(dataMap, cgenConfigList);
         }
     }
 
@@ -381,7 +355,7 @@ public class CgenPanel extends AppPanel
 
     private void generateAction() {
         ClassGenerationAction generator = new ToolsInjectorBuilder()
-                .addModule(binder -> binder.bind(DataChannelMetaData.class).toInstance(app().getMetaData()))
+                .addModule(binder -> binder.bind(DataChannelMetaData.class).toInstance(app.getMetaData()))
                 .create()
                 .getInstance(ClassGenerationActionFactory.class)
                 .createAction(cgenConfiguration);
@@ -406,7 +380,7 @@ public class CgenPanel extends AppPanel
                 configurationsComboBox.getSelectedItem());
         CgenConfiguration configuration = createDefaultCgenConfiguration(session.getSelectedDataMap());
         if (name != null) {
-            if (configuration != null && !cgenConfigList.isExist(name) && !name.isEmpty()) {
+            if (!cgenConfigList.isExist(name) && !name.isEmpty()) {
                 configuration.setName(name);
                 cgenConfigList.add(configuration);
                 configurationsComboBox.addItem(name);
@@ -469,11 +443,11 @@ public class CgenPanel extends AppPanel
         map.getObjEntities().forEach(configuration::loadEntity);
         map.getEmbeddables().forEach(configuration::loadEmbeddable);
         if (map.getLocation() != null) {
-            Path basePath = CgenOps.baseDir(app());
+            Path basePath = CgenOps.baseDir(session);
             configuration.setRootPath(Utils.getRootPathForDataMap(map));
             configuration.updateOutputPath(basePath);
         }
-        configuration.setEncoding(GeneralPrefs.of(app().getPreferencesRepository()).getEncoding());
+        configuration.setEncoding(GeneralPrefs.of(app.getPreferencesRepository()).getEncoding());
         return configuration;
     }
 
@@ -524,7 +498,7 @@ public class CgenPanel extends AppPanel
     @Override
     public void objEntityChanged(ObjEntityEvent e) {
         String oldName = e.getOldName();
-        ObjEntity entity = (ObjEntity) e.getEntity();
+        ObjEntity entity = e.getEntity();
         String newName = entity.getName();
         if (oldName == null || oldName.equals(newName)) {
             return;
@@ -540,12 +514,12 @@ public class CgenPanel extends AppPanel
 
     @Override
     public void objEntityAdded(ObjEntityEvent e) {
-        addEntity(e.getEntity().getDataMap(), (ObjEntity) e.getEntity());
+        addEntity(e.getEntity().getDataMap(), e.getEntity());
     }
 
     @Override
     public void objEntityRemoved(ObjEntityEvent e) {
-        selectionModel.removeFromSelectedEntities((ObjEntity) e.getEntity());
+        selectionModel.removeFromSelectedEntities(e.getEntity());
         if (cgenConfiguration != null) {
             cgenConfiguration.getEntities().remove(e.getEntity().getName());
         }

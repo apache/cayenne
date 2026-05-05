@@ -194,7 +194,7 @@ public class DBConnectorPrefsPanel extends AppPanel {
     }
 
     private void addConnectorClicked() {
-        DBConnectorCreatorDialog creator = new DBConnectorCreatorDialog(app(), SwingUtilities.getWindowAncestor(this), this);
+        DBConnectorCreatorDialog creator = new DBConnectorCreatorDialog(app, SwingUtilities.getWindowAncestor(this), this);
         DBConnector connector = creator.startupAction();
 
         if (connector != null) {
@@ -211,7 +211,7 @@ public class DBConnectorPrefsPanel extends AppPanel {
             return;
         }
         DBConnectorDuplicatorDialog duplicator = new DBConnectorDuplicatorDialog(
-                app(), SwingUtilities.getWindowAncestor(this), this, prototypeKey);
+                app, SwingUtilities.getWindowAncestor(this), this, prototypeKey);
         DBConnector connector = duplicator.startupAction();
 
         if (connector != null) {

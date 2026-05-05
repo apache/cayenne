@@ -63,7 +63,7 @@ public class EjbqlQueryScriptsTab extends ProjectPanel implements DocumentListen
 
     private void initView() {
 
-        scriptArea = new CMUndoableTextPane(app().getUndoManager(), new EjbqlSyntax());
+        scriptArea = new CMUndoableTextPane(app.getUndoManager(), new EjbqlSyntax());
         scriptArea.getDocument().addDocumentListener(this);
         scriptArea.getDocument().addDocumentListener(new DocumentListener() {
 
@@ -138,7 +138,7 @@ public class EjbqlQueryScriptsTab extends ProjectPanel implements DocumentListen
     }
 
     public void initFromModel() {
-        QueryDescriptor query = session().getSelectedQuery();
+        QueryDescriptor query = session.getSelectedQuery();
 
         if (query == null || !QueryDescriptor.EJBQL_QUERY.equals(query.getType())) {
             setVisible(false);
@@ -151,7 +151,7 @@ public class EjbqlQueryScriptsTab extends ProjectPanel implements DocumentListen
     }
 
     EJBQLQueryDescriptor getQuery() {
-        QueryDescriptor query = session().getSelectedQuery();
+        QueryDescriptor query = session.getSelectedQuery();
         return (query != null && QueryDescriptor.EJBQL_QUERY.equals(query.getType())) ?
                 (EJBQLQueryDescriptor) query : null;
     }
@@ -179,7 +179,7 @@ public class EjbqlQueryScriptsTab extends ProjectPanel implements DocumentListen
         // will call "verify" even if no changes have occured....
         if (!Util.nullSafeEquals(text, query.getEjbql())) {
             query.setEjbql(text);
-            session().fireQueryEvent(QueryEvent.ofChange(this, query));
+            session.fireQueryEvent(QueryEvent.ofChange(this, query));
         }
 
     }

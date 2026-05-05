@@ -103,8 +103,8 @@ public class TableSelectorPanel extends AppPanel {
         excludedTables.clear();
         validationMessages.clear();
 
-        Project project = app().getFrame().getProjectSession().project();
-        ProjectValidator projectValidator = app().getProjectValidator();
+        Project project = app.getFrame().getProjectSession().project();
+        ProjectValidator projectValidator = app.getProjectValidator();
         ValidationResult validationResult = projectValidator.validate(project.getRootNode());
 
         for (ValidationFailure problem : validationResult.getFailures()) {

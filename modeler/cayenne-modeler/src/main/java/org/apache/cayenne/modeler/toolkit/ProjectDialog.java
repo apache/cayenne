@@ -31,14 +31,10 @@ import java.awt.Window;
  */
 public abstract class ProjectDialog extends AppDialog {
 
-    private final ProjectSession session;
+    protected final ProjectSession session;
 
     protected ProjectDialog(ProjectSession session, Window owner, String title, ModalityType modality) {
         super(session.app(), owner, title, modality);
         this.session = session;
-    }
-
-    protected ProjectSession session() {
-        return session;
     }
 }

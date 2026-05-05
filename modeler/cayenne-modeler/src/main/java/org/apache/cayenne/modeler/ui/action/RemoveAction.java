@@ -104,7 +104,7 @@ public class RemoveAction extends ModelerAbstractAction {
      * @param allowAsking If false, no question will be asked no matter what settings are
      */
     public ConfirmRemoveDialog getConfirmDeleteDialog(boolean allowAsking) {
-        return new ConfirmRemoveDialog(application, allowAsking);
+        return new ConfirmRemoveDialog(app, allowAsking);
     }
 
     @Override
@@ -125,35 +125,35 @@ public class RemoveAction extends ModelerAbstractAction {
         if (session.getSelectedObjEntity() != null) {
             if (dialog.shouldDelete("ObjEntity", session.getSelectedObjEntity().getName())) {
 
-                application.getUndoManager()
+                app.getUndoManager()
                         .addEdit(new RemoveUndoableEdit(session, session.getSelectedDataMap(), session.getSelectedObjEntity()));
                 removeObjEntity(session.getSelectedDataMap(), session.getSelectedObjEntity());
             }
         } else if (session.getSelectedDbEntity() != null) {
             if (dialog.shouldDelete("DbEntity", session.getSelectedDbEntity().getName())) {
 
-                application.getUndoManager()
+                app.getUndoManager()
                         .addEdit(new RemoveUndoableEdit(session, session.getSelectedDataMap(), session.getSelectedDbEntity()));
                 removeDbEntity(session.getSelectedDataMap(), session.getSelectedDbEntity());
             }
         } else if (session.getSelectedQuery() != null) {
             if (dialog.shouldDelete("query", session.getSelectedQuery().getName())) {
 
-                application.getUndoManager()
+                app.getUndoManager()
                         .addEdit(new RemoveUndoableEdit(session, session.getSelectedDataMap(), session.getSelectedQuery()));
                 removeQuery(session.getSelectedDataMap(), session.getSelectedQuery());
             }
         } else if (session.getSelectedProcedure() != null) {
             if (dialog.shouldDelete("procedure", session.getSelectedProcedure().getName())) {
 
-                application.getUndoManager()
+                app.getUndoManager()
                         .addEdit(new RemoveUndoableEdit(session, session.getSelectedDataMap(), session.getSelectedProcedure()));
                 removeProcedure(session.getSelectedDataMap(), session.getSelectedProcedure());
             }
         } else if (session.getSelectedEmbeddable() != null) {
             if (dialog.shouldDelete("embeddable", session.getSelectedEmbeddable().getClassName())) {
 
-                application.getUndoManager()
+                app.getUndoManager()
                         .addEdit(new RemoveUndoableEdit(session, session.getSelectedDataMap(), session.getSelectedEmbeddable()));
                 removeEmbeddable(session.getSelectedDataMap(), session.getSelectedEmbeddable());
             }
@@ -162,13 +162,13 @@ public class RemoveAction extends ModelerAbstractAction {
 
                 // In context of Data node just remove from Data Node
                 if (session.getSelectedDataNode() != null) {
-                    application.getUndoManager()
+                    app.getUndoManager()
                             .addEdit(new RemoveUndoableEdit(session, session.getSelectedDataNode(),
                                     session.getSelectedDataMap()));
                     removeDataMapFromDataNode(session.getSelectedDataNode(), session.getSelectedDataMap());
                 } else {
                     // Not under Data Node, remove completely
-                    application.getUndoManager()
+                    app.getUndoManager()
                             .addEdit(new RemoveUndoableEdit(session, session.getSelectedDataMap()));
                     removeDataMap(session.getSelectedDataMap());
                 }
@@ -176,7 +176,7 @@ public class RemoveAction extends ModelerAbstractAction {
         } else if (session.getSelectedDataNode() != null) {
             if (dialog.shouldDelete("data node", session.getSelectedDataNode().getName())) {
 
-                application.getUndoManager()
+                app.getUndoManager()
                         .addEdit(new RemoveUndoableEdit(session, session.getSelectedDataNode()));
                 removeDataNode(session.getSelectedDataNode());
             }
@@ -192,7 +192,7 @@ public class RemoveAction extends ModelerAbstractAction {
                 }
                 compoundEdit.end();
 
-                application.getUndoManager().addEdit(compoundEdit);
+                app.getUndoManager().addEdit(compoundEdit);
             }
         } else if(session.getSelectedCallbackMethods().length > 0) {
             removeMethods(session, dialog, getProjectSession().getSelectedCallbackMethods());
@@ -216,7 +216,7 @@ public class RemoveAction extends ModelerAbstractAction {
         ProjectSession session = getProjectSession();
         for (ProcedureParameter parameter : parameters) {
             procedure.removeCallParameter(parameter.getName());
-            ProcedureParameterEvent e = ProcedureParameterEvent.ofRemove(application.getFrame(), parameter);
+            ProcedureParameterEvent e = ProcedureParameterEvent.ofRemove(app.getFrame(), parameter);
             session.fireProcedureParameterEvent(e);
         }
     }
@@ -228,12 +228,12 @@ public class RemoveAction extends ModelerAbstractAction {
 
         		Embeddable embeddable = session.getSelectedEmbeddable();
 
-                application.getUndoManager()
+                app.getUndoManager()
                         .addEdit(new RemoveAttributeUndoableEdit(session,embeddable, embAttrs));
 
                 for (EmbeddableAttribute attrib : embAttrs) {
                     embeddable.removeAttribute(attrib.getName());
-                    EmbeddableAttributeEvent e = EmbeddableAttributeEvent.ofRemove(application.getFrame(),
+                    EmbeddableAttributeEvent e = EmbeddableAttributeEvent.ofRemove(app.getFrame(),
                             attrib, embeddable);
                     session.fireEmbeddableAttributeEvent(e);
                 }
@@ -250,11 +250,11 @@ public class RemoveAction extends ModelerAbstractAction {
 
         		ObjEntity entity = session.getSelectedObjEntity();
 
-                application.getUndoManager().addEdit(new RemoveAttributeUndoableEdit(session,entity, objAttrs));
+                app.getUndoManager().addEdit(new RemoveAttributeUndoableEdit(session,entity, objAttrs));
 
                 for (ObjAttribute attrib : objAttrs) {
                     entity.removeAttribute(attrib.getName());
-                    ObjAttributeEvent e = ObjAttributeEvent.ofRemove(application.getFrame(), attrib, entity);
+                    ObjAttributeEvent e = ObjAttributeEvent.ofRemove(app.getFrame(), attrib, entity);
                     session.fireObjAttributeEvent(e);
                 }
 
@@ -270,12 +270,12 @@ public class RemoveAction extends ModelerAbstractAction {
 
         		DbEntity entity = session.getSelectedDbEntity();
 
-                application.getUndoManager()
+                app.getUndoManager()
                         .addEdit(new RemoveAttributeUndoableEdit(session,entity, dbAttrs));
 
                 for (DbAttribute attrib : dbAttrs) {
                     entity.removeAttribute(attrib.getName());
-                DbAttributeEvent e = DbAttributeEvent.ofRemove(application.getFrame(), attrib, entity);
+                DbAttributeEvent e = DbAttributeEvent.ofRemove(app.getFrame(), attrib, entity);
                     session.fireDbAttributeEvent(e);
                 }
 
@@ -292,12 +292,12 @@ public class RemoveAction extends ModelerAbstractAction {
 				
 				for (DbRelationship rel : dbRels) {
 					entity.removeRelationship(rel.getName());
-					DbRelationshipEvent e = DbRelationshipEvent.ofRemove(application.getFrame(), rel, entity);
+					DbRelationshipEvent e = DbRelationshipEvent.ofRemove(app.getFrame(), rel, entity);
 					session.fireDbRelationshipEvent(e);
 				}
 
                 DataMapOps.removeBrokenObjToDbMappings(session.getSelectedDataMap());
-				application.getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(session,entity, dbRels));
+				app.getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(session,entity, dbRels));
 			}
 		}
 	}
@@ -308,10 +308,10 @@ public class RemoveAction extends ModelerAbstractAction {
 			ObjEntity entity = session.getSelectedObjEntity();
 			for (ObjRelationship rel : rels) {
 				entity.removeRelationship(rel.getName());
-ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(application.getFrame(), rel, entity);
+ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(app.getFrame(), rel, entity);
 				session.fireObjRelationshipEvent(e);
 			}
-			application.getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(session,entity, rels));
+			app.getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(session,entity, rels));
 		}		
 	}
 
@@ -329,14 +329,14 @@ ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(application.getFrame(), r
                 session.fireCallbackMethodEvent(ce);
             }
             
-            application.getUndoManager().addEdit(new RemoveCallbackMethodUndoableEdit(getProjectSession(), callbackType, methods));
+            app.getUndoManager().addEdit(new RemoveCallbackMethodUndoableEdit(getProjectSession(), callbackType, methods));
         }		
 	}
 
 	public void removeDataMap(DataMap map) {
         ProjectSession session = getProjectSession();
         DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
-        DataMapEvent e = DataMapEvent.ofRemove(application.getFrame(), map);
+        DataMapEvent e = DataMapEvent.ofRemove(app.getFrame(), map);
 
         domain.getDataMaps().remove(map);
         if (map.getConfigurationSource() != null) {
@@ -357,7 +357,7 @@ ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(application.getFrame(), r
     public void removeDataNode(DataNodeDescriptor node) {
         ProjectSession session = getProjectSession();
         DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
-        DataNodeEvent e = DataNodeEvent.ofRemove(application.getFrame(), node);
+        DataNodeEvent e = DataNodeEvent.ofRemove(app.getFrame(), node);
 
         domain.getNodeDescriptors().remove(node);
         session.fireDataNodeEvent(e);
@@ -369,7 +369,7 @@ ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(application.getFrame(), r
     public void removeDbEntity(DataMap map, DbEntity ent) {
         ProjectSession session = getProjectSession();
 
-        DbEntityEvent e = DbEntityEvent.ofRemove(application.getFrame(), ent);
+        DbEntityEvent e = DbEntityEvent.ofRemove(app.getFrame(), ent);
 
         map.removeDbEntity(ent.getName(), true);
         session.fireDbEntityEvent(e);
@@ -381,7 +381,7 @@ ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(application.getFrame(), r
     public void removeQuery(DataMap map, QueryDescriptor query) {
         ProjectSession session = getProjectSession();
 
-        QueryEvent e = QueryEvent.ofRemove(application.getFrame(), query, map);
+        QueryEvent e = QueryEvent.ofRemove(app.getFrame(), query, map);
 
         map.removeQueryDescriptor(query.getName());
         session.fireQueryEvent(e);
@@ -393,7 +393,7 @@ ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(application.getFrame(), r
     public void removeProcedure(DataMap map, Procedure procedure) {
         ProjectSession session = getProjectSession();
 
-        ProcedureEvent e = ProcedureEvent.ofRemove(application.getFrame(), procedure);
+        ProcedureEvent e = ProcedureEvent.ofRemove(app.getFrame(), procedure);
 
         map.removeProcedure(procedure.getName());
         session.fireProcedureEvent(e);
@@ -405,7 +405,7 @@ ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(application.getFrame(), r
     public void removeObjEntity(DataMap map, ObjEntity entity) {
         ProjectSession session = getProjectSession();
 
-    ObjEntityEvent e = ObjEntityEvent.ofRemove(application.getFrame(), entity);
+    ObjEntityEvent e = ObjEntityEvent.ofRemove(app.getFrame(), entity);
 
         map.removeObjEntity(entity.getName(), true);
         session.fireObjEntityEvent(e);
@@ -428,7 +428,7 @@ ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(application.getFrame(), r
     public void removeEmbeddable(DataMap map, Embeddable embeddable) {
         ProjectSession session = getProjectSession();
 
-        EmbeddableEvent e = EmbeddableEvent.ofRemove(application.getFrame(), embeddable);
+        EmbeddableEvent e = EmbeddableEvent.ofRemove(app.getFrame(), embeddable);
 
         map.removeEmbeddable(embeddable.getClassName());
         session.fireEmbeddableEvent(e, map);
@@ -437,7 +437,7 @@ ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(application.getFrame(), r
     public void removeDataMapFromDataNode(DataNodeDescriptor node, DataMap map) {
         ProjectSession session = getProjectSession();
 
-        DataNodeEvent e = DataNodeEvent.ofChange(application.getFrame(), node);
+        DataNodeEvent e = DataNodeEvent.ofChange(app.getFrame(), node);
 
         node.getDataMapNames().remove(map.getName());
 

@@ -150,7 +150,7 @@ public class JDBCDataSourcePanel extends DataSourcePanel {
     }
 
     private void syncDataSourceAction() {
-        MainFrame mainController = app().getFrame();
+        MainFrame frame = app.getFrame();
 
         if (getNode() == null || getNode().getDataSourceDescriptor() == null) {
             return;
@@ -159,28 +159,26 @@ public class JDBCDataSourcePanel extends DataSourcePanel {
         DataSourceDescriptor projectDataSourceDescriptor = getNode().getDataSourceDescriptor();
 
         String key = DataNodePrefs.of(
-                app().getPreferencesRepository(),
-                app().getFrame().getProjectSession().project(),
+                app.getPreferencesRepository(),
+                frame.getProjectSession().project(),
                 getNode().getName()).getLocalDataSource();
         if (key == null) {
-            mainController.updateStatus("No Local DataSource selected for node...");
+            frame.updateStatus("No Local DataSource selected for node...");
             return;
         }
 
-        DBConnector dataSource = app()
-                .getDbConnectors()
-                .get(key);
+        DBConnector connector = app.getDbConnectors().get(key);
 
-        if (dataSource != null) {
-            if (dataSource.copyTo(projectDataSourceDescriptor)) {
+        if (connector != null) {
+            if (connector.copyTo(projectDataSourceDescriptor)) {
                 refreshView();
                 nodeChangeProcessor.run();
-                mainController.updateStatus(null);
+                frame.updateStatus(null);
             } else {
-                mainController.updateStatus("DataNode is up to date...");
+                frame.updateStatus("DataNode is up to date...");
             }
         } else {
-            mainController.updateStatus("Invalid Local DataSource selected for node...");
+            frame.updateStatus("Invalid Local DataSource selected for node...");
         }
     }
 }

@@ -71,7 +71,7 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
         prefetchBox.addItem(DISJOINT_PREFETCH_SEMANTICS);
         prefetchBox.addItem(DISJOINT_BY_ID_PREFETCH_SEMANTICS);
 
-        prefetchBox.addActionListener(e -> session().setDirty(true));
+        prefetchBox.addActionListener(e -> session.setDirty(true));
 
         column.setCellEditor(new DefaultCellEditor(prefetchBox));
 
@@ -98,7 +98,7 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
 
             addPrefetch(prefetch);
 
-            app().getUndoManager().addEdit(new AddPrefetchUndoableEdit(prefetch, SelectQueryPrefetchTab.this));
+            app.getUndoManager().addEdit(new AddPrefetchUndoableEdit(prefetch, SelectQueryPrefetchTab.this));
         });
 
         JButton remove = new ModelerAbstractAction.CayenneToolbarButton(null, 3);
@@ -159,7 +159,7 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
         table.setModel(createTableModel());
         setUpPrefetchBox(table.getColumnModel().getColumn(2));
         
-        session().fireQueryEvent(QueryEvent.ofChange(this, selectQuery));
+        session.fireQueryEvent(QueryEvent.ofChange(this, selectQuery));
     }
 
     public void removePrefetch(String prefetch) {
@@ -169,7 +169,7 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
         table.setModel(createTableModel());
         setUpPrefetchBox(table.getColumnModel().getColumn(2));
 
-        session().fireQueryEvent(QueryEvent.ofChange(this, selectQuery));
+        session.fireQueryEvent(QueryEvent.ofChange(this, selectQuery));
     }
 
 }

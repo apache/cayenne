@@ -65,8 +65,8 @@ public class ProjectAction extends ModelerAbstractAction {
             return false;
         }
 
-        application.getUndoManager().discardAllEdits();
-        application.getFrame().onProjectClosed();
+        app.getUndoManager().discardAllEdits();
+        app.getFrame().onProjectClosed();
 
         return true;
     }
@@ -77,7 +77,7 @@ public class ProjectAction extends ModelerAbstractAction {
     public boolean checkSaveOnClose() {
         ProjectSession session = getProjectSession();
         if (session != null && session.isDirty()) {
-            UnsavedChangesDialog dialog = new UnsavedChangesDialog(application.getFrame());
+            UnsavedChangesDialog dialog = new UnsavedChangesDialog(app.getFrame());
             dialog.show();
 
             if (dialog.shouldCancel()) {
@@ -89,7 +89,7 @@ public class ProjectAction extends ModelerAbstractAction {
                         this,
                         ActionEvent.ACTION_PERFORMED,
                         "SaveAll");
-                application
+                app
                         .getActionManager()
                         .getAction(SaveAction.class)
                         .actionPerformed(e);

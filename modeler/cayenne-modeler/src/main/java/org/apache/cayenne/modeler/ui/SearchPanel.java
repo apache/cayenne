@@ -54,7 +54,7 @@ public class SearchPanel extends AppPanel {
             public void keyTyped(KeyEvent e) {
             }
         });
-        findField.setAction(app().getActionManager().getAction(FindAction.class));
+        findField.setAction(app.getActionManager().getAction(FindAction.class));
 
         Toolkit.getDefaultToolkit().addAWTEventListener(event -> {
             if (event instanceof KeyEvent) {

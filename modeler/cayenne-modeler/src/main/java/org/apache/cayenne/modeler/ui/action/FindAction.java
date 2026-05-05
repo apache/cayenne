@@ -121,9 +121,9 @@ public class FindAction extends ModelerAbstractAction {
         if (searchResults.isEmpty()) {
             markEmptySearch(source);
         } else if (searchResults.size() == 1) {
-            jumpToResult(searchResults.iterator().next(), application);
+            jumpToResult(searchResults.iterator().next(), app);
         } else {
-            new FindDialog(application, application.getFrame(), searchResults).open();
+            new FindDialog(app, app.getFrame(), searchResults).open();
         }
     }
 
@@ -135,8 +135,8 @@ public class FindAction extends ModelerAbstractAction {
      * Navigate to search result
      */
     public static void jumpToResult(FindAction.SearchResultEntry searchResultEntry, Application application) {
-        DataChannelDescriptor domain = (DataChannelDescriptor) application.getFrame().getProjectSession().project().getRootNode();
         ProjectSession session = application.getFrame().getProjectSession();
+        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
         ProjectView projectView = application.getFrame().getProjectView();
 
         if (searchResultEntry.getObject() instanceof Entity) {
@@ -374,8 +374,8 @@ public class FindAction extends ModelerAbstractAction {
 
         DefaultMutableTreeNode[] mutableTreeNodes = new DefaultMutableTreeNode[]{
                 treeModel.getRootNode(),
-                treeModel.getNodeForObjectPath(new Object[]{map}),
-                treeModel.getNodeForObjectPath(new Object[]{map, object})
+                treeModel.getNodeForObjectPath(map),
+                treeModel.getNodeForObjectPath(map, object)
         };
 
         TreePath treePath = new TreePath(mutableTreeNodes);

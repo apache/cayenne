@@ -76,7 +76,7 @@ public class SourceTargetPanel extends JPanel {
     private final ModelerAbstractAction.CayenneToolbarButton moveButton;
     private final ModelerAbstractAction.CayenneToolbarButton moveInvertButton;
     private final JScrollPane scrollPane;
-    
+
     private ImportSourceTree importSourceTree;
 
     public SourceTargetPanel(DbImportTree sourceTree, DbImportTree targetTree, DbImportActions actions) {

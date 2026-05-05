@@ -48,7 +48,7 @@ public class SuperclassUpdateDialog extends DefaultsUpdateDialog {
                         if (!Util.nullSafeEquals(defaultSuperclass, entity.getSuperClassName())) {
                             entity.setSuperClassName(defaultSuperclass);
                             // any way to batch events, a big change will flood the app with entity events?
-                            session().fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
+                            session.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
                         }
                     }
                 });

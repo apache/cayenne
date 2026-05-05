@@ -94,13 +94,13 @@ public class MainFrame extends AppFrame {
     private ProjectView projectView;
     private Component dockComponent;
 
-    public MainFrame(Application application) {
-        super(application);
-        this.globalActions = app().getActionManager();
+    public MainFrame(Application app) {
+        super(app);
+        this.globalActions = this.app.getActionManager();
 
         setIconImage(IconFactory.buildIcon("CayenneModeler.png").getImage());
         getContentPane().setLayout(new BorderLayout());
-        this.menuBar = new MainMenuBar(globalActions);
+        this.menuBar = new MainMenuBar(app);
         setJMenuBar(menuBar);
         initToolbar();
 
@@ -113,7 +113,7 @@ public class MainFrame extends AppFrame {
         splitPane.getInsets().right = 5;
         splitPane.setResizeWeight(0.7);
 
-        this.splitPanePrefs = CMSplitPanePrefs.of(app().getPreferencesRepository(), "frame/splitPane");
+        this.splitPanePrefs = CMSplitPanePrefs.of(app.getPreferencesRepository(), "frame/splitPane");
 
         JPanel statusBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 1));
         statusBar.setBorder(TopBorder.create());
@@ -127,16 +127,16 @@ public class MainFrame extends AppFrame {
         getContentPane().add(splitPane, BorderLayout.CENTER);
         getContentPane().add(statusBar, BorderLayout.SOUTH);
 
-        this.welcomePanel = new WelcomeScreen(app());
+        this.welcomePanel = new WelcomeScreen(this.app);
         this.menuBar.addRecentFileListener(welcomePanel);
 
         fireRecentFileListChanged(); // start filling list in welcome screen and in menu
 
         setProjectView(null);
 
-        app().getPlatformInitializer().setupMenus(this);
+        this.app.getPlatformInitializer().setupMenus(this);
 
-        this.session = new ProjectSession(app());
+        this.session = new ProjectSession(this.app);
         this.session.addDirtyListener((wasDirty, isDirty) -> {
             if (isDirty) {
                 onProjectModified();
@@ -147,11 +147,7 @@ public class MainFrame extends AppFrame {
             globalActions.getAction(RevertAction.class).setEnabled(isDirty);
         });
 
-        this.dbImportResultDialog = new DbImportResultDialog(app(), this);
-    }
-
-    public Application getApplication() {
-        return app();
+        this.dbImportResultDialog = new DbImportResultDialog(this.app, this);
     }
 
     public ProjectSession getProjectSession() {
@@ -224,12 +220,11 @@ public class MainFrame extends AppFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 session.saveSelectionToPrefs();
-                app().getActionManager().getAction(ExitAction.class).exit();
+                app.getActionManager().getAction(ExitAction.class).exit();
             }
         });
 
-        // Register a hook to save the window position when quit via the app menu.
-        // This is in Mac OSX only.
+        // Register a hook to save the window position when quit via the app menu. This is in macOS only.
         if (OperatingSystem.getOS() == OperatingSystem.MAC_OS_X) {
             Runnable runner = session::saveSelectionToPrefs;
             Runtime.getRuntime().addShutdownHook(new Thread(runner, "Window Prefs Hook"));
@@ -244,7 +239,7 @@ public class MainFrame extends AppFrame {
             }
         });
 
-        CMComponentGeometryPrefs.of(app().getPreferencesRepository(), "frame/geometry").bind(this, 1200, 720);
+        CMComponentGeometryPrefs.of(app.getPreferencesRepository(), "frame/geometry").bind(this, 1200, 720);
 
         setVisible(true);
     }
@@ -271,7 +266,7 @@ public class MainFrame extends AppFrame {
         setTitle("");
 
         session.projectClosed();
-        app().getActionManager().projectClosed();
+        app.getActionManager().projectClosed();
 
         updateStatus("Project Closed...");
     }
@@ -286,7 +281,7 @@ public class MainFrame extends AppFrame {
         setTitle(getProjectLocationString());
         setProjectView(projectView);
 
-        app().getActionManager().projectOpened();
+        app.getActionManager().projectOpened();
         session.restoreSelectionFromPrefs();
 
         // do status update AFTER the project is actually opened...
@@ -309,12 +304,12 @@ public class MainFrame extends AppFrame {
             allFailures.addAll(loadFailures);
         }
 
-        ProjectValidator projectValidator = app().getProjectValidator();
+        ProjectValidator projectValidator = app.getProjectValidator();
         ValidationResult validationResult = projectValidator.validate(project.getRootNode());
         allFailures.addAll(validationResult.getFailures());
 
         if (!allFailures.isEmpty()) {
-            app().getActionManager().getAction(ValidateAction.class).showFailures(allFailures);
+            app.getActionManager().getAction(ValidateAction.class).showFailures(allFailures);
         }
     }
 
@@ -322,11 +317,11 @@ public class MainFrame extends AppFrame {
      * Adds path to the list of last opened projects in preferences.
      */
     public void addToLastProjListAction(File file) {
-        RecentProjectsPrefs.of(app().getPreferencesRepository()).addFile(file);
+        RecentProjectsPrefs.of(app.getPreferencesRepository()).addFile(file);
     }
 
     public void changePathInLastProjListAction(File oldFile, File newFile) {
-        RecentProjectsPrefs prefs = RecentProjectsPrefs.of(app().getPreferencesRepository());
+        RecentProjectsPrefs prefs = RecentProjectsPrefs.of(app.getPreferencesRepository());
         prefs.removeFile(oldFile);
         prefs.addFile(newFile);
 
@@ -365,7 +360,7 @@ public class MainFrame extends AppFrame {
         if (transferFile.isFile()) {
             FileFilter filter = FileFilters.getApplicationFilter();
             if (filter.accept(transferFile)) {
-                app().getActionManager().getAction(OpenProjectAction.class).openProject(transferFile);
+                app.getActionManager().getAction(OpenProjectAction.class).openProject(transferFile);
                 return true;
             }
         }
@@ -387,7 +382,7 @@ public class MainFrame extends AppFrame {
 
     private void initToolbar() {
 
-        MainToolBar toolBar = new MainToolBar(app());
+        MainToolBar toolBar = new MainToolBar(app);
         getContentPane().add(toolBar, BorderLayout.NORTH);
 
         // Hide some buttons when frame is too small

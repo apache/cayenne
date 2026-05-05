@@ -91,15 +91,15 @@ public class DataNodeEditorPanel extends ProjectPanel {
         super(session);
 
         this.nodeChangeProcessor = () -> session.fireDataNodeEvent(DataNodeEvent.ofChange(this, node));
-        this.defaultSubeditor = new CustomDataSourcePanel(app(), nodeChangeProcessor);
+        this.defaultSubeditor = new CustomDataSourcePanel(app, nodeChangeProcessor);
 
-        this.dataNodeName = new CMUndoableTextField(app().getUndoManager());
-        this.factories = new CMUndoableComboBox<>(app().getUndoManager());
-        this.localDataSources = new CMUndoableComboBox<>(app().getUndoManager());
-        this.schemaUpdateStrategy = new CMUndoableComboBox<>(app().getUndoManager());
+        this.dataNodeName = new CMUndoableTextField(app.getUndoManager());
+        this.factories = new CMUndoableComboBox<>(app.getUndoManager());
+        this.localDataSources = new CMUndoableComboBox<>(app.getUndoManager());
+        this.schemaUpdateStrategy = new CMUndoableComboBox<>(app.getUndoManager());
         this.dataSourceDetailLayout = new CardLayout();
         this.dataSourceDetail = new JPanel(dataSourceDetailLayout);
-        this.customAdapter = new CMUndoableTextField(app().getUndoManager());
+        this.customAdapter = new CMUndoableTextField(app.getUndoManager());
         this.configLocalDataSources = new JButton("...");
         this.configLocalDataSources.setToolTipText("configure local DataSource");
 
@@ -140,12 +140,12 @@ public class DataNodeEditorPanel extends ProjectPanel {
     }
 
     private void initBindings() {
-        session().addDataNodeDisplayListener(e -> refreshView(e.getDataNode()));
+        session.addDataNodeDisplayListener(e -> refreshView(e.getDataNode()));
 
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentShown(ComponentEvent e) {
-                refreshView(node != null ? node : session().getSelectedDataNode());
+                refreshView(node != null ? node : session.getSelectedDataNode());
             }
         });
 
@@ -217,7 +217,7 @@ public class DataNodeEditorPanel extends ProjectPanel {
         }
 
         DataChannelDescriptor dataChannelDescriptor =
-                (DataChannelDescriptor) app().getFrame().getProjectSession().project().getRootNode();
+                (DataChannelDescriptor) app.getFrame().getProjectSession().project().getRootNode();
 
         Collection<DataNodeDescriptor> matchingNode = dataChannelDescriptor.getNodeDescriptors();
         for (DataNodeDescriptor n : matchingNode) {
@@ -230,7 +230,7 @@ public class DataNodeEditorPanel extends ProjectPanel {
         // passed validation, set value, then move prefs subtree to the new name...
         String oldName = node.getName();
         node.setName(newName);
-        DataNodePrefs.rename(app().getPreferencesRepository(), app().getFrame().getProjectSession().project(), oldName, newName);
+        DataNodePrefs.rename(app.getPreferencesRepository(), app.getFrame().getProjectSession().project(), oldName, newName);
     }
 
     private DataNodePrefs nodePrefs() {
@@ -238,17 +238,17 @@ public class DataNodeEditorPanel extends ProjectPanel {
         if (selected == null) {
             throw new IllegalStateException("No DataNode selected");
         }
-        return DataNodePrefs.of(app().getPreferencesRepository(), app().getFrame().getProjectSession().project(), selected.getName());
+        return DataNodePrefs.of(app.getPreferencesRepository(), app.getFrame().getProjectSession().project(), selected.getName());
     }
 
     private void dataSourceConfigAction() {
-        new PreferenceDialog(app(), app().getFrame())
+        new PreferenceDialog(app, app.getFrame())
                 .showDBConnectorEditorAction(localDataSources.getSelectedItem());
         refreshLocalDataSources();
     }
 
     private void refreshLocalDataSources() {
-        Map<String, DBConnector> sources = app().getDbConnectors().getAll();
+        Map<String, DBConnector> sources = app.getDbConnectors().getAll();
 
         int len = sources.size();
         String[] keys = new String[len + 1];
@@ -296,7 +296,7 @@ public class DataNodeEditorPanel extends ProjectPanel {
         // create subview dynamically...
         if (c == null) {
             if (DataSourceFactoryType.CAYENNE.getLabel().equals(factoryName)) {
-                c = new JDBCDataSourcePanel(app(), nodeChangeProcessor);
+                c = new JDBCDataSourcePanel(app, nodeChangeProcessor);
             } else {
                 // special case - no detail view, just show it and bail..
                 defaultSubeditor.setNode(node);

@@ -36,7 +36,7 @@ public class InferRelationshipsAction extends ModelerAbstractAction {
         if (dataMap != null) {
             new InferRelationshipsDialog(
                     getProjectSession(),
-                    application.getFrame(),
+                    app.getFrame(),
                     dataMap).open();
         }
     }

@@ -53,7 +53,7 @@ public abstract class DBConnectionAwareAction extends ModelerAbstractAction {
     protected DataSourceDialog getDataSourceController(String title) {
         DataSourceDialog connectWizard = new DataSourceDialog(
                 getProjectSession(),
-                application.getFrame(),
+                app.getFrame(),
                 title);
         if (!connectWizard.startupAction()) {
             return null;
@@ -71,6 +71,6 @@ public abstract class DBConnectionAwareAction extends ModelerAbstractAction {
     }
 
     private DataMapPrefs dataMapPrefs(DataMap dataMap) {
-        return DataMapPrefs.of(application.getPreferencesRepository(), dataMap);
+        return DataMapPrefs.of(app.getPreferencesRepository(), dataMap);
     }
 }

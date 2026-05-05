@@ -90,7 +90,7 @@ public class CopyAction extends ModelerAbstractAction {
         }
 
         // update paste button
-        application.getActionManager().getAction(PasteAction.class).updateState();
+        app.getActionManager().getAction(PasteAction.class).updateState();
     }
 
     /**

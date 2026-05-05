@@ -123,14 +123,14 @@ public class LockingUpdateDialog extends ProjectDialog {
         for (ObjEntity entity : dataMap.getObjEntities()) {
             if (updateEntities && defaultLockType != entity.getDeclaredLockType()) {
                 entity.setDeclaredLockType(defaultLockType);
-                session().fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
+                session.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
             }
 
             if (updateAttributes) {
                 for (ObjAttribute a : entity.getAttributes()) {
                     if (a.isUsedForLocking() != on) {
                         a.setUsedForLocking(on);
-                        session().fireObjAttributeEvent(ObjAttributeEvent.ofChange(this, a, entity));
+                        session.fireObjAttributeEvent(ObjAttributeEvent.ofChange(this, a, entity));
                     }
                 }
             }
@@ -139,7 +139,7 @@ public class LockingUpdateDialog extends ProjectDialog {
                 for (ObjRelationship r : entity.getRelationships()) {
                     if (r.isUsedForLocking() != on) {
                         r.setUsedForLocking(on);
-                        session().fireObjRelationshipEvent(ObjRelationshipEvent.ofChange(this, r, entity));
+                        session.fireObjRelationshipEvent(ObjRelationshipEvent.ofChange(this, r, entity));
                     }
                 }
             }

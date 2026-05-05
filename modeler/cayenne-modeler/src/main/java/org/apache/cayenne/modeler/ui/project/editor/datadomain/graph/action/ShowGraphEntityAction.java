@@ -74,7 +74,7 @@ public class ShowGraphEntityAction extends ModelerAbstractAction {
 
     void showEntity(Entity<?,?,?> entity) {
         // we're always in same domain
-        ProjectView editor = application.getFrame().getProjectView();
+        ProjectView editor = app.getFrame().getProjectView();
 
         editor.getProjectTreeView().getSelectionModel().setSelectionPath(
                 editor

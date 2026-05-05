@@ -103,7 +103,7 @@ public class ProjectValidatorDialog extends ProjectDialog {
         problemsTable.setDefaultRenderer(ValidationFailure.class, new ValidationRenderer());
         problemsTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        GlobalActions globalActions = app().getActionManager();
+        GlobalActions globalActions = app.getActionManager();
         JPopupMenu popup = new JPopupMenu();
         popup.add(globalActions.getAction(ShowValidationOptionAction.class).buildMenu());
         popup.add(globalActions.getAction(DisableValidationInspectionAction.class).buildMenu());
@@ -132,7 +132,7 @@ public class ProjectValidatorDialog extends ProjectDialog {
             dispose();
         });
         refreshButton.addActionListener(e ->
-                app().getActionManager().getAction(ValidateAction.class).actionPerformed(e));
+                app.getActionManager().getAction(ValidateAction.class).actionPerformed(e));
         problemsTable.getSelectionModel().addListSelectionListener(e -> fireFailedObjectSelection());
         problemsTable.getSelectionModel().addListSelectionListener(new ContextMenuSelectionListener());
     }
@@ -143,15 +143,15 @@ public class ProjectValidatorDialog extends ProjectDialog {
         }
         ValidationFailure failure = (ValidationFailure) problemsTable.getModel()
                 .getValueAt(problemsTable.getSelectedRow(), 0);
-        JFrame frame = app().getFrame();
-        ValidationDisplayHandler.getErrorMsg(failure, session()).displayField(session(), frame);
+        JFrame frame = app.getFrame();
+        ValidationDisplayHandler.getErrorMsg(failure, session).displayField(session, frame);
     }
 
     private void onSelectionChanged(ValidationFailure failure) {
         Inspection inspection = failure instanceof ProjectValidationFailure
                 ? ((ProjectValidationFailure) failure).getInspection()
                 : null;
-        GlobalActions globalActions = app().getActionManager();
+        GlobalActions globalActions = app.getActionManager();
         globalActions.getAction(DisableValidationInspectionAction.class)
                 .putInspection(inspection)
                 .setEnabled(inspection != null);

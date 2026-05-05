@@ -47,7 +47,7 @@ public abstract class BaseQueryMainTab extends ProjectPanel {
 
     protected void initQueryRoot() {
         queryRoot = new CMComboBox<>();
-        AutoCompletion.enable(queryRoot, session()::getSelectedDataMap);
+        AutoCompletion.enable(queryRoot, session::getSelectedDataMap);
         queryRoot.setRenderer(Renderers.listRendererWithIcons());
 
         RootSelectionHandler rootHandler = new RootSelectionHandler(this);
@@ -66,7 +66,7 @@ public abstract class BaseQueryMainTab extends ProjectPanel {
     }
 
     public ProjectSession getSession() {
-        return session();
+        return session;
     }
 
     /**
@@ -91,7 +91,7 @@ public abstract class BaseQueryMainTab extends ProjectPanel {
             throw new ValidationException("SelectQuery name is required.");
         }
 
-        DataMap map = session().getSelectedDataMap();
+        DataMap map = session.getSelectedDataMap();
         QueryDescriptor matchingQuery = map.getQueryDescriptor(newName);
 
         if (matchingQuery == null) {
@@ -106,7 +106,7 @@ public abstract class BaseQueryMainTab extends ProjectPanel {
             if (ns instanceof EntityResolver) {
                 ((EntityResolver) ns).refreshMappingCache();
             }
-            session().fireQueryEvent(e);
+            session.fireQueryEvent(e);
         } else if (matchingQuery != query) {
             // there is a query with the same name
             throw new ValidationException("There is another query named '"

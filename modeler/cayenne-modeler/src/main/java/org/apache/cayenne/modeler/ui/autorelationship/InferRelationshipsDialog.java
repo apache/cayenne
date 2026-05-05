@@ -88,7 +88,7 @@ public class InferRelationshipsDialog extends ProjectDialog {
         this.entities = new ArrayList<>(dataMap.getDbEntities());
         this.strategy = createNamingStrategy(NameGeneratorPreferences
                 .getInstance()
-                .getLastUsedStrategies(app())
+                .getLastUsedStrategies(app)
                 .get(0));
         setRelationships();
 
@@ -133,7 +133,7 @@ public class InferRelationshipsDialog extends ProjectDialog {
         contentPane.add(buttons, BorderLayout.SOUTH);
 
         strategyCombo.setModel(new DefaultComboBoxModel<>(
-                NameGeneratorPreferences.getInstance().getLastUsedStrategies(app())));
+                NameGeneratorPreferences.getInstance().getLastUsedStrategies(app)));
     }
 
     private void initBindings() {
@@ -329,7 +329,7 @@ public class InferRelationshipsDialog extends ProjectDialog {
 
     private ObjectNameGenerator createNamingStrategy(String strategyClass) {
         try {
-            ModelerClassLoader classLoader = app().getClassLoader();
+            ModelerClassLoader classLoader = app.getClassLoader();
             return classLoader.loadClass(ObjectNameGenerator.class, strategyClass)
                     .getDeclaredConstructor().newInstance();
         } catch (Throwable th) {
@@ -365,9 +365,9 @@ public class InferRelationshipsDialog extends ProjectDialog {
                 return;
             }
             // be user-friendly: update preferences with the chosen strategy
-            NameGeneratorPreferences.getInstance().addToLastUsedStrategies(app(), strategyClass);
+            NameGeneratorPreferences.getInstance().addToLastUsedStrategies(app, strategyClass);
             strategyCombo.setModel(new DefaultComboBoxModel<>(
-                    NameGeneratorPreferences.getInstance().getLastUsedStrategies(app())));
+                    NameGeneratorPreferences.getInstance().getLastUsedStrategies(app)));
         } catch (Throwable th) {
             LOGGER.error("Error in " + getClass().getName(), th);
             return;
@@ -385,8 +385,8 @@ public class InferRelationshipsDialog extends ProjectDialog {
             DbRelationship rel = new DbRelationship(uniqueRelName(temp.getSource(), temp.getName()));
 
             DbRelationshipEvent e = DbRelationshipEvent.ofAdd(
-                    app().getFrame(), rel, temp.getSource());
-            session().fireDbRelationshipEvent(e);
+                    app.getFrame(), rel, temp.getSource());
+            session.fireDbRelationshipEvent(e);
 
             rel.setSourceEntity(temp.getSource());
             rel.setTargetEntityName(temp.getTarget());
@@ -398,7 +398,7 @@ public class InferRelationshipsDialog extends ProjectDialog {
             temp.getSource().addRelationship(rel);
 
             undoableEdit.addEdit(new CreateRelationshipUndoableEdit(
-                    session(), temp.getSource(), new DbRelationship[]{rel}));
+                    session, temp.getSource(), new DbRelationship[]{rel}));
         }
         JOptionPane.showMessageDialog(this, getSelectedEntitiesSize() + " relationships generated");
         dispose();

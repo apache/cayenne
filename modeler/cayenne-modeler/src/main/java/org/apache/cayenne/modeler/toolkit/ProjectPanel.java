@@ -35,8 +35,4 @@ public abstract class ProjectPanel extends AppPanel {
         super(session.app());
         this.session = session;
     }
-
-    protected ProjectSession session() {
-        return session;
-    }
 }

@@ -77,7 +77,7 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
 
                 DBConnector connectionInfo = getConnector(
                         "Load Db Schema",
-                        application.getFrame().getProjectSession().getSelectedDataMap());
+                        app.getFrame().getProjectSession().getSelectedDataMap());
 
                 if (connectionInfo == null) {
                     return;
@@ -102,7 +102,7 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
                 }
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(
-                        application.getFrame(),
+                        app.getFrame(),
                         ex.getMessage(),
                         "Error loading db schema",
                         JOptionPane.ERROR_MESSAGE);
@@ -118,8 +118,8 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
 
     private void loadDataBase(DBConnector connectionInfo) throws Exception {
         SourceTargetPanel sourceTargetPanel = view.getDraggableTreePanel();
-        ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader(application.getDbAdapterFactory())
-                .load(connectionInfo, application.getClassLoader());
+        ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader(app.getDbAdapterFactory())
+                .load(connectionInfo, app.getClassLoader());
         sourceTargetPanel.getSourceTree()
                 .setEnabled(true);
         sourceTargetPanel.getSourceTree()
@@ -131,9 +131,9 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
 
     private void loadTables(DBConnector connectionInfo, TreePath tablePath) throws Exception {
         SourceTargetPanel sourceTargetPanel = view.getDraggableTreePanel();
-        ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader(application.getDbAdapterFactory())
+        ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader(app.getDbAdapterFactory())
                 .loadTables(connectionInfo,
-                        application.getClassLoader(),
+                        app.getClassLoader(),
                         tablePath,
                         view.getTableTypes());
         sourceTargetPanel.getSourceTree()
@@ -143,8 +143,8 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
 
     private void loadColumns(DBConnector connectionInfo, TreePath tablePath) throws SQLException {
         SourceTargetPanel sourceTargetPanel = view.getDraggableTreePanel();
-        ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader(application.getDbAdapterFactory())
-                .loadColumns(connectionInfo, application.getClassLoader(), tablePath);
+        ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader(app.getDbAdapterFactory())
+                .loadColumns(connectionInfo, app.getClassLoader(), tablePath);
         sourceTargetPanel.getSourceTree()
                 .update(databaseReverseEngineering,
                         new PrintColumnsBiFunction(sourceTargetPanel.getSourceTree()));

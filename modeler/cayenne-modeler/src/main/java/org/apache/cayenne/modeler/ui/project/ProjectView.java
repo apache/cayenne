@@ -53,7 +53,7 @@ public class ProjectView extends ProjectPanel {
     public ProjectView(ProjectSession session) {
         super(session);
 
-        GlobalActions globalActions = app().getActionManager();
+        GlobalActions globalActions = app.getActionManager();
         globalActions.getAction(CollapseTreeAction.class).setAlwaysOn(true);
         globalActions.getAction(FilterAction.class).setAlwaysOn(true);
 
@@ -100,7 +100,7 @@ public class ProjectView extends ProjectPanel {
 
         this.filterPopup = new TreeFilterPopup(treePanel);
 
-        CMSplitPanePrefs.of(app().getPreferencesRepository(), "project/splitPane").bind(splitPane, 300);
+        CMSplitPanePrefs.of(app.getPreferencesRepository(), "project/splitPane").bind(splitPane, 300);
     }
 
     public EditorPanelView getEditorPanel() {

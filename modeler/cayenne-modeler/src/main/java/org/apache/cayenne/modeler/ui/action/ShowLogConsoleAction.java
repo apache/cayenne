@@ -38,11 +38,11 @@ public class ShowLogConsoleAction extends ModelerAbstractAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        application.getLogConsole().toggle();
+        app.getLogConsole().toggle();
         putValue(Action.SELECTED_KEY, isConsoleShown());
     }
 
     private Boolean isConsoleShown() {
-        return LogConsolePrefs.of(application.getPreferencesRepository()).isShowConsole();
+        return LogConsolePrefs.of(app.getPreferencesRepository()).isShowConsole();
     }
 }

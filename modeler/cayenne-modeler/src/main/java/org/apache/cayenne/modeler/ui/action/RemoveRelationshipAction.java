@@ -78,7 +78,7 @@ public class RemoveRelationshipAction extends RemoveAction implements MultipleOb
 							.shouldDelete("selected ObjRelationships"))) {
 				ObjEntity entity = session.getSelectedObjEntity();
 				removeObjRelationships(entity, rels);
-				application.getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(session,entity, rels));
+				app.getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(session,entity, rels));
 			}
 		} else {
 			DbRelationship[] dbRels = getProjectSession()
@@ -90,7 +90,7 @@ public class RemoveRelationshipAction extends RemoveAction implements MultipleOb
 								.shouldDelete("selected DbRelationships"))) {
 					DbEntity entity = session.getSelectedDbEntity();
 					removeDbRelationships(entity, dbRels);
-					application.getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(session,entity, dbRels));
+					app.getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(session,entity, dbRels));
 				}
 			}
 		}
@@ -101,7 +101,7 @@ public class RemoveRelationshipAction extends RemoveAction implements MultipleOb
 
 		for (ObjRelationship rel : rels) {
 			entity.removeRelationship(rel.getName());
-			ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(application.getFrame(),
+			ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(app.getFrame(),
 					rel, entity);
 			session.fireObjRelationshipEvent(e);
 		}
@@ -113,7 +113,7 @@ public class RemoveRelationshipAction extends RemoveAction implements MultipleOb
 		for(int i = 0; i < rels.length; i++) {
 			rels[i] = entity.getRelationship(rels[i].getName());
 			entity.removeRelationship(rels[i].getName());
-			DbRelationshipEvent e = DbRelationshipEvent.ofRemove(application.getFrame(),
+			DbRelationshipEvent e = DbRelationshipEvent.ofRemove(app.getFrame(),
 					rels[i], entity);
 			session.fireDbRelationshipEvent(e);
 		}

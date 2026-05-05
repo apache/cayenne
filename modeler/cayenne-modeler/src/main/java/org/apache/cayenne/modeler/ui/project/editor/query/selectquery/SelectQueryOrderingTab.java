@@ -77,11 +77,11 @@ public class SelectQueryOrderingTab extends ProjectPanel {
         messagePanel = new JPanel(new BorderLayout());
         cardLayout = new CardLayout();
 
-        int defLocation = app().getFrame().getHeight() / 2;
+        int defLocation = app.getFrame().getHeight() / 2;
 
         //As of CAY-888 #3 main pane is now a JSplitPane. Top component is a bit larger.
         JSplitPane mainPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        CMSplitPanePrefs.of(app().getPreferencesRepository(), "selectQuery/orderingSplit").bind(mainPanel, defLocation);
+        CMSplitPanePrefs.of(app.getPreferencesRepository(), "selectQuery/orderingSplit").bind(mainPanel, defLocation);
 
         mainPanel.setTopComponent(createEditorPanel());
         mainPanel.setBottomComponent(createSelectorPanel());
@@ -102,7 +102,7 @@ public class SelectQueryOrderingTab extends ProjectPanel {
     }
 
     protected void initFromModel() {
-        QueryDescriptor query = session().getSelectedQuery();
+        QueryDescriptor query = session.getSelectedQuery();
 
         if (query == null || !QueryDescriptor.SELECT_QUERY.equals(query.getType())) {
             processInvalidModel("Unknown query.");
@@ -238,7 +238,7 @@ public class SelectQueryOrderingTab extends ProjectPanel {
 
         OrderingModel model = (OrderingModel) table.getModel();
         model.fireTableRowsInserted(index, index);
-        session().fireQueryEvent(QueryEvent.ofChange(SelectQueryOrderingTab.this, selectQuery));
+        session.fireQueryEvent(QueryEvent.ofChange(SelectQueryOrderingTab.this, selectQuery));
     }
 
     void removeOrdering() {
@@ -252,7 +252,7 @@ public class SelectQueryOrderingTab extends ProjectPanel {
         selectQuery.removeOrdering(ordering);
 
         model.fireTableRowsDeleted(selection, selection);
-        session().fireQueryEvent(QueryEvent.ofChange(SelectQueryOrderingTab.this, selectQuery));
+        session.fireQueryEvent(QueryEvent.ofChange(SelectQueryOrderingTab.this, selectQuery));
     }
 
     /**
@@ -342,7 +342,7 @@ public class SelectQueryOrderingTab extends ProjectPanel {
                     throw new IndexOutOfBoundsException("Invalid editable column: " + column);
             }
 
-            session().fireQueryEvent(QueryEvent.ofChange(SelectQueryOrderingTab.this, selectQuery));
+            session.fireQueryEvent(QueryEvent.ofChange(SelectQueryOrderingTab.this, selectQuery));
         }
     }
 }

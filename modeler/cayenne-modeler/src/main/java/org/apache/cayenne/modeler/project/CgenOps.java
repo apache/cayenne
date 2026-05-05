@@ -1,7 +1,6 @@
 package org.apache.cayenne.modeler.project;
 
 import org.apache.cayenne.gen.internal.Utils;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.resource.Resource;
 
@@ -12,8 +11,8 @@ import java.nio.file.Paths;
 
 public class CgenOps {
 
-    public static Path baseDir(Application application) {
-        Path projectRoot = projectRoot(application);
+    public static Path baseDir(ProjectSession session) {
+        Path projectRoot = projectRoot(session);
         if (projectRoot == null) {
             return Paths.get(".");
         }
@@ -21,8 +20,8 @@ public class CgenOps {
         return Utils.getMavenSrcPathForPath(projectRoot).map(Paths::get).orElse(projectRoot);
     }
 
-    private static Path projectRoot(Application application) {
-        Project project = application.getFrame().getProjectSession().project();
+    private static Path projectRoot(ProjectSession session) {
+        Project project = session.project();
         if (project == null) {
             return null;
         }

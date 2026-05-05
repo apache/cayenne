@@ -60,11 +60,11 @@ public class DataDomainMainView extends ProjectPanel implements DomainDisplayLis
     protected void initView() {
 
         // create widgets
-        this.name = new CMUndoableTextField(app().getUndoManager());
+        this.name = new CMUndoableTextField(app.getUndoManager());
         this.name.addCommitListener(this::setDomainName);
 
-        this.objectValidation = new CMCheckBox(app().getUndoManager());
-        this.sharedCache = new CMCheckBox(app().getUndoManager());
+        this.objectValidation = new CMCheckBox(app.getUndoManager());
+        this.sharedCache = new CMCheckBox(app.getUndoManager());
 
         // assemble
         CellConstraints cc = new CellConstraints();
@@ -90,7 +90,7 @@ public class DataDomainMainView extends ProjectPanel implements DomainDisplayLis
     }
 
     protected void initController() {
-        session().addDomainDisplayListener(this);
+        session.addDomainDisplayListener(this);
 
         // add item listener to checkboxes
         objectValidation.addItemListener(e -> {
@@ -117,7 +117,7 @@ public class DataDomainMainView extends ProjectPanel implements DomainDisplayLis
      */
     protected void setDomainProperty(String property, String value, String defaultValue) {
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) session()
+        DataChannelDescriptor domain = (DataChannelDescriptor) session
                 .project()
                 .getRootNode();
 
@@ -141,13 +141,13 @@ public class DataDomainMainView extends ProjectPanel implements DomainDisplayLis
             properties.put(property, value);
 
             DomainEvent e = DomainEvent.ofChange(this, domain);
-            session().fireDomainEvent(e);
+            session.fireDomainEvent(e);
         }
     }
 
     public String getDomainProperty(String property, String defaultValue) {
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) session()
+        DataChannelDescriptor domain = (DataChannelDescriptor) session
                 .project()
                 .getRootNode();
 
@@ -187,7 +187,7 @@ public class DataDomainMainView extends ProjectPanel implements DomainDisplayLis
 
     void setDomainName(String newName) {
 
-        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) app()
+        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) app
                 .getFrame().getProjectSession().project()
                 .getRootNode();
 
@@ -205,6 +205,6 @@ public class DataDomainMainView extends ProjectPanel implements DomainDisplayLis
                 dataChannelDescriptor.getName());
         dataChannelDescriptor.setName(newName);
 
-        session().fireDomainEvent(e);
+        session.fireDomainEvent(e);
     }
 }

@@ -113,7 +113,7 @@ public class CreateAttributeAction extends ModelerAbstractAction {
 
             createEmbAttribute(embeddable, attr);
 
-            application.getUndoManager().addEdit(
+            app.getUndoManager().addEdit(
                     new CreateEmbAttributeUndoableEdit(getProjectSession(), embeddable, new EmbeddableAttribute[]{attr}));
         }
 
@@ -126,7 +126,7 @@ public class CreateAttributeAction extends ModelerAbstractAction {
 
             createObjAttribute(session.getSelectedDataMap(), objEntity, attr);
 
-            application.getUndoManager().addEdit(
+            app.getUndoManager().addEdit(
                     new CreateAttributeUndoableEdit(session, (DataChannelDescriptor) session.project().getRootNode(),
                             session.getSelectedDataMap(), objEntity, attr));
         } else if (getProjectSession().getSelectedDbEntity() != null) {
@@ -139,7 +139,7 @@ public class CreateAttributeAction extends ModelerAbstractAction {
 
             createDbAttribute(session.getSelectedDataMap(), dbEntity, attr);
 
-            application.getUndoManager().addEdit(
+            app.getUndoManager().addEdit(
                     new CreateAttributeUndoableEdit(session, (DataChannelDescriptor) session.project().getRootNode(),
                             session.getSelectedDataMap(), dbEntity, attr));
         }

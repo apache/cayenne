@@ -201,7 +201,7 @@ public class MergerOptionsDialog extends ProjectDialog {
 
     private void prepareMigrator() {
         try {
-            adapter = connectionInfo.makeAdapter(app().getClassLoader(), app().getDbAdapterFactory());
+            adapter = connectionInfo.makeAdapter(app.getClassLoader(), app.getDbAdapterFactory());
 
             MergerTokenFactory mergerTokenFactory = mergerTokenFactoryProvider.get(adapter);
             tokens.setMergerTokenFactory(mergerTokenFactory);
@@ -216,7 +216,7 @@ public class MergerOptionsDialog extends ProjectDialog {
             DbLoaderConfiguration config = new DbLoaderConfiguration();
             config.setFiltersConfig(filters);
 
-            DataSource dataSource = connectionInfo.makeDataSource(app().getClassLoader());
+            DataSource dataSource = connectionInfo.makeDataSource(app.getClassLoader());
 
             DataMap dbImport;
             try (Connection conn = dataSource.getConnection()) {
@@ -272,7 +272,7 @@ public class MergerOptionsDialog extends ProjectDialog {
 
         DataSource dataSource;
         try {
-            dataSource = connectionInfo.makeDataSource(app().getClassLoader());
+            dataSource = connectionInfo.makeDataSource(app.getClassLoader());
         } catch (SQLException ex) {
             reportError("Migration Error", ex);
             return;
@@ -297,7 +297,7 @@ public class MergerOptionsDialog extends ProjectDialog {
         reportFailures(mergerContext);
 
         if (tokens.isReverse()) {
-            app().getUndoManager().discardAllEdits();
+            app.getUndoManager().discardAllEdits();
         }
     }
 
@@ -345,8 +345,8 @@ public class MergerOptionsDialog extends ProjectDialog {
             JOptionPane.showMessageDialog(this, "Migration Complete.");
         } else {
             new ValidationDialog(
-                    app(),
-                    app().getFrame(),
+                    app,
+                    app.getFrame(),
                     "Migration Complete",
                     "Migration finished. The following problem(s) were ignored.",
                     failures).open();
@@ -359,11 +359,11 @@ public class MergerOptionsDialog extends ProjectDialog {
         }
 
         // mark the model as unsaved
-        Project project = app().getFrame().getProjectSession().project();
+        Project project = app.getFrame().getProjectSession().project();
         project.setModified(true);
-        session().setDirty(true);
-        session().fireDataMapEvent(DataMapEvent.ofRemove(app().getFrame(), dataMap));
-        session().fireDataMapEvent(DataMapEvent.ofAdd(app().getFrame(), dataMap));
+        session.setDirty(true);
+        session.fireDataMapEvent(DataMapEvent.ofRemove(app.getFrame(), dataMap));
+        session.fireDataMapEvent(DataMapEvent.ofAdd(app.getFrame(), dataMap));
     }
 
     private void storeSQLAction() {
@@ -371,7 +371,7 @@ public class MergerOptionsDialog extends ProjectDialog {
         fc.setDialogType(JFileChooser.SAVE_DIALOG);
         fc.setDialogTitle("Save SQL Script");
 
-        Resource projectDir = app().getFrame().getProjectSession().project().getConfigurationResource();
+        Resource projectDir = app.getFrame().getProjectSession().project().getConfigurationResource();
         if (projectDir != null) {
             fc.setCurrentDirectory(new File(projectDir.getURL().getPath()));
         }

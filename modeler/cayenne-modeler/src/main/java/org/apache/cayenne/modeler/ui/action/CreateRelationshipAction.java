@@ -85,7 +85,7 @@ public class CreateRelationshipAction extends ModelerAbstractAction {
         ObjEntity objEnt = getProjectSession().getSelectedObjEntity();
         if (objEnt != null) {
 
-            new ObjRelationshipInfoDialog(getProjectSession(), application.getFrame())
+            new ObjRelationshipInfoDialog(getProjectSession(), app.getFrame())
                     .createRelationship(objEnt)
                     .startupAction();
 
@@ -93,7 +93,7 @@ public class CreateRelationshipAction extends ModelerAbstractAction {
             DbEntity dbEnt = getProjectSession().getSelectedDbEntity();
             if (dbEnt != null) {
 
-                new DbRelationshipDialog(getProjectSession(), application.getFrame())
+                new DbRelationshipDialog(getProjectSession(), app.getFrame())
                         .createNewRelationship(dbEnt)
                         .startUp();
             }

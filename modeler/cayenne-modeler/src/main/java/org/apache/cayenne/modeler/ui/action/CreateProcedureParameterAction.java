@@ -74,7 +74,7 @@ public class CreateProcedureParameterAction extends ModelerAbstractAction {
 
             createProcedureParameter(procedure, parameter);
 
-            application.getUndoManager().addEdit(
+            app.getUndoManager().addEdit(
                     new CreateProcedureParameterUndoableEdit(session,
                             (DataChannelDescriptor) session.project().getRootNode(), session.getSelectedDataMap(),
                             procedure, parameter

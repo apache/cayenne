@@ -68,7 +68,7 @@ public class RemoveCallbackMethodAction extends RemoveAction implements Multiple
             removeCallbackMethod(callbackType, callbackMethod.getName());
         }
 
-        application.getUndoManager().addEdit(new RemoveCallbackMethodUndoableEdit(getProjectSession(), callbackType, callbackMethods));
+        app.getUndoManager().addEdit(new RemoveCallbackMethodUndoableEdit(getProjectSession(), callbackType, callbackMethods));
     }
 
     public void removeCallbackMethod(CallbackType callbackType, String method) {
