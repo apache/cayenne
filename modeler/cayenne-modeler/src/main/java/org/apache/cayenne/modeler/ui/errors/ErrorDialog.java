@@ -38,13 +38,11 @@ public class ErrorDialog extends AppDialog {
 
     private static final String BUGREPORT_URL = "https://issues.apache.org/jira/browse/CAY";
 
-    private final JButton close;
-
     public ErrorDialog(Application app, String title, Throwable throwable) {
 
         super(app, app.getFrame(), title, ModalityType.MODELESS);
 
-        close = new JButton("Close");
+        JButton close = new JButton("Close");
         close.addActionListener(e -> dispose());
 
         setResizable(false);
@@ -52,11 +50,10 @@ public class ErrorDialog extends AppDialog {
         Container pane = this.getContentPane();
         pane.setLayout(new BorderLayout());
 
-        // info area
-        JEditorPane infoText = new JEditorPane("text/html", infoHTML(app));
+        JEditorPane infoText = new JEditorPane("text/html", infoHTML(title));
         infoText.setBackground(pane.getBackground());
         infoText.setEditable(false);
-        // popup hyperlinks
+      
         infoText.addHyperlinkListener(e -> {
             if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
                 UrlOpener.displayURL(e.getURL().toExternalForm());
@@ -97,9 +94,9 @@ public class ErrorDialog extends AppDialog {
         pane.add(new CMButtonPanel(close), BorderLayout.SOUTH);
     }
 
-    protected String infoHTML(Application application) {
+    private static String infoHTML(String title) {
         return "<b><font face='Arial,Helvetica' size='+1' color='red'>"
-                + getTitle()
+                + title
                 + "</font></b><br>"
                 + "<font face='Arial,Helvetica' size='-1'>Please copy the message below and "
                 + "report this error by going to <br>"
