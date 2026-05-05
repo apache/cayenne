@@ -58,22 +58,22 @@ public abstract class BaseViewEntityAction extends ModelerAbstractAction {
     public void navigateToEntity(Entity<?, ?, ?> entity) {
         TreePath path = buildTreePath(entity);
 
-        ProjectView view = application.getFrameController().getView().getProjectView();
+        ProjectView view = application.getFrame().getProjectView();
         view.getProjectTreeView().getSelectionModel().setSelectionPath(path);
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) getProjectController().getProject().getRootNode();
+        DataChannelDescriptor domain = (DataChannelDescriptor) getProjectSession().project().getRootNode();
         if (entity instanceof DbEntity) {
-            getProjectController().displayDbEntity(new DbEntityDisplayEvent(
+            getProjectSession().displayDbEntity(new DbEntityDisplayEvent(
                     view.getProjectTreeView(), domain, entity.getDataMap(), (DbEntity) entity));
         } else if (entity instanceof ObjEntity) {
-            getProjectController().displayObjEntity(new ObjEntityDisplayEvent(
+            getProjectSession().displayObjEntity(new ObjEntityDisplayEvent(
                     view.getProjectTreeView(), domain, entity.getDataMap(), (ObjEntity) entity));
         }
     }
 
     private TreePath buildTreePath(Entity<?, ?, ?> entity) {
 
-        ProjectView view = application.getFrameController().getView().getProjectView();
+        ProjectView view = application.getFrame().getProjectView();
 
         DataChannelDescriptor domain = (DataChannelDescriptor) getCurrentProject().getRootNode();
 

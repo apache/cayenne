@@ -29,7 +29,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.action.CreateDataMapAction;
 import org.apache.cayenne.modeler.ui.action.CreateDbEntityAction;
 import org.apache.cayenne.modeler.ui.action.CreateEmbeddableAction;
@@ -71,29 +71,29 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
 
     private final REMOVE_MODE mode;
 
-    public RemoveUndoableEdit(ProjectController controller, DataNodeDescriptor node, DataMap map) {
-        super(controller);
+    public RemoveUndoableEdit(ProjectSession session, DataNodeDescriptor node, DataMap map) {
+        super(session);
         this.map = map;
         this.dataNode = node;
         this.mode = REMOVE_MODE.MAP_FROM_NODE;
     }
 
-    public RemoveUndoableEdit(ProjectController controller, DataMap map) {
-        super(controller);
-        this.domain = (DataChannelDescriptor) controller.getProject().getRootNode();
+    public RemoveUndoableEdit(ProjectSession session, DataMap map) {
+        super(session);
+        this.domain = (DataChannelDescriptor) session.project().getRootNode();
         this.map = map;
         this.mode = REMOVE_MODE.MAP_FROM_DOMAIN;
     }
 
-    public RemoveUndoableEdit(ProjectController controller, DataNodeDescriptor node) {
-        super(controller);
-        this.domain = (DataChannelDescriptor) controller.getProject().getRootNode();
+    public RemoveUndoableEdit(ProjectSession session, DataNodeDescriptor node) {
+        super(session);
+        this.domain = (DataChannelDescriptor) session.project().getRootNode();
         this.dataNode = node;
         this.mode = REMOVE_MODE.NODE;
     }
 
-    public RemoveUndoableEdit(ProjectController controller, DataMap map, ObjEntity objEntity) {
-        super(controller);
+    public RemoveUndoableEdit(ProjectSession session, DataMap map, ObjEntity objEntity) {
+        super(session);
         this.map = map;
         this.objEntity = objEntity;
         this.mode = REMOVE_MODE.OBJECT_ENTITY;
@@ -109,8 +109,8 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
         }
     }
 
-    public RemoveUndoableEdit(ProjectController controller, DataMap map, DbEntity dbEntity) {
-        super(controller);
+    public RemoveUndoableEdit(ProjectSession session, DataMap map, DbEntity dbEntity) {
+        super(session);
         this.map = map;
         this.dbEntity = dbEntity;
         this.mode = REMOVE_MODE.DB_ENTITY;
@@ -128,22 +128,22 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
         }
     }
 
-    public RemoveUndoableEdit(ProjectController controller, DataMap map, QueryDescriptor query) {
-        super(controller);
+    public RemoveUndoableEdit(ProjectSession session, DataMap map, QueryDescriptor query) {
+        super(session);
         this.map = map;
         this.query = query;
         this.mode = REMOVE_MODE.QUERY;
     }
 
-    public RemoveUndoableEdit(ProjectController controller, DataMap map, Procedure procedure) {
-        super(controller);
+    public RemoveUndoableEdit(ProjectSession session, DataMap map, Procedure procedure) {
+        super(session);
         this.map = map;
         this.procedure = procedure;
         this.mode = REMOVE_MODE.PROCEDURE;
     }
 
-    public RemoveUndoableEdit(ProjectController controller, DataMap map, Embeddable embeddable) {
-        super(controller);
+    public RemoveUndoableEdit(ProjectSession session, DataMap map, Embeddable embeddable) {
+        super(session);
         this.map = map;
         this.embeddable = embeddable;
         this.mode = REMOVE_MODE.EMBEDDABLE;
@@ -236,7 +236,7 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
                 break;
             }
             case QUERY: {
-                this.domain = (DataChannelDescriptor) controller.getProject().getRootNode();
+                this.domain = (DataChannelDescriptor) session.project().getRootNode();
                 CreateQueryAction action = globalActions.getAction(CreateQueryAction.class);
                 action.createQuery(domain, map, query);
                 break;
@@ -248,16 +248,16 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
             }
             case MAP_FROM_NODE: {
                 this.dataNode.getDataMapNames().add(map.getName());
-                DataNodeEvent e = DataNodeEvent.ofChange(controller.getApplication().getFrameController().getView(), this.dataNode);
-                controller.fireDataNodeEvent(e);
+                DataNodeEvent e = DataNodeEvent.ofChange(session.app().getFrame(), this.dataNode);
+                session.fireDataNodeEvent(e);
                 break;
             }
             case MAP_FROM_DOMAIN: {
-                CreateDataMapAction.onMapCreated(this, controller, map);
+                CreateDataMapAction.onMapCreated(this, session, map);
                 break;
             }
             case NODE: {
-                CreateNodeAction.createDataNode(this, controller, dataNode);
+                CreateNodeAction.createDataNode(this, session, dataNode);
                 break;
             }
             case EMBEDDABLE: {

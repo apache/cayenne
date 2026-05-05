@@ -35,12 +35,11 @@ import org.apache.cayenne.modeler.pref.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
 import org.apache.cayenne.modeler.service.platform.PlatformInitializer;
-import org.apache.cayenne.modeler.ui.ModelerController;
+import org.apache.cayenne.modeler.ui.MainFrame;
 import org.apache.cayenne.modeler.ui.action.OpenProjectAction;
-import org.apache.cayenne.modeler.ui.logconsole.LogConsoleController;
+import org.apache.cayenne.modeler.ui.logconsole.LogConsole;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 import org.apache.cayenne.project.ConfigurationNodeParentGetter;
-import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectLoader;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.project.upgrade.UpgradeService;
@@ -66,8 +65,8 @@ public class Application {
 
     private final Injector injector;
     private final String name;
-    private LogConsoleController logConsoleController;
-    private ModelerController frameController;
+    private LogConsole logConsole;
+    private MainFrame frame;
     private CayenneUndoManager undoManager;
     private DBConnectors dbConnectors;
 
@@ -76,10 +75,6 @@ public class Application {
 
         String configuredName = System.getProperty(APPLICATION_NAME_PROPERTY);
         this.name = (configuredName != null) ? configuredName : DEFAULT_APPLICATION_NAME;
-    }
-
-    public Project getProject() {
-        return getFrameController().getProjectController().getProject();
     }
 
     public String getName() {
@@ -138,17 +133,17 @@ public class Application {
         return undoManager;
     }
 
-    public ModelerController getFrameController() {
-        return frameController;
+    public MainFrame getFrame() {
+        return frame;
     }
 
-    public LogConsoleController getLogConsoleController() {
-        return logConsoleController;
+    public LogConsole getLogConsole() {
+        return logConsole;
     }
 
     public void startup(File initialProject) {
-        this.logConsoleController = new LogConsoleController(this);
-        ModelerLogFactory.setAppender(logConsoleController);
+        this.logConsole = new LogConsole(this);
+        ModelerLogFactory.setAppender(logConsole);
 
         getPreferencesRepository().runMigrations();
 
@@ -166,14 +161,14 @@ public class Application {
         }
 
         this.undoManager = new CayenneUndoManager(this);
-        this.frameController = new ModelerController(this);
+        this.frame = new MainFrame(this);
 
         // open up
-        frameController.onStartup();
+        frame.onStartup();
 
         // After prefs have been loaded, we can now show the console if needed
-        logConsoleController.showConsoleIfNeeded();
-        getFrameController().getView().setVisible(true);
+        logConsole.showConsoleIfNeeded();
+        getFrame().setVisible(true);
 
         if (initialProject == null) {
             initialProject = initialProjectFromPreferences();

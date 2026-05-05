@@ -48,8 +48,8 @@ import org.apache.cayenne.modeler.ui.action.CutAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.ObjEntityToSuperEntityAction;
 import org.apache.cayenne.modeler.ui.action.PasteAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeRelationshipAction;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.project.editor.objentity.attrinfo.ObjAttributeInfoDialogController;
+import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.attrinfo.ObjAttributeInfoDialog;
 import org.apache.cayenne.modeler.toolkit.ValueTypes;
 
 import javax.swing.*;
@@ -77,24 +77,24 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
 
     private static final ImageIcon INHERITANCE_ICON = IconFactory.buildIcon("icon-inheritance.png");
 
-    private final ProjectController controller;
+    private final ProjectSession session;
     private final ObjEntityPropertiesView parentPanel;
 
     private final CMTable table;
     private final JMenuItem editMenu;
 
-    public ObjAttributePanel(ProjectController controller, ObjEntityPropertiesView parentPanel) {
-        this.controller = controller;
+    public ObjAttributePanel(ProjectSession session, ObjEntityPropertiesView parentPanel) {
+        this.session = session;
         this.parentPanel = parentPanel;
 
         this.setLayout(new BorderLayout());
 
-        GlobalActions globalActions = controller.getApplication().getActionManager();
+        GlobalActions globalActions = session.app().getActionManager();
 
         table = new CMTable();
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        table.setDefaultRenderer(String.class, new CellRenderer(controller));
+        table.setDefaultRenderer(String.class, new CellRenderer(session));
 
         // go to SuperEntity from ObjEntity by inheritance icon
         table.addMouseListener(new MouseAdapter() {
@@ -129,9 +129,9 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
         TablePopupHandler.install(table, popup);
         add(new CMTablePanel(table), BorderLayout.CENTER);
 
-        controller.addObjEntityDisplayListener(this);
-        controller.addObjEntityListener(this);
-        controller.addObjAttributeListener(this);
+        session.addObjEntityDisplayListener(this);
+        session.addObjEntityListener(this);
+        session.addObjAttributeListener(this);
 
         table.getSelectionModel().addListSelectionListener(this::valueChanged);
 
@@ -149,7 +149,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
         List<String> embeddableNames = new ArrayList<>();
         List<String> typeNames = new ArrayList<>();
 
-        for (DataMap dataMap : ((DataChannelDescriptor) controller.getProject().getRootNode()).getDataMaps()) {
+        for (DataMap dataMap : ((DataChannelDescriptor) session.project().getRootNode()).getDataMaps()) {
             for (Embeddable emb : dataMap.getEmbeddables()) {
                 embeddableNames.add(emb.getClassName());
             }
@@ -162,7 +162,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
         TableColumn typeColumn = table.getColumnModel().getColumn(ObjAttributeTableModel.OBJ_ATTRIBUTE_TYPE);
 
         JComboBox<String> javaTypesCombo = new CMComboBox<>(typeNames);
-        AutoCompletion.enable(javaTypesCombo, false, true, controller::getSelectedDataMap);
+        AutoCompletion.enable(javaTypesCombo, false, true, session::getSelectedDataMap);
         typeColumn.setCellEditor(new CMComboBoxCellEditor(javaTypesCombo));
     }
 
@@ -259,7 +259,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
                         JOptionPane.QUESTION_MESSAGE,
                         JOptionPane.YES_NO_OPTION);
 
-                JDialog dialog = pane.createDialog(controller.getApplication().getFrameController().getView(), "Confirm Remove");
+                JDialog dialog = pane.createDialog(session.app().getFrame(), "Confirm Remove");
                 dialog.setVisible(true);
 
                 boolean shouldDelete;
@@ -298,7 +298,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
             TableCellEditor cellEditor = table.getCellEditor(table.getEditingRow(), table.getEditingColumn());
             cellEditor.stopCellEditing();
         }
-        ObjAttributeTableModel model = new ObjAttributeTableModel(entity, controller, this);
+        ObjAttributeTableModel model = new ObjAttributeTableModel(entity, session, this);
         table.setModel(model);
         table.setRowHeight(25);
         table.setRowMargin(3);
@@ -312,9 +312,9 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
         initComboBoxes();
 
         table.getColumnModel().getColumn(ObjAttributeTableModel.DB_ATTRIBUTE).setCellRenderer(new DbAttributePathComboBoxRenderer());
-        table.getColumnModel().getColumn(ObjAttributeTableModel.DB_ATTRIBUTE).setCellEditor(new DbAttributePathComboBoxEditor(controller::getSelectedDataMap));
+        table.getColumnModel().getColumn(ObjAttributeTableModel.DB_ATTRIBUTE).setCellEditor(new DbAttributePathComboBoxEditor(session::getSelectedDataMap));
 
-        CMTablePrefs.of(controller.getApplication().getPreferencesRepository(), "objEntity/attributeTable")
+        CMTablePrefs.of(session.app().getPreferencesRepository(), "objEntity/attributeTable")
                 .bind(table, minSizes, ObjAttributeTableModel.OBJ_ATTRIBUTE);
     }
 
@@ -352,10 +352,10 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
     // custom renderer used for inherited attributes highlighting
     static final class CellRenderer extends DefaultTableCellRenderer {
 
-        private final ProjectController controller;
+        private final ProjectSession session;
 
-        CellRenderer(ProjectController controller) {
-            this.controller = controller;
+        CellRenderer(ProjectSession session) {
+            this.session = session;
         }
 
         @Override
@@ -399,7 +399,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
         public void mouseClicked(MouseEvent event, int x) {
             Point point = event.getPoint();
             if (point.x - x <= INHERITANCE_ICON.getIconWidth()) {
-                GlobalActions globalActions = controller.getApplication().getActionManager();
+                GlobalActions globalActions = session.app().getActionManager();
                 globalActions.getAction(ObjEntityToSuperEntityAction.class).performAction(null);
             }
         }
@@ -427,7 +427,10 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
         ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
 
         // ... show dialog...
-        new ObjAttributeInfoDialogController(controller, row, model).startupAction();
+        new ObjAttributeInfoDialog(
+                session,
+                session.app().getFrame(),
+                row, model).startupAction();
 
         // This is required for a table to be updated properly
         table.cancelEditing();
@@ -452,7 +455,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
                 parentPanel.getRelationshipPanel().getTable().getCellEditor().stopCellEditing();
             }
 
-            GlobalActions globalActions = controller.getApplication().getActionManager();
+            GlobalActions globalActions = session.app().getActionManager();
             globalActions.getAction(RemoveAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
             globalActions.getAction(CutAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
             globalActions.getAction(CopyAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
@@ -478,11 +481,11 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
             editMenu.setEnabled(editEnabled);
         }
 
-        controller.displayObjAttribute(new ObjAttributeDisplayEvent(
+        session.displayObjAttribute(new ObjAttributeDisplayEvent(
                 this,
-                controller.getSelectedDataDomain(),
-                controller.getSelectedDataMap(),
-                controller.getSelectedObjEntity(),
+                session.getSelectedDataDomain(),
+                session.getSelectedDataMap(),
+                session.getSelectedObjEntity(),
                 attrs));
 
         parentPanel.updateActions(attrs);

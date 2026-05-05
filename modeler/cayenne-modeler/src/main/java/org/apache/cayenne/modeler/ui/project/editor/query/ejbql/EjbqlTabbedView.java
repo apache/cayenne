@@ -19,30 +19,31 @@
 package org.apache.cayenne.modeler.ui.project.editor.query.ejbql;
 
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.toolkit.ProjectTabbedPane;
+import org.apache.cayenne.modeler.project.ProjectSession;
 
-import javax.swing.*;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 
-public class EjbqlTabbedView extends JTabbedPane {
+public class EjbqlTabbedView extends ProjectTabbedPane {
 
-    private final ProjectController controller;
     private final EjbqlQueryMainTab mainTab;
     private final EjbqlQueryScriptsTab scriptsTab;
     private int lastTabIndex;
 
-    public EjbqlTabbedView(ProjectController controller) {
-        this.controller = controller;
+    public EjbqlTabbedView(ProjectSession session) {
+        super(session);
 
         setTabPlacement(JTabbedPane.TOP);
 
-        this.mainTab = new EjbqlQueryMainTab(controller);
+        this.mainTab = new EjbqlQueryMainTab(session);
         addTab("General", new JScrollPane(mainTab));
 
-        this.scriptsTab = new EjbqlQueryScriptsTab(controller);
+        this.scriptsTab = new EjbqlQueryScriptsTab(session);
         addTab("EJBQL", scriptsTab);
 
-        controller.addQueryDisplayListener(e -> initFromModel());
+        session.addQueryDisplayListener(e -> initFromModel());
         addChangeListener(this::stateChanged);
     }
 
@@ -52,7 +53,7 @@ public class EjbqlTabbedView extends JTabbedPane {
     }
 
     private void initFromModel() {
-        if (!QueryDescriptor.EJBQL_QUERY.equals(controller.getSelectedQuery().getType())) {
+        if (!QueryDescriptor.EJBQL_QUERY.equals(session().getSelectedQuery().getType())) {
             setVisible(false);
             return;
         }

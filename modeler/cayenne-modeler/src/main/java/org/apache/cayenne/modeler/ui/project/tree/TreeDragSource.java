@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.ui.project.tree;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -37,13 +37,13 @@ class TreeDragSource implements DragSourceListener, DragGestureListener {
 
     private final DragSource source;
     private final JTree sourceTree;
-    private final ProjectController controller;
+    private final ProjectSession session;
 
     private TreeDropTarget dt;
 
-    public TreeDragSource(DragSource source, JTree sourceTree, ProjectController controller) {
+    public TreeDragSource(DragSource source, JTree sourceTree, ProjectSession session) {
         this.sourceTree = sourceTree;
-        this.controller = controller;
+        this.session = session;
         this.source = source;
     }
 
@@ -53,7 +53,7 @@ class TreeDragSource implements DragSourceListener, DragGestureListener {
         if ((path == null) || (path.getPathCount() <= 1)) {
             return;
         }
-        dt = new TreeDropTarget(sourceTree, controller, path);
+        dt = new TreeDropTarget(sourceTree, session, path);
         source.startDrag(dge, DragSource.DefaultLinkDrop, dt, this);
     }
 

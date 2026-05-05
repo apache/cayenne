@@ -33,7 +33,7 @@ import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.ExpressionConvertor;
 import org.apache.cayenne.modeler.ui.project.editor.query.BaseQueryMainTab;
 import org.apache.cayenne.modeler.ui.project.editor.query.ObjectQueryPropertiesPanel;
@@ -59,8 +59,8 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
     protected JCheckBox distinct;
     protected ObjectQueryPropertiesPanel properties;
 
-    public SelectQueryMainTab(ProjectController mediator) {
-        super(mediator);
+    public SelectQueryMainTab(ProjectSession session) {
+        super(session);
 
         initQueryRoot();
         initView();
@@ -69,18 +69,18 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
 
     private void initView() {
         // create widgets
-        name = new CMUndoableTextField(controller.getApplication().getUndoManager());
+        name = new CMUndoableTextField(app().getUndoManager());
         name.addCommitListener(this::setQueryName);
 
-        qualifier = new CMUndoableTextField(controller.getApplication().getUndoManager());
+        qualifier = new CMUndoableTextField(app().getUndoManager());
         qualifier.addCommitListener(this::setQueryQualifier);
 
-        comment = new CMUndoableTextField(controller.getApplication().getUndoManager());
+        comment = new CMUndoableTextField(app().getUndoManager());
         comment.addCommitListener(this::setQueryComment);
 
-        distinct = new CMCheckBox(controller.getApplication().getUndoManager());
+        distinct = new CMCheckBox(app().getUndoManager());
 
-        properties = new ObjectQueryPropertiesPanel(controller);
+        properties = new ObjectQueryPropertiesPanel(session());
 
         // assemble
         CellConstraints cc = new CellConstraints();
@@ -112,7 +112,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
             QueryDescriptor query = getQuery();
             if (query != null) {
                 query.setProperty(SelectQueryDescriptor.DISTINCT_PROPERTY, Boolean.toString(distinct.isSelected()));
-                controller.fireQueryEvent(QueryEvent.ofChange(this, query));
+                session().fireQueryEvent(QueryEvent.ofChange(this, query));
             }
         });
     }
@@ -122,7 +122,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
      * query is changed.
      */
     void initFromModel() {
-        QueryDescriptor descriptor = controller.getSelectedQuery();
+        QueryDescriptor descriptor = session().getSelectedQuery();
 
         if (descriptor == null || !QueryDescriptor.SELECT_QUERY.equals(descriptor.getType())) {
             setVisible(false);
@@ -146,7 +146,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
         // since query root is fully resolved during map loading,
         // making it impossible to reference other DataMaps.
 
-        DataMap map = controller.getSelectedDataMap();
+        DataMap map = session().getSelectedDataMap();
         ObjEntity[] roots = map.getObjEntities().toArray(new ObjEntity[0]);
 
         if (roots.length > 1) {
@@ -164,11 +164,11 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
 
     @Override
     protected SelectQueryDescriptor getQuery() {
-        if(controller.getSelectedQuery() == null) {
+        if(session().getSelectedQuery() == null) {
             return null;
         }
-        return QueryDescriptor.SELECT_QUERY.equals(controller.getSelectedQuery().getType())
-                ? (SelectQueryDescriptor) controller.getSelectedQuery()
+        return QueryDescriptor.SELECT_QUERY.equals(session().getSelectedQuery().getType())
+                ? (SelectQueryDescriptor) session().getSelectedQuery()
                 : null;
     }
 
@@ -178,7 +178,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
         }
 
         getQuery().setQualifier(createQualifier(text));
-        controller.fireQueryEvent(QueryEvent.ofChange(this, getQuery()));
+        session().fireQueryEvent(QueryEvent.ofChange(this, getQuery()));
     }
 
     /**
@@ -259,11 +259,11 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
         if (query == null) {
             return;
         }
-        ObjectInfo.putToMetaData(controller.getApplication().getMetaData(), query, ObjectInfo.COMMENT, text);
-        controller.fireQueryEvent(QueryEvent.ofChange(this, query));
+        ObjectInfo.putToMetaData(app().getMetaData(), query, ObjectInfo.COMMENT, text);
+        session().fireQueryEvent(QueryEvent.ofChange(this, query));
     }
 
     private String getQueryComment(QueryDescriptor queryDescriptor) {
-        return ObjectInfo.getFromMetaData(controller.getApplication().getMetaData(), queryDescriptor, ObjectInfo.COMMENT);
+        return ObjectInfo.getFromMetaData(app().getMetaData(), queryDescriptor, ObjectInfo.COMMENT);
     }
 }

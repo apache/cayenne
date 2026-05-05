@@ -25,7 +25,7 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
@@ -52,8 +52,8 @@ public class ObjRelationshipTableModel extends CMTableModel<ObjRelationship> {
 
     private final ObjEntity entity;
 
-    public ObjRelationshipTableModel(ObjEntity entity, ProjectController mediator, Object eventSource) {
-        super(mediator, eventSource, new ArrayList<>(entity.getRelationships()));
+    public ObjRelationshipTableModel(ObjEntity entity, ProjectSession session, Object eventSource) {
+        super(session, eventSource, new ArrayList<>(entity.getRelationships()));
         this.entity = entity;
 
         // order using local comparator
@@ -216,7 +216,7 @@ public class ObjRelationshipTableModel extends CMTableModel<ObjRelationship> {
                 break;
         }
 
-        controller.fireObjRelationshipEvent(
+        session.fireObjRelationshipEvent(
                 ObjRelationshipEvent.ofChange(eventSource, relationship, entity, renamedFrom));
     }
 
@@ -313,10 +313,10 @@ public class ObjRelationshipTableModel extends CMTableModel<ObjRelationship> {
     }
 
     private String getComment(ObjRelationship rel) {
-        return ObjectInfo.getFromMetaData(controller.getApplication().getMetaData(), rel, ObjectInfo.COMMENT);
+        return ObjectInfo.getFromMetaData(session.app().getMetaData(), rel, ObjectInfo.COMMENT);
     }
 
     private void setComment(String newVal, ObjRelationship rel) {
-        ObjectInfo.putToMetaData(controller.getApplication().getMetaData(), rel, ObjectInfo.COMMENT, newVal);
+        ObjectInfo.putToMetaData(session.app().getMetaData(), rel, ObjectInfo.COMMENT, newVal);
     }
 }

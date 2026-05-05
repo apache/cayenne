@@ -25,15 +25,15 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.modeler.ui.action.CreateEmbeddableAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAction;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 
 public class CreateEmbeddableUndoableEdit extends CayenneUndoableEdit {
 
     private DataMap dataMap;
     private Embeddable embeddable;
 
-    public CreateEmbeddableUndoableEdit(ProjectController controller, DataMap dataMap, Embeddable embeddable) {
-        super(controller);
+    public CreateEmbeddableUndoableEdit(ProjectSession session, DataMap dataMap, Embeddable embeddable) {
+        super(session);
         this.dataMap = dataMap;
         this.embeddable = embeddable;
     }

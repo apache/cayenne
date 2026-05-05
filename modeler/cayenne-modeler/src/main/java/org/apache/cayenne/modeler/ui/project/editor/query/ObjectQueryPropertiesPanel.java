@@ -24,7 +24,7 @@ import java.awt.BorderLayout;
 import javax.swing.JCheckBox;
 
 import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.query.QueryMetadata;
 
@@ -40,15 +40,15 @@ public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel {
 
     protected JCheckBox dataRows;
 
-    public ObjectQueryPropertiesPanel(ProjectController mediator) {
-        super(mediator);
+    public ObjectQueryPropertiesPanel(ProjectSession session) {
+        super(session);
     }
 
     protected void initView() {
         super.initView();
         // create widgets
 
-        dataRows = new CMCheckBox(mediator.getApplication().getUndoManager());
+        dataRows = new CMCheckBox(session.app().getUndoManager());
 
         // assemble
         CellConstraints cc = new CellConstraints();

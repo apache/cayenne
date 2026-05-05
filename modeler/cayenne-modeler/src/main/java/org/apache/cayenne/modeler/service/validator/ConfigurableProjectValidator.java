@@ -30,7 +30,7 @@ public class ConfigurableProjectValidator extends DefaultProjectValidator {
     public ConfigurableProjectValidator(@Inject Application application) {
         super(() -> {
             DataChannelMetaData metaData = application.getMetaData();
-            DataChannelDescriptor dataChannel = (DataChannelDescriptor) application.getProject().getRootNode();
+            DataChannelDescriptor dataChannel = (DataChannelDescriptor) application.getFrame().getProjectSession().project().getRootNode();
             return ValidationConfig.fromMetadata(metaData, dataChannel);
         });
     }

@@ -114,7 +114,7 @@ public class DeleteNodeAction extends TreeManipulationAction {
     private void updateParentChilds() {
         DbImportModel model = (DbImportModel) tree.getModel();
         model.removeNodeFromParent(selectedElement);
-        getProjectController().setDirty(true);
+        getProjectSession().setDirty(true);
         tree.reloadModelKeepingExpanded(parentElement);
     }
 
@@ -150,7 +150,7 @@ public class DeleteNodeAction extends TreeManipulationAction {
                 }
             }
             if (paths.length > 1) {
-                getProjectController().setDirty(true);
+                getProjectSession().setDirty(true);
                 List<DbImportTreeNode> expandList = tree.getTreeExpandList();
                 tree.translateReverseEngineeringToTree(tree.getReverseEngineering(), false);
                 tree.expandTree(expandList);

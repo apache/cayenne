@@ -21,10 +21,10 @@ package org.apache.cayenne.modeler.ui.project.editor;
 
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.DataDomainView;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.DataMapView;
-import org.apache.cayenne.modeler.ui.project.editor.datanode.DataNodeController;
+import org.apache.cayenne.modeler.ui.project.editor.datanode.DataNodeEditorPanel;
 import org.apache.cayenne.modeler.ui.project.editor.dbentity.DbEntityView;
 import org.apache.cayenne.modeler.ui.project.editor.embeddable.EmbeddableView;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.ObjEntityView;
@@ -66,7 +66,7 @@ public class EditorPanelView extends JPanel {
     private final SQLTemplateTabbedView sqlTemplateView;
     private final EjbqlTabbedView ejbqlQueryView;
 
-    public EditorPanelView(ProjectController controller) {
+    public EditorPanelView(ProjectSession session) {
 
         detailLayout = new CardLayout();
         setLayout(detailLayout);
@@ -77,48 +77,48 @@ public class EditorPanelView extends JPanel {
 
         add(new JPanel(), EMPTY_VIEW);
 
-        dataDomainView = new DataDomainView(controller);
+        dataDomainView = new DataDomainView(session);
         add(dataDomainView, DOMAIN_VIEW);
 
-        DataNodeController nodeController = new DataNodeController(controller);
-        add(new JScrollPane(nodeController.getView()), NODE_VIEW);
+        DataNodeEditorPanel nodeEditor = new DataNodeEditorPanel(session.app(), session);
+        add(new JScrollPane(nodeEditor), NODE_VIEW);
 
-        dataMapView = new DataMapView(controller);
+        dataMapView = new DataMapView(session);
         add(dataMapView, DATA_MAP_VIEW);
 
-        procedureView = new ProcedureTabbedView(controller);
+        procedureView = new ProcedureTabbedView(session);
         add(procedureView, PROCEDURE_VIEW);
 
-        SelectQueryTabbedView selectQueryView = new SelectQueryTabbedView(controller);
+        SelectQueryTabbedView selectQueryView = new SelectQueryTabbedView(session);
         add(selectQueryView, SELECT_QUERY_VIEW);
 
-        sqlTemplateView = new SQLTemplateTabbedView(controller);
+        sqlTemplateView = new SQLTemplateTabbedView(session);
         add(sqlTemplateView, SQL_TEMPLATE_VIEW);
 
-        Component procedureQueryView = new ProcedureQueryView(controller);
+        Component procedureQueryView = new ProcedureQueryView(session);
         add(new JScrollPane(procedureQueryView), PROCEDURE_QUERY_VIEW);
 
-        ejbqlQueryView = new EjbqlTabbedView(controller);
+        ejbqlQueryView = new EjbqlTabbedView(session);
         add(ejbqlQueryView, EJBQL_QUERY_VIEW);
 
-        embeddableView = new EmbeddableView(controller);
+        embeddableView = new EmbeddableView(session);
         add(embeddableView, EMBEDDABLE_VIEW);
 
-        objDetailView = new ObjEntityView(controller);
+        objDetailView = new ObjEntityView(session);
         add(objDetailView, OBJ_VIEW);
 
-        dbDetailView = new DbEntityView(controller);
+        dbDetailView = new DbEntityView(session);
         add(dbDetailView, DB_VIEW);
 
-        controller.addDomainDisplayListener(e -> detailLayout.show(this, e.getDomain() == null ? EMPTY_VIEW : DOMAIN_VIEW));
-        controller.addDataNodeDisplayListener(e -> detailLayout.show(this, e.getDataNode() == null ? EMPTY_VIEW : NODE_VIEW));
-        controller.addDataMapDisplayListener(e -> detailLayout.show(this, e.getDataMap() == null ? EMPTY_VIEW : DATA_MAP_VIEW));
-        controller.addObjEntityDisplayListener(e -> detailLayout.show(this, e.getEntity() == null ? EMPTY_VIEW : OBJ_VIEW));
-        controller.addDbEntityDisplayListener(e -> detailLayout.show(this, e.getEntity() == null ? EMPTY_VIEW : DB_VIEW));
-        controller.addProcedureDisplayListener(e -> detailLayout.show(this, e.getProcedure() == null ? EMPTY_VIEW : PROCEDURE_VIEW));
-        controller.addQueryDisplayListener(this::querySelected);
-        controller.addMultipleObjectsDisplayListener(e -> detailLayout.show(this, EMPTY_VIEW));
-        controller.addEmbeddableDisplayListener(e -> detailLayout.show(this, e.getEmbeddable() == null ? EMPTY_VIEW : EMBEDDABLE_VIEW));
+        session.addDomainDisplayListener(e -> detailLayout.show(this, e.getDomain() == null ? EMPTY_VIEW : DOMAIN_VIEW));
+        session.addDataNodeDisplayListener(e -> detailLayout.show(this, e.getDataNode() == null ? EMPTY_VIEW : NODE_VIEW));
+        session.addDataMapDisplayListener(e -> detailLayout.show(this, e.getDataMap() == null ? EMPTY_VIEW : DATA_MAP_VIEW));
+        session.addObjEntityDisplayListener(e -> detailLayout.show(this, e.getEntity() == null ? EMPTY_VIEW : OBJ_VIEW));
+        session.addDbEntityDisplayListener(e -> detailLayout.show(this, e.getEntity() == null ? EMPTY_VIEW : DB_VIEW));
+        session.addProcedureDisplayListener(e -> detailLayout.show(this, e.getProcedure() == null ? EMPTY_VIEW : PROCEDURE_VIEW));
+        session.addQueryDisplayListener(this::querySelected);
+        session.addMultipleObjectsDisplayListener(e -> detailLayout.show(this, EMPTY_VIEW));
+        session.addEmbeddableDisplayListener(e -> detailLayout.show(this, e.getEmbeddable() == null ? EMPTY_VIEW : EMBEDDABLE_VIEW));
     }
 
     public SQLTemplateTabbedView getSqlTemplateView() {

@@ -34,7 +34,7 @@ import javax.swing.JPanel;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.toolkit.combobox.CMUndoableComboBox;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.query.QueryMetadata;
@@ -81,27 +81,27 @@ public abstract class SelectPropertiesPanel extends JPanel {
     protected CMUndoableTextField cacheGroups;
     protected JComponent cacheGroupsLabel;
 
-    protected ProjectController mediator;
+    protected ProjectSession session;
 
-    public SelectPropertiesPanel(ProjectController mediator) {
-        this.mediator = mediator;
+    public SelectPropertiesPanel(ProjectSession session) {
+        this.session = session;
         initView();
         initController();
     }
 
     protected void initView() {
-        fetchOffset = new CMUndoableTextField(mediator.getApplication().getUndoManager(), 7);
+        fetchOffset = new CMUndoableTextField(session.app().getUndoManager(), 7);
         fetchOffset.addCommitListener(this::setFetchOffset);
 
-        fetchLimit = new CMUndoableTextField(mediator.getApplication().getUndoManager(), 7);
+        fetchLimit = new CMUndoableTextField(session.app().getUndoManager(), 7);
         fetchLimit.addCommitListener(this::setFetchLimit);
 
-        pageSize = new CMUndoableTextField(mediator.getApplication().getUndoManager(), 7);
+        pageSize = new CMUndoableTextField(session.app().getUndoManager(), 7);
         pageSize.addCommitListener(this::setPageSize);
 
-        cacheStrategy = new CMUndoableComboBox<>(mediator.getApplication().getUndoManager());
+        cacheStrategy = new CMUndoableComboBox<>(session.app().getUndoManager());
         cacheStrategy.setRenderer(new CacheStrategyRenderer());
-        cacheGroups = new CMUndoableTextField(mediator.getApplication().getUndoManager());
+        cacheGroups = new CMUndoableTextField(session.app().getUndoManager());
         cacheGroups.addCommitListener(this::setCacheGroups);
     }
 
@@ -187,7 +187,7 @@ public abstract class SelectPropertiesPanel extends JPanel {
     }
 
     QueryDescriptor getQuery() {
-        return mediator.getSelectedQuery();
+        return session.getSelectedQuery();
     }
 
     public void setEnabled(boolean flag) {
@@ -215,7 +215,7 @@ public abstract class SelectPropertiesPanel extends JPanel {
                     return;
                 }
                 query.setProperty(property, value);
-                mediator.fireQueryEvent(QueryEvent.ofChange(this, query));
+                session.fireQueryEvent(QueryEvent.ofChange(this, query));
             }
             catch (Exception ex) {
                 LOGGER.warn("Error setting property: " + property, ex);

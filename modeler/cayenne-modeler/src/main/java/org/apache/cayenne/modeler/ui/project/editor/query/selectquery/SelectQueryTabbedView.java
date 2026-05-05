@@ -23,32 +23,32 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 
-import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.modeler.toolkit.ProjectTabbedPane;
+import org.apache.cayenne.modeler.project.ProjectSession;
 
-public class SelectQueryTabbedView extends JTabbedPane {
+public class SelectQueryTabbedView extends ProjectTabbedPane {
 
-    private final ProjectController mediator;
     private final SelectQueryMainTab mainTab;
     private final SelectQueryPrefetchTab prefetchTab;
     private final SelectQueryOrderingTab orderingTab;
     private int lastSelectionIndex;
 
-    public SelectQueryTabbedView(ProjectController mediator) {
-        this.mediator = mediator;
+    public SelectQueryTabbedView(ProjectSession session) {
+        super(session);
 
         setTabPlacement(JTabbedPane.TOP);
 
-        this.mainTab = new SelectQueryMainTab(mediator);
+        this.mainTab = new SelectQueryMainTab(session);
         addTab("General", new JScrollPane(mainTab));
 
-        this.orderingTab = new SelectQueryOrderingTab(mediator);
+        this.orderingTab = new SelectQueryOrderingTab(session);
         addTab("Orderings", orderingTab);
 
-        this.prefetchTab = new SelectQueryPrefetchTab(mediator);
+        this.prefetchTab = new SelectQueryPrefetchTab(session);
         addTab("Prefetches", prefetchTab);
 
-        mediator.addQueryDisplayListener(e -> initFromModel());
+        session.addQueryDisplayListener(e -> initFromModel());
         addChangeListener(this::stateChanged);
     }
 
@@ -58,13 +58,13 @@ public class SelectQueryTabbedView extends JTabbedPane {
     }
 
     private void initFromModel() {
-        if (!QueryDescriptor.SELECT_QUERY.equals(mediator.getSelectedQuery().getType())) {
+        if (!QueryDescriptor.SELECT_QUERY.equals(session().getSelectedQuery().getType())) {
             setVisible(false);
             return;
         }
 
         // if no root, reset tabs to show the first panel..
-        if (mediator.getSelectedQuery().getRoot() == null) {
+        if (session().getSelectedQuery().getRoot() == null) {
             lastSelectionIndex = 0;
         }
 

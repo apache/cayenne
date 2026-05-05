@@ -38,7 +38,7 @@ public class ShowLogConsoleAction extends ModelerAbstractAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        application.getLogConsoleController().toggle();
+        application.getLogConsole().toggle();
         putValue(Action.SELECTED_KEY, isConsoleShown());
     }
 

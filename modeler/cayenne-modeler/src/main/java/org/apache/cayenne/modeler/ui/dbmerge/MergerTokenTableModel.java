@@ -33,16 +33,16 @@ public class MergerTokenTableModel extends AbstractTableModel {
     public static final int COL_NAME = 2;
     public static final int COL_VALUE = 3;
 
-    private MergerTokenSelectorController controller;
+    private MergerTokenSelector controller;
 
     private List<MergerToken> tokens;
 
-    public MergerTokenTableModel(MergerTokenSelectorController controller) {
+    public MergerTokenTableModel(MergerTokenSelector controller) {
         this.controller = controller;
         this.tokens = controller.getSelectableTokens();
     }
 
-    private MergerTokenSelectorController getController() {
+    private MergerTokenSelector getController() {
         return controller;
     }
 

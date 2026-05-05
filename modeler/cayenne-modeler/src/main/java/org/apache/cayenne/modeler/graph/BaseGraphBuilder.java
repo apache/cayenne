@@ -47,7 +47,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.ui.action.CreateRelationshipAction;
@@ -102,10 +102,7 @@ abstract class BaseGraphBuilder<E extends Entity<E, A, R>, A extends Attribute<E
      */
     protected List<DefaultGraphCell> createdObjects;
 
-    /**
-     * Current project controller
-     */
-    protected transient ProjectController mediator;
+    protected transient ProjectSession session;
 
     protected transient Entity<E, A, R> selectedEntity;
 
@@ -114,7 +111,7 @@ abstract class BaseGraphBuilder<E extends Entity<E, A, R>, A extends Attribute<E
     boolean undoEventsDisabled;
 
     @Override
-    public void buildGraph(ProjectController mediator, DataChannelDescriptor domain, boolean doLayout) {
+    public void buildGraph(ProjectSession session, DataChannelDescriptor domain, boolean doLayout) {
         if (graph != null) {
             // graph already built, exiting silently
             return;
@@ -124,7 +121,7 @@ abstract class BaseGraphBuilder<E extends Entity<E, A, R>, A extends Attribute<E
         GraphModel model = new DefaultGraphModel();
         graph.setModel(model);
 
-        setProjectController(mediator);
+        setProjectSession(session);
         setDataDomain(domain);
 
         GraphLayoutCache view = new GraphLayoutCache(model, new DefaultCellViewFactory());
@@ -362,7 +359,7 @@ abstract class BaseGraphBuilder<E extends Entity<E, A, R>, A extends Attribute<E
      * Creates popup menu
      */
     protected JPopupMenu createPopupMenu() {
-        Application application = mediator.getApplication();
+        Application application = session.app();
         GlobalActions globalActions = application.getActionManager();
 
         JPopupMenu menu = new JPopupMenu();
@@ -511,10 +508,10 @@ abstract class BaseGraphBuilder<E extends Entity<E, A, R>, A extends Attribute<E
         }
     }
 
-    public void setProjectController(ProjectController mediator) {
-        this.mediator = mediator;
+    public void setProjectSession(ProjectSession session) {
+        this.session = session;
 
-        mediator.addDataMapListener(this);
+        session.addDataMapListener(this);
     }
 
     public void setDataDomain(DataChannelDescriptor domain) {
@@ -528,7 +525,7 @@ abstract class BaseGraphBuilder<E extends Entity<E, A, R>, A extends Attribute<E
 
     @Override
     public void destroy() {
-        mediator.removeDataMapListener(this);
+        session.removeDataMapListener(this);
     }
 
     /**
@@ -602,9 +599,9 @@ abstract class BaseGraphBuilder<E extends Entity<E, A, R>, A extends Attribute<E
     public void undoableEditHappened(UndoableEditEvent e) {
         if (!undoEventsDisabled) {
             // graph has been modified
-            mediator.setDirty(true);
+            session.setDirty(true);
 
-            mediator.getApplication().getUndoManager().undoableEditHappened(e);
+            session.app().getUndoManager().undoableEditHappened(e);
         }
     }
 }

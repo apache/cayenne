@@ -22,7 +22,8 @@ package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.progress;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.toolkit.dialog.CMDialog;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.toolkit.AppDialog;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,14 +31,15 @@ import java.awt.*;
 /**
  * A dialog rendering a progress bar.
  */
-public class DbImportProgressDialog extends CMDialog {
+public class DbImportProgressDialog extends AppDialog {
 
     protected JProgressBar progressBar;
     protected JLabel statusLabel;
     protected JButton cancelButton;
 
-    public DbImportProgressDialog(JFrame parent, String title, String message) {
-        super(parent, title, false);
+    public DbImportProgressDialog(Application application, Window parent, String title, String message) {
+        super(application, parent, title, ModalityType.MODELESS);
+        makeCloseableOnEscape();
 
         progressBar = new JProgressBar();
         statusLabel = new JLabel(message, SwingConstants.LEFT);
@@ -65,7 +67,7 @@ public class DbImportProgressDialog extends CMDialog {
 
         setResizable(false);
         pack();
-        centerWindow();
+        centerOnOwner();
     }
 
     public JButton getCancelButton() {

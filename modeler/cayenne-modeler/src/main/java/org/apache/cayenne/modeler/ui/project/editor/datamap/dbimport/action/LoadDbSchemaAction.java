@@ -77,7 +77,7 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
 
                 DBConnector connectionInfo = getConnector(
                         "Load Db Schema",
-                        application.getFrameController().getProjectController().getSelectedDataMap());
+                        application.getFrame().getProjectSession().getSelectedDataMap());
 
                 if (connectionInfo == null) {
                     return;
@@ -102,7 +102,7 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
                 }
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(
-                        application.getFrameController().getView(),
+                        application.getFrame(),
                         ex.getMessage(),
                         "Error loading db schema",
                         JOptionPane.ERROR_MESSAGE);
@@ -125,7 +125,7 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
         draggableTreePanel.getSourceTree()
                 .translateReverseEngineeringToTree(databaseReverseEngineering, true);
         draggableTreePanel
-                .bindReverseEngineeringToDatamap(getProjectController().getSelectedDataMap(), databaseReverseEngineering);
+                .bindReverseEngineeringToDatamap(getProjectSession().getSelectedDataMap(), databaseReverseEngineering);
         ((DbImportModel) draggableTreePanel.getSourceTree().getModel()).reload();
     }
 

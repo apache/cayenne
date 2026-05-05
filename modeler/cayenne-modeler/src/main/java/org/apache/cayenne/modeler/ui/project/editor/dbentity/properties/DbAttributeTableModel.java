@@ -26,7 +26,7 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
 import org.apache.cayenne.modeler.project.DbAttributeOps;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 
@@ -50,8 +50,8 @@ public class DbAttributeTableModel extends CMTableModel<DbAttribute> {
 
     private final DbEntity entity;
 
-    public DbAttributeTableModel(DbEntity entity, ProjectController controller, Object eventSource) {
-        super(controller, eventSource, new ArrayList<>(entity.getAttributes()));
+    public DbAttributeTableModel(DbEntity entity, ProjectSession session, Object eventSource) {
+        super(session, eventSource, new ArrayList<>(entity.getAttributes()));
         this.entity = entity;
     }
 
@@ -165,7 +165,7 @@ public class DbAttributeTableModel extends CMTableModel<DbAttribute> {
                 break;
         }
 
-        controller.fireDbAttributeEvent(DbAttributeEvent.ofChange(eventSource, attr, entity, oldName));
+        session.fireDbAttributeEvent(DbAttributeEvent.ofChange(eventSource, attr, entity, oldName));
     }
 
     private String setDbAttributeName(DbAttribute attr, String newName) {
@@ -207,7 +207,7 @@ public class DbAttributeTableModel extends CMTableModel<DbAttribute> {
     }
 
     public String getComment(DbAttribute attr) {
-        return ObjectInfo.getFromMetaData(controller.getApplication().getMetaData(), attr, ObjectInfo.COMMENT);
+        return ObjectInfo.getFromMetaData(session.app().getMetaData(), attr, ObjectInfo.COMMENT);
     }
 
     public void setMaxLength(String newVal, DbAttribute attr) {
@@ -268,7 +268,7 @@ public class DbAttributeTableModel extends CMTableModel<DbAttribute> {
                             + " \"To Dep PK\" relationships using this attribute?";
 
                     int answer = JOptionPane.showConfirmDialog(
-                            controller.getApplication().getFrameController().getView(),
+                            session.app().getFrame(),
                             message);
                     if (answer != JOptionPane.YES_OPTION) {
                         // no action needed
@@ -296,7 +296,7 @@ public class DbAttributeTableModel extends CMTableModel<DbAttribute> {
     }
 
     public void setComment(String newVal, DbAttribute attr) {
-        ObjectInfo.putToMetaData(controller.getApplication().getMetaData(), attr, ObjectInfo.COMMENT, newVal);
+        ObjectInfo.putToMetaData(session.app().getMetaData(), attr, ObjectInfo.COMMENT, newVal);
     }
 
     public boolean isCellEditable(int row, int col) {

@@ -28,9 +28,8 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
-import org.apache.cayenne.modeler.ui.ModelerFrame;
 import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
 
 /**
@@ -56,11 +55,11 @@ public class ShowGraphEntityAction extends ModelerAbstractAction {
     public void performAction(ActionEvent e) {
         Entity<?,?,?> entity = null;
 
-        ProjectController mediator = getProjectController();
-        if (mediator.getSelectedDbEntity() != null) {
-            entity = mediator.getSelectedDbEntity();
-        } else if (mediator.getSelectedObjEntity() != null) {
-            entity = mediator.getSelectedObjEntity();
+        ProjectSession session = getProjectSession();
+        if (session.getSelectedDbEntity() != null) {
+            entity = session.getSelectedDbEntity();
+        } else if (session.getSelectedObjEntity() != null) {
+            entity = session.getSelectedObjEntity();
         }
 
         if (entity != null) {
@@ -75,7 +74,7 @@ public class ShowGraphEntityAction extends ModelerAbstractAction {
 
     void showEntity(Entity<?,?,?> entity) {
         // we're always in same domain
-        ProjectView editor = ((ModelerFrame) application.getFrameController().getView()).getProjectView();
+        ProjectView editor = application.getFrame().getProjectView();
 
         editor.getProjectTreeView().getSelectionModel().setSelectionPath(
                 editor
@@ -84,11 +83,11 @@ public class ShowGraphEntityAction extends ModelerAbstractAction {
                         .getParentPath()
                         .getParentPath());
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) getProjectController().getProject().getRootNode();
+        DataChannelDescriptor domain = (DataChannelDescriptor) getProjectSession().project().getRootNode();
         if (entity instanceof ObjEntity) {
-            getProjectController().displayObjEntity(new ObjEntityDisplayEvent(this, domain, entity.getDataMap(), (ObjEntity) entity));
+            getProjectSession().displayObjEntity(new ObjEntityDisplayEvent(this, domain, entity.getDataMap(), (ObjEntity) entity));
         } else if (entity instanceof DbEntity) {
-            getProjectController().displayDbEntity(new DbEntityDisplayEvent(this, domain, entity.getDataMap(), (DbEntity) entity));
+            getProjectSession().displayDbEntity(new DbEntityDisplayEvent(this, domain, entity.getDataMap(), (DbEntity) entity));
         }
     }
 }

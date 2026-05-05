@@ -25,7 +25,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
 import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -37,8 +37,8 @@ public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
     protected CMUndoableTextField customPKName;
     protected CMUndoableTextField customPKSize;
 
-    public PKCustomSequenceGeneratorPanel(ProjectController mediator) {
-        super(mediator);
+    public PKCustomSequenceGeneratorPanel(ProjectSession session) {
+        super(session);
         initView();
     }
 
@@ -48,9 +48,9 @@ public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
                 "* Custom sequences are supported on Oracle and Postgres");
         note.setFont(note.getFont().deriveFont(Font.ITALIC).deriveFont(11f));
 
-        customPKName = new CMUndoableTextField(mediator.getApplication().getUndoManager());
+        customPKName = new CMUndoableTextField(session.app().getUndoManager());
         customPKName.addCommitListener(this::setPKName);
-        customPKSize = new CMUndoableTextField(mediator.getApplication().getUndoManager());
+        customPKSize = new CMUndoableTextField(session.app().getUndoManager());
         customPKSize.addCommitListener(this::setPKSize);
 
         // assemble
@@ -97,8 +97,8 @@ public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
 
     protected void setPKSize(String text) {
 
-        if (mediator.getSelectedDbEntity() == null
-                || mediator.getSelectedDbEntity().getPrimaryKeyGenerator() == null) {
+        if (session.getSelectedDbEntity() == null
+                || session.getSelectedDbEntity().getPrimaryKeyGenerator() == null) {
             return;
         }
 
@@ -113,17 +113,17 @@ public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
             }
         }
 
-        DbKeyGenerator generator = mediator.getSelectedDbEntity().getPrimaryKeyGenerator();
+        DbKeyGenerator generator = session.getSelectedDbEntity().getPrimaryKeyGenerator();
         if (!Util.nullSafeEquals(generator.getKeyCacheSize(), cacheSize)) {
             generator.setKeyCacheSize(cacheSize);
-            mediator.fireDbEntityEvent(DbEntityEvent.ofChange(this, generator.getDbEntity()));
+            session.fireDbEntityEvent(DbEntityEvent.ofChange(this, generator.getDbEntity()));
         }
     }
 
     protected void setPKName(String text) {
 
-        if (mediator.getSelectedDbEntity() == null
-                || mediator.getSelectedDbEntity().getPrimaryKeyGenerator() == null) {
+        if (session.getSelectedDbEntity() == null
+                || session.getSelectedDbEntity().getPrimaryKeyGenerator() == null) {
             return;
         }
 
@@ -131,10 +131,10 @@ public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
             text = null;
         }
 
-        DbKeyGenerator generator = mediator.getSelectedDbEntity().getPrimaryKeyGenerator();
+        DbKeyGenerator generator = session.getSelectedDbEntity().getPrimaryKeyGenerator();
         if (!Util.nullSafeEquals(text, generator.getName())) {
             generator.setGeneratorName(text);
-            mediator.fireDbEntityEvent(DbEntityEvent.ofChange(this, generator.getDbEntity()));
+            session.fireDbEntityEvent(DbEntityEvent.ofChange(this, generator.getDbEntity()));
         }
     }
 }

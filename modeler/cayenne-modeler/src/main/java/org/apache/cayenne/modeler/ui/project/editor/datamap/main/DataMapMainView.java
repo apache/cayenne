@@ -31,13 +31,14 @@ import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
 import org.apache.cayenne.modeler.toolkit.combobox.CMUndoableComboBox;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.ui.action.LinkDataMapAction;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.main.catalog.CatalogUpdateController;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.main.locking.LockingUpdateController;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.main.pkg.PackageUpdateController;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.main.schema.SchemaUpdateController;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.main.superclass.SuperclassUpdateController;
+import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.main.catalog.CatalogUpdateDialog;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.main.locking.LockingUpdateDialog;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.main.pkg.PackageUpdateDialog;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.main.schema.SchemaUpdateDialog;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.main.superclass.SuperclassUpdateDialog;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
@@ -52,9 +53,7 @@ import java.util.List;
 /**
  * Panel for editing a DataMap.
  */
-public class DataMapMainView extends JPanel {
-
-    private final ProjectController controller;
+public class DataMapMainView extends ProjectPanel {
 
     private final CMUndoableTextField name;
     private final JLabel nodeSelectorLabel;
@@ -68,40 +67,40 @@ public class DataMapMainView extends JPanel {
 
     private final CMUndoableTextField comment;
 
-    public DataMapMainView(ProjectController controller) {
-        this.controller = controller;
+    public DataMapMainView(ProjectSession session) {
+        super(session);
 
         // create widgets
-        name = new CMUndoableTextField(controller.getApplication().getUndoManager());
+        name = new CMUndoableTextField(app().getUndoManager());
         name.addCommitListener(this::setDataMapName);
 
         nodeSelectorLabel = new JLabel("DataNode:");
-        nodeSelector = new CMUndoableComboBox<>(controller.getApplication().getUndoManager());
+        nodeSelector = new CMUndoableComboBox<>(app().getUndoManager());
         nodeSelector.setRenderer(Renderers.listRendererWithIcons());
 
         JButton updateDefaultCatalog = new JButton("Update...");
-        defaultCatalog = new CMUndoableTextField(controller.getApplication().getUndoManager());
+        defaultCatalog = new CMUndoableTextField(app().getUndoManager());
         defaultCatalog.addCommitListener(this::setDefaultCatalog);
 
         JButton updateDefaultSchema = new JButton("Update...");
-        defaultSchema = new CMUndoableTextField(controller.getApplication().getUndoManager());
+        defaultSchema = new CMUndoableTextField(app().getUndoManager());
         defaultSchema.addCommitListener(this::setDefaultSchema);
 
-        quoteSQLIdentifiers = new CMCheckBox(controller.getApplication().getUndoManager());
+        quoteSQLIdentifiers = new CMCheckBox(app().getUndoManager());
 
-        comment = new CMUndoableTextField(controller.getApplication().getUndoManager());
+        comment = new CMUndoableTextField(app().getUndoManager());
         comment.addCommitListener(this::updateComment);
 
         JButton updateDefaultPackage = new JButton("Update...");
-        defaultPackage = new CMUndoableTextField(controller.getApplication().getUndoManager());
+        defaultPackage = new CMUndoableTextField(app().getUndoManager());
         defaultPackage.addCommitListener(this::setDefaultPackage);
 
         JButton updateDefaultSuperclass = new JButton("Update...");
-        defaultSuperclass = new CMUndoableTextField(controller.getApplication().getUndoManager());
+        defaultSuperclass = new CMUndoableTextField(app().getUndoManager());
         defaultSuperclass.addCommitListener(this::setDefaultSuperclass);
 
         JButton updateDefaultLockType = new JButton("Update...");
-        defaultLockType = new CMCheckBox(controller.getApplication().getUndoManager());
+        defaultLockType = new CMCheckBox(app().getUndoManager());
 
         // assemble
         FormLayout layout = new FormLayout(
@@ -135,7 +134,7 @@ public class DataMapMainView extends JPanel {
         this.setLayout(new BorderLayout());
         add(builder.getPanel(), BorderLayout.CENTER);
 
-        controller.addDataMapDisplayListener(e -> {
+        session().addDataMapDisplayListener(e -> {
             DataMap map = e.getDataMap();
             if (map != null) {
                 initFromModel(map);
@@ -165,7 +164,7 @@ public class DataMapMainView extends JPanel {
 
         // rebuild data node list
 
-        DataNodeDescriptor[] nodes = ((DataChannelDescriptor) controller.getProject().getRootNode())
+        DataNodeDescriptor[] nodes = ((DataChannelDescriptor) session().project().getRootNode())
                 .getNodeDescriptors().toArray(new DataNodeDescriptor[0]);
 
         // add an empty item to the front
@@ -201,7 +200,7 @@ public class DataMapMainView extends JPanel {
     }
 
     void setDefaultLockType(int lockType) {
-        DataMap dataMap = controller.getSelectedDataMap();
+        DataMap dataMap = session().getSelectedDataMap();
 
         if (dataMap == null) {
             return;
@@ -213,11 +212,11 @@ public class DataMapMainView extends JPanel {
         }
 
         dataMap.setDefaultLockType(lockType);
-        controller.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
+        session().fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
     }
 
     void setQuoteSQLIdentifiers(boolean flag) {
-        DataMap dataMap = controller.getSelectedDataMap();
+        DataMap dataMap = session().getSelectedDataMap();
 
         if (dataMap == null) {
             return;
@@ -226,12 +225,12 @@ public class DataMapMainView extends JPanel {
         if (dataMap.isQuotingSQLIdentifiers() != flag) {
             dataMap.setQuotingSQLIdentifiers(flag);
 
-            controller.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
+            session().fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
         }
     }
 
     void setDefaultPackage(String newDefaultPackage) {
-        DataMap dataMap = controller.getSelectedDataMap();
+        DataMap dataMap = session().getSelectedDataMap();
 
         if (dataMap == null) {
             return;
@@ -249,14 +248,14 @@ public class DataMapMainView extends JPanel {
         dataMap.setDefaultPackage(newDefaultPackage);
 
         // update class generation preferences
-        DataMapPrefs.of(controller.getApplication().getPreferencesRepository(), dataMap)
+        DataMapPrefs.of(app().getPreferencesRepository(), dataMap)
                 .setSuperclassPackage(newDefaultPackage, DataMapPrefs.DEFAULT_SUPERCLASS_PACKAGE_SUFFIX);
 
-        controller.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
+        session().fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
     }
 
     void setDefaultCatalog(String newCatalog) {
-        DataMap dataMap = controller.getSelectedDataMap();
+        DataMap dataMap = session().getSelectedDataMap();
 
         if (dataMap == null) {
             return;
@@ -272,11 +271,11 @@ public class DataMapMainView extends JPanel {
         }
 
         dataMap.setDefaultCatalog(newCatalog);
-        controller.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
+        session().fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
     }
 
     void setDefaultSchema(String newSchema) {
-        DataMap dataMap = controller.getSelectedDataMap();
+        DataMap dataMap = session().getSelectedDataMap();
 
         if (dataMap == null) {
             return;
@@ -292,11 +291,11 @@ public class DataMapMainView extends JPanel {
         }
 
         dataMap.setDefaultSchema(newSchema);
-        controller.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
+        session().fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
     }
 
     void setDefaultSuperclass(String newSuperclass) {
-        DataMap dataMap = controller.getSelectedDataMap();
+        DataMap dataMap = session().getSelectedDataMap();
 
         if (dataMap == null) {
             return;
@@ -312,7 +311,7 @@ public class DataMapMainView extends JPanel {
         }
 
         dataMap.setDefaultSuperclass(newSuperclass);
-        controller.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
+        session().fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
     }
 
     void setDataMapName(String newName) {
@@ -320,11 +319,11 @@ public class DataMapMainView extends JPanel {
             throw new ValidationException("Enter name for DataMap");
         }
 
-        DataMap map = controller.getSelectedDataMap();
+        DataMap map = session().getSelectedDataMap();
 
         // search for matching map name across domains, as currently they have to be
         // unique globally
-        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) controller.getProject().getRootNode();
+        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) session().project().getRootNode();
 
         DataMap matchingMap = dataChannelDescriptor.getDataMap(newName);
 
@@ -341,7 +340,7 @@ public class DataMapMainView extends JPanel {
         }
         // completely new name, set new name for domain
         DataMapEvent e = DataMapEvent.ofChange(this, map, oldName);
-        DataChannelDescriptor domain = (DataChannelDescriptor) controller.getProject().getRootNode();
+        DataChannelDescriptor domain = (DataChannelDescriptor) session().project().getRootNode();
 
         // must fully relink renamed map across node descriptors
         List<DataNodeDescriptor> nodesUsingMap = new ArrayList<>();
@@ -356,78 +355,78 @@ public class DataMapMainView extends JPanel {
             node.getDataMapNames().add(newName);
         }
 
-        controller.fireDataMapEvent(e);
+        session().fireDataMapEvent(e);
     }
 
     void setDataNode() {
         DataNodeDescriptor node = (DataNodeDescriptor) nodeSelector.getSelectedItem();
-        DataMap map = controller.getSelectedDataMap();
-        LinkDataMapAction action = controller.getApplication().getActionManager().getAction(LinkDataMapAction.class);
+        DataMap map = session().getSelectedDataMap();
+        LinkDataMapAction action = app().getActionManager().getAction(LinkDataMapAction.class);
         action.linkDataMap(map, node);
     }
 
     void updateDefaultCatalog() {
-        DataMap dataMap = controller.getSelectedDataMap();
+        DataMap dataMap = session().getSelectedDataMap();
 
         if (dataMap == null) {
             return;
         }
 
         if (!dataMap.getDbEntities().isEmpty() || !dataMap.getProcedures().isEmpty()) {
-            new CatalogUpdateController(controller, dataMap).startupAction();
+            new CatalogUpdateDialog(session(), app().getFrame(), dataMap).open();
         }
     }
 
     void updateDefaultSchema() {
-        DataMap dataMap = controller.getSelectedDataMap();
+        DataMap dataMap = session().getSelectedDataMap();
 
         if (dataMap == null) {
             return;
         }
 
         if (!dataMap.getDbEntities().isEmpty() || !dataMap.getProcedures().isEmpty()) {
-            new SchemaUpdateController(controller, dataMap).startupAction();
+            new SchemaUpdateDialog(session(), app().getFrame(), dataMap).open();
         }
     }
 
     void updateDefaultSuperclass() {
-        DataMap dataMap = controller.getSelectedDataMap();
+        DataMap dataMap = session().getSelectedDataMap();
 
         if (dataMap == null) {
             return;
         }
 
         if (!dataMap.getObjEntities().isEmpty()) {
-            new SuperclassUpdateController(controller, dataMap).startupAction();
+            new SuperclassUpdateDialog(session(), app().getFrame(), dataMap).open();
         }
     }
 
     void updateDefaultPackage() {
-        DataMap dataMap = controller.getSelectedDataMap();
+        DataMap dataMap = session().getSelectedDataMap();
 
         if (dataMap == null) {
             return;
         }
 
         if (!dataMap.getObjEntities().isEmpty() || !dataMap.getEmbeddables().isEmpty()) {
-            new PackageUpdateController(controller, dataMap).startupAction();
+            new PackageUpdateDialog(session(), app().getFrame(), dataMap).open();
         }
     }
 
     void updateDefaultLockType() {
-        DataMap dataMap = controller.getSelectedDataMap();
+        DataMap dataMap = session().getSelectedDataMap();
 
         if (dataMap == null) {
             return;
         }
 
         if (!dataMap.getObjEntities().isEmpty()) {
-            new LockingUpdateController(controller, dataMap).startup();
+            new LockingUpdateDialog(session(), app().getFrame(), dataMap).open();
         }
     }
 
     void updateComment(String comment) {
-        DataMap dataMap = controller.getSelectedDataMap();
+        DataMap dataMap = session().getSelectedDataMap();
         if (dataMap == null) {
             return;
         }
@@ -436,12 +435,12 @@ public class DataMapMainView extends JPanel {
             currentComment = "";
         }
         if (!currentComment.equals(comment)) {
-            ObjectInfo.putToMetaData(controller.getApplication().getMetaData(), dataMap, ObjectInfo.COMMENT, comment);
-            controller.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
+            ObjectInfo.putToMetaData(app().getMetaData(), dataMap, ObjectInfo.COMMENT, comment);
+            session().fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
         }
     }
 
     private String getComment(DataMap dataMap) {
-        return ObjectInfo.getFromMetaData(controller.getApplication().getMetaData(), dataMap, ObjectInfo.COMMENT);
+        return ObjectInfo.getFromMetaData(app().getMetaData(), dataMap, ObjectInfo.COMMENT);
     }
 }

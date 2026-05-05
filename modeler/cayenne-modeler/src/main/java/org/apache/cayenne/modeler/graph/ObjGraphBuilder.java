@@ -31,7 +31,7 @@ import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
 import org.apache.cayenne.modeler.event.model.ObjAttributeListener;
 import org.apache.cayenne.modeler.event.model.ObjEntityListener;
 import org.apache.cayenne.modeler.event.model.ObjRelationshipListener;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.jgraph.graph.AttributeMap;
 import org.jgraph.graph.DefaultEdge;
 import org.jgraph.graph.DefaultGraphCell;
@@ -120,20 +120,20 @@ class ObjGraphBuilder extends BaseGraphBuilder<ObjEntity, ObjAttribute, ObjRelat
     }
 
     @Override
-    public void setProjectController(ProjectController mediator) {
-        super.setProjectController(mediator);
+    public void setProjectSession(ProjectSession session) {
+        super.setProjectSession(session);
 
-        mediator.addObjEntityListener(this);
-        mediator.addObjAttributeListener(this);
-        mediator.addObjRelationshipListener(this);
+        session.addObjEntityListener(this);
+        session.addObjAttributeListener(this);
+        session.addObjRelationshipListener(this);
     }
 
     public void destroy() {
         super.destroy();
 
-        mediator.removeObjEntityListener(this);
-        mediator.removeObjAttributeListener(this);
-        mediator.removeObjRelationshipListener(this);
+        session.removeObjEntityListener(this);
+        session.removeObjAttributeListener(this);
+        session.removeObjRelationshipListener(this);
     }
 
     public void objEntityAdded(ObjEntityEvent e) {

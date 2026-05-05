@@ -23,7 +23,7 @@ package org.apache.cayenne.modeler.ui.errors;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.UrlOpener;
 import org.apache.cayenne.modeler.toolkit.buttons.CMButtonPanel;
-import org.apache.cayenne.modeler.toolkit.dialog.CMDialog;
+import org.apache.cayenne.modeler.toolkit.AppDialog;
 import org.apache.cayenne.util.LocalizedStringsHandler;
 import org.apache.cayenne.util.Util;
 
@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-class ErrorDialog extends CMDialog implements ActionListener {
+class ErrorDialog extends AppDialog implements ActionListener {
 
     private static final String BUGREPORT_URL = "https://issues.apache.org/jira/browse/CAY";
 
@@ -55,7 +55,12 @@ class ErrorDialog extends CMDialog implements ActionListener {
             boolean modal)
             throws HeadlessException {
 
-        super(application.getFrameController().getView(), title, modal);
+        super(application,
+                application.getFrame(),
+                title,
+                modal ? ModalityType.APPLICATION_MODAL : ModalityType.MODELESS);
+
+        makeCloseableOnEscape();
 
         setThrowable(Util.unwindException(throwable));
         setDetailed(detailed);
@@ -119,7 +124,7 @@ class ErrorDialog extends CMDialog implements ActionListener {
 
         // prepare to display
         this.pack();
-        this.centerWindow();
+        this.centerOnOwner();
     }
 
     protected String infoHTML(Application application) {
@@ -188,7 +193,7 @@ class ErrorDialog extends CMDialog implements ActionListener {
                 showDetails();
             }
             this.pack();
-            this.centerWindow();
+            this.centerOnOwner();
         }
     }
 

@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.project.validator;
 import javax.swing.JFrame;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 import org.apache.cayenne.validation.ValidationFailure;
 
@@ -44,10 +44,10 @@ public class DomainErrorMsg extends ValidationDisplayHandler {
         domain = (DataChannelDescriptor) object;
     }
 
-    public void displayField(ProjectController mediator, JFrame frame) {
+    public void displayField(ProjectSession session, JFrame frame) {
         DomainDisplayEvent event;
         event = new DomainDisplayEvent(frame, domain);
-        mediator.displayDomain(event);
+        session.displayDomain(event);
     }
 
 }

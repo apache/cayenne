@@ -24,7 +24,7 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 
 /**
  * Action for copying attribute(s)
@@ -68,13 +68,13 @@ public class CopyAttributeAction extends CopyAction implements MultipleObjectsAc
     }
 
     @Override
-    public Object copy(ProjectController controller) {
-        Object[] attrs = getProjectController().getSelectedObjAttributes();
+    public Object copy(ProjectSession session) {
+        Object[] attrs = getProjectSession().getSelectedObjAttributes();
         if (attrs == null || attrs.length == 0) {
-            attrs = getProjectController().getSelectedDbAttributes();
+            attrs = getProjectSession().getSelectedDbAttributes();
         }
         if (attrs == null || attrs.length == 0) {
-            attrs = getProjectController().getSelectedEmbeddableAttributes();
+            attrs = getProjectSession().getSelectedEmbeddableAttributes();
         }
 
         if (attrs != null && attrs.length > 0) {

@@ -27,7 +27,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +40,7 @@ public class ModelerDbLoaderContext {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelerDbLoaderContext.class);
 
-    private final ProjectController projectController;
+    private final ProjectSession session;
     private final DataMap dataMap;
     private final Application application;
 
@@ -50,8 +50,8 @@ public class ModelerDbLoaderContext {
     private String loadStatusNote;
     private volatile boolean isInterrupted;
 
-    public ModelerDbLoaderContext(ProjectController projectController, Application application, DataMap dataMap) {
-        this.projectController = projectController;
+    public ModelerDbLoaderContext(ProjectSession session, Application application, DataMap dataMap) {
+        this.session = session;
         this.application = application;
         this.dataMap = dataMap;
     }
@@ -60,8 +60,8 @@ public class ModelerDbLoaderContext {
         return dataMap;
     }
 
-    public ProjectController getProjectController() {
-        return projectController;
+    public ProjectSession getProjectSession() {
+        return session;
     }
 
     public Application getApplication() {
@@ -170,7 +170,7 @@ public class ModelerDbLoaderContext {
         LOGGER.info("Exception on reverse engineering", Util.unwindException(th));
         isInterrupted = true;
         SwingUtilities.invokeLater(() -> JOptionPane
-                .showMessageDialog(projectController.getApplication().getFrameController().getView(), th.getMessage(), message, JOptionPane.ERROR_MESSAGE));
+                .showMessageDialog(session.app().getFrame(), th.getMessage(), message, JOptionPane.ERROR_MESSAGE));
     }
 
     public boolean isInterrupted() {

@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 
 import java.awt.event.ActionEvent;
@@ -33,8 +33,8 @@ public class ShowValidationConfigAction extends ModelerAbstractAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        ProjectController controller = getProjectController();
-        DataChannelDescriptor dataChannel = (DataChannelDescriptor) controller.getProject().getRootNode();
-        controller.displayDomain(new DomainDisplayEvent(this, dataChannel));
+        ProjectSession session = getProjectSession();
+        DataChannelDescriptor dataChannel = (DataChannelDescriptor) session.project().getRootNode();
+        session.displayDomain(new DomainDisplayEvent(this, dataChannel));
     }
 }

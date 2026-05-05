@@ -22,21 +22,20 @@ package org.apache.cayenne.modeler.ui.project.editor.objentity.classname;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.mvc.ChildController;
-import org.apache.cayenne.modeler.mvc.RootController;
 
 import javax.swing.JOptionPane;
 import java.awt.Component;
 
-public class ClassNameUpdaterController extends ChildController<RootController> {
+public class ClassNameUpdaterController {
 
     private static final String UPDATE = "Update";
     private static final String CANCEL = "Cancel";
 
+    private final Component owner;
     private final ObjEntity entity;
 
-    public ClassNameUpdaterController(RootController parent, ObjEntity entity) {
-        super(parent);
+    public ClassNameUpdaterController(Component owner, ObjEntity entity) {
+        this.owner = owner;
         this.entity = entity;
     }
 
@@ -66,7 +65,7 @@ public class ClassNameUpdaterController extends ChildController<RootController> 
         pane.setOptions(new Object[]{UPDATE, CANCEL});
         pane.setInitialValue(UPDATE);
 
-        pane.createDialog(parent.getView(), "Update Class Name").setVisible(true);
+        pane.createDialog(owner, "Update Class Name").setVisible(true);
 
         if (UPDATE.equals(pane.getValue())) {
             entity.setClassName(suggestedName);
@@ -102,10 +101,5 @@ public class ClassNameUpdaterController extends ChildController<RootController> 
         }
 
         return DataMap.getNameWithPackage(pkg, entityName);
-    }
-
-    @Override
-    public Component getView() {
-        return null;
     }
 }

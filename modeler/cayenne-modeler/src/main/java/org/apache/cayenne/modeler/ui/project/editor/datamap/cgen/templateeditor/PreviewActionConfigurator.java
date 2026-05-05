@@ -41,20 +41,20 @@ public class PreviewActionConfigurator {
 
     public static final String TEMPLATE_EDITOR_WRITER = "tplEditorWriter";
     private static final Key<StringWriter> TPL_EDITOR_WRITER = Key.get(StringWriter.class, TEMPLATE_EDITOR_WRITER);
-    private final TemplateEditorController editorController;
+    private final TemplateEditor editor;
     private final TemplateType templateType;
     private final ArtefactsConfigurator artefactsConfigurator;
     private final Injector injector;
 
-    public PreviewActionConfigurator(TemplateEditorController editorController) {
-        this.editorController = editorController;
-        this.templateType = editorController.getTemplateType();
-        this.artefactsConfigurator = editorController.getArtefactsConfigurator();
+    public PreviewActionConfigurator(TemplateEditor editor) {
+        this.editor = editor;
+        this.templateType = editor.getTemplateType();
+        this.artefactsConfigurator = editor.getArtefactsConfigurator();
         this.injector = getInjector();
     }
 
     private Injector getInjector() {
-        DataChannelMetaData metaData = editorController.getApplication().getMetaData();
+        DataChannelMetaData metaData = editor.app().getMetaData();
         return new ToolsInjectorBuilder()
                 .addModule(binder -> binder.bind(DataChannelMetaData.class).toInstance(metaData))
                 .addModule(binder -> binder.bind(ClassGenerationActionFactory.class).to(PreviewClassGenerationFactory.class))
@@ -69,7 +69,7 @@ public class PreviewActionConfigurator {
         ClassGenerationAction action = injector
                 .getInstance(ClassGenerationActionFactory.class)
                 .createAction(previewCgenConfiguration);
-        artefactsConfigurator.config(action, editorController.getSelectedArtifactName());
+        artefactsConfigurator.config(action, editor.getSelectedArtifactName());
         return action;
     }
 
@@ -97,7 +97,7 @@ public class PreviewActionConfigurator {
 
     private CgenConfiguration createPreviewCgenConfiguration() {
         CgenConfiguration cgenConfiguration = new CgenConfiguration();
-        cgenConfiguration.setDataMap(editorController.getCurrentDataMap());
+        cgenConfiguration.setDataMap(editor.getCurrentDataMap());
         cgenConfiguration.setMakePairs(false);
         cgenConfiguration.setArtifactsGenerationMode(ArtifactsGenerationMode.ALL.getLabel());
         return cgenConfiguration;

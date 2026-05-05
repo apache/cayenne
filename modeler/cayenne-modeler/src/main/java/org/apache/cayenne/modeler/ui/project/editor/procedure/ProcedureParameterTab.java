@@ -49,7 +49,8 @@ import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.ui.action.PasteAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.RemoveProcedureParameterAction;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 
 import javax.swing.*;
@@ -65,10 +66,8 @@ import java.util.Arrays;
 import java.util.EventObject;
 import java.util.List;
 
-public class ProcedureParameterTab extends JPanel implements ProcedureParameterListener,
+public class ProcedureParameterTab extends ProjectPanel implements ProcedureParameterListener,
         ProcedureDisplayListener, ExistingSelectionProcessor, ActionListener {
-
-    private final ProjectController controller;
 
     protected CMTable table;
     protected JButton removeParameterButton;
@@ -83,13 +82,13 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
     protected JMenuItem moveUpMenu;
     protected JMenuItem moveDownMenu;
 
-    public ProcedureParameterTab(ProjectController controller) {
-        this.controller = controller;
+    public ProcedureParameterTab(ProjectSession session) {
+        super(session);
 
         init();
 
-        controller.addProcedureDisplayListener(this);
-        controller.addProcedureParameterListener(this);
+        session.addProcedureDisplayListener(this);
+        session.addProcedureParameterListener(this);
 
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
@@ -111,7 +110,7 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        GlobalActions globalActions = controller.getApplication().getActionManager();
+        GlobalActions globalActions = app().getActionManager();
         toolBar.add(globalActions.getAction(CreateProcedureParameterAction.class).buildButton(1));
         removeParameterButton = globalActions.getAction(RemoveProcedureParameterAction.class).buildButton(3);
         toolBar.add(removeParameterButton);
@@ -223,11 +222,11 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
 
         ProcedureParameterDisplayEvent ppde = new ProcedureParameterDisplayEvent(
                 this,
-                (DataChannelDescriptor) controller.getProject().getRootNode(),
-                controller.getSelectedDataMap(),
-                controller.getSelectedProcedure(),
+                (DataChannelDescriptor) session().project().getRootNode(),
+                session().getSelectedDataMap(),
+                session().getSelectedProcedure(),
                 parameters);
-        controller.displayProcedureParameter(ppde);
+        session().displayProcedureParameter(ppde);
     }
 
     /**
@@ -244,7 +243,7 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
      * Selects a specified parameters.
      */
     public void selectParameters(ProcedureParameter[] params) {
-        GlobalActions actions = controller.getApplication().getActionManager();
+        GlobalActions actions = app().getActionManager();
         actions.getAction(RemoveAttributeRelationshipAction.class).updateForSelection(params.length);
         actions.getAction(CutAttributeRelationshipAction.class).updateForSelection(params.length);
         actions.getAction(CopyAttributeRelationshipAction.class).updateForSelection(params.length);
@@ -264,7 +263,7 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
     protected void rebuildTable(Procedure procedure) {
         ProcedureParameterTableModel model = new ProcedureParameterTableModel(
                 procedure,
-                controller,
+                session(),
                 this);
 
         table.setModel(model);
@@ -283,7 +282,7 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
         String[] dbTypes = TypesMapping.getDatabaseTypes();
         Arrays.sort(dbTypes);
         JComboBox typesEditor = new CMComboBox<>(dbTypes);
-        AutoCompletion.enable(typesEditor, controller::getSelectedDataMap);
+        AutoCompletion.enable(typesEditor, session()::getSelectedDataMap);
         typesColumn.setCellEditor(new CMComboBoxCellEditor(typesEditor));
 
         // direction column tweaking
@@ -305,7 +304,7 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
         moveUp.setEnabled(false);
         moveDown.setEnabled(false);
 
-        CMTablePrefs.of(controller.getApplication().getPreferencesRepository(), "procedure/parameterTable").bind(table, null);
+        CMTablePrefs.of(app().getPreferencesRepository(), "procedure/parameterTable").bind(table, null);
     }
 
     public void procedureParameterAdded(ProcedureParameterEvent e) {
@@ -341,7 +340,7 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
 
             // note that 'setCallParameters' is donw by copy internally
             parameter.getProcedure().setCallParameters(model.getObjectList());
-            controller.fireProcedureEvent(
+            session().fireProcedureEvent(
                     ProcedureEvent.ofChange(this, parameter.getProcedure())
             );
         }

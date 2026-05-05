@@ -25,7 +25,7 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.modeler.event.model.DbEntityEvent;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
@@ -38,8 +38,8 @@ public class PKDBGeneratorPanel extends PKGeneratorPanel {
 
     private JComboBox<Object> attributes;
 
-    public PKDBGeneratorPanel(ProjectController mediator) {
-        super(mediator);
+    public PKDBGeneratorPanel(ProjectSession session) {
+        super(session);
         initView();
     }
 
@@ -76,7 +76,7 @@ public class PKDBGeneratorPanel extends PKGeneratorPanel {
             DbAttribute pk = (DbAttribute) pkAttributes.iterator().next();
             if (TypesMapping.isNumeric(pk.getType()) && !pk.isGenerated()) {
                 pk.setGenerated(true);
-                mediator.fireDbEntityEvent(DbEntityEvent.ofChange(this, entity));
+                session.fireDbEntityEvent(DbEntityEvent.ofChange(this, entity));
             }
         }
 
@@ -121,7 +121,7 @@ public class PKDBGeneratorPanel extends PKGeneratorPanel {
 
                     if (a.isGenerated() != generated) {
                         a.setGenerated(generated);
-                        mediator.fireDbEntityEvent(DbEntityEvent.ofChange(this, entity));
+                        session.fireDbEntityEvent(DbEntityEvent.ofChange(this, entity));
                     }
                 }
             });

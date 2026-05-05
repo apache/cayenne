@@ -37,7 +37,7 @@ public class EditorTemplateLoader {
     private final CgenConfiguration cgenConfiguration;
     private final JFrame view;
 
-    public EditorTemplateLoader(CgenConfiguration configuration, TemplateEditorView view) {
+    public EditorTemplateLoader(CgenConfiguration configuration, JFrame view) {
         this.cgenConfiguration = configuration;
         this.view = view;
     }

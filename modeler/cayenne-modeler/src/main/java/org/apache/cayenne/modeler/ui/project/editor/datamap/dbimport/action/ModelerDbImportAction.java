@@ -32,8 +32,7 @@ import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.project.DataMapOps;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.progress.DbImportProgressDialog;
 import org.apache.cayenne.modeler.ui.action.DBConnectionAwareAction;
-import org.apache.cayenne.modeler.ui.dbloadresult.DbLoadResultDialog;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportController;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportResultDialog;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.runner.ModelerDbImportModule;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.runner.ModelerDbLoaderContext;
 import org.slf4j.Logger;
@@ -72,7 +71,7 @@ public class ModelerDbImportAction extends DBConnectionAwareAction {
 
     private void startImport(DataMap dataMap, AtomicInteger dataMapCount) {
         ModelerDbLoaderContext context = new ModelerDbLoaderContext(
-                getProjectController(),
+                getProjectSession(),
                 application,
                 dataMap);
 
@@ -85,7 +84,7 @@ public class ModelerDbImportAction extends DBConnectionAwareAction {
             context.setConnection(connectionInfo.makeDataSource(application.getClassLoader()).getConnection());
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(
-                    application.getFrameController().getView(),
+                    application.getFrame(),
                     ex.getMessage(),
                     "Error loading schemas dialog",
                     JOptionPane.ERROR_MESSAGE);
@@ -100,8 +99,7 @@ public class ModelerDbImportAction extends DBConnectionAwareAction {
             return;
         }
 
-        DbImportController dbImportController = application.getFrameController().getDbImportController();
-        DbLoadResultDialog dbLoadResultDialog = dbImportController.createDialog();
+        DbImportResultDialog dbImportResultDialog = application.getFrame().getDbImportResultDialog();
 
         runLoaderInThread(context, () -> {
             application.getUndoManager().discardAllEdits();
@@ -111,8 +109,8 @@ public class ModelerDbImportAction extends DBConnectionAwareAction {
                 // TODO: this whole thing with "dataMapCount" seems like a code smell. Loader thread should simply
                 //  return when it does, and then the dialog should be shown
                 if (dataMapCount.decrementAndGet() <= 0 && !context.isInterrupted()) {
-                    if (!dbLoadResultDialog.isVisible() && !dbLoadResultDialog.getTableForMap().isEmpty()) {
-                        dbImportController.showDialog();
+                    if (!dbImportResultDialog.isVisible() && !dbImportResultDialog.getTableForMap().isEmpty()) {
+                        dbImportResultDialog.showDialog();
                     }
                 }
             } catch (SQLException ignored) {
@@ -125,12 +123,12 @@ public class ModelerDbImportAction extends DBConnectionAwareAction {
      */
     @Override
     public void performAction(ActionEvent event) {
-        startImport(application.getFrameController().getProjectController().getSelectedDataMap(), new AtomicInteger(1));
+        startImport(application.getFrame().getProjectSession().getSelectedDataMap(), new AtomicInteger(1));
     }
 
     private void runLoaderInThread(ModelerDbLoaderContext context, Runnable callback) {
         Thread th = new Thread(() -> {
-            new DbImportTask(application.getFrameController().getView(), "Reengineering DB", context).startAndWait();
+            new DbImportTask(application, "Reengineering DB", context).startAndWait();
             SwingUtilities.invokeLater(callback);
         });
         th.start();
@@ -141,14 +139,14 @@ public class ModelerDbImportAction extends DBConnectionAwareAction {
         private static final int DEFAULT_MS_TO_DECIDE_TO_POPUP = 500;
 
         private final ModelerDbLoaderContext context;
-        private final JFrame frame;
+        private final Application application;
         private final String title;
         private DbImportProgressDialog dialog;
         private Timer taskPollingTimer;
         private boolean finished;
 
-        public DbImportTask(JFrame frame, String title, ModelerDbLoaderContext context) {
-            this.frame = frame;
+        public DbImportTask(Application application, String title, ModelerDbLoaderContext context) {
+            this.application = application;
             this.title = title;
             this.context = context;
         }
@@ -194,7 +192,7 @@ public class ModelerDbImportAction extends DBConnectionAwareAction {
             }
 
             LOGGER.debug("task still in progress, will show progress dialog...");
-            this.dialog = new DbImportProgressDialog(frame, "Progress...", title);
+            this.dialog = new DbImportProgressDialog(application, application.getFrame(), "Progress...", title);
             this.dialog.getCancelButton().addActionListener(e -> setCanceled(true));
             updateProgress();
 

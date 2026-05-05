@@ -18,45 +18,44 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.query.ejbql;
 
-import java.awt.BorderLayout;
-import javax.swing.JPanel;
-
-import org.apache.cayenne.modeler.event.model.QueryEvent;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.MappingNamespace;
-import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.project.extension.info.ObjectInfo;
-import org.apache.cayenne.util.Util;
-import org.apache.cayenne.validation.ValidationException;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.MappingNamespace;
+import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.modeler.event.model.QueryEvent;
+import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
+import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.project.extension.info.ObjectInfo;
+import org.apache.cayenne.util.Util;
+import org.apache.cayenne.validation.ValidationException;
+
+import java.awt.BorderLayout;
 
 
-public class EjbqlQueryMainTab extends JPanel{
+public class EjbqlQueryMainTab extends ProjectPanel {
 
-    protected ProjectController mediator;
     protected CMUndoableTextField name;
     protected CMUndoableTextField comment;
     protected EjbqlQueryPropertiesPanel properties;
 
-    public EjbqlQueryMainTab(ProjectController mediator) {
-        this.mediator = mediator;
-        initView();  
+    public EjbqlQueryMainTab(ProjectSession session) {
+        super(session);
+        initView();
     }
 
     private void initView() {
         // create widgets
-        name = new CMUndoableTextField(mediator.getApplication().getUndoManager());
+        name = new CMUndoableTextField(app().getUndoManager());
         name.addCommitListener(this::setQueryName);
 
-        comment = new CMUndoableTextField(mediator.getApplication().getUndoManager());
+        comment = new CMUndoableTextField(app().getUndoManager());
         comment.addCommitListener(this::setQueryComment);
 
-        properties = new EjbqlQueryPropertiesPanel(mediator);
+        properties = new EjbqlQueryPropertiesPanel(session());
         // assemble
         CellConstraints cc = new CellConstraints();
         FormLayout layout = new FormLayout(
@@ -80,7 +79,7 @@ public class EjbqlQueryMainTab extends JPanel{
      * query is changed.
      */
     void initFromModel() {
-        QueryDescriptor query = mediator.getSelectedQuery();
+        QueryDescriptor query = session().getSelectedQuery();
 
         if (query == null || !QueryDescriptor.EJBQL_QUERY.equals(query.getType())) {
             setVisible(false);
@@ -94,7 +93,7 @@ public class EjbqlQueryMainTab extends JPanel{
     }
 
     protected QueryDescriptor getQuery() {
-        QueryDescriptor query = mediator.getSelectedQuery();
+        QueryDescriptor query = session().getSelectedQuery();
         return (query != null && QueryDescriptor.EJBQL_QUERY.equals(query.getType())) ? query : null;
     }
 
@@ -120,7 +119,7 @@ public class EjbqlQueryMainTab extends JPanel{
             throw new ValidationException("Query name is required.");
         }
 
-        DataMap map = mediator.getSelectedDataMap();
+        DataMap map = session().getSelectedDataMap();
 
         if (map.getQueryDescriptor(newName) == null) {
             // completely new name, set new name for entity
@@ -134,7 +133,7 @@ public class EjbqlQueryMainTab extends JPanel{
             if (ns instanceof EntityResolver) {
                 ((EntityResolver) ns).refreshMappingCache();
             }
-            mediator.fireQueryEvent(e);
+            session().fireQueryEvent(e);
         }
         else {
             // there is a query with the same name
@@ -149,11 +148,11 @@ public class EjbqlQueryMainTab extends JPanel{
         if (query == null) {
             return;
         }
-        ObjectInfo.putToMetaData(mediator.getApplication().getMetaData(), query, ObjectInfo.COMMENT, text);
-        mediator.fireQueryEvent(QueryEvent.ofChange(this, query));
+        ObjectInfo.putToMetaData(app().getMetaData(), query, ObjectInfo.COMMENT, text);
+        session().fireQueryEvent(QueryEvent.ofChange(this, query));
     }
 
     private String getQueryComment(QueryDescriptor queryDescriptor) {
-        return ObjectInfo.getFromMetaData(mediator.getApplication().getMetaData(), queryDescriptor, ObjectInfo.COMMENT);
+        return ObjectInfo.getFromMetaData(app().getMetaData(), queryDescriptor, ObjectInfo.COMMENT);
     }
 }

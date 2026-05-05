@@ -22,7 +22,7 @@ import org.apache.cayenne.modeler.ui.project.editor.query.SelectPropertiesPanel;
 
 import java.awt.BorderLayout;
 
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -30,8 +30,8 @@ import com.jgoodies.forms.layout.FormLayout;
 
 public class EjbqlQueryPropertiesPanel extends SelectPropertiesPanel {
 
-    public EjbqlQueryPropertiesPanel(ProjectController mediator) {
-        super(mediator);
+    public EjbqlQueryPropertiesPanel(ProjectSession session) {
+        super(session);
     }
 
     protected PanelBuilder createPanelBuilder() {

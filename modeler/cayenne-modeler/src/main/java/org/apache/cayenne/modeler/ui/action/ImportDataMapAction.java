@@ -63,7 +63,7 @@ public class ImportDataMapAction extends ModelerAbstractAction {
     }
 
     protected void importDataMap() {
-        File dataMapFile = selectDataMap(application.getFrameController().getView());
+        File dataMapFile = selectDataMap(application.getFrame());
         if (dataMapFile == null) {
             return;
         }
@@ -75,7 +75,7 @@ public class ImportDataMapAction extends ModelerAbstractAction {
             DataMapLoader loader = application.getDataMapLoader();
             newMap = loader.load(new URLResource(url));
 
-            ConfigurationNode root = getProjectController().getProject().getRootNode();
+            ConfigurationNode root = getProjectSession().project().getRootNode();
             newMap.setName(NameBuilder
                     .builder(newMap, root)
                     .baseName(newMap.getName())
@@ -88,10 +88,10 @@ public class ImportDataMapAction extends ModelerAbstractAction {
                 newMap.setConfigurationSource(dataMapResource);
             }
 
-            CreateDataMapAction.onMapCreated(application.getFrameController().getView(), getProjectController(), newMap);
+            CreateDataMapAction.onMapCreated(application.getFrame(), getProjectSession(), newMap);
         } catch (Exception ex) {
             LOGGER.info("Error importing DataMap.", ex);
-            JOptionPane.showMessageDialog(application.getFrameController().getView(), "Error reading DataMap: " + ex.getMessage(),
+            JOptionPane.showMessageDialog(application.getFrame(), "Error reading DataMap: " + ex.getMessage(),
                     "Can't Open DataMap", JOptionPane.OK_OPTION);
         }
     }

@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.dbentity.properties.DbAttributePanel;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.properties.ObjAttributePanel;
 import javax.swing.JComponent;
@@ -57,11 +57,11 @@ public class CopyAttributeRelationshipAction extends CopyAction implements Multi
         }
     }
 
-    public Object copy(ProjectController controller) {
+    public Object copy(ProjectSession session) {
         if (currentSelectedPanel instanceof ObjAttributePanel || currentSelectedPanel instanceof DbAttributePanel) {
-            return copyAttributeAction.copy(controller);
+            return copyAttributeAction.copy(session);
         } else {
-            return copyRelationshipAction.copy(controller);
+            return copyRelationshipAction.copy(session);
         }
     }
 

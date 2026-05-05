@@ -21,12 +21,12 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.datasource.DataSourceController;
+import org.apache.cayenne.modeler.ui.datasource.DataSourceDialog;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.pref.DataMapPrefs;
 
 /**
- * Base action that provides DBConnectionInfo for the current DataMap or calls {@link DataSourceController} dialog to
+ * Base action that provides DBConnectionInfo for the current DataMap or calls {@link DataSourceDialog} dialog to
  * create one.
  */
 public abstract class DBConnectionAwareAction extends ModelerAbstractAction {
@@ -39,7 +39,7 @@ public abstract class DBConnectionAwareAction extends ModelerAbstractAction {
 
         DBConnector connector = getConnectionInfoFromPreferences(dataMap);
         if (connector == null) {
-            DataSourceController controller = getDataSourceController(title);
+            DataSourceDialog controller = getDataSourceController(title);
             if (controller == null) {
                 return null;
             }
@@ -50,8 +50,11 @@ public abstract class DBConnectionAwareAction extends ModelerAbstractAction {
         return connector;
     }
 
-    protected DataSourceController getDataSourceController(String title) {
-        DataSourceController connectWizard = new DataSourceController(getProjectController(), title);
+    protected DataSourceDialog getDataSourceController(String title) {
+        DataSourceDialog connectWizard = new DataSourceDialog(
+                getProjectSession(),
+                application.getFrame(),
+                title);
         if (!connectWizard.startupAction()) {
             return null;
         }
@@ -63,7 +66,7 @@ public abstract class DBConnectionAwareAction extends ModelerAbstractAction {
         return defaults != null ? defaults.getConnector() : null;
     }
 
-    protected void saveConnector(DataMap dataMap, DataSourceController controller) {
+    protected void saveConnector(DataMap dataMap, DataSourceDialog controller) {
         dataMapPrefs(dataMap).setConnector(controller.getConnector());
     }
 

@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.undo;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportTree;
 
@@ -34,14 +34,14 @@ public class DbImportTreeUndoableEdit extends AbstractUndoableEdit {
     private ReverseEngineering previousReverseEngineering;
     private ReverseEngineering nextReverseEngineering;
     private DbImportTree tree;
-    private ProjectController projectController;
+    private ProjectSession session;
 
     public DbImportTreeUndoableEdit(ReverseEngineering previousReverseEngineering, ReverseEngineering nextReverseEngineering,
-                                    DbImportTree tree, ProjectController projectController) {
+                                    DbImportTree tree, ProjectSession session) {
         this.tree = tree;
         this.previousReverseEngineering = previousReverseEngineering;
         this.nextReverseEngineering = nextReverseEngineering;
-        this.projectController = projectController;
+        this.session = session;
     }
 
     @Override
@@ -54,8 +54,8 @@ public class DbImportTreeUndoableEdit extends AbstractUndoableEdit {
         tree.stopEditing();
         tree.setReverseEngineering(this.nextReverseEngineering);
         List<DbImportTreeNode> list = tree.getTreeExpandList();
-        projectController.getApplication().getMetaData().add(projectController.getSelectedDataMap(), tree.getReverseEngineering());
-        projectController.setDirty(true);
+        session.app().getMetaData().add(session.getSelectedDataMap(), tree.getReverseEngineering());
+        session.setDirty(true);
         tree.translateReverseEngineeringToTree(tree.getReverseEngineering(), false);
         tree.expandTree(list);
     }
@@ -65,8 +65,8 @@ public class DbImportTreeUndoableEdit extends AbstractUndoableEdit {
         tree.stopEditing();
         tree.setReverseEngineering(this.previousReverseEngineering);
         List<DbImportTreeNode> list = tree.getTreeExpandList();
-        projectController.getApplication().getMetaData().add(projectController.getSelectedDataMap(), tree.getReverseEngineering());
-        projectController.setDirty(true);
+        session.app().getMetaData().add(session.getSelectedDataMap(), tree.getReverseEngineering());
+        session.setDirty(true);
         tree.translateReverseEngineeringToTree(tree.getReverseEngineering(), false);
         tree.expandTree(list);
     }

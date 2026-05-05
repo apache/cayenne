@@ -29,7 +29,7 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeAction;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 
 public class RemoveAttributeUndoableEdit extends BaseRemovePropertyUndoableEdit {
 
@@ -37,20 +37,20 @@ public class RemoveAttributeUndoableEdit extends BaseRemovePropertyUndoableEdit 
     private ObjAttribute[] objAttributes;
     private EmbeddableAttribute[] embeddableAttrs;
 
-    public RemoveAttributeUndoableEdit(ProjectController controller, Embeddable embeddable, EmbeddableAttribute[] embeddableAttributes) {
-        super(controller);
+    public RemoveAttributeUndoableEdit(ProjectSession session, Embeddable embeddable, EmbeddableAttribute[] embeddableAttributes) {
+        super(session);
         this.embeddable = embeddable;
         this.embeddableAttrs = embeddableAttributes;
     }
 
-    public RemoveAttributeUndoableEdit(ProjectController controller, ObjEntity entity, ObjAttribute[] objAttributes) {
-        super(controller);
+    public RemoveAttributeUndoableEdit(ProjectSession session, ObjEntity entity, ObjAttribute[] objAttributes) {
+        super(session);
         this.objEntity = entity;
         this.objAttributes = objAttributes;
     }
 
-    public RemoveAttributeUndoableEdit(ProjectController controller, DbEntity entity, DbAttribute[] dbAttributes) {
-        super(controller);
+    public RemoveAttributeUndoableEdit(ProjectSession session, DbEntity entity, DbAttribute[] dbAttributes) {
+        super(session);
         this.dbEntity = entity;
         this.dbAttributes = dbAttributes;
     }

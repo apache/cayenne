@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 
 import java.awt.event.ActionEvent;
 
@@ -30,10 +30,10 @@ public abstract class NavigateAction extends ModelerAbstractAction {
         super(name, application);
     }
 
-    protected abstract void navigate(ProjectController controller);
+    protected abstract void navigate(ProjectSession session);
 
     @Override
     public void performAction(ActionEvent e) {
-        navigate(getProjectController());
+        navigate(getProjectSession());
     }
 }

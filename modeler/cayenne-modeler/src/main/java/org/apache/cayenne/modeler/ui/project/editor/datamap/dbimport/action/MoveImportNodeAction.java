@@ -186,7 +186,7 @@ public class MoveImportNodeAction extends ModelerAbstractAction {
                     }
                 }
                 if ((paths.length > 1) && (targetTree.getSelectionPath() != null)) {
-                    getProjectController().setDirty(true);
+                    getProjectSession().setDirty(true);
                     List<DbImportTreeNode> expandList = targetTree.getTreeExpandList();
                     targetTree.translateReverseEngineeringToTree(targetTree.getReverseEngineering(), false);
                     targetTree.expandTree(expandList);
@@ -194,9 +194,9 @@ public class MoveImportNodeAction extends ModelerAbstractAction {
                 if ((isChanged) && (!insertableName.equals(EMPTY_NAME))) {
                     ReverseEngineering reverseEngineeringNewCopy = new ReverseEngineering(targetTree.getReverseEngineering());
                     DbImportTreeUndoableEdit undoableEdit = new DbImportTreeUndoableEdit(
-                            reverseEngineeringOldCopy, reverseEngineeringNewCopy, targetTree, getProjectController()
+                            reverseEngineeringOldCopy, reverseEngineeringNewCopy, targetTree, getProjectSession()
                     );
-                    getProjectController().getApplication().getUndoManager().addEdit(undoableEdit);
+                    getProjectSession().app().getUndoManager().addEdit(undoableEdit);
                 }
                 if (foundNode != null) {
                     DbImportSorter.sortSubtree((DbImportTreeNode) foundNode.getRoot(),DbImportSorter.NODE_COMPARATOR_BY_TYPE);

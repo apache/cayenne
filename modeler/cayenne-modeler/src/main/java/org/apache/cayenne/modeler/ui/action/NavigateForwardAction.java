@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 
 public class NavigateForwardAction extends NavigateAction {
 
@@ -34,7 +34,7 @@ public class NavigateForwardAction extends NavigateAction {
     }
 
     @Override
-    protected void navigate(ProjectController controller) {
-        controller.rewindForward();
+    protected void navigate(ProjectSession session) {
+        session.rewindForward();
     }
 }

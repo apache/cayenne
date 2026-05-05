@@ -25,7 +25,8 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
@@ -35,19 +36,18 @@ import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.*;
 
-public abstract class BaseQueryMainTab extends JPanel {
+public abstract class BaseQueryMainTab extends ProjectPanel {
 
-    protected final ProjectController controller;
     protected CMUndoableTextField name;
     protected JComboBox<ObjEntity> queryRoot;
 
-    protected BaseQueryMainTab(ProjectController controller) {
-        this.controller = controller;
+    protected BaseQueryMainTab(ProjectSession session) {
+        super(session);
     }
 
     protected void initQueryRoot() {
         queryRoot = new CMComboBox<>();
-        AutoCompletion.enable(queryRoot, controller::getSelectedDataMap);
+        AutoCompletion.enable(queryRoot, session()::getSelectedDataMap);
         queryRoot.setRenderer(Renderers.listRendererWithIcons());
 
         RootSelectionHandler rootHandler = new RootSelectionHandler(this);
@@ -65,8 +65,8 @@ public abstract class BaseQueryMainTab extends JPanel {
         return queryRoot;
     }
 
-    public ProjectController getController() {
-        return controller;
+    public ProjectSession getSession() {
+        return session();
     }
 
     /**
@@ -91,7 +91,7 @@ public abstract class BaseQueryMainTab extends JPanel {
             throw new ValidationException("SelectQuery name is required.");
         }
 
-        DataMap map = controller.getSelectedDataMap();
+        DataMap map = session().getSelectedDataMap();
         QueryDescriptor matchingQuery = map.getQueryDescriptor(newName);
 
         if (matchingQuery == null) {
@@ -106,7 +106,7 @@ public abstract class BaseQueryMainTab extends JPanel {
             if (ns instanceof EntityResolver) {
                 ((EntityResolver) ns).refreshMappingCache();
             }
-            controller.fireQueryEvent(e);
+            session().fireQueryEvent(e);
         } else if (matchingQuery != query) {
             // there is a query with the same name
             throw new ValidationException("There is another query named '"

@@ -19,18 +19,18 @@
 
 package org.apache.cayenne.modeler.event.model;
 
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 
 import java.util.EventObject;
 
 public class ProjectAfterSaveEvent extends EventObject {
 
-    public ProjectAfterSaveEvent(ProjectController source) {
+    public ProjectAfterSaveEvent(ProjectSession source) {
         super(source);
     }
 
     @Override
-    public ProjectController getSource() {
-        return (ProjectController) super.getSource();
+    public ProjectSession getSource() {
+        return (ProjectSession) super.getSource();
     }
 }

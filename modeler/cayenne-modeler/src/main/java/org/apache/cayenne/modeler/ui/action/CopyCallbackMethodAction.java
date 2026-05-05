@@ -22,7 +22,7 @@ import java.util.Arrays;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
 
 public class CopyCallbackMethodAction extends CopyAction implements MultipleObjectsAction {
@@ -60,8 +60,8 @@ public class CopyCallbackMethodAction extends CopyAction implements MultipleObje
     }
 
     @Override
-    public Object copy(ProjectController controller) {
-        Object[] methods = getProjectController().getSelectedCallbackMethods();
+    public Object copy(ProjectSession session) {
+        Object[] methods = getProjectSession().getSelectedCallbackMethods();
 
         if (methods != null && methods.length > 0) {
             return Arrays.asList(methods);

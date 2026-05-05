@@ -24,7 +24,6 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -32,7 +31,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
 import org.apache.cayenne.modeler.event.model.QueryEvent;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextPane;
 import org.apache.cayenne.project.validation.EJBQLStatementValidator;
 import org.apache.cayenne.project.validation.EJBQLStatementValidator.PositionException;
@@ -43,17 +43,16 @@ import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
+public class EjbqlQueryScriptsTab extends ProjectPanel implements DocumentListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EjbqlQueryScriptsTab.class);
 
-    protected ProjectController mediator;
     protected CMTextPane scriptArea;
     private boolean updateDisabled;
     protected EJBQLStatementValidator ejbqlQueryValidator = new EJBQLStatementValidator();
 
-    public EjbqlQueryScriptsTab(ProjectController mediator) {
-        this.mediator = mediator;
+    public EjbqlQueryScriptsTab(ProjectSession session) {
+        super(session);
         initView();
     }
 
@@ -64,7 +63,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
 
     private void initView() {
 
-        scriptArea = new CMUndoableTextPane(mediator.getApplication().getUndoManager(), new EjbqlSyntax());
+        scriptArea = new CMUndoableTextPane(app().getUndoManager(), new EjbqlSyntax());
         scriptArea.getDocument().addDocumentListener(this);
         scriptArea.getDocument().addDocumentListener(new DocumentListener() {
 
@@ -139,7 +138,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
     }
 
     public void initFromModel() {
-        QueryDescriptor query = mediator.getSelectedQuery();
+        QueryDescriptor query = session().getSelectedQuery();
 
         if (query == null || !QueryDescriptor.EJBQL_QUERY.equals(query.getType())) {
             setVisible(false);
@@ -152,7 +151,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
     }
 
     EJBQLQueryDescriptor getQuery() {
-        QueryDescriptor query = mediator.getSelectedQuery();
+        QueryDescriptor query = session().getSelectedQuery();
         return (query != null && QueryDescriptor.EJBQL_QUERY.equals(query.getType())) ?
                 (EJBQLQueryDescriptor) query : null;
     }
@@ -180,7 +179,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
         // will call "verify" even if no changes have occured....
         if (!Util.nullSafeEquals(text, query.getEjbql())) {
             query.setEjbql(text);
-            mediator.fireQueryEvent(QueryEvent.ofChange(this, query));
+            session().fireQueryEvent(QueryEvent.ofChange(this, query));
         }
 
     }

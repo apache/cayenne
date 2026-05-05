@@ -22,33 +22,117 @@ package org.apache.cayenne.modeler.ui.entitysync;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
+import org.apache.cayenne.dbsync.merge.context.EntityMergeSupport;
+import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.NoStemStemmer;
+import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.toolkit.AppDialog;
+import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.FlowLayout;
+import java.awt.Window;
+import java.util.Collection;
+import java.util.Collections;
 
-public class EntitySyncDialog extends JDialog {
+/**
+ * Builds an {@link EntityMergeSupport} for synchronizing ObjEntities with their parent
+ * DbEntity. If any of the involved entities have meaningful FK attributes, prompts the
+ * user (via this dialog) to confirm whether those should be removed; otherwise returns
+ * a default merger without showing UI.
+ */
+public class EntitySyncDialog extends AppDialog {
 
-    protected JCheckBox removeFKs;
+    private final DbEntity dbEntity;
+    private final ObjEntity objEntity;
 
-    protected JButton updateButton;
-    protected JButton cancelButton;
+    private final JCheckBox removeFKs;
+    private final JButton updateButton;
+    private final JButton cancelButton;
 
-    public EntitySyncDialog() {
-        removeFKs = new JCheckBox();
-        removeFKs.setSelected(true);
+    private boolean cancelled;
 
-        updateButton = new JButton("Continue");
-        cancelButton = new JButton("Cancel");
+    public EntitySyncDialog(Application app, Window owner, DbEntity dbEntity) {
+        this(app, owner, dbEntity, null);
+    }
 
+    public EntitySyncDialog(Application app, Window owner, ObjEntity objEntity) {
+        this(app, owner, objEntity.getDbEntity(), objEntity);
+    }
+
+    private EntitySyncDialog(Application app, Window owner, DbEntity dbEntity, ObjEntity objEntity) {
+        super(app, owner, "Synchronize ObjEntity with DbEntity", ModalityType.APPLICATION_MODAL);
+        this.dbEntity = dbEntity;
+        this.objEntity = objEntity;
+
+        this.removeFKs = new JCheckBox();
+        this.removeFKs.setSelected(true);
+        this.updateButton = new JButton("Continue");
+        this.cancelButton = new JButton("Cancel");
+
+        initLayout();
+        initBindings();
+    }
+
+    /**
+     * Returns a configured merger, prompting the user via the dialog only when the
+     * involved entities have meaningful FK attributes. Returns null if the user cancelled.
+     */
+    public EntityMergeSupport createMerger() {
+        Collection<ObjEntity> entities = objEntities();
+        if (entities.isEmpty()) {
+            return null;
+        }
+
+        ObjectNameGenerator namingStrategy;
+        try {
+            namingStrategy = NameGeneratorPreferences.getInstance().createNamingStrategy(app());
+        } catch (Throwable e) {
+            namingStrategy = new DefaultObjectNameGenerator(NoStemStemmer.getInstance());
+        }
+
+        // TODO: Modeler-controlled defaults for all the hardcoded boolean flags here.
+        EntityMergeSupport merger = new EntityMergeSupport(namingStrategy, NamePatternMatcher.EXCLUDE_ALL, true, false);
+
+        for (ObjEntity entity : entities) {
+            if (!merger.getMeaningfulFKs(entity).isEmpty()) {
+                return confirmMeaningfulFKs(namingStrategy);
+            }
+        }
+
+        return merger;
+    }
+
+    private EntityMergeSupport confirmMeaningfulFKs(ObjectNameGenerator namingStrategy) {
+        pack();
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        centerOnOwner();
+        makeCloseableOnEscape();
+        setVisible(true);
+
+        if (cancelled) {
+            return null;
+        }
+        // TODO: Modeler-controlled defaults for all the hardcoded flags here.
+        return new EntityMergeSupport(namingStrategy, NamePatternMatcher.EXCLUDE_ALL, removeFKs.isSelected(), false);
+    }
+
+    private Collection<ObjEntity> objEntities() {
+        return objEntity == null ? dbEntity.getDataMap().getMappedEntities(dbEntity)
+                : Collections.singleton(objEntity);
+    }
+
+    private void initLayout() {
         getRootPane().setDefaultButton(updateButton);
-
-        // assemble
 
         FormLayout layout = new FormLayout("pref, 3dlu, pref", "p, 3dlu");
         PanelBuilder builder = new PanelBuilder(layout);
@@ -56,8 +140,7 @@ public class EntitySyncDialog extends JDialog {
 
         CellConstraints cc = new CellConstraints();
         builder.add(removeFKs, cc.xy(1, 1));
-        builder.add(new JLabel("Remove Object Attributes mapped on Foreign Keys?"), cc
-                .xy(3, 1));
+        builder.add(new JLabel("Remove Object Attributes mapped on Foreign Keys?"), cc.xy(3, 1));
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.add(cancelButton);
@@ -67,19 +150,13 @@ public class EntitySyncDialog extends JDialog {
         contentPane.setLayout(new BorderLayout());
         contentPane.add(builder.getPanel(), BorderLayout.CENTER);
         contentPane.add(buttons, BorderLayout.SOUTH);
-
-        setTitle("Synchronize ObjEntity with DbEntity");
     }
 
-    public JButton getCancelButton() {
-        return cancelButton;
-    }
-
-    public JCheckBox getRemoveFKs() {
-        return removeFKs;
-    }
-
-    public JButton getUpdateButton() {
-        return updateButton;
+    private void initBindings() {
+        updateButton.addActionListener(e -> dispose());
+        cancelButton.addActionListener(e -> {
+            cancelled = true;
+            dispose();
+        });
     }
 }

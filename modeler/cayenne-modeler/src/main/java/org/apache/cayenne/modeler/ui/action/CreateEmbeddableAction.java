@@ -25,9 +25,8 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.event.model.EmbeddableEvent;
-import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateEmbeddableUndoableEdit;
 
@@ -37,20 +36,20 @@ public class CreateEmbeddableAction extends ModelerAbstractAction {
 
     static void fireEmbeddableEvent(
             Object src,
-            ProjectController controller,
+            ProjectSession session,
             DataMap dataMap,
             Embeddable embeddable) {
 
-        controller.fireEmbeddableEvent(
+        session.fireEmbeddableEvent(
                 EmbeddableEvent.ofAdd(src, embeddable),
                 dataMap);
         EmbeddableDisplayEvent displayEvent = new EmbeddableDisplayEvent(
                 src,
-                (DataChannelDescriptor) controller.getProject().getRootNode(),
+                (DataChannelDescriptor) session.project().getRootNode(),
                 dataMap,
                 embeddable,
                 true);
-        controller.displayEmbeddable(displayEvent);
+        session.displayEmbeddable(displayEvent);
 
     }
 
@@ -65,7 +64,7 @@ public class CreateEmbeddableAction extends ModelerAbstractAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        DataMap dataMap = getProjectController().getSelectedDataMap();
+        DataMap dataMap = getProjectSession().getSelectedDataMap();
 
         Embeddable embeddable = new Embeddable();
         String baseName = NameBuilder.builder(embeddable, dataMap).name();
@@ -73,12 +72,12 @@ public class CreateEmbeddableAction extends ModelerAbstractAction {
         embeddable.setClassName(nameWithPackage);
         createEmbeddable(dataMap, embeddable);
 
-        application.getUndoManager().addEdit(new CreateEmbeddableUndoableEdit(getProjectController(), dataMap, embeddable));
+        application.getUndoManager().addEdit(new CreateEmbeddableUndoableEdit(getProjectSession(), dataMap, embeddable));
     }
 
     public void createEmbeddable(DataMap dataMap, Embeddable embeddable) {
         dataMap.addEmbeddable(embeddable);
-        fireEmbeddableEvent(this, getProjectController(), dataMap, embeddable);
+        fireEmbeddableEvent(this, getProjectSession(), dataMap, embeddable);
     }
 
     /**

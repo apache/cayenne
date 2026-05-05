@@ -46,7 +46,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.event.model.DbEntityEvent;
-import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
@@ -54,7 +53,7 @@ import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.toolkit.filechooser.CMFileChooserPrefs;
 import org.apache.cayenne.modeler.ui.errors.ErrorsController;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.util.FileFilters;
 import org.apache.cayenne.wocompat.EOModelProcessor;
 import org.slf4j.Logger;
@@ -126,7 +125,7 @@ public class ImportEOModelAction extends ModelerAbstractAction {
      */
     protected void importEOModel() {
         JFileChooser fileChooser = getEOModelChooser();
-        int status = fileChooser.showOpenDialog(application.getFrameController().getView());
+        int status = fileChooser.showOpenDialog(application.getFrame());
 
         if (status == JFileChooser.APPROVE_OPTION) {
 
@@ -135,7 +134,7 @@ public class ImportEOModelAction extends ModelerAbstractAction {
                 file = file.getParentFile();
             }
 
-            DataMap currentMap = getProjectController().getSelectedDataMap();
+            DataMap currentMap = getProjectSession().getSelectedDataMap();
 
             try {
                 URL url = file.toURI().toURL();
@@ -206,19 +205,19 @@ public class ImportEOModelAction extends ModelerAbstractAction {
                 dsi.setUserName(keyAsString(connection, "username"));
             }
 
-            DataChannelDescriptor domain = (DataChannelDescriptor) getProjectController()
-                    .getProject()
+            DataChannelDescriptor domain = (DataChannelDescriptor) getProjectSession()
+                    .project()
                     .getRootNode();
             domain.getNodeDescriptors().add(node);
 
             // send events after the node creation is complete
-            getProjectController().fireDataNodeEvent(
+            getProjectSession().fireDataNodeEvent(
                     DataNodeEvent.ofAdd(this, node));
-            getProjectController().displayDataNode(
+            getProjectSession().displayDataNode(
                     new DataNodeDisplayEvent(
                             this,
-                            (DataChannelDescriptor) getProjectController()
-                                    .getProject()
+                            (DataChannelDescriptor) getProjectSession()
+                                    .project()
                                     .getRootNode(),
                             node));
         }
@@ -236,7 +235,7 @@ public class ImportEOModelAction extends ModelerAbstractAction {
      */
     protected void addDataMap(DataMap map, DataMap currentMap) {
 
-        ProjectController controller = getProjectController();
+        ProjectSession session = getProjectSession();
 
         if (currentMap != null) {
             // merge with existing map... have to memorize map state before and after
@@ -254,57 +253,57 @@ public class ImportEOModelAction extends ModelerAbstractAction {
             Collection<DbEntity> newDE = new ArrayList<>(currentMap.getDbEntities());
             Collection<QueryDescriptor> newQueries = new ArrayList<>(currentMap.getQueryDescriptors());
 
-            Object src = application.getFrameController().getView();
+            Object src = application.getFrame();
 
             // 1. ObjEntities
             Collection<ObjEntity> addedOE = new ArrayList<>(newOE);
             addedOE.removeAll(originalOE);
             for (ObjEntity e : addedOE) {
-                controller.fireObjEntityEvent(ObjEntityEvent.ofAdd(src, e));
+                session.fireObjEntityEvent(ObjEntityEvent.ofAdd(src, e));
             }
 
             Collection<ObjEntity> removedOE = new ArrayList<>(originalOE);
             removedOE.removeAll(newOE);
             for (ObjEntity e : removedOE) {
-                controller.fireObjEntityEvent(ObjEntityEvent.ofRemove(src, e));
+                session.fireObjEntityEvent(ObjEntityEvent.ofRemove(src, e));
             }
 
             // 2. DbEntities
             Collection<DbEntity> addedDE = new ArrayList<>(newDE);
             addedDE.removeAll(originalDE);
             for (DbEntity e : addedDE) {
-                controller.fireDbEntityEvent(DbEntityEvent.ofAdd(src, e));
+                session.fireDbEntityEvent(DbEntityEvent.ofAdd(src, e));
             }
 
             Collection<DbEntity> removedDE = new ArrayList<>(originalDE);
             removedDE.removeAll(newDE);
             for (DbEntity e : removedDE) {
-                controller.fireDbEntityEvent(DbEntityEvent.ofRemove(src, e));
+                session.fireDbEntityEvent(DbEntityEvent.ofRemove(src, e));
             }
 
             // 3. queries
             Collection<QueryDescriptor> addedQueries = new ArrayList<>(newQueries);
             addedQueries.removeAll(originalQueries);
             for (QueryDescriptor q : addedQueries) {
-                controller.fireQueryEvent(QueryEvent.ofAdd(src, q));
+                session.fireQueryEvent(QueryEvent.ofAdd(src, q));
             }
 
             Collection<QueryDescriptor> removedQueries = new ArrayList<>(originalQueries);
             removedQueries.removeAll(newQueries);
             for (QueryDescriptor q : removedQueries) {
-                controller.fireQueryEvent(QueryEvent.ofRemove(src, q));
+                session.fireQueryEvent(QueryEvent.ofRemove(src, q));
             }
 
-            controller.displayDataMap(new DataMapDisplayEvent(
-                    application.getFrameController().getView(),
-                    (DataChannelDescriptor) controller
-                            .getProject()
+            session.displayDataMap(new DataMapDisplayEvent(
+                    application.getFrame(),
+                    (DataChannelDescriptor) session
+                            .project()
                             .getRootNode(),
                     map,
-                    controller.getSelectedDataNode()));
+                    session.getSelectedDataNode()));
         } else {
             // fix DataMap name, as there maybe a map with the same name already
-            ConfigurationNode root = controller.getProject().getRootNode();
+            ConfigurationNode root = session.project().getRootNode();
             map.setName(NameBuilder
                     .builder(map, root)
                     .baseName(map.getName())
@@ -312,7 +311,7 @@ public class ImportEOModelAction extends ModelerAbstractAction {
 
             // side effect of this operation is that if a node was created, this DataMap
             // will be linked with it...
-            CreateDataMapAction.onMapCreated(application.getFrameController().getView(), getProjectController(), map);
+            CreateDataMapAction.onMapCreated(application.getFrame(), getProjectSession(), map);
 
         }
     }

@@ -29,7 +29,7 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeAction;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 
@@ -78,7 +78,7 @@ public class CreateAttributeUndoableEdit extends CayenneUndoableEdit {
                 objAttr
             });
 
-            controller.displayObjEntity(new ObjEntityDisplayEvent(
+            session.displayObjEntity(new ObjEntityDisplayEvent(
                     this,
                     domain,
                     dataMap,
@@ -90,7 +90,7 @@ public class CreateAttributeUndoableEdit extends CayenneUndoableEdit {
                 dbAttr
             });
 
-            controller.displayDbEntity(new DbEntityDisplayEvent(
+            session.displayDbEntity(new DbEntityDisplayEvent(
                     this,
                     domain,
                     dataMap,
@@ -98,18 +98,18 @@ public class CreateAttributeUndoableEdit extends CayenneUndoableEdit {
         }
     }
 
-    public CreateAttributeUndoableEdit(ProjectController controller, DataChannelDescriptor domain, DataMap map,
+    public CreateAttributeUndoableEdit(ProjectSession session, DataChannelDescriptor domain, DataMap map,
             ObjEntity objEntity, ObjAttribute attr) {
-        super(controller);
+        super(session);
         this.domain = domain;
         this.dataMap = map;
         this.objEntity = objEntity;
         this.objAttr = attr;
     }
 
-    public CreateAttributeUndoableEdit(ProjectController controller, DataChannelDescriptor domain, DataMap map,
+    public CreateAttributeUndoableEdit(ProjectSession session, DataChannelDescriptor domain, DataMap map,
             DbEntity dbEntity, DbAttribute attr) {
-        super(controller);
+        super(session);
         this.domain = domain;
         this.dataMap = map;
         this.dbEntity = dbEntity;

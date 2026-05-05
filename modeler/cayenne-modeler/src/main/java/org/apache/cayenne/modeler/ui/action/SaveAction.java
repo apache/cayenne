@@ -57,15 +57,15 @@ public class SaveAction extends SaveAsAction {
 
         File oldProjectFile = new File(p.getConfigurationResource().getURL().toURI());
 
-        getProjectController().pauseFileChangeTracking();
+        getProjectSession().pauseFileChangeTracking();
         ProjectSaver saver = application.getProjectSaver();
         saver.save(p);
 
         File newProjectFile = new File(p.getConfigurationResource().getURL().toURI());
-        application.getFrameController().changePathInLastProjListAction(oldProjectFile, newProjectFile);
-        application.getFrameController().getView().fireRecentFileListChanged();
+        application.getFrame().changePathInLastProjListAction(oldProjectFile, newProjectFile);
+        application.getFrame().fireRecentFileListChanged();
 
-        getProjectController().fireProjectAfterSaveEvent(new ProjectAfterSaveEvent(getProjectController()));
+        getProjectSession().fireProjectAfterSaveEvent(new ProjectAfterSaveEvent(getProjectSession()));
 
         return true;
     }

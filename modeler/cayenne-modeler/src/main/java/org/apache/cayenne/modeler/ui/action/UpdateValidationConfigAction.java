@@ -54,16 +54,16 @@ public class UpdateValidationConfigAction extends ModelerAbstractAction {
     @Override
     public void performAction(ActionEvent e) {
         DataChannelMetaData metaData = application.getMetaData();
-        DataChannelDescriptor dataChannel = ((DataChannelDescriptor) application.getProject().getRootNode());
+        DataChannelDescriptor dataChannel = ((DataChannelDescriptor) application.getFrame().getProjectSession().project().getRootNode());
         ValidationConfig config = (ValidationConfig) getValue(CONFIG_PARAM);
         ValidationConfig oldConfig = ValidationConfig.fromMetadata(metaData, dataChannel);
         metaData.add(dataChannel, config);
 
         if (undoable) {
             CayenneUndoManager undoManager = application.getUndoManager();
-            undoManager.addEdit(new UpdateValidationConfigUndoableEdit(getProjectController(), oldConfig, config));
+            undoManager.addEdit(new UpdateValidationConfigUndoableEdit(getProjectSession(), oldConfig, config));
         }
-        getProjectController().fireDomainEvent(DomainEvent.ofChange(e.getSource(), dataChannel));
+        getProjectSession().fireDomainEvent(DomainEvent.ofChange(e.getSource(), dataChannel));
     }
 
     public UpdateValidationConfigAction putConfig(ValidationConfig config) {

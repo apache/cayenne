@@ -105,9 +105,9 @@ public abstract class TreeManipulationAction extends ModelerAbstractAction {
     protected void putReverseEngineeringToUndoManager(ReverseEngineering reverseEngineeringOldCopy) {
         ReverseEngineering reverseEngineeringNewCopy = new ReverseEngineering(tree.getReverseEngineering());
         DbImportTreeUndoableEdit undoableEdit = new DbImportTreeUndoableEdit(
-                reverseEngineeringOldCopy, reverseEngineeringNewCopy, tree, getProjectController()
+                reverseEngineeringOldCopy, reverseEngineeringNewCopy, tree, getProjectSession()
         );
-        getProjectController().getApplication().getUndoManager().addEdit(undoableEdit);
+        getProjectSession().app().getUndoManager().addEdit(undoableEdit);
     }
 
     boolean reverseEngineeringIsEmpty() {
@@ -176,7 +176,7 @@ public abstract class TreeManipulationAction extends ModelerAbstractAction {
 
     protected void updateModel(boolean updateSelected) {
         insertableNodeName = null;
-        getProjectController().setDirty(true);
+        getProjectSession().setDirty(true);
         TreePath savedPath = null;
         if (!updateSelected) {
             savedPath = new TreePath(parentElement.getPath());

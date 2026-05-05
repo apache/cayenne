@@ -22,7 +22,7 @@ public class CgenOps {
     }
 
     private static Path projectRoot(Application application) {
-        Project project = application.getProject();
+        Project project = application.getFrame().getProjectSession().project();
         if (project == null) {
             return null;
         }

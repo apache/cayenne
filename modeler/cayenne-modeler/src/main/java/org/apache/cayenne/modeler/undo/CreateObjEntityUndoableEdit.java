@@ -25,15 +25,15 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.ui.action.CreateObjEntityAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAction;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 
 public class CreateObjEntityUndoableEdit extends CayenneUndoableEdit {
 
     private DataMap map;
     private ObjEntity objEntity;
 
-    public CreateObjEntityUndoableEdit(ProjectController controller, DataMap map, ObjEntity objEntity) {
-        super(controller);
+    public CreateObjEntityUndoableEdit(ProjectSession session, DataMap map, ObjEntity objEntity) {
+        super(session);
         this.map = map;
         this.objEntity = objEntity;
     }

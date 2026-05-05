@@ -25,9 +25,8 @@ import org.apache.cayenne.modeler.event.model.ProcedureEvent;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateProcedureUndoableEdit;
 
@@ -41,15 +40,15 @@ public class CreateProcedureAction extends ModelerAbstractAction {
     /**
      * Fires events when a procedure was added
      */
-    static void fireProcedureEvent(Object src, ProjectController controller, DataMap dataMap, Procedure procedure) {
-        controller.fireProcedureEvent(ProcedureEvent.ofAdd(src, procedure));
+    static void fireProcedureEvent(Object src, ProjectSession session, DataMap dataMap, Procedure procedure) {
+        session.fireProcedureEvent(ProcedureEvent.ofAdd(src, procedure));
         ProcedureDisplayEvent displayEvent = new ProcedureDisplayEvent(
                 src,
-                (DataChannelDescriptor) controller.getProject().getRootNode(),
-                controller.getSelectedDataMap(),
+                (DataChannelDescriptor) session.project().getRootNode(),
+                session.getSelectedDataMap(),
                 procedure,
                 true);
-        controller.displayProcedure(displayEvent);
+        session.displayProcedure(displayEvent);
     }
 
     public CreateProcedureAction(Application application) {
@@ -58,20 +57,20 @@ public class CreateProcedureAction extends ModelerAbstractAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        DataMap map = getProjectController().getSelectedDataMap();
+        DataMap map = getProjectSession().getSelectedDataMap();
 
         Procedure procedure = new Procedure();
         procedure.setName(NameBuilder.builder(procedure, map).name());
         createProcedure(map, procedure);
 
-        application.getUndoManager().addEdit(new CreateProcedureUndoableEdit(getProjectController(), map, procedure));
+        application.getUndoManager().addEdit(new CreateProcedureUndoableEdit(getProjectSession(), map, procedure));
     }
 
     public void createProcedure(DataMap map, Procedure procedure) {
         procedure.setSchema(map.getDefaultSchema());
         procedure.setCatalog(map.getDefaultCatalog());
         map.addProcedure(procedure);
-        fireProcedureEvent(this, getProjectController(), map, procedure);
+        fireProcedureEvent(this, getProjectSession(), map, procedure);
     }
 
     /**

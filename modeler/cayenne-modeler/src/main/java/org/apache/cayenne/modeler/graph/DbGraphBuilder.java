@@ -32,7 +32,7 @@ import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
 import org.apache.cayenne.modeler.event.model.DbAttributeListener;
 import org.apache.cayenne.modeler.event.model.DbEntityListener;
 import org.apache.cayenne.modeler.event.model.DbRelationshipListener;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.jgraph.graph.DefaultEdge;
 import org.jgraph.graph.DefaultGraphCell;
 import org.jgraph.graph.GraphConstants;
@@ -72,20 +72,20 @@ class DbGraphBuilder extends BaseGraphBuilder<DbEntity, DbAttribute, DbRelations
     }
 
     @Override
-    public void setProjectController(ProjectController mediator) {
-        super.setProjectController(mediator);
+    public void setProjectSession(ProjectSession session) {
+        super.setProjectSession(session);
 
-        mediator.addDbEntityListener(this);
-        mediator.addDbAttributeListener(this);
-        mediator.addDbRelationshipListener(this);
+        session.addDbEntityListener(this);
+        session.addDbAttributeListener(this);
+        session.addDbRelationshipListener(this);
     }
 
     public void destroy() {
         super.destroy();
 
-        mediator.removeDbEntityListener(this);
-        mediator.removeDbAttributeListener(this);
-        mediator.removeDbRelationshipListener(this);
+        session.removeDbEntityListener(this);
+        session.removeDbAttributeListener(this);
+        session.removeDbRelationshipListener(this);
     }
 
     public void dbEntityAdded(DbEntityEvent e) {

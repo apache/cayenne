@@ -33,7 +33,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.toolkit.combobox.CMUndoableComboBox;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.query.CapsStrategy;
@@ -74,8 +74,8 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
     protected CMUndoableTextField comment;
     protected SelectPropertiesPanel properties;
 
-    public SQLTemplateMainTab(ProjectController mediator) {
-        super(mediator);
+    public SQLTemplateMainTab(ProjectSession session) {
+        super(session);
 
         initQueryRoot();
         initView();
@@ -83,13 +83,13 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
 
     private void initView() {
         // create widgets
-        name = new CMUndoableTextField(controller.getApplication().getUndoManager());
+        name = new CMUndoableTextField(app().getUndoManager());
         name.addCommitListener(this::setQueryName);
 
-        comment = new CMUndoableTextField(controller.getApplication().getUndoManager());
+        comment = new CMUndoableTextField(app().getUndoManager());
         comment.addCommitListener(this::setQueryComment);
 
-        properties = new SQLTemplateQueryPropertiesPanel(controller);
+        properties = new SQLTemplateQueryPropertiesPanel(session());
 
         // assemble
         CellConstraints cc = new CellConstraints();
@@ -117,7 +117,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
      * query is changed.
      */
     void initFromModel() {
-        QueryDescriptor query = controller.getSelectedQuery();
+        QueryDescriptor query = session().getSelectedQuery();
 
         if (query == null || !QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) {
             setVisible(false);
@@ -128,7 +128,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
         properties.initFromModel(query);
         comment.setText(getQueryComment(query));
 
-        DataMap map = controller.getSelectedDataMap();
+        DataMap map = session().getSelectedDataMap();
         ObjEntity[] roots = map.getObjEntities().toArray(new ObjEntity[0]);
 
         if (roots.length > 1) {
@@ -144,7 +144,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
 
     @Override
     protected QueryDescriptor getQuery() {
-        QueryDescriptor query = controller.getSelectedQuery();
+        QueryDescriptor query = session().getSelectedQuery();
         return (query != null && QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) ? query : null;
     }
 
@@ -160,10 +160,10 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
         QueryDescriptor template = getQuery();
         if (template != null) {
             // in case of null entity, set root to DataMap
-            Object root = entity != null ? entity : controller.getSelectedDataMap();
+            Object root = entity != null ? entity : session().getSelectedDataMap();
             template.setRoot(root);
 
-            controller.fireQueryEvent(QueryEvent.ofChange(this, template));
+            session().fireQueryEvent(QueryEvent.ofChange(this, template));
         }
     }
 
@@ -172,12 +172,12 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
         if (query == null) {
             return;
         }
-        ObjectInfo.putToMetaData(controller.getApplication().getMetaData(), query, ObjectInfo.COMMENT, text);
-        controller.fireQueryEvent(QueryEvent.ofChange(this, query));
+        ObjectInfo.putToMetaData(app().getMetaData(), query, ObjectInfo.COMMENT, text);
+        session().fireQueryEvent(QueryEvent.ofChange(this, query));
     }
 
     private String getQueryComment(QueryDescriptor queryDescriptor) {
-        return ObjectInfo.getFromMetaData(controller.getApplication().getMetaData(), queryDescriptor, ObjectInfo.COMMENT);
+        return ObjectInfo.getFromMetaData(app().getMetaData(), queryDescriptor, ObjectInfo.COMMENT);
     }
 
     final class LabelCapsRenderer extends DefaultListCellRenderer {
@@ -197,13 +197,13 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
 
         private JComboBox<CapsStrategy> labelCase;
 
-        SQLTemplateQueryPropertiesPanel(ProjectController mediator) {
-            super(mediator);
+        SQLTemplateQueryPropertiesPanel(ProjectSession session) {
+            super(session);
         }
 
         @Override
         protected PanelBuilder createPanelBuilder() {
-            labelCase = new CMUndoableComboBox<>(controller.getApplication().getUndoManager());
+            labelCase = new CMUndoableComboBox<>(app().getUndoManager());
             labelCase.setRenderer(new LabelCapsRenderer());
 
             labelCase.addActionListener(event -> {

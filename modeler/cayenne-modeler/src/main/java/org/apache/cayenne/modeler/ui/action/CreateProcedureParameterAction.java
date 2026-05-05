@@ -25,9 +25,8 @@ import org.apache.cayenne.modeler.event.model.ProcedureParameterEvent;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.display.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateProcedureParameterUndoableEdit;
 
@@ -44,14 +43,14 @@ public class CreateProcedureParameterAction extends ModelerAbstractAction {
      */
     static void fireProcedureParameterEvent(
             Object src,
-            ProjectController controller,
+            ProjectSession session,
             Procedure procedure,
             ProcedureParameter parameter) {
-        controller.fireProcedureParameterEvent(ProcedureParameterEvent.ofAdd(src, parameter));
+        session.fireProcedureParameterEvent(ProcedureParameterEvent.ofAdd(src, parameter));
 
-        controller.displayProcedureParameter(new ProcedureParameterDisplayEvent(src,
-                (DataChannelDescriptor) controller.getProject().getRootNode(),
-                controller.getSelectedDataMap(),
+        session.displayProcedureParameter(new ProcedureParameterDisplayEvent(src,
+                (DataChannelDescriptor) session.project().getRootNode(),
+                session.getSelectedDataMap(),
                 procedure,
                 parameter));
     }
@@ -66,18 +65,18 @@ public class CreateProcedureParameterAction extends ModelerAbstractAction {
      */
     @Override
     public void performAction(ActionEvent e) {
-        ProjectController controller = getProjectController();
+        ProjectSession session = getProjectSession();
 
-        if (getProjectController().getSelectedProcedure() != null) {
-            Procedure procedure = getProjectController().getSelectedProcedure();
+        if (getProjectSession().getSelectedProcedure() != null) {
+            Procedure procedure = getProjectSession().getSelectedProcedure();
             ProcedureParameter parameter = new ProcedureParameter();
             parameter.setName(NameBuilder.builder(parameter, procedure).name());
 
             createProcedureParameter(procedure, parameter);
 
             application.getUndoManager().addEdit(
-                    new CreateProcedureParameterUndoableEdit(controller,
-                            (DataChannelDescriptor) controller.getProject().getRootNode(), controller.getSelectedDataMap(),
+                    new CreateProcedureParameterUndoableEdit(session,
+                            (DataChannelDescriptor) session.project().getRootNode(), session.getSelectedDataMap(),
                             procedure, parameter
                     )
             );
@@ -86,7 +85,7 @@ public class CreateProcedureParameterAction extends ModelerAbstractAction {
 
     public void createProcedureParameter(Procedure procedure, ProcedureParameter parameter) {
         procedure.addCallParameter(parameter);
-        fireProcedureParameterEvent(this, getProjectController(), procedure, parameter);
+        fireProcedureParameterEvent(this, getProjectSession(), procedure, parameter);
     }
 
     /**

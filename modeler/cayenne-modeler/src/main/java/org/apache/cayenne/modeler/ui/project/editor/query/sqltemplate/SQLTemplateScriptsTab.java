@@ -25,7 +25,8 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SQLTemplateDescriptor;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.util.DbAdapterInfo;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextPane;
 import org.apache.cayenne.modeler.toolkit.text.CMTextPane;
@@ -36,7 +37,6 @@ import org.slf4j.LoggerFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.DocumentEvent;
@@ -58,12 +58,10 @@ import java.util.Map;
  * A panel for configuring SQL scripts of a SQL template.
  *
  */
-public class SQLTemplateScriptsTab extends JPanel {
+public class SQLTemplateScriptsTab extends ProjectPanel {
 
     private static final String DEFAULT_LABEL = "Default";
     private static final Logger LOGGER = LoggerFactory.getLogger(SQLTemplateScriptsTab.class);
-
-    protected ProjectController mediator;
 
     protected JList<String> scripts;
     protected List<String> keys;
@@ -73,15 +71,15 @@ public class SQLTemplateScriptsTab extends JPanel {
     protected List<CMTextPane> panes;
     protected ListSelectionListener scriptRefreshHandler;
 
-    public SQLTemplateScriptsTab(ProjectController mediator) {
-        this.mediator = mediator;
+    public SQLTemplateScriptsTab(ProjectSession session) {
+        super(session);
 
         initView();
     }
 
     private void prepareScriptAreas() {
         for(String key : DbAdapterInfo.getStandardAdapters()) {
-            CMTextPane currPane = new CMUndoableTextPane(mediator.getApplication().getUndoManager(), new SQLSyntax());
+            CMTextPane currPane = new CMUndoableTextPane(app().getUndoManager(), new SQLSyntax());
             currPane.setName(key);
             currPane.getDocument().addDocumentListener(new CustomListener(currPane.getName()));
             builder.add(currPane.getScrollPane(), cc.xy(3, 2));
@@ -114,7 +112,7 @@ public class SQLTemplateScriptsTab extends JPanel {
         // assemble
         cc = new CellConstraints();
 
-        textPane = new CMUndoableTextPane(mediator.getApplication().getUndoManager(), new SQLSyntax());
+        textPane = new CMUndoableTextPane(app().getUndoManager(), new SQLSyntax());
         textPane.setName(DEFAULT_LABEL);
         textPane.getDocument().addDocumentListener(new CustomListener(textPane.getName()));
 
@@ -139,7 +137,7 @@ public class SQLTemplateScriptsTab extends JPanel {
     }
 
     void initFromModel() {
-        QueryDescriptor query = mediator.getSelectedQuery();
+        QueryDescriptor query = session().getSelectedQuery();
 
         if (query == null || !QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) {
             setVisible(false);
@@ -173,7 +171,7 @@ public class SQLTemplateScriptsTab extends JPanel {
     }
 
     SQLTemplateDescriptor getQuery() {
-        QueryDescriptor query = mediator.getSelectedQuery();
+        QueryDescriptor query = session().getSelectedQuery();
         return (query != null && QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) ?
                 (SQLTemplateDescriptor) query : null;
     }
@@ -238,12 +236,12 @@ public class SQLTemplateScriptsTab extends JPanel {
         if (key.equals(DEFAULT_LABEL)) {
             if (!Util.nullSafeEquals(text, query.getSql())) {
                 query.setSql(text);
-                mediator.fireQueryEvent(QueryEvent.ofChange(this, query));
+                session().fireQueryEvent(QueryEvent.ofChange(this, query));
             }
         } else {
             if (!Util.nullSafeEquals(text, query.getAdapterSql().get(key))) {
                 query.getAdapterSql().put(key, text);
-                mediator.fireQueryEvent(QueryEvent.ofChange(this, query));
+                session().fireQueryEvent(QueryEvent.ofChange(this, query));
             }
         }
     }

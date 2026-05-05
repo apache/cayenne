@@ -24,7 +24,6 @@ import org.apache.cayenne.dbsync.reverse.dbload.DefaultDbLoaderDelegate;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.modeler.event.model.DbEntityEvent;
-import org.apache.cayenne.modeler.event.model.ModelEvent;
 
 final class ModelerDbLoaderDelegate extends DefaultDbLoaderDelegate {
 
@@ -43,7 +42,7 @@ final class ModelerDbLoaderDelegate extends DefaultDbLoaderDelegate {
     @Override
     public void dbEntityRemoved(DbEntity entity) {
         checkCanceled();
-        context.getProjectController().fireDbEntityEvent(DbEntityEvent.ofRemove(context.getProjectController().getApplication().getFrameController().getView(), entity));
+        context.getProjectSession().fireDbEntityEvent(DbEntityEvent.ofRemove(context.getProjectSession().app().getFrame(), entity));
     }
 
     @Override

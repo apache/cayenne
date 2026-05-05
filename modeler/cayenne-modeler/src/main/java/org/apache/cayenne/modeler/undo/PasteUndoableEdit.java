@@ -40,7 +40,7 @@ import org.apache.cayenne.modeler.ui.action.RemoveAttributeAction;
 import org.apache.cayenne.modeler.ui.action.RemoveCallbackMethodAction;
 import org.apache.cayenne.modeler.ui.action.RemoveProcedureParameterAction;
 import org.apache.cayenne.modeler.ui.action.RemoveRelationshipAction;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
 import org.apache.cayenne.map.QueryDescriptor;
 
@@ -51,9 +51,9 @@ public class PasteUndoableEdit extends CayenneUndoableEdit {
     private Object where;
     private Object content;
 
-    public PasteUndoableEdit(ProjectController controller, DataChannelDescriptor domain, DataMap map, Object where,
+    public PasteUndoableEdit(ProjectSession session, DataChannelDescriptor domain, DataMap map, Object where,
             Object content) {
-        super(controller);
+        super(session);
         this.domain = domain;
         this.map = map;
         this.where = where;

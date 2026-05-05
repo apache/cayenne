@@ -32,7 +32,7 @@ import org.apache.cayenne.modeler.event.display.DbAttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjAttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.validation.ValidationFailure;
 
 /**
@@ -57,15 +57,15 @@ public class AttributeErrorMsg extends ValidationDisplayHandler {
         map = entity.getDataMap();
     }
 
-    public void displayField(ProjectController mediator, JFrame frame) {
+    public void displayField(ProjectSession session, JFrame frame) {
         // must first display entity, and then switch to attribute display ..
         // so fire twice
         if (entity instanceof ObjEntity) {
-            mediator.displayObjEntity(new ObjEntityDisplayEvent(frame, domain, map, (ObjEntity) entity));
-            mediator.displayObjAttribute(new ObjAttributeDisplayEvent(frame, domain, map, (ObjEntity) entity, (ObjAttribute) attribute));
+            session.displayObjEntity(new ObjEntityDisplayEvent(frame, domain, map, (ObjEntity) entity));
+            session.displayObjAttribute(new ObjAttributeDisplayEvent(frame, domain, map, (ObjEntity) entity, (ObjAttribute) attribute));
         } else if (entity instanceof DbEntity) {
-            mediator.displayDbEntity(new DbEntityDisplayEvent(frame, domain, map, (DbEntity) entity));
-            mediator.displayDbAttribute(new DbAttributeDisplayEvent(frame, domain, map, (DbEntity) entity, (DbAttribute) attribute));
+            session.displayDbEntity(new DbEntityDisplayEvent(frame, domain, map, (DbEntity) entity));
+            session.displayDbAttribute(new DbAttributeDisplayEvent(frame, domain, map, (DbEntity) entity, (DbAttribute) attribute));
         }
     }
 }

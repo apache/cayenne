@@ -22,7 +22,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
@@ -38,18 +38,18 @@ public class LinkDataMapsUndoableEdit extends CayenneUndoableEdit {
         return "Link unlinked DataMaps";
     }
 
-    public LinkDataMapsUndoableEdit(ProjectController mediator, DataNodeDescriptor dataNodeDescriptor, Collection<String> linkedDataMaps) {
-        super(mediator);
+    public LinkDataMapsUndoableEdit(ProjectSession session, DataNodeDescriptor dataNodeDescriptor, Collection<String> linkedDataMaps) {
+        super(session);
         this.dataNodeDescriptor = dataNodeDescriptor;
         this.linkedDataMaps = linkedDataMaps;
     }
 
     @Override
     public void redo() throws CannotRedoException {
-        for (DataMap dataMap : ((DataChannelDescriptor) controller.getProject().getRootNode()).getDataMaps()) {
+        for (DataMap dataMap : ((DataChannelDescriptor) session.project().getRootNode()).getDataMaps()) {
             if (!linkedDataMaps.contains(dataMap.getName())) {
                 dataNodeDescriptor.getDataMapNames().add(dataMap.getName());
-                controller.fireDataNodeEvent(DataNodeEvent.ofChange(this, dataNodeDescriptor));
+                session.fireDataNodeEvent(DataNodeEvent.ofChange(this, dataNodeDescriptor));
             }
         }
     }
@@ -57,7 +57,7 @@ public class LinkDataMapsUndoableEdit extends CayenneUndoableEdit {
     @Override
     public void undo() throws CannotUndoException {
         dataNodeDescriptor.getDataMapNames().retainAll(linkedDataMaps);
-        controller.fireDataNodeEvent(DataNodeEvent.ofChange(this, dataNodeDescriptor));
+        session.fireDataNodeEvent(DataNodeEvent.ofChange(this, dataNodeDescriptor));
     }
 
 }

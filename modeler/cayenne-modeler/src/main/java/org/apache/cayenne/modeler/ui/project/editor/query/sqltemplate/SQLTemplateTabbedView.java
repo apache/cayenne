@@ -20,34 +20,35 @@
 package org.apache.cayenne.modeler.ui.project.editor.query.sqltemplate;
 
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.toolkit.ProjectTabbedPane;
+import org.apache.cayenne.modeler.project.ProjectSession;
 
-import javax.swing.*;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 
-public class SQLTemplateTabbedView extends JTabbedPane {
+public class SQLTemplateTabbedView extends ProjectTabbedPane {
 
-    private final ProjectController controller;
     private final SQLTemplateMainTab mainTab;
     private final SQLTemplateScriptsTab scriptsTab;
     private final SQLTemplatePrefetchTab prefetchTab;
     private int lastSelectionIndex;
 
-    public SQLTemplateTabbedView(ProjectController controller) {
-        this.controller = controller;
+    public SQLTemplateTabbedView(ProjectSession session) {
+        super(session);
 
         setTabPlacement(JTabbedPane.TOP);
 
-        this.mainTab = new SQLTemplateMainTab(controller);
+        this.mainTab = new SQLTemplateMainTab(session);
         addTab("General", new JScrollPane(mainTab));
 
-        this.scriptsTab = new SQLTemplateScriptsTab(controller);
+        this.scriptsTab = new SQLTemplateScriptsTab(session);
         addTab("SQL Scripts", scriptsTab);
 
-        this.prefetchTab = new SQLTemplatePrefetchTab(controller);
+        this.prefetchTab = new SQLTemplatePrefetchTab(session);
         addTab("Prefetches", prefetchTab);
 
-        controller.addQueryDisplayListener(e -> initFromModel());
+        session.addQueryDisplayListener(e -> initFromModel());
         addChangeListener(this::stateChanged);
     }
 
@@ -57,13 +58,13 @@ public class SQLTemplateTabbedView extends JTabbedPane {
     }
 
     private void initFromModel() {
-        if (!QueryDescriptor.SQL_TEMPLATE.equals(controller.getSelectedQuery().getType())) {
+        if (!QueryDescriptor.SQL_TEMPLATE.equals(session().getSelectedQuery().getType())) {
             setVisible(false);
             return;
         }
 
         // if no root, reset tabs to show the first panel..
-        if (controller.getSelectedQuery().getRoot() == null) {
+        if (session().getSelectedQuery().getRoot() == null) {
             lastSelectionIndex = 0;
         }
 

@@ -23,11 +23,11 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.toolkit.table.CMComboBoxCellEditor;
-import org.apache.cayenne.modeler.ui.ModelerFrame;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.toolkit.dialog.CMDialog;
+import org.apache.cayenne.modeler.toolkit.AppDialog;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 
 import javax.swing.JButton;
@@ -39,6 +39,7 @@ import javax.swing.JTable;
 import javax.swing.table.TableColumn;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Window;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -46,7 +47,7 @@ import java.util.List;
  * Dialog for resolving name collision.
  * 
  */
-public class DuplicatedAttributesDialog extends CMDialog {
+public class DuplicatedAttributesDialog extends AppDialog {
 
     protected static DuplicatedAttributesDialog instance;
 
@@ -67,25 +68,26 @@ public class DuplicatedAttributesDialog extends CMDialog {
     protected JButton cancelButton;
     protected JButton proceedButton;
 
-    public static void showDialog(ModelerFrame editor, ProjectController controller,
+    public static void showDialog(Application application, Window owner, ProjectSession session,
                                   List<ObjAttribute> duplicatedAttributes,
                                   ObjEntity superEntity, ObjEntity entity) {
 
         if (instance == null) {
-            instance = new DuplicatedAttributesDialog(editor);
-            instance.centerWindow();
+            instance = new DuplicatedAttributesDialog(application, owner);
+            instance.centerOnOwner();
         }
 
         instance.setSuperEntity(superEntity);
         instance.setEntity(entity);
-        instance.setDuplicatedAttributes(controller, duplicatedAttributes);
+        instance.setDuplicatedAttributes(session, duplicatedAttributes);
         instance.updateTable();
         instance.setVisible(true);
     }
 
-    protected DuplicatedAttributesDialog(ModelerFrame editor) {
-        super(editor, "Duplicated Attributes", true);
+    protected DuplicatedAttributesDialog(Application application, Window owner) {
+        super(application, owner, "Duplicated Attributes", ModalityType.APPLICATION_MODAL);
 
+        makeCloseableOnEscape();
         result = CANCEL_RESULT;
 
         initView();
@@ -162,7 +164,7 @@ public class DuplicatedAttributesDialog extends CMDialog {
         }
     }
 
-    public void setDuplicatedAttributes(ProjectController controller, List<ObjAttribute> attributes) {
+    public void setDuplicatedAttributes(ProjectSession session, List<ObjAttribute> attributes) {
         if (duplicatedAttributes == null) {
             duplicatedAttributes = new LinkedList<>();
         }
@@ -175,7 +177,7 @@ public class DuplicatedAttributesDialog extends CMDialog {
             duplicatedAttributes.add(attributeInfo);
         }
 
-        attributesTable.setModel(new DuplicatedAttributeTableModel(controller, this, duplicatedAttributes));
+        attributesTable.setModel(new DuplicatedAttributeTableModel(session, this, duplicatedAttributes));
 
     }
 
@@ -197,8 +199,8 @@ public class DuplicatedAttributesDialog extends CMDialog {
         /**
          * Constructor for CMTableModel.
          */
-        public DuplicatedAttributeTableModel(ProjectController controller, Object eventSource, List objectList) {
-            super(controller, eventSource, objectList);
+        public DuplicatedAttributeTableModel(ProjectSession session, Object eventSource, List objectList) {
+            super(session, eventSource, objectList);
         }
 
         public void setUpdatedValueAt(Object newValue, int row, int column) {

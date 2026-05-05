@@ -35,9 +35,8 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
 import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
 import org.apache.cayenne.modeler.event.model.EmbeddableAttributeEvent;
-import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.display.DbAttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableAttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjAttributeDisplayEvent;
@@ -49,43 +48,43 @@ import java.awt.event.ActionEvent;
 
 public class CreateAttributeAction extends ModelerAbstractAction {
 
-    static void fireEmbeddableAttributeEvent(Object src, ProjectController controller, Embeddable embeddable, EmbeddableAttribute attr) {
+    static void fireEmbeddableAttributeEvent(Object src, ProjectSession session, Embeddable embeddable, EmbeddableAttribute attr) {
 
-        controller.fireEmbeddableAttributeEvent(EmbeddableAttributeEvent.ofAdd(src, attr, embeddable));
+        session.fireEmbeddableAttributeEvent(EmbeddableAttributeEvent.ofAdd(src, attr, embeddable));
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) controller.getProject().getRootNode();
+        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
         EmbeddableAttributeDisplayEvent e = new EmbeddableAttributeDisplayEvent(
-                src, domain, controller.getSelectedDataMap(), embeddable, attr);
+                src, domain, session.getSelectedDataMap(), embeddable, attr);
 
-        controller.displayEmbeddableAttribute(e);
+        session.displayEmbeddableAttribute(e);
     }
 
     /**
      * Fires events when an obj attribute was added
      */
-    static void fireObjAttributeEvent(Object src, ProjectController controller, DataMap map, ObjEntity objEntity,
+    static void fireObjAttributeEvent(Object src, ProjectSession session, DataMap map, ObjEntity objEntity,
                                       ObjAttribute attr) {
 
-        controller.fireObjAttributeEvent(ObjAttributeEvent.ofAdd(src, attr, objEntity));
+        session.fireObjAttributeEvent(ObjAttributeEvent.ofAdd(src, attr, objEntity));
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) controller.getProject().getRootNode();
+        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
 
         ObjAttributeDisplayEvent ade = new ObjAttributeDisplayEvent(src, domain, map, objEntity, attr);
 
-        controller.displayObjAttribute(ade);
+        session.displayObjAttribute(ade);
     }
 
     /**
      * Fires events when a db attribute was added
      */
-    static void fireDbAttributeEvent(Object src, ProjectController controller, DataMap map, DbEntity dbEntity,
+    static void fireDbAttributeEvent(Object src, ProjectSession session, DataMap map, DbEntity dbEntity,
                                      DbAttribute attr) {
-        controller.fireDbAttributeEvent(DbAttributeEvent.ofAdd(src, attr, dbEntity));
+        session.fireDbAttributeEvent(DbAttributeEvent.ofAdd(src, attr, dbEntity));
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) controller.getProject().getRootNode();
+        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
         DbAttributeDisplayEvent ade = new DbAttributeDisplayEvent(src, domain, map, dbEntity, attr);
 
-        controller.displayDbAttribute(ade);
+        session.displayDbAttribute(ade);
     }
 
     public CreateAttributeAction(Application application) {
@@ -102,10 +101,10 @@ public class CreateAttributeAction extends ModelerAbstractAction {
      */
     @Override
     public void performAction(ActionEvent e) {
-        ProjectController controller = getProjectController();
+        ProjectSession session = getProjectSession();
 
-        if (getProjectController().getSelectedEmbeddable() != null) {
-            Embeddable embeddable = controller.getSelectedEmbeddable();
+        if (getProjectSession().getSelectedEmbeddable() != null) {
+            Embeddable embeddable = session.getSelectedEmbeddable();
 
             EmbeddableAttribute attr = new EmbeddableAttribute();
             attr.setName(NameBuilder
@@ -115,50 +114,50 @@ public class CreateAttributeAction extends ModelerAbstractAction {
             createEmbAttribute(embeddable, attr);
 
             application.getUndoManager().addEdit(
-                    new CreateEmbAttributeUndoableEdit(getProjectController(), embeddable, new EmbeddableAttribute[]{attr}));
+                    new CreateEmbAttributeUndoableEdit(getProjectSession(), embeddable, new EmbeddableAttribute[]{attr}));
         }
 
-        if (getProjectController().getSelectedObjEntity() != null) {
+        if (getProjectSession().getSelectedObjEntity() != null) {
 
-            ObjEntity objEntity = controller.getSelectedObjEntity();
+            ObjEntity objEntity = session.getSelectedObjEntity();
 
             ObjAttribute attr = new ObjAttribute();
             attr.setName(NameBuilder.builder(attr, objEntity).name());
 
-            createObjAttribute(controller.getSelectedDataMap(), objEntity, attr);
+            createObjAttribute(session.getSelectedDataMap(), objEntity, attr);
 
             application.getUndoManager().addEdit(
-                    new CreateAttributeUndoableEdit(controller, (DataChannelDescriptor) controller.getProject().getRootNode(),
-                            controller.getSelectedDataMap(), objEntity, attr));
-        } else if (getProjectController().getSelectedDbEntity() != null) {
-            DbEntity dbEntity = getProjectController().getSelectedDbEntity();
+                    new CreateAttributeUndoableEdit(session, (DataChannelDescriptor) session.project().getRootNode(),
+                            session.getSelectedDataMap(), objEntity, attr));
+        } else if (getProjectSession().getSelectedDbEntity() != null) {
+            DbEntity dbEntity = getProjectSession().getSelectedDbEntity();
 
             DbAttribute attr = new DbAttribute();
             attr.setName(NameBuilder.builder(attr, dbEntity).name());
             attr.setType(TypesMapping.NOT_DEFINED);
             attr.setEntity(dbEntity);
 
-            createDbAttribute(controller.getSelectedDataMap(), dbEntity, attr);
+            createDbAttribute(session.getSelectedDataMap(), dbEntity, attr);
 
             application.getUndoManager().addEdit(
-                    new CreateAttributeUndoableEdit(controller, (DataChannelDescriptor) controller.getProject().getRootNode(),
-                            controller.getSelectedDataMap(), dbEntity, attr));
+                    new CreateAttributeUndoableEdit(session, (DataChannelDescriptor) session.project().getRootNode(),
+                            session.getSelectedDataMap(), dbEntity, attr));
         }
     }
 
     public void createEmbAttribute(Embeddable embeddable, EmbeddableAttribute attr) {
         embeddable.addAttribute(attr);
-        fireEmbeddableAttributeEvent(this, getProjectController(), embeddable, attr);
+        fireEmbeddableAttributeEvent(this, getProjectSession(), embeddable, attr);
     }
 
     public void createObjAttribute(DataMap map, ObjEntity objEntity, ObjAttribute attr) {
         objEntity.addAttribute(attr);
-        fireObjAttributeEvent(this, getProjectController(), map, objEntity, attr);
+        fireObjAttributeEvent(this, getProjectSession(), map, objEntity, attr);
     }
 
     public void createDbAttribute(DataMap map, DbEntity dbEntity, DbAttribute attr) {
         dbEntity.addAttribute(attr);
-        fireDbAttributeEvent(this, getProjectController(), map, dbEntity, attr);
+        fireDbAttributeEvent(this, getProjectSession(), map, dbEntity, attr);
     }
 
     /**

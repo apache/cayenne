@@ -25,7 +25,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.modeler.ui.action.CreateDbEntityAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAction;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 
 public class CreateDbEntityUndoableEdit extends CayenneUndoableEdit {
 
@@ -42,8 +42,8 @@ public class CreateDbEntityUndoableEdit extends CayenneUndoableEdit {
     private DataMap map;
     private DbEntity entity;
 
-    public CreateDbEntityUndoableEdit(ProjectController controller, DataMap map, DbEntity entity) {
-        super(controller);
+    public CreateDbEntityUndoableEdit(ProjectSession session, DataMap map, DbEntity entity) {
+        super(session);
         this.map = map;
         this.entity = entity;
     }

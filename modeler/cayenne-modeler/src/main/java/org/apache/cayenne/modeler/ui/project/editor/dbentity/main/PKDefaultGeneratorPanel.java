@@ -20,12 +20,12 @@
 package org.apache.cayenne.modeler.ui.project.editor.dbentity.main;
 
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 
 public class PKDefaultGeneratorPanel extends PKGeneratorPanel {
     
-    public PKDefaultGeneratorPanel(ProjectController mediator) {
-        super(mediator);
+    public PKDefaultGeneratorPanel(ProjectSession session) {
+        super(session);
     }
 
     public void setDbEntity(DbEntity entity) {

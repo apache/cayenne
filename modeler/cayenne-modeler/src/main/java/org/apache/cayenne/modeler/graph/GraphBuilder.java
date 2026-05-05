@@ -24,7 +24,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.util.XMLSerializable;
 import org.jgraph.JGraph;
 import org.jgraph.graph.DefaultGraphCell;
@@ -39,7 +39,7 @@ public interface GraphBuilder<E extends Entity<E, A, R>, A extends Attribute<E, 
     /**
      * Builds graph
      */
-    void buildGraph(ProjectController mediator, DataChannelDescriptor domain, boolean layout);
+    void buildGraph(ProjectSession session, DataChannelDescriptor domain, boolean layout);
     
     /**
      * Invoked at destroying of the builder

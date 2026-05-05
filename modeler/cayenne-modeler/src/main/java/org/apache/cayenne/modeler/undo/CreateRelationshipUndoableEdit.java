@@ -28,7 +28,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.ui.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.RemoveRelationshipAction;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 
@@ -40,14 +40,14 @@ public class CreateRelationshipUndoableEdit extends CayenneUndoableEdit {
     private DbEntity dbEnt;
     private DbRelationship[] dbRel;
 
-    public CreateRelationshipUndoableEdit(ProjectController controller, ObjEntity objEnt, ObjRelationship[] objectRel) {
-        super(controller);
+    public CreateRelationshipUndoableEdit(ProjectSession session, ObjEntity objEnt, ObjRelationship[] objectRel) {
+        super(session);
         this.objEnt = objEnt;
         this.objectRel = objectRel;
     }
 
-    public CreateRelationshipUndoableEdit(ProjectController controller, DbEntity dbEnt, DbRelationship[] dbRel) {
-        super(controller);
+    public CreateRelationshipUndoableEdit(ProjectSession session, DbEntity dbEnt, DbRelationship[] dbRel) {
+        super(session);
         this.dbEnt = dbEnt;
         this.dbRel = dbRel;
     }
@@ -80,15 +80,15 @@ public class CreateRelationshipUndoableEdit extends CayenneUndoableEdit {
         RemoveRelationshipAction action = globalActions
                 .getAction(RemoveRelationshipAction.class);
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) controller.getProject().getRootNode();
+        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
         if (objEnt != null) {
             action.removeObjRelationships(objEnt, objectRel);
-            controller.displayObjEntity(new ObjEntityDisplayEvent(this, domain, objEnt.getDataMap(), objEnt));
+            session.displayObjEntity(new ObjEntityDisplayEvent(this, domain, objEnt.getDataMap(), objEnt));
         }
 
         if (dbEnt != null) {
             action.removeDbRelationships(dbEnt, dbRel);
-            controller.displayDbEntity(new DbEntityDisplayEvent(this, domain, dbEnt.getDataMap(), dbEnt));
+            session.displayDbEntity(new DbEntityDisplayEvent(this, domain, dbEnt.getDataMap(), dbEnt));
         }
     }
 }

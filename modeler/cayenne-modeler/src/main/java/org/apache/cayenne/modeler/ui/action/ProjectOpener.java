@@ -79,7 +79,7 @@ class ProjectOpener extends JFileChooser {
         File selectedDir;
 
         while (true) {
-            int status = showDialog(application.getFrameController().getView(), "Select");
+            int status = showDialog(application.getFrame(), "Select");
             selectedDir = getSelectedFile();
             if (status != JFileChooser.APPROVE_OPTION || selectedDir == null) {
                 LOGGER.info("Save canceled.");
@@ -95,7 +95,7 @@ class ProjectOpener extends JFileChooser {
             // check for overwrite
             File projectFile = new File(selectedDir, location);
             if (projectFile.exists()) {
-                OverwriteDialog dialog = new OverwriteDialog(projectFile, application.getFrameController().getView());
+                OverwriteDialog dialog = new OverwriteDialog(projectFile, application.getFrame());
                 dialog.show();
 
                 if (dialog.shouldOverwrite()) {
@@ -129,7 +129,7 @@ class ProjectOpener extends JFileChooser {
         // default to App projects
         setFileFilter(FileFilters.getApplicationFilter());
 
-        int status = showOpenDialog(application.getFrameController().getView());
+        int status = showOpenDialog(application.getFrame());
         if (status != JFileChooser.APPROVE_OPTION) {
             return null;
         }

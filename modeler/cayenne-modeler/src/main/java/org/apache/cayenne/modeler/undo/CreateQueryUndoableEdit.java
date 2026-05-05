@@ -25,7 +25,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ui.action.CreateQueryAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAction;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.map.QueryDescriptor;
 
 public class CreateQueryUndoableEdit extends CayenneUndoableEdit {
@@ -34,8 +34,8 @@ public class CreateQueryUndoableEdit extends CayenneUndoableEdit {
     private DataMap map;
     private QueryDescriptor query;
 
-    public CreateQueryUndoableEdit(ProjectController controller, DataChannelDescriptor domain, DataMap map, QueryDescriptor query) {
-        super(controller);
+    public CreateQueryUndoableEdit(ProjectSession session, DataChannelDescriptor domain, DataMap map, QueryDescriptor query) {
+        super(session);
         this.domain = domain;
         this.map = map;
         this.query = query;

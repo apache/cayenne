@@ -32,7 +32,7 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.EmbeddableArtefactsConfigurator;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.EntityArtefactsConfigurator;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.PreviewActionConfigurator;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.TemplateEditorController;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.TemplateEditor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.mock;
 public class PreviewActionConfiguratorTest {
 
     private static final String TEST_TEMPLATE_TEXT = "TestTemplate";
-    private TemplateEditorController editorController;
+    private TemplateEditor editor;
 
 
     @BeforeEach
@@ -54,11 +54,11 @@ public class PreviewActionConfiguratorTest {
 
         Application application = mock(Application.class);
 
-        this.editorController = mock(TemplateEditorController.class);
+        this.editor = mock(TemplateEditor.class);
 
-        Mockito.when(editorController.getApplication()).thenReturn(application);
+        Mockito.when(editor.app()).thenReturn(application);
         Mockito.when(application.getMetaData()).thenReturn(new DefaultDataChannelMetaData());
-        Mockito.when(editorController.getCurrentDataMap()).thenReturn(dataMap);
+        Mockito.when(editor.getCurrentDataMap()).thenReturn(dataMap);
 
     }
 
@@ -95,11 +95,11 @@ public class PreviewActionConfiguratorTest {
 
     private void actionTest(String artifactName, TemplateType type, ArtefactsConfigurator configurator) throws Exception {
 
-        Mockito.when(editorController.getSelectedArtifactName()).thenReturn(artifactName);
-        Mockito.when(editorController.getTemplateType()).thenReturn(type);
-        Mockito.when(editorController.getArtefactsConfigurator()).thenReturn(configurator);
+        Mockito.when(editor.getSelectedArtifactName()).thenReturn(artifactName);
+        Mockito.when(editor.getTemplateType()).thenReturn(type);
+        Mockito.when(editor.getArtefactsConfigurator()).thenReturn(configurator);
 
-        PreviewActionConfigurator actionConfigurator = new PreviewActionConfigurator(editorController);
+        PreviewActionConfigurator actionConfigurator = new PreviewActionConfigurator(editor);
         ClassGenerationAction action = actionConfigurator.preparePreviewAction(TEST_TEMPLATE_TEXT);
         action.execute();
         Writer writer = actionConfigurator.getWriter();

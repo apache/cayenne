@@ -24,11 +24,10 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
-import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateNodeUndoableEdit;
@@ -37,11 +36,11 @@ import java.awt.event.ActionEvent;
 
 public class CreateNodeAction extends ModelerAbstractAction {
 
-    public static void createDataNode(Object src, ProjectController controller, DataNodeDescriptor node) {
-        DataChannelDescriptor domain = (DataChannelDescriptor) controller.getProject().getRootNode();
+    public static void createDataNode(Object src, ProjectSession session, DataNodeDescriptor node) {
+        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
         domain.getNodeDescriptors().add(node);
-        controller.fireDataNodeEvent(DataNodeEvent.ofAdd(src, node));
-        controller.displayDataNode(new DataNodeDisplayEvent(src, domain, node));
+        session.fireDataNodeEvent(DataNodeEvent.ofAdd(src, node));
+        session.displayDataNode(new DataNodeDisplayEvent(src, domain, node));
     }
 
     public CreateNodeAction(Application application) {
@@ -56,8 +55,8 @@ public class CreateNodeAction extends ModelerAbstractAction {
     @Override
     public void performAction(ActionEvent e) {
         DataNodeDescriptor node = buildDataNode();
-        createDataNode(this, getProjectController(), node);
-        application.getUndoManager().addEdit(new CreateNodeUndoableEdit(getProjectController(), node));
+        createDataNode(this, getProjectSession(), node);
+        application.getUndoManager().addEdit(new CreateNodeUndoableEdit(getProjectSession(), node));
     }
 
 
@@ -74,7 +73,7 @@ public class CreateNodeAction extends ModelerAbstractAction {
      * any events.
      */
     public DataNodeDescriptor buildDataNode() {
-        DataChannelDescriptor domain = (DataChannelDescriptor) getProjectController().getProject().getRootNode();
+        DataChannelDescriptor domain = (DataChannelDescriptor) getProjectSession().project().getRootNode();
 
         DataNodeDescriptor node = buildDataNode(domain);
         node.setDataSourceDescriptor(new DataSourceDescriptor());

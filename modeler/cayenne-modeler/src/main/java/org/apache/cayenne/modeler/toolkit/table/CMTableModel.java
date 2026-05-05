@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.toolkit.table;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,13 +43,13 @@ public abstract class CMTableModel<T> extends AbstractTableModel {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CMTableModel.class);
 
-    protected ProjectController controller;
+    protected ProjectSession session;
     protected Object eventSource;
     protected List<T> objectList;
 
-    protected CMTableModel(ProjectController controller, Object eventSource, List<T> objectList) {
+    protected CMTableModel(ProjectSession session, Object eventSource, List<T> objectList) {
         this.eventSource = eventSource;
-        this.controller = controller;
+        this.session = session;
         this.objectList = objectList;
     }
 
@@ -61,14 +61,14 @@ public abstract class CMTableModel<T> extends AbstractTableModel {
             if (!Util.nullSafeEquals(newVal, oldValue)) {
                 setUpdatedValueAt(newVal, row, col);
 
-                this.controller.getApplication()
+                this.session.app()
                         .getUndoManager()
                         .addEdit(new CMTableModelUndoableEdit(this, oldValue, newVal, row, col));
             }
         } catch (IllegalArgumentException e) {
             LOGGER.error("Error setting table model value", e);
             JOptionPane.showMessageDialog(
-                    controller.getApplication().getFrameController().getView(),
+                    session.app().getFrame(),
                     e.getMessage(),
                     "Invalid value",
                     JOptionPane.ERROR_MESSAGE);
@@ -97,8 +97,8 @@ public abstract class CMTableModel<T> extends AbstractTableModel {
     /**
      * Returns EventController object.
      */
-    public ProjectController getController() {
-        return controller;
+    public ProjectSession getSession() {
+        return session;
     }
 
     /**

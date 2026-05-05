@@ -21,7 +21,8 @@ package org.apache.cayenne.modeler.ui.dbactionoptions;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.toolkit.dialog.CMDialog;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.toolkit.AppDialog;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -31,11 +32,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.HeadlessException;
+import java.awt.Window;
 import java.util.Collection;
 
-public class DbActionOptionsDialog extends CMDialog {
+public class DbActionOptionsDialog extends AppDialog {
 
     public static final int CANCEL = 0;
     public static final int SELECT = 1;
@@ -49,17 +50,18 @@ public class DbActionOptionsDialog extends CMDialog {
     private JButton cancelButton;
     protected JPanel buttons;
 
-    public DbActionOptionsDialog(Frame owner, String title, Collection<String> catalogs, Collection<String> schemas,
+    public DbActionOptionsDialog(Application application, Window owner, String title,
+                                 Collection<String> catalogs, Collection<String> schemas,
                                  String currentCatalog, String currentSchema) throws HeadlessException {
-        super(owner, title, false);
+        super(application, owner, title, ModalityType.APPLICATION_MODAL);
+        makeCloseableOnEscape();
         init();
         initController();
         initFromModel(catalogs, schemas, currentCatalog, currentSchema);
 
         pack();
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        setModal(true);
-        centerWindow();
+        centerOnOwner();
     }
 
     protected void init() {

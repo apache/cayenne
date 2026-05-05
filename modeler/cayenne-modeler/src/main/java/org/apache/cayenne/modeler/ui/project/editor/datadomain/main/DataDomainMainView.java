@@ -29,7 +29,8 @@ import org.apache.cayenne.modeler.event.display.DomainDisplayListener;
 import org.apache.cayenne.modeler.event.model.DomainEvent;
 import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -40,16 +41,14 @@ import java.util.Map;
 /**
  * Panel for editing DataDomain.
  */
-public class DataDomainMainView extends JPanel implements DomainDisplayListener {
-
-    private final ProjectController controller;
+public class DataDomainMainView extends ProjectPanel implements DomainDisplayListener {
 
     protected CMUndoableTextField name;
     protected JCheckBox objectValidation;
     protected JCheckBox sharedCache;
 
-    public DataDomainMainView(ProjectController controller) {
-        this.controller = controller;
+    public DataDomainMainView(ProjectSession session) {
+        super(session);
 
         // Create and layout components
         initView();
@@ -61,11 +60,11 @@ public class DataDomainMainView extends JPanel implements DomainDisplayListener 
     protected void initView() {
 
         // create widgets
-        this.name = new CMUndoableTextField(controller.getApplication().getUndoManager());
+        this.name = new CMUndoableTextField(app().getUndoManager());
         this.name.addCommitListener(this::setDomainName);
 
-        this.objectValidation = new CMCheckBox(controller.getApplication().getUndoManager());
-        this.sharedCache = new CMCheckBox(controller.getApplication().getUndoManager());
+        this.objectValidation = new CMCheckBox(app().getUndoManager());
+        this.sharedCache = new CMCheckBox(app().getUndoManager());
 
         // assemble
         CellConstraints cc = new CellConstraints();
@@ -91,7 +90,7 @@ public class DataDomainMainView extends JPanel implements DomainDisplayListener 
     }
 
     protected void initController() {
-        controller.addDomainDisplayListener(this);
+        session().addDomainDisplayListener(this);
 
         // add item listener to checkboxes
         objectValidation.addItemListener(e -> {
@@ -118,8 +117,8 @@ public class DataDomainMainView extends JPanel implements DomainDisplayListener 
      */
     protected void setDomainProperty(String property, String value, String defaultValue) {
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) controller
-                .getProject()
+        DataChannelDescriptor domain = (DataChannelDescriptor) session()
+                .project()
                 .getRootNode();
 
         if (domain == null) {
@@ -142,14 +141,14 @@ public class DataDomainMainView extends JPanel implements DomainDisplayListener 
             properties.put(property, value);
 
             DomainEvent e = DomainEvent.ofChange(this, domain);
-            controller.fireDomainEvent(e);
+            session().fireDomainEvent(e);
         }
     }
 
     public String getDomainProperty(String property, String defaultValue) {
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) controller
-                .getProject()
+        DataChannelDescriptor domain = (DataChannelDescriptor) session()
+                .project()
                 .getRootNode();
 
         if (domain == null) {
@@ -188,9 +187,8 @@ public class DataDomainMainView extends JPanel implements DomainDisplayListener 
 
     void setDomainName(String newName) {
 
-        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) controller
-                .getApplication()
-                .getProject()
+        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) app()
+                .getFrame().getProjectSession().project()
                 .getRootNode();
 
         if (Util.nullSafeEquals(dataChannelDescriptor.getName(), newName)) {
@@ -207,6 +205,6 @@ public class DataDomainMainView extends JPanel implements DomainDisplayListener 
                 dataChannelDescriptor.getName());
         dataChannelDescriptor.setName(newName);
 
-        controller.fireDomainEvent(e);
+        session().fireDomainEvent(e);
     }
 }

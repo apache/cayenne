@@ -18,31 +18,33 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.autorelationship;
 
-import org.apache.cayenne.modeler.mvc.ChildController;
 import org.apache.cayenne.modeler.toolkit.table.TableSizer;
 
 import javax.swing.table.AbstractTableModel;
-import java.awt.*;
 import java.util.List;
 
-public class InferRelationshipsTabController extends ChildController<InferRelationshipsController> {
+/**
+ * Builds and binds the entity-selection table for {@link InferRelationshipsDialog}.
+ * Lives as a sibling helper rather than an inner class to keep the dialog scannable.
+ */
+public class InferRelationshipsTabController {
 
     private static final String[] COLUMN_HEADERS = {"", "Source", "Target", "Join", "Name", "To Many"};
     private static final Class<?>[] COLUMN_CLASSES = {
             Boolean.class, String.class, String.class, String.class, String.class, String.class
     };
 
+    private final InferRelationshipsDialog parent;
     private final InferRelationshipsPanel view;
     private AbstractTableModel tableModel;
 
-    public InferRelationshipsTabController(InferRelationshipsController parent) {
-        super(parent);
+    public InferRelationshipsTabController(InferRelationshipsDialog parent) {
+        this.parent = parent;
         this.view = new InferRelationshipsPanel();
         initBindings();
     }
 
-    @Override
-    public Component getView() {
+    public InferRelationshipsPanel getView() {
         return view;
     }
 
@@ -108,6 +110,4 @@ public class InferRelationshipsTabController extends ChildController<InferRelati
             tableModel.fireTableDataChanged();
         }
     }
-
 }
-

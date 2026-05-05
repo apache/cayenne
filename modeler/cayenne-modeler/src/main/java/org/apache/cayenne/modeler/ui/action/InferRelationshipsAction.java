@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.autorelationship.InferRelationshipsController;
+import org.apache.cayenne.modeler.ui.autorelationship.InferRelationshipsDialog;
 
 import java.awt.event.ActionEvent;
 
@@ -32,9 +32,12 @@ public class InferRelationshipsAction extends ModelerAbstractAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        DataMap dataMap = getProjectController().getSelectedDataMap();
+        DataMap dataMap = getProjectSession().getSelectedDataMap();
         if (dataMap != null) {
-            new InferRelationshipsController(application.getFrameController(), dataMap).startup();
+            new InferRelationshipsDialog(
+                    getProjectSession(),
+                    application.getFrame(),
+                    dataMap).open();
         }
     }
 }

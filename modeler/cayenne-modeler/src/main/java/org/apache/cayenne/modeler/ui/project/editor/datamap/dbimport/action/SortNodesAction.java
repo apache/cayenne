@@ -49,7 +49,7 @@ public class SortNodesAction extends TreeManipulationAction {
         List<DbImportTreeNode> treeExpandList = tree.getTreeExpandList();
         DbImportSorter.sortSubtree(tree.getRootNode(), DbImportSorter.NODE_COMPARATOR_BY_TYPE_BY_NAME);
         putReverseEngineeringToUndoManager(reverseEngineeringOldCopy);
-        getProjectController().setDirty(true);
+        getProjectSession().setDirty(true);
         tree.reloadModelKeepingExpanded();
         tree.expandTree(treeExpandList);
     }

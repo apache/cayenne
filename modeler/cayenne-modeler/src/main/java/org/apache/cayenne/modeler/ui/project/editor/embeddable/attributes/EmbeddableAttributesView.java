@@ -18,53 +18,57 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.embeddable.attributes;
 
-import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
-import org.apache.cayenne.modeler.ui.action.CutAttributeRelationshipAction;
-import org.apache.cayenne.modeler.ui.action.RemoveAttributeRelationshipAction;
-import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
-import org.apache.cayenne.modeler.event.model.EmbeddableAttributeEvent;
-import org.apache.cayenne.modeler.event.model.EmbeddableAttributeListener;
-import org.apache.cayenne.modeler.event.model.EmbeddableEvent;
-import org.apache.cayenne.modeler.event.model.EmbeddableListener;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.service.action.GlobalActions;
-import org.apache.cayenne.modeler.ui.action.CopyAttributeAction;
-import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
-import org.apache.cayenne.modeler.ui.action.CutAttributeAction;
-import org.apache.cayenne.modeler.ui.action.PasteAction;
-import org.apache.cayenne.modeler.ui.action.RemoveAttributeAction;
 import org.apache.cayenne.modeler.event.display.EmbeddableAttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayListener;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
-import org.apache.cayenne.modeler.toolkit.table.CMTablePrefs;
-import org.apache.cayenne.modeler.toolkit.table.CMTable;
-import org.apache.cayenne.modeler.toolkit.table.CMTablePanel;
+import org.apache.cayenne.modeler.event.model.EmbeddableAttributeEvent;
+import org.apache.cayenne.modeler.event.model.EmbeddableAttributeListener;
+import org.apache.cayenne.modeler.event.model.EmbeddableEvent;
+import org.apache.cayenne.modeler.event.model.EmbeddableListener;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.ValueTypes;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.toolkit.table.CMComboBoxCellEditor;
+import org.apache.cayenne.modeler.toolkit.table.CMTable;
+import org.apache.cayenne.modeler.toolkit.table.CMTablePanel;
+import org.apache.cayenne.modeler.toolkit.table.CMTablePrefs;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
+import org.apache.cayenne.modeler.ui.action.CopyAttributeAction;
+import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
+import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
+import org.apache.cayenne.modeler.ui.action.CutAttributeAction;
+import org.apache.cayenne.modeler.ui.action.CutAttributeRelationshipAction;
+import org.apache.cayenne.modeler.ui.action.PasteAction;
+import org.apache.cayenne.modeler.ui.action.RemoveAttributeAction;
+import org.apache.cayenne.modeler.ui.action.RemoveAttributeRelationshipAction;
+import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 
-import javax.swing.*;
+import javax.swing.JComboBox;
+import javax.swing.JPopupMenu;
+import javax.swing.JTable;
+import javax.swing.JToolBar;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.table.TableColumn;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.util.EventObject;
 import java.util.List;
 
-public class EmbeddableAttributesView extends JPanel implements
+public class EmbeddableAttributesView extends ProjectPanel implements
         EmbeddableAttributeListener, EmbeddableDisplayListener, EmbeddableListener,
         ExistingSelectionProcessor {
 
-    private final ProjectController controller;
     private CMTable table;
 
-    public EmbeddableAttributesView(ProjectController controller) {
-        this.controller = controller;
+    public EmbeddableAttributesView(ProjectSession session) {
+        super(session);
         init();
         initController();
     }
@@ -74,7 +78,7 @@ public class EmbeddableAttributesView extends JPanel implements
 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
-        GlobalActions globalActions = controller.getApplication().getActionManager();
+        GlobalActions globalActions = app().getActionManager();
 
         toolBar.add(globalActions.getAction(CreateAttributeAction.class).buildButton());
         toolBar.addSeparator();
@@ -107,13 +111,13 @@ public class EmbeddableAttributesView extends JPanel implements
     }
 
     private void initController() {
-        controller.addEmbeddableAttributeListener(this);
-        controller.addEmbeddableDisplayListener(this);
-        controller.addEmbeddableListener(this);
+        session().addEmbeddableAttributeListener(this);
+        session().addEmbeddableDisplayListener(this);
+        session().addEmbeddableListener(this);
 
         table.getSelectionModel().addListSelectionListener(this::processExistingSelection);
 
-        controller.getApplication().getActionManager().setupCutCopyPaste(
+        app().getActionManager().setupCutCopyPaste(
                 table,
                 CutAttributeAction.class,
                 CopyAttributeAction.class);
@@ -144,18 +148,18 @@ public class EmbeddableAttributesView extends JPanel implements
 
         EmbeddableAttributeDisplayEvent ev = new EmbeddableAttributeDisplayEvent(
                 this,
-                (DataChannelDescriptor) controller.getProject().getRootNode(),
-                controller.getSelectedDataMap(),
-                controller.getSelectedEmbeddable(),
+                (DataChannelDescriptor) session().project().getRootNode(),
+                session().getSelectedDataMap(),
+                session().getSelectedEmbeddable(),
                 attrs);
 
-        controller.displayEmbeddableAttribute(ev);
+        session().displayEmbeddableAttribute(ev);
     }
 
     private void rebuildTable(Embeddable emb) {
         EmbeddableAttributeTableModel model = new EmbeddableAttributeTableModel(
                 emb,
-                controller,
+                session(),
                 this);
         table.setModel(model);
         table.setRowHeight(25);
@@ -167,10 +171,10 @@ public class EmbeddableAttributesView extends JPanel implements
 
         TableColumn typeColumn = table.getColumnModel().getColumn(EmbeddableAttributeTableModel.OBJ_ATTRIBUTE_TYPE);
         JComboBox javaTypesCombo = new CMComboBox<>(ValueTypes.getTypes());
-        AutoCompletion.enable(javaTypesCombo, false, true, controller::getSelectedDataMap);
+        AutoCompletion.enable(javaTypesCombo, false, true, session()::getSelectedDataMap);
         typeColumn.setCellEditor(new CMComboBoxCellEditor(javaTypesCombo));
 
-        CMTablePrefs.of(controller.getApplication().getPreferencesRepository(), "embeddable/attributeTable")
+        CMTablePrefs.of(app().getPreferencesRepository(), "embeddable/attributeTable")
                 .bind(table, null, EmbeddableAttributeTableModel.OBJ_ATTRIBUTE);
 
     }
@@ -179,7 +183,7 @@ public class EmbeddableAttributesView extends JPanel implements
      * Selects a specified attribute.
      */
     public void selectAttributes(EmbeddableAttribute[] embAttrs) {
-        GlobalActions actions = controller.getApplication().getActionManager();
+        GlobalActions actions = app().getActionManager();
         actions.getAction(RemoveAttributeRelationshipAction.class).updateForSelection(embAttrs.length);
         actions.getAction(CutAttributeRelationshipAction.class).updateForSelection(embAttrs.length);
         actions.getAction(CopyAttributeRelationshipAction.class).updateForSelection(embAttrs.length);

@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.ui.about;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
+import org.apache.cayenne.modeler.toolkit.AppFrame;
 import org.apache.cayenne.util.LocalizedStringsHandler;
 import org.apache.cayenne.util.Util;
 
@@ -40,7 +41,7 @@ import java.time.LocalDate;
 // Implementation note - the data displayed here is
 // static and very simple, so there is no need to implement complex Scope MVC
 // triad, though it might be beneficial to use strings file
-public class AboutDialog extends JFrame implements FocusListener, KeyListener, MouseListener {
+public class AboutDialog extends AppFrame implements FocusListener, KeyListener, MouseListener {
 
     private static final String ABOUT_STRING = "(c) 2001-%d Apache Software Foundation and individual authors.<br><br>https://cayenne.apache.org/<br>";
 
@@ -55,7 +56,7 @@ public class AboutDialog extends JFrame implements FocusListener, KeyListener, M
     }
 
     public AboutDialog(Application application) {
-
+        super(application);
         FlowLayout flowLayout = new FlowLayout();
         getContentPane().setLayout(flowLayout);
         getContentPane().setBackground(Color.WHITE);

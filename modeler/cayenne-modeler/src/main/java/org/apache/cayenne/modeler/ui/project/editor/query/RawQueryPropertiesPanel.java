@@ -31,7 +31,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
 import org.apache.cayenne.modeler.toolkit.combobox.CMUndoableComboBox;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.util.Comparators;
 
@@ -51,8 +51,8 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
     protected JCheckBox persistentObjects;
     protected JComboBox<ObjEntity> entities;
 
-    public RawQueryPropertiesPanel(ProjectController mediator) {
-        super(mediator);
+    public RawQueryPropertiesPanel(ProjectSession session) {
+        super(session);
     }
 
     protected void initController() {
@@ -96,9 +96,9 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
 
         // create widgets
 
-        persistentObjects = new CMCheckBox(mediator.getApplication().getUndoManager());
+        persistentObjects = new CMCheckBox(session.app().getUndoManager());
 
-        entities = new CMUndoableComboBox<>(mediator.getApplication().getUndoManager());
+        entities = new CMUndoableComboBox<>(session.app().getUndoManager());
         entities.setRenderer(Renderers.listRendererWithIcons());
 
         this.setLayout(new BorderLayout());
@@ -119,7 +119,7 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
         // since query root is fully resolved during map loading,
         // making it impossible to reference other DataMaps.
 
-        DataMap map = mediator.getSelectedDataMap();
+        DataMap map = session.getSelectedDataMap();
         List<ObjEntity> objEntities = new ArrayList<>(map.getObjEntities());
 
         if (objEntities.size() > 1) {

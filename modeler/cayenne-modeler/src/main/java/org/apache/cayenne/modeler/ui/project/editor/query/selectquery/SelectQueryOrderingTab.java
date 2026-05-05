@@ -27,8 +27,9 @@ import org.apache.cayenne.modeler.toolkit.MultiColumnBrowser;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.toolkit.splitpane.CMSplitPanePrefs;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SortOrder;
@@ -44,7 +45,7 @@ import java.awt.*;
  * A panel for picking SelectQuery orderings.
  *
  */
-public class SelectQueryOrderingTab extends JPanel {
+public class SelectQueryOrderingTab extends ProjectPanel {
 
     static final Dimension BROWSER_CELL_DIM = new Dimension(150, 100);
     static final Dimension TABLE_DIM = new Dimension(460, 60);
@@ -56,7 +57,6 @@ public class SelectQueryOrderingTab extends JPanel {
     static final String REAL_PANEL = "real";
     static final String PLACEHOLDER_PANEL = "placeholder";
 
-    protected ProjectController mediator;
     protected SelectQueryDescriptor selectQuery;
 
     protected MultiColumnBrowser browser;
@@ -65,8 +65,8 @@ public class SelectQueryOrderingTab extends JPanel {
     protected CardLayout cardLayout;
     protected JPanel messagePanel;
 
-    public SelectQueryOrderingTab(ProjectController mediator) {
-        this.mediator = mediator;
+    public SelectQueryOrderingTab(ProjectSession session) {
+        super(session);
 
         initView();
         initController();
@@ -77,11 +77,11 @@ public class SelectQueryOrderingTab extends JPanel {
         messagePanel = new JPanel(new BorderLayout());
         cardLayout = new CardLayout();
 
-        int defLocation = mediator.getApplication().getFrameController().getView().getHeight() / 2;
+        int defLocation = app().getFrame().getHeight() / 2;
 
         //As of CAY-888 #3 main pane is now a JSplitPane. Top component is a bit larger.
         JSplitPane mainPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        CMSplitPanePrefs.of(mediator.getApplication().getPreferencesRepository(), "selectQuery/orderingSplit").bind(mainPanel, defLocation);
+        CMSplitPanePrefs.of(app().getPreferencesRepository(), "selectQuery/orderingSplit").bind(mainPanel, defLocation);
 
         mainPanel.setTopComponent(createEditorPanel());
         mainPanel.setBottomComponent(createSelectorPanel());
@@ -102,7 +102,7 @@ public class SelectQueryOrderingTab extends JPanel {
     }
 
     protected void initFromModel() {
-        QueryDescriptor query = mediator.getSelectedQuery();
+        QueryDescriptor query = session().getSelectedQuery();
 
         if (query == null || !QueryDescriptor.SELECT_QUERY.equals(query.getType())) {
             processInvalidModel("Unknown query.");
@@ -238,7 +238,7 @@ public class SelectQueryOrderingTab extends JPanel {
 
         OrderingModel model = (OrderingModel) table.getModel();
         model.fireTableRowsInserted(index, index);
-        mediator.fireQueryEvent(QueryEvent.ofChange(SelectQueryOrderingTab.this, selectQuery));
+        session().fireQueryEvent(QueryEvent.ofChange(SelectQueryOrderingTab.this, selectQuery));
     }
 
     void removeOrdering() {
@@ -252,7 +252,7 @@ public class SelectQueryOrderingTab extends JPanel {
         selectQuery.removeOrdering(ordering);
 
         model.fireTableRowsDeleted(selection, selection);
-        mediator.fireQueryEvent(QueryEvent.ofChange(SelectQueryOrderingTab.this, selectQuery));
+        session().fireQueryEvent(QueryEvent.ofChange(SelectQueryOrderingTab.this, selectQuery));
     }
 
     /**
@@ -342,7 +342,7 @@ public class SelectQueryOrderingTab extends JPanel {
                     throw new IndexOutOfBoundsException("Invalid editable column: " + column);
             }
 
-            mediator.fireQueryEvent(QueryEvent.ofChange(SelectQueryOrderingTab.this, selectQuery));
+            session().fireQueryEvent(QueryEvent.ofChange(SelectQueryOrderingTab.this, selectQuery));
         }
     }
 }

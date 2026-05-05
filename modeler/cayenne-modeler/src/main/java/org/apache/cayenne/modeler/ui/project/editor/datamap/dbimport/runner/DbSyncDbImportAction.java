@@ -32,8 +32,7 @@ import org.apache.cayenne.dbsync.reverse.dbimport.DefaultDbImportAction;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.dbloadresult.DbLoadResultDialog;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportController;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportResultDialog;
 import org.apache.cayenne.project.ProjectSaver;
 import org.slf4j.Logger;
 
@@ -45,11 +44,10 @@ import java.util.List;
 public class DbSyncDbImportAction extends DefaultDbImportAction {
 
     private final DataMap targetMap;
-    private final DbImportController dbImportController;
+    private final DbImportResultDialog resultDialog;
 
     private DataMap sourceDataMap;
     private DbImportConfiguration config;
-    private DbLoadResultDialog resultDialog;
 
     public DbSyncDbImportAction(
             @Inject DataMap targetMap,
@@ -74,7 +72,7 @@ public class DbSyncDbImportAction extends DefaultDbImportAction {
                 metaData);
 
         this.targetMap = targetMap;
-        this.dbImportController = application.getFrameController().getDbImportController();
+        this.resultDialog = application.getFrame().getDbImportResultDialog();
     }
 
     @Override
@@ -90,7 +88,6 @@ public class DbSyncDbImportAction extends DefaultDbImportAction {
 
     @Override
     protected Collection<MergerToken> log(List<MergerToken> tokens) {
-        resultDialog = dbImportController.createDialog();
         resultDialog.refreshElements();
         resultDialog.getOkButton().addActionListener(e -> {
             try {
@@ -136,12 +133,12 @@ public class DbSyncDbImportAction extends DefaultDbImportAction {
 
     private void resetDialog() {
         resultDialog.setVisible(false);
-        dbImportController.resetDialog();
+        resultDialog.resetDialog();
     }
 
     private void checkForUnusedImports() {
         resetDialog();
-        dbImportController.setGlobalImport(false);
+        resultDialog.setGlobalImport(false);
     }
 
     @Override

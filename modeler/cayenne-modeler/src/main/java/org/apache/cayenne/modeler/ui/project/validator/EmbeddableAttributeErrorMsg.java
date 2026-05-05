@@ -23,7 +23,7 @@ import javax.swing.JFrame;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.display.EmbeddableAttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 import org.apache.cayenne.validation.ValidationFailure;
@@ -44,9 +44,9 @@ public class EmbeddableAttributeErrorMsg extends ValidationDisplayHandler {
     }
 
     @Override
-    public void displayField(ProjectController mediator, JFrame frame) {
-        mediator.displayEmbeddable(new EmbeddableDisplayEvent(frame, domain, map, embeddable));
-        mediator.displayEmbeddableAttribute(new EmbeddableAttributeDisplayEvent(
+    public void displayField(ProjectSession session, JFrame frame) {
+        session.displayEmbeddable(new EmbeddableDisplayEvent(frame, domain, map, embeddable));
+        session.displayEmbeddableAttribute(new EmbeddableAttributeDisplayEvent(
                 frame, domain, map, embeddable, embeddableAttribute));
     }
 

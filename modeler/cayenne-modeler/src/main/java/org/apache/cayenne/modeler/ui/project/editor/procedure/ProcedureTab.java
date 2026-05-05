@@ -19,12 +19,13 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.procedure;
 
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ProcedureDisplayListener;
 import org.apache.cayenne.map.DataMap;
@@ -44,9 +45,8 @@ import java.util.EventObject;
 /**
  * A panel for editing stored procedure general settings, such as name, schema, etc.
  */
-public class ProcedureTab extends JPanel implements ProcedureDisplayListener, ExistingSelectionProcessor {
+public class ProcedureTab extends ProjectPanel implements ProcedureDisplayListener, ExistingSelectionProcessor {
 
-    protected ProjectController eventController;
     protected CMUndoableTextField name;
     protected CMUndoableTextField schema;
     protected CMUndoableTextField catalog;
@@ -54,8 +54,8 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
     protected JCheckBox returnsValue;
     protected boolean ignoreChange;
 
-    public ProcedureTab(ProjectController eventController) {
-        this.eventController = eventController;
+    public ProcedureTab(ProjectSession session) {
+        super(session);
 
         initView();
         initController();
@@ -64,19 +64,19 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
     private void initView() {
         // create widgets
 
-        this.name = new CMUndoableTextField(eventController.getApplication().getUndoManager());
+        this.name = new CMUndoableTextField(app().getUndoManager());
         this.name.addCommitListener(this::setProcedureName);
 
-        this.schema = new CMUndoableTextField(eventController.getApplication().getUndoManager());
+        this.schema = new CMUndoableTextField(app().getUndoManager());
         this.schema.addCommitListener(this::setSchema);
 
-        this.catalog = new CMUndoableTextField(eventController.getApplication().getUndoManager());
+        this.catalog = new CMUndoableTextField(app().getUndoManager());
         this.catalog.addCommitListener(this::setCatalog);
 
-        this.comment = new CMUndoableTextField(eventController.getApplication().getUndoManager());
+        this.comment = new CMUndoableTextField(app().getUndoManager());
         this.comment.addCommitListener(this::setComment);
 
-        this.returnsValue = new CMCheckBox(eventController.getApplication().getUndoManager());
+        this.returnsValue = new CMCheckBox(app().getUndoManager());
         this.returnsValue.setToolTipText("first parameter will be used as return value");
 
         FormLayout layout = new FormLayout("right:pref, 3dlu, fill:200dlu", "");
@@ -96,22 +96,22 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
 
     private void initController() {
         returnsValue.addItemListener(e -> {
-            Procedure procedure = eventController.getSelectedProcedure();
+            Procedure procedure = session().getSelectedProcedure();
             if (procedure != null && !ignoreChange) {
                 procedure.setReturningValue(returnsValue.isSelected());
-                eventController.fireProcedureEvent(ProcedureEvent.ofChange(ProcedureTab.this, procedure));
+                session().fireProcedureEvent(ProcedureEvent.ofChange(ProcedureTab.this, procedure));
             }
         });
 
-        eventController.addProcedureDisplayListener(this);
+        session().addProcedureDisplayListener(this);
     }
 
     public void processExistingSelection(EventObject e) {
         ProcedureDisplayEvent pde = new ProcedureDisplayEvent(this,
-                (DataChannelDescriptor) eventController.getProject().getRootNode(),
-                eventController.getSelectedDataMap(),
-                eventController.getSelectedProcedure());
-        eventController.displayProcedure(pde);
+                (DataChannelDescriptor) session().project().getRootNode(),
+                session().getSelectedDataMap(),
+                session().getSelectedProcedure());
+        session().displayProcedure(pde);
     }
 
     /**
@@ -138,7 +138,7 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
             newName = null;
         }
 
-        Procedure procedure = eventController.getSelectedProcedure();
+        Procedure procedure = session().getSelectedProcedure();
 
         if (procedure == null || Util.nullSafeEquals(newName, procedure.getName())) {
             return;
@@ -158,7 +158,7 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
             if (ns instanceof EntityResolver) {
                 ((EntityResolver) ns).refreshMappingCache();
             }
-            eventController.fireProcedureEvent(e);
+            session().fireProcedureEvent(e);
         } else {
             // there is an entity with the same name
             throw new ValidationException("There is another procedure with name '" + newName + "'.");
@@ -170,11 +170,11 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
             text = null;
         }
 
-        Procedure procedure = eventController.getSelectedProcedure();
+        Procedure procedure = session().getSelectedProcedure();
 
         if (procedure != null && !Util.nullSafeEquals(procedure.getSchema(), text)) {
             procedure.setSchema(text);
-            eventController.fireProcedureEvent(ProcedureEvent.ofChange(this, procedure));
+            session().fireProcedureEvent(ProcedureEvent.ofChange(this, procedure));
         }
     }
 
@@ -183,26 +183,26 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
             text = null;
         }
 
-        Procedure procedure = eventController.getSelectedProcedure();
+        Procedure procedure = session().getSelectedProcedure();
 
         if (procedure != null && !Util.nullSafeEquals(procedure.getCatalog(), text)) {
             procedure.setCatalog(text);
-            eventController.fireProcedureEvent(ProcedureEvent.ofChange(this, procedure));
+            session().fireProcedureEvent(ProcedureEvent.ofChange(this, procedure));
         }
     }
 
     void setComment(String comment) {
-        Procedure procedure = eventController.getSelectedProcedure();
+        Procedure procedure = session().getSelectedProcedure();
 
         if (procedure == null) {
             return;
         }
 
-        ObjectInfo.putToMetaData(eventController.getApplication().getMetaData(), procedure, ObjectInfo.COMMENT, comment);
-        eventController.fireProcedureEvent(ProcedureEvent.ofChange(this, procedure));
+        ObjectInfo.putToMetaData(app().getMetaData(), procedure, ObjectInfo.COMMENT, comment);
+        session().fireProcedureEvent(ProcedureEvent.ofChange(this, procedure));
     }
 
     String getComment(Procedure procedure) {
-        return ObjectInfo.getFromMetaData(eventController.getApplication().getMetaData(), procedure, ObjectInfo.COMMENT);
+        return ObjectInfo.getFromMetaData(app().getMetaData(), procedure, ObjectInfo.COMMENT);
     }
 }

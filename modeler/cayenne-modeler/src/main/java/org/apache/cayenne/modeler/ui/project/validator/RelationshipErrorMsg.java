@@ -32,7 +32,7 @@ import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DbRelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjRelationshipDisplayEvent;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.validation.ValidationFailure;
 
 /**
@@ -56,14 +56,14 @@ public class RelationshipErrorMsg extends ValidationDisplayHandler {
         map = entity.getDataMap();
     }
 
-    public void displayField(ProjectController mediator, JFrame frame) {
+    public void displayField(ProjectSession session, JFrame frame) {
         // must first display entity, and then switch to relationship display .. so fire twice
         if (entity instanceof ObjEntity) {
-            mediator.displayObjEntity(new ObjEntityDisplayEvent(frame, domain, map, (ObjEntity) entity));
-            mediator.displayObjRelationship(new ObjRelationshipDisplayEvent(frame, domain, map, (ObjEntity) entity, (ObjRelationship) rel));
+            session.displayObjEntity(new ObjEntityDisplayEvent(frame, domain, map, (ObjEntity) entity));
+            session.displayObjRelationship(new ObjRelationshipDisplayEvent(frame, domain, map, (ObjEntity) entity, (ObjRelationship) rel));
         } else if (entity instanceof DbEntity) {
-            mediator.displayDbEntity(new DbEntityDisplayEvent(frame, domain, map, (DbEntity) entity));
-            mediator.displayDbRelationship(new DbRelationshipDisplayEvent(frame, domain, map, (DbEntity) entity, (DbRelationship) rel));
+            session.displayDbEntity(new DbEntityDisplayEvent(frame, domain, map, (DbEntity) entity));
+            session.displayDbRelationship(new DbRelationshipDisplayEvent(frame, domain, map, (DbEntity) entity, (DbRelationship) rel));
         }
     }
 }

@@ -18,9 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.tree.treefilter;
 
-import javax.swing.*;
+import org.apache.cayenne.modeler.ui.project.tree.ProjectTree;
+import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeModel;
+
+import javax.swing.JCheckBox;
+import javax.swing.JPopupMenu;
+import javax.swing.JTree;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import java.util.Enumeration;
 
 public class TreeFilterPopup extends JPopupMenu {
+
+    private final ProjectTree treeView;
+    private final ProjectTreeModel treeModel;
 
     private final JCheckBox dbEntity;
     private final JCheckBox objEntity;
@@ -29,7 +40,16 @@ public class TreeFilterPopup extends JPopupMenu {
     private final JCheckBox query;
     private final JCheckBox all;
 
-    public TreeFilterPopup() {
+    private boolean showDbEntity;
+    private boolean showObjEntity;
+    private boolean showEmbeddable;
+    private boolean showProcedure;
+    private boolean showQuery;
+
+    public TreeFilterPopup(ProjectTree treeView) {
+        this.treeView = treeView;
+        this.treeModel = treeView.getProjectModel();
+
         this.all = new JCheckBox("Show all");
         this.dbEntity = new JCheckBox("DbEntity");
         this.objEntity = new JCheckBox("ObjEntity");
@@ -44,12 +64,77 @@ public class TreeFilterPopup extends JPopupMenu {
         add(embeddable);
         add(procedure);
         add(query);
+
+        selectAll();
+
+        dbEntity.addActionListener(e -> {
+            showDbEntity = dbEntity.isSelected();
+            applyFilter();
+        });
+        objEntity.addActionListener(e -> {
+            showObjEntity = objEntity.isSelected();
+            applyFilter();
+        });
+        embeddable.addActionListener(e -> {
+            showEmbeddable = embeddable.isSelected();
+            applyFilter();
+        });
+        procedure.addActionListener(e -> {
+            showProcedure = procedure.isSelected();
+            applyFilter();
+        });
+        query.addActionListener(e -> {
+            showQuery = query.isSelected();
+            applyFilter();
+        });
+        all.addActionListener(e -> removeFilter());
     }
 
-    public JCheckBox getDbEntity() { return dbEntity; }
-    public JCheckBox getObjEntity() { return objEntity; }
-    public JCheckBox getEmbeddable() { return embeddable; }
-    public JCheckBox getProcedure() { return procedure; }
-    public JCheckBox getQuery() { return query; }
-    public JCheckBox getAll() { return all; }
+    public void treeExpOrCollPath(String action) {
+        TreeNode root = (TreeNode) treeModel.getRoot();
+        expandAll(treeView, new TreePath(root), action);
+    }
+
+    private void selectAll() {
+        showDbEntity = showObjEntity = showEmbeddable = showProcedure = showQuery = true;
+        dbEntity.setSelected(true);
+        objEntity.setSelected(true);
+        embeddable.setSelected(true);
+        procedure.setSelected(true);
+        query.setSelected(true);
+        all.setEnabled(false);
+    }
+
+    private void removeFilter() {
+        selectAll();
+        treeModel.setFiltered(true, true, true, true, true);
+        treeView.updateUI();
+    }
+
+    private void applyFilter() {
+        treeModel.setFiltered(showDbEntity, showObjEntity, showEmbeddable, showProcedure, showQuery);
+        treeView.updateUI();
+
+        boolean allSelected = showDbEntity && showObjEntity && showEmbeddable && showProcedure && showQuery;
+        all.setSelected(allSelected);
+        all.setEnabled(!allSelected);
+    }
+
+    private void expandAll(JTree tree, TreePath parent, String action) {
+        TreeNode node = (TreeNode) parent.getLastPathComponent();
+
+        if (node.getChildCount() >= 0) {
+            for (Enumeration<? extends TreeNode> e = node.children(); e.hasMoreElements(); ) {
+                TreeNode n = e.nextElement();
+                TreePath path = parent.pathByAddingChild(n);
+                expandAll(tree, path, action);
+            }
+        }
+
+        if ("expand".equals(action)) {
+            tree.expandPath(parent);
+        } else if ("collapse".equals(action)) {
+            treeModel.reload(treeModel.getRootNode());
+        }
+    }
 }

@@ -64,7 +64,7 @@ public class DragAndDropNodeAction extends TreeManipulationAction {
                 model.insertNodeInto(node, dropLocationParentNode, index);
             }
         }
-        getProjectController().setDirty(true);
+        getProjectSession().setDirty(true);
         DbImportSorter.syncUserObjectItems(dropLocationParentNode);
         DbImportSorter.syncUserObjectItems(sourceParentNode);
         putReverseEngineeringToUndoManager(reverseEngineeringOldCopy);
@@ -81,7 +81,7 @@ public class DragAndDropNodeAction extends TreeManipulationAction {
             int duplicateIndex = dropLocationParentNode.getChildNodes().indexOf(node);
             if (duplicateIndex >= 0) {
                 JOptionPane.showMessageDialog(
-                        application.getFrameController().getView(),
+                        application.getFrame(),
                         dropLocationParentNode.getSimpleNodeName() + " already contains " + node.getSimpleNodeName(),
                         "Error moving",
                         JOptionPane.ERROR_MESSAGE);

@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.project.validator;
 import javax.swing.JFrame;
 
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.validation.ValidationFailure;
 
@@ -40,9 +40,9 @@ public class DataMapErrorMsg extends ValidationDisplayHandler {
         map = (DataMap) object;
     }
 
-    public void displayField(ProjectController mediator, JFrame frame) {
+    public void displayField(ProjectSession session, JFrame frame) {
         DataMapDisplayEvent event;
         event = new DataMapDisplayEvent(frame, domain, map);
-        mediator.displayDataMap(event);
+        session.displayDataMap(event);
     }
 }

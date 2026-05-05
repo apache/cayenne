@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.graph;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.event.model.DomainEvent;
 import org.apache.cayenne.modeler.event.model.DomainListener;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.jgraph.JGraph;
 
 import java.util.HashMap;
@@ -47,7 +47,7 @@ public class GraphRegistry implements DomainListener {
     /**
      * Builds graph with specified type, or returns existing one
      */
-    public JGraph loadGraph(ProjectController mediator, DataChannelDescriptor domain, GraphType type) {
+    public JGraph loadGraph(ProjectSession session, DataChannelDescriptor domain, GraphType type) {
         GraphMap graphMap = graphMaps.get(domain);
         if (graphMap == null) {
             graphMap = new GraphMap(domain);
@@ -56,9 +56,14 @@ public class GraphRegistry implements DomainListener {
 
         GraphBuilder builder = graphMap.get(type);
         if (builder == null) {
-            builder = graphMap.createGraphBuilder(mediator, type, true);
-            
-            mediator.setDirty(true);
+            boolean fromParkedState = graphMap.hasParkedState(type);
+            builder = graphMap.createGraphBuilder(session, type, true);
+
+            // only mark dirty when this is a freshly auto-laid-out graph; restoring a
+            // graph parsed from the project file shouldn't dirty the project
+            if (!fromParkedState) {
+                session.setDirty(true);
+            }
         }
         
         //marking this builder as default
@@ -97,10 +102,10 @@ public class GraphRegistry implements DomainListener {
     }
     
     /**
-     * Removes all listeners (and itself) from ProjectController
+     * Removes all listeners (and itself) from ProjectSession
      */
-    public void unregister(ProjectController mediator) {
-        unregisterDomain((DataChannelDescriptor)mediator.getProject().getRootNode());
-        mediator.removeDomainListener(this);
+    public void unregister(ProjectSession session) {
+        unregisterDomain((DataChannelDescriptor)session.project().getRootNode());
+        session.removeDomainListener(this);
     }
 }

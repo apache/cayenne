@@ -43,7 +43,7 @@ public class CreateCallbackMethodAction extends ModelerAbstractAction {
      * @return CallbackMap instance where to create a method
      */
     public CallbackMap getCallbackMap() {
-        return getProjectController().getSelectedObjEntity().getCallbackMap();
+        return getProjectSession().getSelectedObjEntity().getCallbackMap();
     }
 
     @Override
@@ -53,17 +53,17 @@ public class CreateCallbackMethodAction extends ModelerAbstractAction {
 
     @Override
     public final void performAction(ActionEvent e) {
-        CallbackType callbackType = getProjectController().getSelectedCallbackType();
+        CallbackType callbackType = getProjectSession().getSelectedCallbackType();
 
         String methodName = NameBuilder
-                .builderForCallbackMethod(getProjectController().getSelectedObjEntity())
+                .builderForCallbackMethod(getProjectSession().getSelectedObjEntity())
                 .baseName(toMethodName(callbackType.getType()))
                 .name();
 
         createCallbackMethod(callbackType, methodName);
         application.getUndoManager().addEdit(
                 new CreateCallbackMethodUndoableEdit(
-                        getProjectController(),
+                        getProjectSession(),
                         callbackType,
                         methodName));
     }
@@ -75,7 +75,7 @@ public class CreateCallbackMethodAction extends ModelerAbstractAction {
 
         CallbackMethodEvent ce = CallbackMethodEvent.ofAdd(this, methodName);
 
-        getProjectController().fireCallbackMethodEvent(ce);
+        getProjectSession().fireCallbackMethodEvent(ce);
     }
 
     private String toMethodName(LifecycleEvent event) {

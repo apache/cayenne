@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.dbrelationship;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 
 import java.util.ArrayList;
@@ -49,10 +49,10 @@ public class DbJoinTableModel extends CMTableModel<DbJoin> {
 
     public DbJoinTableModel(
             DbRelationship relationship,
-            ProjectController mediator,
+            ProjectSession session,
             Object src) {
 
-        super(mediator, src, new ArrayList<>(relationship.getJoins()));
+        super(session, src, new ArrayList<>(relationship.getJoins()));
         this.relationship = relationship;
         this.source = relationship.getSourceEntity();
         this.target = relationship.getTargetEntity();
@@ -60,11 +60,11 @@ public class DbJoinTableModel extends CMTableModel<DbJoin> {
 
     public DbJoinTableModel(
             DbRelationship relationship,
-            ProjectController mediator,
+            ProjectSession session,
             Object src,
             boolean editable) {
 
-        this(relationship, mediator, src);
+        this(relationship, session, src);
         this.editable = editable;
     }
 

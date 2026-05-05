@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.action.DBConnectionAwareAction;
-import org.apache.cayenne.modeler.ui.datasource.DataSourceController;
+import org.apache.cayenne.modeler.ui.datasource.DataSourceDialog;
 
 import java.awt.event.ActionEvent;
 
@@ -42,12 +42,12 @@ public class GetDbConnectionAction extends DBConnectionAwareAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        DataSourceController connectWizard = getDataSourceController(DIALOG_TITLE);
+        DataSourceDialog connectWizard = getDataSourceController(DIALOG_TITLE);
         if (connectWizard == null) {
             return;
         }
         saveConnector(
-                application.getFrameController().getProjectController().getSelectedDataMap(),
+                application.getFrame().getProjectSession().getSelectedDataMap(),
                 connectWizard);
     }
 }

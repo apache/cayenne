@@ -27,21 +27,21 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.ui.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.RemoveRelationshipAction;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 
 public class RemoveRelationshipUndoableEdit extends BaseRemovePropertyUndoableEdit {
 
     private ObjRelationship[] rels;
     private DbRelationship[] dbRels;
 
-    public RemoveRelationshipUndoableEdit(ProjectController controller, ObjEntity objEntity, ObjRelationship[] rels) {
-        super(controller);
+    public RemoveRelationshipUndoableEdit(ProjectSession session, ObjEntity objEntity, ObjRelationship[] rels) {
+        super(session);
         this.objEntity = objEntity;
         this.rels = rels;
     }
 
-    public RemoveRelationshipUndoableEdit(ProjectController controller, DbEntity dbEntity, DbRelationship[] dbRels) {
-        super(controller);
+    public RemoveRelationshipUndoableEdit(ProjectSession session, DbEntity dbEntity, DbRelationship[] dbRels) {
+        super(session);
         this.dbEntity = dbEntity;
         this.dbRels = dbRels;
     }

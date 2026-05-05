@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.project.tree;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ui.action.LinkDataMapAction;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -39,13 +39,13 @@ class TreeDropTarget implements DropTargetListener, Transferable {
 
     private DropTarget target;
     private final JTree targetTree;
-    private final ProjectController controller;
+    private final ProjectSession session;
     private final TreePath parentPath;
     private TreePath targetPath;
 
-    public TreeDropTarget(JTree targetTree, ProjectController controller, TreePath parentPath) {
+    public TreeDropTarget(JTree targetTree, ProjectSession session, TreePath parentPath) {
         this.targetTree = targetTree;
-        this.controller = controller;
+        this.session = session;
         this.parentPath = parentPath;
 
         // ugly - many DND objects are using constructors with side effects
@@ -77,7 +77,7 @@ class TreeDropTarget implements DropTargetListener, Transferable {
                     DataNodeDescriptor currentDataNode = (DataNodeDescriptor) target.getUserObject();
                     DataMap currentDataMap = (DataMap) parent.getUserObject();
 
-                    LinkDataMapAction action = controller.getApplication().getActionManager().getAction(LinkDataMapAction.class);
+                    LinkDataMapAction action = session.app().getActionManager().getAction(LinkDataMapAction.class);
                     action.linkDataMap(currentDataMap, currentDataNode);
 
                     targetTree.makeVisible(targetPath.pathByAddingChild(target));

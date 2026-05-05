@@ -29,7 +29,8 @@ import org.apache.cayenne.modeler.graph.GraphBuilder;
 import org.apache.cayenne.modeler.graph.GraphRegistry;
 import org.apache.cayenne.modeler.graph.GraphType;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.RebuildGraphAction;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.SaveAsImageAction;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ShowGraphEntityAction;
@@ -45,9 +46,8 @@ import java.awt.event.ItemListener;
 /**
  * Tab for editing graphical representation of a dataDomain
  */
-public class DataDomainGraphTab extends JPanel implements DomainDisplayListener, ItemListener {
+public class DataDomainGraphTab extends ProjectPanel implements DomainDisplayListener, ItemListener {
 
-    private final ProjectController controller;
     JComboBox<String> diagramCombo;
     JScrollPane scrollPane;
     JGraph graph;
@@ -55,13 +55,13 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
     boolean needRebuild;
     GraphRegistry graphRegistry;
 
-    public DataDomainGraphTab(ProjectController controller) {
-        this.controller = controller;
+    public DataDomainGraphTab(ProjectSession session) {
+        super(session);
 
         needRebuild = true;
-        controller.addDomainDisplayListener(this);
-        controller.addObjEntityDisplayListener(this::entityFocused);
-        controller.addDbEntityDisplayListener(this::entityFocused);
+        session.addDomainDisplayListener(this);
+        session.addObjEntityDisplayListener(this::entityFocused);
+        session.addDbEntityDisplayListener(this::entityFocused);
 
         setLayout(new BorderLayout());
         JToolBar toolbar = new JToolBar();
@@ -77,11 +77,11 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
         diagramCombo = new CMComboBox<>(names);
         diagramCombo.addItemListener(this);
 
-        toolbar.add(new RebuildGraphAction(this,controller.getApplication()).buildButton(1));
-        toolbar.add(new SaveAsImageAction(this, controller.getApplication()).buildButton(3));
+        toolbar.add(new RebuildGraphAction(this,app()).buildButton(1));
+        toolbar.add(new SaveAsImageAction(this, app()).buildButton(3));
         toolbar.addSeparator();
-        toolbar.add(new ZoomInAction(this, controller.getApplication()).buildButton(1));
-        toolbar.add(new ZoomOutAction(this, controller.getApplication()).buildButton(3));
+        toolbar.add(new ZoomInAction(this, app()).buildButton(1));
+        toolbar.add(new ZoomOutAction(this, app()).buildButton(3));
 
         toolbar.addSeparator();
         toolbar.add(new JLabel("Diagram: "));
@@ -146,7 +146,7 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
      */
     public void refresh() {
         if (needRebuild && domain != null) {
-            graph = getGraphRegistry().loadGraph(controller, domain, getSelectedType());
+            graph = getGraphRegistry().loadGraph(session(), domain, getSelectedType());
             scrollPane.setViewportView(graph);
 
             needRebuild = false;
@@ -165,7 +165,7 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
             JOptionPane pane = new JOptionPane("Rebuilding graph from domain will cause all user"
                     + " changes to be lost. Continue?", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
 
-            JDialog dialog = pane.createDialog(controller.getApplication().getFrameController().getView(), "Confirm Rebuild");
+            JDialog dialog = pane.createDialog(app().getFrame(), "Confirm Rebuild");
             dialog.setVisible(true);
 
             if (pane.getValue().equals(JOptionPane.YES_OPTION)) {
@@ -185,10 +185,10 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
     }
 
     GraphRegistry getGraphRegistry() {
-        graphRegistry = controller.getApplication().getMetaData().get(domain, GraphRegistry.class);
+        graphRegistry = app().getMetaData().get(domain, GraphRegistry.class);
         if (graphRegistry == null) {
             graphRegistry = new GraphRegistry();
-            controller.getApplication().getMetaData().add(domain, graphRegistry);
+            app().getMetaData().add(domain, graphRegistry);
         }
 
         return graphRegistry;

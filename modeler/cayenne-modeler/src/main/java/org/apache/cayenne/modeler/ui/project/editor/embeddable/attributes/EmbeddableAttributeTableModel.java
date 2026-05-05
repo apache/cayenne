@@ -22,7 +22,7 @@ import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.modeler.event.model.EmbeddableAttributeEvent;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.util.Util;
 
 import java.util.ArrayList;
@@ -37,8 +37,8 @@ public class EmbeddableAttributeTableModel extends CMTableModel {
     static final int OBJ_ATTRIBUTE_TYPE = 1;
     static final int DB_ATTRIBUTE = 2;
 
-    public EmbeddableAttributeTableModel(Embeddable embeddable, ProjectController mediator, Object eventSource) {
-        super(mediator, eventSource, new ArrayList<>(embeddable.getAttributes()));
+    public EmbeddableAttributeTableModel(Embeddable embeddable, ProjectSession session, Object eventSource) {
+        super(session, eventSource, new ArrayList<>(embeddable.getAttributes()));
         this.embeddable = embeddable;
     }
 
@@ -82,7 +82,7 @@ public class EmbeddableAttributeTableModel extends CMTableModel {
             fireTableCellUpdated(row, col);
         }
 
-        controller.fireEmbeddableAttributeEvent(
+        session.fireEmbeddableAttributeEvent(
                 EmbeddableAttributeEvent.ofChange(eventSource, attribute, embeddable, renamedFrom));
     }
 

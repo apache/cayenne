@@ -30,7 +30,7 @@ import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
 import org.apache.cayenne.modeler.event.model.ObjRelationshipEvent;
 import org.apache.cayenne.modeler.project.DataMapOps;
 import org.apache.cayenne.modeler.ui.confirmremove.ConfirmRemoveDialog;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.undo.RemoveRelationshipUndoableEdit;
 
 import java.awt.event.ActionEvent;
@@ -67,57 +67,57 @@ public class RemoveRelationshipAction extends RemoveAction implements MultipleOb
 	@Override
 	public void performAction(ActionEvent e, boolean allowAsking) {
 		ConfirmRemoveDialog dialog = getConfirmDeleteDialog(allowAsking);
-		ProjectController mediator = getProjectController();
+		ProjectSession session = getProjectSession();
 
-		ObjRelationship[] rels = getProjectController()
+		ObjRelationship[] rels = getProjectSession()
 				.getSelectedObjRelationships();
 		if (rels != null && rels.length > 0) {
 			if ((rels.length == 1 && dialog.shouldDelete("ObjRelationship",
 					rels[0].getName()))
 					|| (rels.length > 1 && dialog
 							.shouldDelete("selected ObjRelationships"))) {
-				ObjEntity entity = mediator.getSelectedObjEntity();
+				ObjEntity entity = session.getSelectedObjEntity();
 				removeObjRelationships(entity, rels);
-				application.getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(mediator,entity, rels));
+				application.getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(session,entity, rels));
 			}
 		} else {
-			DbRelationship[] dbRels = getProjectController()
+			DbRelationship[] dbRels = getProjectSession()
 					.getSelectedDbRelationships();
 			if (dbRels != null && dbRels.length > 0) {
 				if ((dbRels.length == 1 && dialog.shouldDelete(
 						"DbRelationship", dbRels[0].getName()))
 						|| (dbRels.length > 1 && dialog
 								.shouldDelete("selected DbRelationships"))) {
-					DbEntity entity = mediator.getSelectedDbEntity();
+					DbEntity entity = session.getSelectedDbEntity();
 					removeDbRelationships(entity, dbRels);
-					application.getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(mediator,entity, dbRels));
+					application.getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(session,entity, dbRels));
 				}
 			}
 		}
 	}
 
 	public void removeObjRelationships(ObjEntity entity, ObjRelationship[] rels) {
-		ProjectController controller = getProjectController();
+		ProjectSession session = getProjectSession();
 
 		for (ObjRelationship rel : rels) {
 			entity.removeRelationship(rel.getName());
-			ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(application.getFrameController().getView(),
+			ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(application.getFrame(),
 					rel, entity);
-			controller.fireObjRelationshipEvent(e);
+			session.fireObjRelationshipEvent(e);
 		}
 	}
 
 	public void removeDbRelationships(DbEntity entity, DbRelationship[] rels) {
-		ProjectController controller = getProjectController();
+		ProjectSession session = getProjectSession();
 
 		for(int i = 0; i < rels.length; i++) {
 			rels[i] = entity.getRelationship(rels[i].getName());
 			entity.removeRelationship(rels[i].getName());
-			DbRelationshipEvent e = DbRelationshipEvent.ofRemove(application.getFrameController().getView(),
+			DbRelationshipEvent e = DbRelationshipEvent.ofRemove(application.getFrame(),
 					rels[i], entity);
-			controller.fireDbRelationshipEvent(e);
+			session.fireDbRelationshipEvent(e);
 		}
 
-		DataMapOps.removeBrokenObjToDbMappings(controller.getSelectedDataMap());
+		DataMapOps.removeBrokenObjToDbMappings(session.getSelectedDataMap());
 	}
 }

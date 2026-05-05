@@ -38,8 +38,8 @@ import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.errors.ErrorsController;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.project.querytype.QueryTypeController;
+import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.ui.project.querytype.QueryTypeDialog;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
 import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
 import org.apache.cayenne.modeler.undo.PasteCompoundUndoableEdit;
@@ -100,17 +100,17 @@ public class PasteAction extends ModelerAbstractAction implements FlavorListener
             Object content = Toolkit.getDefaultToolkit().getSystemClipboard().getData(
                     CMTransferable.CAYENNE_FLAVOR);
 
-            Object currentObject = getProjectController().getSelectedObject();
+            Object currentObject = getProjectSession().getSelectedObject();
 
             if (content instanceof DataMap) {
-                currentObject = getProjectController().getProject().getRootNode();
+                currentObject = getProjectSession().project().getRootNode();
             }
 
             if (content != null && currentObject != null) {
-                DataChannelDescriptor domain = (DataChannelDescriptor) getProjectController()
-                        .getProject()
+                DataChannelDescriptor domain = (DataChannelDescriptor) getProjectSession()
+                        .project()
                         .getRootNode();
-                DataMap map = getProjectController().getSelectedDataMap();
+                DataMap map = getProjectSession().getSelectedDataMap();
 
                 UndoableEdit undoableEdit;
                 if (content instanceof List) {
@@ -119,7 +119,7 @@ public class PasteAction extends ModelerAbstractAction implements FlavorListener
                     for (Object o : (List) content) {
                         paste(currentObject, o);
                         undoableEdit.addEdit(new PasteUndoableEdit(
-                                getProjectController(),
+                                getProjectSession(),
                                 domain,
                                 map,
                                 currentObject,
@@ -127,7 +127,7 @@ public class PasteAction extends ModelerAbstractAction implements FlavorListener
                     }
                 } else {
                     paste(currentObject, content);
-                    undoableEdit = new PasteUndoableEdit(getProjectController(), domain, map, currentObject, content);
+                    undoableEdit = new PasteUndoableEdit(getProjectSession(), domain, map, currentObject, content);
                 }
 
                 application.getUndoManager().addEdit(undoableEdit);
@@ -140,9 +140,9 @@ public class PasteAction extends ModelerAbstractAction implements FlavorListener
     }
 
     private void paste(Object where, Object content) {
-        paste(where, content, (DataChannelDescriptor) getProjectController()
-                .getProject()
-                .getRootNode(), getProjectController().getSelectedDataMap());
+        paste(where, content, (DataChannelDescriptor) getProjectSession()
+                .project()
+                .getRootNode(), getProjectSession().getSelectedDataMap());
     }
 
     /**
@@ -154,14 +154,14 @@ public class PasteAction extends ModelerAbstractAction implements FlavorListener
             DataChannelDescriptor dataChannelDescriptor,
             DataMap map) {
 
-        ProjectController controller = getProjectController();
+        ProjectSession session = getProjectSession();
 
         /**
          * Add a little intelligence - if a tree leaf is selected, we can paste to a
          * parent datamap
          */
         if (isTreeLeaf(where) && isTreeLeaf(content)) {
-            where = controller.getSelectedDataMap();
+            where = session.getSelectedDataMap();
         }
 
         if ((where instanceof DataChannelDescriptor || where instanceof DataNodeDescriptor)
@@ -268,7 +268,7 @@ public class PasteAction extends ModelerAbstractAction implements FlavorListener
                 }
             }
 
-            CreateDataMapAction.onMapCreated(this, getProjectController(), dataMap);
+            CreateDataMapAction.onMapCreated(this, getProjectSession(), dataMap);
         } else if (where instanceof DataMap) {
             // paste DbEntity to DataMap
             final DataMap dataMap = ((DataMap) where);
@@ -285,7 +285,7 @@ public class PasteAction extends ModelerAbstractAction implements FlavorListener
                         .name());
 
                 dataMap.addDbEntity(dbEntity);
-                CreateDbEntityAction.onDbEntityCreated(this, controller, dbEntity);
+                CreateDbEntityAction.onDbEntityCreated(this, session, dbEntity);
             } else if (content instanceof ObjEntity) {
                 // paste ObjEntity to DataMap
                 ObjEntity objEntity = (ObjEntity) content;
@@ -297,7 +297,7 @@ public class PasteAction extends ModelerAbstractAction implements FlavorListener
                 dataMap.addObjEntity(objEntity);
                 CreateObjEntityAction.onObjEntityCreated(
                         this,
-                        controller,
+                        session,
                         dataMap,
                         objEntity);
             } else if (content instanceof Embeddable) {
@@ -312,7 +312,7 @@ public class PasteAction extends ModelerAbstractAction implements FlavorListener
                 dataMap.addEmbeddable(embeddable);
                 CreateEmbeddableAction.fireEmbeddableEvent(
                         this,
-                        controller,
+                        session,
                         dataMap,
                         embeddable);
             } else if (content instanceof QueryDescriptor) {
@@ -326,7 +326,7 @@ public class PasteAction extends ModelerAbstractAction implements FlavorListener
                 query.setDataMap(dataMap);
 
                 dataMap.addQueryDescriptor(query);
-                QueryTypeController.fireQueryEvent(this, controller, dataMap, query);
+                QueryTypeDialog.fireQueryEvent(this, session, dataMap, query);
             } else if (content instanceof Procedure) {
                 // paste Procedure to DataMap
                 Procedure procedure = (Procedure) content;
@@ -339,7 +339,7 @@ public class PasteAction extends ModelerAbstractAction implements FlavorListener
                 dataMap.addProcedure(procedure);
                 CreateProcedureAction.fireProcedureEvent(
                         this,
-                        controller,
+                        session,
                         dataMap,
                         procedure);
             }
@@ -355,7 +355,7 @@ public class PasteAction extends ModelerAbstractAction implements FlavorListener
                         .name());
 
                 dbEntity.addAttribute(attr);
-                CreateAttributeAction.fireDbAttributeEvent(this, controller, controller
+                CreateAttributeAction.fireDbAttributeEvent(this, session, session
                         .getSelectedDataMap(), dbEntity, attr);
             } else if (content instanceof DbRelationship) {
                 DbRelationship rel = (DbRelationship) content;
@@ -368,7 +368,7 @@ public class PasteAction extends ModelerAbstractAction implements FlavorListener
                 dbEntity.addRelationship(rel);
                 CreateRelationshipAction.fireDbRelationshipEvent(
                         this,
-                        controller,
+                        session,
                         dbEntity,
                         rel);
             }
@@ -384,7 +384,7 @@ public class PasteAction extends ModelerAbstractAction implements FlavorListener
                         .name());
 
                 objEntity.addAttribute(attr);
-                CreateAttributeAction.fireObjAttributeEvent(this, controller, controller
+                CreateAttributeAction.fireObjAttributeEvent(this, session, session
                         .getSelectedDataMap(), objEntity, attr);
             } else if (content instanceof ObjRelationship) {
                 ObjRelationship rel = (ObjRelationship) content;
@@ -397,7 +397,7 @@ public class PasteAction extends ModelerAbstractAction implements FlavorListener
                 objEntity.addRelationship(rel);
                 CreateRelationshipAction.fireObjRelationshipEvent(
                         this,
-                        controller,
+                        session,
                         objEntity,
                         rel);
             } else if (content instanceof ObjCallbackMethod) {
@@ -410,12 +410,12 @@ public class PasteAction extends ModelerAbstractAction implements FlavorListener
                         .name());
 
                 objEntity.getCallbackMap()
-                        .getCallbackDescriptor(controller.getSelectedCallbackType().getType())
+                        .getCallbackDescriptor(session.getSelectedCallbackType().getType())
                         .addCallbackMethod(method.getName());
 
                 CallbackMethodEvent ce = CallbackMethodEvent.ofAdd(this, method.getName());
 
-                getProjectController().fireCallbackMethodEvent(ce);
+                getProjectSession().fireCallbackMethodEvent(ce);
             }
         } else if (where instanceof Embeddable) {
             final Embeddable embeddable = (Embeddable) where;
@@ -431,7 +431,7 @@ public class PasteAction extends ModelerAbstractAction implements FlavorListener
                 embeddable.addAttribute(attr);
                 CreateAttributeAction.fireEmbeddableAttributeEvent(
                         this,
-                        controller,
+                        session,
                         embeddable,
                         attr);
             }
@@ -452,7 +452,7 @@ public class PasteAction extends ModelerAbstractAction implements FlavorListener
                 procedure.addCallParameter(param);
                 CreateProcedureParameterAction.fireProcedureParameterEvent(
                         this,
-                        controller,
+                        session,
                         procedure,
                         param);
             }
@@ -498,7 +498,7 @@ public class PasteAction extends ModelerAbstractAction implements FlavorListener
                 content = ((List) content).get(0);
             }
 
-            Object currentObject = getProjectController().getSelectedObject();
+            Object currentObject = getProjectSession().getSelectedObject();
 
             if (currentObject == null) {
                 return false;

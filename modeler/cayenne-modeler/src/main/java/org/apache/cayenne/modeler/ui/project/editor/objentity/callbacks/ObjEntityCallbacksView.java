@@ -38,8 +38,9 @@ import org.apache.cayenne.modeler.ui.action.CreateCallbackMethodAction;
 import org.apache.cayenne.modeler.ui.action.CutCallbackMethodAction;
 import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.ui.action.PasteAction;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.ui.action.RemoveCallbackMethodAction;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,13 +67,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class ObjEntityCallbacksView extends JPanel {
+public class ObjEntityCallbacksView extends ProjectPanel {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ObjEntityCallbacksView.class);
 
     private static final Map<Integer, Integer> MIN_SIZES = Collections.singletonMap(0, 150);
-
-    private final ProjectController controller;
 
     private final JPanel auxPanel;
     private final JPopupMenu popupMenu;
@@ -90,8 +89,8 @@ public class ObjEntityCallbacksView extends JPanel {
 
     private final CMTable[] tables = new CMTable[callbackTypes.length];
 
-    public ObjEntityCallbacksView(ProjectController controller) {
-        this.controller = controller;
+    public ObjEntityCallbacksView(ProjectSession session) {
+        super(session);
         this.setLayout(new BorderLayout());
 
         JToolBar toolBar = new JToolBar();
@@ -114,7 +113,7 @@ public class ObjEntityCallbacksView extends JPanel {
 
         add(new JScrollPane(auxPanel), BorderLayout.CENTER);
 
-        controller.addCallbackMethodListener(new CallbackMethodListener() {
+        session().addCallbackMethodListener(new CallbackMethodListener() {
 
             public void callbackMethodChanged(CallbackMethodEvent e) {
                 rebuildTables();
@@ -129,7 +128,7 @@ public class ObjEntityCallbacksView extends JPanel {
                 int row = -1, i;
 
                 for (i = 0; i < callbackTypes.length; i++) {
-                    if (callbackTypes[i] == controller.getSelectedCallbackType()) {
+                    if (callbackTypes[i] == session().getSelectedCallbackType()) {
                         row = tables[i].getSelectedRow();
                         break;
                     }
@@ -150,7 +149,7 @@ public class ObjEntityCallbacksView extends JPanel {
         });
 
         for (CMTable table : tables) {
-            controller.getApplication().getActionManager().setupCutCopyPaste(
+            app().getActionManager().setupCutCopyPaste(
                     table,
                     CutCallbackMethodAction.class,
                     CopyCallbackMethodAction.class);
@@ -162,7 +161,7 @@ public class ObjEntityCallbacksView extends JPanel {
             }
         });
 
-        controller.addObjEntityDisplayListener(e -> {
+        session().addObjEntityDisplayListener(e -> {
             if (ObjEntityCallbacksView.this.isVisible()) {
                 rebuildTables();
             }
@@ -170,30 +169,30 @@ public class ObjEntityCallbacksView extends JPanel {
     }
 
     private CallbackMap getCallbackMap() {
-        if (controller.getSelectedObjEntity() != null) {
-            return controller.getSelectedObjEntity().getCallbackMap();
+        if (session().getSelectedObjEntity() != null) {
+            return session().getSelectedObjEntity().getCallbackMap();
         }
         return null;
     }
 
     private ModelerAbstractAction getCreateCallbackMethodAction() {
-        return controller.getApplication().getActionManager().getAction(CreateCallbackMethodAction.class);
+        return app().getActionManager().getAction(CreateCallbackMethodAction.class);
     }
 
     private RemoveCallbackMethodAction getRemoveCallbackMethodAction() {
-        return controller.getApplication().getActionManager().getAction(RemoveCallbackMethodAction.class);
+        return app().getActionManager().getAction(RemoveCallbackMethodAction.class);
     }
 
     private CopyCallbackMethodAction getCopyCallbackMethodAction() {
-        return controller.getApplication().getActionManager().getAction(CopyCallbackMethodAction.class);
+        return app().getActionManager().getAction(CopyCallbackMethodAction.class);
     }
 
     private CutCallbackMethodAction getCutCallbackMethodAction() {
-        return controller.getApplication().getActionManager().getAction(CutCallbackMethodAction.class);
+        return app().getActionManager().getAction(CutCallbackMethodAction.class);
     }
 
     private PasteAction getPasteCallbackMethodAction() {
-        return controller.getApplication().getActionManager().getAction(PasteAction.class);
+        return app().getActionManager().getAction(PasteAction.class);
     }
 
     private void rebuildTables() {
@@ -211,13 +210,13 @@ public class ObjEntityCallbacksView extends JPanel {
             }
 
             CallbackDescriptorTableModel model = new CallbackDescriptorTableModel(
-                    controller, this, methods, descriptor, callbackType);
+                    session(), this, methods, descriptor, callbackType);
 
             tables[i].setModel(model);
         }
 
         for (CMTable table : tables) {
-            CMTablePrefs.of(controller.getApplication().getPreferencesRepository(), "objEntity/callbackTable")
+            CMTablePrefs.of(app().getPreferencesRepository(), "objEntity/callbackTable")
                     .bind(table, MIN_SIZES);
         }
     }
@@ -305,7 +304,7 @@ public class ObjEntityCallbacksView extends JPanel {
 
     private void selectAdded() {
         for (int i = 0; i < callbackTypes.length; i++) {
-            if (callbackTypes[i] == controller.getSelectedCallbackType()) {
+            if (callbackTypes[i] == session().getSelectedCallbackType()) {
                 if (tables[i].editCellAt(tables[i].getRowCount() - 1, CallbackDescriptorTableModel.METHOD_NAME)
                         && tables[i].getEditorComponent() != null) {
                     tables[i].changeSelection(tables[i].getRowCount() - 1, 0, false, false);
@@ -334,7 +333,7 @@ public class ObjEntityCallbacksView extends JPanel {
         }
 
         public void actionPerformed(ActionEvent e) {
-            controller.displayCallbackType(new CallbackTypeDisplayEvent(this, callbackType));
+            session().displayCallbackType(new CallbackTypeDisplayEvent(this, callbackType));
         }
     }
 
@@ -372,7 +371,7 @@ public class ObjEntityCallbacksView extends JPanel {
                 int rowIndex = table.getSelectedRow();
                 CallbackDescriptor callbackDescriptor =
                         ((CallbackDescriptorTableModel) table.getCayenneModel()).getCallbackDescriptor();
-                controller.setDirty(callbackDescriptor.moveMethod(callbackMethod, rowIndex));
+                session().setDirty(callbackDescriptor.moveMethod(callbackMethod, rowIndex));
                 rebuildTables();
                 return true;
             }
@@ -411,13 +410,13 @@ public class ObjEntityCallbacksView extends JPanel {
                         }
                     }
 
-                    controller.displayCallbackType(new CallbackTypeDisplayEvent(this,
+                    session().displayCallbackType(new CallbackTypeDisplayEvent(this,
                             ((CallbackDescriptorTableModel) table.getCayenneModel()).getCallbackType()));
                 }
 
                 if (table.getSelectedRow() != -1) {
                     int[] sel = table.getSelectedRows();
-                    CallbackType callbackType = controller.getSelectedCallbackType();
+                    CallbackType callbackType = session().getSelectedCallbackType();
 
                     methods = new ObjCallbackMethod[sel.length];
 
@@ -428,7 +427,7 @@ public class ObjEntityCallbacksView extends JPanel {
                     }
                 }
 
-                controller.displayCallbackMethod(new CallbackMethodDisplayEvent(this, methods));
+                session().displayCallbackMethod(new CallbackMethodDisplayEvent(this, methods));
                 boolean enabled = methods.length > 0;
                 boolean multiple = methods.length > 1;
 
@@ -491,7 +490,7 @@ public class ObjEntityCallbacksView extends JPanel {
         public void mousePressed(MouseEvent e) {
             if (e.isPopupTrigger() && e.getComponent() instanceof JTableHeader) {
                 unselectAll();
-                controller.displayCallbackType(new CallbackTypeDisplayEvent(this,
+                session().displayCallbackType(new CallbackTypeDisplayEvent(this,
                         ((CallbackDescriptorTableModel) table.getCayenneModel()).getCallbackType()));
                 popupMenu.show(e.getComponent(), e.getX(), e.getY());
             }
@@ -511,7 +510,7 @@ public class ObjEntityCallbacksView extends JPanel {
 
         public void mouseDragged(MouseEvent e) {
             if (table.getColumnWidthChanged()) {
-                CMTablePrefs.of(controller.getApplication().getPreferencesRepository(), "objEntity/callbackTable")
+                CMTablePrefs.of(app().getPreferencesRepository(), "objEntity/callbackTable")
                         .bind(table, MIN_SIZES);
                 for (CMTable nextTable : tables) {
                     if (!table.equals(nextTable)) {

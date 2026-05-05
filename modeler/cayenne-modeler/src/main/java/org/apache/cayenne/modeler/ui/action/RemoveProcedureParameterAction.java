@@ -23,9 +23,8 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.event.model.ProcedureParameterEvent;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.confirmremove.ConfirmRemoveDialog;
 
 import java.awt.event.ActionEvent;
@@ -64,7 +63,7 @@ public class RemoveProcedureParameterAction extends RemoveAction implements Mult
     public void performAction(ActionEvent e, boolean allowAsking) {
         ConfirmRemoveDialog dialog = getConfirmDeleteDialog(allowAsking);
 
-        ProcedureParameter[] params = getProjectController()
+        ProcedureParameter[] params = getProjectSession()
                 .getSelectedProcedureParameters();
         if (params.length > 0) {
             if ((params.length == 1 && dialog.shouldDelete(
@@ -78,23 +77,23 @@ public class RemoveProcedureParameterAction extends RemoveAction implements Mult
     }
 
     protected void removeProcedureParameters() {
-        ProjectController mediator = getProjectController();
-        ProcedureParameter[] parameters = mediator.getSelectedProcedureParameters();
-        removeProcedureParameters(mediator.getSelectedProcedure(), parameters);
+        ProjectSession session = getProjectSession();
+        ProcedureParameter[] parameters = session.getSelectedProcedureParameters();
+        removeProcedureParameters(session.getSelectedProcedure(), parameters);
     }
 
     public void removeProcedureParameters(
             Procedure procedure,
             ProcedureParameter[] parameters) {
-        ProjectController mediator = getProjectController();
+        ProjectSession session = getProjectSession();
 
         for (ProcedureParameter parameter : parameters) {
 
             procedure.removeCallParameter(parameter.getName());
 
-            ProcedureParameterEvent e = ProcedureParameterEvent.ofRemove(application.getFrameController().getView(), parameter);
+            ProcedureParameterEvent e = ProcedureParameterEvent.ofRemove(application.getFrame(), parameter);
 
-            mediator.fireProcedureParameterEvent(e);
+            session.fireProcedureParameterEvent(e);
         }
     }
 }

@@ -26,7 +26,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
 
 import javax.swing.*;
@@ -47,11 +47,11 @@ public class ReverseEngineeringConfigPanel extends JPanel {
 
     private CMUndoableTextField tableTypes;
 
-    private final ProjectController controller;
+    private final ProjectSession session;
     private final DbImportView dbImportView;
 
-    ReverseEngineeringConfigPanel(ProjectController controller, DbImportView dbImportView) {
-        this.controller = controller;
+    ReverseEngineeringConfigPanel(ProjectSession session, DbImportView dbImportView) {
+        this.session = session;
         this.dbImportView = dbImportView;
         initFormElements();
         initListeners();
@@ -90,45 +90,45 @@ public class ReverseEngineeringConfigPanel extends JPanel {
     }
 
     ReverseEngineering getReverseEngineeringBySelectedMap() {
-        DataMap dataMap = controller.getSelectedDataMap();
-        return controller.getApplication().getMetaData().get(dataMap, ReverseEngineering.class);
+        DataMap dataMap = session.getSelectedDataMap();
+        return session.app().getMetaData().get(dataMap, ReverseEngineering.class);
     }
 
     void initStrategy(ReverseEngineering reverseEngineering) {
         Vector<String> arr = NameGeneratorPreferences
                 .getInstance()
-                .getLastUsedStrategies(controller.getApplication());
+                .getLastUsedStrategies(session.app());
         strategyCombo.setModel(new DefaultComboBoxModel<>(arr));
         strategyCombo.setSelectedItem(reverseEngineering.getNamingStrategy());
     }
 
     private void initFormElements() {
         strategyCombo = new CMComboBox<>();
-        AutoCompletion.enable(strategyCombo, false, true, controller::getSelectedDataMap);
+        AutoCompletion.enable(strategyCombo, false, true, session::getSelectedDataMap);
         strategyCombo.setToolTipText("Naming strategy to use");
 
-        meaningfulPk = new CMUndoableTextField(controller.getApplication().getUndoManager());
+        meaningfulPk = new CMUndoableTextField(session.app().getUndoManager());
         meaningfulPk.setToolTipText("<html>Regular expression to filter tables with meaningful primary keys.<br>" +
                 "Multiple expressions divided by comma can be used.<br>" +
                 "Example: <b>^table1|^table2|^prefix.*|table_name</b></html>");
         meaningfulPk.addCommitListener(text -> {
             if (!dbImportView.isInitFromModel()) {
                 getReverseEngineeringBySelectedMap().setMeaningfulPkTables(text);
-                controller.setDirty(true);
+                session.setDirty(true);
             }
         });
 
-        stripFromTableNames = new CMUndoableTextField(controller.getApplication().getUndoManager());
+        stripFromTableNames = new CMUndoableTextField(session.app().getUndoManager());
         stripFromTableNames.setToolTipText("<html>Regex that matches the part of the table name that needs to be stripped off " +
                 "when generating ObjEntity name</html>");
         stripFromTableNames.addCommitListener(text -> {
             if (!dbImportView.isInitFromModel()) {
                 getReverseEngineeringBySelectedMap().setStripFromTableNames(text);
-                controller.setDirty(true);
+                session.setDirty(true);
             }
         });
 
-        tableTypes = new CMUndoableTextField(controller.getApplication().getUndoManager());
+        tableTypes = new CMUndoableTextField(session.app().getUndoManager());
         tableTypes.setToolTipText("<html>Default types to import is TABLE and VIEW.");
         tableTypes.addCommitListener(this::applyTableTypes);
 
@@ -153,31 +153,31 @@ public class ReverseEngineeringConfigPanel extends JPanel {
         skipRelationshipsLoading.addActionListener(e -> {
             if (!dbImportView.isInitFromModel()) {
                 getReverseEngineeringBySelectedMap().setSkipRelationshipsLoading(skipRelationshipsLoading.isSelected());
-                controller.setDirty(true);
+                session.setDirty(true);
             }
         });
         skipPrimaryKeyLoading.addActionListener(e -> {
             if (!dbImportView.isInitFromModel()) {
                 getReverseEngineeringBySelectedMap().setSkipPrimaryKeyLoading(skipPrimaryKeyLoading.isSelected());
-                controller.setDirty(true);
+                session.setDirty(true);
             }
         });
         forceDataMapCatalog.addActionListener(e -> {
             if (!dbImportView.isInitFromModel()) {
                 getReverseEngineeringBySelectedMap().setForceDataMapCatalog(forceDataMapCatalog.isSelected());
-                controller.setDirty(true);
+                session.setDirty(true);
             }
         });
         forceDataMapSchema.addActionListener(e -> {
             if (!dbImportView.isInitFromModel()) {
                 getReverseEngineeringBySelectedMap().setForceDataMapSchema(forceDataMapSchema.isSelected());
-                controller.setDirty(true);
+                session.setDirty(true);
             }
         });
         useJava7Types.addActionListener(e -> {
             if (!dbImportView.isInitFromModel()) {
                 getReverseEngineeringBySelectedMap().setUseJava7Types(useJava7Types.isSelected());
-                controller.setDirty(true);
+                session.setDirty(true);
             }
         });
         strategyCombo.addActionListener(e -> {
@@ -185,8 +185,8 @@ public class ReverseEngineeringConfigPanel extends JPanel {
             checkStrategy(strategy);
             if (!dbImportView.isInitFromModel()) {
                 getReverseEngineeringBySelectedMap().setNamingStrategy(strategy);
-                NameGeneratorPreferences.getInstance().addToLastUsedStrategies(controller.getApplication(), strategy);
-                controller.setDirty(true);
+                NameGeneratorPreferences.getInstance().addToLastUsedStrategies(session.app(), strategy);
+                session.setDirty(true);
             }
         });
     }
@@ -209,7 +209,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
             String[] tableTypesFromReverseEngineering = reverseEngineering.getTableTypes();
             tableTypes.setText(String.join(",", tableTypesFromReverseEngineering));
             JOptionPane.showMessageDialog(
-                    controller.getApplication().getFrameController().getView(),
+                    session.app().getFrame(),
                     "Table types field can't be empty.",
                     "Error setting table types",
                     JOptionPane.ERROR_MESSAGE);
@@ -222,7 +222,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
                 }
             }
             if (!dbImportView.isInitFromModel()) {
-                controller.setDirty(true);
+                session.setDirty(true);
             }
         }
     }

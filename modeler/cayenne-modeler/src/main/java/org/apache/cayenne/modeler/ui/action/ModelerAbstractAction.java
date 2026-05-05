@@ -24,7 +24,7 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.errors.ErrorsController;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.util.Util;
 
@@ -72,7 +72,7 @@ public abstract class ModelerAbstractAction extends AbstractAction {
     }
 
     protected Project getCurrentProject() {
-        return application.getFrameController().getProjectController().getProject();
+        return application.getFrame().getProjectSession().project();
     }
 
     /**
@@ -135,10 +135,10 @@ public abstract class ModelerAbstractAction extends AbstractAction {
     }
 
     /**
-     * Returns current project controller.
+     * Returns the current {@link ProjectSession}.
      */
-    public ProjectController getProjectController() {
-        return application.getFrameController().getProjectController();
+    public ProjectSession getProjectSession() {
+        return application.getFrame().getProjectSession();
     }
 
     /**

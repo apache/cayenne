@@ -25,16 +25,16 @@ import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeAction;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 
 public class CreateEmbAttributeUndoableEdit extends CayenneUndoableEdit {
 
     private Embeddable embeddable;
     private EmbeddableAttribute[] attrs;
 
-    public CreateEmbAttributeUndoableEdit(ProjectController controller, Embeddable embeddable,
+    public CreateEmbAttributeUndoableEdit(ProjectSession session, Embeddable embeddable,
             EmbeddableAttribute[] attr) {
-        super(controller);
+        super(session);
         this.embeddable = embeddable;
         this.attrs = attr;
     }

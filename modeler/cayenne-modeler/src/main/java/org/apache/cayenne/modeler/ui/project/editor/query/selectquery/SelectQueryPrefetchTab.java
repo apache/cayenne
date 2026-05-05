@@ -24,7 +24,7 @@ import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.util.EntityTreeFilter;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
@@ -53,8 +53,8 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
     public static final String DISJOINT_BY_ID_PREFETCH_SEMANTICS = "Disjoint by id";
     public static final String UNDEFINED_SEMANTICS = "Undefined semantics";
 
-    public SelectQueryPrefetchTab(ProjectController mediator) {
-        super(mediator);
+    public SelectQueryPrefetchTab(ProjectSession session) {
+        super(session);
     }
 
     protected void initFromModel(){
@@ -71,7 +71,7 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
         prefetchBox.addItem(DISJOINT_PREFETCH_SEMANTICS);
         prefetchBox.addItem(DISJOINT_BY_ID_PREFETCH_SEMANTICS);
 
-        prefetchBox.addActionListener(e -> mediator.setDirty(true));
+        prefetchBox.addActionListener(e -> session().setDirty(true));
 
         column.setCellEditor(new DefaultCellEditor(prefetchBox));
 
@@ -98,7 +98,7 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
 
             addPrefetch(prefetch);
 
-            mediator.getApplication().getUndoManager().addEdit(new AddPrefetchUndoableEdit(prefetch, SelectQueryPrefetchTab.this));
+            app().getUndoManager().addEdit(new AddPrefetchUndoableEdit(prefetch, SelectQueryPrefetchTab.this));
         });
 
         JButton remove = new ModelerAbstractAction.CayenneToolbarButton(null, 3);
@@ -159,7 +159,7 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
         table.setModel(createTableModel());
         setUpPrefetchBox(table.getColumnModel().getColumn(2));
         
-        mediator.fireQueryEvent(QueryEvent.ofChange(this, selectQuery));
+        session().fireQueryEvent(QueryEvent.ofChange(this, selectQuery));
     }
 
     public void removePrefetch(String prefetch) {
@@ -169,7 +169,7 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
         table.setModel(createTableModel());
         setUpPrefetchBox(table.getColumnModel().getColumn(2));
 
-        mediator.fireQueryEvent(QueryEvent.ofChange(this, selectQuery));
+        session().fireQueryEvent(QueryEvent.ofChange(this, selectQuery));
     }
 
 }

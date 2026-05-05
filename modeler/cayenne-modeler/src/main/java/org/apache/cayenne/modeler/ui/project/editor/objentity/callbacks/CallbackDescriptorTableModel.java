@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks;
 
 import org.apache.cayenne.map.CallbackDescriptor;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 
@@ -40,14 +40,14 @@ public class CallbackDescriptorTableModel extends CMTableModel<String> {
     /**
      * constructor
      * 
-     * @param mediator mediator instance
+     * @param session session instance
      * @param eventSource event source
      * @param objectList default objects list
      * @param callbackDescriptor callback descriptor instance
      */
-    public CallbackDescriptorTableModel(ProjectController mediator, Object eventSource,
+    public CallbackDescriptorTableModel(ProjectSession session, Object eventSource,
             List<String> objectList, CallbackDescriptor callbackDescriptor, CallbackType callbackType) {
-        super(mediator, eventSource, objectList);
+        super(session, eventSource, objectList);
         this.callbackDescriptor = callbackDescriptor;
         this.callbackType = callbackType;
     }
@@ -145,7 +145,7 @@ public class CallbackDescriptorTableModel extends CMTableModel<String> {
 
                 fireTableRowsUpdated(row, row);
 
-                controller.fireCallbackMethodEvent(CallbackMethodEvent.ofChange(
+                session.fireCallbackMethodEvent(CallbackMethodEvent.ofChange(
                         eventSource,
                         prevMethod,
                         method));

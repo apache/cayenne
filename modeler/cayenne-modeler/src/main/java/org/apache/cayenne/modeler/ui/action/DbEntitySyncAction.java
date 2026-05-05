@@ -27,10 +27,9 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
-import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.entitysync.EntitySyncController;
+import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.ui.entitysync.EntitySyncDialog;
 import org.apache.cayenne.modeler.undo.DbEntitySyncUndoableEdit;
 
 import javax.swing.*;
@@ -66,8 +65,8 @@ public class DbEntitySyncAction extends ModelerAbstractAction {
     }
 
     protected void syncDbEntity() {
-        ProjectController mediator = getProjectController();
-        DbEntity dbEntity = mediator.getSelectedDbEntity();
+        ProjectSession session = getProjectSession();
+        DbEntity dbEntity = session.getSelectedDbEntity();
 
         if (dbEntity != null) {
 
@@ -76,7 +75,10 @@ public class DbEntitySyncAction extends ModelerAbstractAction {
                 return;
             }
 
-            EntityMergeSupport merger = new EntitySyncController(application.getFrameController(), dbEntity).createMerger();
+            EntityMergeSupport merger = new EntitySyncDialog(
+                    application,
+                    application.getFrame(),
+                    dbEntity).createMerger();
 
             if (merger == null) {
                 return;
@@ -84,8 +86,8 @@ public class DbEntitySyncAction extends ModelerAbstractAction {
 
             merger.setNameGenerator(new PreserveRelationshipNameGenerator());
 
-            DbEntitySyncUndoableEdit undoableEdit = new DbEntitySyncUndoableEdit(mediator,
-                    (DataChannelDescriptor) mediator.getProject().getRootNode(), mediator.getSelectedDataMap());
+            DbEntitySyncUndoableEdit undoableEdit = new DbEntitySyncUndoableEdit(session,
+                    (DataChannelDescriptor) session.project().getRootNode(), session.getSelectedDataMap());
 
             // filter out inherited entities, as we need to add attributes only to the roots
             filterInheritedEntities(entities);
@@ -108,7 +110,7 @@ public class DbEntitySyncAction extends ModelerAbstractAction {
                 }
 
                 if (merger.synchronizeWithDbEntity(entity)) {
-                    mediator.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
+                    session.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
                     hasChanges = true;
                 }
 

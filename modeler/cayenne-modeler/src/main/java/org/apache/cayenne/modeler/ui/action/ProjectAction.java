@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.unsavedchanges.UnsavedChangesDialog;
 
 import java.awt.event.ActionEvent;
@@ -57,7 +57,7 @@ public class ProjectAction extends ModelerAbstractAction {
      */
     public boolean closeProject(boolean checkUnsaved) {
         // check if there is a project...
-        if (getProjectController() == null || getProjectController().getProject() == null) {
+        if (getProjectSession() == null || getProjectSession().project() == null) {
             return true;
         }
 
@@ -66,7 +66,7 @@ public class ProjectAction extends ModelerAbstractAction {
         }
 
         application.getUndoManager().discardAllEdits();
-        application.getFrameController().onProjectClosed();
+        application.getFrame().onProjectClosed();
 
         return true;
     }
@@ -75,9 +75,9 @@ public class ProjectAction extends ModelerAbstractAction {
      * Returns false if cancel closing the window, true otherwise.
      */
     public boolean checkSaveOnClose() {
-        ProjectController projectController = getProjectController();
-        if (projectController != null && projectController.isDirty()) {
-            UnsavedChangesDialog dialog = new UnsavedChangesDialog(application.getFrameController().getView());
+        ProjectSession session = getProjectSession();
+        if (session != null && session.isDirty()) {
+            UnsavedChangesDialog dialog = new UnsavedChangesDialog(application.getFrame());
             dialog.show();
 
             if (dialog.shouldCancel()) {
@@ -93,7 +93,7 @@ public class ProjectAction extends ModelerAbstractAction {
                         .getActionManager()
                         .getAction(SaveAction.class)
                         .actionPerformed(e);
-                if (projectController.isDirty()) {
+                if (session.isDirty()) {
                     // save was canceled... do not close
                     return false;
                 }

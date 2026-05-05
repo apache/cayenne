@@ -19,24 +19,27 @@
 package org.apache.cayenne.modeler.ui.project.editor.datamap;
 
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.CgenController;
+import org.apache.cayenne.modeler.toolkit.ProjectTabbedPane;
+import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.CgenPanel;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportView;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.DataMapMainView;
 
-import javax.swing.*;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 
-public class DataMapView extends JTabbedPane {
+public class DataMapView extends ProjectTabbedPane {
 
-    public DataMapView(ProjectController controller) {
+    public DataMapView(ProjectSession session) {
+        super(session);
 
         setTabPlacement(JTabbedPane.TOP);
-        
-        addTab("DataMap", new JScrollPane(new DataMapMainView(controller)));
-        addTab("DB Import", new JScrollPane(new DbImportView(controller)));
-        addTab("Class Generation", new JScrollPane(new CgenController(controller).getView()));
 
-        controller.addDataMapDisplayListener(this::currentDataMapChanged);
+        addTab("DataMap", new JScrollPane(new DataMapMainView(session)));
+        addTab("DB Import", new JScrollPane(new DbImportView(session)));
+        addTab("Class Generation", new JScrollPane(new CgenPanel(app(), session)));
+
+        session.addDataMapDisplayListener(this::currentDataMapChanged);
     }
 
     private void currentDataMapChanged(DataMapDisplayEvent e) {
@@ -46,4 +49,3 @@ public class DataMapView extends JTabbedPane {
         }
     }
 }
-

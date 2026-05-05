@@ -25,15 +25,15 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.modeler.ui.action.CreateProcedureAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAction;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 
 public class CreateProcedureUndoableEdit extends CayenneUndoableEdit {
 
     private DataMap map;
     private Procedure procedure;
 
-    public CreateProcedureUndoableEdit(ProjectController controller, DataMap map, Procedure procedure) {
-        super(controller);
+    public CreateProcedureUndoableEdit(ProjectSession session, DataMap map, Procedure procedure) {
+        super(session);
         this.map = map;
         this.procedure = procedure;
     }

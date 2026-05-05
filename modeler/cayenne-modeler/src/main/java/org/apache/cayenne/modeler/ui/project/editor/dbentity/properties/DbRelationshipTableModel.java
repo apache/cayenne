@@ -26,7 +26,7 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
 import org.apache.cayenne.modeler.project.DbRelationshipOps;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 
@@ -48,10 +48,10 @@ public class DbRelationshipTableModel extends CMTableModel<DbRelationship> {
 
     protected DbEntity entity;
 
-    public DbRelationshipTableModel(DbEntity entity, ProjectController mediator,
+    public DbRelationshipTableModel(DbEntity entity, ProjectSession session,
                                     Object eventSource) {
 
-        super(mediator, eventSource, new ArrayList<>(entity.getRelationships()));
+        super(session, eventSource, new ArrayList<>(entity.getRelationships()));
         this.entity = entity;
     }
 
@@ -124,11 +124,11 @@ public class DbRelationshipTableModel extends CMTableModel<DbRelationship> {
     }
 
     private String getComment(DbRelationship rel) {
-        return ObjectInfo.getFromMetaData(controller.getApplication().getMetaData(), rel, ObjectInfo.COMMENT);
+        return ObjectInfo.getFromMetaData(session.app().getMetaData(), rel, ObjectInfo.COMMENT);
     }
 
     private void setComment(String newVal, DbRelationship rel) {
-        ObjectInfo.putToMetaData(controller.getApplication().getMetaData(), rel, ObjectInfo.COMMENT, newVal);
+        ObjectInfo.putToMetaData(session.app().getMetaData(), rel, ObjectInfo.COMMENT, newVal);
     }
 
     public void setUpdatedValueAt(Object aValue, int row, int column) {
@@ -147,7 +147,7 @@ public class DbRelationshipTableModel extends CMTableModel<DbRelationship> {
             }
             DbRelationshipEvent e = DbRelationshipEvent.ofChange(eventSource, rel, entity, oldName);
             entity.renameRelationship(rel, newName);
-            controller.fireDbRelationshipEvent(e);
+            session.fireDbRelationshipEvent(e);
             fireTableCellUpdated(row, column);
         } else if (column == TO_DEPENDENT_KEY) {
             boolean flag = (Boolean) aValue;
@@ -158,7 +158,7 @@ public class DbRelationshipTableModel extends CMTableModel<DbRelationship> {
                 if (reverse != null && reverse.isToDependentPK()) {
                     String message = "Unset reverse relationship's \"To Dep PK\" setting?";
                     int answer = JOptionPane.showConfirmDialog(
-                            controller.getApplication().getFrameController().getView(),
+                            session.app().getFrame(),
                             message);
                     if (answer != JOptionPane.YES_OPTION) {
                         // no action needed
@@ -171,15 +171,15 @@ public class DbRelationshipTableModel extends CMTableModel<DbRelationship> {
             }
 
             rel.setToDependentPK(flag);
-            controller.fireDbRelationshipEvent(DbRelationshipEvent.ofChange(eventSource, rel, entity));
+            session.fireDbRelationshipEvent(DbRelationshipEvent.ofChange(eventSource, rel, entity));
         } else if (column == CARDINALITY) {
             rel.setToMany((Boolean) aValue);
-            controller.fireDbRelationshipEvent(DbRelationshipEvent.ofChange(eventSource, rel, entity));
+            session.fireDbRelationshipEvent(DbRelationshipEvent.ofChange(eventSource, rel, entity));
 
             updateDependentObjRelationships(rel);
         } else if (column == COMMENTS) {
             setComment((String) aValue, rel);
-            controller.fireDbRelationshipEvent(DbRelationshipEvent.ofChange(eventSource, rel, entity));
+            session.fireDbRelationshipEvent(DbRelationshipEvent.ofChange(eventSource, rel, entity));
         }
         fireTableRowsUpdated(row, row);
     }
@@ -195,7 +195,7 @@ public class DbRelationshipTableModel extends CMTableModel<DbRelationship> {
 
     void updateDependentObjRelationships(DbRelationship relationship) {
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) controller.getProject().getRootNode();
+        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
         for (ObjRelationship objRelationship : DbRelationshipOps.objRelationshipsUsingDbRelationship(domain, relationship)) {
             objRelationship.recalculateToManyValue();
         }

@@ -23,10 +23,9 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.merge.context.EntityMergeSupport;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
-import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.entitysync.EntitySyncController;
+import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.ui.entitysync.EntitySyncDialog;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 
 import javax.swing.*;
@@ -65,11 +64,14 @@ public class ObjEntitySyncAction extends ModelerAbstractAction {
     }
 
     protected void syncObjEntity() {
-        ProjectController mediator = getProjectController();
-        ObjEntity entity = mediator.getSelectedObjEntity();
+        ProjectSession session = getProjectSession();
+        ObjEntity entity = session.getSelectedObjEntity();
 
         if (entity != null && entity.getDbEntity() != null) {
-            EntityMergeSupport merger = new EntitySyncController(application.getFrameController(), entity).createMerger();
+            EntityMergeSupport merger = new EntitySyncDialog(
+                    application,
+                    application.getFrame(),
+                    entity).createMerger();
 
             if (merger == null) {
                 return;
@@ -78,11 +80,11 @@ public class ObjEntitySyncAction extends ModelerAbstractAction {
             merger.setNameGenerator(new DbEntitySyncAction.PreserveRelationshipNameGenerator());
 
             if (merger.synchronizeWithDbEntity(entity)) {
-                mediator
+                session
                         .fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
-                mediator.displayObjEntity(new ObjEntityDisplayEvent(
+                session.displayObjEntity(new ObjEntityDisplayEvent(
                         this,
-                        (DataChannelDescriptor) mediator.getProject().getRootNode(),
+                        (DataChannelDescriptor) session.project().getRootNode(),
                         entity.getDataMap(),
                         entity));
             }

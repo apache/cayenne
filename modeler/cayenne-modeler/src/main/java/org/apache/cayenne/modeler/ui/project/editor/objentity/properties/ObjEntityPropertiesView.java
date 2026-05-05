@@ -33,8 +33,9 @@ import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.ui.action.ObjEntityCounterpartAction;
 import org.apache.cayenne.modeler.ui.action.ObjEntitySyncAction;
 import org.apache.cayenne.modeler.ui.action.PasteAction;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeRelationshipAction;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 
 import javax.swing.*;
 import java.awt.*;
@@ -43,34 +44,33 @@ import java.awt.event.ActionListener;
 /**
  * Combines ObjEntityAttributeTab and ObjEntityRelationshipTab in JSplitPane.
  */
-public class ObjEntityPropertiesView extends JPanel implements ObjEntityDisplayListener, ObjEntityListener {
+public class ObjEntityPropertiesView extends ProjectPanel implements ObjEntityDisplayListener, ObjEntityListener {
 
     private final ObjAttributePanel attributePanel;
     private final ObjRelationshipPanel relationshipPanel;
     private final JSplitPane splitPane;
     private final JToolBar toolBar;
     private final JButton editButton;
-    private final ProjectController controller;
 
-    public ObjEntityPropertiesView(ProjectController controller) {
+    public ObjEntityPropertiesView(ProjectSession session) {
+        super(session);
         this.setLayout(new BorderLayout());
 
-        this.controller = controller;
         this.editButton = new ModelerAbstractAction.CayenneToolbarButton(null, 0);
-        attributePanel = new ObjAttributePanel(controller, this);
-        relationshipPanel = new ObjRelationshipPanel(controller, this);
+        attributePanel = new ObjAttributePanel(session, this);
+        relationshipPanel = new ObjRelationshipPanel(session, this);
 
         splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, attributePanel, relationshipPanel);
         splitPane.setOneTouchExpandable(true);
         splitPane.setResizeWeight(0.5);
 
-        CMSplitPanePrefs.of(controller.getApplication().getPreferencesRepository(), "objEntity/splitPane").bind(splitPane, -1);
+        CMSplitPanePrefs.of(app().getPreferencesRepository(), "objEntity/splitPane").bind(splitPane, -1);
 
         add(splitPane);
 
         toolBar = new JToolBar();
         toolBar.setFloatable(false);
-        GlobalActions globalActions = controller.getApplication().getActionManager();
+        GlobalActions globalActions = app().getActionManager();
 
         toolBar.add(globalActions.getAction(CreateAttributeAction.class).buildButton(1));
         toolBar.add(globalActions.getAction(CreateRelationshipAction.class).buildButton(3));
@@ -96,7 +96,7 @@ public class ObjEntityPropertiesView extends JPanel implements ObjEntityDisplayL
     }
 
     public void updateActions(Object[] params) {
-        GlobalActions actions = controller.getApplication().getActionManager();
+        GlobalActions actions = app().getActionManager();
         actions.getAction(RemoveAttributeRelationshipAction.class).updateForSelection(params.length);
         actions.getAction(CutAttributeRelationshipAction.class).updateForSelection(params.length);
         actions.getAction(CopyAttributeRelationshipAction.class).updateForSelection(params.length);

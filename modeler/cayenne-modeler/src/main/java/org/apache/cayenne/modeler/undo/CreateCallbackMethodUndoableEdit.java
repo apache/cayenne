@@ -23,7 +23,7 @@ import javax.swing.undo.CannotUndoException;
 
 import org.apache.cayenne.modeler.ui.action.CreateCallbackMethodAction;
 import org.apache.cayenne.modeler.ui.action.RemoveCallbackMethodAction;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.CallbackType;
 
 public class CreateCallbackMethodUndoableEdit extends CayenneUndoableEdit {
@@ -50,9 +50,9 @@ public class CreateCallbackMethodUndoableEdit extends CayenneUndoableEdit {
         action.removeCallbackMethod(callbackType, methodName);
     }
 
-    public CreateCallbackMethodUndoableEdit(ProjectController controller, CallbackType callbackType,
+    public CreateCallbackMethodUndoableEdit(ProjectSession session, CallbackType callbackType,
             String methodName) {
-        super(controller);
+        super(session);
         this.callbackType = callbackType;
         this.methodName = methodName;
     }

@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.undo;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.action.LinkDataMapAction;
 
 import javax.swing.undo.CannotRedoException;
@@ -39,8 +39,8 @@ public class LinkDataMapUndoableEdit extends CayenneUndoableEdit {
         return "Link unlinked DataMaps";
     }
 
-    public LinkDataMapUndoableEdit(ProjectController mediator, DataMap map, DataNodeDescriptor node, Collection<DataNodeDescriptor> unlinkedNodes) {
-        super(mediator);
+    public LinkDataMapUndoableEdit(ProjectSession session, DataMap map, DataNodeDescriptor node, Collection<DataNodeDescriptor> unlinkedNodes) {
+        super(session);
         this.map = map;
         this.node = node;
         this.unlinkedNodes = unlinkedNodes;
@@ -56,13 +56,13 @@ public class LinkDataMapUndoableEdit extends CayenneUndoableEdit {
     public void undo() throws CannotUndoException {
         if (node != null) {
             node.getDataMapNames().remove(map.getName());
-            controller.fireDataNodeEvent(DataNodeEvent.ofChange(this, node));
+            session.fireDataNodeEvent(DataNodeEvent.ofChange(this, node));
         }
 
         if (!unlinkedNodes.isEmpty()) {
             for (DataNodeDescriptor unlinkedNode : unlinkedNodes) {
                 unlinkedNode.getDataMapNames().add(map.getName());
-                controller.fireDataNodeEvent(DataNodeEvent.ofChange(this, unlinkedNode));
+                session.fireDataNodeEvent(DataNodeEvent.ofChange(this, unlinkedNode));
             }
         }
     }

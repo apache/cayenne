@@ -29,7 +29,7 @@ import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.DbImportActions;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 
@@ -48,15 +48,15 @@ class ReverseEngineeringTreePanel extends JScrollPane {
     private final DbImportTree reverseEngineeringTree;
     private final DbImportTree dbSchemaTree;
 
-    private final ProjectController projectController;
+    private final ProjectSession session;
     private final DbImportActions actions;
     private TreeToolbarPanel treeToolbar;
     private Map<Class<?>, DefaultPopUpMenu> popups;
 
-    ReverseEngineeringTreePanel(ProjectController projectController, DbImportTree reverseEngineeringTree,
+    ReverseEngineeringTreePanel(ProjectSession session, DbImportTree reverseEngineeringTree,
                                 DbImportTree dbSchemaTree, DbImportActions actions) {
         super(reverseEngineeringTree);
-        this.projectController = projectController;
+        this.session = session;
         this.reverseEngineeringTree = reverseEngineeringTree;
         this.dbSchemaTree = dbSchemaTree;
         this.actions = actions;
@@ -158,8 +158,8 @@ class ReverseEngineeringTreePanel extends JScrollPane {
     }
 
     private ReverseEngineering getReverseEngineeringBySelectedMap() {
-        DataMap dataMap = projectController.getSelectedDataMap();
-        return projectController.getApplication().getMetaData().get(dataMap, ReverseEngineering.class);
+        DataMap dataMap = session.getSelectedDataMap();
+        return session.app().getMetaData().get(dataMap, ReverseEngineering.class);
     }
 
     private void changeIcons() {

@@ -23,7 +23,8 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.DbImportActions;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.LoadDbSchemaAction;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.ModelerDbImportAction;
@@ -37,7 +38,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
-public class DbImportView extends JPanel {
+public class DbImportView extends ProjectPanel {
 
     private static final int ALL_LINE_SPAN = 5;
     private static final ImageIcon rightArrow = IconFactory.buildIcon("icon-arrow-closed.png");
@@ -51,12 +52,10 @@ public class DbImportView extends JPanel {
     private final JProgressBar reverseEngineeringProgress;
     private final ModelerAbstractAction.CayenneToolbarButton loadDbSchemaButton;
 
-    private final ProjectController controller;
-
     private boolean initFromModel;
 
-    public DbImportView(ProjectController controller) {
-        this.controller = controller;
+    public DbImportView(ProjectSession session) {
+        super(session);
 
         DbImportTreeNode root = new DbImportTreeNode(new ReverseEngineering());
         DbImportTreeNode draggableTreeRoot = new DbImportTreeNode(new ReverseEngineering());
@@ -74,20 +73,20 @@ public class DbImportView extends JPanel {
         reverseEngineeringTree.setModel(model);
         reverseEngineeringTree.setShowsRootHandles(true);
 
-        DbImportActions actions = new DbImportActions(controller.getApplication(), this, reverseEngineeringTree, draggableTree);
+        DbImportActions actions = new DbImportActions(app(), this, reverseEngineeringTree, draggableTree);
 
         this.draggableTreePanel = new DraggableTreePanel(draggableTree, reverseEngineeringTree, actions);
 
         draggableTree.setLoadDbSchemaAction(actions.getLoadDbSchemaAction());
         treeToolbar = new TreeToolbarPanel(reverseEngineeringTree, actions);
-        treePanel = new ReverseEngineeringTreePanel(controller, reverseEngineeringTree, draggableTree, actions);
+        treePanel = new ReverseEngineeringTreePanel(session, reverseEngineeringTree, draggableTree, actions);
         treePanel.setTreeToolbar(treeToolbar);
         model.setDbSchemaTree(draggableTree);
         draggableTreeModel.setDbSchemaTree(draggableTree);
         ((ColorTreeRenderer) draggableTreePanel.getSourceTree().getCellRenderer()).
                 setReverseEngineeringTree(reverseEngineeringTree);
 
-        configPanel = new ReverseEngineeringConfigPanel(controller, this);
+        configPanel = new ReverseEngineeringConfigPanel(session, this);
         configPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         configPanel.setVisible(false);
 
@@ -154,7 +153,7 @@ public class DbImportView extends JPanel {
         this.setLayout(new BorderLayout());
         add(builder.getPanel(), BorderLayout.CENTER);
 
-        controller.addDataMapDisplayListener(e -> {
+        session().addDataMapDisplayListener(e -> {
             DataMap map = e.getDataMap();
             if (map != null) {
                 initFromModel(map);
@@ -186,12 +185,12 @@ public class DbImportView extends JPanel {
         if (map != null) {
             initFromModel = true;
             treeToolbar.unlockButtons();
-            ReverseEngineering reverseEngineering = DbImportView.this.controller.getApplication()
+            ReverseEngineering reverseEngineering = DbImportView.this.app()
                     .getMetaData().get(map, ReverseEngineering.class);
             if (reverseEngineering == null) {
                 // create config with default values
                 reverseEngineering = new ReverseEngineering();
-                DbImportView.this.controller.getApplication().getMetaData().add(map, reverseEngineering);
+                DbImportView.this.app().getMetaData().add(map, reverseEngineering);
             }
             configPanel.fillCheckboxes(reverseEngineering);
             configPanel.initializeTextFields(reverseEngineering);
@@ -206,7 +205,7 @@ public class DbImportView extends JPanel {
             treePanel.updateTree();
             DbImportTreeNode root = draggableTreePanel.getSourceTree().getRootNode();
             root.removeAllChildren();
-            draggableTreePanel.updateTree(controller.getSelectedDataMap());
+            draggableTreePanel.updateTree(session().getSelectedDataMap());
             draggableTreePanel.getMoveButton().setEnabled(false);
             draggableTreePanel.getMoveInvertButton().setEnabled(false);
         }

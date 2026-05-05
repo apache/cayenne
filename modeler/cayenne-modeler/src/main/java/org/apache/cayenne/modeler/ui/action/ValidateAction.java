@@ -20,8 +20,9 @@
 package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.validator.ProjectValidatorDialogController;
+import org.apache.cayenne.modeler.ui.project.validator.ProjectValidatorDialog;
 import org.apache.cayenne.project.validation.ProjectValidator;
+import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
 import javax.swing.*;
@@ -29,11 +30,16 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.List;
 
 /**
  * UI action that performs full project validation.
  */
 public class ValidateAction extends ModelerAbstractAction {
+
+    private ProjectValidatorDialog dialog;
 
     public ValidateAction(Application application) {
         super("Validate Project", application);
@@ -55,10 +61,35 @@ public class ValidateAction extends ModelerAbstractAction {
                 .getRootNode());
 
         if (!validationResult.getFailures().isEmpty()) {
-            new ProjectValidatorDialogController(getProjectController()).showOnFailures(validationResult.getFailures());
+            showFailures(validationResult.getFailures());
         }
         else {
-            ProjectValidatorDialogController.showOnSuccess(application);
+            disposeDialog();
+            ProjectValidatorDialog.showOnSuccess(application);
+        }
+    }
+
+    /**
+     * Displays the given failures, reusing the existing validator dialog if one is open.
+     * Used both by this action and by other callers that need to surface failures (project
+     * open, save-as) so that at most one dialog is visible at a time.
+     */
+    public void showFailures(List<ValidationFailure> failures) {
+        if (dialog == null || !dialog.isDisplayable()) {
+            dialog = new ProjectValidatorDialog(getProjectSession(), application.getFrame());
+            dialog.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    dialog = null;
+                }
+            });
+        }
+        dialog.showOnFailures(failures);
+    }
+
+    private void disposeDialog() {
+        if (dialog != null && dialog.isDisplayable()) {
+            dialog.dispose();
         }
     }
 }

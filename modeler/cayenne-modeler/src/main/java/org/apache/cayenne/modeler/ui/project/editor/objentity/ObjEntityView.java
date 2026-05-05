@@ -25,10 +25,11 @@ import org.apache.cayenne.modeler.event.display.ObjAttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjRelationshipDisplayEvent;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
+import org.apache.cayenne.modeler.toolkit.ProjectTabbedPane;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeAction;
 import org.apache.cayenne.modeler.ui.action.RemoveCallbackMethodAction;
 import org.apache.cayenne.modeler.ui.action.RemoveRelationshipAction;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjEntityCallbacksView;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.main.ObjEntityMainView;
@@ -40,16 +41,15 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import java.awt.*;
 
-public class ObjEntityView extends JTabbedPane {
+public class ObjEntityView extends ProjectTabbedPane {
 
-    private final ProjectController controller;
     private final Component entityPanel;
     private final ObjEntityPropertiesView attributeRelationshipTab;
     private final ObjEntityCallbacksView callbacksPanel;
     private int lastTabIndex;
 
-    public ObjEntityView(ProjectController controller) {
-        this.controller = controller;
+    public ObjEntityView(ProjectSession session) {
+        super(session);
 
         setTabPlacement(JTabbedPane.TOP);
 
@@ -57,18 +57,18 @@ public class ObjEntityView extends JTabbedPane {
         // note that those panels that have no internal scrollable tables
         // must be wrapped in a scroll pane
 
-        entityPanel = new JScrollPane(new ObjEntityMainView(controller));
+        entityPanel = new JScrollPane(new ObjEntityMainView(session));
         addTab("Entity", entityPanel);
 
-        attributeRelationshipTab = new ObjEntityPropertiesView(controller);
+        attributeRelationshipTab = new ObjEntityPropertiesView(session);
         addTab("Properties", attributeRelationshipTab);
 
-        callbacksPanel = new ObjEntityCallbacksView(controller);
+        callbacksPanel = new ObjEntityCallbacksView(session);
         addTab("Callbacks", callbacksPanel);
 
-        controller.addObjEntityDisplayListener(this::currentObjEntityChanged);
-        controller.addObjAttributeDisplayListener(this::currentObjAttributeChanged);
-        controller.addObjRelationshipDisplayListener(this::currentObjRelationshipChanged);
+        session.addObjEntityDisplayListener(this::currentObjEntityChanged);
+        session.addObjAttributeDisplayListener(this::currentObjAttributeChanged);
+        session.addObjRelationshipDisplayListener(this::currentObjRelationshipChanged);
 
         addChangeListener(this::stateChanged);
     }
@@ -89,7 +89,7 @@ public class ObjEntityView extends JTabbedPane {
     }
 
     private void resetRemoveButtons() {
-        GlobalActions globalActions = controller.getApplication().getActionManager();
+        GlobalActions globalActions = app().getActionManager();
 
         globalActions.getAction(RemoveAttributeAction.class).setEnabled(false);
         globalActions.getAction(RemoveRelationshipAction.class).setEnabled(false);

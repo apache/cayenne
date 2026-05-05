@@ -24,7 +24,6 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.model.ProjectBeforeSaveEvent;
 import org.apache.cayenne.modeler.event.model.ProjectAfterSaveEvent;
-import org.apache.cayenne.modeler.ui.project.validator.ProjectValidatorDialogController;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.project.validation.ProjectValidator;
@@ -73,22 +72,22 @@ public class SaveAsAction extends ModelerAbstractAction {
         }
 
         if (projectDir.exists() && !projectDir.canWrite()) {
-            JOptionPane.showMessageDialog(application.getFrameController().getView(), "Can't save project - unable to write to file \""
+            JOptionPane.showMessageDialog(application.getFrame(), "Can't save project - unable to write to file \""
                     + projectDir.getPath() + "\"", "Can't Save Project", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
-        getProjectController().pauseFileChangeTracking();
+        getProjectSession().pauseFileChangeTracking();
 
         URLResource res = new URLResource(projectDir.toURI().toURL());
         ProjectSaver saver = application.getProjectSaver();
         saver.saveAs(p, res);
 
         File file = new File(p.getConfigurationResource().getURL().toURI());
-        application.getFrameController().addToLastProjListAction(file);
-        application.getFrameController().getView().fireRecentFileListChanged();
+        application.getFrame().addToLastProjListAction(file);
+        application.getFrame().fireRecentFileListChanged();
 
-        getProjectController().fireProjectAfterSaveEvent(new ProjectAfterSaveEvent(getProjectController()));
+        getProjectSession().fireProjectAfterSaveEvent(new ProjectAfterSaveEvent(getProjectSession()));
 
         return true;
     }
@@ -107,7 +106,7 @@ public class SaveAsAction extends ModelerAbstractAction {
         ProjectValidator projectValidator = application.getProjectValidator();
         ValidationResult validationResult = projectValidator.validate(getCurrentProject().getRootNode());
 
-        getProjectController().fireProjectBeforeSaveEvent(new ProjectBeforeSaveEvent(SaveAsAction.class));
+        getProjectSession().fireProjectBeforeSaveEvent(new ProjectBeforeSaveEvent(SaveAsAction.class));
 
         try {
             if (!saveAll()) {
@@ -117,12 +116,12 @@ public class SaveAsAction extends ModelerAbstractAction {
             throw new CayenneRuntimeException("Error on save", ex);
         }
 
-        application.getFrameController().onProjectSaved();
+        application.getFrame().onProjectSaved();
 
         // If there were errors or warnings at validation, display them
         if (!validationResult.getFailures().isEmpty()) {
-            new ProjectValidatorDialogController(getProjectController())
-                    .showOnFailures(validationResult.getFailures());
+            application.getActionManager().getAction(ValidateAction.class)
+                    .showFailures(validationResult.getFailures());
         }
     }
 
@@ -136,7 +135,7 @@ public class SaveAsAction extends ModelerAbstractAction {
             return false;
         }
 
-        Project project = application.getProject();
+        Project project = application.getFrame().getProjectSession().project();
         return project != null && project.isModified();
     }
 }

@@ -23,9 +23,9 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoader;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.datasource.DataSourceController;
+import org.apache.cayenne.modeler.ui.datasource.DataSourceDialog;
 import org.apache.cayenne.modeler.ui.dbactionoptions.DbActionOptionsDialog;
-import org.apache.cayenne.modeler.ui.dbmerge.MergerOptionsController;
+import org.apache.cayenne.modeler.ui.dbmerge.MergerOptionsDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,12 +55,12 @@ public class MigrateAction extends DBConnectionAwareAction {
 
     public void performAction(ActionEvent e) {
 
-        DataSourceController connectWizard = getDataSourceController("Migrate DB Schema: Connect to Database");
+        DataSourceDialog connectWizard = getDataSourceController("Migrate DB Schema: Connect to Database");
         if(connectWizard == null) {
             return;
         }
 
-        DataMap map = getProjectController().getSelectedDataMap();
+        DataMap map = getProjectSession().getSelectedDataMap();
         if (map == null) {
             throw new IllegalStateException("No current DataMap selected.");
         }
@@ -77,8 +77,9 @@ public class MigrateAction extends DBConnectionAwareAction {
         MergerTokenFactoryProvider mergerTokenFactoryProvider = application.getMergerTokenFactoryProvider();
 
         // ... show dialog...
-        new MergerOptionsController(
-                getProjectController(),
+        new MergerOptionsDialog(
+                getProjectSession(),
+                application.getFrame(),
                 "Migrate DB Schema: Options",
                 connectWizard.getConnector(),
                 map, selectedCatalog, selectedSchema, mergerTokenFactoryProvider).startupAction();
@@ -88,13 +89,14 @@ public class MigrateAction extends DBConnectionAwareAction {
                                                  String currentCatalog, String currentSchema, int command) {
         dialogShown = true;
         if (command == DbActionOptionsDialog.SELECT) {
-            return new DbActionOptionsDialog(application.getFrameController().getView(), "Migrate DB Schema: Select Catalog and Schema",
+            return new DbActionOptionsDialog(application, application.getFrame(),
+                    "Migrate DB Schema: Select Catalog and Schema",
                     catalogs, schemas, currentCatalog, currentSchema);
         }
         return null;
     }
 
-    protected DbActionOptionsDialog loaderOptionDialog(DataSourceController connectWizard) {
+    protected DbActionOptionsDialog loaderOptionDialog(DataSourceDialog connectWizard) {
 
         // use this catalog as the default...
         List<String> catalogs;
@@ -116,7 +118,7 @@ public class MigrateAction extends DBConnectionAwareAction {
             }
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(
-                    application.getFrameController().getView(),
+                    application.getFrame(),
                     ex.getMessage(),
                     "Error loading schemas dialog",
                     JOptionPane.ERROR_MESSAGE);
@@ -141,7 +143,7 @@ public class MigrateAction extends DBConnectionAwareAction {
     }
 
     @SuppressWarnings("unchecked")
-    private List<String> getCatalogs(DataSourceController connectWizard, Connection connection) throws Exception {
+    private List<String> getCatalogs(DataSourceDialog connectWizard, Connection connection) throws Exception {
         if(!connectWizard.getAdapter().supportsCatalogsOnReverseEngineering()) {
             return (List<String>) Collections.EMPTY_LIST;
         }

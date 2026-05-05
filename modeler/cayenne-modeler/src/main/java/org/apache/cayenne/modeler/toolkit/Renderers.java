@@ -23,7 +23,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.reflect.PropertyUtils;
 import org.apache.cayenne.util.CayenneMapEntry;
 
@@ -73,8 +73,8 @@ public final class Renderers {
     /**
      * Returns a TableCellRenderer to display Cayenne project entities with icons in table.
      */
-    public static TableCellRenderer entityTableRendererWithIcons(ProjectController mediator) {
-        return new EntityTableRenderer(mediator);
+    public static TableCellRenderer entityTableRendererWithIcons(ProjectSession session) {
+        return new EntityTableRenderer(session);
     }
 
     /**
@@ -232,10 +232,10 @@ public final class Renderers {
 
     final static class EntityTableRenderer extends DefaultTableCellRenderer {
 
-        private final ProjectController controller;
+        private final ProjectSession session;
 
-        public EntityTableRenderer(ProjectController controller) {
-            this.controller = controller;
+        public EntityTableRenderer(ProjectSession session) {
+            this.session = session;
         }
 
         public Component getTableCellRendererComponent(
@@ -247,7 +247,7 @@ public final class Renderers {
                 int column) {
 
             Object oldValue = value;
-            value = Renderers.asString(value, controller.getSelectedDataMap());
+            value = Renderers.asString(value, session.getSelectedDataMap());
 
             super.getTableCellRendererComponent(
                     table,

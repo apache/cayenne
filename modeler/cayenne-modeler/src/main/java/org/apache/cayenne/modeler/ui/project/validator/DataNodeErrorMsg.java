@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.project.validator;
 import javax.swing.JFrame;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
 import org.apache.cayenne.validation.ValidationFailure;
 
@@ -45,10 +45,10 @@ public class DataNodeErrorMsg extends ValidationDisplayHandler {
         node = (DataNodeDescriptor) object;
     }
 
-    public void displayField(ProjectController mediator, JFrame frame) {
+    public void displayField(ProjectSession session, JFrame frame) {
         DataNodeDisplayEvent event;
         event = new DataNodeDisplayEvent(frame, domain, node);
-        mediator.displayDataNode(event);
+        session.displayDataNode(event);
     }
 
 }

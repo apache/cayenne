@@ -37,7 +37,7 @@ import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.project.DbEntityOps;
 import org.apache.cayenne.modeler.toolkit.ValueTypes;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 
@@ -65,8 +65,8 @@ public class ObjAttributeTableModel extends CMTableModel<ObjAttribute> {
     private final ObjEntity entity;
     private DbEntity dbEntity;
 
-    public ObjAttributeTableModel(ObjEntity entity, ProjectController mediator, Object eventSource) {
-        super(mediator, eventSource, new ArrayList<>(entity.getAttributes()));
+    public ObjAttributeTableModel(ObjEntity entity, ProjectSession session, Object eventSource) {
+        super(session, eventSource, new ArrayList<>(entity.getAttributes()));
         this.entity = entity;
         this.dbEntity = entity.getDbEntity();
 
@@ -248,7 +248,7 @@ public class ObjAttributeTableModel extends CMTableModel<ObjAttribute> {
         }
 
         ObjAttribute attributeNew;
-        if (controller.getEntityResolver().getEmbeddable(newType) != null) {
+        if (session.entityResolver().getEmbeddable(newType) != null) {
             attributeNew = new EmbeddedAttribute();
             attributeNew.setDbAttributePath((String)null);
         } else {
@@ -266,24 +266,24 @@ public class ObjAttributeTableModel extends CMTableModel<ObjAttribute> {
 
         entity.updateAttribute(attributeNew);
 
-        controller.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
+        session.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
 
-        controller.displayObjEntity(new ObjEntityDisplayEvent(
+        session.displayObjEntity(new ObjEntityDisplayEvent(
                 this,
-                (DataChannelDescriptor) controller.getProject().getRootNode(),
-                controller.getSelectedDataMap(),
-                controller.getSelectedObjEntity()));
+                (DataChannelDescriptor) session.project().getRootNode(),
+                session.getSelectedDataMap(),
+                session.getSelectedObjEntity()));
 
-        controller.fireObjAttributeEvent(ObjAttributeEvent.ofChange(
+        session.fireObjAttributeEvent(ObjAttributeEvent.ofChange(
                 this,
                 attributeNew,
                 entity));
 
-        controller.displayObjAttribute(new ObjAttributeDisplayEvent(
+        session.displayObjAttribute(new ObjAttributeDisplayEvent(
                 this,
-                (DataChannelDescriptor) controller.getProject().getRootNode(),
-                controller.getSelectedDataMap(),
-                controller.getSelectedObjEntity(),
+                (DataChannelDescriptor) session.project().getRootNode(),
+                session.getSelectedDataMap(),
+                session.getSelectedObjEntity(),
                 attributeNew));
     }
 
@@ -346,7 +346,7 @@ public class ObjAttributeTableModel extends CMTableModel<ObjAttribute> {
                 break;
         }
 
-        controller.fireObjAttributeEvent(ObjAttributeEvent.ofChange(eventSource, attribute, entity, oldName));
+        session.fireObjAttributeEvent(ObjAttributeEvent.ofChange(eventSource, attribute, entity, oldName));
     }
 
     public boolean isCellEditable(int row, int col) {
@@ -447,11 +447,11 @@ public class ObjAttributeTableModel extends CMTableModel<ObjAttribute> {
     }
 
     private String getComment(ObjAttribute attr) {
-        return ObjectInfo.getFromMetaData(controller.getApplication().getMetaData(), attr, ObjectInfo.COMMENT);
+        return ObjectInfo.getFromMetaData(session.app().getMetaData(), attr, ObjectInfo.COMMENT);
     }
 
     private void setComment(String newVal, ObjAttribute attr) {
-        ObjectInfo.putToMetaData(controller.getApplication().getMetaData(), attr, ObjectInfo.COMMENT, newVal);
+        ObjectInfo.putToMetaData(session.app().getMetaData(), attr, ObjectInfo.COMMENT, newVal);
     }
 
     @Override

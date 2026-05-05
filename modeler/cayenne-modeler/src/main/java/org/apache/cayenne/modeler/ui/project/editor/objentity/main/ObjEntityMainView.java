@@ -41,7 +41,8 @@ import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.ExpressionConvertor;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ShowGraphEntityAction;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.classname.ClassNameUpdaterController;
@@ -60,11 +61,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListener, ExistingSelectionProcessor {
+public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayListener, ExistingSelectionProcessor {
 
     private static final ObjEntity NO_INHERITANCE = new ObjEntity("Direct Mapping to Table/View");
 
-    private final ProjectController controller;
     private final CMUndoableTextField name;
     private final CMUndoableTextField className;
 
@@ -78,15 +78,15 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
     private final CMCheckBox isAbstract;
     private final CMUndoableTextField comment;
 
-    public ObjEntityMainView(ProjectController controller) {
-        this.controller = controller;
+    public ObjEntityMainView(ProjectSession session) {
+        super(session);
 
         this.setLayout(new BorderLayout());
 
         JToolBar toolBar = new JToolBar();
         toolBar.setBorder(BorderFactory.createEmptyBorder());
         toolBar.setFloatable(false);
-        GlobalActions globalActions = controller.getApplication().getActionManager();
+        GlobalActions globalActions = app().getActionManager();
 
         toolBar.add(globalActions.getAction(CreateAttributeAction.class).buildButton(1));
         toolBar.add(globalActions.getAction(CreateRelationshipAction.class).buildButton(3));
@@ -99,24 +99,24 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
         add(toolBar, BorderLayout.NORTH);
 
         // create widgets
-        name = new CMUndoableTextField(controller.getApplication().getUndoManager());
+        name = new CMUndoableTextField(app().getUndoManager());
         name.addCommitListener(this::setEntityName);
-        superClassName = new CMUndoableTextField(controller.getApplication().getUndoManager());
+        superClassName = new CMUndoableTextField(app().getUndoManager());
         superClassName.addCommitListener(this::setSuperClassName);
-        className = new CMUndoableTextField(controller.getApplication().getUndoManager());
+        className = new CMUndoableTextField(app().getUndoManager());
         className.addCommitListener(this::setClassName);
-        qualifier = new CMUndoableTextField(controller.getApplication().getUndoManager());
+        qualifier = new CMUndoableTextField(app().getUndoManager());
         qualifier.addCommitListener(this::setQualifier);
 
         dbEntityCombo = new CMComboBox<>();
         superEntityCombo = new CMComboBox<>();
 
-        AutoCompletion.enable(dbEntityCombo, controller::getSelectedDataMap);
-        AutoCompletion.enable(superEntityCombo, controller::getSelectedDataMap);
+        AutoCompletion.enable(dbEntityCombo, session()::getSelectedDataMap);
+        AutoCompletion.enable(superEntityCombo, session()::getSelectedDataMap);
 
-        readOnly = new CMCheckBox(controller.getApplication().getUndoManager());
+        readOnly = new CMCheckBox(app().getUndoManager());
 
-        optimisticLocking = new CMCheckBox(controller.getApplication().getUndoManager());
+        optimisticLocking = new CMCheckBox(app().getUndoManager());
 
         // borderless clickable button used as a label
         JButton tableLabel = new JButton("Table/View:");
@@ -127,9 +127,9 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
         tableLabel.setBorder(null);
 
 
-        isAbstract = new CMCheckBox(controller.getApplication().getUndoManager());
+        isAbstract = new CMCheckBox(app().getUndoManager());
 
-        comment = new CMUndoableTextField(controller.getApplication().getUndoManager());
+        comment = new CMUndoableTextField(app().getUndoManager());
         comment.addCommitListener(this::setComment);
 
         // assemble
@@ -155,17 +155,17 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
 
         // initialize events processing and tracking of UI updates...
 
-        controller.addObjEntityDisplayListener(this);
+        session().addObjEntityDisplayListener(this);
 
         dbEntityCombo.addActionListener(e -> {
             // Change DbEntity for current ObjEntity
-            ObjEntity entity = controller.getSelectedObjEntity();
+            ObjEntity entity = session().getSelectedObjEntity();
             DbEntity dbEntity = (DbEntity) dbEntityCombo.getSelectedItem();
 
 
             if (dbEntity != entity.getDbEntity()) {
                 entity.setDbEntity(dbEntity);
-                controller.fireObjEntityEvent(ObjEntityEvent.ofChange(ObjEntityMainView.this, entity));
+                session().fireObjEntityEvent(ObjEntityEvent.ofChange(ObjEntityMainView.this, entity));
             }
         });
 
@@ -176,7 +176,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
                     ? null
                     : superEntity.getName();
 
-            ObjEntity entity = controller.getSelectedObjEntity();
+            ObjEntity entity = session().getSelectedObjEntity();
 
             if (!Util.nullSafeEquals(name, entity.getSuperEntityName())) {
                 List<ObjAttribute> duplicateAttributes = null;
@@ -186,7 +186,9 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
 
                 if (duplicateAttributes != null && !duplicateAttributes.isEmpty()) {
                     DuplicatedAttributesDialog.showDialog(
-                            controller.getApplication().getFrameController().getView(), controller, duplicateAttributes, superEntity, entity);
+                            app(),
+                            app().getFrame(),
+                            session(), duplicateAttributes, superEntity, entity);
                     if (DuplicatedAttributesDialog.getResult().equals(DuplicatedAttributesDialog.CANCEL_RESULT)) {
                         superEntityCombo.setSelectedItem(entity.getSuperEntity());
                         superClassName.setText(entity.getSuperClassName());
@@ -220,46 +222,46 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
                 // fire both ObjEntityEvent and ObjEntityDisplayEvent;
                 // the latter is to update attribute and relationship display
 
-                DataChannelDescriptor domain = (DataChannelDescriptor) controller.getProject().getRootNode();
-                DataMap map = controller.getSelectedDataMap();
+                DataChannelDescriptor domain = (DataChannelDescriptor) session().project().getRootNode();
+                DataMap map = session().getSelectedDataMap();
 
-                controller.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
-                controller.displayObjEntity(new ObjEntityDisplayEvent(this, domain, map, entity));
+                session().fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
+                session().displayObjEntity(new ObjEntityDisplayEvent(this, domain, map, entity));
             }
         });
 
         tableLabel.addActionListener(e -> {
             // Jump to DbEntity of the current ObjEntity
-            DbEntity entity = controller.getSelectedObjEntity().getDbEntity();
+            DbEntity entity = session().getSelectedObjEntity().getDbEntity();
             if (entity != null) {
-                DataChannelDescriptor dom = (DataChannelDescriptor) controller.getProject().getRootNode();
-                controller.displayDbEntity(new DbEntityDisplayEvent(this, dom, entity.getDataMap(), entity));
+                DataChannelDescriptor dom = (DataChannelDescriptor) session().project().getRootNode();
+                session().displayDbEntity(new DbEntityDisplayEvent(this, dom, entity.getDataMap(), entity));
             }
         });
 
         readOnly.addItemListener(e -> {
-            ObjEntity entity = controller.getSelectedObjEntity();
+            ObjEntity entity = session().getSelectedObjEntity();
             if (entity != null) {
                 entity.setReadOnly(readOnly.isSelected());
-                controller.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
+                session().fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
             }
         });
 
         optimisticLocking.addItemListener(e -> {
-            ObjEntity entity = controller.getSelectedObjEntity();
+            ObjEntity entity = session().getSelectedObjEntity();
             if (entity != null) {
                 entity.setDeclaredLockType(optimisticLocking.isSelected()
                         ? ObjEntity.LOCK_TYPE_OPTIMISTIC
                         : ObjEntity.LOCK_TYPE_NONE);
-                controller.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
+                session().fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
             }
         });
 
         isAbstract.addItemListener(e -> {
-            ObjEntity entity = controller.getSelectedObjEntity();
+            ObjEntity entity = session().getSelectedObjEntity();
             if (entity != null) {
                 entity.setAbstract(isAbstract.isSelected());
-                controller.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
+                session().fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
             }
         });
     }
@@ -287,8 +289,8 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
         optimisticLocking.setSelected(entity.getDeclaredLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC);
 
         // init DbEntities
-        EntityResolver resolver = controller.getEntityResolver();
-        DataMap map = controller.getSelectedDataMap();
+        EntityResolver resolver = session().entityResolver();
+        DataMap map = session().getSelectedDataMap();
         DbEntity[] dbEntities = resolver.getDbEntities().toArray(new DbEntity[0]);
         Arrays.sort(dbEntities, Comparators.forDataMapChildren());
 
@@ -321,12 +323,12 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
             className = null;
         }
 
-        ObjEntity entity = controller.getSelectedObjEntity();
+        ObjEntity entity = session().getSelectedObjEntity();
 
         // "ent" may be null if we quit editing by changing tree selection
         if (entity != null && !Util.nullSafeEquals(entity.getClassName(), className)) {
             entity.setClassName(className);
-            controller.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
+            session().fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
         }
     }
 
@@ -336,11 +338,11 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
             text = null;
         }
 
-        ObjEntity ent = controller.getSelectedObjEntity();
+        ObjEntity ent = session().getSelectedObjEntity();
 
         if (ent != null && !Util.nullSafeEquals(ent.getSuperClassName(), text)) {
             ent.setSuperClassName(text);
-            controller.fireObjEntityEvent(ObjEntityEvent.ofChange(this, ent));
+            session().fireObjEntityEvent(ObjEntityEvent.ofChange(this, ent));
         }
     }
 
@@ -349,13 +351,13 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
             text = null;
         }
 
-        ObjEntity entity = controller.getSelectedObjEntity();
+        ObjEntity entity = session().getSelectedObjEntity();
         if (entity != null) {
             try {
                 String oldQualifier = ExpressionConvertor.asString(entity.getDeclaredQualifier());
                 if (!Util.nullSafeEquals(oldQualifier, text)) {
                     entity.setDeclaredQualifier(ExpressionConvertor.fromString(text));
-                    controller.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
+                    session().fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
                 }
             } catch (IllegalArgumentException ex) {
                 // unparsable qualifier
@@ -369,7 +371,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
             newName = null;
         }
 
-        ObjEntity entity = controller.getSelectedObjEntity();
+        ObjEntity entity = session().getSelectedObjEntity();
         if (entity == null) {
             return;
         }
@@ -385,10 +387,10 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
             ObjEntityEvent e = ObjEntityEvent.ofChange(this, entity, entity.getName());
             entity.getDataMap().renameObjEntity(entity, newName);
 
-            controller.fireObjEntityEvent(e);
+            session().fireObjEntityEvent(e);
 
             // suggest to update class name
-            ClassNameUpdaterController nameUpdater = new ClassNameUpdaterController(controller.getApplication().getFrameController(), entity);
+            ClassNameUpdaterController nameUpdater = new ClassNameUpdaterController(this, entity);
 
             if (nameUpdater.doNameUpdate()) {
                 className.setText(entity.getClassName());
@@ -408,10 +410,10 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
 
         ObjEntityDisplayEvent ede = new ObjEntityDisplayEvent(
                 this,
-                (DataChannelDescriptor) controller.getProject().getRootNode(),
-                controller.getSelectedDataMap(),
-                controller.getSelectedObjEntity());
-        controller.displayObjEntity(ede);
+                (DataChannelDescriptor) session().project().getRootNode(),
+                session().getSelectedDataMap(),
+                session().getSelectedObjEntity());
+        session().displayObjEntity(ede);
     }
 
     public void objEntitySelected(ObjEntityDisplayEvent e) {
@@ -426,7 +428,7 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
     private List<ObjAttribute> getDuplicatedAttributes(ObjEntity superEntity) {
         List<ObjAttribute> result = new LinkedList<>();
 
-        ObjEntity entity = controller.getSelectedObjEntity();
+        ObjEntity entity = session().getSelectedObjEntity();
 
         for (ObjAttribute attribute : entity.getAttributes()) {
             if (superEntity.getAttribute(attribute.getName()) != null) {
@@ -438,17 +440,17 @@ public class ObjEntityMainView extends JPanel implements ObjEntityDisplayListene
     }
 
     private void setComment(String value) {
-        ObjEntity entity = controller.getSelectedObjEntity();
+        ObjEntity entity = session().getSelectedObjEntity();
         if (entity == null) {
             return;
         }
 
-        ObjectInfo.putToMetaData(controller.getApplication().getMetaData(), entity, ObjectInfo.COMMENT, value);
-        controller.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
+        ObjectInfo.putToMetaData(app().getMetaData(), entity, ObjectInfo.COMMENT, value);
+        session().fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
     }
 
     private String getComment(ObjEntity entity) {
-        return ObjectInfo.getFromMetaData(controller.getApplication().getMetaData(), entity, ObjectInfo.COMMENT);
+        return ObjectInfo.getFromMetaData(app().getMetaData(), entity, ObjectInfo.COMMENT);
     }
 
 }

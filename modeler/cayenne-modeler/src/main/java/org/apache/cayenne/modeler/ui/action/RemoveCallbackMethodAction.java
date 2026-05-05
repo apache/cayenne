@@ -18,9 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.confirmremove.ConfirmRemoveDialog;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.CallbackType;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
@@ -51,7 +50,7 @@ public class RemoveCallbackMethodAction extends RemoveAction implements Multiple
     public void performAction(ActionEvent e, boolean allowAsking) {
         ConfirmRemoveDialog dialog = getConfirmDeleteDialog(allowAsking);
 
-        ObjCallbackMethod[] methods = getProjectController().getSelectedCallbackMethods();
+        ObjCallbackMethod[] methods = getProjectSession().getSelectedCallbackMethods();
 
         if ((methods.length == 1 && dialog.shouldDelete("callback method", methods[0].getName()))
                 || (methods.length > 1 && dialog.shouldDelete("selected callback methods"))) {
@@ -60,29 +59,29 @@ public class RemoveCallbackMethodAction extends RemoveAction implements Multiple
     }
 
     private void removeCallbackMethods() {
-        ProjectController mediator = getProjectController();
-        CallbackType callbackType = mediator.getSelectedCallbackType();
+        ProjectSession session = getProjectSession();
+        CallbackType callbackType = session.getSelectedCallbackType();
 
-        ObjCallbackMethod[] callbackMethods = mediator.getSelectedCallbackMethods();
+        ObjCallbackMethod[] callbackMethods = session.getSelectedCallbackMethods();
 
         for (ObjCallbackMethod callbackMethod : callbackMethods) {
             removeCallbackMethod(callbackType, callbackMethod.getName());
         }
 
-        application.getUndoManager().addEdit(new RemoveCallbackMethodUndoableEdit(getProjectController(), callbackType, callbackMethods));
+        application.getUndoManager().addEdit(new RemoveCallbackMethodUndoableEdit(getProjectSession(), callbackType, callbackMethods));
     }
 
     public void removeCallbackMethod(CallbackType callbackType, String method) {
-        ProjectController controller = getProjectController();
+        ProjectSession session = getProjectSession();
 
-        getProjectController().getSelectedObjEntity()
+        getProjectSession().getSelectedObjEntity()
                 .getCallbackMap()
                 .getCallbackDescriptor(callbackType.getType())
                 .removeCallbackMethod(method);
 
         CallbackMethodEvent e = CallbackMethodEvent.ofRemove(this, method);
 
-        controller.fireCallbackMethodEvent(e);
+        session.fireCallbackMethodEvent(e);
     }
 }
 

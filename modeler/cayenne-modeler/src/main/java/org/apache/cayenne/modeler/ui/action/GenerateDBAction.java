@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.action;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.dbgen.DBGeneratorOptionsController;
+import org.apache.cayenne.modeler.ui.dbgen.DBGeneratorOptionsDialog;
 import org.apache.cayenne.project.Project;
 
 import java.awt.event.ActionEvent;
@@ -45,16 +45,19 @@ public class GenerateDBAction extends ModelerAbstractAction {
     public void performAction(ActionEvent e) {
 
         Collection<DataMap> dataMaps;
-        DataMap dataMap = getProjectController().getSelectedDataMap();
+        DataMap dataMap = getProjectSession().getSelectedDataMap();
 
         if (dataMap != null) {
             dataMaps = new ArrayList<>();
             dataMaps.add(dataMap);
         } else {
-            Project project = getProjectController().getProject();
+            Project project = getProjectSession().project();
             dataMaps = ((DataChannelDescriptor) project.getRootNode()).getDataMaps();
         }
-        new DBGeneratorOptionsController(getProjectController(), "Generate DB Schema: Options", dataMaps)
-                .startupAction();
+        new DBGeneratorOptionsDialog(
+                getProjectSession(),
+                application.getFrame(),
+                "Generate DB Schema: Options",
+                dataMaps).startupAction();
     }
 }

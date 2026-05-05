@@ -18,41 +18,42 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.embeddable;
 
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.EmbeddableAttribute;
+import org.apache.cayenne.modeler.event.display.EmbeddableAttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
+import org.apache.cayenne.modeler.toolkit.ProjectTabbedPane;
+import org.apache.cayenne.modeler.ui.action.RemoveAttributeAction;
+import org.apache.cayenne.modeler.ui.action.RemoveCallbackMethodAction;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.embeddable.attributes.EmbeddableAttributesView;
 import org.apache.cayenne.modeler.ui.project.editor.embeddable.main.EmbeddableMainView;
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
-import org.apache.cayenne.map.Embeddable;
-import org.apache.cayenne.map.EmbeddableAttribute;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.service.action.GlobalActions;
-import org.apache.cayenne.modeler.ui.action.RemoveAttributeAction;
-import org.apache.cayenne.modeler.ui.action.RemoveCallbackMethodAction;
-import org.apache.cayenne.modeler.event.display.EmbeddableAttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 
-import javax.swing.*;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
-import java.awt.*;
+import java.awt.Component;
 
-public class EmbeddableView extends JTabbedPane {
+public class EmbeddableView extends ProjectTabbedPane {
 
-    private final ProjectController controller;
     private final JScrollPane embeddablePanel;
     private final EmbeddableAttributesView attributesPanel;
 
-    public EmbeddableView(ProjectController controller) {
-        this.controller = controller;
+    public EmbeddableView(ProjectSession session) {
+        super(session);
 
         setTabPlacement(JTabbedPane.TOP);
 
-        embeddablePanel = new JScrollPane(new EmbeddableMainView(controller));
+        embeddablePanel = new JScrollPane(new EmbeddableMainView(session));
         addTab("Embeddable", embeddablePanel);
 
-        attributesPanel = new EmbeddableAttributesView(controller);
+        attributesPanel = new EmbeddableAttributesView(session);
         addTab("Attributes", attributesPanel);
 
-        controller.addEmbeddableAttributeDisplayListener(this::currentEmbeddableAttributeChanged);
-        controller.addEmbeddableDisplayListener(this::currentEmbeddableChanged);
+        session.addEmbeddableAttributeDisplayListener(this::currentEmbeddableAttributeChanged);
+        session.addEmbeddableDisplayListener(this::currentEmbeddableChanged);
         addChangeListener(this::stateChanged);
     }
 
@@ -69,7 +70,7 @@ public class EmbeddableView extends JTabbedPane {
     }
 
     private void resetRemoveButtons() {
-        GlobalActions globalActions = controller.getApplication().getActionManager();
+        GlobalActions globalActions = app().getActionManager();
 
         globalActions.getAction(RemoveAttributeAction.class).setEnabled(false);
         globalActions.getAction(RemoveCallbackMethodAction.class).setEnabled(false);

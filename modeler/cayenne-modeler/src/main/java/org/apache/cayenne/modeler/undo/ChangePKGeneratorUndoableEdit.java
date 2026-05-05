@@ -25,7 +25,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
@@ -38,8 +38,8 @@ public class ChangePKGeneratorUndoableEdit extends CayenneUndoableEdit {
 
     private PkGeneratorState newState;
 
-    public ChangePKGeneratorUndoableEdit(ProjectController controller, DbEntity dbEntity) {
-        super(controller);
+    public ChangePKGeneratorUndoableEdit(ProjectSession session, DbEntity dbEntity) {
+        super(session);
         this.dbEntity = dbEntity;
     }
 
@@ -77,9 +77,9 @@ public class ChangePKGeneratorUndoableEdit extends CayenneUndoableEdit {
     }
 
     private void fireEvents() {
-        controller.fireDbEntityEvent(DbEntityEvent.ofChange(this, dbEntity));
-        DataChannelDescriptor domain = (DataChannelDescriptor) controller.getProject().getRootNode();
-        controller.displayDbEntity(new DbEntityDisplayEvent(this, domain, dbEntity.getDataMap(), dbEntity));
+        session.fireDbEntityEvent(DbEntityEvent.ofChange(this, dbEntity));
+        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
+        session.displayDbEntity(new DbEntityDisplayEvent(this, domain, dbEntity.getDataMap(), dbEntity));
     }
 
     public boolean hasRealChange() {

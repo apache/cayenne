@@ -19,31 +19,41 @@
 
 package org.apache.cayenne.modeler.ui.project;
 
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
+import org.apache.cayenne.modeler.toolkit.splitpane.CMSplitPanePrefs;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.ui.action.CollapseTreeAction;
 import org.apache.cayenne.modeler.ui.action.FilterAction;
-import org.apache.cayenne.modeler.toolkit.splitpane.CMSplitPanePrefs;
 import org.apache.cayenne.modeler.ui.project.editor.EditorPanelView;
-import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeController;
-import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeView;
-import org.apache.cayenne.modeler.ui.project.tree.treefilter.TreeFilterController;
+import org.apache.cayenne.modeler.ui.project.tree.ProjectTree;
+import org.apache.cayenne.modeler.ui.project.tree.treefilter.TreeFilterPopup;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JToolBar;
+import java.awt.BorderLayout;
+import java.awt.ComponentOrientation;
+import java.awt.Dimension;
 
 /**
- * Main display area split into the project navigation tree on the left and selected object editor on the right.
+ * Main display area split into the project navigation tree on the left and the selected
+ * object editor on the right. Constructed once per opened project; receives the
+ * {@link ProjectSession} that backs it.
  */
-public class ProjectView extends JPanel {
+public class ProjectView extends ProjectPanel {
 
-    private final ProjectTreeController treeController;
-    private final ProjectTreeView treePanel;
+    private final ProjectTree treePanel;
     private final EditorPanelView editorPanel;
-    private final TreeFilterController filterController;
+    private final TreeFilterPopup filterPopup;
 
-    public ProjectView(ProjectController controller) {
+    public ProjectView(ProjectSession session) {
+        super(session);
 
-        GlobalActions globalActions = controller.getApplication().getActionManager();
+        GlobalActions globalActions = app().getActionManager();
         globalActions.getAction(CollapseTreeAction.class).setAlwaysOn(true);
         globalActions.getAction(FilterAction.class).setAlwaysOn(true);
 
@@ -62,8 +72,7 @@ public class ProjectView extends JPanel {
         barPanel.add(filterButton);
         barPanel.add(collapseButton);
 
-        treeController = new ProjectTreeController(controller);
-        treePanel = treeController.getView();
+        treePanel = new ProjectTree(session);
         treePanel.setMinimumSize(new Dimension(75, 180));
 
         JPanel treeNavigatePanel = new JPanel();
@@ -71,7 +80,7 @@ public class ProjectView extends JPanel {
         treeNavigatePanel.setLayout(new BorderLayout());
         treeNavigatePanel.add(treePanel, BorderLayout.CENTER);
 
-        editorPanel = new EditorPanelView(controller);
+        editorPanel = new EditorPanelView(session);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true);
         splitPane.setDividerSize(2);
@@ -89,20 +98,20 @@ public class ProjectView extends JPanel {
         setLayout(new BorderLayout());
         add(splitPane, BorderLayout.CENTER);
 
-        this.filterController = new TreeFilterController(treePanel);
+        this.filterPopup = new TreeFilterPopup(treePanel);
 
-        CMSplitPanePrefs.of(controller.getApplication().getPreferencesRepository(), "project/splitPane").bind(splitPane, 300);
+        CMSplitPanePrefs.of(app().getPreferencesRepository(), "project/splitPane").bind(splitPane, 300);
     }
 
     public EditorPanelView getEditorPanel() {
         return editorPanel;
     }
 
-    public TreeFilterController getFilterController() {
-        return filterController;
+    public TreeFilterPopup getFilterPopup() {
+        return filterPopup;
     }
 
-    public ProjectTreeView getProjectTreeView() {
+    public ProjectTree getProjectTreeView() {
         return treePanel;
     }
 }

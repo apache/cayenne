@@ -27,7 +27,7 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 
 import javax.swing.*;
 import java.awt.*;
@@ -59,12 +59,12 @@ public class OverrideEmbeddableAttributeTableModel extends CMTableModel {
     }
 
     public OverrideEmbeddableAttributeTableModel(
-            ProjectController controller,
+            ProjectSession session,
             Object eventSource,
             Collection<EmbeddableAttribute> embAttr,
             ObjAttribute attr) {
 
-        super(controller, eventSource, new ArrayList<Object>(embAttr));
+        super(session, eventSource, new ArrayList<Object>(embAttr));
         this.embeddableList = new ArrayList<>(embAttr);
         this.attr = attr;
         this.isAttributeOverrideChange = false;
@@ -103,8 +103,7 @@ public class OverrideEmbeddableAttributeTableModel extends CMTableModel {
             attribute.setDbAttributeName(value != null ? value.toString() : null);
             fireTableCellUpdated(row, col);
             this.isAttributeOverrideChange = true;
-            ((ObjAttributeInfoDialogView) ((ObjAttributeInfoDialogController) eventSource)
-                    .getView()).getSaveButton().setEnabled(true);
+            ((ObjAttributeInfoDialog) eventSource).getSaveButton().setEnabled(true);
 
             if (value != null) {
                 DbEntity currentEnt = attr.getEntity().getDbEntity();

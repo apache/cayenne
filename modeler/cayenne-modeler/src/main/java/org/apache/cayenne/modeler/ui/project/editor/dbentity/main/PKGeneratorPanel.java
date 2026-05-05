@@ -24,15 +24,15 @@ import javax.swing.JPanel;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.undo.ChangePKGeneratorUndoableEdit;
 
 public abstract class PKGeneratorPanel extends JPanel {
 
-    protected ProjectController mediator;
+    protected ProjectSession session;
 
-    public PKGeneratorPanel(ProjectController mediator) {
-        this.mediator = mediator;
+    public PKGeneratorPanel(ProjectSession session) {
+        this.session = session;
     }
 
     /**
@@ -46,14 +46,14 @@ public abstract class PKGeneratorPanel extends JPanel {
      * Called by parent when the panel becomes visible.
      */
     public void onInit(DbEntity entity) {
-        ChangePKGeneratorUndoableEdit edit = new ChangePKGeneratorUndoableEdit(mediator, entity);
+        ChangePKGeneratorUndoableEdit edit = new ChangePKGeneratorUndoableEdit(session, entity);
         edit.captureOldState();
 
         onInitInternal(entity);
 
         edit.captureNewState();
         if(edit.hasRealChange()) {
-            mediator.getApplication().getUndoManager().addEdit(edit);
+            session.app().getUndoManager().addEdit(edit);
         }
     }
 
@@ -81,7 +81,7 @@ public abstract class PKGeneratorPanel extends JPanel {
         }
 
         if (hasChanges) {
-            mediator.fireDbEntityEvent(DbEntityEvent.ofChange(this, entity));
+            session.fireDbEntityEvent(DbEntityEvent.ofChange(this, entity));
         }
     }
 }

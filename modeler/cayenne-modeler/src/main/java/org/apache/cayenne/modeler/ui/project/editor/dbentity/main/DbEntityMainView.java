@@ -19,22 +19,23 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.dbentity.main;
 
-import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
+import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
+import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
+import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.ui.action.CreateObjEntityFromDbAction;
 import org.apache.cayenne.modeler.ui.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.DbEntityCounterpartAction;
 import org.apache.cayenne.modeler.ui.action.DbEntitySyncAction;
-import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
-import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
-import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.ExpressionConvertor;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ShowGraphEntityAction;
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
@@ -42,19 +43,23 @@ import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JToolBar;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.util.EventObject;
 
-public class DbEntityMainView extends JPanel implements ExistingSelectionProcessor, DbEntityDisplayListener {
+public class DbEntityMainView extends ProjectPanel implements ExistingSelectionProcessor, DbEntityDisplayListener {
 
     static final String PK_DEFAULT_GENERATOR = "Cayenne-Generated (Default)";
     static final String PK_DB_GENERATOR = "Database-Generated";
     static final String PK_CUSTOM_SEQUENCE_GENERATOR = "Custom Sequence";
 
     static final String[] PK_GENERATOR_TYPES = { PK_DEFAULT_GENERATOR, PK_DB_GENERATOR, PK_CUSTOM_SEQUENCE_GENERATOR };
-
-    private final ProjectController controller;
 
     private final CMUndoableTextField name;
     private final CMUndoableTextField catalog;
@@ -71,14 +76,13 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
 
     private final JToolBar toolBar;
 
-    public DbEntityMainView(ProjectController controller) {
-        super();
-        this.controller = controller;
+    public DbEntityMainView(ProjectSession session) {
+        super(session);
 
         toolBar = new JToolBar();
         toolBar.setBorder(BorderFactory.createEmptyBorder());
         toolBar.setFloatable(false);
-        GlobalActions globalActions = controller.getApplication().getActionManager();
+        GlobalActions globalActions = app().getActionManager();
 
         toolBar.add(globalActions.getAction(CreateAttributeAction.class).buildButton(1));
         toolBar.add(globalActions.getAction(CreateRelationshipAction.class).buildButton(3));
@@ -92,21 +96,21 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
         toolBar.add(globalActions.getAction(ShowGraphEntityAction.class).buildButton());
 
         // create widgets
-        name = new CMUndoableTextField(controller.getApplication().getUndoManager());
+        name = new CMUndoableTextField(app().getUndoManager());
         name.addCommitListener(this::setEntityName);
 
         catalogLabel = new JLabel("Catalog:");
-        catalog = new CMUndoableTextField(controller.getApplication().getUndoManager());
+        catalog = new CMUndoableTextField(app().getUndoManager());
         catalog.addCommitListener(this::setCatalog);
 
         schemaLabel = new JLabel("Schema:");
-        schema = new CMUndoableTextField(controller.getApplication().getUndoManager());
+        schema = new CMUndoableTextField(app().getUndoManager());
         schema.addCommitListener(this::setSchema);
 
-        qualifier = new CMUndoableTextField(controller.getApplication().getUndoManager());
+        qualifier = new CMUndoableTextField(app().getUndoManager());
         qualifier.addCommitListener(this::setQualifier);
 
-        comment = new CMUndoableTextField(controller.getApplication().getUndoManager());
+        comment = new CMUndoableTextField(app().getUndoManager());
         comment.addCommitListener(this::setComment);
 
         pkGeneratorType = new JComboBox<>();
@@ -115,9 +119,9 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
 
         pkGeneratorDetailLayout = new CardLayout();
         pkGeneratorDetail = new JPanel(pkGeneratorDetailLayout);
-        pkGeneratorDetail.add(new PKDefaultGeneratorPanel(controller), PK_DEFAULT_GENERATOR);
-        pkGeneratorDetail.add(new PKDBGeneratorPanel(controller), PK_DB_GENERATOR);
-        pkGeneratorDetail.add(new PKCustomSequenceGeneratorPanel(controller), PK_CUSTOM_SEQUENCE_GENERATOR);
+        pkGeneratorDetail.add(new PKDefaultGeneratorPanel(session), PK_DEFAULT_GENERATOR);
+        pkGeneratorDetail.add(new PKDBGeneratorPanel(session), PK_DB_GENERATOR);
+        pkGeneratorDetail.add(new PKCustomSequenceGeneratorPanel(session), PK_CUSTOM_SEQUENCE_GENERATOR);
 
         // assemble
         FormLayout layout = new FormLayout("right:pref, 3dlu, fill:200dlu", "");
@@ -144,7 +148,7 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
         add(toolBar, BorderLayout.NORTH);
         add(mainPanel, BorderLayout.CENTER);
 
-        controller.addDbEntityDisplayListener(this);
+        session().addDbEntityDisplayListener(this);
 
         pkGeneratorType.addItemListener(e -> {
             pkGeneratorDetailLayout.show(pkGeneratorDetail, (String) pkGeneratorType.getSelectedItem());
@@ -152,7 +156,7 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
             for (int i = 0; i < pkGeneratorDetail.getComponentCount(); i++) {
                 if (pkGeneratorDetail.getComponent(i).isVisible()) {
 
-                    DbEntity entity = controller.getSelectedDbEntity();
+                    DbEntity entity = session().getSelectedDbEntity();
                     PKGeneratorPanel panel = (PKGeneratorPanel) pkGeneratorDetail.getComponent(i);
                     panel.onInit(entity);
                     break;
@@ -163,10 +167,10 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
 
     public void processExistingSelection(EventObject e) {
         DbEntityDisplayEvent ede = new DbEntityDisplayEvent(this,
-                (DataChannelDescriptor) controller.getProject().getRootNode(),
-                controller.getSelectedDataMap(),
-                controller.getSelectedDbEntity());
-        controller.displayDbEntity(ede);
+                (DataChannelDescriptor) session().project().getRootNode(),
+                session().getSelectedDataMap(),
+                session().getSelectedDbEntity());
+        session().displayDbEntity(ede);
     }
 
     public void dbEntitySelected(DbEntityDisplayEvent e) {
@@ -225,7 +229,7 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
             newName = null;
         }
 
-        DbEntity entity = controller.getSelectedDbEntity();
+        DbEntity entity = session().getSelectedDbEntity();
 
         if (entity == null || Util.nullSafeEquals(newName, entity.getName())) {
             return;
@@ -237,7 +241,7 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
             // completely new name, set new name for entity
             DbEntityEvent e = DbEntityEvent.ofChange(this, entity, entity.getName());
             entity.getDataMap().renameDbEntity(entity, newName);
-            controller.fireDbEntityEvent(e);
+            session().fireDbEntityEvent(e);
         } else {
             // there is an entity with the same name
             throw new ValidationException("There is another entity with name '" + newName + "'.");
@@ -250,11 +254,11 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
             text = null;
         }
 
-        DbEntity ent = controller.getSelectedDbEntity();
+        DbEntity ent = session().getSelectedDbEntity();
 
         if (ent != null && !Util.nullSafeEquals(ent.getCatalog(), text)) {
             ent.setCatalog(text);
-            controller.fireDbEntityEvent(DbEntityEvent.ofChange(this, ent));
+            session().fireDbEntityEvent(DbEntityEvent.ofChange(this, ent));
         }
     }
 
@@ -264,11 +268,11 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
             text = null;
         }
 
-        DbEntity ent = controller.getSelectedDbEntity();
+        DbEntity ent = session().getSelectedDbEntity();
 
         if (ent != null && !Util.nullSafeEquals(ent.getSchema(), text)) {
             ent.setSchema(text);
-            controller.fireDbEntityEvent(DbEntityEvent.ofChange(this, ent));
+            session().fireDbEntityEvent(DbEntityEvent.ofChange(this, ent));
         }
     }
 
@@ -278,14 +282,14 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
             qualifier = null;
         }
 
-        DbEntity ent = controller.getSelectedDbEntity();
+        DbEntity ent = session().getSelectedDbEntity();
 
         if (ent != null && !Util.nullSafeEquals(ent.getQualifier(), qualifier)) {
             try {
                 String oldQualifier = ExpressionConvertor.asString(ent.getQualifier());
                 if (!Util.nullSafeEquals(oldQualifier, qualifier)) {
                     ent.setQualifier(ExpressionConvertor.fromString(qualifier));
-                    controller.fireDbEntityEvent(DbEntityEvent.ofChange(this, ent));
+                    session().fireDbEntityEvent(DbEntityEvent.ofChange(this, ent));
                 }
             } catch (IllegalArgumentException ex) {
                 // unparsable qualifier
@@ -296,17 +300,17 @@ public class DbEntityMainView extends JPanel implements ExistingSelectionProcess
     }
 
     private String getComment(DbEntity entity) {
-        return ObjectInfo.getFromMetaData(controller.getApplication().getMetaData(), entity, ObjectInfo.COMMENT);
+        return ObjectInfo.getFromMetaData(app().getMetaData(), entity, ObjectInfo.COMMENT);
     }
 
     private void setComment(String value) {
-        DbEntity entity = controller.getSelectedDbEntity();
+        DbEntity entity = session().getSelectedDbEntity();
 
         if(entity == null) {
             return;
         }
 
-        ObjectInfo.putToMetaData(controller.getApplication().getMetaData(), entity, ObjectInfo.COMMENT, value);
-        controller.fireDbEntityEvent(DbEntityEvent.ofChange(this, entity));
+        ObjectInfo.putToMetaData(app().getMetaData(), entity, ObjectInfo.COMMENT, value);
+        session().fireDbEntityEvent(DbEntityEvent.ofChange(this, entity));
     }
 }

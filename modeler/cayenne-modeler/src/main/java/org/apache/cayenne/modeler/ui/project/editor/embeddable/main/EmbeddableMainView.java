@@ -27,9 +27,10 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
 import org.apache.cayenne.modeler.event.model.EmbeddableEvent;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayListener;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
@@ -43,20 +44,19 @@ import java.awt.*;
 import java.util.Collection;
 import java.util.Iterator;
 
-public class EmbeddableMainView extends JPanel implements EmbeddableDisplayListener {
+public class EmbeddableMainView extends ProjectPanel implements EmbeddableDisplayListener {
 
-    protected ProjectController mediator;
     protected CMUndoableTextField className;
     protected CMUndoableTextField comment;
 
-    public EmbeddableMainView(ProjectController mediator) {
-        this.mediator = mediator;
+    public EmbeddableMainView(ProjectSession session) {
+        super(session);
         initView();
         initController();
     }
 
     private void initController() {
-        mediator.addEmbeddableDisplayListener(this);
+        session().addEmbeddableDisplayListener(this);
     }
 
     private void initView() {
@@ -65,15 +65,15 @@ public class EmbeddableMainView extends JPanel implements EmbeddableDisplayListe
         JToolBar toolBar = new JToolBar();
         toolBar.setBorder(BorderFactory.createEmptyBorder());
         toolBar.setFloatable(false);
-        GlobalActions globalActions = mediator.getApplication().getActionManager();
+        GlobalActions globalActions = app().getActionManager();
         toolBar.add(globalActions.getAction(CreateAttributeAction.class).buildButton());
 
         add(toolBar, BorderLayout.NORTH);
 
-        className = new CMUndoableTextField(mediator.getApplication().getUndoManager());
+        className = new CMUndoableTextField(app().getUndoManager());
         className.addCommitListener(this::setClassName);
 
-        comment = new CMUndoableTextField(mediator.getApplication().getUndoManager());
+        comment = new CMUndoableTextField(app().getUndoManager());
         comment.addCommitListener(this::setComment);
 
         FormLayout layout = new FormLayout(
@@ -92,7 +92,7 @@ public class EmbeddableMainView extends JPanel implements EmbeddableDisplayListe
             newClassName = null;
         }
 
-        Embeddable embeddable = mediator.getSelectedEmbeddable();
+        Embeddable embeddable = session().getSelectedEmbeddable();
 
         if (embeddable == null) {
             return;
@@ -106,9 +106,9 @@ public class EmbeddableMainView extends JPanel implements EmbeddableDisplayListe
             throw new ValidationException("Embeddable name is required.");
         }
         else if (embeddable.getDataMap().getEmbeddable(newClassName) == null) {
-            
-            // if newClassName dupliucates in other DataMaps 
-            DataChannelDescriptor domain = (DataChannelDescriptor) mediator.getProject().getRootNode();
+
+            // if newClassName dupliucates in other DataMaps
+            DataChannelDescriptor domain = (DataChannelDescriptor) session().project().getRootNode();
             if (domain != null) {
                 for (DataMap nextMap : domain.getDataMaps()) {
                     if (nextMap == embeddable.getDataMap()) {
@@ -124,16 +124,16 @@ public class EmbeddableMainView extends JPanel implements EmbeddableDisplayListe
                     }
                 }
             }
-            
+
             // completely new name, set new name for embeddable
             EmbeddableEvent e = EmbeddableEvent.ofChange(this, embeddable, embeddable
                     .getClassName());
             String oldName = embeddable.getClassName();
             embeddable.setClassName(newClassName);
 
-            mediator.fireEmbeddableEvent(e, mediator.getSelectedDataMap());
+            session().fireEmbeddableEvent(e, session().getSelectedDataMap());
 
-            Iterator it = ((DataChannelDescriptor) mediator.getProject().getRootNode()).getDataMaps().iterator();
+            Iterator it = ((DataChannelDescriptor) session().project().getRootNode()).getDataMaps().iterator();
             while (it.hasNext()) {
                 DataMap dataMap = (DataMap) it.next();
                 Iterator<ObjEntity> ent = dataMap.getObjEntities().stream()
@@ -141,20 +141,20 @@ public class EmbeddableMainView extends JPanel implements EmbeddableDisplayListe
                         .iterator();
 
                 while (ent.hasNext()) {
-                    
+
                     Collection<ObjAttribute> attr = ent.next().getAttributes();
                     Iterator<ObjAttribute> attrIt = attr.iterator();
-                    
+
                     while (attrIt.hasNext()) {
                         ObjAttribute atribute = attrIt.next();
                         if (atribute.getType()==null || atribute.getType().equals(oldName)) {
                             atribute.setType(newClassName);
                             ObjAttributeEvent ev = ObjAttributeEvent.ofChange(this, atribute, atribute
                                     .getEntity());
-                            mediator.fireObjAttributeEvent(ev);
+                            session().fireObjAttributeEvent(ev);
                         }
                     }
-                    
+
                 }
             }
 
@@ -182,17 +182,17 @@ public class EmbeddableMainView extends JPanel implements EmbeddableDisplayListe
     }
 
     void setComment(String comment) {
-        Embeddable embeddable = mediator.getSelectedEmbeddable();
+        Embeddable embeddable = session().getSelectedEmbeddable();
 
         if (embeddable == null) {
             return;
         }
 
-        ObjectInfo.putToMetaData(mediator.getApplication().getMetaData(), embeddable, ObjectInfo.COMMENT, comment);
-        mediator.fireEmbeddableEvent(EmbeddableEvent.ofChange(this, embeddable), mediator.getSelectedDataMap());
+        ObjectInfo.putToMetaData(app().getMetaData(), embeddable, ObjectInfo.COMMENT, comment);
+        session().fireEmbeddableEvent(EmbeddableEvent.ofChange(this, embeddable), session().getSelectedDataMap());
     }
 
     String getComment(Embeddable embeddable) {
-        return ObjectInfo.getFromMetaData(mediator.getApplication().getMetaData(), embeddable, ObjectInfo.COMMENT);
+        return ObjectInfo.getFromMetaData(app().getMetaData(), embeddable, ObjectInfo.COMMENT);
     }
 }

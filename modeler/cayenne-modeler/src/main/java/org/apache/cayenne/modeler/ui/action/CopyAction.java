@@ -32,7 +32,7 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
 import org.apache.cayenne.modeler.toolkit.copypaste.CMTransferable;
 
@@ -80,9 +80,9 @@ public class CopyAction extends ModelerAbstractAction {
      */
     @Override
     public void performAction(ActionEvent e) {
-        ProjectController controller = getProjectController();
+        ProjectSession session = getProjectSession();
 
-        Object content = copy(controller);
+        Object content = copy(session);
 
         if (content != null) {
             Clipboard sysClip = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -96,8 +96,8 @@ public class CopyAction extends ModelerAbstractAction {
     /**
      * Detects selected objects and returns them
      */
-    public Object copy(ProjectController controller) {
-        return controller.getSelectedObject();
+    public Object copy(ProjectSession session) {
+        return session.getSelectedObject();
     }
 
     /**

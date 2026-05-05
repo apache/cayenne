@@ -24,7 +24,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.ui.action.ObjEntityCounterpartAction;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 
 public abstract class BaseRemovePropertyUndoableEdit extends CayenneUndoableEdit {
@@ -33,8 +33,8 @@ public abstract class BaseRemovePropertyUndoableEdit extends CayenneUndoableEdit
     protected DbEntity dbEntity;
     protected Embeddable embeddable;
 
-    protected BaseRemovePropertyUndoableEdit(ProjectController controller) {
-        super(controller);
+    protected BaseRemovePropertyUndoableEdit(ProjectSession session) {
+        super(session);
     }
 
     protected void focusObjEntity(){
@@ -46,9 +46,9 @@ public abstract class BaseRemovePropertyUndoableEdit extends CayenneUndoableEdit
     }
 
     protected void focusEmbeddable() {
-        controller.displayEmbeddable(new EmbeddableDisplayEvent(
+        session.displayEmbeddable(new EmbeddableDisplayEvent(
                 this,
-                (DataChannelDescriptor) controller.getProject().getRootNode(),
+                (DataChannelDescriptor) session.project().getRootNode(),
                 embeddable.getDataMap(),
                 embeddable));
     }

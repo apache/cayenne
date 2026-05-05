@@ -23,7 +23,7 @@ import org.apache.cayenne.modeler.event.model.ProcedureParameterEvent;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 import org.apache.cayenne.util.Util;
 
@@ -58,8 +58,8 @@ public class ProcedureParameterTableModel extends CMTableModel<ProcedureParamete
 
     protected Procedure procedure;
 
-    public ProcedureParameterTableModel(Procedure procedure, ProjectController mediator, Object eventSource) {
-        super(mediator, eventSource, new ArrayList<>(procedure.getCallParameters()));
+    public ProcedureParameterTableModel(Procedure procedure, ProjectSession session, Object eventSource) {
+        super(session, eventSource, new ArrayList<>(procedure.getCallParameters()));
         this.procedure = procedure;
     }
 
@@ -99,7 +99,7 @@ public class ProcedureParameterTableModel extends CMTableModel<ProcedureParamete
                 setPrecision(value, parameter);
                 break;
         }
-        controller.fireProcedureParameterEvent(
+        session.fireProcedureParameterEvent(
                 ProcedureParameterEvent.ofChange(eventSource, parameter, renamedFrom));
     }
 

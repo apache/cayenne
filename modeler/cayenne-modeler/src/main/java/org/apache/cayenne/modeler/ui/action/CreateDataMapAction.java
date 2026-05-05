@@ -24,9 +24,8 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.modeler.event.model.DataNodeEvent;
@@ -39,22 +38,22 @@ import java.awt.event.ActionEvent;
  */
 public class CreateDataMapAction extends ModelerAbstractAction {
     
-    public static void onMapCreated(Object src, ProjectController controller, DataMap map) {
+    public static void onMapCreated(Object src, ProjectSession session, DataMap map) {
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) controller.getProject().getRootNode();
+        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
         map.setDataChannelDescriptor(domain);
         domain.getDataMaps().add(map);
 
-        DataNodeDescriptor node = controller.getSelectedDataNode();
+        DataNodeDescriptor node = session.getSelectedDataNode();
         if (node != null && !node.getDataMapNames().contains(map.getName())) {
             node.getDataMapNames().add(map.getName());
-            controller.fireDataNodeEvent(DataNodeEvent.ofChange(src, node));
+            session.fireDataNodeEvent(DataNodeEvent.ofChange(src, node));
         }
 
-        controller.fireDataMapEvent(DataMapEvent.ofAdd(src, map));
+        session.fireDataMapEvent(DataMapEvent.ofAdd(src, map));
 
         DataMapDisplayEvent displayEvent = new DataMapDisplayEvent(src, domain, map, node, true);
-        controller.displayDataMap(displayEvent);
+        session.displayDataMap(displayEvent);
     }
 
     public CreateDataMapAction(Application application) {
@@ -68,15 +67,15 @@ public class CreateDataMapAction extends ModelerAbstractAction {
 
     public void performAction(ActionEvent e) {
 
-        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) getProjectController()
-                .getProject()
+        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) getProjectSession()
+                .project()
                 .getRootNode();
 
         DataMap map = new DataMap();
         map.setName(NameBuilder.builder(map, dataChannelDescriptor).name());
-        onMapCreated(this, getProjectController(), map);
+        onMapCreated(this, getProjectSession(), map);
 
-        application.getUndoManager().addEdit(new CreateDataMapUndoableEdit(getProjectController(), dataChannelDescriptor, map));
+        application.getUndoManager().addEdit(new CreateDataMapUndoableEdit(getProjectSession(), dataChannelDescriptor, map));
     }
 
     /**

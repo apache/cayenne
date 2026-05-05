@@ -23,7 +23,7 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.undo.LinkDataMapsUndoableEdit;
 
 import java.awt.event.ActionEvent;
@@ -43,11 +43,11 @@ public class LinkDataMapsAction extends ModelerAbstractAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        ProjectController mediator = getProjectController();
-        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) mediator.getProject().getRootNode();
+        ProjectSession session = getProjectSession();
+        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) session.project().getRootNode();
 
         Collection<String> linkedDataMaps = new ArrayList<>();
-        DataNodeDescriptor dataNodeDescriptor = mediator.getSelectedDataNode();
+        DataNodeDescriptor dataNodeDescriptor = session.getSelectedDataNode();
         for (DataNodeDescriptor dataNodeDesc : dataChannelDescriptor.getNodeDescriptors()) {
             linkedDataMaps.addAll(dataNodeDesc.getDataMapNames());
         }
@@ -55,12 +55,12 @@ public class LinkDataMapsAction extends ModelerAbstractAction {
         for (DataMap dataMap : dataChannelDescriptor.getDataMaps()) {
             if (!linkedDataMaps.contains(dataMap.getName())) {
                 dataNodeDescriptor.getDataMapNames().add(dataMap.getName());
-                mediator.fireDataNodeEvent(DataNodeEvent.ofChange(this, dataNodeDescriptor));
+                session.fireDataNodeEvent(DataNodeEvent.ofChange(this, dataNodeDescriptor));
             }
         }
 
         application.getUndoManager().addEdit(
-                new LinkDataMapsUndoableEdit(mediator, dataNodeDescriptor, linkedDataMaps));
+                new LinkDataMapsUndoableEdit(session, dataNodeDescriptor, linkedDataMaps));
     }
 
 }

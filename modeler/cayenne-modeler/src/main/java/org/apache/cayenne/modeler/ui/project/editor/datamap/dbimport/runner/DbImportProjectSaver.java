@@ -20,19 +20,18 @@ package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.runner;
 
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.resource.Resource;
 
 public class DbImportProjectSaver implements ProjectSaver {
 
-    private ProjectController projectController;
+    private ProjectSession session;
 
-    public DbImportProjectSaver(@Inject ProjectController projectController) {
-        this.projectController = projectController;
+    public DbImportProjectSaver(@Inject ProjectSession session) {
+        this.session = session;
     }
 
     @Override
@@ -45,8 +44,8 @@ public class DbImportProjectSaver implements ProjectSaver {
     public void save(Project project) {
 
         DataMap dataMap = (DataMap) project.getRootNode();
-        projectController.fireDataMapEvent(DataMapEvent.ofRemove(projectController.getApplication().getFrameController().getView(), dataMap));
-        projectController.fireDataMapEvent(DataMapEvent.ofAdd(projectController.getApplication().getFrameController().getView(), dataMap));
+        session.fireDataMapEvent(DataMapEvent.ofRemove(session.app().getFrame(), dataMap));
+        session.fireDataMapEvent(DataMapEvent.ofAdd(session.app().getFrame(), dataMap));
     }
 
     @Override

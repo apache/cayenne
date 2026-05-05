@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.preferences.PreferenceDialogController;
+import org.apache.cayenne.modeler.ui.preferences.PreferenceDialog;
 
 import java.awt.event.ActionEvent;
 
@@ -40,7 +40,7 @@ public class ConfigurePreferencesAction extends ModelerAbstractAction {
     }
 
     public void showPreferencesDialog() {
-        new PreferenceDialogController(application.getFrameController()).showLastSelectedAction();
+        new PreferenceDialog(application, application.getFrame()).showLastSelectedAction();
     }
-    
+
 }

@@ -24,9 +24,10 @@ import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.event.model.DbEntityListener;
-import org.apache.cayenne.modeler.toolkit.splitpane.CMSplitPanePrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
+import org.apache.cayenne.modeler.toolkit.splitpane.CMSplitPanePrefs;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.ui.action.CreateObjEntityFromDbAction;
@@ -37,41 +38,43 @@ import org.apache.cayenne.modeler.ui.action.DbEntitySyncAction;
 import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.ui.action.PasteAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeRelationshipAction;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JSplitPane;
+import javax.swing.JToolBar;
+import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 
-public class DbEntityPropertiesView extends JPanel implements DbEntityDisplayListener, DbEntityListener {
+public class DbEntityPropertiesView extends ProjectPanel implements DbEntityDisplayListener, DbEntityListener {
 
     private final DbAttributePanel attributePanel;
     private final DbRelationshipPanel relationshipPanel;
     private final JButton editButton;
     private final JSplitPane splitPane;
     private final JToolBar toolBar;
-    private final ProjectController controller;
 
-    public DbEntityPropertiesView(ProjectController controller) {
+    public DbEntityPropertiesView(ProjectSession session) {
+        super(session);
 
         this.setLayout(new BorderLayout());
 
-        this.controller = controller;
         editButton = new ModelerAbstractAction.CayenneToolbarButton(null, 0);
 
-        attributePanel = new DbAttributePanel(controller, this);
-        relationshipPanel = new DbRelationshipPanel(controller, this);
+        attributePanel = new DbAttributePanel(session, this);
+        relationshipPanel = new DbRelationshipPanel(session, this);
 
         splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, attributePanel, relationshipPanel);
         splitPane.setOneTouchExpandable(true);
         splitPane.setResizeWeight(0.5);
 
-        CMSplitPanePrefs.of(controller.getApplication().getPreferencesRepository(), "dbEntity/splitPane").bind(splitPane, -1);
+        CMSplitPanePrefs.of(app().getPreferencesRepository(), "dbEntity/splitPane").bind(splitPane, -1);
 
         add(splitPane);
         toolBar = new JToolBar();
         toolBar.setFloatable(false);
-        GlobalActions globalActions = controller.getApplication().getActionManager();
+        GlobalActions globalActions = app().getActionManager();
 
         toolBar.add(globalActions.getAction(CreateAttributeAction.class).buildButton(1));
         toolBar.add(globalActions.getAction(CreateRelationshipAction.class).buildButton(3));
@@ -96,11 +99,11 @@ public class DbEntityPropertiesView extends JPanel implements DbEntityDisplayLis
         toolBar.add(globalActions.getAction(PasteAction.class).buildButton(3));
 
         add(toolBar, BorderLayout.NORTH);
-        controller.addDbEntityDisplayListener(this);
+        session().addDbEntityDisplayListener(this);
     }
 
     public void updateActions(Object[] params) {
-        GlobalActions actions = controller.getApplication().getActionManager();
+        GlobalActions actions = app().getActionManager();
         actions.getAction(RemoveAttributeRelationshipAction.class).updateForSelection(params.length);
         actions.getAction(CutAttributeRelationshipAction.class).updateForSelection(params.length);
         actions.getAction(CopyAttributeRelationshipAction.class).updateForSelection(params.length);

@@ -67,7 +67,7 @@ public class SaveAsImageAction extends ModelerAbstractAction {
 		String ext = "png";
 		chooser.addChoosableFileFilter(FileFilters.getExtensionFileFilter(ext, "PNG Images"));
 
-		int status = chooser.showSaveDialog(application.getFrameController().getView());
+		int status = chooser.showSaveDialog(application.getFrame());
 		if (status == JFileChooser.APPROVE_OPTION) {
 			String path = chooser.getSelectedFile().getPath();
 			if (!path.endsWith("." + ext)) {
@@ -97,7 +97,7 @@ public class SaveAsImageAction extends ModelerAbstractAction {
 
 			} catch (IOException ex) {
 				LOGGER.error("Could not save image", ex);
-				JOptionPane.showMessageDialog(application.getFrameController().getView(), "Could not save image.", "Error saving image",
+				JOptionPane.showMessageDialog(application.getFrame(), "Could not save image.", "Error saving image",
 						JOptionPane.ERROR_MESSAGE);
 			}
 		}

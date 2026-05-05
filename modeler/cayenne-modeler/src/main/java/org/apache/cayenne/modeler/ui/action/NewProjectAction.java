@@ -23,7 +23,7 @@ import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.ModelerController;
+import org.apache.cayenne.modeler.ui.MainFrame;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 import org.apache.cayenne.project.Project;
 
@@ -51,7 +51,7 @@ public class NewProjectAction extends ProjectAction {
     @Override
     public void performAction(ActionEvent e) {
 
-        ModelerController controller = application.getFrameController();
+        MainFrame controller = application.getFrame();
         // Save and close (if needed) currently open project.
         if (getCurrentProject() != null && !closeProject(true)) {
             return;
@@ -69,6 +69,6 @@ public class NewProjectAction extends ProjectAction {
         controller.onProjectOpened(project);
 
         // select default domain
-        getProjectController().displayDomain(new DomainDisplayEvent(this, dataChannelDescriptor));
+        getProjectSession().displayDomain(new DomainDisplayEvent(this, dataChannelDescriptor));
     }
 }

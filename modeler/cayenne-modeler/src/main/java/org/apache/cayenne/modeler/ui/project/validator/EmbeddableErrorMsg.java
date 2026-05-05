@@ -22,7 +22,7 @@ import javax.swing.JFrame;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 import org.apache.cayenne.validation.ValidationFailure;
 
@@ -40,13 +40,13 @@ public class EmbeddableErrorMsg extends ValidationDisplayHandler {
     }
 
     @Override
-    public void displayField(ProjectController mediator, JFrame frame) {
+    public void displayField(ProjectSession session, JFrame frame) {
         EmbeddableDisplayEvent event = new EmbeddableDisplayEvent(
                 frame,
                 domain,
                 map,
                 embeddable);
-        mediator.displayEmbeddable(event);
+        session.displayEmbeddable(event);
     }
 
 }

@@ -23,7 +23,7 @@ import java.util.Arrays;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 
 /**
  * Action for copying procedure parameter(s)
@@ -62,8 +62,8 @@ public class CopyProcedureParameterAction extends CopyAction implements Multiple
     }
     
     @Override
-    public Object copy(ProjectController controller) {
-        Object[] params = getProjectController().getSelectedProcedureParameters();
+    public Object copy(ProjectSession session) {
+        Object[] params = getProjectSession().getSelectedProcedureParameters();
         
         if (params != null && params.length > 0) {
             return Arrays.asList(params);

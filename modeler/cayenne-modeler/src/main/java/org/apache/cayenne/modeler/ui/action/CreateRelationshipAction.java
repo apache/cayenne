@@ -29,11 +29,10 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.event.model.ObjRelationshipEvent;
 import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
-import org.apache.cayenne.modeler.event.model.ModelEvent;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.dbrelationship.DbRelationshipDialogController;
-import org.apache.cayenne.modeler.ui.project.editor.objentity.relinfo.ObjRelationshipInfoController;
+import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.ui.dbrelationship.DbRelationshipDialog;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.relinfo.ObjRelationshipInfoDialog;
 import org.apache.cayenne.modeler.event.display.DbRelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjRelationshipDisplayEvent;
 import org.apache.cayenne.util.DeleteRuleUpdater;
@@ -45,28 +44,28 @@ public class CreateRelationshipAction extends ModelerAbstractAction {
     /**
      * Fires events when a obj rel was added
      */
-    static void fireObjRelationshipEvent(Object src, ProjectController mediator, ObjEntity objEntity,
+    static void fireObjRelationshipEvent(Object src, ProjectSession session, ObjEntity objEntity,
                                          ObjRelationship rel) {
 
-        mediator.fireObjRelationshipEvent(ObjRelationshipEvent.ofAdd(src, rel, objEntity));
+        session.fireObjRelationshipEvent(ObjRelationshipEvent.ofAdd(src, rel, objEntity));
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) mediator.getProject().getRootNode();
-        ObjRelationshipDisplayEvent rde = new ObjRelationshipDisplayEvent(src, domain, mediator.getSelectedDataMap(), objEntity, rel);
+        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
+        ObjRelationshipDisplayEvent rde = new ObjRelationshipDisplayEvent(src, domain, session.getSelectedDataMap(), objEntity, rel);
 
-        mediator.displayObjRelationship(rde);
+        session.displayObjRelationship(rde);
     }
 
     /**
      * Fires events when a db rel was added
      */
-    static void fireDbRelationshipEvent(Object src, ProjectController mediator, DbEntity dbEntity, DbRelationship rel) {
+    static void fireDbRelationshipEvent(Object src, ProjectSession session, DbEntity dbEntity, DbRelationship rel) {
 
-        mediator.fireDbRelationshipEvent(DbRelationshipEvent.ofAdd(src, rel, dbEntity));
+        session.fireDbRelationshipEvent(DbRelationshipEvent.ofAdd(src, rel, dbEntity));
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) mediator.getProject().getRootNode();
-        DbRelationshipDisplayEvent rde = new DbRelationshipDisplayEvent(src, domain, mediator.getSelectedDataMap(), dbEntity, rel);
+        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
+        DbRelationshipDisplayEvent rde = new DbRelationshipDisplayEvent(src, domain, session.getSelectedDataMap(), dbEntity, rel);
 
-        mediator.displayDbRelationship(rde);
+        session.displayDbRelationship(rde);
     }
 
     public CreateRelationshipAction(Application application) {
@@ -83,18 +82,18 @@ public class CreateRelationshipAction extends ModelerAbstractAction {
      */
     @Override
     public void performAction(ActionEvent e) {
-        ObjEntity objEnt = getProjectController().getSelectedObjEntity();
+        ObjEntity objEnt = getProjectSession().getSelectedObjEntity();
         if (objEnt != null) {
 
-            new ObjRelationshipInfoController(getProjectController())
+            new ObjRelationshipInfoDialog(getProjectSession(), application.getFrame())
                     .createRelationship(objEnt)
                     .startupAction();
 
         } else {
-            DbEntity dbEnt = getProjectController().getSelectedDbEntity();
+            DbEntity dbEnt = getProjectSession().getSelectedDbEntity();
             if (dbEnt != null) {
 
-                new DbRelationshipDialogController(getProjectController())
+                new DbRelationshipDialog(getProjectSession(), application.getFrame())
                         .createNewRelationship(dbEnt)
                         .startUp();
             }
@@ -102,20 +101,20 @@ public class CreateRelationshipAction extends ModelerAbstractAction {
     }
 
     public void createObjRelationship(ObjEntity objEntity, ObjRelationship rel) {
-        ProjectController mediator = getProjectController();
+        ProjectSession session = getProjectSession();
 
         rel.setSourceEntity(objEntity);
         DeleteRuleUpdater.updateObjRelationship(rel);
 
         objEntity.addRelationship(rel);
-        fireObjRelationshipEvent(this, mediator, objEntity, rel);
+        fireObjRelationshipEvent(this, session, objEntity, rel);
     }
 
     public void createDbRelationship(DbEntity dbEntity, DbRelationship rel) {
-        ProjectController mediator = getProjectController();
+        ProjectSession session = getProjectSession();
         dbEntity.addRelationship(rel);
 
-        fireDbRelationshipEvent(this, mediator, dbEntity, rel);
+        fireDbRelationshipEvent(this, session, dbEntity, rel);
     }
 
     /**

@@ -28,14 +28,14 @@ import org.apache.cayenne.modeler.event.model.ObjRelationshipListener;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.toolkit.table.CMComboBoxCellEditor;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.CutAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.ObjEntityToSuperEntityAction;
 import org.apache.cayenne.modeler.ui.action.PasteAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeRelationshipAction;
-import org.apache.cayenne.modeler.ui.project.editor.objentity.relinfo.ObjRelationshipInfoController;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.relinfo.ObjRelationshipInfoDialog;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.display.ObjRelationshipDisplayEvent;
@@ -70,18 +70,18 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
             DeleteRule.deleteRuleName(DeleteRule.DENY),
     };
 
-    private final ProjectController controller;
+    private final ProjectSession session;
     private final CMTable table;
     private final ObjEntityPropertiesView parentPanel;
     private final JMenuItem editMenu;
 
-    public ObjRelationshipPanel(ProjectController controller, ObjEntityPropertiesView parentPanel) {
-        this.controller = controller;
+    public ObjRelationshipPanel(ProjectSession session, ObjEntityPropertiesView parentPanel) {
+        this.session = session;
         this.parentPanel = parentPanel;
 
         this.setLayout(new BorderLayout());
 
-        GlobalActions globalActions = controller.getApplication().getActionManager();
+        GlobalActions globalActions = session.app().getActionManager();
 
         table = new CMTable();
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -123,15 +123,15 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
         TablePopupHandler.install(table, popup);
         add(new CMTablePanel(table), BorderLayout.CENTER);
 
-        controller.addObjEntityDisplayListener(this);
-        controller.addObjEntityListener(this);
-        controller.addObjRelationshipListener(this);
+        session.addObjEntityDisplayListener(this);
+        session.addObjEntityListener(this);
+        session.addObjRelationshipListener(this);
 
         editMenu.addActionListener(this::edit);
 
         table.getSelectionModel().addListSelectionListener(this::valueChanged);
 
-        controller.getApplication().getActionManager().setupCutCopyPaste(
+        session.app().getActionManager().setupCutCopyPaste(
                 table,
                 CutAttributeRelationshipAction.class,
                 CopyAttributeRelationshipAction.class);
@@ -221,7 +221,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
         }
 
         // If current model added/removed, do nothing.
-        ObjEntity entity = controller.getSelectedObjEntity();
+        ObjEntity entity = session.getSelectedObjEntity();
         if (entity == e.getEntity() || entity == null) {
             return;
         }
@@ -240,7 +240,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
     protected void rebuildTable(ObjEntity entity) {
         final ObjRelationshipTableModel model = new ObjRelationshipTableModel(
                 entity,
-                controller,
+                session,
                 this);
 
         model.addTableModelListener(e -> {
@@ -254,7 +254,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
         table.setRowMargin(3);
 
         TableColumn col = table.getColumnModel().getColumn(ObjRelationshipTableModel.REL_TARGET_PATH);
-        col.setCellEditor(new DbRelationshipPathComboBoxEditor(controller));
+        col.setCellEditor(new DbRelationshipPathComboBoxEditor(session));
         col.setCellRenderer(new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -274,7 +274,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
         deleteRulesCombo.setSelectedIndex(0); // Default to the first value
         col.setCellEditor(new CMComboBoxCellEditor(deleteRulesCombo));
 
-        CMTablePrefs.of(controller.getApplication().getPreferencesRepository(), "objEntity/relationshipTable")
+        CMTablePrefs.of(session.app().getPreferencesRepository(), "objEntity/relationshipTable")
                 .bind(table, null, ObjRelationshipTableModel.REL_NAME);
     }
 
@@ -290,7 +290,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
                 int column) {
 
             Object oldValue = value;
-            value = Renderers.asString(value, controller.getSelectedDataMap());
+            value = Renderers.asString(value, session.getSelectedDataMap());
 
             super.getTableCellRendererComponent(
                     table,
@@ -362,7 +362,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
         public void mouseClicked(MouseEvent event, int x) {
             Point point = event.getPoint();
             if (point.x - x <= INHERITANCE_ICON.getIconWidth()) {
-                GlobalActions globalActions = controller.getApplication().getActionManager();
+                GlobalActions globalActions = session.app().getActionManager();
                 globalActions.getAction(ObjEntityToSuperEntityAction.class).performAction(null);
             }
         }
@@ -375,7 +375,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
         }
 
         ObjRelationshipTableModel model = (ObjRelationshipTableModel) table.getModel();
-        new ObjRelationshipInfoController(controller)
+        new ObjRelationshipInfoDialog(session, session.app().getFrame())
                 .modifyRelationship(model.getRelationship(row))
                 .startupAction();
 
@@ -402,7 +402,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
                 parentPanel.getAttributePanel().getTable().getCellEditor().stopCellEditing();
             }
 
-            GlobalActions globalActions = controller.getApplication().getActionManager();
+            GlobalActions globalActions = session.app().getActionManager();
             globalActions.getAction(RemoveAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
             globalActions.getAction(CutAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
             globalActions.getAction(CopyAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
@@ -428,11 +428,11 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
             editMenu.setEnabled(editEnabled);
         }
 
-        controller.displayObjRelationship(new ObjRelationshipDisplayEvent(
+        session.displayObjRelationship(new ObjRelationshipDisplayEvent(
                 this,
-                controller.getSelectedDataDomain(),
-                controller.getSelectedDataMap(),
-                controller.getSelectedObjEntity(),
+                session.getSelectedDataDomain(),
+                session.getSelectedDataMap(),
+                session.getSelectedObjEntity(),
                 rels));
 
         parentPanel.updateActions(rels);

@@ -25,7 +25,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.validation.ValidationFailure;
@@ -37,11 +37,11 @@ public class ProcedureParameterErrorMsg extends ValidationDisplayHandler {
         super(result);
     }
 
-    public void displayField(ProjectController mediator, JFrame frame) {
+    public void displayField(ProjectSession session, JFrame frame) {
         Object object = super.validationFailure.getSource();
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) mediator
-                .getProject()
+        DataChannelDescriptor domain = (DataChannelDescriptor) session
+                .project()
                 .getRootNode();
 
         ProcedureParameter procedureParameter = (ProcedureParameter) object;
@@ -59,7 +59,7 @@ public class ProcedureParameterErrorMsg extends ValidationDisplayHandler {
                 map,
                 procedure,
                 true);
-        mediator.displayProcedure(procedureEvent);
+        session.displayProcedure(procedureEvent);
 
         // now show the failed parameter
         ProcedureParameterDisplayEvent event = new ProcedureParameterDisplayEvent(
@@ -69,7 +69,7 @@ public class ProcedureParameterErrorMsg extends ValidationDisplayHandler {
                 procedure,
                 procedureParameter);
 
-        mediator.displayProcedureParameter(event);
+        session.displayProcedureParameter(event);
     }
 
 }

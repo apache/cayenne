@@ -27,7 +27,7 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.validation.ValidationFailure;
 
 /**
@@ -50,11 +50,11 @@ public class EntityErrorMsg extends ValidationDisplayHandler {
         map = entity.getDataMap();
     }
 
-    public void displayField(ProjectController mediator, JFrame frame) {
+    public void displayField(ProjectSession session, JFrame frame) {
         if (entity instanceof ObjEntity) {
-            mediator.displayObjEntity(new ObjEntityDisplayEvent(frame, domain, map, (ObjEntity) entity));
+            session.displayObjEntity(new ObjEntityDisplayEvent(frame, domain, map, (ObjEntity) entity));
         } else if (entity instanceof DbEntity) {
-            mediator.displayDbEntity(new DbEntityDisplayEvent(frame, domain, map, (DbEntity) entity));
+            session.displayDbEntity(new DbEntityDisplayEvent(frame, domain, map, (DbEntity) entity));
         }
     }
 }

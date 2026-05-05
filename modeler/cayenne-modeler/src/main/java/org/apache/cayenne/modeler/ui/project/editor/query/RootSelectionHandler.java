@@ -57,7 +57,7 @@ class RootSelectionHandler implements FocusListener, ActionListener {
                     String newPrefix = root.getName() + "Query";
                     newName = newPrefix;
 
-                    DataMap map = queryTab.getController().getSelectedDataMap();
+                    DataMap map = queryTab.getSession().getSelectedDataMap();
                     long postfix = 1;
 
                     while (map.getQueryDescriptor(newName) != null) {
@@ -99,7 +99,7 @@ class RootSelectionHandler implements FocusListener, ActionListener {
      */
     boolean hasDefaultName(QueryDescriptor query) {
         String prefix = query.getRoot() == null ? "UntitledQuery" :
-                Renderers.asString(query.getRoot(), queryTab.getController().getSelectedDataMap()) + "Query";
+                Renderers.asString(query.getRoot(), queryTab.getSession().getSelectedDataMap()) + "Query";
 
         return queryTab.getNameField().getText().startsWith(prefix);
     }

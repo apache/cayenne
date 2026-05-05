@@ -30,7 +30,7 @@ import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.pref.DataNodePrefs;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +47,7 @@ public abstract class ValidationDisplayHandler {
     protected ValidationFailure validationFailure;
     protected DataChannelDescriptor domain;
 
-    public static ValidationDisplayHandler getErrorMsg(ValidationFailure result, ProjectController controller) {
+    public static ValidationDisplayHandler getErrorMsg(ValidationFailure result, ProjectSession session) {
         Object validatedObj = result.getSource();
 
         ValidationDisplayHandler msg;
@@ -90,7 +90,7 @@ public abstract class ValidationDisplayHandler {
             msg = new NullHanlder(result);
         }
 
-        msg.setDomain((DataChannelDescriptor) controller.getProject().getRootNode());
+        msg.setDomain((DataChannelDescriptor) session.project().getRootNode());
         return msg;
     }
 
@@ -101,7 +101,7 @@ public abstract class ValidationDisplayHandler {
     /**
      * Fires event to display the screen where error should be corrected.
      */
-    public abstract void displayField(ProjectController mediator, JFrame frame);
+    public abstract void displayField(ProjectSession session, JFrame frame);
 
     /** Returns the text of the error message. */
     public String getMessage() {
@@ -130,7 +130,7 @@ public abstract class ValidationDisplayHandler {
             super(info);
         }
 
-        public void displayField(ProjectController mediator, JFrame frame) {
+        public void displayField(ProjectSession session, JFrame frame) {
             // noop
         }
     }

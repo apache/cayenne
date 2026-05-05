@@ -28,23 +28,23 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.model.DbEntityEvent;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.undo.CreateDbEntityUndoableEdit;
 
 import java.awt.event.ActionEvent;
 
 public class CreateDbEntityAction extends ModelerAbstractAction {
 
-    static void onDbEntityCreated(Object src, ProjectController controller, DbEntity entity) {
-        controller.fireDbEntityEvent(DbEntityEvent.ofAdd(src, entity));
+    static void onDbEntityCreated(Object src, ProjectSession session, DbEntity entity) {
+        session.fireDbEntityEvent(DbEntityEvent.ofAdd(src, entity));
         DbEntityDisplayEvent displayEvent = new DbEntityDisplayEvent(
                 src,
-                (DataChannelDescriptor) controller.getProject().getRootNode(),
-                controller.getSelectedDataMap(),
+                (DataChannelDescriptor) session.project().getRootNode(),
+                session.getSelectedDataMap(),
                 entity,
                 true,
                 false);
-        controller.displayDbEntity(displayEvent);
+        session.displayDbEntity(displayEvent);
     }
 
     public CreateDbEntityAction(Application application) {
@@ -60,12 +60,12 @@ public class CreateDbEntityAction extends ModelerAbstractAction {
      * Creates new DbEntity, adds it to the current DataMap, fires DbEntityEvent and DbEntityDisplayEvent.
      */
     public void performAction(ActionEvent e) {
-        DataMap map = getProjectController().getSelectedDataMap();
+        DataMap map = getProjectSession().getSelectedDataMap();
         DbEntity entity = new DbEntity();
         entity.setName(NameBuilder.builder(entity, map).name());
         createEntity(map, entity);
 
-        application.getUndoManager().addEdit(new CreateDbEntityUndoableEdit(getProjectController(), map, entity));
+        application.getUndoManager().addEdit(new CreateDbEntityUndoableEdit(getProjectSession(), map, entity));
     }
 
     /**
@@ -76,7 +76,7 @@ public class CreateDbEntityAction extends ModelerAbstractAction {
         entity.setCatalog(map.getDefaultCatalog());
         entity.setSchema(map.getDefaultSchema());
         map.addDbEntity(entity);
-        onDbEntityCreated(this, getProjectController(), entity);
+        onDbEntityCreated(this, getProjectSession(), entity);
     }
 
     /**

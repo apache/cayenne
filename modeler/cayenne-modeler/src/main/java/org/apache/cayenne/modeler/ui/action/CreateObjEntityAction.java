@@ -31,7 +31,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.undo.CreateObjEntityUndoableEdit;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 
@@ -41,18 +41,18 @@ public class CreateObjEntityAction extends ModelerAbstractAction {
 
     static void onObjEntityCreated(
             Object src,
-            ProjectController controller,
+            ProjectSession session,
             DataMap dataMap,
             ObjEntity entity) {
-        controller.fireObjEntityEvent(ObjEntityEvent.ofAdd(src, entity));
+        session.fireObjEntityEvent(ObjEntityEvent.ofAdd(src, entity));
         ObjEntityDisplayEvent displayEvent = new ObjEntityDisplayEvent(
                 src,
-                (DataChannelDescriptor) controller.getProject().getRootNode(),
+                (DataChannelDescriptor) session.project().getRootNode(),
                 dataMap,
                 entity,
                 true,
                 false);
-        controller.displayObjEntity(displayEvent);
+        session.displayObjEntity(displayEvent);
     }
 
     public CreateObjEntityAction(Application application) {
@@ -71,9 +71,9 @@ public class CreateObjEntityAction extends ModelerAbstractAction {
     }
 
     protected void createObjEntity() {
-        ProjectController controller = getProjectController();
+        ProjectSession session = getProjectSession();
 
-        DataMap dataMap = controller.getSelectedDataMap();
+        DataMap dataMap = session.getSelectedDataMap();
         ObjEntity entity = new ObjEntity();
         entity.setName(NameBuilder.builder(entity, dataMap).name());
 
@@ -81,7 +81,7 @@ public class CreateObjEntityAction extends ModelerAbstractAction {
         entity.setSuperClassName(dataMap.getDefaultSuperclass());
         entity.setDeclaredLockType(dataMap.getDefaultLockType());
 
-        DbEntity dbEntity = controller.getSelectedDbEntity();
+        DbEntity dbEntity = session.getSelectedDbEntity();
         if (dbEntity != null) {
             entity.setDbEntity(dbEntity);
 
@@ -104,14 +104,14 @@ public class CreateObjEntityAction extends ModelerAbstractAction {
         merger.addEntityMergeListener(DeleteRuleUpdater.getEntityMergeListener());
         merger.synchronizeWithDbEntity(entity);
 
-        onObjEntityCreated(this, controller, dataMap, entity);
+        onObjEntityCreated(this, session, dataMap, entity);
 
-        application.getUndoManager().addEdit(new CreateObjEntityUndoableEdit(getProjectController(), dataMap, entity));
+        application.getUndoManager().addEdit(new CreateObjEntityUndoableEdit(getProjectSession(), dataMap, entity));
     }
 
     public void createObjEntity(DataMap dataMap, ObjEntity entity) {
         dataMap.addObjEntity(entity);
-        onObjEntityCreated(this, getProjectController(), dataMap, entity);
+        onObjEntityCreated(this, getProjectSession(), dataMap, entity);
     }
 
     /**

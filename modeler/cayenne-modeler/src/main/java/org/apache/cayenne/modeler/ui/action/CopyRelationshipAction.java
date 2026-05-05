@@ -23,7 +23,7 @@ import java.util.Arrays;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 
 /**
  * Action for copying relationship(s)
@@ -63,10 +63,10 @@ public class CopyRelationshipAction extends CopyAction implements MultipleObject
     }
 
     @Override
-    public Object copy(ProjectController controller) {
-        Object[] rels = getProjectController().getSelectedObjRelationships();
+    public Object copy(ProjectSession session) {
+        Object[] rels = getProjectSession().getSelectedObjRelationships();
         if (rels == null || rels.length == 0) {
-            rels = getProjectController().getSelectedDbRelationships();
+            rels = getProjectSession().getSelectedDbRelationships();
         }
 
         if (rels != null && rels.length > 0) {

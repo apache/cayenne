@@ -27,7 +27,8 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.SQLTemplateDescriptor;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
 import org.apache.cayenne.modeler.util.EntityTreeFilter;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
@@ -60,7 +61,7 @@ import java.awt.Dimension;
 /**
  * Class configured to work with prefetches.
  */
-public class SQLTemplatePrefetchTab extends JPanel {
+public class SQLTemplatePrefetchTab extends ProjectPanel {
 
     private static final Dimension BROWSER_CELL_DIM = new Dimension(150, 100);
     private static final Dimension TABLE_DIM = new Dimension(460, 60);
@@ -68,7 +69,6 @@ public class SQLTemplatePrefetchTab extends JPanel {
     private static final String REAL_PANEL = "real";
     private static final String PLACEHOLDER_PANEL = "placeholder";
 
-    protected ProjectController mediator;
     protected SQLTemplateDescriptor sqlTemplate;
 
     protected MultiColumnBrowser browser;
@@ -77,8 +77,8 @@ public class SQLTemplatePrefetchTab extends JPanel {
     protected CardLayout cardLayout;
     protected JPanel messagePanel;
 
-    public SQLTemplatePrefetchTab(ProjectController mediator) {
-        this.mediator = mediator;
+    public SQLTemplatePrefetchTab(ProjectSession session) {
+        super(session);
 
         initView();
         initController();
@@ -88,11 +88,11 @@ public class SQLTemplatePrefetchTab extends JPanel {
         messagePanel = new JPanel(new BorderLayout());
         cardLayout = new CardLayout();
 
-        int defLocation = mediator.getApplication().getFrameController().getView().getHeight() / 2;
+        int defLocation = app().getFrame().getHeight() / 2;
 
         //As of CAY-888 #3 main pane is now a JSplitPane. Top component is a bit larger.
         JSplitPane mainPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        CMSplitPanePrefs.of(mediator.getApplication().getPreferencesRepository(), "sqlTemplate/prefetchSplit").bind(mainPanel, defLocation);
+        CMSplitPanePrefs.of(app().getPreferencesRepository(), "sqlTemplate/prefetchSplit").bind(mainPanel, defLocation);
 
         mainPanel.setTopComponent(createEditorPanel());
         mainPanel.setBottomComponent(createSelectorPanel());
@@ -112,7 +112,7 @@ public class SQLTemplatePrefetchTab extends JPanel {
     }
 
     protected void initFromModel() {
-        QueryDescriptor query = mediator.getSelectedQuery();
+        QueryDescriptor query = session().getSelectedQuery();
 
         if (query == null || !QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) {
             processInvalidModel("Unknown query.");
@@ -150,7 +150,7 @@ public class SQLTemplatePrefetchTab extends JPanel {
         prefetchBox.addItem(SelectQueryPrefetchTab.JOINT_PREFETCH_SEMANTICS);
         prefetchBox.addItem(SelectQueryPrefetchTab.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
 
-        prefetchBox.addActionListener(e -> mediator.setDirty(true));
+        prefetchBox.addActionListener(e -> session().setDirty(true));
 
         column.setCellEditor(new DefaultCellEditor(prefetchBox));
 
@@ -209,7 +209,7 @@ public class SQLTemplatePrefetchTab extends JPanel {
 
             addPrefetch(prefetch);
 
-            mediator.getApplication().getUndoManager().addEdit(new AddPrefetchUndoableEditForSqlTemplate(prefetch, SQLTemplatePrefetchTab.this));
+            app().getUndoManager().addEdit(new AddPrefetchUndoableEditForSqlTemplate(prefetch, SQLTemplatePrefetchTab.this));
         });
 
         JButton remove = new ModelerAbstractAction.CayenneToolbarButton(null, 3);
@@ -292,7 +292,7 @@ public class SQLTemplatePrefetchTab extends JPanel {
         table.setModel(createTableModel());
         setUpPrefetchBox(table.getColumnModel().getColumn(2));
 
-        mediator.fireQueryEvent(QueryEvent.ofChange(this, sqlTemplate));
+        session().fireQueryEvent(QueryEvent.ofChange(this, sqlTemplate));
     }
 
     public void removePrefetch(String prefetch) {
@@ -302,7 +302,7 @@ public class SQLTemplatePrefetchTab extends JPanel {
         table.setModel(createTableModel());
         setUpPrefetchBox(table.getColumnModel().getColumn(2));
 
-        mediator.fireQueryEvent(QueryEvent.ofChange(this, sqlTemplate));
+        session().fireQueryEvent(QueryEvent.ofChange(this, sqlTemplate));
     }
 
 }

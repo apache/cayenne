@@ -25,45 +25,46 @@ import org.apache.cayenne.modeler.event.display.DbAttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DbRelationshipDisplayEvent;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
+import org.apache.cayenne.modeler.toolkit.ProjectTabbedPane;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeAction;
 import org.apache.cayenne.modeler.ui.action.RemoveRelationshipAction;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.dbentity.main.DbEntityMainView;
 import org.apache.cayenne.modeler.ui.project.editor.dbentity.properties.DbAttributePanel;
 import org.apache.cayenne.modeler.ui.project.editor.dbentity.properties.DbEntityPropertiesView;
 import org.apache.cayenne.modeler.ui.project.editor.dbentity.properties.DbRelationshipPanel;
 
-import javax.swing.*;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
-import java.awt.*;
+import java.awt.Component;
 
-public class DbEntityView extends JTabbedPane {
+public class DbEntityView extends ProjectTabbedPane {
 
-    private final ProjectController controller;
     private final Component entityPanel;
     private final DbEntityPropertiesView attributeRelationshipTab;
     private int lastTabIndex;
 
-    public DbEntityView(ProjectController controller) {
-        this.controller = controller;
+    public DbEntityView(ProjectSession session) {
+        super(session);
 
         setTabPlacement(JTabbedPane.TOP);
 
-        this.entityPanel = new JScrollPane(new DbEntityMainView(controller));
+        this.entityPanel = new JScrollPane(new DbEntityMainView(session));
         addTab("Entity", entityPanel);
 
-        this.attributeRelationshipTab = new DbEntityPropertiesView(controller);
+        this.attributeRelationshipTab = new DbEntityPropertiesView(session);
         addTab("Properties", attributeRelationshipTab);
 
-        controller.addDbEntityDisplayListener(this::currentDbEntityChanged);
-        controller.addDbAttributeDisplayListener(this::currentDbAttributeChanged);
-        controller.addDbRelationshipDisplayListener(this::currentDbRelationshipChanged);
+        session.addDbEntityDisplayListener(this::currentDbEntityChanged);
+        session.addDbAttributeDisplayListener(this::currentDbAttributeChanged);
+        session.addDbRelationshipDisplayListener(this::currentDbRelationshipChanged);
 
         addChangeListener(this::stateChanged);
     }
 
     private void resetRemoveButtons() {
-        GlobalActions globalActions = controller.getApplication().getActionManager();
+        GlobalActions globalActions = app().getActionManager();
 
         globalActions.getAction(RemoveAttributeAction.class).setEnabled(false);
         globalActions.getAction(RemoveRelationshipAction.class).setEnabled(false);

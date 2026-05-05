@@ -23,7 +23,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
 import org.apache.cayenne.modeler.event.model.DbAttributeListener;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.CutAttributeRelationshipAction;
@@ -56,17 +56,17 @@ import java.util.List;
  */
 public class DbAttributePanel extends JPanel implements DbEntityDisplayListener, DbAttributeListener {
 
-    private final ProjectController controller;
+    private final ProjectSession session;
     private final CMTable table;
     private final DbEntityPropertiesView parentPanel;
 
-    public DbAttributePanel(ProjectController controller, DbEntityPropertiesView parentPanel) {
-        this.controller = controller;
+    public DbAttributePanel(ProjectSession session, DbEntityPropertiesView parentPanel) {
+        this.session = session;
         this.parentPanel = parentPanel;
 
         this.setLayout(new BorderLayout());
 
-        GlobalActions globalActions = controller.getApplication().getActionManager();
+        GlobalActions globalActions = session.app().getActionManager();
 
         // Create table with two columns and no rows.
         table = new CMTable();
@@ -87,8 +87,8 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
         TablePopupHandler.install(table, popup);
         add(new CMTablePanel(table), BorderLayout.CENTER);
 
-        controller.addDbEntityDisplayListener(this);
-        controller.addDbAttributeListener(this);
+        session.addDbEntityDisplayListener(this);
+        session.addDbAttributeListener(this);
 
         table.getSelectionModel().addListSelectionListener(this::valueChanged);
 
@@ -108,13 +108,13 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
         List<?> listAttrs = model.getObjectList();
         int[] newSel = new int[attrs.length];
 
-        controller.getApplication().getActionManager()
+        session.app().getActionManager()
                 .getAction(RemoveAttributeRelationshipAction.class)
                 .setCurrentSelectedPanel(parentPanel.getAttributePanel());
-        controller.getApplication().getActionManager()
+        session.app().getActionManager()
                 .getAction(CutAttributeRelationshipAction.class)
                 .setCurrentSelectedPanel(parentPanel.getAttributePanel());
-        controller.getApplication().getActionManager()
+        session.app().getActionManager()
                 .getAction(CopyAttributeRelationshipAction.class)
                 .setCurrentSelectedPanel(parentPanel.getAttributePanel());
 
@@ -169,7 +169,7 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
             cellEditor.stopCellEditing();
         }
 
-        DbAttributeTableModel model = new DbAttributeTableModel(ent, controller, this);
+        DbAttributeTableModel model = new DbAttributeTableModel(ent, session, this);
         table.setModel(model);
         table.setRowHeight(25);
         table.setRowMargin(3);
@@ -180,7 +180,7 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
 
         // Types.NULL makes no sense as a column type
         comboBox.removeItem("NULL");
-        AutoCompletion.enable(comboBox, controller::getSelectedDataMap);
+        AutoCompletion.enable(comboBox, session::getSelectedDataMap);
 
         TableColumn typeColumn = table.getColumnModel().getColumn(DbAttributeTableModel.DB_ATTRIBUTE_TYPE);
         typeColumn.setCellEditor(new CMComboBoxCellEditor(comboBox));
@@ -191,7 +191,7 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
         TableColumn scaleColumn = table.getColumnModel().getColumn(DbAttributeTableModel.DB_ATTRIBUTE_SCALE);
         scaleColumn.setCellEditor(new CMTextFieldCellEditor(new LimitedTextField(10)));
 
-        CMTablePrefs.of(controller.getApplication().getPreferencesRepository(), "dbEntity/attributeTable")
+        CMTablePrefs.of(session.app().getPreferencesRepository(), "dbEntity/attributeTable")
                 .bind(table, null, DbAttributeTableModel.DB_ATTRIBUTE_NAME);
     }
 
@@ -210,7 +210,7 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
                 parentPanel.getRelationshipPanel().getTable().getCellEditor().stopCellEditing();
             }
 
-            GlobalActions globalActions = controller.getApplication().getActionManager();
+            GlobalActions globalActions = session.app().getActionManager();
 
             globalActions.getAction(RemoveAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
             globalActions.getAction(CutAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
@@ -232,11 +232,11 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
             }
         }
 
-        controller.displayDbAttribute(new DbAttributeDisplayEvent(
+        session.displayDbAttribute(new DbAttributeDisplayEvent(
                 this,
-                controller.getSelectedDataDomain(),
-                controller.getSelectedDataMap(),
-                controller.getSelectedDbEntity(),
+                session.getSelectedDataDomain(),
+                session.getSelectedDataMap(),
+                session.getSelectedDbEntity(),
                 attrs));
 
         parentPanel.updateActions(attrs);

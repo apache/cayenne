@@ -21,57 +21,57 @@ package org.apache.cayenne.modeler.ui.project.editor.datadomain;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
+import org.apache.cayenne.modeler.toolkit.ProjectTabbedPane;
 import org.apache.cayenne.modeler.ui.action.ShowValidationConfigAction;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
-import org.apache.cayenne.modeler.ui.project.editor.datadomain.cgen.DataDomainCgenController;
-import org.apache.cayenne.modeler.ui.project.editor.datadomain.dbimport.DataDomainDbImportController;
+import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.cgen.DataDomainCgenTab;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.dbimport.DataDomainDbImportTab;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.DataDomainGraphTab;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ShowGraphEntityAction;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.main.DataDomainMainView;
-import org.apache.cayenne.modeler.ui.project.editor.datadomain.validation.ValidationTabController;
+import org.apache.cayenne.modeler.ui.project.editor.datadomain.validation.ValidationTab;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 
-public class DataDomainView extends JTabbedPane {
+public class DataDomainView extends ProjectTabbedPane {
 
     private final DataDomainGraphTab graphTab;
     private final JComponent cgenView;
-    private final DataDomainCgenController cgenController;
+    private final DataDomainCgenTab cgenTab;
     private final JComponent dbImportView;
-    private final DataDomainDbImportController dbImportController;
-    private final JComponent validationTabView;
-    private final ValidationTabController validationTabController;
+    private final DataDomainDbImportTab dbImportTab;
+    private final ValidationTab validationTab;
 
-    public DataDomainView(ProjectController controller) {
+    public DataDomainView(ProjectSession session) {
+        super(session);
 
         setTabPlacement(JTabbedPane.TOP);
 
         // add panels to tabs
         // note that those panels that have no internal scrollable tables
         // must be wrapped in a scroll pane
-        JScrollPane domainView = new JScrollPane(new DataDomainMainView(controller));
+        JScrollPane domainView = new JScrollPane(new DataDomainMainView(session));
         addTab("Main", domainView);
 
-        dbImportController = new DataDomainDbImportController(controller);
-        dbImportView = new JScrollPane(dbImportController.getView());
+        dbImportTab = new DataDomainDbImportTab(session);
+        dbImportView = new JScrollPane(dbImportTab);
         addTab("Db Import", dbImportView);
 
-        cgenController = new DataDomainCgenController(controller);
-        cgenView = new JScrollPane(cgenController.getView());
+        cgenTab = new DataDomainCgenTab(session);
+        cgenView = new JScrollPane(cgenTab);
         addTab("Class Generation", cgenView);
 
-        graphTab = new DataDomainGraphTab(controller);
+        graphTab = new DataDomainGraphTab(session);
         addTab("Graph", graphTab);
 
-        validationTabController = new ValidationTabController(controller);
-        validationTabView = validationTabController.getView();
-        addTab("Validation", validationTabView);
+        validationTab = new ValidationTab(session);
+        addTab("Validation", validationTab);
 
         addChangeListener(this::stateChanged);
-        controller.addDomainDisplayListener(this::currentDomainChanged);
-        controller.addObjEntityDisplayListener(this::onEntitySelected);
-        controller.addDbEntityDisplayListener(this::onEntitySelected);
+        session.addDomainDisplayListener(this::currentDomainChanged);
+        session.addObjEntityDisplayListener(this::onEntitySelected);
+        session.addDbEntityDisplayListener(this::onEntitySelected);
     }
 
     private void onEntitySelected(ObjEntityDisplayEvent e) {
@@ -90,11 +90,9 @@ public class DataDomainView extends JTabbedPane {
         if (getSelectedComponent() == graphTab) {
             graphTab.refresh();
         } else if (getSelectedComponent() == cgenView) {
-            cgenController.getView().initView();
+            cgenTab.initView();
         } else if (getSelectedComponent() == dbImportView) {
-            dbImportController.getView().initView();
-        } else if (getSelectedComponent() == validationTabView) {
-            validationTabController.getView().initView();
+            dbImportTab.initView();
         }
     }
 
@@ -106,7 +104,7 @@ public class DataDomainView extends JTabbedPane {
             fireStateChanged();
         }
         if (e.getSource() instanceof ShowValidationConfigAction) {
-            setSelectedComponent(validationTabView);
+            setSelectedComponent(validationTab);
         }
     }
 }

@@ -23,7 +23,7 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.ProjectController;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.undo.LinkDataMapUndoableEdit;
 
 import java.awt.event.ActionEvent;
@@ -46,8 +46,8 @@ public class LinkDataMapAction extends ModelerAbstractAction {
             return;
         }
 
-        ProjectController mediator = getProjectController();
-        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) mediator.getProject().getRootNode();
+        ProjectSession session = getProjectSession();
+        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) session.project().getRootNode();
         Collection<DataNodeDescriptor> unlinkedNodes = new ArrayList<>();
 
         // unlink map from any nodes
@@ -56,7 +56,7 @@ public class LinkDataMapAction extends ModelerAbstractAction {
         for (DataNodeDescriptor nextNode : dataChannelDescriptor.getNodeDescriptors()) {
             if (nextNode.getDataMapNames().contains(map.getName())) {
                 nextNode.getDataMapNames().remove(map.getName());
-                mediator.fireDataNodeEvent(DataNodeEvent.ofChange(this, nextNode));
+                session.fireDataNodeEvent(DataNodeEvent.ofChange(this, nextNode));
                 unlinkedNodes.add(nextNode);
             }
         }
@@ -66,11 +66,11 @@ public class LinkDataMapAction extends ModelerAbstractAction {
             node.getDataMapNames().add(map.getName());
 
             // announce DataNode change
-            mediator.fireDataNodeEvent(DataNodeEvent.ofChange(this, node));
+            session.fireDataNodeEvent(DataNodeEvent.ofChange(this, node));
         }
 
         application.getUndoManager().addEdit(
-                new LinkDataMapUndoableEdit(mediator, map, node, unlinkedNodes));
+                new LinkDataMapUndoableEdit(session, map, node, unlinkedNodes));
     }
 
     @Override
