@@ -22,6 +22,7 @@ package org.apache.cayenne.modeler.ui.welcome;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
+import org.apache.cayenne.modeler.toolkit.AppPanel;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.action.NewProjectAction;
 import org.apache.cayenne.modeler.ui.action.OpenProjectAction;
@@ -36,9 +37,8 @@ import java.util.List;
 /**
  * A panel shown when no project is open. User can quickly create new project or open an existing one.
  */
-public class WelcomeScreen extends JScrollPane implements RecentFileListListener, RecentFileListRenderer.OnFileClickListener {
+public class WelcomeScreen extends AppPanel implements RecentFileListListener, RecentFileListRenderer.OnFileClickListener {
 
-    private final Application application;
     private final GlobalActions actionManager;
 
     private final JList<String> recentProjectsList;
@@ -46,8 +46,8 @@ public class WelcomeScreen extends JScrollPane implements RecentFileListListener
     private final JPanel mainPanel;
 
     public WelcomeScreen(Application application) {
-        this.application = application;
-        this.actionManager = application.getActionManager();
+        super(application);
+        this.actionManager = app().getActionManager();
         this.mainPanel = new WelcomeScreenMainPanel();
         this.buttonsPanel = new BackgroundPanel("welcome/welcome-screen-left-bg.jpg");
         this.recentProjectsList = new JList<>();
@@ -56,10 +56,12 @@ public class WelcomeScreen extends JScrollPane implements RecentFileListListener
     }
 
     private void initLayout() {
-        setBorder(BorderFactory.createEmptyBorder());
         initButtonsPane();
         initFileListPane();
-        setViewportView(mainPanel);
+        JScrollPane scrollPane = new JScrollPane(mainPanel);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        setLayout(new BorderLayout());
+        add(scrollPane, BorderLayout.CENTER);
     }
 
     private void initFileListPane() {
@@ -124,7 +126,7 @@ public class WelcomeScreen extends JScrollPane implements RecentFileListListener
 
     @Override
     public void recentFileListChanged() {
-        List<File> arr = RecentProjectsPrefs.of(application.getPreferencesRepository()).getFiles();
+        List<File> arr = RecentProjectsPrefs.of(app().getPreferencesRepository()).getFiles();
         recentProjectsList.setModel(new RecentFileListModel(arr));
     }
 }

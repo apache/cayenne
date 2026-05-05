@@ -29,7 +29,7 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImpo
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DatabaseSchemaLoader;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportModel;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportView;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DraggableTreePanel;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.SourceTargetPanel;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.PrintColumnsBiFunction;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.PrintTablesBiFunction;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
@@ -65,14 +65,14 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
     }
 
     public void loadDbSchema(TreePath tablePath) {
-        DraggableTreePanel draggableTreePanel = view.getDraggableTreePanel();
+        SourceTargetPanel sourceTargetPanel = view.getDraggableTreePanel();
         view.getLoadDbSchemaProgress().setVisible(true);
         view.getLoadDbSchemaButton().setEnabled(false);
         Thread thread = new Thread(() -> {
             LoadDbSchemaAction.this.setEnabled(false);
             view.lockToolbarButtons();
-            draggableTreePanel.getMoveButton().setEnabled(false);
-            draggableTreePanel.getMoveInvertButton().setEnabled(false);
+            sourceTargetPanel.getMoveButton().setEnabled(false);
+            sourceTargetPanel.getMoveInvertButton().setEnabled(false);
             try {
 
                 DBConnector connectionInfo = getConnector(
@@ -117,36 +117,36 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
     }
 
     private void loadDataBase(DBConnector connectionInfo) throws Exception {
-        DraggableTreePanel draggableTreePanel = view.getDraggableTreePanel();
+        SourceTargetPanel sourceTargetPanel = view.getDraggableTreePanel();
         ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader(application.getDbAdapterFactory())
                 .load(connectionInfo, application.getClassLoader());
-        draggableTreePanel.getSourceTree()
+        sourceTargetPanel.getSourceTree()
                 .setEnabled(true);
-        draggableTreePanel.getSourceTree()
+        sourceTargetPanel.getSourceTree()
                 .translateReverseEngineeringToTree(databaseReverseEngineering, true);
-        draggableTreePanel
+        sourceTargetPanel
                 .bindReverseEngineeringToDatamap(getProjectSession().getSelectedDataMap(), databaseReverseEngineering);
-        ((DbImportModel) draggableTreePanel.getSourceTree().getModel()).reload();
+        ((DbImportModel) sourceTargetPanel.getSourceTree().getModel()).reload();
     }
 
     private void loadTables(DBConnector connectionInfo, TreePath tablePath) throws Exception {
-        DraggableTreePanel draggableTreePanel = view.getDraggableTreePanel();
+        SourceTargetPanel sourceTargetPanel = view.getDraggableTreePanel();
         ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader(application.getDbAdapterFactory())
                 .loadTables(connectionInfo,
                         application.getClassLoader(),
                         tablePath,
                         view.getTableTypes());
-        draggableTreePanel.getSourceTree()
+        sourceTargetPanel.getSourceTree()
                 .update(databaseReverseEngineering,
-                        new PrintTablesBiFunction(draggableTreePanel.getSourceTree()));
+                        new PrintTablesBiFunction(sourceTargetPanel.getSourceTree()));
     }
 
     private void loadColumns(DBConnector connectionInfo, TreePath tablePath) throws SQLException {
-        DraggableTreePanel draggableTreePanel = view.getDraggableTreePanel();
+        SourceTargetPanel sourceTargetPanel = view.getDraggableTreePanel();
         ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader(application.getDbAdapterFactory())
                 .loadColumns(connectionInfo, application.getClassLoader(), tablePath);
-        draggableTreePanel.getSourceTree()
+        sourceTargetPanel.getSourceTree()
                 .update(databaseReverseEngineering,
-                        new PrintColumnsBiFunction(draggableTreePanel.getSourceTree()));
+                        new PrintColumnsBiFunction(sourceTargetPanel.getSourceTree()));
     }
 }

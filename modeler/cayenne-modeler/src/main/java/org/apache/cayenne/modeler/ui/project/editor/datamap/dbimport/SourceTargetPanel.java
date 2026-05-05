@@ -41,6 +41,7 @@ import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
+import java.awt.BorderLayout;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -54,7 +55,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DraggableTreePanel extends JScrollPane {
+public class SourceTargetPanel extends JPanel {
 
     private static final int ROOT_LEVEL = 14;
     private static final int FIRST_LEVEL = 11;
@@ -74,10 +75,11 @@ public class DraggableTreePanel extends JScrollPane {
 
     private final ModelerAbstractAction.CayenneToolbarButton moveButton;
     private final ModelerAbstractAction.CayenneToolbarButton moveInvertButton;
+    private final JScrollPane scrollPane;
+    
     private ImportSourceTree importSourceTree;
 
-    public DraggableTreePanel(DbImportTree sourceTree, DbImportTree targetTree, DbImportActions actions) {
-        super(sourceTree);
+    public SourceTargetPanel(DbImportTree sourceTree, DbImportTree targetTree, DbImportActions actions) {
         this.targetTree = targetTree;
         this.sourceTree = sourceTree;
         this.actions = actions;
@@ -86,55 +88,13 @@ public class DraggableTreePanel extends JScrollPane {
         this.insertableLevels = new HashMap<>();
         this.moveButton = (ModelerAbstractAction.CayenneToolbarButton) actions.getMoveImportNodeAction().buildButton();
         this.moveInvertButton = (ModelerAbstractAction.CayenneToolbarButton) actions.getMoveInvertNodeAction().buildButton();
+        this.scrollPane = new JScrollPane(sourceTree);
+
         initLayout();
         initBindings();
     }
 
-    public void updateTree(DataMap dataMap) {
-        DbImportModel model = (DbImportModel) sourceTree.getModel();
-        model.reload();
-        if (databaseStructures.get(dataMap) != null) {
-            sourceTree.setReverseEngineering(databaseStructures.get(dataMap));
-            sourceTree.translateReverseEngineeringToTree(databaseStructures.get(dataMap), true);
-            sourceTree.setEnabled(true);
-        } else {
-            sourceTree.setEnabled(false);
-        }
-    }
-
-    private void initBindings() {
-        sourceTree.addKeyListener(new SourceTreeKeyListener());
-        sourceTree.setTransferHandler(new SourceTreeTransferHandler());
-        sourceTree.addTreeSelectionListener(new SourceTreeSelectionListener());
-        sourceTree.addMouseListener(new ResetFocusMouseAdapter());
-
-        targetTree.addKeyListener(new TargetTreeKeyListener());
-        targetTree.setTransferHandler(new TargetTreeTransferHandler());
-        targetTree.addTreeSelectionListener(new TargetTreeSelectionListener());
-        targetTree.setDragEnabled(true);
-        targetTree.setDropMode(DropMode.INSERT);
-    }
-
-    private boolean canBeInverted() {
-        DbImportTreeNode selectedElement = sourceTree.getSelectedNode();
-        if (selectedElement == null) {
-            return false;
-        }
-        return levels.get(selectedElement.getUserObject().getClass()) < SECOND_LEVEL;
-    }
-
     private void initLayout() {
-        initLevels();
-        sourceTree.setDragEnabled(true);
-        sourceTree.setCellRenderer(new ColorTreeRenderer());
-        sourceTree.setDropMode(DropMode.INSERT);
-        moveButton.setShowingText(true);
-        moveButton.setText(MOVE_BUTTON_LABEL);
-        moveInvertButton.setShowingText(true);
-        moveInvertButton.setText(MOVE_INV_BUTTON_LABEL);
-    }
-
-    private void initLevels() {
         levels.put(ReverseEngineering.class, ROOT_LEVEL);
         levels.put(Catalog.class, FIRST_LEVEL);
         levels.put(Schema.class, SECOND_LEVEL);
@@ -168,6 +128,54 @@ public class DraggableTreePanel extends JScrollPane {
         insertableLevels.put(IncludeTable.class, Arrays.asList(
                 IncludeColumn.class, ExcludeColumn.class
         ));
+
+        sourceTree.setDragEnabled(true);
+        sourceTree.setCellRenderer(new ColorTreeRenderer());
+        sourceTree.setDropMode(DropMode.INSERT);
+        moveButton.setShowingText(true);
+        moveButton.setText(MOVE_BUTTON_LABEL);
+        moveInvertButton.setShowingText(true);
+        moveInvertButton.setText(MOVE_INV_BUTTON_LABEL);
+
+        setLayout(new BorderLayout());
+        add(scrollPane, BorderLayout.CENTER);
+    }
+
+    private void initBindings() {
+        sourceTree.addKeyListener(new SourceTreeKeyListener());
+        sourceTree.setTransferHandler(new SourceTreeTransferHandler());
+        sourceTree.addTreeSelectionListener(new SourceTreeSelectionListener());
+        sourceTree.addMouseListener(new ResetFocusMouseAdapter());
+
+        targetTree.addKeyListener(new TargetTreeKeyListener());
+        targetTree.setTransferHandler(new TargetTreeTransferHandler());
+        targetTree.addTreeSelectionListener(new TargetTreeSelectionListener());
+        targetTree.setDragEnabled(true);
+        targetTree.setDropMode(DropMode.INSERT);
+    }
+
+    public void updateTree(DataMap dataMap) {
+        DbImportModel model = (DbImportModel) sourceTree.getModel();
+        model.reload();
+        if (databaseStructures.get(dataMap) != null) {
+            sourceTree.setReverseEngineering(databaseStructures.get(dataMap));
+            sourceTree.translateReverseEngineeringToTree(databaseStructures.get(dataMap), true);
+            sourceTree.setEnabled(true);
+        } else {
+            sourceTree.setEnabled(false);
+        }
+    }
+
+    private boolean canBeInverted() {
+        DbImportTreeNode selectedElement = sourceTree.getSelectedNode();
+        if (selectedElement == null) {
+            return false;
+        }
+        return levels.get(selectedElement.getUserObject().getClass()) < SECOND_LEVEL;
+    }
+
+    public void resetHorizontalScroll() {
+        scrollPane.getHorizontalScrollBar().setValue(0);
     }
 
     private boolean canBeMoved() {
@@ -259,7 +267,8 @@ public class DraggableTreePanel extends JScrollPane {
 
     private class SourceTreeKeyListener implements KeyListener {
         @Override
-        public void keyTyped(KeyEvent e) {}
+        public void keyTyped(KeyEvent e) {
+        }
 
         @Override
         public void keyPressed(KeyEvent e) {
@@ -271,12 +280,14 @@ public class DraggableTreePanel extends JScrollPane {
         }
 
         @Override
-        public void keyReleased(KeyEvent e) {}
+        public void keyReleased(KeyEvent e) {
+        }
     }
 
     private class TargetTreeKeyListener implements KeyListener {
         @Override
-        public void keyTyped(KeyEvent e) {}
+        public void keyTyped(KeyEvent e) {
+        }
 
         @Override
         public void keyPressed(KeyEvent e) {
@@ -286,7 +297,8 @@ public class DraggableTreePanel extends JScrollPane {
         }
 
         @Override
-        public void keyReleased(KeyEvent e) {}
+        public void keyReleased(KeyEvent e) {
+        }
     }
 
     private class TargetTreeSelectionListener implements TreeSelectionListener {
@@ -432,7 +444,7 @@ public class DraggableTreePanel extends JScrollPane {
     private class ResetFocusMouseAdapter extends MouseAdapter {
         @Override
         public void mouseClicked(MouseEvent e) {
-            if (sourceTree.getRowForLocation(e.getX(),e.getY()) == -1) {
+            if (sourceTree.getRowForLocation(e.getX(), e.getY()) == -1) {
                 sourceTree.setSelectionRow(-1);
                 moveInvertButton.setEnabled(false);
                 moveButton.setEnabled(false);

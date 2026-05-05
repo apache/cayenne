@@ -33,32 +33,36 @@ import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.DbImportActions;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
+import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Map;
 
-class ReverseEngineeringTreePanel extends JScrollPane {
+class ReverseEngineeringTreePanel extends JPanel {
 
     private final DbImportTree reverseEngineeringTree;
     private final DbImportTree dbSchemaTree;
 
     private final ProjectSession session;
     private final DbImportActions actions;
+    private final SourceTargetPanel sourceTargetPanel;
     private TreeToolbarPanel treeToolbar;
     private final Map<Class<?>, DefaultPopUpMenu> popups;
 
     ReverseEngineeringTreePanel(ProjectSession session, DbImportTree reverseEngineeringTree,
-                                DbImportTree dbSchemaTree, DbImportActions actions) {
-        super(reverseEngineeringTree);
+                                DbImportTree dbSchemaTree, SourceTargetPanel sourceTargetPanel,
+                                DbImportActions actions) {
         this.session = session;
         this.reverseEngineeringTree = reverseEngineeringTree;
         this.dbSchemaTree = dbSchemaTree;
+        this.sourceTargetPanel = sourceTargetPanel;
         this.actions = actions;
         this.popups = new HashMap<>();
         initLayout();
@@ -86,6 +90,8 @@ class ReverseEngineeringTreePanel extends JScrollPane {
         popups.put(IncludeProcedure.class, new DefaultPopUpMenu(actions));
         popups.put(ExcludeProcedure.class, new DefaultPopUpMenu(actions));
         changeIcons();
+        setLayout(new BorderLayout());
+        add(new JScrollPane(reverseEngineeringTree), BorderLayout.CENTER);
     }
 
     private void initBindings() {
@@ -153,8 +159,7 @@ class ReverseEngineeringTreePanel extends JScrollPane {
     private void scrollToNode(JTree tree, DbImportTreeNode node) {
         TreePath path = new TreePath(node.getPath());
         tree.scrollPathToVisible(path);
-        DraggableTreePanel parentPanel = ((DraggableTreePanel) dbSchemaTree.getParent().getParent());
-        parentPanel.getHorizontalScrollBar().setValue(0);
+        sourceTargetPanel.resetHorizontalScroll();
     }
 
     private ReverseEngineering getReverseEngineeringBySelectedMap() {
