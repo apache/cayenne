@@ -16,7 +16,7 @@ public class ErrorsController {
             LOGGER.error("CayenneModeler Error", th);
         }
 
-        new ErrorDialog(application, "CayenneModeler Error", th, true, false).setVisible(true);
+        new ErrorDialog(application, "CayenneModeler Error", th, true, false).open();
     }
 
     /**

@@ -67,14 +67,6 @@ public abstract class DefaultsUpdateDialog extends ProjectDialog {
         initBindings();
     }
 
-    public void open() {
-        pack();
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        centerOnOwner();
-        makeCloseableOnEscape();
-        setVisible(true);
-    }
-
     /**
      * @return true if "update all" radio is selected, false if "don't override existing".
      */

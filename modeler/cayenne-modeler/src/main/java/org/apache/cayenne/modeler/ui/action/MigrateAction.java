@@ -82,7 +82,7 @@ public class MigrateAction extends DBConnectionAwareAction {
                 app.getFrame(),
                 "Migrate DB Schema: Options",
                 connectWizard.getConnector(),
-                map, selectedCatalog, selectedSchema, mergerTokenFactoryProvider).startupAction();
+                map, selectedCatalog, selectedSchema, mergerTokenFactoryProvider).open();
     }
 
     protected DbActionOptionsDialog createDialog(Collection<String> catalogs, Collection<String> schemas,
@@ -125,13 +125,13 @@ public class MigrateAction extends DBConnectionAwareAction {
             return null;
         }
         DbActionOptionsDialog optionsDialog = getStartDialog(catalogs, schemas, currentCatalog, currentSchema);
-        optionsDialog.setVisible(true);
+        optionsDialog.open();
         while ((optionsDialog.getChoice() != DbActionOptionsDialog.CANCEL)) {
             if (optionsDialog.getChoice() == DbActionOptionsDialog.SELECT) {
                 return optionsDialog;
             }
             optionsDialog = createDialog(catalogs, schemas, currentCatalog, currentSchema, optionsDialog.getChoice());
-            optionsDialog.setVisible(true);
+            optionsDialog.open();
         }
 
         return null;

@@ -45,6 +45,7 @@ public class ValidateAction extends ModelerAbstractAction {
         super("Validate Project", application);
     }
 
+    @Override
     public KeyStroke getAcceleratorKey() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_V,
                 Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx() | InputEvent.SHIFT_DOWN_MASK);
@@ -62,10 +63,11 @@ public class ValidateAction extends ModelerAbstractAction {
 
         if (!validationResult.getFailures().isEmpty()) {
             showFailures(validationResult.getFailures());
-        }
-        else {
-            disposeDialog();
-            ProjectValidatorDialog.showOnSuccess(app);
+        } else {
+            if (dialog != null && dialog.isDisplayable()) {
+                dialog.dispose();
+            }
+            JOptionPane.showMessageDialog(app.getFrame(), "Cayenne project is valid.");
         }
     }
 
@@ -76,20 +78,16 @@ public class ValidateAction extends ModelerAbstractAction {
      */
     public void showFailures(List<ValidationFailure> failures) {
         if (dialog == null || !dialog.isDisplayable()) {
-            dialog = new ProjectValidatorDialog(getProjectSession(), app.getFrame());
+            dialog = new ProjectValidatorDialog(getProjectSession(), app.getFrame(), failures);
             dialog.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosed(WindowEvent e) {
                     dialog = null;
                 }
             });
-        }
-        dialog.showOnFailures(failures);
-    }
-
-    private void disposeDialog() {
-        if (dialog != null && dialog.isDisplayable()) {
-            dialog.dispose();
+            dialog.open();
+        } else {
+            dialog.refresh(failures);
         }
     }
 }

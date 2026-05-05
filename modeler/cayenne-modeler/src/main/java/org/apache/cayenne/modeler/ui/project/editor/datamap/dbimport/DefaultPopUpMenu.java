@@ -22,16 +22,13 @@ package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.DbImportActions;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JTree;
+import javax.swing.*;
 
 public class DefaultPopUpMenu extends JPopupMenu {
 
     protected JMenuItem delete;
     protected DbImportTreeNode selectedElement;
     protected DbImportTreeNode parentElement;
-    protected JTree tree;
     protected final DbImportActions actions;
 
     public DefaultPopUpMenu(DbImportActions actions) {
@@ -55,9 +52,5 @@ public class DefaultPopUpMenu extends JPopupMenu {
 
     public void setParentElement(DbImportTreeNode parentElement) {
         this.parentElement = parentElement;
-    }
-
-    public void setTree(JTree tree) {
-        this.tree = tree;
     }
 }

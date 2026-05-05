@@ -77,13 +77,6 @@ public class LockingUpdateDialog extends ProjectDialog {
         initBindings();
     }
 
-    public void open() {
-        pack();
-        centerOnOwner();
-        makeCloseableOnEscape();
-        setVisible(true);
-    }
-
     private void initLayout() {
         CellConstraints cc = new CellConstraints();
         FormLayout layout = new FormLayout(

@@ -149,14 +149,6 @@ public class DBGeneratorOptionsDialog extends ProjectDialog {
         sqlPreview.setText(textForSQL);
     }
 
-    public void startupAction() {
-        pack();
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        centerOnOwner();
-        makeCloseableOnEscape();
-        setVisible(true);
-    }
-
     private void initLayout() {
         getRootPane().setDefaultButton(generateButton);
 
@@ -320,7 +312,8 @@ public class DBGeneratorOptionsDialog extends ProjectDialog {
                 session,
                 app.getFrame(),
                 "Generate DB Schema: Connect to Database");
-        if (!connectWizard.startupAction()) {
+        connectWizard.open();
+        if (connectWizard.isCanceled()) {
             return;
         }
 

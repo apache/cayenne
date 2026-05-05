@@ -63,6 +63,7 @@ public class DBConnectorDuplicatorDialog extends AppDialog {
 
         initLayout();
         initBindings();
+        setResizable(false);
     }
 
     /**
@@ -70,11 +71,7 @@ public class DBConnectorDuplicatorDialog extends AppDialog {
      * null if the user cancelled.
      */
     public DBConnector startupAction() {
-        pack();
-        setResizable(false);
-        centerOnOwner();
-        makeCloseableOnEscape();
-        setVisible(true);
+        open();
         return createConnector();
     }
 

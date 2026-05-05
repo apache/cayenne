@@ -58,6 +58,6 @@ public class GenerateDBAction extends ModelerAbstractAction {
                 getProjectSession(),
                 app.getFrame(),
                 "Generate DB Schema: Options",
-                dataMaps).startupAction();
+                dataMaps).open();
     }
 }

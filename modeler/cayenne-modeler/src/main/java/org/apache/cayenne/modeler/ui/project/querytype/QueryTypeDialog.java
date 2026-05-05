@@ -78,14 +78,6 @@ public class QueryTypeDialog extends ProjectDialog {
         initBindings();
     }
 
-    public void open() {
-        pack();
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        centerOnOwner();
-        makeCloseableOnEscape();
-        setVisible(true);
-    }
-
     /**
      * Fires the standard "query added" notification sequence on the given session.
      * Used both internally on Create, and externally by paste handling.

@@ -105,14 +105,6 @@ public class InferRelationshipsDialog extends ProjectDialog {
         initBindings();
     }
 
-    public void open() {
-        // show dialog even on empty DataMap, as custom generation may still take advantage of it
-        pack();
-        centerOnOwner();
-        makeCloseableOnEscape();
-        setVisible(true);
-    }
-
     private void initLayout() {
         getRootPane().setDefaultButton(generateButton);
 

@@ -91,6 +91,18 @@ public abstract class AppDialog extends JDialog {
     }
 
     /**
+     * Standard dialog launch: pack, set dispose-on-close, center on owner, wire ESC, show.
+     * Blocks until the dialog is closed for modal dialogs.
+     */
+    public void open() {
+        pack();
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        centerOnOwner();
+        makeCloseableOnEscape();
+        setVisible(true);
+    }
+
+    /**
      * Logs the error and shows a modal error dialog anchored on this dialog.
      */
     protected void reportError(String title, Throwable t) {

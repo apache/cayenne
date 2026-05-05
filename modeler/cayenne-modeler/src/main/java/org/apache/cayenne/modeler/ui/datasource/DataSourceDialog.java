@@ -50,8 +50,8 @@ import java.util.Map;
 
 /**
  * Modal dialog for selecting/editing a saved DB Connector and testing the resulting
- * connection. Returns true from {@link #startupAction()} when the user chose a working
- * connector and clicked Continue, false on Cancel or test failure.
+ * connection. After {@link #open()} returns, call {@link #isCanceled()} to check whether
+ * the user confirmed a working connection or cancelled.
  */
 public class DataSourceDialog extends ProjectDialog {
 
@@ -80,14 +80,7 @@ public class DataSourceDialog extends ProjectDialog {
 
         initLayout();
         initBindings();
-    }
 
-    /**
-     * Pops up the dialog, blocks until closed, returns true if the user confirmed
-     * a working connection.
-     */
-    public boolean startupAction() {
-        canceled = true;
         refreshDataSources();
         initFavouriteDataSource();
 
@@ -98,13 +91,11 @@ public class DataSourceDialog extends ProjectDialog {
 
         editor.setConnector(connector);
 
-        pack();
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        centerOnOwner();
-        makeCloseableOnEscape();
-        setVisible(true);
+        this.canceled = true;
+    }
 
-        return !canceled;
+    public boolean isCanceled() {
+        return canceled;
     }
 
     public DBConnector getConnector() {

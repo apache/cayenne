@@ -121,7 +121,6 @@ class ReverseEngineeringTreePanel extends JPanel {
                     if (popupMenu != null) {
                         popupMenu.setSelectedElement(selectedElement);
                         popupMenu.setParentElement(selectedElement.getParent());
-                        popupMenu.setTree(reverseEngineeringTree);
                         popupMenu.show(e.getComponent(), e.getX(), e.getY());
                     }
                 } else if (reverseEngineeringTree.getSelectionPath() != null) {

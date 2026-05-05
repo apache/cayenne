@@ -104,7 +104,7 @@ public class ClasspathPrefsPanel extends AppPanel {
         addDirButton.addActionListener(e ->
                 chooseClassEntry(null, "Select Java Class Directory.", JFileChooser.DIRECTORIES_ONLY));
         addMvnButton.addActionListener(e ->
-                new MavenDependencyDialog(app, SwingUtilities.getWindowAncestor(this), this).setVisible(true));
+                new MavenDependencyDialog(app, SwingUtilities.getWindowAncestor(this), this).open());
         deleteEntryButton.addActionListener(e -> removeEntryClicked());
 
         DefaultFormBuilder sidebar = new DefaultFormBuilder(

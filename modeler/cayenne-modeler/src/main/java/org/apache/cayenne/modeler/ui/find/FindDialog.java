@@ -67,17 +67,6 @@ public class FindDialog extends AppDialog {
         initBindings();
     }
 
-    /**
-     * Packs, centers on owner, enables ESC to close, and shows the dialog.
-     */
-    public void open() {
-        pack();
-        centerOnOwner();
-        makeCloseableOnEscape();
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setVisible(true);
-    }
-
     private void initLayout() {
         table.getColumnModel().getColumn(0).setCellRenderer(new IconCellRenderer());
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

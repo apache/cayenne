@@ -173,14 +173,6 @@ public class ObjAttributeInfoDialog extends ProjectDialog implements TreeSelecti
         return saveButton;
     }
 
-    public void startupAction() {
-        pack();
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        centerOnOwner();
-        makeCloseableOnEscape();
-        setVisible(true);
-    }
-
     private void initLayout() {
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(

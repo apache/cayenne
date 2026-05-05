@@ -27,7 +27,6 @@ import org.apache.cayenne.modeler.toolkit.AppDialog;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
@@ -54,14 +53,9 @@ public class DbActionOptionsDialog extends AppDialog {
                                  Collection<String> catalogs, Collection<String> schemas,
                                  String currentCatalog, String currentSchema) throws HeadlessException {
         super(application, owner, title, ModalityType.APPLICATION_MODAL);
-        makeCloseableOnEscape();
         init();
         initController();
         initFromModel(catalogs, schemas, currentCatalog, currentSchema);
-
-        pack();
-        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        centerOnOwner();
     }
 
     protected void init() {

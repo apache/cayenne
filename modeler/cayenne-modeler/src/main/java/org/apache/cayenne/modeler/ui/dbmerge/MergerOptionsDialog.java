@@ -137,14 +137,6 @@ public class MergerOptionsDialog extends ProjectDialog {
         sqlPreview.setText(textForSQL);
     }
 
-    public void startupAction() {
-        pack();
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        centerOnOwner();
-        makeCloseableOnEscape();
-        setVisible(true);
-    }
-
     private void initLayout() {
         getRootPane().setDefaultButton(generateButton);
 

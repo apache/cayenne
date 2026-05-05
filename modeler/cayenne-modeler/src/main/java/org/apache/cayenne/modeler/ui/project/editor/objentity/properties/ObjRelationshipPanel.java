@@ -379,7 +379,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
         ObjRelationshipTableModel model = (ObjRelationshipTableModel) table.getModel();
         new ObjRelationshipInfoDialog(session, session.app().getFrame())
                 .modifyRelationship(model.getRelationship(row))
-                .startupAction();
+                .open();
 
         // This is required for a table to be updated properly
         table.cancelEditing();

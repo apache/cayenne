@@ -87,7 +87,7 @@ public class CreateRelationshipAction extends ModelerAbstractAction {
 
             new ObjRelationshipInfoDialog(getProjectSession(), app.getFrame())
                     .createRelationship(objEnt)
-                    .startupAction();
+                    .open();
 
         } else {
             DbEntity dbEnt = getProjectSession().getSelectedDbEntity();
@@ -95,7 +95,7 @@ public class CreateRelationshipAction extends ModelerAbstractAction {
 
                 new DbRelationshipDialog(getProjectSession(), app.getFrame())
                         .createNewRelationship(dbEnt)
-                        .startUp();
+                        .open();
             }
         }
     }

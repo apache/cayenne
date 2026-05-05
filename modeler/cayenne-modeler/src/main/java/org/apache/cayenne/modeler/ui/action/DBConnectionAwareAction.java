@@ -55,7 +55,8 @@ public abstract class DBConnectionAwareAction extends ModelerAbstractAction {
                 getProjectSession(),
                 app.getFrame(),
                 title);
-        if (!connectWizard.startupAction()) {
+        connectWizard.open();
+        if (connectWizard.isCanceled()) {
             return null;
         }
         return connectWizard;

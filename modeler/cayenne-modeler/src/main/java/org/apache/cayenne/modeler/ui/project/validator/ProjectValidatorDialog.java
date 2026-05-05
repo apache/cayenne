@@ -22,36 +22,23 @@ package org.apache.cayenne.modeler.ui.project.validator;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.ProjectDialog;
 import org.apache.cayenne.modeler.ui.action.DisableValidationInspectionAction;
 import org.apache.cayenne.modeler.ui.action.ShowValidationOptionAction;
 import org.apache.cayenne.modeler.ui.action.ValidateAction;
-import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.project.validation.Inspection;
 import org.apache.cayenne.project.validation.ProjectValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.Window;
-import java.util.Collections;
+import java.awt.*;
 import java.util.List;
 
 /**
@@ -60,38 +47,29 @@ import java.util.List;
  */
 public class ProjectValidatorDialog extends ProjectDialog {
 
-    public static final Color WARNING_COLOR = new Color(245, 194, 194);
+    private static final Color WARNING_COLOR = new Color(245, 194, 194);
 
     private final JTable problemsTable;
     private final JButton refreshButton;
     private final JButton closeButton;
 
-    private List<ValidationFailure> validationObjects = Collections.emptyList();
+    private List<ValidationFailure> validationObjects;
 
-    public ProjectValidatorDialog(ProjectSession session, Window owner) {
+    public ProjectValidatorDialog(ProjectSession session, Window owner, List<ValidationFailure> failures) {
         super(session, owner, "Validation Problems", ModalityType.MODELESS);
+        this.validationObjects = failures;
         this.problemsTable = new JTable();
         this.refreshButton = new JButton("Refresh");
         this.closeButton = new JButton("Close");
 
         initLayout();
         initBindings();
-
-        // TODO: use preferences
-        setSize(450, 350);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        centerOnOwner();
-        makeCloseableOnEscape();
+        problemsTable.setModel(new ValidatorTableModel());
     }
 
-    public void showOnFailures(List<ValidationFailure> failures) {
+    public void refresh(List<ValidationFailure> failures) {
         validationObjects = failures;
         problemsTable.setModel(new ValidatorTableModel());
-        setVisible(true);
-    }
-
-    public static void showOnSuccess(Application application) {
-        JOptionPane.showMessageDialog(application.getFrame(), "Cayenne project is valid.");
     }
 
     private void initLayout() {
@@ -121,16 +99,16 @@ public class ProjectValidatorDialog extends ProjectDialog {
         buttons.add(closeButton);
         buttons.add(refreshButton);
 
+        JPanel content = builder.getPanel();
+        content.setPreferredSize(new Dimension(450, 300));
+
         getContentPane().setLayout(new BorderLayout());
-        getContentPane().add(builder.getPanel(), BorderLayout.CENTER);
+        getContentPane().add(content, BorderLayout.CENTER);
         getContentPane().add(buttons, BorderLayout.SOUTH);
     }
 
     private void initBindings() {
-        closeButton.addActionListener(e -> {
-            setVisible(false);
-            dispose();
-        });
+        closeButton.addActionListener(e -> dispose());
         refreshButton.addActionListener(e ->
                 app.getActionManager().getAction(ValidateAction.class).actionPerformed(e));
         problemsTable.getSelectionModel().addListSelectionListener(e -> fireFailedObjectSelection());

@@ -68,15 +68,7 @@ public class TemplateEditorFindDialog extends AppDialog {
 
         initLayout();
         initBindings();
-    }
-
-    public void open() {
-        pack();
         setResizable(false);
-        centerOnOwner();
-        makeCloseableOnEscape();
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setVisible(true);
     }
 
     protected void initLayout() {

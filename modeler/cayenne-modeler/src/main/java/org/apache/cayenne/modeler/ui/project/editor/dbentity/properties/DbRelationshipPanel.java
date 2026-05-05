@@ -269,7 +269,7 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
         DbRelationship rel = model.getRelationship(row);
         new DbRelationshipDialog(session, session.app().getFrame())
                 .modifyRelationship(rel)
-                .startUp();
+                .open();
     }
 
     private void valueChanged(ListSelectionEvent e) {

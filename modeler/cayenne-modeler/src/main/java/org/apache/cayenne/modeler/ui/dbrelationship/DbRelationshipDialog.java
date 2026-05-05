@@ -152,24 +152,8 @@ public class DbRelationshipDialog extends ProjectDialog {
         return this;
     }
 
-    public void startUp() {
-        pack();
-        centerOnOwner();
-        makeCloseableOnEscape();
-        setVisible(true);
-        dispose();
-    }
-
     public Optional<DbRelationship> getRelationship() {
         return cancelPressed ? Optional.empty() : Optional.of(relationship);
-    }
-
-    @Override
-    public void setVisible(boolean b) {
-        if (b && cancelPressed) {
-            return;
-        }
-        super.setVisible(b);
     }
 
     private void initLayout() {
@@ -284,12 +268,11 @@ public class DbRelationshipDialog extends ProjectDialog {
             cancelPressed = false;
             save();
             dispose();
-            setVisible(false);
         });
 
         cancelButton.addActionListener(e -> {
             cancelPressed = true;
-            setVisible(false);
+            dispose();
         });
 
         addWindowListener(new WindowAdapter() {

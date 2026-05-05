@@ -434,7 +434,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
         new ObjAttributeInfoDialog(
                 session,
                 session.app().getFrame(),
-                row, model).startupAction();
+                row, model).open();
 
         // This is required for a table to be updated properly
         table.cancelEditing();

@@ -172,14 +172,6 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
         return this;
     }
 
-    public void startupAction() {
-        pack();
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        centerOnOwner();
-        makeCloseableOnEscape();
-        setVisible(true);
-    }
-
     private void initLayout() {
         getRootPane().setDefaultButton(saveButton);
         setLayout(new BorderLayout());
@@ -374,7 +366,7 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
 
         DbRelationshipDialog dialog =
                 new DbRelationshipDialog(session, this).createNewRelationship(dbEntity);
-        dialog.startUp();
+        dialog.open();
 
         Optional<DbRelationship> dbRelationship = dialog.getRelationship();
         if (dbRelationship.isPresent()) {

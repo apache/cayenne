@@ -60,8 +60,6 @@ class ErrorDialog extends AppDialog implements ActionListener {
                 title,
                 modal ? ModalityType.APPLICATION_MODAL : ModalityType.MODELESS);
 
-        makeCloseableOnEscape();
-
         setThrowable(Util.unwindException(throwable));
         setDetailed(detailed);
 
@@ -121,10 +119,6 @@ class ErrorDialog extends AppDialog implements ActionListener {
         JButton[] buttons = (showHide != null) ? new JButton[]{close, showHide}
                 : new JButton[]{close};
         pane.add(new CMButtonPanel(buttons), BorderLayout.SOUTH);
-
-        // prepare to display
-        this.pack();
-        this.centerOnOwner();
     }
 
     protected String infoHTML(Application application) {
@@ -183,6 +177,7 @@ class ErrorDialog extends AppDialog implements ActionListener {
         }
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == close) {
             this.dispose();

@@ -76,9 +76,6 @@ public class MavenDependencyDialog extends AppDialog {
 
         initLayout();
         initBindings();
-        pack();
-        centerOnOwner();
-        makeCloseableOnEscape();
     }
 
     private void initLayout() {

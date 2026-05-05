@@ -82,14 +82,6 @@ public class ValidationDialog extends AppDialog {
         initBindings();
     }
 
-    public void open() {
-        pack();
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        centerOnOwner();
-        makeCloseableOnEscape();
-        setVisible(true);
-    }
-
     private void initLayout() {
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(new FormLayout(
