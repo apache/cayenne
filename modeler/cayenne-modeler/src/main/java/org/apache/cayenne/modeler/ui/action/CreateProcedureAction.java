@@ -28,6 +28,7 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.undo.CreateProcedureUndoableEdit;
 
 import java.awt.event.ActionEvent;
@@ -35,7 +36,7 @@ import java.awt.event.ActionEvent;
 /**
  * Action class to create a new stored procedure mapping.
  */
-public class CreateProcedureAction extends ModelerAbstractAction {
+public class CreateProcedureAction extends AppAction {
 
     /**
      * Fires events when a procedure was added
@@ -52,7 +53,7 @@ public class CreateProcedureAction extends ModelerAbstractAction {
     }
 
     public CreateProcedureAction(Application application) {
-        super("Create Stored Procedure", application);
+        super(application, "Create Stored Procedure");
     }
 
     @Override

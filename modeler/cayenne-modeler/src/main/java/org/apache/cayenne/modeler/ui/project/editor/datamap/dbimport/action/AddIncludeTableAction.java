@@ -34,7 +34,7 @@ public class AddIncludeTableAction extends TreeManipulationAction {
     private static final String ICON_NAME = "icon-dbi-includeTable.png";
 
     public AddIncludeTableAction(Application application, DbImportTree tree) {
-        super(ACTION_NAME, application, tree);
+        super(application, ACTION_NAME, tree);
         insertableNodeClass = IncludeTable.class;
     }
 

@@ -23,7 +23,7 @@ import org.apache.cayenne.modeler.log.LogAppender;
 import org.apache.cayenne.modeler.toolkit.border.TopBorder;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.toolkit.AppPanel;
-import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.action.ShowLogConsoleAction;
 import org.apache.cayenne.util.Util;
 
@@ -86,9 +86,9 @@ public class LogConsole extends AppPanel implements LogAppender {
     public LogConsole(Application app) {
         super(app);
         this.logView = new JTextPane();
-        this.clearItem = new ModelerAbstractAction.CayenneToolbarButton(null, 0);
-        this.copyItem = new ModelerAbstractAction.CayenneToolbarButton(null, 0);
-        this.closeItem = new ModelerAbstractAction.CayenneToolbarButton(null, 0);
+        this.clearItem = new AppAction.CayenneToolbarButton(null, 0);
+        this.copyItem = new AppAction.CayenneToolbarButton(null, 0);
+        this.closeItem = new AppAction.CayenneToolbarButton(null, 0);
 
         initLayout();
         initBindings();

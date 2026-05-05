@@ -35,7 +35,7 @@ import org.apache.cayenne.modeler.ui.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.CutAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.DbEntityCounterpartAction;
 import org.apache.cayenne.modeler.ui.action.DbEntitySyncAction;
-import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.action.PasteAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeRelationshipAction;
 import org.apache.cayenne.modeler.project.ProjectSession;
@@ -57,7 +57,7 @@ public class DbEntityPropertiesView extends ProjectPanel implements DbEntityDisp
 
     public DbEntityPropertiesView(ProjectSession session) {
         super(session);
-        this.editButton = new ModelerAbstractAction.CayenneToolbarButton(null, 0);
+        this.editButton = new AppAction.CayenneToolbarButton(null, 0);
         this.attributePanel = new DbAttributePanel(session, this);
         this.relationshipPanel = new DbRelationshipPanel(session, this);
         this.splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, attributePanel, relationshipPanel);

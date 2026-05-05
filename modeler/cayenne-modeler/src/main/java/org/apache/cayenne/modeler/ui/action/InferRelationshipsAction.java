@@ -20,14 +20,15 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.autorelationship.InferRelationshipsDialog;
 
 import java.awt.event.ActionEvent;
 
-public class InferRelationshipsAction extends ModelerAbstractAction {
+public class InferRelationshipsAction extends AppAction {
 
     public InferRelationshipsAction(Application application) {
-        super("Infer Relationships", application);
+        super(application, "Infer Relationships");
     }
 
     @Override

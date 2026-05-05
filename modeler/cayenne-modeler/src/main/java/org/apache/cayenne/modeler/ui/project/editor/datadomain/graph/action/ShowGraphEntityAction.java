@@ -28,21 +28,21 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
-import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
 
 /**
  * Action that shows entity on the graph
  */
-public class ShowGraphEntityAction extends ModelerAbstractAction {
+public class ShowGraphEntityAction extends AppAction {
 
     public static String getActionName() {
         return "ShowGraphEntity";
     }
 
     public ShowGraphEntityAction(Application application) {
-        super(getActionName(), application, "Show on Graph");
+        super(application, getActionName(), "Show on Graph");
         setEnabled(true);
     }
 

@@ -22,6 +22,7 @@ import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.CallbackType;
 import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
 import org.apache.cayenne.modeler.undo.CreateCallbackMethodUndoableEdit;
@@ -32,10 +33,10 @@ import java.awt.event.ActionEvent;
 /**
  * Action class for creating callback methods on ObjEntity
  */
-public class CreateCallbackMethodAction extends ModelerAbstractAction {
+public class CreateCallbackMethodAction extends AppAction {
 
     public CreateCallbackMethodAction(Application application) {
-        super("Create callback method", application);
+        super(application, "Create callback method");
     }
 
     /**

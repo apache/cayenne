@@ -45,7 +45,7 @@ import org.apache.cayenne.modeler.ui.action.CopyProcedureParameterAction;
 import org.apache.cayenne.modeler.ui.action.CreateProcedureParameterAction;
 import org.apache.cayenne.modeler.ui.action.CutAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.CutProcedureParameterAction;
-import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.action.PasteAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.RemoveProcedureParameterAction;
@@ -119,13 +119,13 @@ public class ProcedureParameterTab extends ProjectPanel implements ProcedurePara
         Icon up = IconFactory.buildIcon("icon-up.png");
         Icon down = IconFactory.buildIcon("icon-down.png");
 
-        moveUp = new ModelerAbstractAction.CayenneToolbarButton(null, 1);
+        moveUp = new AppAction.CayenneToolbarButton(null, 1);
         moveUp.setIcon(up);
         moveUp.setDisabledIcon(IconFactory.disabledIcon(up));
         moveUp.setToolTipText("Move Parameter Up");
         toolBar.add(moveUp);
 
-        moveDown = new ModelerAbstractAction.CayenneToolbarButton(null, 3);
+        moveDown = new AppAction.CayenneToolbarButton(null, 3);
         moveDown.setIcon(down);
         moveDown.setDisabledIcon(IconFactory.disabledIcon(down));
         moveDown.setToolTipText("Move Parameter Down");

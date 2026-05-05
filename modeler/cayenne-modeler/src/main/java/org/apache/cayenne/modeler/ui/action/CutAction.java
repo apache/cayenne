@@ -20,6 +20,7 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,14 +30,14 @@ import java.awt.event.KeyEvent;
 /**
  * Action for cutting entities, queries etc.
  */
-public class CutAction extends ModelerAbstractAction {
+public class CutAction extends AppAction {
 
     public CutAction(Application application) {
-        this("Cut", application);
+        this(application, "Cut");
     }
 
-    protected CutAction(String name, Application application) {
-        super(name, application);
+    protected CutAction(Application application, String name) {
+        super(application, name);
     }
 
     @Override

@@ -22,6 +22,7 @@ package org.apache.cayenne.modeler.ui.action;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.dbgen.DBGeneratorOptionsDialog;
 import org.apache.cayenne.project.Project;
 
@@ -32,14 +33,14 @@ import java.util.Collection;
 /**
  * Action that generates database tables from a DataMap.
  */
-public class GenerateDBAction extends ModelerAbstractAction {
+public class GenerateDBAction extends AppAction {
 
     public static String getActionName() {
         return "Generate Database Schema";
     }
 
     public GenerateDBAction(Application application) {
-        super(getActionName(), application);
+        super(application, getActionName());
     }
 
     public void performAction(ActionEvent e) {

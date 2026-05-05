@@ -41,7 +41,7 @@ public class CutProcedureParameterAction extends CutAction implements MultipleOb
     }
 
     public CutProcedureParameterAction(Application application) {
-        super(ACTION_NAME, application);
+        super(application, ACTION_NAME);
     }
 
     /**

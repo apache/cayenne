@@ -29,7 +29,7 @@ import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.DbImportActions;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.DragAndDropNodeAction;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.TreeManipulationAction;
@@ -73,8 +73,8 @@ public class SourceTargetPanel extends JPanel {
     private final Map<Class<?>, Integer> levels;
     private final Map<Class<?>, List<Class<?>>> insertableLevels;
 
-    private final ModelerAbstractAction.CayenneToolbarButton moveButton;
-    private final ModelerAbstractAction.CayenneToolbarButton moveInvertButton;
+    private final AppAction.CayenneToolbarButton moveButton;
+    private final AppAction.CayenneToolbarButton moveInvertButton;
     private final JScrollPane scrollPane;
 
     private ImportSourceTree importSourceTree;
@@ -86,8 +86,8 @@ public class SourceTargetPanel extends JPanel {
         this.databaseStructures = new HashMap<>();
         this.levels = new HashMap<>();
         this.insertableLevels = new HashMap<>();
-        this.moveButton = (ModelerAbstractAction.CayenneToolbarButton) actions.getMoveImportNodeAction().buildButton();
-        this.moveInvertButton = (ModelerAbstractAction.CayenneToolbarButton) actions.getMoveInvertNodeAction().buildButton();
+        this.moveButton = (AppAction.CayenneToolbarButton) actions.getMoveImportNodeAction().buildButton();
+        this.moveInvertButton = (AppAction.CayenneToolbarButton) actions.getMoveInvertNodeAction().buildButton();
         this.scrollPane = new JScrollPane(sourceTree);
 
         initLayout();

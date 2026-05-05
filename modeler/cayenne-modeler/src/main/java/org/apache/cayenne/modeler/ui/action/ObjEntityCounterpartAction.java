@@ -30,7 +30,7 @@ public class ObjEntityCounterpartAction extends BaseViewEntityAction {
     }
 
     public ObjEntityCounterpartAction(Application application) {
-        super(getActionName(), application);
+        super(application, getActionName());
     }
 
     public String getIconName() {

@@ -19,19 +19,20 @@
 package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.project.tree.treefilter.TreeFilterPopup;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
-public class FilterAction extends ModelerAbstractAction {
+public class FilterAction extends AppAction {
 
     public static String getActionName() {
         return "Filter tree";
     }
 
     public FilterAction(Application application) {
-        super(getActionName(), application);
+        super(application, getActionName());
     }
 
     @Override

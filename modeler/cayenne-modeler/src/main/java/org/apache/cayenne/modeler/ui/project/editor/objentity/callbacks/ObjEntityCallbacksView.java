@@ -36,7 +36,7 @@ import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.ui.action.CopyCallbackMethodAction;
 import org.apache.cayenne.modeler.ui.action.CreateCallbackMethodAction;
 import org.apache.cayenne.modeler.ui.action.CutCallbackMethodAction;
-import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.action.PasteAction;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.ui.action.RemoveCallbackMethodAction;
@@ -178,7 +178,7 @@ public class ObjEntityCallbacksView extends ProjectPanel {
         return null;
     }
 
-    private ModelerAbstractAction getCreateCallbackMethodAction() {
+    private AppAction getCreateCallbackMethodAction() {
         return app.getActionManager().getAction(CreateCallbackMethodAction.class);
     }
 

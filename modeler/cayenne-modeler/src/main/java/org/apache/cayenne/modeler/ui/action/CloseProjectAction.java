@@ -21,47 +21,34 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.unsavedchanges.UnsavedChangesDialog;
 
 import java.awt.event.ActionEvent;
 
 
-public class ProjectAction extends ModelerAbstractAction {
+public class CloseProjectAction extends AppAction {
 
-    public static String getActionName() {
-        return "Close Project";
+    public CloseProjectAction(Application application) {
+        super(application, "Close Project");
     }
 
-    public ProjectAction(Application application) {
-        super(getActionName(), application);
-    }
-
-    /**
-     * Constructor for ProjectAction.
-     *
-     * @param name
-     */
-    public ProjectAction(String name, Application application) {
-        super(name, application);
-    }
-
-    /**
-     * Closes current project.
-     */
+    @Override
     public void performAction(ActionEvent e) {
-        closeProject(true);
+        closeProject(app, true);
     }
 
     /**
      * Returns true if successfully closed project, false otherwise.
      */
-    public boolean closeProject(boolean checkUnsaved) {
+    public static boolean closeProject(Application app, boolean checkUnsaved) {
         // check if there is a project...
-        if (getProjectSession() == null || getProjectSession().project() == null) {
+        ProjectSession session = app.getFrame().getProjectSession();
+        if (session == null || session.project() == null) {
             return true;
         }
 
-        if (checkUnsaved && !checkSaveOnClose()) {
+        if (checkUnsaved && !checkSaveOnClose(true, app)) {
             return false;
         }
 
@@ -74,8 +61,8 @@ public class ProjectAction extends ModelerAbstractAction {
     /**
      * Returns false if cancel closing the window, true otherwise.
      */
-    public boolean checkSaveOnClose() {
-        ProjectSession session = getProjectSession();
+    public static boolean checkSaveOnClose(Object source, Application app) {
+        ProjectSession session = app.getFrame().getProjectSession();
         if (session != null && session.isDirty()) {
             UnsavedChangesDialog dialog = new UnsavedChangesDialog(app.getFrame());
             dialog.show();
@@ -86,27 +73,19 @@ public class ProjectAction extends ModelerAbstractAction {
             } else if (dialog.shouldSave()) {
                 // save changes and close
                 ActionEvent e = new ActionEvent(
-                        this,
+                        source,
                         ActionEvent.ACTION_PERFORMED,
                         "SaveAll");
                 app
                         .getActionManager()
                         .getAction(SaveAction.class)
                         .actionPerformed(e);
-                if (session.isDirty()) {
-                    // save was canceled... do not close
-                    return false;
-                }
+
+                // save was canceled... do not close
+                return !session.isDirty();
             }
         }
 
-        return true;
-    }
-
-    /**
-     * Always returns true.
-     */
-    public boolean enableForPath(Object object) {
         return true;
     }
 }

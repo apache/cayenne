@@ -20,14 +20,15 @@
 package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.about.AboutFrame;
 
 import java.awt.event.ActionEvent;
 
-public class AboutAction extends ModelerAbstractAction {
+public class AboutAction extends AppAction {
 
     public AboutAction(Application application) {
-        super("About CayenneModeler", application);
+        super(application, "About CayenneModeler");
     }
 
     @Override

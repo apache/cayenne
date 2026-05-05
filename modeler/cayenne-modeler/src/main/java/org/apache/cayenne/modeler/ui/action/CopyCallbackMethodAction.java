@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.action;
 
-import java.util.Arrays;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
+
+import java.util.Arrays;
 
 public class CopyCallbackMethodAction extends CopyAction implements MultipleObjectsAction {
 
@@ -43,7 +43,7 @@ public class CopyCallbackMethodAction extends CopyAction implements MultipleObje
     }
 
     public CopyCallbackMethodAction(Application application) {
-        super(ACTION_NAME, application);
+        super(application, ACTION_NAME);
     }
 
     /**

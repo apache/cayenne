@@ -45,7 +45,7 @@ public class CopyProcedureParameterAction extends CopyAction implements Multiple
     }
 
     public CopyProcedureParameterAction(Application application) {
-        super(ACTION_NAME, application);
+        super(application, ACTION_NAME);
     }
 
     /**

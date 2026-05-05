@@ -23,17 +23,17 @@ import java.awt.event.ActionEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.DataDomainGraphTab;
 import org.apache.cayenne.modeler.graph.GraphBuilder;
-import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.jgraph.JGraph;
 
 /**
  * Action for zooming out graph
  */
-public class ZoomOutAction extends ModelerAbstractAction {
+public class ZoomOutAction extends AppAction {
     private final DataDomainGraphTab dataDomainGraphTab;
     
     public ZoomOutAction(DataDomainGraphTab dataDomainGraphTab, Application application) {
-        super("Zoom Out", application);
+        super(application, "Zoom Out");
         this.dataDomainGraphTab = dataDomainGraphTab;
         setEnabled(true);
     }

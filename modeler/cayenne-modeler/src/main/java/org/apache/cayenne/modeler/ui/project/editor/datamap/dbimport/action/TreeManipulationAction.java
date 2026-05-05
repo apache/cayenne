@@ -32,7 +32,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportTree;
 import org.apache.cayenne.modeler.undo.DbImportTreeUndoableEdit;
-import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +45,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class TreeManipulationAction extends ModelerAbstractAction {
+public abstract class TreeManipulationAction extends AppAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TreeManipulationAction.class);
 
@@ -61,8 +61,8 @@ public abstract class TreeManipulationAction extends ModelerAbstractAction {
     protected String name;
     protected boolean updateSelected;
 
-    public TreeManipulationAction(String name, Application application, DbImportTree tree) {
-        super(name, application);
+    public TreeManipulationAction(Application app, String name, DbImportTree tree) {
+        super(app, name);
         this.tree = tree;
         this.levels = initLevels();
     }
@@ -71,7 +71,7 @@ public abstract class TreeManipulationAction extends ModelerAbstractAction {
         if (!isMultipleAction) {
             updateAfterInsert();
         }
-        if ((!isMultipleAction) && (!insertableNodeName.equals(""))) {
+        if ((!isMultipleAction) && (!insertableNodeName.isEmpty())) {
             putReverseEngineeringToUndoManager(reverseEngineeringOldCopy);
         }
     }

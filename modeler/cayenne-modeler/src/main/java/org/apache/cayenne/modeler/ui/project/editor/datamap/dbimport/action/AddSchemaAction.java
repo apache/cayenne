@@ -35,7 +35,7 @@ public class AddSchemaAction extends TreeManipulationAction {
     private static final String ICON_NAME = "icon-dbi-schema.png";
 
     public AddSchemaAction(Application application, DbImportTree tree) {
-        super(ACTION_NAME, application, tree);
+        super(application, ACTION_NAME, tree);
         insertableNodeClass = Schema.class;
     }
 

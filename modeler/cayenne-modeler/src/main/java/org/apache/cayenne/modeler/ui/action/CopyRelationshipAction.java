@@ -46,7 +46,7 @@ public class CopyRelationshipAction extends CopyAction implements MultipleObject
     }
 
     public CopyRelationshipAction(Application application) {
-        super(ACTION_NAME, application);
+        super(application, ACTION_NAME);
     }
 
     /**

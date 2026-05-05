@@ -25,7 +25,7 @@ import org.apache.cayenne.modeler.project.ProjectSession;
 public class NavigateBackwardAction extends NavigateAction {
 
     public NavigateBackwardAction(Application application) {
-        super("Move Backward", application);
+        super(application, "Move Backward");
     }
 
     @Override

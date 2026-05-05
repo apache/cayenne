@@ -33,7 +33,7 @@ public class AddCatalogAction extends TreeManipulationAction {
     private static final String ICON_NAME = "icon-dbi-catalog.png";
 
     public AddCatalogAction(Application application, DbImportTree tree) {
-        super(ACTION_NAME, application, tree);
+        super(application, ACTION_NAME, tree);
         insertableNodeClass = Catalog.class;
     }
 

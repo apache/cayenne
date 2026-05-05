@@ -20,6 +20,7 @@
 package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.project.validator.ProjectValidatorDialog;
 import org.apache.cayenne.project.validation.ProjectValidator;
 import org.apache.cayenne.validation.ValidationFailure;
@@ -37,12 +38,12 @@ import java.util.List;
 /**
  * UI action that performs full project validation.
  */
-public class ValidateAction extends ModelerAbstractAction {
+public class ValidateAction extends AppAction {
 
     private ProjectValidatorDialog dialog;
 
     public ValidateAction(Application application) {
-        super("Validate Project", application);
+        super(application, "Validate Project");
     }
 
     @Override

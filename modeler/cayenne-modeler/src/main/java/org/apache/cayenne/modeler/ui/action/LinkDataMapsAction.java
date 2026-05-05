@@ -24,16 +24,17 @@ import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.undo.LinkDataMapsUndoableEdit;
 
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class LinkDataMapsAction extends ModelerAbstractAction {
+public class LinkDataMapsAction extends AppAction {
     
     public LinkDataMapsAction(Application application) {
-        super("Link unlinked DataMaps", application);
+        super(application, "Link unlinked DataMaps");
     }
 
     @Override

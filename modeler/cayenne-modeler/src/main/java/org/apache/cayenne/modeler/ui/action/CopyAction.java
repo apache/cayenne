@@ -33,6 +33,7 @@ import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
 import org.apache.cayenne.modeler.toolkit.copypaste.CMTransferable;
 
@@ -45,24 +46,20 @@ import java.awt.event.KeyEvent;
 /**
  * Action for copying entities, queries etc. into system buffer
  */
-public class CopyAction extends ModelerAbstractAction {
-
-    public static String getActionName() {
-        return "Copy";
-    }
+public class CopyAction extends AppAction {
 
     /**
      * Constructor for CopyAction
      */
     public CopyAction(Application application) {
-        this(getActionName(), application);
+        this(application, "Copy");
     }
 
     /**
      * Constructor for descendants
      */
-    protected CopyAction(String name, Application application) {
-        super(name, application);
+    protected CopyAction(Application application, String name) {
+        super(application, name);
     }
 
     @Override

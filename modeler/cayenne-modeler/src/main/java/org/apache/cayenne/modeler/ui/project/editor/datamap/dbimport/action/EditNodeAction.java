@@ -38,7 +38,7 @@ public class EditNodeAction extends TreeManipulationAction {
     private String actionName;
 
     public EditNodeAction(Application application, DbImportTree tree) {
-        super(ACTION_NAME, application, tree);
+        super(application, ACTION_NAME, tree);
     }
 
     public String getIconName() {

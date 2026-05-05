@@ -19,15 +19,12 @@
 package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 
 import java.awt.event.ActionEvent;
 
-public class CollapseTreeAction extends ModelerAbstractAction {
+public class CollapseTreeAction extends AppAction {
     private final static String COLLAPSE = "collapse";
-
-    public static String getActionName() {
-        return "Collapse tree";
-    }
 
     @Override
     public String getIconName() {
@@ -35,7 +32,7 @@ public class CollapseTreeAction extends ModelerAbstractAction {
     }
 
     public CollapseTreeAction(Application application) {
-        super(getActionName(), application);
+        super(application, "Collapse tree");
     }
 
     @Override

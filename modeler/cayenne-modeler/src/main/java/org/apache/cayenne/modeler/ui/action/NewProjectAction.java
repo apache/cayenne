@@ -23,8 +23,9 @@ import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.MainFrame;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
+import org.apache.cayenne.modeler.toolkit.AppAction;
+import org.apache.cayenne.modeler.ui.MainFrame;
 import org.apache.cayenne.project.Project;
 
 import javax.swing.*;
@@ -32,10 +33,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-public class NewProjectAction extends ProjectAction {
+public class NewProjectAction extends AppAction {
 
     public NewProjectAction(Application application) {
-        super("New Project", application);
+        super(application, "New Project");
     }
 
     @Override
@@ -53,7 +54,7 @@ public class NewProjectAction extends ProjectAction {
 
         MainFrame controller = app.getFrame();
         // Save and close (if needed) currently open project.
-        if (getCurrentProject() != null && !closeProject(true)) {
+        if (getCurrentProject() != null && !CloseProjectAction.closeProject(app, true)) {
             return;
         }
 

@@ -19,7 +19,7 @@
 package org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.toolkit.filechooser.CMFileChooserPrefs;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.DataDomainGraphTab;
 import org.apache.cayenne.modeler.util.FileFilters;
@@ -39,13 +39,13 @@ import java.io.OutputStream;
 /**
  * Action for saving graph as image
  */
-public class SaveAsImageAction extends ModelerAbstractAction {
+public class SaveAsImageAction extends AppAction {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SaveAsImageAction.class);
 
 	private final DataDomainGraphTab dataDomainGraphTab;
 
 	public SaveAsImageAction(DataDomainGraphTab dataDomainGraphTab, Application application) {
-		super("Save As Image", application);
+		super(application, "Save As Image");
 		this.dataDomainGraphTab = dataDomainGraphTab;
 		setEnabled(true);
 	}

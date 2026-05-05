@@ -52,6 +52,7 @@ import org.apache.cayenne.modeler.event.display.ObjRelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.find.FindDialog;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
@@ -71,7 +72,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-public class FindAction extends ModelerAbstractAction {
+public class FindAction extends AppAction {
 
     /**
      * Result sort priority based on result type
@@ -99,7 +100,7 @@ public class FindAction extends ModelerAbstractAction {
     }
 
     public FindAction(Application application) {
-        super("Find", application);
+        super(application, "Find");
     }
 
     /**

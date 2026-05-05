@@ -25,7 +25,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.PreferencesRepository;
 import org.apache.cayenne.modeler.toolkit.AppPanel;
-import org.apache.cayenne.modeler.ui.action.ProjectAction;
+import org.apache.cayenne.modeler.ui.action.CloseProjectAction;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -100,8 +100,7 @@ public class MorePrefsPanel extends AppPanel {
         // Close the open project first (with the standard unsaved-changes
         // prompt). closeProject is a no-op when no project is open. If the user
         // cancels the save prompt, abort the wipe entirely.
-        ProjectAction projectAction = app.getActionManager().getAction(ProjectAction.class);
-        if (!projectAction.closeProject(true)) {
+        if (!CloseProjectAction.closeProject(app, true)) {
             return;
         }
 

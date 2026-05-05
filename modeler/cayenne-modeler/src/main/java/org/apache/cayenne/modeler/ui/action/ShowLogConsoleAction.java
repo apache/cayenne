@@ -19,6 +19,7 @@
 package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.logconsole.LogConsolePrefs;
 
 import javax.swing.Action;
@@ -29,10 +30,10 @@ import java.awt.event.ActionEvent;
  * {@link Action#SELECTED_KEY} so that any bound checkbox menu item or toggle
  * stays in sync regardless of where the toggle originates.
  */
-public class ShowLogConsoleAction extends ModelerAbstractAction {
+public class ShowLogConsoleAction extends AppAction {
 
     public ShowLogConsoleAction(Application application) {
-        super("Show Log Console", application);
+        super(application, "Show Log Console");
         putValue(Action.SELECTED_KEY, isConsoleShown());
     }
 

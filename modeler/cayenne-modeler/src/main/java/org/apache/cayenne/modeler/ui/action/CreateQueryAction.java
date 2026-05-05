@@ -25,15 +25,16 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.project.querytype.QueryTypeDialog;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
 
 import java.awt.event.ActionEvent;
 
-public class CreateQueryAction extends ModelerAbstractAction {
+public class CreateQueryAction extends AppAction {
 
     public CreateQueryAction(Application application) {
-        super("Create Query", application);
+        super(application, "Create Query");
     }
 
     @Override

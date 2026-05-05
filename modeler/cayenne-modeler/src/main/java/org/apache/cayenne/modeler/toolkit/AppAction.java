@@ -18,7 +18,7 @@
  ****************************************************************/
 
 
-package org.apache.cayenne.modeler.ui.action;
+package org.apache.cayenne.modeler.toolkit;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
@@ -35,16 +35,16 @@ import java.awt.event.ActionEvent;
  * Superclass of CayenneModeler actions that implements support for some common functionality, exception handling,
  * etc.
  */
-public abstract class ModelerAbstractAction extends AbstractAction {
+public abstract class AppAction extends AbstractAction {
 
     protected final Application app;
     protected boolean alwaysOn;
 
-    protected ModelerAbstractAction(String name, Application app) {
-        this(name, app, name);
+    protected AppAction(Application app, String name) {
+        this(app, name, name);
     }
 
-    protected ModelerAbstractAction(String name, Application app, String shortDescription) {
+    protected AppAction(Application app, String name, String shortDescription) {
         super(name);
         super.putValue(Action.DEFAULT, name);
 
@@ -130,9 +130,6 @@ public abstract class ModelerAbstractAction extends AbstractAction {
         return false;
     }
 
-    /**
-     * Returns the current {@link ProjectSession}.
-     */
     public ProjectSession getProjectSession() {
         return app.getFrame().getProjectSession();
     }

@@ -22,16 +22,16 @@ import java.awt.event.ActionEvent;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.DataDomainGraphTab;
-import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 
 /**
  * Action for refreshing the graph 
  */
-public class RebuildGraphAction extends ModelerAbstractAction {
+public class RebuildGraphAction extends AppAction {
     private final DataDomainGraphTab dataDomainGraphTab;
 
     public RebuildGraphAction(DataDomainGraphTab dataDomainGraphTab, Application application) {
-        super("Rebuild", application);
+        super(application, "Rebuild");
         this.dataDomainGraphTab = dataDomainGraphTab;
         setEnabled(true);
     }

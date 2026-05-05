@@ -62,7 +62,7 @@ class MainMenuBar extends JMenuBar {
 
         fileMenu.add(actions.getAction(NewProjectAction.class).buildMenu());
         fileMenu.add(actions.getAction(OpenProjectAction.class).buildMenu());
-        fileMenu.add(actions.getAction(ProjectAction.class).buildMenu());
+        fileMenu.add(actions.getAction(CloseProjectAction.class).buildMenu());
         fileMenu.add(actions.getAction(ImportDataMapAction.class).buildMenu());
         fileMenu.addSeparator();
         fileMenu.add(actions.getAction(SaveAction.class).buildMenu());

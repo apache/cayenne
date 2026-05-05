@@ -20,19 +20,16 @@
 package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.preferences.PreferenceDialog;
 
 import java.awt.event.ActionEvent;
 
 
-public class ConfigurePreferencesAction extends ModelerAbstractAction {
+public class ConfigurePreferencesAction extends AppAction {
 
-    public static String getActionName() {
-        return "Preferences";
-    }
-
-    public ConfigurePreferencesAction(Application application) {
-        super(getActionName(), application);
+    public ConfigurePreferencesAction(Application app) {
+        super(app, "Preferences");
     }
 
     public void performAction(ActionEvent e) {

@@ -30,7 +30,7 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.Mode
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.ColorTreeRenderer;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.TransferableNode;
-import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -49,7 +49,7 @@ public class DbImportView extends ProjectPanel {
     private final SourceTargetPanel sourceTargetPanel;
     private final JProgressBar loadDbSchemaProgress;
     private final JProgressBar reverseEngineeringProgress;
-    private final ModelerAbstractAction.CayenneToolbarButton loadDbSchemaButton;
+    private final AppAction.CayenneToolbarButton loadDbSchemaButton;
 
     private boolean initFromModel;
 
@@ -84,7 +84,7 @@ public class DbImportView extends ProjectPanel {
         this.configPanel = new ReverseEngineeringConfigPanel(session, this);
         this.loadDbSchemaProgress = new JProgressBar();
         this.reverseEngineeringProgress = new JProgressBar();
-        this.loadDbSchemaButton = (ModelerAbstractAction.CayenneToolbarButton)
+        this.loadDbSchemaButton = (AppAction.CayenneToolbarButton)
                 actions.getLoadDbSchemaAction().buildButton(0);
 
         initLayout(actions);
@@ -121,8 +121,8 @@ public class DbImportView extends ProjectPanel {
         treeToolbar.add(loadDbSchemaButton);
 
         ModelerDbImportAction dbImportAction = actions.getReverseEngineeringAction();
-        ModelerAbstractAction.CayenneToolbarButton reverseEngineeringButton =
-                (ModelerAbstractAction.CayenneToolbarButton) dbImportAction.buildButton(0);
+        AppAction.CayenneToolbarButton reverseEngineeringButton =
+                (AppAction.CayenneToolbarButton) dbImportAction.buildButton(0);
         reverseEngineeringButton.setShowingText(true);
         reverseEngineeringButton.setText("Run Import");
         JPanel reverseEngineeringButtonPanel = new JPanel();

@@ -25,7 +25,7 @@ import org.apache.cayenne.modeler.project.ProjectSession;
 public class NavigateForwardAction extends NavigateAction {
 
     public NavigateForwardAction(Application application) {
-        super("Move Forward", application);
+        super(application, "Move Forward");
     }
 
     @Override

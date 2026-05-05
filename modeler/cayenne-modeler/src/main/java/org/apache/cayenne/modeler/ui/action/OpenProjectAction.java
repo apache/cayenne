@@ -20,6 +20,7 @@
 package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.MainFrame;
 import org.apache.cayenne.modeler.ui.errors.ErrorsController;
 import org.apache.cayenne.project.Project;
@@ -43,7 +44,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class OpenProjectAction extends ProjectAction {
+public class OpenProjectAction extends AppAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenProjectAction.class);
 
@@ -63,12 +64,9 @@ public class OpenProjectAction extends ProjectAction {
 
     private final ProjectOpener fileChooser;
 
-    public static String getActionName() {
-        return "Open Project";
-    }
 
     public OpenProjectAction(Application application) {
-        super(getActionName(), application);
+        super(application, "Open Project");
         this.fileChooser = new ProjectOpener();
         resetClipboard();
     }
@@ -87,7 +85,7 @@ public class OpenProjectAction extends ProjectAction {
     public void performAction(ActionEvent e) {
 
         // Save and close (if needed) currently open project.
-        if (getProjectSession() != null && !checkSaveOnClose()) {
+        if (getProjectSession() != null && !CloseProjectAction.checkSaveOnClose(this, app)) {
             return;
         }
 
@@ -118,7 +116,7 @@ public class OpenProjectAction extends ProjectAction {
 
         if (f != null) {
             // by now if the project is unsaved, this has been a user choice...
-            if (getProjectSession() != null && !closeProject(false)) {
+            if (getProjectSession() != null && !CloseProjectAction.closeProject(app, false)) {
                 return;
             }
 
@@ -160,21 +158,21 @@ public class OpenProjectAction extends ProjectAction {
                             "Open the project in the older Modeler " + modelerVersion
                                     + " to do an intermediate upgrade\nbefore you can upgrade to latest version.",
                             "Can't Upgrade Project", JOptionPane.ERROR_MESSAGE);
-                    closeProject(false);
+                    CloseProjectAction.closeProject(app, false);
                     return;
 
                 case DOWNGRADE_NEEDED:
                     JOptionPane.showMessageDialog(app.getFrame(),
                             "Can't open project - it was created using a newer version of the Modeler",
                             "Can't Open Project", JOptionPane.ERROR_MESSAGE);
-                    closeProject(false);
+                    CloseProjectAction.closeProject(app, false);
                     return;
 
                 case UPGRADE_NEEDED:
                     if (processUpgrades()) {
                         rootSource = upgradeService.upgradeProject(rootSource);
                     } else {
-                        closeProject(false);
+                        CloseProjectAction.closeProject(app, false);
                         return;
                     }
                     break;

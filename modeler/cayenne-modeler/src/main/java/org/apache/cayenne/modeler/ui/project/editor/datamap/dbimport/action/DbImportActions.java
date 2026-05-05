@@ -28,7 +28,7 @@ import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportTree;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportView;
 
@@ -95,7 +95,7 @@ public class DbImportActions {
         actionsByNodeType.put(ExcludeProcedure.class, addExcludeProcedure);
     }
 
-    private static <T extends ModelerAbstractAction> T enabled(T action) {
+    private static <T extends AppAction> T enabled(T action) {
         action.setAlwaysOn(true);
         return action;
     }

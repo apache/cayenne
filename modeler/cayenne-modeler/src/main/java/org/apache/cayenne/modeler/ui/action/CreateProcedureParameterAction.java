@@ -28,14 +28,15 @@ import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.display.ProcedureParameterDisplayEvent;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.undo.CreateProcedureParameterUndoableEdit;
 
 import java.awt.event.ActionEvent;
 
-public class CreateProcedureParameterAction extends ModelerAbstractAction {
+public class CreateProcedureParameterAction extends AppAction {
 
     public CreateProcedureParameterAction(Application application) {
-        super("Create Parameter", application);
+        super(application, "Create Parameter");
     }
 
     /**

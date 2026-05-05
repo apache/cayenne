@@ -76,7 +76,7 @@ import org.apache.cayenne.modeler.ui.action.CreateQueryAction;
 import org.apache.cayenne.modeler.ui.action.CutAction;
 import org.apache.cayenne.modeler.ui.action.DbEntitySyncAction;
 import org.apache.cayenne.modeler.ui.action.LinkDataMapsAction;
-import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.action.ObjEntitySyncAction;
 import org.apache.cayenne.modeler.ui.action.PasteAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAction;
@@ -988,7 +988,7 @@ public class ProjectTree extends JTree
      * Creates and returns a menu item associated with the given action type.
      */
     private JMenuItem buildMenu(Class<? extends Action> actionType) {
-        ModelerAbstractAction action = (ModelerAbstractAction) session.app()
+        AppAction action = (AppAction) session.app()
                 .getActionManager()
                 .getAction(actionType);
         return action.buildMenu();

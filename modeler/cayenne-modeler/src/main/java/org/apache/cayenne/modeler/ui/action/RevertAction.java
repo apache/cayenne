@@ -20,15 +20,16 @@
 package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.project.Project;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
 
-public class RevertAction extends ModelerAbstractAction {
+public class RevertAction extends AppAction {
 
     public RevertAction(Application application) {
-        super("Revert", application);
+        super(application, "Revert");
     }
 
     @Override

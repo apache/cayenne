@@ -34,7 +34,7 @@ public class SortNodesAction extends TreeManipulationAction {
     private static final String ICON_NAME = "icon-dbi-sort.png";
 
     public SortNodesAction(Application application, DbImportTree tree) {
-        super(ACTION_NAME, application, tree);
+        super(application, ACTION_NAME, tree);
     }
 
     @Override

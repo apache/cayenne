@@ -26,6 +26,7 @@ import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.toolkit.filechooser.CMFileChooserPrefs;
 import org.apache.cayenne.modeler.util.FileFilters;
 import org.apache.cayenne.resource.Resource;
@@ -43,14 +44,14 @@ import java.net.URL;
  * Modeler action that imports a DataMap into a project from an arbitrary
  * location.
  */
-public class ImportDataMapAction extends ModelerAbstractAction {
+public class ImportDataMapAction extends AppAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImportDataMapAction.class);
 
     private final ConfigurationNameMapper nameMapper;
 
     public ImportDataMapAction(Application application, ConfigurationNameMapper nameMapper) {
-        super(getActionName(), application);
+        super(application, getActionName());
         this.nameMapper = nameMapper;
     }
 

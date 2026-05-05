@@ -22,13 +22,14 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 
 import java.awt.event.ActionEvent;
 
-public class ShowValidationConfigAction extends ModelerAbstractAction {
+public class ShowValidationConfigAction extends AppAction {
 
     public ShowValidationConfigAction(Application application) {
-        super("Show validation config", application);
+        super(application, "Show validation config");
     }
 
     @Override

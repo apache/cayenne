@@ -23,6 +23,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.event.model.DomainEvent;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 import org.apache.cayenne.modeler.undo.UpdateValidationConfigUndoableEdit;
 import org.apache.cayenne.project.validation.ValidationConfig;
@@ -32,19 +33,19 @@ import java.awt.event.ActionEvent;
 /**
  * Requires config provided with {@link UpdateValidationConfigAction#putConfig(ValidationConfig)}.
  */
-public class UpdateValidationConfigAction extends ModelerAbstractAction {
+public class UpdateValidationConfigAction extends AppAction {
 
     private static final String CONFIG_PARAM = "config";
 
     private boolean undoable;
 
     public UpdateValidationConfigAction(Application application) {
-        super("Update ValidationConfig", application);
+        super(application, "Update ValidationConfig");
         this.undoable = true;
     }
 
     protected UpdateValidationConfigAction(String name, Application application) {
-        super(name, application);
+        super(application, name);
     }
 
     public void performAction(Object source) {

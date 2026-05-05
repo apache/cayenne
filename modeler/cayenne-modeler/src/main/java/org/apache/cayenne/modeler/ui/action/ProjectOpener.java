@@ -37,7 +37,6 @@ import java.util.List;
 
 /**
  * File chooser panel used to select a directory to store project files.
- *
  */
 class ProjectOpener extends JFileChooser {
 

@@ -30,11 +30,12 @@ import org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.undo.CreateNodeUndoableEdit;
 
 import java.awt.event.ActionEvent;
 
-public class CreateNodeAction extends ModelerAbstractAction {
+public class CreateNodeAction extends AppAction {
 
     public static void createDataNode(Object src, ProjectSession session, DataNodeDescriptor node) {
         DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
@@ -44,7 +45,7 @@ public class CreateNodeAction extends ModelerAbstractAction {
     }
 
     public CreateNodeAction(Application application) {
-        super("Create DataNode", application);
+        super(application, "Create DataNode");
     }
 
     @Override

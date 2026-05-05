@@ -24,6 +24,7 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.model.ProjectBeforeSaveEvent;
 import org.apache.cayenne.modeler.event.model.ProjectAfterSaveEvent;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.project.validation.ProjectValidator;
@@ -40,7 +41,7 @@ import java.io.File;
 /**
  * A "Save As" action that allows user to pick save location.
  */
-public class SaveAsAction extends ModelerAbstractAction {
+public class SaveAsAction extends AppAction {
 
     private final ProjectOpener fileChooser;
 
@@ -49,7 +50,7 @@ public class SaveAsAction extends ModelerAbstractAction {
     }
 
     protected SaveAsAction(String name, Application application) {
-        super(name, application);
+        super(application, name);
         this.fileChooser = new ProjectOpener();
     }
 

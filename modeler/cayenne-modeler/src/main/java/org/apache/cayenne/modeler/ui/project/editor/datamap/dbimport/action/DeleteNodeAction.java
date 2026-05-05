@@ -48,7 +48,7 @@ public class DeleteNodeAction extends TreeManipulationAction {
     private final DbImportView view;
 
     public DeleteNodeAction(Application application, DbImportView view, DbImportTree tree) {
-        super(ACTION_NAME, application, tree);
+        super(application, ACTION_NAME, tree);
         this.view = view;
     }
 

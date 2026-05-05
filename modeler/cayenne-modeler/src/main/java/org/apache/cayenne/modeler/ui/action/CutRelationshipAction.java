@@ -41,7 +41,7 @@ public class CutRelationshipAction extends CutAction implements MultipleObjectsA
     }
 
     public CutRelationshipAction(Application application) {
-        super(ACTION_NAME, application);
+        super(application, ACTION_NAME);
     }
 
     /**

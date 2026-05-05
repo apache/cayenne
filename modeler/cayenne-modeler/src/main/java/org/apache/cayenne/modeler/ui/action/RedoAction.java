@@ -26,8 +26,9 @@ import java.awt.event.KeyEvent;
 import javax.swing.KeyStroke;
 
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 
-public class RedoAction extends ModelerAbstractAction {
+public class RedoAction extends AppAction {
 
     @Override
     public void setEnabled(boolean b) {
@@ -46,7 +47,7 @@ public class RedoAction extends ModelerAbstractAction {
     }
     
     public RedoAction(Application application) {
-        super(getActionName(), application);
+        super(application, getActionName());
     }
     
     @Override

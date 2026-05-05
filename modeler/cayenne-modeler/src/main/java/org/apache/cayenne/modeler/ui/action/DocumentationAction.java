@@ -22,17 +22,18 @@ package org.apache.cayenne.modeler.ui.action;
 import java.awt.event.ActionEvent;
 
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.toolkit.UrlOpener;
 import org.apache.cayenne.util.LocalizedStringsHandler;
 
-public class DocumentationAction extends ModelerAbstractAction {
+public class DocumentationAction extends AppAction {
 
     public static String getActionName() {
         return "Documentation";
     }
 
     public DocumentationAction(Application application) {
-        super(getActionName(), application);
+        super(application, getActionName());
     }
 
     @Override

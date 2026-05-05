@@ -43,7 +43,7 @@ public class DragAndDropNodeAction extends TreeManipulationAction {
     private JTree.DropLocation dropLocation;
 
     public DragAndDropNodeAction(Application application, DbImportTree tree) {
-        super(ACTION_NAME, application, tree);
+        super(application, ACTION_NAME, tree);
     }
 
     @Override

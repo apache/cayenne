@@ -29,7 +29,7 @@ import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.ui.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.CutAttributeRelationshipAction;
-import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.action.ObjEntityCounterpartAction;
 import org.apache.cayenne.modeler.ui.action.ObjEntitySyncAction;
 import org.apache.cayenne.modeler.ui.action.PasteAction;
@@ -54,7 +54,7 @@ public class ObjEntityPropertiesView extends ProjectPanel implements ObjEntityDi
 
     public ObjEntityPropertiesView(ProjectSession session) {
         super(session);
-        this.editButton = new ModelerAbstractAction.CayenneToolbarButton(null, 0);
+        this.editButton = new AppAction.CayenneToolbarButton(null, 0);
         this.attributePanel = new ObjAttributePanel(session, this);
         this.relationshipPanel = new ObjRelationshipPanel(session, this);
         this.splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, attributePanel, relationshipPanel);

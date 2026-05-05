@@ -29,7 +29,7 @@ public class ObjEntityToSuperEntityAction extends BaseViewEntityAction {
     }
 
     public ObjEntityToSuperEntityAction(Application application) {
-        super(getActionName(), application);
+        super(application, getActionName());
     }
 
     @Override

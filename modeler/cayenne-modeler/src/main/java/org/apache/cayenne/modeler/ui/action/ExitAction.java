@@ -22,28 +22,23 @@ package org.apache.cayenne.modeler.ui.action;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.log.ModelerLogFactory;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 
 import java.awt.event.ActionEvent;
 
-public class ExitAction extends ProjectAction {
+public class ExitAction extends AppAction {
 
-    public static String getActionName() {
-        return "Exit";
-    }
-
-    /**
-     * Constructor for ExitAction.
-     */
     public ExitAction(Application application) {
-        super(getActionName(), application);
+        super(application, "Exit");
     }
 
+    @Override
     public void performAction(ActionEvent e) {
         exit();
     }
 
     public boolean exit() {
-        if (!checkSaveOnClose()) {
+        if (!CloseProjectAction.checkSaveOnClose(this, app)) {
             return false;
         }
 
@@ -51,7 +46,6 @@ public class ExitAction extends ProjectAction {
         // fall back to System.out instead of pushing into a torn-down Swing console
         ModelerLogFactory.setAppender(null);
 
-        // goodbye
         System.exit(0);
         return true;
     }
@@ -59,6 +53,7 @@ public class ExitAction extends ProjectAction {
     /**
      * Always returns true.
      */
+    @Override
     public boolean enableForPath(ConfigurationNode object) {
         return true;
     }

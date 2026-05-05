@@ -25,7 +25,7 @@ import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.project.ProjectSession;
-import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.util.EntityTreeFilter;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
@@ -83,7 +83,7 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
 
     protected JComponent createToolbar() {
 
-        JButton add = new ModelerAbstractAction.CayenneToolbarButton(null, 1);
+        JButton add = new AppAction.CayenneToolbarButton(null, 1);
         add.setText("Add Prefetch");
         Icon addIcon = IconFactory.buildIcon("icon-plus.png");
         add.setIcon(addIcon);
@@ -101,7 +101,7 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
             app.getUndoManager().addEdit(new AddPrefetchUndoableEdit(prefetch, SelectQueryPrefetchTab.this));
         });
 
-        JButton remove = new ModelerAbstractAction.CayenneToolbarButton(null, 3);
+        JButton remove = new AppAction.CayenneToolbarButton(null, 3);
         remove.setText("Remove Prefetch");
         Icon removeIcon = IconFactory.buildIcon("icon-trash.png");
         remove.setIcon(removeIcon);

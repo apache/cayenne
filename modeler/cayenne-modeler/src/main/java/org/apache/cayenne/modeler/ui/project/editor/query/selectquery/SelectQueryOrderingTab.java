@@ -28,7 +28,7 @@ import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.toolkit.splitpane.CMSplitPanePrefs;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
-import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.query.Ordering;
@@ -167,14 +167,14 @@ public class SelectQueryOrderingTab extends ProjectPanel {
 
     protected JComponent createToolbar() {
 
-        JButton add = new ModelerAbstractAction.CayenneToolbarButton(null, 1);
+        JButton add = new AppAction.CayenneToolbarButton(null, 1);
         add.setText("Add Ordering");
         Icon addIcon = IconFactory.buildIcon("icon-plus.png");
         add.setIcon(addIcon);
         add.setDisabledIcon(IconFactory.disabledIcon(addIcon));
         add.addActionListener(e -> addOrdering());
 
-        JButton remove = new ModelerAbstractAction.CayenneToolbarButton(null, 3);
+        JButton remove = new AppAction.CayenneToolbarButton(null, 3);
         remove.setText("Remove Ordering");
         Icon removeIcon = IconFactory.buildIcon("icon-trash.png");
         remove.setIcon(removeIcon);

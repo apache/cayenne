@@ -29,11 +29,12 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.undo.CreateDbEntityUndoableEdit;
 
 import java.awt.event.ActionEvent;
 
-public class CreateDbEntityAction extends ModelerAbstractAction {
+public class CreateDbEntityAction extends AppAction {
 
     static void onDbEntityCreated(Object src, ProjectSession session, DbEntity entity) {
         session.fireDbEntityEvent(DbEntityEvent.ofAdd(src, entity));
@@ -48,7 +49,7 @@ public class CreateDbEntityAction extends ModelerAbstractAction {
     }
 
     public CreateDbEntityAction(Application application) {
-        super("Create DbEntity", application);
+        super(application, "Create DbEntity");
     }
 
     @Override

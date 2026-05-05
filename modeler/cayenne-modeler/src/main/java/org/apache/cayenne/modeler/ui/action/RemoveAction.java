@@ -54,6 +54,7 @@ import org.apache.cayenne.modeler.event.model.ProcedureEvent;
 import org.apache.cayenne.modeler.event.model.ProcedureParameterEvent;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.project.DataMapOps;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.confirmremove.ConfirmRemoveDialog;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.CallbackType;
@@ -78,14 +79,14 @@ import java.util.Collection;
  * Removes currently selected object from the project. This can be Domain, DataNode,
  * Entity, Attribute or Relationship.
  */
-public class RemoveAction extends ModelerAbstractAction {
+public class RemoveAction extends AppAction {
 
     public RemoveAction(Application application) {
-        super("Remove", application);
+        super(application, "Remove");
     }
 
     protected RemoveAction(String actionName, Application application) {
-        super(actionName, application);
+        super(application, actionName);
     }
 
     @Override

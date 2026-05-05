@@ -51,6 +51,7 @@ import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.toolkit.filechooser.CMFileChooserPrefs;
 import org.apache.cayenne.modeler.ui.errors.ErrorsController;
 import org.apache.cayenne.modeler.project.ProjectSession;
@@ -74,7 +75,7 @@ import java.util.Map;
  * Action handler for WebObjects EOModel import function.
  *
  */
-public class ImportEOModelAction extends ModelerAbstractAction {
+public class ImportEOModelAction extends AppAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImportEOModelAction.class);
 
@@ -84,7 +85,7 @@ public class ImportEOModelAction extends ModelerAbstractAction {
     private JFileChooser eoModelChooser;
 
     public ImportEOModelAction(Application application) {
-        super("Import EOModel", application);
+        super(application, "Import EOModel");
 
         this.adaptersByEofPlugin = new HashMap<>();
         adaptersByEofPlugin.put("com.webobjects.jdbcadaptor.SybasePlugIn", SybaseAdapter.class.getName());

@@ -39,7 +39,7 @@ public abstract class AddPatternParamAction extends TreeManipulationAction {
     private final Class<?> paramClass;
 
     AddPatternParamAction(String name, Application application, DbImportTree tree, Class<?> paramClass) {
-        super(name, application, tree);
+        super(application, name, tree);
         this.paramClass = paramClass;
     }
 

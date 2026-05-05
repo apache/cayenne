@@ -22,6 +22,7 @@ import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.action.*;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ShowGraphEntityAction;
 import org.apache.cayenne.project.ConfigurationNodeParentGetter;
@@ -71,7 +72,7 @@ public class GlobalActions {
         projectActions = new HashSet<>();
         projectActions.addAll(Arrays.asList(
                 RevertAction.class.getName(),
-                ProjectAction.class.getName(),
+                CloseProjectAction.class.getName(),
                 ValidateAction.class.getName(),
                 SaveAsAction.class.getName(),
                 FindAction.class.getName(),
@@ -149,7 +150,7 @@ public class GlobalActions {
 
         this.actionMap = new HashMap<>(40);
 
-        registerAction(new ProjectAction(application));
+        registerAction(new CloseProjectAction(application));
         registerAction(new NewProjectAction(application)).setAlwaysOn(true);
         registerAction(new OpenProjectAction(application)).setAlwaysOn(true);
         registerAction(new ImportDataMapAction(application, nameMapper));
@@ -233,7 +234,7 @@ public class GlobalActions {
         registerAction(new DisableValidationInspectionAction(application));
     }
 
-    private ModelerAbstractAction registerAction(ModelerAbstractAction action) {
+    private AppAction registerAction(AppAction action) {
         actionMap.put(action.getClass().getName(), action);
         return action;
     }
@@ -300,7 +301,7 @@ public class GlobalActions {
 
         updateActions("Selected Objects");
 
-        ModelerAbstractAction cutAction = getAction(CutAction.class);
+        AppAction cutAction = getAction(CutAction.class);
         boolean canCopy = true; // cut/copy can be performed if selected objects are on
         // the same level
 

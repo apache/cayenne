@@ -46,7 +46,7 @@ public class CutAttributeAction extends CutAction implements MultipleObjectsActi
     }
 
     public CutAttributeAction(Application application) {
-        super(ACTION_NAME, application);
+        super(application, ACTION_NAME);
     }
 
     /**

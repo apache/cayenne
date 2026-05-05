@@ -23,7 +23,7 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.graph.GraphBuilder;
 import org.apache.cayenne.modeler.ui.action.FindAction;
-import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -31,23 +31,23 @@ import java.awt.event.ActionEvent;
 /**
  * Action that displays one of the objects in main tree, and then fires another action (if specified)
  */
-public class EntityDisplayAction extends ModelerAbstractAction {
+public class EntityDisplayAction extends AppAction {
 
     /**
      * Action that will be performed after selection
      */
-    private ModelerAbstractAction delegate;
+    private AppAction delegate;
 
     private final GraphBuilder builder;
 
     public EntityDisplayAction(GraphBuilder builder, Application application) {
-        super("Show", application);
+        super(application, "Show");
         this.builder = builder;
         init();
     }
 
-    public EntityDisplayAction(GraphBuilder builder, ModelerAbstractAction delegate, Application application) {
-        super((String) delegate.getValue(Action.NAME), application);
+    public EntityDisplayAction(GraphBuilder builder, AppAction delegate, Application application) {
+        super(application, (String) delegate.getValue(Action.NAME));
         this.delegate = delegate;
         this.builder = builder;
         init();

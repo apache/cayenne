@@ -40,13 +40,14 @@ import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.display.DbAttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableAttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjAttributeDisplayEvent;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.undo.CreateAttributeUndoableEdit;
 import org.apache.cayenne.modeler.undo.CreateEmbAttributeUndoableEdit;
 
 import java.awt.event.ActionEvent;
 
 
-public class CreateAttributeAction extends ModelerAbstractAction {
+public class CreateAttributeAction extends AppAction {
 
     static void fireEmbeddableAttributeEvent(Object src, ProjectSession session, Embeddable embeddable, EmbeddableAttribute attr) {
 
@@ -88,7 +89,7 @@ public class CreateAttributeAction extends ModelerAbstractAction {
     }
 
     public CreateAttributeAction(Application application) {
-        super("Create Attribute", application);
+        super(application, "Create Attribute");
     }
 
     @Override

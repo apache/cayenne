@@ -26,23 +26,21 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
 import org.apache.cayenne.modeler.ui.project.tree.ProjectTreeModel;
 
 import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
 
-public abstract class BaseViewEntityAction extends ModelerAbstractAction {
+public abstract class BaseViewEntityAction extends AppAction {
 
     abstract protected Entity<?, ?, ?> getEntity();
 
-    public BaseViewEntityAction(String name, Application application) {
-        super(name, application);
+    public BaseViewEntityAction(Application application, String name) {
+        super(application, name);
     }
 
-    /**
-     * @see ModelerAbstractAction#performAction(ActionEvent)
-     */
     @Override
     public void performAction(ActionEvent e) {
         viewEntity();

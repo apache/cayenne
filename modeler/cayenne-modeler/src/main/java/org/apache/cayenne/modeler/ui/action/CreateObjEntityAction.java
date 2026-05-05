@@ -32,12 +32,13 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.undo.CreateObjEntityUndoableEdit;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 
 import java.awt.event.ActionEvent;
 
-public class CreateObjEntityAction extends ModelerAbstractAction {
+public class CreateObjEntityAction extends AppAction {
 
     static void onObjEntityCreated(
             Object src,
@@ -56,7 +57,7 @@ public class CreateObjEntityAction extends ModelerAbstractAction {
     }
 
     public CreateObjEntityAction(Application application) {
-        super("Create ObjEntity", application);
+        super(application, "Create ObjEntity");
     }
 
 

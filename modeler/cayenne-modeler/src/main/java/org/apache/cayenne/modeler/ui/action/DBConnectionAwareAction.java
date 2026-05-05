@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.datasource.DataSourceDialog;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.pref.DataMapPrefs;
@@ -29,10 +30,10 @@ import org.apache.cayenne.modeler.pref.DataMapPrefs;
  * Base action that provides DBConnectionInfo for the current DataMap or calls {@link DataSourceDialog} dialog to
  * create one.
  */
-public abstract class DBConnectionAwareAction extends ModelerAbstractAction {
+public abstract class DBConnectionAwareAction extends AppAction {
 
     public DBConnectionAwareAction(String name, Application application) {
-        super(name, application);
+        super(application, name);
     }
 
     protected DBConnector getConnector(String title, DataMap dataMap) {

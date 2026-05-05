@@ -28,11 +28,12 @@ import org.apache.cayenne.modeler.event.model.EmbeddableEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.undo.CreateEmbeddableUndoableEdit;
 
 import java.awt.event.ActionEvent;
 
-public class CreateEmbeddableAction extends ModelerAbstractAction {
+public class CreateEmbeddableAction extends AppAction {
 
     static void fireEmbeddableEvent(
             Object src,
@@ -54,7 +55,7 @@ public class CreateEmbeddableAction extends ModelerAbstractAction {
     }
 
     public CreateEmbeddableAction(Application application) {
-        super("Create Embeddable", application);
+        super(application, "Create Embeddable");
     }
 
     @Override

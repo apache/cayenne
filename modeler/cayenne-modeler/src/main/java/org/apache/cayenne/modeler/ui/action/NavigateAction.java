@@ -21,13 +21,14 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 
 import java.awt.event.ActionEvent;
 
-public abstract class NavigateAction extends ModelerAbstractAction {
+public abstract class NavigateAction extends AppAction {
 
-    protected NavigateAction(String name, Application application) {
-        super(name, application);
+    protected NavigateAction(Application application, String name) {
+        super(application, name);
     }
 
     protected abstract void navigate(ProjectSession session);

@@ -37,6 +37,7 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.errors.ErrorsController;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.querytype.QueryTypeDialog;
@@ -62,7 +63,7 @@ import java.util.Map;
 /**
  * Action for pasting entities, queries etc. from the system buffer
  */
-public class PasteAction extends ModelerAbstractAction implements FlavorListener {
+public class PasteAction extends AppAction implements FlavorListener {
 
     private static final String COPY_PATTERN = "copy of %s (%d)";
 
@@ -70,15 +71,10 @@ public class PasteAction extends ModelerAbstractAction implements FlavorListener
      * Constructor for PasteAction
      */
     public PasteAction(Application application) {
-        super(getActionName(), application);
+        super(application, "Paste");
 
-        // add listener, so that button state would update event if clipboard was filled
-        // by other app
+        // add listener, so that button state would update event if clipboard was filled by other app
         Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(this);
-    }
-
-    public static String getActionName() {
-        return "Paste";
     }
 
     @Override

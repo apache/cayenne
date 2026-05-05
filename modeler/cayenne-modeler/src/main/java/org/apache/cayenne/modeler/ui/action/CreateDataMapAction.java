@@ -29,6 +29,7 @@ import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.modeler.event.model.DataNodeEvent;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.undo.CreateDataMapUndoableEdit;
 
 import java.awt.event.ActionEvent;
@@ -36,7 +37,7 @@ import java.awt.event.ActionEvent;
 /**
  * Action that creates new DataMap in the project.
  */
-public class CreateDataMapAction extends ModelerAbstractAction {
+public class CreateDataMapAction extends AppAction {
     
     public static void onMapCreated(Object src, ProjectSession session, DataMap map) {
 
@@ -57,7 +58,7 @@ public class CreateDataMapAction extends ModelerAbstractAction {
     }
 
     public CreateDataMapAction(Application application) {
-        super("Create DataMap", application);
+        super(application, "Create DataMap");
     }
 
     @Override

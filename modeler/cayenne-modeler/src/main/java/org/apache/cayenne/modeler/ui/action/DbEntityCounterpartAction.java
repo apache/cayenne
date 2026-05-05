@@ -28,7 +28,7 @@ import java.util.Iterator;
 public class DbEntityCounterpartAction extends BaseViewEntityAction {
 
     public DbEntityCounterpartAction(Application application) {
-        super("View related ObjEntity", application);
+        super(application, "View related ObjEntity");
     }
 
     public String getIconName() {

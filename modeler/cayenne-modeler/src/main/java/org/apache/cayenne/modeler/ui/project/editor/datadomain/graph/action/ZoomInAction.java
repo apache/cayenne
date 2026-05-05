@@ -23,17 +23,17 @@ import java.awt.event.ActionEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.DataDomainGraphTab;
 import org.apache.cayenne.modeler.graph.GraphBuilder;
-import org.apache.cayenne.modeler.ui.action.ModelerAbstractAction;
+import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.jgraph.JGraph;
 
 /**
  * Action for zooming in graph
  */
-public class ZoomInAction extends ModelerAbstractAction {
+public class ZoomInAction extends AppAction {
     private final DataDomainGraphTab dataDomainGraphTab;
     
     public ZoomInAction(DataDomainGraphTab dataDomainGraphTab, Application application) {
-        super("Zoom In", application);
+        super(application, "Zoom In");
         this.dataDomainGraphTab = dataDomainGraphTab;
         setEnabled(true);
     }
