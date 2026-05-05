@@ -94,16 +94,6 @@ public abstract class CMTableModel<T> extends AbstractTableModel {
         return objectList.size();
     }
 
-    /**
-     * Returns EventController object.
-     */
-    public ProjectSession getSession() {
-        return session;
-    }
-
-    /**
-     * Returns internal object list.
-     */
     public List<T> getObjectList() {
         return objectList;
     }

@@ -54,7 +54,7 @@ import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.toolkit.filechooser.CMFileChooserPrefs;
-import org.apache.cayenne.modeler.ui.errors.ErrorsController;
+import org.apache.cayenne.modeler.ui.errors.ErrorDialog;
 import org.apache.cayenne.wocompat.EOModelProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -152,7 +152,7 @@ public class ImportEOModelAction extends AppAction {
 
             } catch (Exception ex) {
                 LOGGER.info("EOModel Loading Exception", ex);
-                ErrorsController.guiException(app, ex);
+                new ErrorDialog(app, "Import EOModel Error", ex).open();
             }
 
         }

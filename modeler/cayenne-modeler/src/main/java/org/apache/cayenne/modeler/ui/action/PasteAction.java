@@ -37,20 +37,20 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.toolkit.AppAction;
-import org.apache.cayenne.modeler.ui.errors.ErrorsController;
-import org.apache.cayenne.modeler.project.ProjectSession;
-import org.apache.cayenne.modeler.ui.project.querytype.QueryTypeDialog;
-import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
 import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
+import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.toolkit.AppAction;
+import org.apache.cayenne.modeler.toolkit.copypaste.CMTransferable;
+import org.apache.cayenne.modeler.ui.errors.ErrorDialog;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
+import org.apache.cayenne.modeler.ui.project.querytype.QueryTypeDialog;
 import org.apache.cayenne.modeler.undo.PasteCompoundUndoableEdit;
 import org.apache.cayenne.modeler.undo.PasteUndoableEdit;
-import org.apache.cayenne.modeler.toolkit.copypaste.CMTransferable;
 import org.apache.cayenne.query.Query;
 
-import javax.swing.KeyStroke;
+import javax.swing.*;
 import javax.swing.undo.UndoableEdit;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.datatransfer.FlavorEvent;
 import java.awt.datatransfer.FlavorListener;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -131,7 +131,7 @@ public class PasteAction extends AppAction implements FlavorListener {
         } catch (UnsupportedFlavorException ufe) {
             // do nothing
         } catch (Exception ex) {
-            ErrorsController.guiException(app, ex);
+            new ErrorDialog(app, "Paste Error", ex).open();
         }
     }
 

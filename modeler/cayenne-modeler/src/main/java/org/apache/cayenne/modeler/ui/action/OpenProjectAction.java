@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.action;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.MainFrame;
-import org.apache.cayenne.modeler.ui.errors.ErrorsController;
+import org.apache.cayenne.modeler.ui.errors.ErrorDialog;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.upgrade.UpgradeMetaData;
 import org.apache.cayenne.project.upgrade.UpgradeService;
@@ -179,9 +179,11 @@ public class OpenProjectAction extends AppAction {
             }
 
             openProjectResourse(rootSource, controller);
+
+
         } catch (Exception ex) {
             LOGGER.warn("Error loading project file.", ex);
-            ErrorsController.guiWarning(app, ex, "Error loading project");
+            new ErrorDialog(app, "Error loading project", ex).open();
         }
     }
 

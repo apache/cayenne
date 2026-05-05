@@ -21,47 +21,31 @@
 package org.apache.cayenne.modeler.ui.errors;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.toolkit.url.UrlOpener;
-import org.apache.cayenne.modeler.toolkit.buttons.CMButtonPanel;
 import org.apache.cayenne.modeler.toolkit.AppDialog;
+import org.apache.cayenne.modeler.toolkit.buttons.CMButtonPanel;
+import org.apache.cayenne.modeler.toolkit.url.UrlOpener;
 import org.apache.cayenne.util.LocalizedStringsHandler;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-class ErrorDialog extends AppDialog implements ActionListener {
+public class ErrorDialog extends AppDialog {
 
     private static final String BUGREPORT_URL = "https://issues.apache.org/jira/browse/CAY";
 
-    protected JButton close;
-    protected JButton showHide;
-    protected JTextArea exText = new JTextArea();
-    protected JPanel exPanel;
-    protected Throwable throwable;
-    protected boolean detailed;
+    private final JButton close;
 
-    public ErrorDialog(
-            Application application,
-            String title,
-            Throwable throwable,
-            boolean detailed,
-            boolean modal)
-            throws HeadlessException {
+    public ErrorDialog(Application app, String title, Throwable throwable) {
 
-        super(application,
-                application.getFrame(),
-                title,
-                modal ? ModalityType.APPLICATION_MODAL : ModalityType.MODELESS);
+        super(app, app.getFrame(), title, ModalityType.MODELESS);
 
-        setThrowable(Util.unwindException(throwable));
-        setDetailed(detailed);
+        close = new JButton("Close");
+        close.addActionListener(e -> dispose());
 
         setResizable(false);
 
@@ -69,7 +53,7 @@ class ErrorDialog extends AppDialog implements ActionListener {
         pane.setLayout(new BorderLayout());
 
         // info area
-        JEditorPane infoText = new JEditorPane("text/html", infoHTML(application));
+        JEditorPane infoText = new JEditorPane("text/html", infoHTML(app));
         infoText.setBackground(pane.getBackground());
         infoText.setEditable(false);
         // popup hyperlinks
@@ -84,41 +68,33 @@ class ErrorDialog extends AppDialog implements ActionListener {
         infoPanel.add(infoText);
         pane.add(infoPanel, BorderLayout.NORTH);
 
-        // exception area
+
         if (throwable != null) {
+            JTextArea exText = new JTextArea();
+
+            exText.setText(throwableText(throwable));
+
             exText.setEditable(false);
             exText.setLineWrap(true);
             exText.setWrapStyleWord(true);
             exText.setRows(16);
             exText.setColumns(40);
+
             JScrollPane exScroll =
                     new JScrollPane(
                             exText,
                             ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                             ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-            exPanel = new JPanel();
+
+            JPanel exPanel = new JPanel();
             exPanel.setLayout(new BorderLayout());
             exPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
             exPanel.add(exScroll, BorderLayout.CENTER);
-
-            // buttons
-            showHide = new JButton("");
-            showHide.addActionListener(this);
-            if (isDetailed()) {
-                showDetails();
-            } else {
-                hideDetails();
-            }
+            getContentPane().add(exPanel, BorderLayout.CENTER);
         }
 
-        close = new JButton("Close");
-        close.addActionListener(this);
-
-        getRootPane().setDefaultButton(showHide);
-
-        JButton[] buttons = (showHide != null) ? new JButton[]{close, showHide}
-                : new JButton[]{close};
-        pane.add(new CMButtonPanel(buttons), BorderLayout.SOUTH);
+        getRootPane().setDefaultButton(close);
+        pane.add(new CMButtonPanel(close), BorderLayout.SOUTH);
     }
 
     protected String infoHTML(Application application) {
@@ -134,36 +110,36 @@ class ErrorDialog extends AppDialog implements ActionListener {
                 + "</a></font>";
     }
 
-    protected void setThrowable(Throwable throwable) {
-        this.throwable = throwable;
+    private static String throwableText(Throwable throwable) {
 
-        String text = null;
-        if (throwable != null) {
-            StringWriter str = new StringWriter();
-            PrintWriter out = new PrintWriter(str);
-
-            // first add extra diagnostics
-
-            out.println("CayenneModeler Info");
-            out.println("Version: " + LocalizedStringsHandler.getString("cayenne.version"));
-            out.println("Build Date: " + LocalizedStringsHandler.getString("cayenne.build.date"));
-            out.println("Exception: ");
-            out.println("=================================");
-            buildStackTrace(out, throwable);
-
-            try {
-                out.close();
-                str.close();
-            } catch (IOException ioex) {
-                // this should never happen
-            }
-            text = str.getBuffer().toString();
+        if (throwable == null) {
+            return null;
         }
 
-        exText.setText(text);
+        throwable = Util.unwindException(throwable);
+
+        StringWriter str = new StringWriter();
+        PrintWriter out = new PrintWriter(str);
+
+        // first add extra diagnostics
+
+        out.println("CayenneModeler Info");
+        out.println("Version: " + LocalizedStringsHandler.getString("cayenne.version"));
+        out.println("Build Date: " + LocalizedStringsHandler.getString("cayenne.build.date"));
+        out.println("Exception: ");
+        out.println("=================================");
+        buildStackTrace(out, throwable);
+
+        try {
+            out.close();
+            str.close();
+        } catch (IOException ioex) {
+            // this should never happen
+        }
+        return str.getBuffer().toString();
     }
 
-    protected void buildStackTrace(PrintWriter out, Throwable th) {
+    private static void buildStackTrace(PrintWriter out, Throwable th) {
         if (th == null) {
             return;
         }
@@ -175,50 +151,5 @@ class ErrorDialog extends AppDialog implements ActionListener {
             out.println("Caused by:");
             buildStackTrace(out, cause);
         }
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == close) {
-            this.dispose();
-        } else if (e.getSource() == showHide) {
-            if (isDetailed()) {
-                hideDetails();
-            } else {
-                showDetails();
-            }
-            this.pack();
-            this.centerOnOwner();
-        }
-    }
-
-    protected void hideDetails() {
-        getContentPane().remove(exPanel);
-        showHide.setText("Show Details");
-        setDetailed(false);
-    }
-
-    protected void showDetails() {
-        getContentPane().add(exPanel, BorderLayout.CENTER);
-        showHide.setText("Hide Details");
-        setDetailed(true);
-    }
-
-    /**
-     * Returns the detailed.
-     *
-     * @return boolean
-     */
-    public boolean isDetailed() {
-        return detailed;
-    }
-
-    /**
-     * Sets the detailed.
-     *
-     * @param detailed The detailed to set
-     */
-    public void setDetailed(boolean detailed) {
-        this.detailed = detailed;
     }
 }

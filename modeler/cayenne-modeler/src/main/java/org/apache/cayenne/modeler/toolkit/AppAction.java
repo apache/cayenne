@@ -22,11 +22,13 @@ package org.apache.cayenne.modeler.toolkit;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
-import org.apache.cayenne.modeler.ui.errors.ErrorsController;
 import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
+import org.apache.cayenne.modeler.ui.errors.ErrorDialog;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -36,6 +38,8 @@ import java.awt.event.ActionEvent;
  * etc.
  */
 public abstract class AppAction extends AbstractAction {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AppAction.class);
 
     protected final Application app;
     protected boolean alwaysOn;
@@ -59,7 +63,7 @@ public abstract class AppAction extends AbstractAction {
         if (accelerator != null) {
             super.putValue(Action.ACCELERATOR_KEY, accelerator);
         }
-        
+
         if (shortDescription != null && !shortDescription.isEmpty()) {
             super.putValue(Action.SHORT_DESCRIPTION, shortDescription);
         }
@@ -119,6 +123,7 @@ public abstract class AppAction extends AbstractAction {
      * Subclasses must implement this method instead of <code>actionPerformed</code> to
      * allow for exception handling.
      */
+    // TODO: make protected, don't call directly
     public abstract void performAction(ActionEvent e);
 
     /**
@@ -141,9 +146,9 @@ public abstract class AppAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         try {
             performAction(e);
-        }
-        catch (Throwable th) {
-            ErrorsController.guiException(app, th);
+        } catch (Throwable th) {
+            LOGGER.info("Action Exception: " + getValue(Action.DEFAULT), th);
+            new ErrorDialog(app, "CayenneModeler Error", th).open();
         }
     }
 
@@ -153,7 +158,7 @@ public abstract class AppAction extends AbstractAction {
     public JMenuItem buildMenu() {
         return new JMenuItem(this);
     }
-    
+
     /**
      * Factory method that creates a checkbox menu item hooked up to this action.
      */
@@ -174,7 +179,7 @@ public abstract class AppAction extends AbstractAction {
 
     /**
      * Returns true if this action is always enabled.
-     * 
+     *
      * @return boolean
      */
     public boolean isAlwaysOn() {
@@ -183,7 +188,7 @@ public abstract class AppAction extends AbstractAction {
 
     /**
      * Sets the alwaysOn.
-     * 
+     *
      * @param alwaysOn The alwaysOn to set
      */
     public void setAlwaysOn(boolean alwaysOn) {
