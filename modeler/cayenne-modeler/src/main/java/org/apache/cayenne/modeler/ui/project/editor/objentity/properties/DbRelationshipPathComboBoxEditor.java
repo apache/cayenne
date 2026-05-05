@@ -24,8 +24,8 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.project.ProjectSession;
-import org.apache.cayenne.modeler.util.EntityTreeModel;
-import org.apache.cayenne.modeler.util.EntityTreeRelationshipFilter;
+import org.apache.cayenne.modeler.toolkit.tree.EntityTreeModel;
+import org.apache.cayenne.modeler.toolkit.tree.EntityTreeRelationshipFilter;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;

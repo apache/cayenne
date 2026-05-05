@@ -39,7 +39,7 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.main.locking.Locking
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.pkg.PackageUpdateDialog;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.schema.SchemaUpdateDialog;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.superclass.SuperclassUpdateDialog;
-import org.apache.cayenne.modeler.util.Comparators;
+import org.apache.cayenne.modeler.project.ProjectComparators;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
@@ -165,7 +165,7 @@ public class DataMapMainView extends ProjectPanel {
 
         // now add the entities
         if (nodes.length > 0) {
-            Arrays.sort(nodes, Comparators.forNamedObjects());
+            Arrays.sort(nodes, ProjectComparators.forNamedObjects());
             System.arraycopy(nodes, 0, objects, 1, nodes.length);
         }
 

@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util;
+package org.apache.cayenne.modeler.toolkit.tree;
 
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbRelationship;

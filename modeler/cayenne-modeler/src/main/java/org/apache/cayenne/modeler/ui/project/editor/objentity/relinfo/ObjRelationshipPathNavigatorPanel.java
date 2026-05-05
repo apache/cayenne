@@ -18,22 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.objentity.relinfo;
 
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.modeler.toolkit.columnview.ColumnViewPanel;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.tree.TreePath;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import javax.swing.SwingUtilities;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.tree.TreePath;
-
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.modeler.toolkit.MultiColumnBrowser;
-
 /**
  * Multi-column browser for obj relationships
  */
-public class ObjRelationshipPathBrowser extends MultiColumnBrowser {
+public class ObjRelationshipPathNavigatorPanel extends ColumnViewPanel {
 
     /**
      * Listener, which performs adding of new column
@@ -45,11 +44,11 @@ public class ObjRelationshipPathBrowser extends MultiColumnBrowser {
      */
     protected ListSelectionListener panelRemover;
 
-    public ObjRelationshipPathBrowser() {
+    public ObjRelationshipPathNavigatorPanel() {
         this(DEFAULT_MIN_COLUMNS_COUNT);
     }
 
-    public ObjRelationshipPathBrowser(int minColumns) {
+    public ObjRelationshipPathNavigatorPanel(int minColumns) {
         super(minColumns);
     }
 

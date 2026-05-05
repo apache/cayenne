@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util;
+package org.apache.cayenne.modeler.project;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -37,7 +37,7 @@ import java.util.Comparator;
 /**
  * A collection of useful Comparators used by the modeler.
  */
-public class Comparators {
+public class ProjectComparators {
 
     private static final Comparator<ConfigurationNode> dataDomainChildren = new DataDomainChildrenComparator();
     private static final Comparator<ConfigurationNode> dataMapChildren = new DataMapChildrenComparator();

@@ -22,26 +22,21 @@ package org.apache.cayenne.modeler.toolkit;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.project.ProjectSession;
 
-import javax.swing.JTabbedPane;
-
 /**
  * Base for tabbed-pane containers in the modeler that need {@link ProjectSession} access
  * (selection state, model events, dirty flag) plus the {@link Application} reference.
  * Sibling of {@link ProjectPanel}, for editors whose root component is a {@code JTabbedPane}.
  */
-public abstract class ProjectTabbedPane extends JTabbedPane {
+public abstract class ProjectTabbedPane extends AppTabbedPane {
 
     protected final ProjectSession session;
 
     protected ProjectTabbedPane(ProjectSession session) {
+        super(session.app());
         this.session = session;
     }
 
     protected Application app() {
         return session.app();
-    }
-
-    protected ProjectSession session() {
-        return session;
     }
 }

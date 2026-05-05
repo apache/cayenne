@@ -33,7 +33,7 @@ import org.apache.cayenne.modeler.toolkit.ProjectDialog;
 import org.apache.cayenne.modeler.ui.datasource.DataSourceDialog;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.validation.ValidationDialog;
-import org.apache.cayenne.modeler.util.DbAdapterInfo;
+import org.apache.cayenne.modeler.dbadapter.DbAdapters;
 import org.apache.cayenne.validation.ValidationResult;
 
 import javax.swing.Box;
@@ -128,7 +128,7 @@ public class DBGeneratorOptionsDialog extends ProjectDialog {
         this.tabs = new JTabbedPane(SwingConstants.TOP);
         this.adapters = new JComboBox<>();
         this.adapters.setEditable(true);
-        this.adapters.setModel(new DefaultComboBoxModel<>(DbAdapterInfo.getStandardAdapters()));
+        this.adapters.setModel(new DefaultComboBoxModel<>(DbAdapters.standardAdapters()));
         this.adapters.setSelectedIndex(0);
 
         this.sqlPreview = new JTextArea();

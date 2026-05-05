@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.util;
 
+import org.apache.cayenne.modeler.toolkit.filechooser.FileFilters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

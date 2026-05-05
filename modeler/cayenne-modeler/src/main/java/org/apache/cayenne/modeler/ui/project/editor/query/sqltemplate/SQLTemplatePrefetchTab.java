@@ -30,9 +30,9 @@ import org.apache.cayenne.map.SQLTemplateDescriptor;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.AppAction;
-import org.apache.cayenne.modeler.util.EntityTreeFilter;
-import org.apache.cayenne.modeler.util.EntityTreeModel;
-import org.apache.cayenne.modeler.toolkit.MultiColumnBrowser;
+import org.apache.cayenne.modeler.toolkit.tree.EntityTreeFilter;
+import org.apache.cayenne.modeler.toolkit.tree.EntityTreeModel;
+import org.apache.cayenne.modeler.toolkit.columnview.ColumnViewPanel;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.toolkit.splitpane.CMSplitPanePrefs;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
@@ -71,7 +71,7 @@ public class SQLTemplatePrefetchTab extends ProjectPanel {
 
     protected SQLTemplateDescriptor sqlTemplate;
 
-    protected MultiColumnBrowser browser;
+    protected ColumnViewPanel browser;
     protected CMTable table;
 
     protected CardLayout cardLayout;
@@ -174,7 +174,7 @@ public class SQLTemplatePrefetchTab extends ProjectPanel {
 
     protected JPanel createSelectorPanel() {
 
-        browser = new MultiColumnBrowser();
+        browser = new ColumnViewPanel();
         browser.setPreferredColumnSize(BROWSER_CELL_DIM);
         browser.setDefaultRenderer();
 

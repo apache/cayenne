@@ -28,7 +28,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.toolkit.filechooser.CMFileChooserPrefs;
-import org.apache.cayenne.modeler.util.FileFilters;
+import org.apache.cayenne.modeler.toolkit.filechooser.FileFilters;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.slf4j.Logger;

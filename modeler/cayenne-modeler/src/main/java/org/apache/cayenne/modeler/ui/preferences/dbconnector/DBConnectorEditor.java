@@ -24,7 +24,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.toolkit.text.CMPasswordField;
 import org.apache.cayenne.modeler.toolkit.text.CMTextField;
-import org.apache.cayenne.modeler.util.DbAdapterInfo;
+import org.apache.cayenne.modeler.dbadapter.DbAdapters;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -62,7 +62,7 @@ public class DBConnectorEditor extends JPanel {
         this.labels = new ArrayList<>();
 
         adapters.setEditable(true);
-        adapters.setModel(new DefaultComboBoxModel<>(DbAdapterInfo.getStandardAdapters()));
+        adapters.setModel(new DefaultComboBoxModel<>(DbAdapters.standardAdapters()));
         adapters.setSelectedIndex(0);
 
         initLayout();

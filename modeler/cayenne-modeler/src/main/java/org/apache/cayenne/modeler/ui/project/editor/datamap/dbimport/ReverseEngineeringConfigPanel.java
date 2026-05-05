@@ -28,7 +28,7 @@ import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.project.ProjectSession;
-import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
+import org.apache.cayenne.modeler.NameGeneratorPreferences;
 
 import javax.swing.*;
 import java.awt.*;

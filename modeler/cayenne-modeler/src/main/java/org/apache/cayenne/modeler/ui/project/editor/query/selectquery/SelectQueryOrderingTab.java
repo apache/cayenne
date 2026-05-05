@@ -23,14 +23,14 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
-import org.apache.cayenne.modeler.toolkit.MultiColumnBrowser;
+import org.apache.cayenne.modeler.toolkit.columnview.ColumnViewPanel;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.toolkit.splitpane.CMSplitPanePrefs;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.project.ProjectSession;
-import org.apache.cayenne.modeler.util.EntityTreeModel;
+import org.apache.cayenne.modeler.toolkit.tree.EntityTreeModel;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.util.CayenneMapEntry;
@@ -59,7 +59,7 @@ public class SelectQueryOrderingTab extends ProjectPanel {
 
     protected SelectQueryDescriptor selectQuery;
 
-    protected MultiColumnBrowser browser;
+    protected ColumnViewPanel browser;
     protected CMTable table;
 
     protected CardLayout cardLayout;
@@ -147,7 +147,7 @@ public class SelectQueryOrderingTab extends ProjectPanel {
     }
 
     protected JPanel createSelectorPanel() {
-        browser = new MultiColumnBrowser();
+        browser = new ColumnViewPanel();
         browser.setPreferredColumnSize(BROWSER_CELL_DIM);
         browser.setDefaultRenderer();
 

@@ -50,7 +50,7 @@ import org.apache.cayenne.modeler.ui.action.PasteAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeRelationshipAction;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.attrinfo.ObjAttributeInfoDialog;
-import org.apache.cayenne.modeler.toolkit.ValueTypes;
+import org.apache.cayenne.modeler.toolkit.valuetype.ValueTypes;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;

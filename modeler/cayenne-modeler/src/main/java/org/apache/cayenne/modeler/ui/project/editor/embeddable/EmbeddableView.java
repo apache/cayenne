@@ -56,8 +56,8 @@ public class EmbeddableView extends ProjectTabbedPane {
     }
 
     private void initBindings() {
-        session().addEmbeddableAttributeDisplayListener(this::currentEmbeddableAttributeChanged);
-        session().addEmbeddableDisplayListener(this::currentEmbeddableChanged);
+        session.addEmbeddableAttributeDisplayListener(this::currentEmbeddableAttributeChanged);
+        session.addEmbeddableDisplayListener(this::currentEmbeddableChanged);
         addChangeListener(this::stateChanged);
     }
 
@@ -74,7 +74,7 @@ public class EmbeddableView extends ProjectTabbedPane {
     }
 
     private void resetRemoveButtons() {
-        GlobalActions globalActions = app().getActionManager();
+        GlobalActions globalActions = app.getActionManager();
 
         globalActions.getAction(RemoveAttributeAction.class).setEnabled(false);
         globalActions.getAction(RemoveCallbackMethodAction.class).setEnabled(false);

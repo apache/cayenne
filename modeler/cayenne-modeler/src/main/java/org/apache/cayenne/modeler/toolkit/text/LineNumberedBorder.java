@@ -23,98 +23,98 @@ import javax.swing.border.AbstractBorder;
 import javax.swing.text.Document;
 import java.awt.*;
 
-public class LineNumberedBorder extends AbstractBorder {
-	private int etalon;
-	private int lineNumberWidth;
-	private CMTextPane pane;
+class LineNumberedBorder extends AbstractBorder {
+    private int etalon;
+    private int lineNumberWidth;
+    private CMTextPane pane;
 
-	public LineNumberedBorder(CMTextPane pane) {
-		setEtalon(10);
-		this.pane = pane;
-	}
+    public LineNumberedBorder(CMTextPane pane) {
+        setEtalon(10);
+        this.pane = pane;
+    }
 
-	public Insets getBorderInsets(Component c) {
-		return getBorderInsets(c, new Insets(0, 0, 0, 0));
-	}
+    public Insets getBorderInsets(Component c) {
+        return getBorderInsets(c, new Insets(0, 0, 0, 0));
+    }
 
-	public Insets getBorderInsets(Component c, Insets insets) {
-		if (c instanceof JTextPane) {
-			int width = lineNumberWidth((JTextPane) c);
-			insets.left = width;
-		}
-		return insets;
-	}
+    public Insets getBorderInsets(Component c, Insets insets) {
+        if (c instanceof JTextPane) {
+            int width = lineNumberWidth((JTextPane) c);
+            insets.left = width;
+        }
+        return insets;
+    }
 
-	/**
-	 * Returns the width, in pixels
-	 */
-	private int lineNumberWidth(JTextPane textPane) {
-		int lineCount = getEtalon();
-		setLineNumberWidth(textPane.getFontMetrics(textPane.getFont())
-				.stringWidth(lineCount + " "));
-		return getLineNumberWidth();
-	}
+    /**
+     * Returns the width, in pixels
+     */
+    private int lineNumberWidth(JTextPane textPane) {
+        int lineCount = getEtalon();
+        setLineNumberWidth(textPane.getFontMetrics(textPane.getFont())
+                .stringWidth(lineCount + " "));
+        return getLineNumberWidth();
+    }
 
-	public void paintBorder(Component c, Graphics g, int x, int y, int width,
-			int height) {
+    public void paintBorder(Component c, Graphics g, int x, int y, int width,
+                            int height) {
 
-		java.awt.Rectangle clip = g.getClipBounds();
+        java.awt.Rectangle clip = g.getClipBounds();
 
-		FontMetrics fm = g.getFontMetrics();
-		int fontHeight = fm.getHeight();
-		int ybaseline = y + fm.getAscent();
+        FontMetrics fm = g.getFontMetrics();
+        int fontHeight = fm.getHeight();
+        int ybaseline = y + fm.getAscent();
 
-		int startingLineNumber = (clip.y / fontHeight) + 1;
+        int startingLineNumber = (clip.y / fontHeight) + 1;
 
-		if (ybaseline < clip.y) {
-			ybaseline = y + startingLineNumber * fontHeight
-					- (fontHeight - fm.getAscent());
-		}
+        if (ybaseline < clip.y) {
+            ybaseline = y + startingLineNumber * fontHeight
+                    - (fontHeight - fm.getAscent());
+        }
 
 
-		int yend = ybaseline + height;
-		if (yend > (y + height)) {
-			yend = y + height;
-		}
+        int yend = ybaseline + height;
+        if (yend > (y + height)) {
+            yend = y + height;
+        }
 
-		int lnxstart = x;
-		int widhtBorder = getLineNumberWidth() - 2;
+        int lnxstart = x;
+        int widhtBorder = getLineNumberWidth() - 2;
 
-		g.setColor(new Color(255, 255, 224));
-		g.fillRect(lnxstart, 0, lnxstart + widhtBorder, yend);
-		g.setColor(new Color(214, 214, 214));
-		g.drawRect(lnxstart - 1, -1, lnxstart + widhtBorder, yend + 1);
+        g.setColor(new Color(255, 255, 224));
+        g.fillRect(lnxstart, 0, lnxstart + widhtBorder, yend);
+        g.setColor(new Color(214, 214, 214));
+        g.drawRect(lnxstart - 1, -1, lnxstart + widhtBorder, yend + 1);
 
-		int end = pane.getEndPositionInDocument();
-		Document doc = pane.getDocument();
-		int endline = doc.getDefaultRootElement().getElementIndex(end) + 1;
-			
-		while (startingLineNumber <= endline) {
-			g.setColor(Color.gray);
-			g.drawString(startingLineNumber + " ", lnxstart + 1, ybaseline);
-			ybaseline += fontHeight;
-			startingLineNumber++;
-		}
+        int end = pane.getEndPositionInDocument();
+        Document doc = pane.getDocument();
+        int endline = doc.getDefaultRootElement().getElementIndex(end) + 1;
 
-		setEtalon(startingLineNumber-1);
-	}
+        while (startingLineNumber <= endline) {
+            g.setColor(Color.gray);
+            g.drawString(startingLineNumber + " ", lnxstart + 1, ybaseline);
+            ybaseline += fontHeight;
+            startingLineNumber++;
+        }
 
-	public int getEtalon() {
-		return etalon;
-	}
+        setEtalon(startingLineNumber - 1);
+    }
 
-	public void setEtalon(int etalon) {
-		if(etalon<10){
-			etalon = 10;
-		}
-		this.etalon = etalon;
-	}
+    public int getEtalon() {
+        return etalon;
+    }
 
-	public int getLineNumberWidth() {
-		return lineNumberWidth;
-	}
+    public void setEtalon(int etalon) {
+        if (etalon < 10) {
+            etalon = 10;
+        }
+        this.etalon = etalon;
+    }
 
-	public void setLineNumberWidth(int lineNumberWidth) {
-		this.lineNumberWidth = lineNumberWidth;
-	}
+    public int getLineNumberWidth() {
+        return lineNumberWidth;
+    }
+
+    public void setLineNumberWidth(int lineNumberWidth) {
+        this.lineNumberWidth = lineNumberWidth;
+    }
 }

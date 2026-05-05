@@ -23,7 +23,7 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.util.Comparators;
+import org.apache.cayenne.modeler.project.ProjectComparators;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.ArrayList;
@@ -133,23 +133,23 @@ class ProjectTreeFactory {
 
             //Should be sorted manually because dataMap don't provide sorted collection.
             dataMap.getObjEntities().stream()
-                    .sorted(Comparators.forDataMapChildren())
+                    .sorted(ProjectComparators.forDataMapChildren())
                     .forEach(e -> makeNode(e));
 
             dataMap.getEmbeddables().stream()
-                    .sorted(Comparators.forDataMapChildren())
+                    .sorted(ProjectComparators.forDataMapChildren())
                     .forEach(e -> makeNode(e));
 
             dataMap.getDbEntities().stream()
-                    .sorted(Comparators.forDataMapChildren())
+                    .sorted(ProjectComparators.forDataMapChildren())
                     .forEach(e -> makeNode(e));
 
             dataMap.getProcedures().stream()
-                    .sorted(Comparators.forDataMapChildren())
+                    .sorted(ProjectComparators.forDataMapChildren())
                     .forEach(e -> makeNode(e));
 
             dataMap.getQueryDescriptors().stream()
-                    .sorted(Comparators.forDataMapChildren())
+                    .sorted(ProjectComparators.forDataMapChildren())
                     .forEach(e -> makeNode(e));
 
             return popNode();

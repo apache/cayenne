@@ -27,7 +27,7 @@ import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SQLTemplateDescriptor;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.project.ProjectSession;
-import org.apache.cayenne.modeler.util.DbAdapterInfo;
+import org.apache.cayenne.modeler.dbadapter.DbAdapters;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextPane;
 import org.apache.cayenne.modeler.toolkit.text.CMTextPane;
 import org.apache.cayenne.util.Util;
@@ -78,7 +78,7 @@ public class SQLTemplateScriptsTab extends ProjectPanel {
     }
 
     private void prepareScriptAreas() {
-        for(String key : DbAdapterInfo.getStandardAdapters()) {
+        for(String key : DbAdapters.standardAdapters()) {
             CMTextPane currPane = new CMUndoableTextPane(app.getUndoManager(), new SQLSyntax());
             currPane.setName(key);
             currPane.getDocument().addDocumentListener(new CustomListener(currPane.getName()));
@@ -101,10 +101,10 @@ public class SQLTemplateScriptsTab extends ProjectPanel {
 
         scripts = new JList<>();
         scripts.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        scripts.setCellRenderer(new DbAdapterListRenderer(DbAdapterInfo.getStandardAdapterLabels()));
+        scripts.setCellRenderer(new DbAdapterListRenderer(DbAdapters.getStandardAdapterLabels()));
 
-        keys = new ArrayList<>(DbAdapterInfo.getStandardAdapters().length + 1);
-        keys.addAll(Arrays.asList(DbAdapterInfo.getStandardAdapters()));
+        keys = new ArrayList<>(DbAdapters.standardAdapters().length + 1);
+        keys.addAll(Arrays.asList(DbAdapters.standardAdapters()));
         Collections.sort(keys);
         keys.add(0, DEFAULT_LABEL);
         scripts.setModel(new DefaultComboBoxModel<>(keys.toArray(new String[0])));

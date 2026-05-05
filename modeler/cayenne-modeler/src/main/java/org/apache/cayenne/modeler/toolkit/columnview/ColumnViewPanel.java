@@ -17,8 +17,9 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.toolkit;
+package org.apache.cayenne.modeler.toolkit.columnview;
 
+import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 
 import javax.swing.*;
@@ -35,22 +36,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A simple non-editable tree browser with multiple columns for display and
- * navigation of a tree structure. This type of browser is ideal for showing
- * deeply (or infinitely) nested trees/graphs. The most famous example of its
- * use is Mac OS X Finder column view.
- * 
- * <p>
- * MultiColumnBrowser starts at the root of the tree and automatically expands
- * to the right as navigation goes deeper. MultiColumnBrowser uses the same
- * TreeModel as a regular JTree for its navigation model.
- * </p>
- * 
- * <p>
- * Users are notified of selection changes via a TreeSelectionEvents.
- * </p>
+ * A tree browser in the style of macOS Finder "column view"
  */
-public class MultiColumnBrowser extends JPanel {
+public class ColumnViewPanel extends JPanel {
 
     protected static final ImageIcon rightArrow = IconFactory.buildIcon("icon-arrow-closed.png");
 
@@ -71,11 +59,11 @@ public class MultiColumnBrowser extends JPanel {
      */
     private boolean fireDisabled;
 
-    public MultiColumnBrowser() {
+    public ColumnViewPanel() {
         this(DEFAULT_MIN_COLUMNS_COUNT);
     }
 
-    public MultiColumnBrowser(int minColumns) {
+    public ColumnViewPanel(int minColumns) {
         if (minColumns < DEFAULT_MIN_COLUMNS_COUNT) {
             throw new IllegalArgumentException("Expected " + DEFAULT_MIN_COLUMNS_COUNT + " or more columns, got: "
                     + minColumns);
@@ -443,7 +431,7 @@ public class MultiColumnBrowser extends JPanel {
             this.children = (treeNode != null) ? model.getChildCount(treeNode) : 0;
 
             // must fire an event to refresh the view
-            super.fireContentsChanged(MultiColumnBrowser.this, 0, Math.max(oldChildren, children));
+            super.fireContentsChanged(ColumnViewPanel.this, 0, Math.max(oldChildren, children));
         }
 
         public Object getElementAt(int index) {

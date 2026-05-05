@@ -19,13 +19,12 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.query.selectquery;
 
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.event.ChangeEvent;
-
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.modeler.toolkit.ProjectTabbedPane;
 import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.toolkit.ProjectTabbedPane;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
 
 public class SelectQueryTabbedView extends ProjectTabbedPane {
 
@@ -51,7 +50,7 @@ public class SelectQueryTabbedView extends ProjectTabbedPane {
     }
 
     private void initBindings() {
-        session().addQueryDisplayListener(e -> initFromModel());
+        session.addQueryDisplayListener(e -> initFromModel());
         addChangeListener(this::stateChanged);
     }
 
@@ -61,13 +60,13 @@ public class SelectQueryTabbedView extends ProjectTabbedPane {
     }
 
     private void initFromModel() {
-        if (!QueryDescriptor.SELECT_QUERY.equals(session().getSelectedQuery().getType())) {
+        if (!QueryDescriptor.SELECT_QUERY.equals(session.getSelectedQuery().getType())) {
             setVisible(false);
             return;
         }
 
         // if no root, reset tabs to show the first panel..
-        if (session().getSelectedQuery().getRoot() == null) {
+        if (session.getSelectedQuery().getRoot() == null) {
             lastSelectionIndex = 0;
         }
 

@@ -25,7 +25,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.toolkit.AppDialog;
 import org.apache.cayenne.modeler.ui.preferences.dbconnector.DBConnectorPrefsPanel;
-import org.apache.cayenne.modeler.util.DbAdapterInfo;
+import org.apache.cayenne.modeler.dbadapter.DbAdapters;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -66,7 +66,7 @@ public class DBConnectorCreatorDialog extends AppDialog {
 
         this.connectorName = new JTextField(suggestName());
 
-        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(DbAdapterInfo.getStandardAdapters());
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(DbAdapters.standardAdapters());
         model.insertElementAt(NO_ADAPTER, 0);
         this.adapters = new JComboBox<>(model);
         this.adapters.setSelectedIndex(0);

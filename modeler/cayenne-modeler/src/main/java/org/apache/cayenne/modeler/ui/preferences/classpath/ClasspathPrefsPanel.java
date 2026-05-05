@@ -29,7 +29,7 @@ import org.apache.cayenne.modeler.toolkit.filechooser.CMFileChooserPrefs;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.toolkit.AppPanel;
 import org.apache.cayenne.modeler.ui.preferences.classpath.maven.MavenDependencyDialog;
-import org.apache.cayenne.modeler.util.FileFilters;
+import org.apache.cayenne.modeler.toolkit.filechooser.FileFilters;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;

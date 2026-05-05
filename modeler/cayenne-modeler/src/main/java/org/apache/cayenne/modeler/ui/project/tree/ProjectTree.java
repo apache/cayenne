@@ -81,7 +81,7 @@ import org.apache.cayenne.modeler.ui.action.ObjEntitySyncAction;
 import org.apache.cayenne.modeler.ui.action.PasteAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAction;
 import org.apache.cayenne.modeler.project.ProjectSession;
-import org.apache.cayenne.modeler.util.Comparators;
+import org.apache.cayenne.modeler.project.ProjectComparators;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.reflect.PropertyUtils;
 import org.apache.cayenne.resource.Resource;
@@ -469,7 +469,7 @@ public class ProjectTree extends JTree
 
         Procedure procedure = e.getProcedure();
         DefaultMutableTreeNode currentNode = new DefaultMutableTreeNode(procedure, false);
-        positionNode(node, currentNode, Comparators.forDataMapChildren());
+        positionNode(node, currentNode, ProjectComparators.forDataMapChildren());
         navigateTo(currentNode);
     }
 
@@ -482,7 +482,7 @@ public class ProjectTree extends JTree
             };
 
             updateNode(path);
-            positionNode(Comparators.forDataMapChildren(), path);
+            positionNode(ProjectComparators.forDataMapChildren(), path);
             navigateTo(path);
         }
     }
@@ -505,7 +505,7 @@ public class ProjectTree extends JTree
 
         QueryDescriptor query = e.getQuery();
         DefaultMutableTreeNode currentNode = new DefaultMutableTreeNode(query, false);
-        positionNode(node, currentNode, Comparators.forDataMapChildren());
+        positionNode(node, currentNode, ProjectComparators.forDataMapChildren());
         navigateTo(currentNode);
     }
 
@@ -518,7 +518,7 @@ public class ProjectTree extends JTree
             };
 
             updateNode(path);
-            positionNode(Comparators.forDataMapChildren(), path);
+            positionNode(ProjectComparators.forDataMapChildren(), path);
             navigateTo(path);
         }
     }
@@ -533,7 +533,7 @@ public class ProjectTree extends JTree
         Object[] path = new Object[]{e.getDomain()};
         updateNode(path);
         if (e.isNameChange()) {
-            positionNode(Comparators.forNamedObjects(), path);
+            positionNode(ProjectComparators.forNamedObjects(), path);
             navigateTo(path);
         }
     }
@@ -547,7 +547,7 @@ public class ProjectTree extends JTree
         if (node != null) {
             if (e.isNameChange()) {
                 positionNode((DefaultMutableTreeNode) node.getParent(), node,
-                        Comparators.forDataDomainChildren());
+                        ProjectComparators.forDataDomainChildren());
                 navigateTo(node);
             } else {
                 getProjectModel().nodeChanged(node);
@@ -572,7 +572,7 @@ public class ProjectTree extends JTree
                         if (!found) {
                             DefaultMutableTreeNode newMapNode =
                                     new DefaultMutableTreeNode(domain.getDataMap(aMapsName), false);
-                            positionNode(node, newMapNode, Comparators.forNamedObjects());
+                            positionNode(node, newMapNode, ProjectComparators.forNamedObjects());
                             break;
                         }
                     }
@@ -612,7 +612,7 @@ public class ProjectTree extends JTree
 
         DataNodeDescriptor dataNode = e.getDataNode();
         DefaultMutableTreeNode currentNode = ProjectTreeFactory.wrapProjectNode(dataNode);
-        positionNode(node, currentNode, Comparators.forDataDomainChildren());
+        positionNode(node, currentNode, ProjectComparators.forDataDomainChildren());
         navigateTo(currentNode);
     }
 
@@ -637,7 +637,7 @@ public class ProjectTree extends JTree
 
         if (e.isNameChange()) {
             session.updateEntityResolver();
-            positionNode(Comparators.forDataDomainChildren(), path);
+            positionNode(ProjectComparators.forDataDomainChildren(), path);
             navigateTo(path);
         }
     }
@@ -652,7 +652,7 @@ public class ProjectTree extends JTree
 
         session.entityResolver().addDataMap(e.getDataMap());
 
-        positionNode(domainNode, newMapNode, Comparators.forDataDomainChildren());
+        positionNode(domainNode, newMapNode, ProjectComparators.forDataDomainChildren());
         if (session.app().getFrame().getDbImportResultDialog().isGlobalImport()) {
             setSelected(newMapNode);
         } else {
@@ -728,7 +728,7 @@ public class ProjectTree extends JTree
             };
 
             updateNode(path);
-            positionNode(Comparators.forDataMapChildren(), path);
+            positionNode(ProjectComparators.forDataMapChildren(), path);
             navigateTo(path);
         }
     }
@@ -748,7 +748,7 @@ public class ProjectTree extends JTree
         }
 
         DefaultMutableTreeNode currentNode = new DefaultMutableTreeNode(entity, false);
-        positionNode(mapNode, currentNode, Comparators.forDataMapChildren());
+        positionNode(mapNode, currentNode, ProjectComparators.forDataMapChildren());
         navigateTo(currentNode);
     }
 
@@ -778,7 +778,7 @@ public class ProjectTree extends JTree
         }
 
         DefaultMutableTreeNode currentNode = new DefaultMutableTreeNode(embeddable, false);
-        positionNode(mapNode, currentNode, Comparators.forDataMapChildren());
+        positionNode(mapNode, currentNode, ProjectComparators.forDataMapChildren());
         navigateTo(currentNode);
     }
 
@@ -791,7 +791,7 @@ public class ProjectTree extends JTree
             };
 
             updateNode(path);
-            positionNode(Comparators.forDataMapChildren(), path);
+            positionNode(ProjectComparators.forDataMapChildren(), path);
             navigateTo(path);
         }
     }

@@ -47,7 +47,7 @@ public class EjbqlTabbedView extends ProjectTabbedPane {
     }
 
     private void initBindings() {
-        session().addQueryDisplayListener(e -> initFromModel());
+        session.addQueryDisplayListener(e -> initFromModel());
         addChangeListener(this::stateChanged);
     }
 
@@ -57,7 +57,7 @@ public class EjbqlTabbedView extends ProjectTabbedPane {
     }
 
     private void initFromModel() {
-        if (!QueryDescriptor.EJBQL_QUERY.equals(session().getSelectedQuery().getType())) {
+        if (!QueryDescriptor.EJBQL_QUERY.equals(session.getSelectedQuery().getType())) {
             setVisible(false);
             return;
         }

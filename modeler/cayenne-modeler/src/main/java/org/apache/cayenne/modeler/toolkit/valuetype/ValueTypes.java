@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.toolkit;
+package org.apache.cayenne.modeler.toolkit.valuetype;
 
 import org.apache.cayenne.value.GeoJson;
 import org.apache.cayenne.value.Json;

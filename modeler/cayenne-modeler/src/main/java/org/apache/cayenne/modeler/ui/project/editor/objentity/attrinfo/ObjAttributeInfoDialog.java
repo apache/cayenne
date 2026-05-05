@@ -35,8 +35,8 @@ import org.apache.cayenne.modeler.event.display.ObjAttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
-import org.apache.cayenne.modeler.toolkit.MultiColumnBrowser;
-import org.apache.cayenne.modeler.toolkit.ValueTypes;
+import org.apache.cayenne.modeler.toolkit.columnview.ColumnViewPanel;
+import org.apache.cayenne.modeler.toolkit.valuetype.ValueTypes;
 import org.apache.cayenne.modeler.toolkit.buttons.CMButtonPanel;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
@@ -45,8 +45,8 @@ import org.apache.cayenne.modeler.toolkit.table.CMTablePrefs;
 import org.apache.cayenne.modeler.toolkit.ProjectDialog;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.properties.ObjAttributeTableModel;
-import org.apache.cayenne.modeler.util.EntityTreeAttributeRelationshipFilter;
-import org.apache.cayenne.modeler.util.EntityTreeModel;
+import org.apache.cayenne.modeler.toolkit.tree.EntityTreeAttributeRelationshipFilter;
+import org.apache.cayenne.modeler.toolkit.tree.EntityTreeModel;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.CayenneMapEntry;
 
@@ -114,7 +114,7 @@ public class ObjAttributeInfoDialog extends ProjectDialog implements TreeSelecti
     private final JCheckBox usedForLockingCheckBox;
     private final JCheckBox lazyCheckBox;
     private final JTextField commentField;
-    private final MultiColumnBrowser pathBrowser;
+    private final ColumnViewPanel pathBrowser;
 
     private final Map<String, Embeddable> stringToEmbeddables = new HashMap<>();
     private final List<String> embeddableNames = new ArrayList<>();
@@ -147,7 +147,7 @@ public class ObjAttributeInfoDialog extends ProjectDialog implements TreeSelecti
         this.commentField = new JTextField();
         this.overrideAttributeTable = new CMTable();
 
-        this.pathBrowser = new ObjAttributePathBrowser(selectPathButton, saveButton);
+        this.pathBrowser = new ObjAttributePathNavigatorPanel(selectPathButton, saveButton);
         this.pathBrowser.setPreferredColumnSize(BROWSER_CELL_DIM);
         this.pathBrowser.setDefaultRenderer();
 

@@ -29,9 +29,6 @@ public class InferRelationshipsPanel extends JPanel {
 
     public InferRelationshipsPanel() {
         this.table = new JTable();
-
-        // TODO: andrus 04/07/2006 - is there an easy way to stick that checkbox in the
-        // table header????
         this.checkAll = new JCheckBox();
         this.checkAllLabel = new JLabel("Check All DBRelationships");
 

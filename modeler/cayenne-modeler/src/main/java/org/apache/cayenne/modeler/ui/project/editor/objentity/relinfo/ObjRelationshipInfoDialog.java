@@ -32,7 +32,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.event.display.ObjRelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.model.ObjRelationshipEvent;
-import org.apache.cayenne.modeler.toolkit.MultiColumnBrowser;
+import org.apache.cayenne.modeler.toolkit.columnview.ColumnViewPanel;
 import org.apache.cayenne.modeler.toolkit.buttons.CMButtonPanel;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.toolkit.ProjectDialog;
@@ -40,9 +40,9 @@ import org.apache.cayenne.modeler.ui.dbrelationship.DbRelationshipDialog;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.RelationshipUndoableEdit;
-import org.apache.cayenne.modeler.util.Comparators;
-import org.apache.cayenne.modeler.util.EntityTreeModel;
-import org.apache.cayenne.modeler.util.EntityTreeRelationshipFilter;
+import org.apache.cayenne.modeler.project.ProjectComparators;
+import org.apache.cayenne.modeler.toolkit.tree.EntityTreeModel;
+import org.apache.cayenne.modeler.toolkit.tree.EntityTreeRelationshipFilter;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.Util;
@@ -100,7 +100,7 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
     private final JComboBox<String> deleteRule;
     private final JCheckBox usedForLocking;
     private final JTextField comment;
-    private final MultiColumnBrowser pathBrowser;
+    private final ColumnViewPanel pathBrowser;
     private final JButton newRelButton;
     private final JButton saveButton;
     private final JButton cancelButton;
@@ -135,7 +135,7 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
         this.usedForLocking = new JCheckBox();
         this.comment = new JTextField();
 
-        this.pathBrowser = new ObjRelationshipPathBrowser();
+        this.pathBrowser = new ObjRelationshipPathNavigatorPanel();
         this.pathBrowser.setPreferredColumnSize(BROWSER_CELL_DIM);
         this.pathBrowser.setDefaultRenderer();
 
@@ -462,7 +462,7 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
         objectTargets = new ArrayList<>();
         if (dbTarget != null) {
             objectTargets.addAll(dbTarget.getDataMap().getMappedEntities(dbTarget));
-            objectTargets.sort(Comparators.forNamedObjects());
+            objectTargets.sort(ProjectComparators.forNamedObjects());
         }
         targetCombo.removeAllItems();
         for (ObjEntity s : objectTargets) {

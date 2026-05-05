@@ -51,7 +51,7 @@ public class SQLTemplateTabbedView extends ProjectTabbedPane {
     }
 
     private void initBindings() {
-        session().addQueryDisplayListener(e -> initFromModel());
+        session.addQueryDisplayListener(e -> initFromModel());
         addChangeListener(this::stateChanged);
     }
 
@@ -61,13 +61,13 @@ public class SQLTemplateTabbedView extends ProjectTabbedPane {
     }
 
     private void initFromModel() {
-        if (!QueryDescriptor.SQL_TEMPLATE.equals(session().getSelectedQuery().getType())) {
+        if (!QueryDescriptor.SQL_TEMPLATE.equals(session.getSelectedQuery().getType())) {
             setVisible(false);
             return;
         }
 
         // if no root, reset tabs to show the first panel..
-        if (session().getSelectedQuery().getRoot() == null) {
+        if (session.getSelectedQuery().getRoot() == null) {
             lastSelectionIndex = 0;
         }
 

@@ -17,10 +17,10 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util;
+package org.apache.cayenne.modeler.toolkit.filechooser;
 
-import java.io.File;
 import javax.swing.filechooser.FileFilter;
+import java.io.File;
 
 /**
  * A collection of common file filters used by CayenneModeler JFileChoosers.
@@ -28,9 +28,6 @@ import javax.swing.filechooser.FileFilter;
 public class FileFilters {
 
     protected static final FileFilter applicationFilter = new ApplicationFileFilter();
-    protected static final FileFilter velotemplateFilter = new VelotemplateFileFilter();
-    protected static final FileFilter eomodelFilter = new EOModelFileFilter();
-    protected static final FileFilter eomodelSelectFilter = new EOModelSelectFilter();
     protected static final FileFilter dataMapFilter = new DataMapFileFilter();
 
     private static final String DATA_MAP_LOCATION_SUFFIX = ".map.xml";
@@ -49,60 +46,12 @@ public class FileFilters {
         return dataMapFilter;
     }
 
-    /**
-     * Returns a FileFilter used to select Velocity template files. Filters files with
-     * ".vm" extension.
-     */
-    public static FileFilter getVelotemplateFilter() {
-        return velotemplateFilter;
-    }
-
-    /**
-     * Returns a FileFilter used to filter EOModels. This filter will only display
-     * directories and index.eomodeld files.
-     */
-    public static FileFilter getEOModelFilter() {
-        return eomodelFilter;
-    }
-
-    /**
-     * Returns FileFilter that defines the rules for EOModel selection. This filter will
-     * only allow selection of the following files/directories:
-     * <ul>
-     * <li>Directories with name matching <code>*.eomodeld</code> that contain
-     * <code>index.eomodeld</code>.</li>
-     * <li><code>index.eomodeld</code> files contained within <code>*.eomodeld</code>
-     * directory.</li>
-     * </ul>
-     */
-    public static FileFilter getEOModelSelectFilter() {
-        return eomodelSelectFilter;
-    }
 
     /**
      * Returns filter that checks if file has specified extension
      */
     public static FileFilter getExtensionFileFilter(String ext, String description) {
         return new ExtensionFileFilter(ext, description);
-    }
-
-    static final class VelotemplateFileFilter extends FileFilter {
-
-        /**
-         * Accepts all *.vm files.
-         */
-        public boolean accept(File f) {
-            if (f.isDirectory()) {
-                return true;
-            }
-
-            String name = f.getName();
-            return (name.endsWith(".vm") && !name.equals(".vm"));
-        }
-
-        public String getDescription() {
-            return "Velocity Templates (*.vm)";
-        }
     }
 
     static final class ApplicationFileFilter extends FileFilter {
@@ -147,62 +96,6 @@ public class FileFilters {
          */
         public String getDescription() {
             return "DataMaps (*" + DATA_MAP_LOCATION_SUFFIX + ")";
-        }
-    }
-
-    static final class EOModelFileFilter extends FileFilter {
-
-        static final String EOM_SUFFIX = ".eomodeld";
-        static final String EOM_INDEX = "index" + EOM_SUFFIX;
-
-        /**
-         * Accepts all directories and <code>*.eomodeld/index.eomodeld</code> files.
-         */
-        public boolean accept(File f) {
-            if (f.isDirectory()) {
-                return true;
-            }
-
-            File parent = f.getParentFile();
-            return parent != null
-                    && parent.getName().endsWith(EOM_SUFFIX)
-                    && EOM_INDEX.equals(f.getName());
-        }
-
-        public String getDescription() {
-            return "*" + EOM_SUFFIX;
-        }
-    }
-
-    static final class EOModelSelectFilter extends FileFilter {
-
-        /**
-         * Accepts all directories and <code>*.eomodeld/index.eomodeld</code> files.
-         * 
-         * @see EOModelSelectFilter#accept(File)
-         */
-        public boolean accept(File f) {
-            if (f.isDirectory()) {
-                if (f.getName().endsWith(EOModelFileFilter.EOM_SUFFIX)
-                        && new File(f, EOModelFileFilter.EOM_INDEX).exists()) {
-
-                    return true;
-                }
-            }
-            else if (f.isFile()) {
-                File parent = f.getParentFile();
-                if (parent != null
-                        && parent.getName().endsWith(EOModelFileFilter.EOM_SUFFIX)
-                        && EOModelFileFilter.EOM_INDEX.equals(f.getName())) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        public String getDescription() {
-            return "*" + EOModelFileFilter.EOM_SUFFIX;
         }
     }
 

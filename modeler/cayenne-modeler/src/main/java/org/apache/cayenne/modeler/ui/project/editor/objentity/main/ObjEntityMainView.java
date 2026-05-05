@@ -48,7 +48,7 @@ import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.Show
 import org.apache.cayenne.modeler.ui.project.editor.objentity.classname.ClassNameUpdaterController;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.duplicates.DuplicatedAttributesDialog;
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
-import org.apache.cayenne.modeler.util.Comparators;
+import org.apache.cayenne.modeler.project.ProjectComparators;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
@@ -281,7 +281,7 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
         EntityResolver resolver = session.entityResolver();
         DataMap map = session.getSelectedDataMap();
         DbEntity[] dbEntities = resolver.getDbEntities().toArray(new DbEntity[0]);
-        Arrays.sort(dbEntities, Comparators.forDataMapChildren());
+        Arrays.sort(dbEntities, ProjectComparators.forDataMapChildren());
 
         DefaultComboBoxModel<DbEntity> dbModel = new DefaultComboBoxModel<>(dbEntities);
         dbModel.setSelectedItem(entity.getDbEntity());
@@ -297,7 +297,7 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
         // do not show this entity or any of the subentities
         List<ObjEntity> objEntities = map.getObjEntities().stream()
                 .filter(object -> entity != object && !object.isSubentityOf(entity))
-                .sorted(Comparators.forDataMapChildren())
+                .sorted(ProjectComparators.forDataMapChildren())
                 .collect(Collectors.toList());
         objEntities.add(0, NO_INHERITANCE);
 

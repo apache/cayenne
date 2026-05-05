@@ -44,18 +44,17 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
-import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.event.model.DataNodeEvent;
+import org.apache.cayenne.modeler.event.model.DbEntityEvent;
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.toolkit.filechooser.CMFileChooserPrefs;
 import org.apache.cayenne.modeler.ui.errors.ErrorsController;
-import org.apache.cayenne.modeler.project.ProjectSession;
-import org.apache.cayenne.modeler.util.FileFilters;
 import org.apache.cayenne.wocompat.EOModelProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -336,15 +335,18 @@ public class ImportEOModelAction extends AppAction {
      */
     static class EOModelChooser extends JFileChooser {
 
+        private static final FileFilter eomodelFilter = new EOModelFileFilter();
+        private static final FileFilter eomodelSelectFilter = new EOModelSelectFilter();
+
         protected FileFilter selectFilter;
         protected JDialog cachedDialog;
 
+
         public EOModelChooser(String title) {
-            super.setFileFilter(FileFilters.getEOModelFilter());
+            super.setFileFilter(eomodelFilter);
             super.setDialogTitle(title);
             super.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-
-            this.selectFilter = FileFilters.getEOModelSelectFilter();
+            this.selectFilter = eomodelSelectFilter;
         }
 
         public int showOpenDialog(Component parent) {
@@ -374,6 +376,62 @@ public class ImportEOModelAction extends AppAction {
                 cachedDialog = super.createDialog(parent);
             }
             return cachedDialog;
+        }
+    }
+
+    static final class EOModelFileFilter extends FileFilter {
+
+        static final String EOM_SUFFIX = ".eomodeld";
+        static final String EOM_INDEX = "index" + EOM_SUFFIX;
+
+        /**
+         * Accepts all directories and <code>*.eomodeld/index.eomodeld</code> files.
+         */
+        public boolean accept(File f) {
+            if (f.isDirectory()) {
+                return true;
+            }
+
+            File parent = f.getParentFile();
+            return parent != null
+                    && parent.getName().endsWith(EOM_SUFFIX)
+                    && EOM_INDEX.equals(f.getName());
+        }
+
+        public String getDescription() {
+            return "*" + EOM_SUFFIX;
+        }
+    }
+
+    static final class EOModelSelectFilter extends FileFilter {
+
+        /**
+         * Accepts all directories and <code>*.eomodeld/index.eomodeld</code> files.
+         *
+         * @see EOModelSelectFilter#accept(File)
+         */
+        public boolean accept(File f) {
+            if (f.isDirectory()) {
+                if (f.getName().endsWith(EOModelFileFilter.EOM_SUFFIX)
+                        && new File(f, EOModelFileFilter.EOM_INDEX).exists()) {
+
+                    return true;
+                }
+            }
+            else if (f.isFile()) {
+                File parent = f.getParentFile();
+                if (parent != null
+                        && parent.getName().endsWith(EOModelFileFilter.EOM_SUFFIX)
+                        && EOModelFileFilter.EOM_INDEX.equals(f.getName())) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public String getDescription() {
+            return "*" + EOModelFileFilter.EOM_SUFFIX;
         }
     }
 }

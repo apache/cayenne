@@ -41,7 +41,6 @@ import org.apache.cayenne.modeler.event.model.*;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.CallbackType;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
-import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.project.ConfigurationNodeParentGetter;
 import org.apache.cayenne.project.Project;
 
@@ -139,8 +138,8 @@ public class ProjectSession {
              * would be set.
              */
             result.sort(parent instanceof DataMap
-                    ? Comparators.forDataMapChildren()
-                    : Comparators.forDataDomainChildren());
+                    ? ProjectComparators.forDataMapChildren()
+                    : ProjectComparators.forDataDomainChildren());
 
             return result;
         }

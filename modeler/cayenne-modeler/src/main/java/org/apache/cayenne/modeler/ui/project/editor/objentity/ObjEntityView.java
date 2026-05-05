@@ -66,9 +66,9 @@ public class ObjEntityView extends ProjectTabbedPane {
     }
 
     private void initBindings() {
-        session().addObjEntityDisplayListener(this::currentObjEntityChanged);
-        session().addObjAttributeDisplayListener(this::currentObjAttributeChanged);
-        session().addObjRelationshipDisplayListener(this::currentObjRelationshipChanged);
+        session.addObjEntityDisplayListener(this::currentObjEntityChanged);
+        session.addObjAttributeDisplayListener(this::currentObjAttributeChanged);
+        session.addObjRelationshipDisplayListener(this::currentObjRelationshipChanged);
         addChangeListener(this::stateChanged);
     }
 
@@ -88,7 +88,7 @@ public class ObjEntityView extends ProjectTabbedPane {
     }
 
     private void resetRemoveButtons() {
-        GlobalActions globalActions = app().getActionManager();
+        GlobalActions globalActions = app.getActionManager();
 
         globalActions.getAction(RemoveAttributeAction.class).setEnabled(false);
         globalActions.getAction(RemoveRelationshipAction.class).setEnabled(false);

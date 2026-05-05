@@ -52,8 +52,8 @@ public class ProcedureTabbedView extends ProjectTabbedPane {
     }
 
     private void initBindings() {
-        session().addProcedureDisplayListener(this::currentProcedureChanged);
-        session().addProcedureParameterDisplayListener(this::currentProcedureParameterChanged);
+        session.addProcedureDisplayListener(this::currentProcedureChanged);
+        session.addProcedureParameterDisplayListener(this::currentProcedureParameterChanged);
         addChangeListener(this::stateChanged);
     }
 
@@ -67,8 +67,7 @@ public class ProcedureTabbedView extends ProjectTabbedPane {
     }
 
     private void currentProcedureChanged(ProcedureDisplayEvent e) {
-        app().getActionManager().getAction(
-                RemoveProcedureParameterAction.class).setEnabled(false);
+        app.getActionManager().getAction(RemoveProcedureParameterAction.class).setEnabled(false);
 
         if (e.getProcedure() == null)
             setVisible(false);

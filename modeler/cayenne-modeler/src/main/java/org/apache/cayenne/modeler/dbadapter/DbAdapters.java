@@ -17,16 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util;
-
-import java.awt.Component;
-import java.util.Collections;
-import java.util.Map;
-import java.util.TreeMap;
-
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JList;
-import javax.swing.ListCellRenderer;
+package org.apache.cayenne.modeler.dbadapter;
 
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.db2.DB2Adapter;
@@ -43,17 +34,19 @@ import org.apache.cayenne.dba.sqlite.SQLiteAdapter;
 import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
 
-public final class DbAdapterInfo {
+import java.util.Collections;
+import java.util.Map;
+import java.util.TreeMap;
 
-    private static final Map<String, String> DEFAULT_ADAPTER_LABELS = new TreeMap<String, String>();
-    private static final String[] standardAdapters = new String[] { JdbcAdapter.class.getName(),
+public final class DbAdapters {
+
+    private static final Map<String, String> DEFAULT_ADAPTER_LABELS = new TreeMap<>();
+    private static final String[] STANDARD_ADAPTERS = new String[]{JdbcAdapter.class.getName(),
             MySQLAdapter.class.getName(), OracleAdapter.class.getName(), SybaseAdapter.class.getName(),
             PostgresAdapter.class.getName(), H2Adapter.class.getName(), HSQLDBAdapter.class.getName(),
             DB2Adapter.class.getName(), SQLServerAdapter.class.getName(), FrontBaseAdapter.class.getName(),
             FirebirdAdapter.class.getName(), DerbyAdapter.class.getName(),
-            IngresAdapter.class.getName(), SQLiteAdapter.class.getName() };
-
-    private static final Map<String, String> IMMUTABLE_LABELS = Collections.unmodifiableMap(DEFAULT_ADAPTER_LABELS);
+            IngresAdapter.class.getName(), SQLiteAdapter.class.getName()};
 
     static {
         DEFAULT_ADAPTER_LABELS.put(JdbcAdapter.class.getName(), "Generic JDBC Adapter");
@@ -72,38 +65,11 @@ public final class DbAdapterInfo {
         DEFAULT_ADAPTER_LABELS.put(SQLiteAdapter.class.getName(), "SQLite Adapter");
     }
 
-    public static Map getStandardAdapterLabels() {
-        return IMMUTABLE_LABELS;
+    public static Map<String, String> getStandardAdapterLabels() {
+        return Collections.unmodifiableMap(DEFAULT_ADAPTER_LABELS);
     }
 
-    public static ListCellRenderer getListRenderer() {
-        return new DbAdapterListRenderer(DEFAULT_ADAPTER_LABELS);
-    }
-
-    public static String[] getStandardAdapters() {
-        return standardAdapters;
-    }
-
-    static final class DbAdapterListRenderer extends DefaultListCellRenderer {
-
-        Map adapterLabels;
-
-        DbAdapterListRenderer(Map adapterLabels) {
-            this.adapterLabels = (adapterLabels != null) ? adapterLabels : Collections.EMPTY_MAP;
-        }
-
-        public Component getListCellRendererComponent(JList list, Object object, int index, boolean arg3, boolean arg4) {
-
-            if (object instanceof Class) {
-                object = ((Class<?>) object).getName();
-            }
-
-            Object label = adapterLabels.get(object);
-            if (label == null) {
-                label = object;
-            }
-
-            return super.getListCellRendererComponent(list, label, index, arg3, arg4);
-        }
+    public static String[] standardAdapters() {
+        return STANDARD_ADAPTERS;
     }
 }

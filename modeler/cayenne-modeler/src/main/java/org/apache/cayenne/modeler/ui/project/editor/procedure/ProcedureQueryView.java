@@ -38,7 +38,7 @@ import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
-import org.apache.cayenne.modeler.util.Comparators;
+import org.apache.cayenne.modeler.project.ProjectComparators;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ProcedureQuery;
@@ -160,7 +160,7 @@ public class ProcedureQueryView extends ProjectPanel {
         Procedure[] roots = map.getProcedures().toArray(new Procedure[0]);
 
         if (roots.length > 1) {
-            Arrays.sort(roots, Comparators.forDataMapChildren());
+            Arrays.sort(roots, ProjectComparators.forDataMapChildren());
         }
 
         DefaultComboBoxModel<Procedure> model = new DefaultComboBoxModel<>(roots);

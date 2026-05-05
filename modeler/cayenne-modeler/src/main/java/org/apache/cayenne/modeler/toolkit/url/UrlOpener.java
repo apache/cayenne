@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.toolkit;
+package org.apache.cayenne.modeler.toolkit.url;
 
 import org.apache.cayenne.modeler.service.os.OperatingSystem;
 

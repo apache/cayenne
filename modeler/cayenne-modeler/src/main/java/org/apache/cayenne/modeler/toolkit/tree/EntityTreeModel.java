@@ -17,12 +17,13 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util;
+package org.apache.cayenne.modeler.toolkit.tree;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
+import org.apache.cayenne.modeler.project.ProjectComparators;
 
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
@@ -78,7 +79,7 @@ public class EntityTreeModel implements TreeModel {
 
         // wonder if linear search will be faster, considering that
         // this comparator uses reflection?
-        return Arrays.binarySearch(sortedChildren(node), (ConfigurationNode)child, Comparators.forNamedObjects());
+        return Arrays.binarySearch(sortedChildren(node), (ConfigurationNode)child, ProjectComparators.forNamedObjects());
     }
 
     public void addTreeModelListener(TreeModelListener listener) {
@@ -121,7 +122,7 @@ public class EntityTreeModel implements TreeModel {
 
             sortedForNode = nodes.toArray(new ConfigurationNode[0]);
 
-            Arrays.sort(sortedForNode, Comparators.forEntityChildren());
+            Arrays.sort(sortedForNode, ProjectComparators.forEntityChildren());
             sortedChildren.put(node, sortedForNode);
         }
 

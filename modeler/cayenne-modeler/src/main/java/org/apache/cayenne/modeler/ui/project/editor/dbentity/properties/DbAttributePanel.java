@@ -21,27 +21,25 @@ package org.apache.cayenne.modeler.ui.project.editor.dbentity.properties;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
-import org.apache.cayenne.modeler.event.model.DbAttributeListener;
-import org.apache.cayenne.modeler.project.ProjectSession;
-import org.apache.cayenne.modeler.service.action.GlobalActions;
-import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
-import org.apache.cayenne.modeler.ui.action.CutAttributeRelationshipAction;
-import org.apache.cayenne.modeler.ui.action.PasteAction;
-import org.apache.cayenne.modeler.ui.action.RemoveAttributeRelationshipAction;
 import org.apache.cayenne.modeler.event.display.DbAttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
-import org.apache.cayenne.modeler.toolkit.table.CMTablePrefs;
-import org.apache.cayenne.modeler.toolkit.table.BoardTableCellRenderer;
-import org.apache.cayenne.modeler.toolkit.table.CMTable;
-import org.apache.cayenne.modeler.toolkit.table.CMTablePanel;
-import org.apache.cayenne.modeler.toolkit.table.CMTextFieldCellEditor;
+import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
+import org.apache.cayenne.modeler.event.model.DbAttributeListener;
+import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
+import org.apache.cayenne.modeler.toolkit.table.BoardTableCellRenderer;
 import org.apache.cayenne.modeler.toolkit.table.CMComboBoxCellEditor;
-import org.apache.cayenne.modeler.toolkit.text.LimitedTextField;
+import org.apache.cayenne.modeler.toolkit.table.CMTable;
+import org.apache.cayenne.modeler.toolkit.table.CMTablePanel;
+import org.apache.cayenne.modeler.toolkit.table.CMTablePrefs;
+import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
+import org.apache.cayenne.modeler.ui.action.CutAttributeRelationshipAction;
+import org.apache.cayenne.modeler.ui.action.PasteAction;
+import org.apache.cayenne.modeler.ui.action.RemoveAttributeRelationshipAction;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -178,7 +176,7 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
 
         String[] types = TypesMapping.getDatabaseTypes();
         Arrays.sort(types);
-        JComboBox comboBox = new CMComboBox<>(types);
+        JComboBox<String> comboBox = new CMComboBox<>(types);
 
         // Types.NULL makes no sense as a column type
         comboBox.removeItem("NULL");
@@ -186,12 +184,6 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
 
         TableColumn typeColumn = table.getColumnModel().getColumn(DbAttributeTableModel.DB_ATTRIBUTE_TYPE);
         typeColumn.setCellEditor(new CMComboBoxCellEditor(comboBox));
-
-        TableColumn lengthColumn = table.getColumnModel().getColumn(DbAttributeTableModel.DB_ATTRIBUTE_MAX);
-        lengthColumn.setCellEditor(new CMTextFieldCellEditor(new LimitedTextField(10)));
-
-        TableColumn scaleColumn = table.getColumnModel().getColumn(DbAttributeTableModel.DB_ATTRIBUTE_SCALE);
-        scaleColumn.setCellEditor(new CMTextFieldCellEditor(new LimitedTextField(10)));
 
         CMTablePrefs.of(session.app().getPreferencesRepository(), "dbEntity/attributeTable")
                 .bind(table, null, DbAttributeTableModel.DB_ATTRIBUTE_NAME);

@@ -23,7 +23,7 @@ import java.awt.event.ActionEvent;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.AppAction;
-import org.apache.cayenne.modeler.toolkit.UrlOpener;
+import org.apache.cayenne.modeler.toolkit.url.UrlOpener;
 import org.apache.cayenne.util.LocalizedStringsHandler;
 
 public class DocumentationAction extends AppAction {

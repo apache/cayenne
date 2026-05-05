@@ -29,7 +29,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.modeler.toolkit.ValueTypes;
+import org.apache.cayenne.modeler.toolkit.valuetype.ValueTypes;
 
 import javax.swing.*;
 import java.awt.*;

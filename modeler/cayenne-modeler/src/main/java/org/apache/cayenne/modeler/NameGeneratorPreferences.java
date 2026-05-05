@@ -16,11 +16,10 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.util;
+package org.apache.cayenne.modeler;
 
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
-import org.apache.cayenne.modeler.Application;
 
 import java.util.Arrays;
 import java.util.Vector;
@@ -29,6 +28,7 @@ import java.util.prefs.Preferences;
 /**
  * Helper class to store/read information about naming strategies have been used
  */
+// TODO: this requires some refactoring (or removal)?
 public class NameGeneratorPreferences {
 
     private static final String STRATEGIES_PREFERENCE = "recentNameGenerators";

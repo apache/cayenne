@@ -33,7 +33,7 @@ import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
 import org.apache.cayenne.modeler.toolkit.combobox.CMUndoableComboBox;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.Renderers;
-import org.apache.cayenne.modeler.util.Comparators;
+import org.apache.cayenne.modeler.project.ProjectComparators;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -123,7 +123,7 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
         List<ObjEntity> objEntities = new ArrayList<>(map.getObjEntities());
 
         if (objEntities.size() > 1) {
-            objEntities.sort(Comparators.forDataMapChildren());
+            objEntities.sort(ProjectComparators.forDataMapChildren());
         }
 
         entities.setEnabled(fetchingDO && isEnabled());

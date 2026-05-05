@@ -23,7 +23,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.defaults.DefaultsUpdateDialog;
-import org.apache.cayenne.modeler.util.Comparators;
+import org.apache.cayenne.modeler.project.ProjectComparators;
 import org.apache.cayenne.util.Util;
 
 import java.awt.Window;
@@ -43,7 +43,7 @@ public class SuperclassUpdateDialog extends DefaultsUpdateDialog {
         String defaultSuperclass = dataMap.getDefaultSuperclass();
 
         dataMap.getObjEntities().stream()
-                .sorted(Comparators.forDataMapChildren()).forEach(entity -> {
+                .sorted(ProjectComparators.forDataMapChildren()).forEach(entity -> {
                     if (doAll || Util.isEmptyString(entity.getSuperClassName())) {
                         if (!Util.nullSafeEquals(defaultSuperclass, entity.getSuperClassName())) {
                             entity.setSuperClassName(defaultSuperclass);

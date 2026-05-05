@@ -22,7 +22,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.toolkit.filechooser.CMFileChooserPrefs;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.DataDomainGraphTab;
-import org.apache.cayenne.modeler.util.FileFilters;
+import org.apache.cayenne.modeler.toolkit.filechooser.FileFilters;
 import org.jgraph.JGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -30,33 +30,29 @@ import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.event.model.ProcedureEvent;
 import org.apache.cayenne.modeler.event.model.ProcedureParameterEvent;
 import org.apache.cayenne.modeler.event.model.ProcedureParameterListener;
-import org.apache.cayenne.modeler.toolkit.table.CMTablePrefs;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
+import org.apache.cayenne.modeler.toolkit.AppAction;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
-import org.apache.cayenne.modeler.toolkit.table.CMComboBoxCellEditor;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
+import org.apache.cayenne.modeler.toolkit.table.CMComboBoxCellEditor;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.toolkit.table.CMTablePanel;
-import org.apache.cayenne.modeler.toolkit.table.CMTextFieldCellEditor;
-import org.apache.cayenne.modeler.toolkit.text.LimitedTextField;
+import org.apache.cayenne.modeler.toolkit.table.CMTablePrefs;
 import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.CopyProcedureParameterAction;
 import org.apache.cayenne.modeler.ui.action.CreateProcedureParameterAction;
 import org.apache.cayenne.modeler.ui.action.CutAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.CutProcedureParameterAction;
-import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.action.PasteAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.RemoveProcedureParameterAction;
-import org.apache.cayenne.modeler.toolkit.ProjectPanel;
-import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
@@ -90,12 +86,7 @@ public class ProcedureParameterTab extends ProjectPanel implements ProcedurePara
         session.addProcedureDisplayListener(this);
         session.addProcedureParameterListener(this);
 
-        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-
-            public void valueChanged(ListSelectionEvent e) {
-                processExistingSelection(e);
-            }
-        });
+        table.getSelectionModel().addListSelectionListener(this::processExistingSelection);
 
         moveDown.addActionListener(this);
         moveUp.addActionListener(this);
@@ -281,25 +272,17 @@ public class ProcedureParameterTab extends ProjectPanel implements ProcedurePara
                 .getColumn(ProcedureParameterTableModel.PARAMETER_TYPE);
         String[] dbTypes = TypesMapping.getDatabaseTypes();
         Arrays.sort(dbTypes);
-        JComboBox typesEditor = new CMComboBox<>(dbTypes);
+        JComboBox<String> typesEditor = new CMComboBox<>(dbTypes);
         AutoCompletion.enable(typesEditor, session::getSelectedDataMap);
         typesColumn.setCellEditor(new CMComboBoxCellEditor(typesEditor));
 
         // direction column tweaking
         TableColumn directionColumn = table.getColumnModel()
                 .getColumn(ProcedureParameterTableModel.PARAMETER_DIRECTION);
-        JComboBox directionEditor = new CMComboBox<>(
+        JComboBox<String> directionEditor = new CMComboBox<>(
                 ProcedureParameterTableModel.PARAMETER_DIRECTION_NAMES);
         directionEditor.setEditable(false);
         directionColumn.setCellEditor(new CMComboBoxCellEditor(directionEditor));
-
-        TableColumn precisionColumn = table.getColumnModel().getColumn(ProcedureParameterTableModel.PARAMETER_PRECISION);
-        LimitedTextField limitedPrecisionField = new LimitedTextField(10);
-        precisionColumn.setCellEditor(new CMTextFieldCellEditor(limitedPrecisionField));
-
-        TableColumn lengthColumn = table.getColumnModel().getColumn(ProcedureParameterTableModel.PARAMETER_LENGTH);
-        LimitedTextField limitedLengthField = new LimitedTextField(10);
-        lengthColumn.setCellEditor(new CMTextFieldCellEditor(limitedLengthField));
 
         moveUp.setEnabled(false);
         moveDown.setEnabled(false);

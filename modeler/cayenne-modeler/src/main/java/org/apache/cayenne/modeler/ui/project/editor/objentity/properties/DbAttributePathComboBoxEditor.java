@@ -27,8 +27,8 @@ import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.toolkit.Renderers;
-import org.apache.cayenne.modeler.util.EntityTreeAttributeRelationshipFilter;
-import org.apache.cayenne.modeler.util.EntityTreeModel;
+import org.apache.cayenne.modeler.toolkit.tree.EntityTreeAttributeRelationshipFilter;
+import org.apache.cayenne.modeler.toolkit.tree.EntityTreeModel;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 

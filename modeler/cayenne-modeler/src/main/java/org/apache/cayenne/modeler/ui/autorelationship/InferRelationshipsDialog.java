@@ -30,7 +30,7 @@ import org.apache.cayenne.modeler.toolkit.ProjectDialog;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.InferRelationshipsUndoableEdit;
-import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
+import org.apache.cayenne.modeler.NameGeneratorPreferences;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,8 +62,6 @@ public class InferRelationshipsDialog extends ProjectDialog {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InferRelationshipsDialog.class);
     public static final String SELECTED_PROPERTY = "selected";
-    public static final int SELECT = 1;
-    public static final int CANCEL = 0;
 
     private final DataMap dataMap;
     private final List<InferredRelationship> inferredRelationships = new ArrayList<>();
@@ -78,9 +76,6 @@ public class InferRelationshipsDialog extends ProjectDialog {
 
     private ObjectNameGenerator strategy;
     private PropertyChangeSupport propertyChangeSupport;
-
-    @SuppressWarnings("unused")
-    private int choice = CANCEL;
 
     public InferRelationshipsDialog(ProjectSession session, Window owner, DataMap dataMap) {
         super(session, owner, "Infer Relationships", ModalityType.APPLICATION_MODAL);
@@ -367,7 +362,6 @@ public class InferRelationshipsDialog extends ProjectDialog {
 
         createNames();
         entitySelector.initBindings();
-        choice = SELECT;
     }
 
     private void generateAction() {
@@ -376,8 +370,7 @@ public class InferRelationshipsDialog extends ProjectDialog {
         for (InferredRelationship temp : selectedEntities) {
             DbRelationship rel = new DbRelationship(uniqueRelName(temp.getSource(), temp.getName()));
 
-            DbRelationshipEvent e = DbRelationshipEvent.ofAdd(
-                    app.getFrame(), rel, temp.getSource());
+            DbRelationshipEvent e = DbRelationshipEvent.ofAdd(app.getFrame(), rel, temp.getSource());
             session.fireDbRelationshipEvent(e);
 
             rel.setSourceEntity(temp.getSource());

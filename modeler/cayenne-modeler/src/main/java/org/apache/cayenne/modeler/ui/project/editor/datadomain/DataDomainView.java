@@ -57,7 +57,7 @@ public class DataDomainView extends ProjectTabbedPane {
 
     private void initLayout() {
         setTabPlacement(JTabbedPane.TOP);
-        addTab("Main", new JScrollPane(new DataDomainMainView(session())));
+        addTab("Main", new JScrollPane(new DataDomainMainView(session)));
         addTab("Db Import", dbImportView);
         addTab("Class Generation", cgenView);
         addTab("Graph", graphTab);
@@ -66,9 +66,9 @@ public class DataDomainView extends ProjectTabbedPane {
 
     private void initBindings() {
         addChangeListener(this::stateChanged);
-        session().addDomainDisplayListener(this::currentDomainChanged);
-        session().addObjEntityDisplayListener(this::onEntitySelected);
-        session().addDbEntityDisplayListener(this::onEntitySelected);
+        session.addDomainDisplayListener(this::currentDomainChanged);
+        session.addObjEntityDisplayListener(this::onEntitySelected);
+        session.addDbEntityDisplayListener(this::onEntitySelected);
     }
 
     private void onEntitySelected(ObjEntityDisplayEvent e) {

@@ -26,8 +26,8 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.AppAction;
-import org.apache.cayenne.modeler.util.EntityTreeFilter;
-import org.apache.cayenne.modeler.util.EntityTreeModel;
+import org.apache.cayenne.modeler.toolkit.tree.EntityTreeFilter;
+import org.apache.cayenne.modeler.toolkit.tree.EntityTreeModel;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 
 import javax.swing.BorderFactory;

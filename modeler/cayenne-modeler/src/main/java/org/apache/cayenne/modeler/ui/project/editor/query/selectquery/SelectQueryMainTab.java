@@ -37,7 +37,7 @@ import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.ExpressionConvertor;
 import org.apache.cayenne.modeler.ui.project.editor.query.BaseQueryMainTab;
 import org.apache.cayenne.modeler.ui.project.editor.query.ObjectQueryPropertiesPanel;
-import org.apache.cayenne.modeler.util.Comparators;
+import org.apache.cayenne.modeler.project.ProjectComparators;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
@@ -150,7 +150,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
         ObjEntity[] roots = map.getObjEntities().toArray(new ObjEntity[0]);
 
         if (roots.length > 1) {
-            Arrays.sort(roots, Comparators.forDataMapChildren());
+            Arrays.sort(roots, ProjectComparators.forDataMapChildren());
         }
 
         DefaultComboBoxModel<ObjEntity> model = new DefaultComboBoxModel<>(roots);

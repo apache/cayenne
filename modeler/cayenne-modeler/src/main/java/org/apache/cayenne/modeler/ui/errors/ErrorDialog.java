@@ -21,7 +21,7 @@
 package org.apache.cayenne.modeler.ui.errors;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.toolkit.UrlOpener;
+import org.apache.cayenne.modeler.toolkit.url.UrlOpener;
 import org.apache.cayenne.modeler.toolkit.buttons.CMButtonPanel;
 import org.apache.cayenne.modeler.toolkit.AppDialog;
 import org.apache.cayenne.util.LocalizedStringsHandler;

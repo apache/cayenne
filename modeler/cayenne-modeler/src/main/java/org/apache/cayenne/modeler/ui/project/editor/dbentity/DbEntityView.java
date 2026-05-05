@@ -60,14 +60,14 @@ public class DbEntityView extends ProjectTabbedPane {
     }
 
     private void initBindings() {
-        session().addDbEntityDisplayListener(this::currentDbEntityChanged);
-        session().addDbAttributeDisplayListener(this::currentDbAttributeChanged);
-        session().addDbRelationshipDisplayListener(this::currentDbRelationshipChanged);
+        session.addDbEntityDisplayListener(this::currentDbEntityChanged);
+        session.addDbAttributeDisplayListener(this::currentDbAttributeChanged);
+        session.addDbRelationshipDisplayListener(this::currentDbRelationshipChanged);
         addChangeListener(this::stateChanged);
     }
 
     private void resetRemoveButtons() {
-        GlobalActions globalActions = app().getActionManager();
+        GlobalActions globalActions = app.getActionManager();
 
         globalActions.getAction(RemoveAttributeAction.class).setEnabled(false);
         globalActions.getAction(RemoveRelationshipAction.class).setEnabled(false);

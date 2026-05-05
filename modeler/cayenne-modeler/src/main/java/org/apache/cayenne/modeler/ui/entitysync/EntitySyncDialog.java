@@ -31,7 +31,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.AppDialog;
-import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
+import org.apache.cayenne.modeler.NameGeneratorPreferences;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;

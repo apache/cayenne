@@ -25,18 +25,18 @@ import org.apache.cayenne.util.Util;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.time.LocalDate;
 
 /**
  * Displays the Cayenne license and build information.
  */
-public class AboutFrame extends JFrame implements FocusListener, KeyListener, MouseListener {
+public class AboutFrame extends JFrame {
 
     private static final String ABOUT_STRING = "(c) 2001-%d Apache Software Foundation and individual authors.<br><br>https://cayenne.apache.org/<br>";
 
@@ -94,9 +94,26 @@ public class AboutFrame extends JFrame implements FocusListener, KeyListener, Mo
     }
 
     private void initBindings() {
-        addMouseListener(this);
-        addFocusListener(this);
-        addKeyListener(this);
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                dispose();
+            }
+        });
+
+        addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                dispose();
+            }
+        });
+
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                dispose();
+            }
+        });
     }
 
     private static String getInfoString() {
@@ -130,38 +147,5 @@ public class AboutFrame extends JFrame implements FocusListener, KeyListener, Mo
         }
 
         return infoString;
-    }
-
-    public void keyPressed(KeyEvent e) {
-        dispose();
-    }
-
-    public void focusLost(FocusEvent e) {
-        dispose();
-    }
-
-    public void focusGained(FocusEvent e) {
-    }
-
-    public void keyReleased(KeyEvent e) {
-    }
-
-    public void keyTyped(KeyEvent e) {
-    }
-
-    public void mouseClicked(MouseEvent e) {
-        dispose();
-    }
-
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    public void mouseExited(MouseEvent e) {
-    }
-
-    public void mousePressed(MouseEvent e) {
-    }
-
-    public void mouseReleased(MouseEvent e) {
     }
 }

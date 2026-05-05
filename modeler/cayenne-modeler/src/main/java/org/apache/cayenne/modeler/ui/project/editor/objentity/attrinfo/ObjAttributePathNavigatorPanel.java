@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.objentity.attrinfo;
 
-import org.apache.cayenne.modeler.ui.project.editor.objentity.relinfo.ObjRelationshipPathBrowser;
+import org.apache.cayenne.modeler.ui.project.editor.objentity.relinfo.ObjRelationshipPathNavigatorPanel;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbRelationship;
 
@@ -27,12 +27,12 @@ import javax.swing.tree.TreePath;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class ObjAttributePathBrowser extends ObjRelationshipPathBrowser {
+public class ObjAttributePathNavigatorPanel extends ObjRelationshipPathNavigatorPanel {
 
     private final JButton selectPathButton;
     private final JButton doneButton;
 
-    public ObjAttributePathBrowser(JButton selectPathButton, JButton doneButton) {
+    public ObjAttributePathNavigatorPanel(JButton selectPathButton, JButton doneButton) {
         this.selectPathButton = selectPathButton;
         this.doneButton = doneButton;
     }
