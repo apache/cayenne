@@ -31,5 +31,4 @@ public interface DataMapListener extends EventListener {
     void dataMapAdded(DataMapEvent e);
 
     void dataMapRemoved(DataMapEvent e);
-
 }

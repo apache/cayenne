@@ -34,10 +34,15 @@ import java.util.List;
 class MainMenuBar extends JMenuBar {
 
     private final List<RecentFileListListener> recentFileListeners;
+    private final GlobalActions globalActions;
 
     MainMenuBar(GlobalActions globalActions) {
         this.recentFileListeners = new ArrayList<>();
+        this.globalActions = globalActions;
+        initLayout();
+    }
 
+    private void initLayout() {
         JMenu fileMenu = new JMenu("File");
         JMenu editMenu = new JMenu("Edit");
         JMenu viewMenu = new JMenu("View");

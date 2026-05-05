@@ -28,16 +28,10 @@ import java.util.EventListener;
  */
 public interface CallbackMethodListener extends EventListener {
 
-    /** Callback method changed.
-     * @param e event */
-    public void callbackMethodChanged(CallbackMethodEvent e);
+    void callbackMethodChanged(CallbackMethodEvent e);
 
-    /** Callback method has been created/added.
-     * @param e event*/
-    public void callbackMethodAdded(CallbackMethodEvent e);
+    void callbackMethodAdded(CallbackMethodEvent e);
 
-    /** Callback method has been removed.
-     * @param e event*/
-    public void callbackMethodRemoved(CallbackMethodEvent e);
+    void callbackMethodRemoved(CallbackMethodEvent e);
 }
 

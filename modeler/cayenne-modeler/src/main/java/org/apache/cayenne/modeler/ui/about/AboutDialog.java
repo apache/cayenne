@@ -57,16 +57,18 @@ public class AboutDialog extends AppFrame implements FocusListener, KeyListener,
 
     public AboutDialog(Application application) {
         super(application);
-        FlowLayout flowLayout = new FlowLayout();
-        getContentPane().setLayout(flowLayout);
-        getContentPane().setBackground(Color.WHITE);
-        this.setUndecorated(true);
-        this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        initLayout();
+        initBindings();
+        pack();
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
 
-        addMouseListener(this);
-        addFocusListener(this);
-        addKeyListener(this);
-        setLocationRelativeTo(null); // centre on screen
+    private void initLayout() {
+        getContentPane().setLayout(new FlowLayout());
+        getContentPane().setBackground(Color.WHITE);
+        setUndecorated(true);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         JPanel panel = new JPanel();
         panel.setLayout(new GridBagLayout());
@@ -77,28 +79,30 @@ public class AboutDialog extends AppFrame implements FocusListener, KeyListener,
         panel.add(image, new GridBagConstraints());
 
         JLabel license = new JLabel();
-        final GridBagConstraints gridBagConstraints_1 = new GridBagConstraints();
-        gridBagConstraints_1.fill = GridBagConstraints.HORIZONTAL;
-        gridBagConstraints_1.anchor = GridBagConstraints.NORTHWEST;
-        gridBagConstraints_1.gridx = 0;
-        gridBagConstraints_1.gridy = 1;
-        gridBagConstraints_1.insets = new Insets(0, 12, 0, 0);
-        panel.add(license, gridBagConstraints_1);
+        GridBagConstraints gbc1 = new GridBagConstraints();
+        gbc1.fill = GridBagConstraints.HORIZONTAL;
+        gbc1.anchor = GridBagConstraints.NORTHWEST;
+        gbc1.gridx = 0;
+        gbc1.gridy = 1;
+        gbc1.insets = new Insets(0, 12, 0, 0);
+        panel.add(license, gbc1);
         license.setText("<html><font size='-1' face='Arial,Helvetica'>Available under the Apache license.</font></html>");
 
         JLabel info = new JLabel();
-        final GridBagConstraints gridBagConstraints_2 = new GridBagConstraints();
-        gridBagConstraints_2.fill = GridBagConstraints.HORIZONTAL;
-        gridBagConstraints_2.anchor = GridBagConstraints.NORTHWEST;
-        gridBagConstraints_2.gridx = 0;
-        gridBagConstraints_2.gridy = 2;
-        gridBagConstraints_2.insets = new Insets(6, 12, 12, 12);
-        panel.add(info, gridBagConstraints_2);
-        info.setText(getInfoString(application));
+        GridBagConstraints gbc2 = new GridBagConstraints();
+        gbc2.fill = GridBagConstraints.HORIZONTAL;
+        gbc2.anchor = GridBagConstraints.NORTHWEST;
+        gbc2.gridx = 0;
+        gbc2.gridy = 2;
+        gbc2.insets = new Insets(6, 12, 12, 12);
+        panel.add(info, gbc2);
+        info.setText(getInfoString(app()));
+    }
 
-        this.pack();
-        this.setLocationRelativeTo(null);
-        this.setVisible(true);
+    private void initBindings() {
+        addMouseListener(this);
+        addFocusListener(this);
+        addKeyListener(this);
     }
 
     private static String getInfoString(Application application) {
