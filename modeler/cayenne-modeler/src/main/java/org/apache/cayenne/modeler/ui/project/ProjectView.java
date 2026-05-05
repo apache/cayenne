@@ -81,9 +81,11 @@ public class ProjectView extends ProjectPanel {
         treeNavigatePanel.add(treePanel, BorderLayout.CENTER);
 
         editorPanel = new EditorPanelView(session);
+        editorPanel.setMinimumSize(new Dimension(0, 0));
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true);
         splitPane.setDividerSize(2);
+        splitPane.setResizeWeight(0.0);
         splitPane.setBorder(BorderFactory.createEmptyBorder());
 
         JPanel leftPanel = new JPanel(new BorderLayout());
