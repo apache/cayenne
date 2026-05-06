@@ -21,21 +21,13 @@ package org.apache.cayenne.modeler.pref;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
 
-import java.util.prefs.Preferences;
-
-public final class DataMapPrefs implements PreferenceAdapter {
+public final class DataMapPrefs extends PreferenceAdapter {
 
     public static final String SUPERCLASS_PACKAGE_PROPERTY = "superclassPackage";
     public static final String DEFAULT_SUPERCLASS_PACKAGE_SUFFIX = "auto";
 
-    public static DataMapPrefs of(PreferencesRepository repository, DataMap dataMap) {
-        return new DataMapPrefs(repository.dataMapPref(dataMap, null));
-    }
-
-    private final Preferences pref;
-
-    private DataMapPrefs(Preferences pref) {
-        this.pref = pref;
+    public DataMapPrefs(PreferencesRepository repository, DataMap dataMap) {
+        super(repository.dataMapPref(dataMap, null));
     }
 
     /**
@@ -44,15 +36,13 @@ public final class DataMapPrefs implements PreferenceAdapter {
     public void setSuperclassPackage(String prefix, String suffix) {
         if (prefix == null) {
             prefix = "";
-        }
-        else if (prefix.endsWith(".")) {
+        } else if (prefix.endsWith(".")) {
             prefix = prefix.substring(0, prefix.length() - 1);
         }
 
         if (suffix == null) {
             suffix = "";
-        }
-        else if (suffix.startsWith(".")) {
+        } else if (suffix.startsWith(".")) {
             suffix = suffix.substring(1);
         }
 
@@ -61,11 +51,11 @@ public final class DataMapPrefs implements PreferenceAdapter {
     }
 
     public void setSuperclassPackage(String superclassPackage) {
-        if (pref != null) {
-            if(superclassPackage == null) {
+        if (prefs != null) {
+            if (superclassPackage == null) {
                 superclassPackage = "";
             }
-            pref.put(SUPERCLASS_PACKAGE_PROPERTY, superclassPackage);
+            prefs.put(SUPERCLASS_PACKAGE_PROPERTY, superclassPackage);
         }
     }
 
@@ -74,34 +64,34 @@ public final class DataMapPrefs implements PreferenceAdapter {
      * connection has been configured (URL not set).
      */
     public DBConnector getConnector() {
-        if (pref == null || pref.get(DBConnector.URL_PROPERTY, null) == null) {
+        if (prefs == null || prefs.get(DBConnector.URL_PROPERTY, null) == null) {
             return null;
         }
         DBConnector connector = new DBConnector();
-        connector.setDbAdapter(pref.get(DBConnector.DB_ADAPTER_PROPERTY, null));
-        connector.setUrl(pref.get(DBConnector.URL_PROPERTY, null));
-        connector.setUserName(pref.get(DBConnector.USER_NAME_PROPERTY, null));
-        connector.setPassword(pref.get(DBConnector.PASSWORD_PROPERTY, null));
-        connector.setJdbcDriver(pref.get(DBConnector.JDBC_DRIVER_PROPERTY, null));
+        connector.setDbAdapter(prefs.get(DBConnector.DB_ADAPTER_PROPERTY, null));
+        connector.setUrl(prefs.get(DBConnector.URL_PROPERTY, null));
+        connector.setUserName(prefs.get(DBConnector.USER_NAME_PROPERTY, null));
+        connector.setPassword(prefs.get(DBConnector.PASSWORD_PROPERTY, null));
+        connector.setJdbcDriver(prefs.get(DBConnector.JDBC_DRIVER_PROPERTY, null));
         return connector;
     }
 
     public void setConnector(DBConnector connector) {
-        if (pref == null) {
+        if (prefs == null) {
             return;
         }
         if (connector.getDbAdapter() != null) {
-            pref.put(DBConnector.DB_ADAPTER_PROPERTY, connector.getDbAdapter());
+            prefs.put(DBConnector.DB_ADAPTER_PROPERTY, connector.getDbAdapter());
         } else {
-            pref.remove(DBConnector.DB_ADAPTER_PROPERTY);
+            prefs.remove(DBConnector.DB_ADAPTER_PROPERTY);
         }
-        pref.put(DBConnector.URL_PROPERTY, connector.getUrl());
-        pref.put(DBConnector.USER_NAME_PROPERTY, connector.getUserName());
-        pref.put(DBConnector.PASSWORD_PROPERTY, connector.getPassword());
-        pref.put(DBConnector.JDBC_DRIVER_PROPERTY, connector.getJdbcDriver());
+        prefs.put(DBConnector.URL_PROPERTY, connector.getUrl());
+        prefs.put(DBConnector.USER_NAME_PROPERTY, connector.getUserName());
+        prefs.put(DBConnector.PASSWORD_PROPERTY, connector.getPassword());
+        prefs.put(DBConnector.JDBC_DRIVER_PROPERTY, connector.getJdbcDriver());
     }
 
     public boolean hasDbAdapter() {
-        return pref != null && pref.get(DBConnector.DB_ADAPTER_PROPERTY, null) != null;
+        return prefs != null && prefs.get(DBConnector.DB_ADAPTER_PROPERTY, null) != null;
     }
 }

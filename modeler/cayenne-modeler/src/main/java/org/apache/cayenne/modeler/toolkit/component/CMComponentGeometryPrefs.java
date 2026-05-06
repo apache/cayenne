@@ -25,23 +25,16 @@ import org.apache.cayenne.modeler.pref.PreferencesRepository;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.prefs.Preferences;
 
-public final class CMComponentGeometryPrefs implements PreferenceAdapter {
+public final class CMComponentGeometryPrefs extends PreferenceAdapter {
 
     private static final String HEIGHT_PROPERTY = "height";
     private static final String WIDTH_PROPERTY = "width";
     private static final String X_PROPERTY = "x";
     private static final String Y_PROPERTY = "y";
 
-    public static CMComponentGeometryPrefs of(PreferencesRepository repository, String path) {
-        return new CMComponentGeometryPrefs(repository.uiPref(path));
-    }
-
-    private final Preferences prefs;
-
-    private CMComponentGeometryPrefs(Preferences prefs) {
-        this.prefs = prefs;
+    public CMComponentGeometryPrefs(PreferencesRepository repository, String path) {
+        super(repository.uiPref(path));
     }
 
     public void bind(Component c, int defaultWidth, int defaultHeight) {

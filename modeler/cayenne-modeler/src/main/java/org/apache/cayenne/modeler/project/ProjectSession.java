@@ -200,14 +200,14 @@ public class ProjectSession {
         if (project == null) {
             return;
         }
-        ProjectPrefs.of(app.getPreferencesRepository(), project).flush(this);
+        new ProjectPrefs(app.getPreferencesRepository(), project).flush(this);
     }
 
     public void restoreSelectionFromPrefs() {
         if (project == null) {
             return;
         }
-        ProjectPrefs.of(app.getPreferencesRepository(), project).load(this);
+        new ProjectPrefs(app.getPreferencesRepository(), project).load(this);
     }
 
     public boolean isDirty() {

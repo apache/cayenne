@@ -447,7 +447,7 @@ public class CgenPanel extends ProjectPanel
             configuration.setRootPath(Utils.getRootPathForDataMap(map));
             configuration.updateOutputPath(basePath);
         }
-        configuration.setEncoding(GeneralPrefs.of(app.getPreferencesRepository()).getEncoding());
+        configuration.setEncoding(new GeneralPrefs(app.getPreferencesRepository()).getEncoding());
         return configuration;
     }
 

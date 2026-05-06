@@ -29,9 +29,8 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import java.util.Map;
-import java.util.prefs.Preferences;
 
-public final class CMTablePrefs implements PreferenceAdapter {
+public final class CMTablePrefs extends PreferenceAdapter {
 
     private static final String SORT_COLUMN_KEY = "sortColumn";
     private static final String SORT_ORDER_KEY = "sortOrder";
@@ -39,14 +38,8 @@ public final class CMTablePrefs implements PreferenceAdapter {
     private static final String ORDER_KEY = "colOrder";
     private static final String LISTENER_PROPERTY = "TablePrefs.listener";
 
-    private final Preferences prefs;
-
-    public static CMTablePrefs of(PreferencesRepository repository, String path) {
-        return new CMTablePrefs(repository.uiPref(path));
-    }
-
-    private CMTablePrefs(Preferences prefs) {
-        this.prefs = prefs;
+    public CMTablePrefs(PreferencesRepository repository, String path) {
+        super(repository.uiPref(path));
     }
 
     /**

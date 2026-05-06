@@ -158,7 +158,7 @@ public class LogConsole extends AppPanel implements LogAppender {
     }
 
     public void toggle() {
-        if (LogConsolePrefs.of(app.getPreferencesRepository()).toggleShowConsole()) {
+        if (new LogConsolePrefs(app.getPreferencesRepository()).toggleShowConsole()) {
             appear();
         } else {
             disappear();
@@ -166,7 +166,7 @@ public class LogConsole extends AppPanel implements LogAppender {
     }
 
     public void showConsoleIfNeeded() {
-        if (LogConsolePrefs.of(app.getPreferencesRepository()).isShowConsole()) {
+        if (new LogConsolePrefs(app.getPreferencesRepository()).isShowConsole()) {
             appear();
         }
     }

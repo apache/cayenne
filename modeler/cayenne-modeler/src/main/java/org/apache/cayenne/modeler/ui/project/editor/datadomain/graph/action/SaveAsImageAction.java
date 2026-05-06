@@ -60,7 +60,7 @@ public class SaveAsImageAction extends AppAction {
 		JFileChooser chooser = new JFileChooser();
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-		CMFileChooserPrefs.of(app.getPreferencesRepository(), "saveAsImage/lastDir").bind(chooser);
+		new CMFileChooserPrefs(app.getPreferencesRepository(), "saveAsImage/lastDir").bind(chooser);
 
 		chooser.setAcceptAllFileFilterUsed(false);
 

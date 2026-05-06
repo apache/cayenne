@@ -24,19 +24,13 @@ import org.apache.cayenne.modeler.pref.PreferencesRepository;
 
 import javax.swing.*;
 import java.beans.PropertyChangeListener;
-import java.util.prefs.Preferences;
 
-public final class CMSplitPanePrefs implements PreferenceAdapter {
+public final class CMSplitPanePrefs extends PreferenceAdapter {
 
-    private final Preferences prefs;
     private PropertyChangeListener listener;
 
-    public static CMSplitPanePrefs of(PreferencesRepository repository, String path) {
-        return new CMSplitPanePrefs(repository.uiPref(path));
-    }
-
-    private CMSplitPanePrefs(Preferences prefs) {
-        this.prefs = prefs;
+    public CMSplitPanePrefs(PreferencesRepository repository, String path) {
+        super(repository.uiPref(path));
     }
 
     public void bind(JSplitPane pane, int defaultLocation) {

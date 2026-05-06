@@ -27,19 +27,19 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.modeler.pref.DataMapPrefs;
+import org.apache.cayenne.modeler.project.ProjectComparators;
+import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
 import org.apache.cayenne.modeler.toolkit.combobox.CMUndoableComboBox;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
-import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.ui.action.LinkDataMapAction;
-import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.catalog.CatalogUpdateDialog;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.locking.LockingUpdateDialog;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.pkg.PackageUpdateDialog;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.schema.SchemaUpdateDialog;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.superclass.SuperclassUpdateDialog;
-import org.apache.cayenne.modeler.project.ProjectComparators;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
@@ -241,7 +241,7 @@ public class DataMapMainView extends ProjectPanel {
         dataMap.setDefaultPackage(newDefaultPackage);
 
         // update class generation preferences
-        DataMapPrefs.of(app.getPreferencesRepository(), dataMap)
+        new DataMapPrefs(app.getPreferencesRepository(), dataMap)
                 .setSuperclassPackage(newDefaultPackage, DataMapPrefs.DEFAULT_SUPERCLASS_PACKAGE_SUFFIX);
 
         session.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
@@ -331,6 +331,7 @@ public class DataMapMainView extends ProjectPanel {
         if (Util.nullSafeEquals(newName, oldName)) {
             return;
         }
+
         // completely new name, set new name for domain
         DataMapEvent e = DataMapEvent.ofChange(this, map, oldName);
         DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();

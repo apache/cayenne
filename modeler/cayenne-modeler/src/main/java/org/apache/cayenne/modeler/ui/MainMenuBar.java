@@ -152,7 +152,7 @@ class MainMenuBar extends JMenuBar {
          */
         public void rebuildFromPreferences() {
 
-            List<File> files = RecentProjectsPrefs.of(app.getPreferencesRepository()).getFiles();
+            List<File> files = new RecentProjectsPrefs(app.getPreferencesRepository()).getFiles();
 
             // read menus
             Component[] comps = getMenuComponents();

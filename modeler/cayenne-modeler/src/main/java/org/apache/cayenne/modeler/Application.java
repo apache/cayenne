@@ -147,7 +147,7 @@ public class Application {
 
         getPreferencesRepository().runMigrations();
 
-        this.dbConnectors = DBConnectorPrefs.loadAndBind(getPreferencesRepository());
+        this.dbConnectors = new DBConnectorPrefs(getPreferencesRepository()).getConnectors();
 
         refreshClassLoader();
 
@@ -191,7 +191,7 @@ public class Application {
      * Reinitializes ModelerClassLoader from preferences.
      */
     public void refreshClassLoader() {
-        List<String> values = ClasspathPrefs.of(getPreferencesRepository()).getEntries();
+        List<String> values = new ClasspathPrefs(getPreferencesRepository()).getEntries();
         if (!values.isEmpty()) {
             getClassLoader().setFiles(values.stream().map(File::new).collect(Collectors.toList()));
         }
@@ -199,8 +199,8 @@ public class Application {
 
     private File initialProjectFromPreferences() {
 
-        if (GeneralPrefs.of(getPreferencesRepository()).isAutoLoadProject()) {
-            List<File> files = RecentProjectsPrefs.of(getPreferencesRepository()).getFiles();
+        if (new GeneralPrefs(getPreferencesRepository()).isAutoLoadProject()) {
+            List<File> files = new RecentProjectsPrefs(getPreferencesRepository()).getFiles();
             if (!files.isEmpty()) {
                 return files.get(0);
             }

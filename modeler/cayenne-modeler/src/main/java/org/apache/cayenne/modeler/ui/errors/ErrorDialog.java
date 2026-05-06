@@ -53,7 +53,7 @@ public class ErrorDialog extends AppDialog {
         JEditorPane infoText = new JEditorPane("text/html", infoHTML(title));
         infoText.setBackground(pane.getBackground());
         infoText.setEditable(false);
-      
+
         infoText.addHyperlinkListener(e -> {
             if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
                 UrlOpener.displayURL(e.getURL().toExternalForm());

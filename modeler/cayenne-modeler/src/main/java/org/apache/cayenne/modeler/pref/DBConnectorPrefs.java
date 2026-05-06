@@ -30,7 +30,7 @@ import java.util.prefs.Preferences;
  * Loads {@link DBConnectors} from the user prefs and binds the registry's
  * change events to the prefs node, so registry mutations are mirrored to disk.
  */
-public class DBConnectorPrefs implements PreferenceAdapter {
+public class DBConnectorPrefs extends PreferenceAdapter {
 
     static final String NODE = "dbConnectors";
 
@@ -40,14 +40,16 @@ public class DBConnectorPrefs implements PreferenceAdapter {
     private static final String URL_PROPERTY = "url";
     private static final String USER_NAME_PROPERTY = "userName";
 
-    public static DBConnectors loadAndBind(PreferencesRepository repository) {
-        Preferences root = repository.appPref(NODE);
+    public DBConnectorPrefs(PreferencesRepository repository) {
+        super(repository.appPref(NODE));
+    }
 
+    public DBConnectors getConnectors() {
         DBConnectors connectors = new DBConnectors();
 
         try {
-            for (String name : root.childrenNames()) {
-                connectors.put(name, loadConnector(root.node(name)));
+            for (String name : prefs.childrenNames()) {
+                connectors.put(name, loadConnector(prefs.node(name)));
             }
         } catch (BackingStoreException e) {
             throw new CayenneRuntimeException("Error loading data source preferences", e);
@@ -56,13 +58,13 @@ public class DBConnectorPrefs implements PreferenceAdapter {
         connectors.addListener(new DBConnectors.Listener() {
             @Override
             public void connectionUpdated(String name) {
-                storeConnector(root.node(name), connectors.get(name));
+                storeConnector(prefs.node(name), connectors.get(name));
             }
 
             @Override
             public void connectionRemoved(String name) {
                 try {
-                    root.node(name).removeNode();
+                    prefs.node(name).removeNode();
                 } catch (BackingStoreException e) {
                     throw new CayenneRuntimeException("Error removing data source preference", e);
                 }

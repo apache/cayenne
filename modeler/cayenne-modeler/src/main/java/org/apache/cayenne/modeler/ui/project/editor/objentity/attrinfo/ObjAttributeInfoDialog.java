@@ -411,7 +411,7 @@ public class ObjAttributeInfoDialog extends ProjectDialog implements TreeSelecti
                 .getColumn(OverrideEmbeddableAttributeTableModel.DB_ATTRIBUTE_TYPE);
         dbAttrTypeColumn.setCellRenderer(renderer);
 
-        CMTablePrefs.of(app.getPreferencesRepository(), "objEntity/overrideAttributeTable")
+        new CMTablePrefs(app.getPreferencesRepository(), "objEntity/overrideAttributeTable")
                 .bind(overrideAttributeTable, null,
                         OverrideEmbeddableAttributeTableModel.OBJ_ATTRIBUTE);
 

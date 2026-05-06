@@ -230,7 +230,8 @@ public class DataNodeEditorPanel extends ProjectPanel {
         // passed validation, set value, then move prefs subtree to the new name...
         String oldName = node.getName();
         node.setName(newName);
-        DataNodePrefs.rename(app.getPreferencesRepository(), app.getFrame().getProjectSession().project(), oldName, newName);
+
+        new DataNodePrefs(app.getPreferencesRepository(), session.project(), oldName).rename(newName);
     }
 
     private DataNodePrefs nodePrefs() {
@@ -238,7 +239,7 @@ public class DataNodeEditorPanel extends ProjectPanel {
         if (selected == null) {
             throw new IllegalStateException("No DataNode selected");
         }
-        return DataNodePrefs.of(app.getPreferencesRepository(), app.getFrame().getProjectSession().project(), selected.getName());
+        return new DataNodePrefs(app.getPreferencesRepository(), session.project(), selected.getName());
     }
 
     private void dataSourceConfigAction() {

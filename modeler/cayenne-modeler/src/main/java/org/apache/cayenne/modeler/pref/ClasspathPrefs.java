@@ -26,22 +26,15 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
 
-public final class ClasspathPrefs implements PreferenceAdapter {
+public final class ClasspathPrefs extends PreferenceAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClasspathPrefs.class);
 
     public static final String NODE = "classpath";
 
-    private final Preferences prefs;
-
-    private ClasspathPrefs(Preferences prefs) {
-        this.prefs = prefs;
-    }
-
-    public static ClasspathPrefs of(PreferencesRepository repository) {
-        return new ClasspathPrefs(repository.appPref(NODE));
+    public ClasspathPrefs(PreferencesRepository repository) {
+        super(repository.appPref(NODE));
     }
 
     // Returns classpath entries in numeric-key order. Defensive against any

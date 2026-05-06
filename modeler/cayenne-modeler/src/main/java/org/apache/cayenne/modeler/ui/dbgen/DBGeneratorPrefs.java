@@ -22,12 +22,10 @@ import org.apache.cayenne.modeler.pref.PreferenceAdapter;
 import org.apache.cayenne.modeler.pref.PreferencesRepository;
 import org.apache.cayenne.project.Project;
 
-import java.util.prefs.Preferences;
-
 /**
  * Persistence for the DB Generator dialog's checkbox options.
  */
-public class DBGeneratorPrefs implements PreferenceAdapter {
+public class DBGeneratorPrefs extends PreferenceAdapter {
 
     static final String NODE = "dbGenerator";
 
@@ -37,14 +35,8 @@ public class DBGeneratorPrefs implements PreferenceAdapter {
     private static final String DROP_PK_PROPERTY = "dropPK";
     private static final String DROP_TABLES_PROPERTY = "dropTables";
 
-    public static DBGeneratorPrefs of(PreferencesRepository repository, Project project) {
-        return new DBGeneratorPrefs(repository.projectPref(project, NODE));
-    }
-
-    private final Preferences prefs;
-
-    private DBGeneratorPrefs(Preferences prefs) {
-        this.prefs = prefs;
+    public DBGeneratorPrefs(PreferencesRepository repository, Project project) {
+        super(repository.projectPref(project, NODE));
     }
 
     public boolean getCreateFK() {

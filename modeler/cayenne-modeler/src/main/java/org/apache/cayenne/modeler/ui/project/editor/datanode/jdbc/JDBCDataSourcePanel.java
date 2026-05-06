@@ -158,7 +158,7 @@ public class JDBCDataSourcePanel extends DataSourcePanel {
 
         DataSourceDescriptor projectDataSourceDescriptor = getNode().getDataSourceDescriptor();
 
-        String key = DataNodePrefs.of(
+        String key = new DataNodePrefs(
                 app.getPreferencesRepository(),
                 frame.getProjectSession().project(),
                 getNode().getName()).getLocalDataSource();

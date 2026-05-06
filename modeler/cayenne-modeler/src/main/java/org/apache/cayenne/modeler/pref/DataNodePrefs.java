@@ -20,40 +20,43 @@ package org.apache.cayenne.modeler.pref;
 
 import org.apache.cayenne.project.Project;
 
-import java.util.prefs.Preferences;
-
-public final class DataNodePrefs implements PreferenceAdapter {
+public final class DataNodePrefs extends PreferenceAdapter {
 
     public static final String LOCAL_DATA_SOURCE_PROPERTY = "localDataSource";
 
     static final String NODE = "dataNode";
 
-    private final Preferences pref;
+    private final PreferencesRepository repository;
+    private final Project project;
+
     private String localDataSource;
 
-    public static DataNodePrefs of(PreferencesRepository repository, Project project, String dataNodeName) {
-        return new DataNodePrefs(repository.projectPref(project, NODE + "/" + dataNodeName));
+    public DataNodePrefs(PreferencesRepository repository, Project project, String dataNodeName) {
+        super(repository.projectPref(project, NODE + "/" + dataNodeName));
+
+        // capture repo and project for the sake of "rename"
+        this.repository = repository;
+        this.project = project;
     }
 
-    public static void rename(PreferencesRepository repository, Project project, String oldName, String newName) {
-        Preferences parent = repository.projectPref(project, NODE);
-        PreferencesCopier.move(parent.node(oldName), parent.node(newName));
-    }
+    public DataNodePrefs rename(String newName) {
+        DataNodePrefs renamed = new DataNodePrefs(repository, project, newName);
 
-    private DataNodePrefs(Preferences pref) {
-        this.pref = pref;
+        // TODO: is this the correct behavior? In the DataMapPrefs we are doing "copy", not "move" to handle reverts
+        PreferencesCopier.move(prefs, renamed.prefs);
+        return renamed;
     }
 
     public void setLocalDataSource(String localDataSource) {
         this.localDataSource = localDataSource;
         if (localDataSource != null) {
-            pref.put(LOCAL_DATA_SOURCE_PROPERTY, localDataSource);
+            prefs.put(LOCAL_DATA_SOURCE_PROPERTY, localDataSource);
         }
     }
 
     public String getLocalDataSource() {
         if (localDataSource == null) {
-            localDataSource = pref.get(LOCAL_DATA_SOURCE_PROPERTY, "");
+            localDataSource = prefs.get(LOCAL_DATA_SOURCE_PROPERTY, "");
         }
         return localDataSource;
     }

@@ -19,8 +19,16 @@
 
 package org.apache.cayenne.modeler.pref;
 
+import java.util.prefs.Preferences;
+
 /**
- * A tag interface for Preferences to objects binding handlers.
+ * Superclass of objects linking preferences with components.
  */
-public interface PreferenceAdapter {
+public abstract class PreferenceAdapter {
+
+    protected final Preferences prefs;
+
+    protected PreferenceAdapter(Preferences prefs) {
+        this.prefs = prefs;
+    }
 }

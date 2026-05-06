@@ -44,6 +44,6 @@ public class ShowLogConsoleAction extends AppAction {
     }
 
     private Boolean isConsoleShown() {
-        return LogConsolePrefs.of(app.getPreferencesRepository()).isShowConsole();
+        return new LogConsolePrefs(app.getPreferencesRepository()).isShowConsole();
     }
 }

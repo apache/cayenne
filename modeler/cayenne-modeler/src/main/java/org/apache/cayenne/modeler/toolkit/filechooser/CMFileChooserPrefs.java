@@ -24,20 +24,13 @@ import org.apache.cayenne.modeler.pref.PreferencesRepository;
 
 import javax.swing.JFileChooser;
 import java.io.File;
-import java.util.prefs.Preferences;
 
-public final class CMFileChooserPrefs implements PreferenceAdapter {
+public final class CMFileChooserPrefs extends PreferenceAdapter {
 
     private static final String PATH_PROPERTY = "path";
 
-    private final Preferences prefs;
-
-    public static CMFileChooserPrefs of(PreferencesRepository repository, String path) {
-        return new CMFileChooserPrefs(repository.uiPref(path));
-    }
-
-    private CMFileChooserPrefs(Preferences prefs) {
-        this.prefs = prefs;
+    public CMFileChooserPrefs(PreferencesRepository repository, String path) {
+        super(repository.uiPref(path));
     }
 
     public void bind(JFileChooser chooser) {

@@ -54,7 +54,7 @@ public class ClasspathPrefsPanel extends AppPanel {
     public ClasspathPrefsPanel(Application app) {
         super(app);
 
-        this.entries = new ArrayList<>(ClasspathPrefs.of(app.getPreferencesRepository()).getEntries());
+        this.entries = new ArrayList<>(new ClasspathPrefs(app.getPreferencesRepository()).getEntries());
         this.tableModel = new ClasspathTableModel();
         this.table = new CMTable();
         this.table.setRowMargin(3);
@@ -70,7 +70,7 @@ public class ClasspathPrefsPanel extends AppPanel {
     }
 
     public void commit() {
-        ClasspathPrefs.of(app.getPreferencesRepository()).setEntries(entries);
+        new ClasspathPrefs(app.getPreferencesRepository()).setEntries(entries);
         app.refreshClassLoader();
     }
 
@@ -139,7 +139,7 @@ public class ClasspathPrefsPanel extends AppPanel {
         chooser.setDialogType(JFileChooser.OPEN_DIALOG);
         chooser.setAcceptAllFileFilterUsed(true);
 
-        CMFileChooserPrefs.of(app.getPreferencesRepository(), "classpath/lastDir").bind(chooser);
+        new CMFileChooserPrefs(app.getPreferencesRepository(), "classpath/lastDir").bind(chooser);
         if (filter != null) {
             chooser.addChoosableFileFilter(filter);
             chooser.setFileFilter(filter);

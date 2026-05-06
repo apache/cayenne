@@ -60,13 +60,12 @@ import org.apache.cayenne.util.CayenneMapEntry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
 
 /**
  * Binding-style handler for the Modeler's last project selection. Loaded on project
  * open to restore selection, flushed on project close or Modeler close to persist it.
  */
-public final class ProjectPrefs implements PreferenceAdapter {
+public final class ProjectPrefs extends PreferenceAdapter {
 
     private static final String EVENT_KEY = "event";
 
@@ -97,14 +96,8 @@ public final class ProjectPrefs implements PreferenceAdapter {
         query, multipleObjects
     }
 
-    public static ProjectPrefs of(PreferencesRepository repository, Project project) {
-        return new ProjectPrefs(repository.projectPref(project, null));
-    }
-
-    private final Preferences prefs;
-
-    private ProjectPrefs(Preferences prefs) {
-        this.prefs = prefs;
+    public ProjectPrefs(PreferencesRepository repository, Project project) {
+        super(repository.projectPref(project, null));
     }
 
     public void load(ProjectSession session) {

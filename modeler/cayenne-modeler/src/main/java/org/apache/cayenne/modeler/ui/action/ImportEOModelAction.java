@@ -325,7 +325,7 @@ public class ImportEOModelAction extends AppAction {
             eoModelChooser = new EOModelChooser("Select EOModel");
         }
 
-        CMFileChooserPrefs.of(app.getPreferencesRepository(), "importEOModel/lastDir").bind(eoModelChooser);
+        new CMFileChooserPrefs(app.getPreferencesRepository(), "importEOModel/lastDir").bind(eoModelChooser);
 
         return eoModelChooser;
     }
@@ -335,7 +335,7 @@ public class ImportEOModelAction extends AppAction {
      */
     static class EOModelChooser extends JFileChooser {
 
-        private static final FileFilter eomodelFilter = new EOModelFileFilter();
+        static final FileFilter eomodelFilter = new EOModelFileFilter();
         private static final FileFilter eomodelSelectFilter = new EOModelSelectFilter();
 
         protected FileFilter selectFilter;
@@ -417,8 +417,7 @@ public class ImportEOModelAction extends AppAction {
 
                     return true;
                 }
-            }
-            else if (f.isFile()) {
+            } else if (f.isFile()) {
                 File parent = f.getParentFile();
                 if (parent != null
                         && parent.getName().endsWith(EOModelFileFilter.EOM_SUFFIX)
