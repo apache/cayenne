@@ -34,6 +34,7 @@ CAY-2928 Modeler: remove floating log console modality
 CAY-2929 Modeler: Prefrences management UI
 CAY-2930 Modeler: remove "rename" button from DB Import toolbar
 CAY-2932 Remove "Generate Classes" menu
+CAY-2933 Modeler: DB Type Column Unreadable for Selected Rows
 
 Bug Fixes:
 

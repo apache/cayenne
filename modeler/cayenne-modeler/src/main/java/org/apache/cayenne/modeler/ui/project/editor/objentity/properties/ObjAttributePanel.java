@@ -378,7 +378,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
             ObjAttribute attribute = model.getAttribute(row);
 
             if (!model.isCellEditable(row, column)) {
-                setForeground(isSelected ? new Color(0xEEEEEE) : Color.GRAY);
+                setForeground(isSelected ? table.getSelectionForeground() : Color.GRAY);
             } else {
                 setForeground(isSelected && !hasFocus ? table.getSelectionForeground() : table.getForeground());
             }
