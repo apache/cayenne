@@ -17,10 +17,8 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.util;
+package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.modeler.toolkit.filechooser.FileFilters;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.swing.filechooser.FileFilter;
@@ -32,31 +30,26 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EOModelFileFilterTest {
 
-    protected FileFilter filter;
-
-    @BeforeEach
-	public void setUp() throws Exception {
-		filter = FileFilters.getEOModelFilter();
-	}
+    protected FileFilter filter = ImportEOModelAction.EOModelChooser.eomodelFilter;
 
     @Test
-	public void testAcceptDir() throws Exception {
-		assertTrue(filter.accept(new File(".")));
-	}
+    public void testAcceptDir() {
+        assertTrue(filter.accept(new File(".")));
+    }
 
     @Test
-	public void testRejectIndexEOM() throws Exception {
-		assertFalse(filter.accept(new File("index.eomodeld")));
-	}
+    public void testRejectIndexEOM() {
+        assertFalse(filter.accept(new File("index.eomodeld")));
+    }
 
     @Test
-	public void testAcceptIndexEOM() throws Exception {
-		assertTrue(filter.accept(new File("some.eomodeld/index.eomodeld")));
-	}
+    public void testAcceptIndexEOM() {
+        assertTrue(filter.accept(new File("some.eomodeld/index.eomodeld")));
+    }
 
     @Test
-	public void testRejectOther() throws Exception {
-		assertFalse(filter.accept(new File("somefile.txt")));
-	}
+    public void testRejectOther() {
+        assertFalse(filter.accept(new File("somefile.txt")));
+    }
 }
 
