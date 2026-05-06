@@ -343,6 +343,7 @@ public class DataMapMainView extends ProjectPanel {
                 nodesUsingMap.add(node);
             }
         }
+        app.getPreferencesRepository().stageDataMapRename(map, newName);
         map.setName(newName);
         for (DataNodeDescriptor node : nodesUsingMap) {
             node.getDataMapNames().remove(oldName);

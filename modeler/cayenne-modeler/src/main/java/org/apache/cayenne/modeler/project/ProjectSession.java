@@ -182,6 +182,7 @@ public class ProjectSession {
     public void projectClosed() {
 
         setDirty(false);
+        app.getPreferencesRepository().resetTransientState();
 
         this.project = null;
         this.entityResolver = null;

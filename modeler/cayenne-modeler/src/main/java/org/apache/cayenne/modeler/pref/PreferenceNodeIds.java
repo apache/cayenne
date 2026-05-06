@@ -30,7 +30,7 @@ import java.util.prefs.Preferences;
  * characters, well below {@link Preferences#MAX_NAME_LENGTH}. The original absolute
  * path is meant to be stored alongside the node as a {@code path} value.
  */
-final class PreferenceNodeIds {
+class PreferenceNodeIds {
 
     static final int MAX_LEN = 60;
     static final int HASH_LEN = 16;

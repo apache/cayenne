@@ -19,6 +19,7 @@
 package org.apache.cayenne.modeler.pref;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.pref.migration.toV5._1_DbConnectorsMigration;
 import org.apache.cayenne.modeler.pref.migration.toV5._2_ClasspathMigration;
@@ -27,13 +28,15 @@ import org.apache.cayenne.modeler.pref.migration.toV5._4_RecentProjectsMigration
 import org.apache.cayenne.modeler.pref.migration.toV5._5_FrameGeometryMigration;
 import org.apache.cayenne.modeler.pref.migration.toV5._6_ProjectSplitPaneMigration;
 import org.apache.cayenne.modeler.pref.migration.toV5._7_EntityTablePrefsMigration;
+import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
+import java.io.File;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +44,7 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 
 /**
  * App-wide preferences service for the Modeler. Owns the layout under
@@ -67,10 +71,14 @@ public class PreferencesRepository {
     static final String PATH_KEY = "path";
     static final String UNSAVED_PREFIX = "unsaved-";
 
-    private final Preferences root;
-    private final Map<Project, String> unsavedProjectIds;
-    private final Map<DataMap, String> unsavedDataMapIds;
+    private final ConfigurationNameMapper nameMapper;
     private final List<PreferenceMigration> migrations;
+
+    private final Preferences root;
+    private final Map<Project, String> newProjectIds;
+    private final Map<DataMap, String> newDataMapIds;
+    private final Map<String, String> stagingDataMap;
+    private final Map<String, String> stagingProject;
 
     private static List<PreferenceMigration> toV5Migrations() {
         return Stream.of(
@@ -87,11 +95,14 @@ public class PreferencesRepository {
                 .collect(Collectors.toList());
     }
 
-    public PreferencesRepository() {
+    public PreferencesRepository(@Inject ConfigurationNameMapper nameMapper) {
+        this.nameMapper = nameMapper;
         this.root = Preferences.userRoot().node(ROOT_PATH);
         this.migrations = toV5Migrations();
-        this.unsavedProjectIds = new IdentityHashMap<>();
-        this.unsavedDataMapIds = new IdentityHashMap<>();
+        this.newProjectIds = new IdentityHashMap<>();
+        this.newDataMapIds = new IdentityHashMap<>();
+        this.stagingDataMap = new HashMap<>();
+        this.stagingProject = new HashMap<>();
     }
 
     public Preferences appPref(String relativePath) {
@@ -110,12 +121,7 @@ public class PreferencesRepository {
     }
 
     /**
-     * Returns the preferences node for the given {@link Project}, optionally
-     * descending into a {@code relativePath} sub-tree within it. If the project
-     * has been saved to disk, the project's subtree is keyed by a stable hash
-     * of its configuration file path; otherwise by a per-runtime
-     * {@code unsaved-<ts>} id assigned on first lookup. Pass {@code null} or
-     * an empty {@code relativePath} to get the project base node itself.
+     * Returns the preferences node for the given {@link Project}, optionally descending into a subtree within it.
      */
     public Preferences projectPref(Project project, String relativePath) {
         String id = projectId(project);
@@ -125,12 +131,7 @@ public class PreferencesRepository {
     }
 
     /**
-     * Returns the preferences node for the given {@link DataMap}, optionally
-     * descending into a {@code relativePath} sub-tree within it. Like
-     * {@link #projectPref(Project, String)}, the DataMap's subtree is keyed by
-     * file path when saved or by a {@code unsaved-<ts>} id otherwise. Pass
-     * {@code null} or an empty {@code relativePath} to get the DataMap base
-     * node itself.
+     * Returns the preferences node for the given {@link DataMap}, optionally descending into a subtree within it.
      */
     public Preferences dataMapPref(DataMap map, String relativePath) {
         String id = dataMapId(map);
@@ -141,27 +142,20 @@ public class PreferencesRepository {
 
     private String projectId(Project project) {
         String path = projectPath(project);
-        if (path != null) {
-            return PreferenceNodeIds.idForPath(path);
-        }
-        return unsavedProjectIds.computeIfAbsent(project, p -> newUnsavedId());
+        return path != null
+                ? PreferenceNodeIds.idForPath(path)
+                : newProjectIds.computeIfAbsent(project, p -> newUnsavedId());
     }
 
     private String dataMapId(DataMap map) {
         String path = dataMapPath(map);
-        if (path != null) {
-            return PreferenceNodeIds.idForPath(path);
-        }
-        return unsavedDataMapIds.computeIfAbsent(map, m -> newUnsavedId());
+        return path != null
+                ? PreferenceNodeIds.idForPath(path)
+                : newDataMapIds.computeIfAbsent(map, m -> newUnsavedId());
     }
 
     /**
-     * Reconciles preferences after a project save. For the project and every
-     * DataMap, if the current file-path-derived id differs from where its
-     * preferences subtree currently lives (an unsaved id, or a different saved
-     * id from a previous Save As), copies the subtree to the new id and removes
-     * the old. Updates the {@code projectIndex} / {@code dataMapIndex}
-     * reverse-lookup nodes. Idempotent.
+     * Reconciles preferences after a project save.
      */
     public void commitProject(Project project) {
         if (project == null) {
@@ -175,6 +169,76 @@ public class PreferencesRepository {
                 reconcileDataMap(map);
             }
         }
+
+        resetTransientState();
+    }
+
+    /**
+     * Records a pending DataMap rename so that {@link #commitProject(Project)} can migrate
+     * the DataMap's preferences subtree from the old node to the new one.
+     */
+    public void stageDataMapRename(DataMap map, String newName) {
+        String oldPath = dataMapPath(map);
+        if (oldPath == null) {
+            return;
+        }
+        int slash = oldPath.lastIndexOf('/');
+        String dir = slash >= 0 ? oldPath.substring(0, slash + 1) : "";
+        String newPath = dir + nameMapper.configurationLocation(DataMap.class, newName);
+        stagingDataMap.put(PreferenceNodeIds.idForPath(newPath), oldPath);
+    }
+
+    /**
+     * Records a pending project rename (domain name change) so that {@link #commitProject(Project)} can migrate project
+     * preferences from the old node to the new one.
+     */
+    public void stageProjectRename(Project project, String newDomainName) {
+        String oldPath = projectPath(project);
+        if (oldPath == null) {
+            return;
+        }
+        int slash = oldPath.lastIndexOf('/');
+        String dir = slash >= 0 ? oldPath.substring(0, slash + 1) : "";
+        String newPath = dir + nameMapper.configurationLocation(DataChannelDescriptor.class, newDomainName);
+        stagingProject.put(PreferenceNodeIds.idForPath(newPath), oldPath);
+    }
+
+    /**
+     * Records a pending DataMap move (project Save As) so that preferences are carried to
+     * the new location. Must be called before the save writes updated paths to disk.
+     */
+    public void stageDataMapMove(DataMap map, File newProjectDir) {
+        String oldPath = dataMapPath(map);
+        if (oldPath == null) {
+            return;
+        }
+        String newPath = new File(newProjectDir, nameMapper.configurationLocation(DataMap.class, map.getName())).getPath();
+        stagingDataMap.put(PreferenceNodeIds.idForPath(newPath), oldPath);
+    }
+
+    /**
+     * Records a pending project move (Save As) so that project-level preferences are
+     * carried to the new location. Must be called before the save writes updated paths.
+     */
+    public void stageProjectMove(Project project, File newProjectDir) {
+        String oldPath = projectPath(project);
+        if (oldPath == null) {
+            return;
+        }
+        String fileName = new File(oldPath).getName();
+        String newPath = new File(newProjectDir, fileName).getPath();
+        stagingProject.put(PreferenceNodeIds.idForPath(newPath), oldPath);
+    }
+
+    /**
+     * Resets all transient per-project state: in-memory unsaved-id bookkeeping and
+     * persisted staging records. Call on both project open and project close.
+     */
+    public void resetTransientState() {
+        newProjectIds.clear();
+        newDataMapIds.clear();
+        stagingDataMap.clear();
+        stagingProject.clear();
     }
 
     /**
@@ -184,9 +248,7 @@ public class PreferencesRepository {
      * to nested objects.
      */
     public String exportAsJson() {
-        StringBuilder sb = new StringBuilder();
-        appendNode(sb, root, 0);
-        return sb.toString();
+        return PreferencesJsonExporter.exportAsJson(root);
     }
 
     /**
@@ -214,8 +276,8 @@ public class PreferencesRepository {
         } catch (BackingStoreException e) {
             LOGGER.warn("Error deleting all preferences under '{}'", root.absolutePath(), e);
         }
-        unsavedProjectIds.clear();
-        unsavedDataMapIds.clear();
+        newProjectIds.clear();
+        newDataMapIds.clear();
 
         if (!importLegacyPreferences && !migrations.isEmpty()) {
             int highest = migrations.get(migrations.size() - 1).version();
@@ -260,7 +322,19 @@ public class PreferencesRepository {
             return;
         }
         String savedId = PreferenceNodeIds.idForPath(currentPath);
-        String oldId = unsavedProjectIds.remove(project);
+
+        String stagedOldPath = stagingProject.get(savedId);
+        if (stagedOldPath != null) {
+            String oldId = PreferenceNodeIds.idForPath(stagedOldPath);
+            if (!oldId.equals(savedId)) {
+                relocate(PROJECT_NODE, oldId, savedId, PROJECT_INDEX_NODE, currentPath);
+            } else {
+                recordPath(root.node(PROJECT_NODE).node(savedId), currentPath, PROJECT_INDEX_NODE, savedId);
+            }
+            return;
+        }
+
+        String oldId = newProjectIds.remove(project);
         if (oldId != null && !oldId.equals(savedId)) {
             relocate(PROJECT_NODE, oldId, savedId, PROJECT_INDEX_NODE, currentPath);
         } else {
@@ -274,7 +348,19 @@ public class PreferencesRepository {
             return;
         }
         String savedId = PreferenceNodeIds.idForPath(currentPath);
-        String oldId = unsavedDataMapIds.remove(map);
+
+        String stagedOldPath = stagingDataMap.get(savedId);
+        if (stagedOldPath != null) {
+            String oldId = PreferenceNodeIds.idForPath(stagedOldPath);
+            if (!oldId.equals(savedId)) {
+                relocate(DATAMAP_NODE, oldId, savedId, DATAMAP_INDEX_NODE, currentPath);
+            } else {
+                recordPath(root.node(DATAMAP_NODE).node(savedId), currentPath, DATAMAP_INDEX_NODE, savedId);
+            }
+            return;
+        }
+
+        String oldId = newDataMapIds.remove(map);
         if (oldId != null && !oldId.equals(savedId)) {
             relocate(DATAMAP_NODE, oldId, savedId, DATAMAP_INDEX_NODE, currentPath);
         } else {
@@ -286,6 +372,7 @@ public class PreferencesRepository {
         Preferences src = root.node(parentNode).node(oldId);
         Preferences dst = root.node(parentNode).node(newId);
         PreferencesCopier.move(src, dst);
+        appPref(indexNode).remove(oldId);
         recordPath(dst, path, indexNode, newId);
     }
 
@@ -301,113 +388,21 @@ public class PreferencesRepository {
         if (project == null) {
             return null;
         }
+
         Resource resource = project.getConfigurationResource();
-        if (resource == null) {
-            return null;
-        }
-        return resource.getURL().getPath();
+        return resource == null ? null : resource.getURL().getPath();
     }
 
     private static String dataMapPath(DataMap map) {
         if (map == null) {
             return null;
         }
+
         Resource resource = map.getConfigurationSource();
-        if (resource == null) {
-            return null;
-        }
-        return resource.getURL().getPath();
+        return resource == null ? null : resource.getURL().getPath();
     }
 
     private static String newUnsavedId() {
         return UNSAVED_PREFIX + System.currentTimeMillis() + "-" + System.nanoTime();
-    }
-
-    private static void appendNode(StringBuilder sb, Preferences node, int indent) {
-        String[] keys;
-        String[] children;
-        try {
-            keys = node.keys();
-            children = node.childrenNames();
-        } catch (BackingStoreException e) {
-            LOGGER.warn("Error reading preferences node '{}'", node.absolutePath(), e);
-            sb.append("{}");
-            return;
-        }
-
-        if (keys.length == 0 && children.length == 0) {
-            sb.append("{}");
-            return;
-        }
-
-        Arrays.sort(keys);
-        Arrays.sort(children);
-
-        sb.append("{\n");
-        boolean first = true;
-        for (String key : keys) {
-            if (!first) {
-                sb.append(",\n");
-            }
-            indent(sb, indent + 1);
-            appendString(sb, key);
-            sb.append(": ");
-            appendString(sb, node.get(key, ""));
-            first = false;
-        }
-        for (String childName : children) {
-            if (!first) {
-                sb.append(",\n");
-            }
-            indent(sb, indent + 1);
-            appendString(sb, childName);
-            sb.append(": ");
-            appendNode(sb, node.node(childName), indent + 1);
-            first = false;
-        }
-        sb.append('\n');
-        indent(sb, indent);
-        sb.append('}');
-    }
-
-    private static void appendString(StringBuilder sb, String s) {
-        sb.append('"');
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            switch (c) {
-                case '"':
-                    sb.append("\\\"");
-                    break;
-                case '\\':
-                    sb.append("\\\\");
-                    break;
-                case '\n':
-                    sb.append("\\n");
-                    break;
-                case '\r':
-                    sb.append("\\r");
-                    break;
-                case '\t':
-                    sb.append("\\t");
-                    break;
-                case '\b':
-                    sb.append("\\b");
-                    break;
-                case '\f':
-                    sb.append("\\f");
-                    break;
-                default:
-                    if (c < 0x20) {
-                        sb.append(String.format("\\u%04x", (int) c));
-                    } else {
-                        sb.append(c);
-                    }
-            }
-        }
-        sb.append('"');
-    }
-
-    private static void indent(StringBuilder sb, int level) {
-        sb.append("  ".repeat(Math.max(0, level)));
     }
 }
