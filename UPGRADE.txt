@@ -7,6 +7,8 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
 
 UPGRADING TO 5.0.M2
 
+* Per CAY-2935 Minimum required Java version for Apache Cayenne 5.0 is 21
+
 * Per CAY-2937 the visual graph feature (entity layout diagrams) has been removed from CayenneModeler.
 Existing `.graph.xml` files will be automatically deleted and their references removed
 from `cayenne-project.xml` when a project is opened in the Modeler and upgraded to the newest format.

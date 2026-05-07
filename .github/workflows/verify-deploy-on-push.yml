@@ -24,15 +24,15 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     name: JDK ${{ matrix.jdk }}, DB ${{ matrix.db-profile }}
-    continue-on-error: ${{ matrix.jdk == '22' }}
+    continue-on-error: ${{ matrix.jdk == '26' }}
     if: github.repository == 'apache/cayenne'
 
     strategy:
       matrix:
-        jdk: [11, 17, 21]
+        jdk: [21, 25]
         db-profile: [hsql, h2, derby, mysql-tc, postgres-tc, sqlserver-tc]
         include:
-          - jdk: 22
+          - jdk: 26
             db-profile: postgres-tc
       fail-fast: false # finish all jobs anyway
 
@@ -70,7 +70,7 @@ jobs:
         if: contains(env.POM_VERSION, '-SNAPSHOT')
         with:
           distribution: 'temurin'
-          java-version: 11
+          java-version: 21
           cache: 'maven'
 
       - name: Deploy snapshot
