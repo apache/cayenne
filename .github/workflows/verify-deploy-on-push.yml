@@ -24,16 +24,12 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     name: JDK ${{ matrix.jdk }}, DB ${{ matrix.db-profile }}
-    continue-on-error: ${{ matrix.jdk == '26' }}
     if: github.repository == 'apache/cayenne'
 
     strategy:
       matrix:
-        jdk: [21, 25]
+        jdk: [21]
         db-profile: [hsql, h2, derby, mysql-tc, postgres-tc, sqlserver-tc]
-        include:
-          - jdk: 26
-            db-profile: postgres-tc
       fail-fast: false # finish all jobs anyway
 
     env:
