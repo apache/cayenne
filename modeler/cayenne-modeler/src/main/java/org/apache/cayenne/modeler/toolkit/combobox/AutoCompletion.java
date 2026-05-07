@@ -21,9 +21,7 @@ package org.apache.cayenne.modeler.toolkit.combobox;
 
 import org.apache.cayenne.map.MappingNamespace;
 
-import javax.swing.JComboBox;
-import javax.swing.JList;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -41,11 +39,11 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
 
     private final SuggestionList suggestions;
 
-    private final JComboBox comboBox;
+    private final JComboBox<?> comboBox;
     private final JTextComponent textEditor;
     private final boolean allowsUserValues;
 
-    protected AutoCompletion(JComboBox comboBox, boolean strict, boolean allowsUserValues, Supplier<MappingNamespace> namespaceSupplier) {
+    protected AutoCompletion(JComboBox<?> comboBox, boolean strict, boolean allowsUserValues, Supplier<MappingNamespace> namespaceSupplier) {
         this.comboBox = comboBox;
         this.textEditor = ((JTextComponent) comboBox.getEditor().getEditorComponent());
         this.allowsUserValues = allowsUserValues;
@@ -57,7 +55,7 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
     /**
      * Enables auto-completion for specified combobox
      */
-    public static void enable(JComboBox comboBox, boolean strict, boolean allowsUserValues, Supplier<MappingNamespace> namespaceSupplier) {
+    public static void enable(JComboBox<?> comboBox, boolean strict, boolean allowsUserValues, Supplier<MappingNamespace> namespaceSupplier) {
         comboBox.setEditable(true);
         KeyListener[] listeners = comboBox.getEditor().getEditorComponent().getListeners(KeyListener.class);
         comboBox.setEditor(new CustomTypeComboBoxEditor(comboBox, allowsUserValues, namespaceSupplier));
@@ -77,7 +75,7 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
     /**
      * Enables auto-completion for specified combobox
      */
-    public static void enable(JComboBox comboBox, Supplier<MappingNamespace> namespaceSupplier) {
+    public static void enable(JComboBox<?> comboBox, Supplier<MappingNamespace> namespaceSupplier) {
         enable(comboBox, true, false, namespaceSupplier);
     }
 
@@ -110,6 +108,7 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
     public void keyTyped(KeyEvent e) {
     }
 
+    @Override
     public void run() {
         String text = textEditor.getText();
 
@@ -261,9 +260,8 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
     }
 
     private void suggestionListScrolling() {
-        JList list = suggestions.getList();
         int selectedIndex = suggestions.getSelectedIndex();
-        list.ensureIndexIsVisible(selectedIndex);
+        suggestions.getList().ensureIndexIsVisible(selectedIndex);
     }
 }
 
