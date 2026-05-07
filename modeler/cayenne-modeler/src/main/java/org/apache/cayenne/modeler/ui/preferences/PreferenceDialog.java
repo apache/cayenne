@@ -129,17 +129,12 @@ public class PreferenceDialog extends AppDialog {
     }
 
     private AppPanel panelFor(String cardKey) {
-        switch (cardKey) {
-            case DB_CONNECTORS_KEY:
-                return dbConnectorPrefs;
-            case CLASSPATH_KEY:
-                return classpathPrefs;
-            case MORE_KEY:
-                return morePrefs;
-            case GENERAL_KEY:
-            default:
-                return generalPrefs;
-        }
+        return switch (cardKey) {
+            case DB_CONNECTORS_KEY -> dbConnectorPrefs;
+            case CLASSPATH_KEY -> classpathPrefs;
+            case MORE_KEY -> morePrefs;
+            default -> generalPrefs;
+        };
     }
 
     private void initLayout() {

@@ -195,12 +195,12 @@ public class LogConsole extends AppPanel implements LogAppender {
     }
 
     private static AttributeSet styleFor(String level) {
-        switch (level) {
-            case "ERROR": return ERROR_STYLE;
-            case "FATAL": return FATAL_STYLE;
-            case "WARN":  return WARN_STYLE;
-            case "INFO":  return INFO_STYLE;
-            default:      return DEBUG_STYLE;
-        }
+        return switch (level) {
+            case "ERROR" -> ERROR_STYLE;
+            case "FATAL" -> FATAL_STYLE;
+            case "WARN" -> WARN_STYLE;
+            case "INFO" -> INFO_STYLE;
+            default -> DEBUG_STYLE;
+        };
     }
 }

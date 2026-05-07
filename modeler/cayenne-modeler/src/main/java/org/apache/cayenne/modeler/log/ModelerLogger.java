@@ -56,20 +56,14 @@ class ModelerLogger implements Logger {
     }
 
     private String getLevelName(byte level) {
-        switch (level) {
-            case LOG_LEVEL_INFO:
-                return INFO_LOG_NAME;
-            case LOG_LEVEL_DEBUG:
-                return DEBUG_LOG_NAME;
-            case LOG_LEVEL_TRACE:
-                return TRACE_LOG_NAME;
-            case LOG_LEVEL_WARN:
-                return WARN_LOG_NAME;
-            case LOG_LEVEL_ERROR:
-                return ERROR_LOG_NAME;
-            default:
-                throw new IllegalStateException("Unregistered log level - " + level);
-        }
+        return switch (level) {
+            case LOG_LEVEL_INFO -> INFO_LOG_NAME;
+            case LOG_LEVEL_DEBUG -> DEBUG_LOG_NAME;
+            case LOG_LEVEL_TRACE -> TRACE_LOG_NAME;
+            case LOG_LEVEL_WARN -> WARN_LOG_NAME;
+            case LOG_LEVEL_ERROR -> ERROR_LOG_NAME;
+            default -> throw new IllegalStateException("Unregistered log level - " + level);
+        };
     }
 
     private boolean isLevelEnabled(int logLevel) {

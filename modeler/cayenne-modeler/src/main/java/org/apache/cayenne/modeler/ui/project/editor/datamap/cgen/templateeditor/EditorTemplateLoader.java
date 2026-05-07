@@ -68,19 +68,12 @@ public class EditorTemplateLoader {
     }
 
     private TemplateType switchTypeToSingle(TemplateType type) {
-            switch (type) {
-                case ENTITY_SUBCLASS: {
-                    return TemplateType.ENTITY_SINGLE_CLASS;
-                }
-                case EMBEDDABLE_SUBCLASS: {
-                    return TemplateType.EMBEDDABLE_SINGLE_CLASS;
-                }
-                case DATAMAP_SUBCLASS: {
-                    return TemplateType.DATAMAP_SINGLE_CLASS;
-                }
-                default:
-                    throw new IllegalStateException("Illegal template type for singleClass " + type);
-            }
+        return switch (type) {
+            case ENTITY_SUBCLASS -> TemplateType.ENTITY_SINGLE_CLASS;
+            case EMBEDDABLE_SUBCLASS -> TemplateType.EMBEDDABLE_SINGLE_CLASS;
+            case DATAMAP_SUBCLASS -> TemplateType.DATAMAP_SINGLE_CLASS;
+            default -> throw new IllegalStateException("Illegal template type for singleClass " + type);
+        };
     }
 
 }

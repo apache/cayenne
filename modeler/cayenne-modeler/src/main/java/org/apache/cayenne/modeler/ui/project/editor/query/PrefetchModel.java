@@ -114,27 +114,21 @@ public class PrefetchModel extends AbstractTableModel {
     public static int getPrefetchType(String semantics) {
 
         //case 2: disjoint isn't use for SQLTemplate prefetch
-        switch (semantics){
-            case "Joint" :
-                return 1;
-            case "Disjoint":
-                return 2;
-            case "Disjoint by id":
-                return 3;
-            default: return 0;
-        }
+        return switch (semantics) {
+            case "Joint" -> 1;
+            case "Disjoint" -> 2;
+            case "Disjoint by id" -> 3;
+            default -> 0;
+        };
     }
 
     private static String getPrefetchTypeString(int semantics) {
-        switch (semantics){
-            case 1 :
-                return SelectQueryPrefetchTab.JOINT_PREFETCH_SEMANTICS;
-            case 2:
-                return SelectQueryPrefetchTab.DISJOINT_PREFETCH_SEMANTICS;
-            case 3:
-                return SelectQueryPrefetchTab.DISJOINT_BY_ID_PREFETCH_SEMANTICS;
-        }
-        return SelectQueryPrefetchTab.UNDEFINED_SEMANTICS;
+        return switch (semantics) {
+            case 1 -> SelectQueryPrefetchTab.JOINT_PREFETCH_SEMANTICS;
+            case 2 -> SelectQueryPrefetchTab.DISJOINT_PREFETCH_SEMANTICS;
+            case 3 -> SelectQueryPrefetchTab.DISJOINT_BY_ID_PREFETCH_SEMANTICS;
+            default -> SelectQueryPrefetchTab.UNDEFINED_SEMANTICS;
+        };
     }
 
     private boolean isToMany(String prefetch) {

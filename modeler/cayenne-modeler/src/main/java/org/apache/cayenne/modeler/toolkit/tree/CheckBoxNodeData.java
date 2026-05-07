@@ -43,15 +43,11 @@ public class CheckBoxNodeData {
     }
 
     public CheckBoxNodeData toggleState() {
-        switch (state) {
-            case DESELECTED:
-            case INDETERMINATE:
-                return withState(State.SELECTED);
-            case SELECTED:
-                return withState(State.DESELECTED);
-            default:
-                throw new IllegalStateException();
-        }
+        return switch (state) {
+            case DESELECTED, INDETERMINATE -> withState(State.SELECTED);
+            case SELECTED -> withState(State.DESELECTED);
+            default -> throw new IllegalStateException();
+        };
     }
 
     public CheckBoxNodeData withState(State state) {

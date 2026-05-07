@@ -206,28 +206,26 @@ public class ColorTreeRenderer extends DbImportTreeCellRenderer {
     }
 
     private Node<?> toLogicalNode(ObjectType type, String value, Node<?> logicalParent) {
-        switch (type) {
-            case CATALOG:
-                return new CatalogNode(value);
-            case SCHEMA:
-                return new SchemaNode(value, (CatalogNode)logicalParent);
-            case TABLE:
-                if(logicalParent instanceof CatalogNode) {
-                    return new CatalogTableNode(value, (CatalogNode)logicalParent);
+        return switch (type) {
+            case CATALOG -> new CatalogNode(value);
+            case SCHEMA -> new SchemaNode(value, (CatalogNode) logicalParent);
+            case TABLE -> {
+                if (logicalParent instanceof CatalogNode cn) {
+                    yield new CatalogTableNode(value, cn);
                 } else {
-                    return new SchemaTableNode(value, (SchemaNode)logicalParent);
+                    yield new SchemaTableNode(value, (SchemaNode) logicalParent);
                 }
-            case COLUMN:
-                return new ColumnNode(value, (TableNode<?>) logicalParent);
-            case PROCEDURE:
-                if(logicalParent instanceof CatalogNode) {
-                    return new CatalogProcedureNode(value, (CatalogNode)logicalParent);
+            }
+            case COLUMN -> new ColumnNode(value, (TableNode<?>) logicalParent);
+            case PROCEDURE -> {
+                if (logicalParent instanceof CatalogNode cn) {
+                    yield new CatalogProcedureNode(value, cn);
                 } else {
-                    return new SchemaProcedureNode(value, (SchemaNode)logicalParent);
+                    yield new SchemaProcedureNode(value, (SchemaNode) logicalParent);
                 }
-            default:
-                return null;
-        }
+            }
+            default -> null;
+        };
     }
 
     private ObjectType getObjectType(Object object) {

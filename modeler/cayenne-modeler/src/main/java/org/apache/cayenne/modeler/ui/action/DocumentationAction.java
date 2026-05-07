@@ -59,13 +59,10 @@ public class DocumentationAction extends AppAction {
         }
         // build a major version in form of 'X.Y'
         String[] components = majorVersion.split("\\.");
-        switch (components.length) {
-            case 0:
-                return "";
-            case 1:
-                return components[0] + ".0";
-            default:
-                return String.join(".", components[0], components[1]);
-        }
+        return switch (components.length) {
+            case 0 -> "";
+            case 1 -> components[0] + ".0";
+            default -> String.join(".", components[0], components[1]);
+        };
     }
 }
