@@ -140,7 +140,7 @@ public class ObjAttributeTableModel extends CMTableModel<ObjAttribute> {
             case DB_ATTRIBUTE_TYPE:
                 return "DB Type";
             case LOCKING:
-                return "Used for Locking";
+                return "Locking";
             case LAZY:
                 return "Lazy loading";
             case COMMENT:
