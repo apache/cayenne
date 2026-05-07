@@ -73,6 +73,7 @@ class SortButtonRenderer extends DefaultTableCellRenderer {
 
         setText(value == null ? "" : value.toString());
         setFont(FONT);
+        setHorizontalAlignment(JLabel.CENTER);
         setHorizontalTextPosition(JLabel.LEFT);
         setBorder(BORDER);
         return this;
