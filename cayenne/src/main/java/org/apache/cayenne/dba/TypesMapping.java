@@ -591,8 +591,11 @@ public class TypesMapping {
 
 		@Override
 		public String toString() {
-			return "[   TypeInfo: " + name + "\n    JDBC Type: " + TypesMapping.getSqlNameByType(jdbcType)
-					+ "\n    Precision: " + precision + "\n]";
+			return """
+					[   TypeInfo: %s
+					    JDBC Type: %s
+					    Precision: %s
+					]""".formatted(name, TypesMapping.getSqlNameByType(jdbcType), precision);
 		}
 	}
 

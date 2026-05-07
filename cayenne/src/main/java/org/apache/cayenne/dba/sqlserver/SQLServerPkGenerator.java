@@ -118,10 +118,11 @@ public class SQLServerPkGenerator extends OraclePkGenerator {
 
     @Override
     protected String selectAllSequencesQuery() {
-        return "SELECT seq.name"
-                + " FROM sys.sequences AS seq"
-                + " JOIN sys.schemas AS sch"
-                + " ON seq.schema_id = sch.schema_id";
+        return """
+                SELECT seq.name
+                FROM sys.sequences AS seq
+                JOIN sys.schemas AS sch
+                ON seq.schema_id = sch.schema_id""";
     }
 
     @Override

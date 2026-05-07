@@ -198,9 +198,12 @@ public class SybasePkGenerator extends JdbcPkGenerator {
 	}
 
 	private String unsafePkProcCreate() {
-		return " CREATE PROCEDURE auto_pk_for_table @tname VARCHAR(32), @pkbatchsize INT AS BEGIN BEGIN TRANSACTION"
-				+ " UPDATE AUTO_PK_SUPPORT set NEXT_ID = NEXT_ID + @pkbatchsize WHERE TABLE_NAME = @tname"
-				+ " SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = @tname COMMIT END";
+		return """
+				CREATE PROCEDURE auto_pk_for_table @tname VARCHAR(32), @pkbatchsize INT AS BEGIN
+				BEGIN TRANSACTION
+				UPDATE AUTO_PK_SUPPORT set NEXT_ID = NEXT_ID + @pkbatchsize WHERE TABLE_NAME = @tname
+				SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = @tname
+				COMMIT END""";
 	}
 
 	private String safePkProcDrop() {

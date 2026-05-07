@@ -121,13 +121,14 @@ public class DataSourceDescriptor implements Serializable, XMLSerializable {
 
     @Override
     public String toString() {
-        return "[" + getClass().getName() + ":" +
-                "\n   driver: " + jdbcDriver +
-                "\n   url: " + dataSourceUrl +
-                "\n   user name: " + userName +
-                "\n   password: " + "**********" +
-                "\n   min. connections: " + minConnections +
-                "\n   max. connections: " + maxConnections +
-                "\n]";
+        return """
+                [%s:
+                   driver: %s
+                   url: %s
+                   user name: %s
+                   password: **********
+                   min. connections: %d
+                   max. connections: %d
+                ]""".formatted(getClass().getName(), jdbcDriver, dataSourceUrl, userName, minConnections, maxConnections);
     }
 }
