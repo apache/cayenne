@@ -25,7 +25,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -84,7 +83,7 @@ public class OracleAdapter extends JdbcAdapter {
 
 	protected static boolean supportsOracleLOB;
 
-	private List<String> SYSTEM_SCHEMAS = Arrays.asList(
+	private List<String> SYSTEM_SCHEMAS = List.of(
 			"ANONYMOUS", "APPQOSSYS", "AUDSYS", "CTXSYS", "DBSFWUSER",
 			"DBSNMP", "DIP", "DVF", "GGSYS", "DVSYS", "GSMADMIN_INTERNAL",
 			"GSMCATUSER", "GSMUSER", "LBACSYS", "MDDATA", "MDSYS", "OJVMSYS",

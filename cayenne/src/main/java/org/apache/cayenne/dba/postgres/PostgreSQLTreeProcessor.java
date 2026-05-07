@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.dba.postgres;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -45,9 +43,9 @@ import org.apache.cayenne.value.Wkt;
  */
 public class PostgreSQLTreeProcessor extends TypeAwareSQLTreeProcessor {
 
-    private static final Set<String> EXTRACT_FUNCTION_NAMES = new HashSet<>(Arrays.asList(
+    private static final Set<String> EXTRACT_FUNCTION_NAMES = Set.of(
         "DAY_OF_MONTH", "DAY", "MONTH", "HOUR", "WEEK", "YEAR", "DAY_OF_WEEK", "DAY_OF_YEAR", "MINUTE", "SECOND"
-    ));
+    );
 
     public PostgreSQLTreeProcessor() {
         registerProcessor(NodeType.LIMIT_OFFSET,    (ChildProcessor<LimitOffsetNode>)this::onLimitOffsetNode);

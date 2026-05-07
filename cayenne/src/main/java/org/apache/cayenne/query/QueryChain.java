@@ -24,8 +24,8 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * A Query decorator for a collection of other queries. Note that QueryChain will always
@@ -49,7 +49,7 @@ public class QueryChain implements Query {
      */
     public QueryChain(Query[] queries) {
         if (queries != null && queries.length > 0) {
-            this.chain = new ArrayList<>(Arrays.asList(queries));
+            this.chain = new ArrayList<>(List.of(queries));
         }
     }
 

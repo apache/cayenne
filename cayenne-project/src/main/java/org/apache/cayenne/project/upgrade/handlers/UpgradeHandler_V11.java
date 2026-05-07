@@ -36,7 +36,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -52,7 +51,7 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(UpgradeHandler_V11.class);
 
-    private static final List<String> defaultTemplatePaths = Arrays.asList(
+    private static final List<String> defaultTemplatePaths = List.of(
             "templates/v4_1/singleclass.vm",
             "templates/v4_1/superclass.vm",
             "templates/v4_1/subclass.vm",

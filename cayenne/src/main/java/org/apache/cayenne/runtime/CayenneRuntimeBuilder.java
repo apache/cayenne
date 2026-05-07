@@ -29,7 +29,6 @@ import org.apache.cayenne.di.spi.ModuleLoader;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -161,7 +160,7 @@ public class CayenneRuntimeBuilder {
 
     public CayenneRuntimeBuilder addConfigs(String... configurationLocations) {
         if (configurationLocations != null) {
-            configs.addAll(Arrays.asList(configurationLocations));
+            configs.addAll(List.of(configurationLocations));
         }
         return this;
     }

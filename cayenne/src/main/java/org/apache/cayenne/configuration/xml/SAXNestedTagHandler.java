@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.xml;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -82,8 +80,8 @@ public class SAXNestedTagHandler extends DefaultHandler {
     protected String unexpectedTagMessage(String tagFound, String... tagsExpected) {
 
         List<String> expected = tagsExpected != null
-                ? Arrays.asList(tagsExpected)
-                : Collections.emptyList();
+                ? List.of(tagsExpected)
+                : List.of();
 
         return String.format("tag <%s> is unexpected at [%d,%d]. The following tags are allowed here: %s",
                 tagFound,

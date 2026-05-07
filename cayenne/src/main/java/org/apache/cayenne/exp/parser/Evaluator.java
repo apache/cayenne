@@ -20,7 +20,6 @@ package org.apache.cayenne.exp.parser;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -176,7 +175,7 @@ abstract class Evaluator {
                 return equalNumbers((Number)lhs, rhs);
             }
             
-            private final List WHOLE_NUMBER_CLASSES = Arrays.asList(Byte.class, Short.class, Integer.class, AtomicInteger.class, Long.class, AtomicLong.class, BigInteger.class);
+            private final List WHOLE_NUMBER_CLASSES = List.of(Byte.class, Short.class, Integer.class, AtomicInteger.class, Long.class, AtomicLong.class, BigInteger.class);
 
             /**
              * Returns the widest primitive wrapper class given the two operands, used in preparation for 

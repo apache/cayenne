@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.project.validation;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.StringTokenizer;
 
 /**
@@ -30,7 +30,7 @@ import java.util.StringTokenizer;
  */
 public class NameValidationHelper {
 
-    static final Collection<String> RESERVED_JAVA_KEYWORDS = Arrays.asList(
+    static final Collection<String> RESERVED_JAVA_KEYWORDS = List.of(
             "abstract",
             "assert",
             "default",
@@ -88,7 +88,7 @@ public class NameValidationHelper {
 
     // a property is considered invalid if there is a getter or a setter for it in
     // java.lang.Object or PersistentObject
-    static final Collection<String> INVALID_JAVA_PROPERTIES = Arrays.asList(
+    static final Collection<String> INVALID_JAVA_PROPERTIES = List.of(
             "class",
             "committedSnapshot",
             "currentSnapshot",

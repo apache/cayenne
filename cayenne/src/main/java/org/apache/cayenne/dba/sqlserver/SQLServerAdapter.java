@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.dba.sqlserver;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -91,13 +90,13 @@ public class SQLServerAdapter extends SybaseAdapter {
 	 */
 	private Integer version;
 
-	private final List<String> SYSTEM_SCHEMAS = Arrays.asList(
+	private final List<String> SYSTEM_SCHEMAS = List.of(
 			"db_accessadmin", "db_backupoperator",
 			"db_datareader", "db_datawriter", "db_ddladmin", "db_denydatareader",
 			"db_denydatawriter", "sys", "db_owner", "db_securityadmin", "INFORMATION_SCHEMA"
 	);
 
-	private final List<String> SYSTEM_CATALOGS = Arrays.asList("model", "msdb", "tempdb");
+	private final List<String> SYSTEM_CATALOGS = List.of("model", "msdb", "tempdb");
 
 	public SQLServerAdapter(@Inject RuntimeProperties runtimeProperties,
 							@Inject(Constants.DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,

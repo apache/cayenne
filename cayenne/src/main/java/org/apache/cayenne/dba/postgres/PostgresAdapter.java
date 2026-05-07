@@ -22,7 +22,6 @@ package org.apache.cayenne.dba.postgres;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -67,7 +66,7 @@ public class PostgresAdapter extends JdbcAdapter {
 
 	public static final String BYTEA = "bytea";
 
-	private List<String> SYSTEM_SCHEMAS = Arrays.asList("information_schema", "pg_catalog");
+	private List<String> SYSTEM_SCHEMAS = List.of("information_schema", "pg_catalog");
 
 	public PostgresAdapter(@Inject RuntimeProperties runtimeProperties,
 						   @Inject(Constants.DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,

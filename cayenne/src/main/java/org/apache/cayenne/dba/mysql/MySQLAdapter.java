@@ -52,7 +52,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -81,7 +80,7 @@ import java.util.List;
 public class MySQLAdapter extends JdbcAdapter {
 
 	static final String DEFAULT_STORAGE_ENGINE = "InnoDB";
-	static final List<String> SYSTEM_CATALOGS = Arrays.asList("sys", "information_schema", "mysql", "performance_schema");
+	static final List<String> SYSTEM_CATALOGS = List.of("sys", "information_schema", "mysql", "performance_schema");
 
 	protected String storageEngine;
 
@@ -136,7 +135,7 @@ public class MySQLAdapter extends JdbcAdapter {
 		QuotingStrategy context = getQuotingStrategy();
 		buf.append(context.quotedFullyQualifiedName(table));
 
-		return Arrays.asList("SET FOREIGN_KEY_CHECKS=0", "DROP TABLE IF EXISTS " + buf.toString() + " CASCADE",
+		return List.of("SET FOREIGN_KEY_CHECKS=0", "DROP TABLE IF EXISTS " + buf.toString() + " CASCADE",
 				"SET FOREIGN_KEY_CHECKS=1");
 	}
 
