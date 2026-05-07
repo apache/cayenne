@@ -20,18 +20,13 @@
 package org.apache.cayenne.modeler.toolkit.table;
 
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
+import org.apache.cayenne.modeler.toolkit.combobox.ComboBoxPopup;
 
-import javax.swing.AbstractCellEditor;
-import javax.swing.JComboBox;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.table.TableCellEditor;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -50,8 +45,6 @@ public class CMComboBoxCellEditor extends AbstractCellEditor
     // so they need a custom action-listener-based path. This client property
     // is read by Swing's combo UI to keep the popup behavior table-friendly.
     static final String IS_TABLE_CELL_EDITOR_PROPERTY = "JComboBox.isTableCellEditor";
-
-    private static final int MAX_POPUP_WIDTH = 450;
 
     private final JComboBox<?> comboBox;
     private final boolean autocomplete;
@@ -108,7 +101,7 @@ public class CMComboBoxCellEditor extends AbstractCellEditor
         popup.setPreferredSize(null);
 
         int naturalWidth = scrollPane.getPreferredSize().width;
-        int targetWidth = Math.min(Math.max(naturalWidth, comboBox.getWidth()), MAX_POPUP_WIDTH);
+        int targetWidth = Math.min(Math.max(naturalWidth, comboBox.getWidth()), ComboBoxPopup.MAX_WIDTH);
 
         Dimension scrollSize = new Dimension(targetWidth, scrollPane.getPreferredSize().height);
         scrollPane.setPreferredSize(scrollSize);

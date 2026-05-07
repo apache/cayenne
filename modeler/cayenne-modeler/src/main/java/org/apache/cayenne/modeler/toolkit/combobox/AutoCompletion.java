@@ -36,43 +36,26 @@ import java.util.function.Supplier;
  *
  */
 public class AutoCompletion implements FocusListener, KeyListener, Runnable {
-    /**
-     * Property to mark combobox as 'auto-completing'
-     */
+
     public static final String AUTOCOMPLETION_PROPERTY = "JComboBox.autoCompletion";
 
-    /**
-     * A list with matching items
-     */
-    private final SuggestionList suggestionList;
+    private final SuggestionList suggestions;
 
-    /**
-     * Combo with auto-completion
-     */
     private final JComboBox comboBox;
-
     private final JTextComponent textEditor;
-
     private final boolean allowsUserValues;
 
     protected AutoCompletion(JComboBox comboBox, boolean strict, boolean allowsUserValues, Supplier<MappingNamespace> namespaceSupplier) {
         this.comboBox = comboBox;
-        textEditor = ((JTextComponent) comboBox.getEditor().getEditorComponent());
+        this.textEditor = ((JTextComponent) comboBox.getEditor().getEditorComponent());
         this.allowsUserValues = allowsUserValues;
-        suggestionList = new SuggestionList(comboBox, strict, namespaceSupplier);
+        this.suggestions = new SuggestionList(comboBox, strict, namespaceSupplier);
 
-        // Marking combobox as auto-completing
         comboBox.putClientProperty(AUTOCOMPLETION_PROPERTY, Boolean.TRUE);
     }
 
     /**
      * Enables auto-completion for specified combobox
-     *
-     * @param comboBox          Combo to be featured
-     * @param strict            Whether strict matching (check 'startWith' or 'contains') should be used
-     * @param allowsUserValues  Whether non-present items are allowed
-     * @param namespaceSupplier Supplies the {@link MappingNamespace} (typically the currently selected DataMap)
-     *                          used to render entity labels.
      */
     public static void enable(JComboBox comboBox, boolean strict, boolean allowsUserValues, Supplier<MappingNamespace> namespaceSupplier) {
         comboBox.setEditable(true);
@@ -98,24 +81,28 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
         enable(comboBox, true, false, namespaceSupplier);
     }
 
+    @Override
     public void focusGained(FocusEvent e) {
     }
 
+    @Override
     public void focusLost(FocusEvent e) {
-        suggestionList.hide();
+        suggestions.hide();
     }
 
+    @Override
     public void keyPressed(KeyEvent e) {
         handleKeyPressed(e);
     }
 
+    @Override
     public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_ENTER) {
             String text = textEditor.getText();
             if (comboBox.isShowing()) {
-                suggestionList.hide();
-                suggestionList.filter(text);
-                suggestionList.show();
+                suggestions.hide();
+                suggestions.filter(text);
+                suggestions.show();
             }
         }
     }
@@ -128,13 +115,13 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
 
         //need to hide first because Swing incorrectly updates popups (getSize() returns
         //dimension not the same as seen on the screen)
-        suggestionList.hide();
+        suggestions.hide();
 
         if (comboBox.isShowing()) {
-            suggestionList.filter(text);
+            suggestions.filter(text);
 
-            if (suggestionList.getItemCount() > 0) {
-                suggestionList.show();
+            if (suggestions.getItemCount() > 0) {
+                suggestions.show();
             }
         }
     }
@@ -144,7 +131,7 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
      * This might affect either suggestion list or original popup
      */
     private void handleKeyPressed(KeyEvent e) {
-        boolean suggest = suggestionList.isVisible();
+        boolean suggest = suggestions.isVisible();
 
         if (suggest) {
             processKeyPressedWhenSuggestionListIsVisible(e);
@@ -195,8 +182,8 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
     }
 
     private void processKeyPressedWhenSuggestionListIsVisible(KeyEvent e) {
-        int sel = suggestionList.getSelectedIndex();
-        int max = suggestionList.getItemCount() - 1;
+        int sel = suggestions.getSelectedIndex();
+        int max = suggestions.getItemCount() - 1;
         int next;
         switch (e.getKeyCode()) {
             case KeyEvent.VK_UP:
@@ -223,7 +210,7 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
                 processEnterPressed();
                 return;
             case KeyEvent.VK_ESCAPE:
-                suggestionList.hide();
+                suggestions.hide();
                 return;
             default:
                 //invoke in end of AWT thread so that information in textEditor would update
@@ -235,15 +222,15 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
     }
 
     private void processEnterPressed() {
-        Object value = suggestionList.getSelectedValue();
-        if (!allowsUserValues && value == null && suggestionList.getItemCount() > 0) {
-            value = suggestionList.getItemAt(0);
+        Object value = suggestions.getSelectedValue();
+        if (!allowsUserValues && value == null && suggestions.getItemCount() > 0) {
+            value = suggestions.getItemAt(0);
         }
         //reset the item (value == null) only if user values are not supported
         if (value != null || !allowsUserValues) {
             comboBox.setSelectedItem(value);
         }
-        suggestionList.hide();
+        suggestions.hide();
     }
 
     private void handleNavigationKeys(boolean suggest, int next, int sel, int max) {
@@ -263,7 +250,7 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
 
             if (next != sel) {
                 if (suggest) {
-                    suggestionList.setSelectedIndex(next);
+                    suggestions.setSelectedIndex(next);
                 } else {
                     comboBox.setPopupVisible(true);
                     comboBox.setSelectedIndex(next);
@@ -274,8 +261,8 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
     }
 
     private void suggestionListScrolling() {
-        JList list = suggestionList.getList();
-        int selectedIndex = suggestionList.getSelectedIndex();
+        JList list = suggestions.getList();
+        int selectedIndex = suggestions.getSelectedIndex();
         list.ensureIndexIsVisible(selectedIndex);
     }
 }

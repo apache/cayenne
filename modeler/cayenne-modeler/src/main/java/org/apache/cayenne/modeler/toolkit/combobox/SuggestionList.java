@@ -35,22 +35,21 @@ import java.util.function.Supplier;
  */
 class SuggestionList extends BasicComboPopup {
 
-    private static final int MAX_POPUP_WIDTH = 450;
+    private final Supplier<MappingNamespace> namespaceSupplier;
 
     /**
-     * 'Strict' matching, i.e. whether 'startWith' or 'contains' function
-     * should be used for checking match
+     * 'Strict' matching, i.e. whether 'startWith' or 'contains' function should be used for checking match
      */
     protected boolean strict;
 
-    private final Supplier<MappingNamespace> namespaceSupplier;
 
     public SuggestionList(JComboBox cb, boolean strict, Supplier<MappingNamespace> namespaceSupplier) {
         super(cb);
 
         this.strict = strict;
         this.namespaceSupplier = namespaceSupplier;
-        list.addMouseListener(new MouseHandler());
+        this.list.addMouseListener(new MouseHandler());
+
         setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
     }
 
@@ -60,7 +59,7 @@ class SuggestionList extends BasicComboPopup {
      * @param prefix user-typed string, used to filter
      */
     public void filter(String prefix) {
-        ComboBoxModel model = comboBox.getModel();
+        ComboBoxModel<?> model = comboBox.getModel();
         DefaultListModel lm = new DefaultListModel();
 
         for (int i = 0; i < model.getSize(); i++) {
@@ -105,7 +104,7 @@ class SuggestionList extends BasicComboPopup {
     protected Rectangle computePopupBounds(int px, int py, int pw, int ph) {
         Rectangle bounds = super.computePopupBounds(px, py, pw, ph);
         int naturalWidth = scroller.getPreferredSize().width;
-        int targetWidth = Math.min(Math.max(naturalWidth, pw), MAX_POPUP_WIDTH);
+        int targetWidth = Math.min(Math.max(naturalWidth, pw), ComboBoxPopup.MAX_WIDTH);
         return new Rectangle(bounds.x, bounds.y, targetWidth, bounds.height);
     }
 
