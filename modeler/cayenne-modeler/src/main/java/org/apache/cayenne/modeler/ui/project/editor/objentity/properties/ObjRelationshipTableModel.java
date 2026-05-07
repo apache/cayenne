@@ -84,7 +84,7 @@ public class ObjRelationshipTableModel extends CMTableModel<ObjRelationship> {
             case REL_TARGET:
                 return "Target";
             case REL_LOCKING:
-                return "Locking";
+                return "Lock";
             case REL_SEMANTICS:
                 return "Semantics";
             case REL_DELETE_RULE:
