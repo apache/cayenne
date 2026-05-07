@@ -204,8 +204,8 @@ public class ProjectTree extends JTree
             boolean hasFocus) {
 
         // unwrap
-        while (value instanceof DefaultMutableTreeNode) {
-            value = ((DefaultMutableTreeNode) value).getUserObject();
+        while (value instanceof DefaultMutableTreeNode node) {
+            value = node.getUserObject();
         }
 
         // String - just return it
@@ -214,8 +214,8 @@ public class ProjectTree extends JTree
         }
 
         // Project - return the name of top file
-        if (value instanceof Project) {
-            Resource resource = ((Project) value).getConfigurationResource();
+        if (value instanceof Project p) {
+            Resource resource = p.getConfigurationResource();
             return (resource != null) ? resource.getURL().getPath() : "";
         }
 
@@ -826,62 +826,62 @@ public class ProjectTree extends JTree
 
         DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
         Object obj = data[data.length - 1];
-        if (obj instanceof DataChannelDescriptor) {
-            session.displayDomain(new DomainDisplayEvent(this, (DataChannelDescriptor) obj));
-        } else if (obj instanceof DataMap) {
+        if (obj instanceof DataChannelDescriptor dcd) {
+            session.displayDomain(new DomainDisplayEvent(this, dcd));
+        } else if (obj instanceof DataMap dm) {
             if (data.length == 2) {
                 session.displayDataMap(new DataMapDisplayEvent(
                         this,
                         domain,
-                        (DataMap) obj,
+                        dm,
                         (DataNodeDescriptor) data[data.length - 2]));
             } else if (data.length == 1) {
                 session.displayDataMap(new DataMapDisplayEvent(
                         this,
                         domain,
-                        (DataMap) obj));
+                        dm));
             }
-        } else if (obj instanceof DataNodeDescriptor) {
+        } else if (obj instanceof DataNodeDescriptor dnd) {
             if (data.length == 1) {
                 session.displayDataNode(new DataNodeDisplayEvent(
                         this,
                         domain,
-                        (DataNodeDescriptor) obj));
+                        dnd));
             }
-        } else if (obj instanceof ObjEntity) {
+        } else if (obj instanceof ObjEntity oe) {
             session.displayObjEntity(new ObjEntityDisplayEvent(
                     this,
                     domain,
                     (DataMap) data[data.length - 2],
-                    (ObjEntity) obj,
+                    oe,
                     false,
                     true));
-        } else if (obj instanceof DbEntity) {
+        } else if (obj instanceof DbEntity de) {
             session.displayDbEntity(new DbEntityDisplayEvent(
                     this,
                     domain,
                     (DataMap) data[data.length - 2],
-                    (DbEntity) obj,
+                    de,
                     false,
                     true));
-        } else if (obj instanceof Embeddable) {
+        } else if (obj instanceof Embeddable emb) {
             session.displayEmbeddable(new EmbeddableDisplayEvent(
                     this,
                     domain,
                     (DataMap) data[data.length - 2],
-                    (Embeddable) obj));
-        } else if (obj instanceof Procedure) {
+                    emb));
+        } else if (obj instanceof Procedure proc) {
             session.displayProcedure(new ProcedureDisplayEvent(
                     this,
                     domain,
                     (DataMap) data[data.length - 2],
-                    (Procedure) obj));
-        } else if (obj instanceof QueryDescriptor) {
+                    proc));
+        } else if (obj instanceof QueryDescriptor qd) {
             session.displayQuery(new QueryDisplayEvent(
                     this,
                     domain,
                     (DataMap) data[data.length - 2],
-                    (QueryDescriptor) obj));
+                    qd));
         }
 
         scrollPathToVisible(path);

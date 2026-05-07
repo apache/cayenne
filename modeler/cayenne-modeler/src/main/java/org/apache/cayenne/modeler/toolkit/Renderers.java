@@ -81,12 +81,10 @@ public final class Renderers {
      * Converts non-String Object used in renderers (currently CayenneMapEntry instances only) to String
      */
     public static String asString(Object obj, MappingNamespace namespace) {
-        if (obj instanceof CayenneMapEntry) {
-            CayenneMapEntry mapObject = (CayenneMapEntry) obj;
+        if (obj instanceof CayenneMapEntry mapObject) {
             String label = mapObject.getName();
 
-            if (mapObject instanceof Entity) {
-                Entity<?, ?, ?> entity = (Entity<?, ?, ?>) mapObject;
+            if (mapObject instanceof Entity<?, ?, ?> entity) {
 
                 DataMap dataMap = entity.getDataMap();
                 if (dataMap != null && dataMap != namespace) {
@@ -95,8 +93,8 @@ public final class Renderers {
             }
 
             return label;
-        } else if (obj instanceof DataMap) {
-            return ((DataMap) obj).getName();
+        } else if (obj instanceof DataMap dm) {
+            return dm.getName();
         }
 
         return obj == null ? null : String.valueOf(obj);
@@ -105,10 +103,10 @@ public final class Renderers {
     public static String asString(Object object) {
         if (object == null) {
             return null;
-        } else if (object instanceof CayenneMapEntry) {
-            return ((CayenneMapEntry) object).getName();
-        } else if (object instanceof String) {
-            return (String) object;
+        } else if (object instanceof CayenneMapEntry cme) {
+            return cme.getName();
+        } else if (object instanceof String s) {
+            return s;
         } else {
             try {
                 // use reflection

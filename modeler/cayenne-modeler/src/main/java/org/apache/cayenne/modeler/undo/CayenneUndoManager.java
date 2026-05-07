@@ -53,8 +53,7 @@ public class CayenneUndoManager extends UndoManager {
     public void redo() throws CannotRedoException {
         UndoableEdit e = editToBeRedone();
 
-        if (e instanceof TextCompoundEdit) {
-            TextCompoundEdit edit = (TextCompoundEdit) e;
+        if (e instanceof TextCompoundEdit edit) {
 
             edit.watchCaretPosition();
 
@@ -72,8 +71,7 @@ public class CayenneUndoManager extends UndoManager {
     public void undo() throws CannotUndoException {
         UndoableEdit e = editToBeUndone();
 
-        if (e instanceof TextCompoundEdit) {
-            TextCompoundEdit edit = (TextCompoundEdit) e;
+        if (e instanceof TextCompoundEdit edit) {
 
             edit.watchCaretPosition();
 

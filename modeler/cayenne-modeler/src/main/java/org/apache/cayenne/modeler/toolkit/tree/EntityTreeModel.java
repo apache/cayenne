@@ -148,10 +148,10 @@ public class EntityTreeModel implements TreeModel {
     }
 
     private Entity<?,?,?> entityForNonLeafNode(Object node) {
-        if (node instanceof Entity) {
-            return (Entity<?,?,?>) node;
-        } else if (node instanceof Relationship) {
-            return ((Relationship<?,?,?>) node).getTargetEntity();
+        if (node instanceof Entity<?,?,?> e) {
+            return e;
+        } else if (node instanceof Relationship<?,?,?> r) {
+            return r.getTargetEntity();
         }
 
         String className = (node != null) ? node.getClass().getName() : "null";

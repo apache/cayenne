@@ -113,10 +113,9 @@ public class PKDBGeneratorPanel extends PKGeneratorPanel {
             // listen for selection changes of the new entity
             attributes.addItemListener(e -> {
                 Object item = e.getItem();
-                if (item instanceof DbAttribute) {
+                if (item instanceof DbAttribute a) {
 
                     boolean generated = e.getStateChange() == ItemEvent.SELECTED;
-                    DbAttribute a = (DbAttribute) item;
 
                     if (a.isGenerated() != generated) {
                         a.setGenerated(generated);
@@ -139,8 +138,7 @@ public class PKDBGeneratorPanel extends PKGeneratorPanel {
                 boolean isSelected,
                 boolean cellHasFocus) {
 
-            if (value instanceof DbAttribute) {
-                DbAttribute a = (DbAttribute) value;
+            if (value instanceof DbAttribute a) {
                 String type = TypesMapping.getSqlNameByType(a.getType());
                 value = a.getName() + " (" + (type != null ? type : "?") + ")";
             }

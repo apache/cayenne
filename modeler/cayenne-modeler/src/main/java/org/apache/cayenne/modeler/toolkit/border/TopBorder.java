@@ -61,8 +61,7 @@ public class TopBorder extends AbstractBorder {
 
     @Override
     public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-        if ((this.thickness > 0) && (g instanceof Graphics2D)) {
-            Graphics2D g2d = (Graphics2D) g;
+        if ((this.thickness > 0) && (g instanceof Graphics2D g2d)) {
 
             Color oldColor = g2d.getColor();
             g2d.setColor(color);

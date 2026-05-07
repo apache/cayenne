@@ -714,18 +714,18 @@ public final class ProjectPrefs extends PreferenceAdapter {
     }
 
     private static String nameOf(ConfigurationNode object) {
-        if (object instanceof CayenneMapEntry) {
-            return ((CayenneMapEntry) object).getName();
-        } else if (object instanceof DataChannelDescriptor) {
-            return ((DataChannelDescriptor) object).getName();
-        } else if (object instanceof DataNodeDescriptor) {
-            return ((DataNodeDescriptor) object).getName();
-        } else if (object instanceof DataMap) {
-            return ((DataMap) object).getName();
-        } else if (object instanceof Embeddable) {
-            return ((Embeddable) object).getClassName();
-        } else if (object instanceof QueryDescriptor) {
-            return ((QueryDescriptor) object).getName();
+        if (object instanceof CayenneMapEntry cme) {
+            return cme.getName();
+        } else if (object instanceof DataChannelDescriptor dcd) {
+            return dcd.getName();
+        } else if (object instanceof DataNodeDescriptor dnd) {
+            return dnd.getName();
+        } else if (object instanceof DataMap dm) {
+            return dm.getName();
+        } else if (object instanceof Embeddable e) {
+            return e.getClassName();
+        } else if (object instanceof QueryDescriptor qd) {
+            return qd.getName();
         }
         return "";
     }

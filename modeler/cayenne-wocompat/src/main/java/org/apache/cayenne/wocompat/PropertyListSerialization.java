@@ -120,8 +120,7 @@ public class PropertyListSerialization {
 			return;
 		}
 
-		if (plist instanceof Collection) {
-			Collection list = (Collection) plist;
+		if (plist instanceof Collection list) {
 
 			out.write('\n');
 			out.write(offset);
@@ -153,8 +152,7 @@ public class PropertyListSerialization {
 			out.write('\n');
 			out.write(offset);
 			out.write(')');
-		} else if (plist instanceof Map) {
-			Map map = (Map) plist;
+		} else if (plist instanceof Map map) {
 			out.write('\n');
 			out.write(offset);
 

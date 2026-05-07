@@ -113,16 +113,16 @@ class MainToolBar extends AppToolBar {
     @Override
     public void setBorder(Border b) {
         Object border = UIManager.get("MainToolBar.border");
-        if (border instanceof Border) {
-            super.setBorder((Border) border);
+        if (border instanceof Border uiBorder) {
+            super.setBorder(uiBorder);
         }
     }
 
     @Override
     public void setBackground(Color bg) {
         Object background = UIManager.get("MainToolBar.background");
-        if (background instanceof Color) {
-            super.setBackground((Color) background);
+        if (background instanceof Color c) {
+            super.setBackground(c);
         }
     }
 }

@@ -96,22 +96,22 @@ public class ProjectNavigationHistory {
     }
 
     private void replay(ProjectSession session, DisplayEvent e) {
-        if (e instanceof ObjEntityDisplayEvent) {
-            session.displayObjEntity((ObjEntityDisplayEvent) e);
-        } else if (e instanceof DbEntityDisplayEvent) {
-            session.displayDbEntity((DbEntityDisplayEvent) e);
-        } else if (e instanceof EmbeddableDisplayEvent) {
-            session.displayEmbeddable((EmbeddableDisplayEvent) e);
-        } else if (e instanceof ProcedureDisplayEvent) {
-            session.displayProcedure((ProcedureDisplayEvent) e);
-        } else if (e instanceof QueryDisplayEvent) {
-            session.displayQuery((QueryDisplayEvent) e);
-        } else if (e instanceof DataMapDisplayEvent) {
-            session.displayDataMap((DataMapDisplayEvent) e);
-        } else if (e instanceof DataNodeDisplayEvent) {
-            session.displayDataNode((DataNodeDisplayEvent) e);
-        } else if (e instanceof DomainDisplayEvent) {
-            session.displayDomain((DomainDisplayEvent) e);
+        if (e instanceof ObjEntityDisplayEvent oe) {
+            session.displayObjEntity(oe);
+        } else if (e instanceof DbEntityDisplayEvent de) {
+            session.displayDbEntity(de);
+        } else if (e instanceof EmbeddableDisplayEvent ee) {
+            session.displayEmbeddable(ee);
+        } else if (e instanceof ProcedureDisplayEvent pe) {
+            session.displayProcedure(pe);
+        } else if (e instanceof QueryDisplayEvent qe) {
+            session.displayQuery(qe);
+        } else if (e instanceof DataMapDisplayEvent dme) {
+            session.displayDataMap(dme);
+        } else if (e instanceof DataNodeDisplayEvent dne) {
+            session.displayDataNode(dne);
+        } else if (e instanceof DomainDisplayEvent doe) {
+            session.displayDomain(doe);
         }
     }
 

@@ -138,8 +138,7 @@ public class DbImportTree extends JTree {
             DbImportTreeNode node = (DbImportTreeNode) parent.getChildAt(i);
             Object userObject = node.getUserObject();
 
-            if (object instanceof Catalog) {
-                Catalog catalog = (Catalog) object;
+            if (object instanceof Catalog catalog) {
                 if (!(userObject instanceof Catalog)) {
                     continue;
                 }
@@ -150,8 +149,7 @@ public class DbImportTree extends JTree {
                 }
             }
 
-            if (object instanceof Schema) {
-                Schema schema = (Schema) object;
+            if (object instanceof Schema schema) {
                 if (!(userObject instanceof Schema)) {
                     continue;
                 }
@@ -162,8 +160,7 @@ public class DbImportTree extends JTree {
                 }
             }
 
-            if (object instanceof IncludeTable) {
-                IncludeTable table = (IncludeTable) object;
+            if (object instanceof IncludeTable table) {
                 if (!(userObject instanceof IncludeTable)) {
                     continue;
                 }
@@ -174,8 +171,7 @@ public class DbImportTree extends JTree {
                 }
             }
 
-            if (object instanceof ExcludeTable) {
-                ExcludeTable table = (ExcludeTable) object;
+            if (object instanceof ExcludeTable table) {
                 if (!(userObject instanceof ExcludeTable)) {
                     continue;
                 }

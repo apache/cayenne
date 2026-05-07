@@ -134,17 +134,13 @@ public class DeleteNodeAction extends TreeManipulationAction {
                 parentElement = selectedElement.getParent();
                 if (parentElement != null) {
                     Object parentUserObject = parentElement.getUserObject();
-                    if (parentUserObject instanceof ReverseEngineering) {
-                        ReverseEngineering reverseEngineering = (ReverseEngineering) parentUserObject;
+                    if (parentUserObject instanceof ReverseEngineering reverseEngineering) {
                         deleteChilds(reverseEngineering);
-                    } else if (parentUserObject instanceof Catalog) {
-                        Catalog catalog = (Catalog) parentUserObject;
+                    } else if (parentUserObject instanceof Catalog catalog) {
                         deleteChilds(catalog);
-                    } else if (parentUserObject instanceof Schema) {
-                        Schema schema = (Schema) parentUserObject;
+                    } else if (parentUserObject instanceof Schema schema) {
                         deleteChilds(schema);
-                    } else if (parentUserObject instanceof IncludeTable) {
-                        IncludeTable includeTable = (IncludeTable) parentUserObject;
+                    } else if (parentUserObject instanceof IncludeTable includeTable) {
                         deleteChilds(includeTable);
                     }
                 }

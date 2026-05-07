@@ -238,9 +238,9 @@ public class EOModelProcessor {
 		Object fetchLimit = plistMap.get("fetchLimit");
 		if (fetchLimit != null) {
 			try {
-				if (fetchLimit instanceof Number) {
+				if (fetchLimit instanceof Number n) {
 					descriptor.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY,
-							String.valueOf(((Number) fetchLimit).intValue()));
+							String.valueOf(n.intValue()));
 				} else if (isNumeric(fetchLimit.toString())) {
 					descriptor.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, fetchLimit.toString());
 				}
@@ -293,9 +293,9 @@ public class EOModelProcessor {
 		Object fetchLimit = plistMap.get("fetchLimit");
 		if (fetchLimit != null) {
 			try {
-				if (fetchLimit instanceof Number) {
+				if (fetchLimit instanceof Number n) {
 					descriptor.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY,
-							String.valueOf(((Number) fetchLimit).intValue()));
+							String.valueOf(n.intValue()));
 				} else if (isNumeric(fetchLimit.toString())) {
 					descriptor.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, fetchLimit.toString());
 				}
@@ -550,8 +550,8 @@ public class EOModelProcessor {
 		}
 
 		// per CAY-752, value can be a String or a Number, so handle both
-		if (value instanceof Number) {
-			return ((Number) value).intValue();
+		if (value instanceof Number n) {
+			return n.intValue();
 		} else {
 			try {
 				return Integer.parseInt(value.toString());

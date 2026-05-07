@@ -178,10 +178,10 @@ public class CgenArtefactSelectorPanel extends JPanel {
 
     public JLabel getProblem(Object obj) {
         String name = null;
-        if (obj instanceof ObjEntity) {
-            name = ((ObjEntity) obj).getName();
-        } else if (obj instanceof Embeddable) {
-            name = ((Embeddable) obj).getClassName();
+        if (obj instanceof ObjEntity oe) {
+            name = oe.getName();
+        } else if (obj instanceof Embeddable emb) {
+            name = emb.getClassName();
         }
 
         ValidationFailure validationFailure = null;
@@ -204,11 +204,11 @@ public class CgenArtefactSelectorPanel extends JPanel {
     public JLabel getItemName(Object obj) {
         String className;
         Icon icon;
-        if (obj instanceof Embeddable) {
-            className = ((Embeddable) obj).getClassName();
+        if (obj instanceof Embeddable emb) {
+            className = emb.getClassName();
             icon = IconFactory.iconForObject(new Embeddable());
-        } else if (obj instanceof ObjEntity) {
-            className = ((ObjEntity) obj).getName();
+        } else if (obj instanceof ObjEntity oe) {
+            className = oe.getName();
             icon = IconFactory.iconForObject(new ObjEntity());
         } else {
             className = ((DataMap) obj).getName();

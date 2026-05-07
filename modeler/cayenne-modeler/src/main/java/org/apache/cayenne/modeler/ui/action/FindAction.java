@@ -335,13 +335,13 @@ public class FindAction extends AppAction {
         DataMap map = entity.getDataMap();
         buildAndSelectTreePath(map, entity, projectView);
 
-        if (entity instanceof ObjEntity) {
+        if (entity instanceof ObjEntity oe) {
             ObjEntityDisplayEvent event = new ObjEntityDisplayEvent(
-                    projectView.getProjectTreeView(), domain, map, (ObjEntity) entity, true, false);
+                    projectView.getProjectTreeView(), domain, map, oe, true, false);
             session.displayObjEntity(event);
-        } else if (entity instanceof DbEntity) {
+        } else if (entity instanceof DbEntity de) {
             DbEntityDisplayEvent event = new DbEntityDisplayEvent(
-                    projectView.getProjectTreeView(), domain, map, (DbEntity) entity, true, false);
+                    projectView.getProjectTreeView(), domain, map, de, true, false);
             session.displayDbEntity(event);
         }
     }

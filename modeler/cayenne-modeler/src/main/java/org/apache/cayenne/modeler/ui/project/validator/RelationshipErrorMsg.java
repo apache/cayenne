@@ -58,12 +58,12 @@ public class RelationshipErrorMsg extends ValidationDisplayHandler {
 
     public void displayField(ProjectSession session, JFrame frame) {
         // must first display entity, and then switch to relationship display .. so fire twice
-        if (entity instanceof ObjEntity) {
-            session.displayObjEntity(new ObjEntityDisplayEvent(frame, domain, map, (ObjEntity) entity));
-            session.displayObjRelationship(new ObjRelationshipDisplayEvent(frame, domain, map, (ObjEntity) entity, (ObjRelationship) rel));
-        } else if (entity instanceof DbEntity) {
-            session.displayDbEntity(new DbEntityDisplayEvent(frame, domain, map, (DbEntity) entity));
-            session.displayDbRelationship(new DbRelationshipDisplayEvent(frame, domain, map, (DbEntity) entity, (DbRelationship) rel));
+        if (entity instanceof ObjEntity oe) {
+            session.displayObjEntity(new ObjEntityDisplayEvent(frame, domain, map, oe));
+            session.displayObjRelationship(new ObjRelationshipDisplayEvent(frame, domain, map, oe, (ObjRelationship) rel));
+        } else if (entity instanceof DbEntity de) {
+            session.displayDbEntity(new DbEntityDisplayEvent(frame, domain, map, de));
+            session.displayDbRelationship(new DbRelationshipDisplayEvent(frame, domain, map, de, (DbRelationship) rel));
         }
     }
 }
