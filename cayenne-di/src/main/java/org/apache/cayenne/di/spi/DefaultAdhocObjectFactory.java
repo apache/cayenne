@@ -91,41 +91,30 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
             return Class.forName(className, true, classLoader);
         } catch (ClassNotFoundException e) {
             if (!className.endsWith("[]")) {
-                switch (className) {
-                    case "byte":
-                        return Byte.TYPE;
-                    case "int":
-                        return Integer.TYPE;
-                    case "short":
-                        return Short.TYPE;
-                    case "char":
-                        return Character.TYPE;
-                    case "double":
-                        return Double.TYPE;
-                    case "long":
-                        return Long.TYPE;
-                    case "float":
-                        return Float.TYPE;
-                    case "boolean":
-                        return Boolean.TYPE;
-                    case "void":
-                        return Void.TYPE;
-
+                return switch (className) {
+                    case "byte" -> Byte.TYPE;
+                    case "int" -> Integer.TYPE;
+                    case "short" -> Short.TYPE;
+                    case "char" -> Character.TYPE;
+                    case "double" -> Double.TYPE;
+                    case "long" -> Long.TYPE;
+                    case "float" -> Float.TYPE;
+                    case "boolean" -> Boolean.TYPE;
+                    case "void" -> Void.TYPE;
                     // try inner class often specified with "." instead of $
-                    default:
+                    default -> {
                         int dot = className.lastIndexOf('.');
                         if (dot > 0 && dot + 1 < className.length()) {
-                            className = className.substring(0, dot) + "$" + className.substring(dot + 1);
+                            String innerClass = className.substring(0, dot) + "$" + className.substring(dot + 1);
                             try {
-                                return Class.forName(className, true, classLoader);
+                                yield Class.forName(innerClass, true, classLoader);
                             } catch (ClassNotFoundException nestedE) {
                                 // ignore, throw the original exception...
                             }
                         }
-                        break;
-                }
-
-                throw new DIRuntimeException("Invalid class: '%s'", e, className);
+                        throw new DIRuntimeException("Invalid class: '%s'", e, className);
+                    }
+                };
             }
 
             if (className.length() < 3) {
@@ -135,30 +124,23 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
             // TODO: support for multi-dim arrays
             className = className.substring(0, className.length() - 2);
 
-            switch (className) {
-                case "byte":
-                    return byte[].class;
-                case "int":
-                    return int[].class;
-                case "long":
-                    return long[].class;
-                case "short":
-                    return short[].class;
-                case "char":
-                    return char[].class;
-                case "double":
-                    return double[].class;
-                case "float":
-                    return float[].class;
-                case "boolean":
-                    return boolean[].class;
-            }
-
-            try {
-                return Class.forName("[L" + className + ";", true, classLoader);
-            } catch (ClassNotFoundException e1) {
-                throw new DIRuntimeException("Invalid class: '%s'", e1, className);
-            }
+            return switch (className) {
+                case "byte" -> byte[].class;
+                case "int" -> int[].class;
+                case "long" -> long[].class;
+                case "short" -> short[].class;
+                case "char" -> char[].class;
+                case "double" -> double[].class;
+                case "float" -> float[].class;
+                case "boolean" -> boolean[].class;
+                default -> {
+                    try {
+                        yield Class.forName("[L" + className + ";", true, classLoader);
+                    } catch (ClassNotFoundException e1) {
+                        throw new DIRuntimeException("Invalid class: '%s'", e1, className);
+                    }
+                }
+            };
         }
     }
 }

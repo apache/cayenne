@@ -63,14 +63,12 @@ class ObjectContextStateLog implements GraphChangeHandler {
             if (node instanceof Persistent) {
                 Persistent persistentNode = (Persistent) node;
                 switch (persistentNode.getPersistenceState()) {
-                    case PersistenceState.MODIFIED:
-                    case PersistenceState.NEW:
-                        persistentNode.setPersistenceState(PersistenceState.COMMITTED);
-                        break;
-                    case PersistenceState.DELETED:
+                    case PersistenceState.MODIFIED, PersistenceState.NEW ->
+                            persistentNode.setPersistenceState(PersistenceState.COMMITTED);
+                    case PersistenceState.DELETED -> {
                         deletedIds.add(id);
                         persistentNode.setPersistenceState(PersistenceState.TRANSIENT);
-                        break;
+                    }
                 }
             }
         }
@@ -91,13 +89,10 @@ class ObjectContextStateLog implements GraphChangeHandler {
             if (node instanceof Persistent) {
                 Persistent persistentNode = (Persistent) node;
                 switch (persistentNode.getPersistenceState()) {
-                    case PersistenceState.MODIFIED:
-                    case PersistenceState.DELETED:
-                        persistentNode.setPersistenceState(PersistenceState.COMMITTED);
-                        break;
-                    case PersistenceState.NEW:
-                        persistentNode.setPersistenceState(PersistenceState.TRANSIENT);
-                        break;
+                    case PersistenceState.MODIFIED, PersistenceState.DELETED ->
+                            persistentNode.setPersistenceState(PersistenceState.COMMITTED);
+                    case PersistenceState.NEW ->
+                            persistentNode.setPersistenceState(PersistenceState.TRANSIENT);
                 }
             }
         }

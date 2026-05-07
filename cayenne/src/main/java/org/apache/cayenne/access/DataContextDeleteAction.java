@@ -176,50 +176,43 @@ class DataContextDeleteAction {
 
             // process remaining rules
             switch (relationship.getDeleteRule()) {
-                case DeleteRule.NO_ACTION:
-                    break;
-                case DeleteRule.NULLIFY:
+                case DeleteRule.NO_ACTION -> { /* nothing to do */ }
+                case DeleteRule.NULLIFY -> {
                     ArcProperty reverseArc = property.getComplimentaryReverseArc();
+                    if (reverseArc != null) {
+                        reverseArc.visit(new PropertyVisitor() {
 
-                    if (reverseArc == null) {
-                        // nothing we can do here
-                        break;
+                            public boolean visitAttribute(AttributeProperty property) {
+                                return false;
+                            }
+
+                            public boolean visitToMany(ToManyProperty property) {
+                                for (Persistent relatedObject : relatedObjects) {
+                                    property.removeTarget(relatedObject, object, true);
+                                }
+                                return false;
+                            }
+
+                            public boolean visitToOne(ToOneProperty property) {
+                                // Inverse is to-one - find all related objects and
+                                // nullify the reverse relationship
+                                for (Persistent relatedObject : relatedObjects) {
+                                    property.setTarget(relatedObject, null, true);
+                                }
+                                return false;
+                            }
+                        });
                     }
-
-                    reverseArc.visit(new PropertyVisitor() {
-
-                        public boolean visitAttribute(AttributeProperty property) {
-                            return false;
-                        }
-
-                        public boolean visitToMany(ToManyProperty property) {
-                            for (Persistent relatedObject : relatedObjects) {
-                                property.removeTarget(relatedObject, object, true);
-                            }
-                            return false;
-                        }
-
-                        public boolean visitToOne(ToOneProperty property) {
-                            // Inverse is to-one - find all related objects and
-                            // nullify the reverse relationship
-                            for (Persistent relatedObject : relatedObjects) {
-                                property.setTarget(relatedObject, null, true);
-                            }
-                            return false;
-                        }
-                    });
-
-                    break;
-                case DeleteRule.CASCADE:
-                    // Delete all related objects
+                }
+                case DeleteRule.CASCADE -> {
                     for (Persistent relatedObject : relatedObjects) {
                         performDelete(relatedObject);
                     }
-
-                    break;
-                default:
+                }
+                default -> {
                     object.setPersistenceState(oldState);
                     throw new CayenneRuntimeException("Invalid delete rule %s", relationship.getDeleteRule());
+                }
             }
         }
     }

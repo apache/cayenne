@@ -37,22 +37,15 @@ public class PersistenceState {
      * Returns String label for persistence state. Used for debugging.
      */
     public static String persistenceStateName(int persistenceState) {
-        switch (persistenceState) {
-            case PersistenceState.TRANSIENT:
-                return "transient";
-            case PersistenceState.NEW:
-                return "new";
-            case PersistenceState.MODIFIED:
-                return "modified";
-            case PersistenceState.COMMITTED:
-                return "committed";
-            case PersistenceState.HOLLOW:
-                return "hollow";
-            case PersistenceState.DELETED:
-                return "deleted";
-            default:
-                return "unknown";
-        }
+        return switch (persistenceState) {
+            case PersistenceState.TRANSIENT -> "transient";
+            case PersistenceState.NEW -> "new";
+            case PersistenceState.MODIFIED -> "modified";
+            case PersistenceState.COMMITTED -> "committed";
+            case PersistenceState.HOLLOW -> "hollow";
+            case PersistenceState.DELETED -> "deleted";
+            default -> "unknown";
+        };
     }
 
     /**

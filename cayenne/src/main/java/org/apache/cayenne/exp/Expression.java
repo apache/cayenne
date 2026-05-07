@@ -244,52 +244,30 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 * Returns String label for this expression. Used for debugging.
 	 */
 	public String expName() {
-		switch (type) {
-		case AND:
-			return "AND";
-		case OR:
-			return "OR";
-		case NOT:
-			return "NOT";
-		case EQUAL_TO:
-			return "=";
-		case NOT_EQUAL_TO:
-			return "<>";
-		case LESS_THAN:
-			return "<";
-		case LESS_THAN_EQUAL_TO:
-			return "<=";
-		case GREATER_THAN:
-			return ">";
-		case GREATER_THAN_EQUAL_TO:
-			return ">=";
-		case BETWEEN:
-			return "BETWEEN";
-		case IN:
-			return "IN";
-		case LIKE:
-			return "LIKE";
-		case LIKE_IGNORE_CASE:
-			return "LIKE_IGNORE_CASE";
-		case OBJ_PATH:
-			return "OBJ_PATH";
-		case DB_PATH:
-			return "DB_PATH";
-		case LIST:
-			return "LIST";
-		case NOT_BETWEEN:
-			return "NOT BETWEEN";
-		case NOT_IN:
-			return "NOT IN";
-		case NOT_LIKE:
-			return "NOT LIKE";
-		case NOT_LIKE_IGNORE_CASE:
-			return "NOT LIKE IGNORE CASE";
-		case FUNCTION_CALL:
-			return "FUNCTION_CALL";
-		default:
-			return "other";
-		}
+		return switch (type) {
+			case AND -> "AND";
+			case OR -> "OR";
+			case NOT -> "NOT";
+			case EQUAL_TO -> "=";
+			case NOT_EQUAL_TO -> "<>";
+			case LESS_THAN -> "<";
+			case LESS_THAN_EQUAL_TO -> "<=";
+			case GREATER_THAN -> ">";
+			case GREATER_THAN_EQUAL_TO -> ">=";
+			case BETWEEN -> "BETWEEN";
+			case IN -> "IN";
+			case LIKE -> "LIKE";
+			case LIKE_IGNORE_CASE -> "LIKE_IGNORE_CASE";
+			case OBJ_PATH -> "OBJ_PATH";
+			case DB_PATH -> "DB_PATH";
+			case LIST -> "LIST";
+			case NOT_BETWEEN -> "NOT BETWEEN";
+			case NOT_IN -> "NOT IN";
+			case NOT_LIKE -> "NOT LIKE";
+			case NOT_LIKE_IGNORE_CASE -> "NOT LIKE IGNORE CASE";
+			case FUNCTION_CALL -> "FUNCTION_CALL";
+			default -> "other";
+		};
 	}
 
 	@Override

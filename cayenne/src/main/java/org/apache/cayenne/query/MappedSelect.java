@@ -198,7 +198,7 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
         }
 
         switch (descriptor.getType()) {
-            case QueryDescriptor.SELECT_QUERY:
+            case QueryDescriptor.SELECT_QUERY -> {
                 ObjectSelect<?> selectQuery = (ObjectSelect<?>) query;
                 if (fetchLimit != null) {
                     selectQuery.limit(fetchLimit);
@@ -215,8 +215,8 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
                 if (cacheStrategyOverride != null) {
                     selectQuery.setCacheStrategy(cacheStrategyOverride);
                 }
-                break;
-            case QueryDescriptor.SQL_TEMPLATE:
+            }
+            case QueryDescriptor.SQL_TEMPLATE -> {
                 SQLTemplate sqlTemplate = (SQLTemplate) query;
                 if (fetchLimit != null) {
                     sqlTemplate.setFetchLimit(fetchLimit);
@@ -227,7 +227,7 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
                 if (statementFetchSize != null) {
                     sqlTemplate.setStatementFetchSize(statementFetchSize);
                 }
-                if(queryTimeout != null) {
+                if (queryTimeout != null) {
                     sqlTemplate.setQueryTimeout(queryTimeout);
                 }
                 if (pageSize != null) {
@@ -236,8 +236,8 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
                 if (cacheStrategyOverride != null) {
                     sqlTemplate.setCacheStrategy(cacheStrategyOverride);
                 }
-                break;
-            case QueryDescriptor.EJBQL_QUERY:
+            }
+            case QueryDescriptor.EJBQL_QUERY -> {
                 EJBQLQuery ejbqlQuery = (EJBQLQuery) query;
                 if (fetchLimit != null) {
                     ejbqlQuery.setFetchLimit(fetchLimit);
@@ -248,7 +248,7 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
                 if (statementFetchSize != null) {
                     ejbqlQuery.setStatementFetchSize(statementFetchSize);
                 }
-                if(queryTimeout != null) {
+                if (queryTimeout != null) {
                     ejbqlQuery.setQueryTimeout(queryTimeout);
                 }
                 if (pageSize != null) {
@@ -257,8 +257,8 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
                 if (cacheStrategyOverride != null) {
                     ejbqlQuery.setCacheStrategy(cacheStrategyOverride);
                 }
-                break;
-            case QueryDescriptor.PROCEDURE_QUERY:
+            }
+            case QueryDescriptor.PROCEDURE_QUERY -> {
                 ProcedureQuery procedureQuery = (ProcedureQuery) query;
                 if (fetchLimit != null) {
                     procedureQuery.setFetchLimit(fetchLimit);
@@ -269,7 +269,7 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
                 if (statementFetchSize != null) {
                     procedureQuery.setStatementFetchSize(statementFetchSize);
                 }
-                if(queryTimeout != null) {
+                if (queryTimeout != null) {
                     procedureQuery.setQueryTimeout(queryTimeout);
                 }
                 if (pageSize != null) {
@@ -278,9 +278,8 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
                 if (cacheStrategyOverride != null) {
                     procedureQuery.setCacheStrategy(cacheStrategyOverride);
                 }
-                break;
-            default:
-                throw new CayenneRuntimeException("Unknown query type: %s", descriptor.getType());
+            }
+            default -> throw new CayenneRuntimeException("Unknown query type: %s", descriptor.getType());
         }
 
         return query;

@@ -61,46 +61,34 @@ public class DataMapHandler extends NamespaceAwareNestedTagHandler {
     @Override
     protected boolean processElement(String namespaceURI, String localName,
                                      Attributes attributes) throws SAXException {
-        switch (localName) {
-            case PROPERTY_TAG:
+        return switch (localName) {
+            case PROPERTY_TAG -> {
                 addProperty(attributes);
-                return true;
-
-            case DATA_MAP_TAG:
+                yield true;
+            }
+            case DATA_MAP_TAG -> {
                 this.dataMap = new DataMap();
-                return true;
-        }
-
-        return false;
+                yield true;
+            }
+            default -> false;
+        };
     }
 
     @Override
     protected ContentHandler createChildTagHandler(String namespaceURI, String localName,
                                                    String qName, Attributes attributes) {
 
-        if(namespaceURI.equals(targetNamespace)) {
-            switch (localName) {
-                case DB_ENTITY_TAG:
-                    return new DbEntityHandler(this, dataMap);
-
-                case OBJ_ENTITY_TAG:
-                    return new ObjEntityHandler(this, dataMap);
-
-                case DB_RELATIONSHIP_TAG:
-                    return new DbRelationshipHandler(this, dataMap);
-
-                case OBJ_RELATIONSHIP_TAG:
-                    return new ObjRelationshipHandler(this, dataMap);
-
-                case PROCEDURE_TAG:
-                    return new ProcedureHandler(this, dataMap);
-
-                case QUERY_TAG:
-                    return new QueryDescriptorHandler(this, dataMap);
-
-                case EMBEDDABLE_TAG:
-                    return new EmbeddableHandler(this, dataMap);
-            }
+        if (namespaceURI.equals(targetNamespace)) {
+            return switch (localName) {
+                case DB_ENTITY_TAG -> new DbEntityHandler(this, dataMap);
+                case OBJ_ENTITY_TAG -> new ObjEntityHandler(this, dataMap);
+                case DB_RELATIONSHIP_TAG -> new DbRelationshipHandler(this, dataMap);
+                case OBJ_RELATIONSHIP_TAG -> new ObjRelationshipHandler(this, dataMap);
+                case PROCEDURE_TAG -> new ProcedureHandler(this, dataMap);
+                case QUERY_TAG -> new QueryDescriptorHandler(this, dataMap);
+                case EMBEDDABLE_TAG -> new EmbeddableHandler(this, dataMap);
+                default -> super.createChildTagHandler(namespaceURI, localName, qName, attributes);
+            };
         }
 
         return super.createChildTagHandler(namespaceURI, localName, qName, attributes);

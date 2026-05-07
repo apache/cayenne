@@ -64,16 +64,12 @@ public class DeleteRule {
      * with loading old maps.
      */
     public static String deleteRuleName(int deleteRule) {
-        switch (deleteRule) {
-            case DeleteRule.NULLIFY :
-                return NULLIFY_NAME;
-            case DeleteRule.CASCADE :
-                return CASCADE_NAME;
-            case DeleteRule.DENY :
-                return DENY_NAME;
-            default :
-                return NO_ACTION_NAME;
-        }
+        return switch (deleteRule) {
+            case DeleteRule.NULLIFY -> NULLIFY_NAME;
+            case DeleteRule.CASCADE -> CASCADE_NAME;
+            case DeleteRule.DENY -> DENY_NAME;
+            default -> NO_ACTION_NAME;
+        };
     }
 
     /**

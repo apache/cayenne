@@ -346,25 +346,16 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
             Persistent object = it.next();
             int objectState = object.getPersistenceState();
             switch (objectState) {
-                case PersistenceState.NEW:
+                case PersistenceState.NEW -> {
                     it.remove();
-
                     object.setObjectContext(null);
                     object.setObjectId(null);
                     object.setPersistenceState(PersistenceState.TRANSIENT);
-                    break;
-                case PersistenceState.DELETED:
-                    // Do the same as for modified... deleted is only a persistence state,
-                    // so
-                    // rolling the object back will set the state to committed
-                case PersistenceState.MODIFIED:
-                    // this will clean any modifications and defer refresh from snapshot
-                    // till the next object accessor is called
-                    object.setPersistenceState(PersistenceState.HOLLOW);
-                    break;
-                default:
-                    // Transient, committed and hollow need no handling
-                    break;
+                }
+                // deleted is only a persistence state, so rolling back sets state to committed
+                case PersistenceState.DELETED, PersistenceState.MODIFIED ->
+                        object.setPersistenceState(PersistenceState.HOLLOW);
+                default -> { /* Transient, committed and hollow need no handling */ }
             }
         }
 
@@ -421,18 +412,16 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
             Persistent object = objectMap.get(id);
 
             switch (object.getPersistenceState()) {
-                case PersistenceState.DELETED:
+                case PersistenceState.DELETED -> {
                     objectMap.remove(id);
-                    if(trackedFlattenedPaths != null) {
+                    if (trackedFlattenedPaths != null) {
                         trackedFlattenedPaths.remove(id);
                     }
                     object.setObjectContext(null);
                     object.setPersistenceState(PersistenceState.TRANSIENT);
-                    break;
-                case PersistenceState.NEW:
-                case PersistenceState.MODIFIED:
-                    object.setPersistenceState(PersistenceState.COMMITTED);
-                    break;
+                }
+                case PersistenceState.NEW, PersistenceState.MODIFIED ->
+                        object.setPersistenceState(PersistenceState.COMMITTED);
             }
         }
 
@@ -610,41 +599,29 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
             DataContextDelegate delegate;
 
             switch (object.getPersistenceState()) {
-                case PersistenceState.COMMITTED:
-                case PersistenceState.HOLLOW:
-                case PersistenceState.DELETED:
-
-                    // consult delegate
+                case PersistenceState.COMMITTED, PersistenceState.HOLLOW, PersistenceState.DELETED -> {
                     delegate = context.nonNullDelegate();
-
                     if (delegate.shouldProcessDelete(object)) {
                         objectMap.remove(nodeId);
                         changes.remove(nodeId);
-                        if(trackedFlattenedPaths != null) {
+                        if (trackedFlattenedPaths != null) {
                             trackedFlattenedPaths.remove(nodeId);
                         }
-
                         // setting DataContext to null will also set state to transient
                         object.setObjectContext(null);
                         delegate.finishedProcessDelete(object);
                     }
-
-                    break;
-
-                case PersistenceState.MODIFIED:
-
-                    // consult delegate
+                }
+                case PersistenceState.MODIFIED -> {
                     delegate = context.nonNullDelegate();
                     if (delegate.shouldProcessDelete(object)) {
                         object.setPersistenceState(PersistenceState.NEW);
                         changes.remove(nodeId);
                         registerNode(nodeId, object);
                         nodeCreated(nodeId);
-
                         delegate.finishedProcessDelete(object);
                     }
-
-                    break;
+                }
             }
         }
     }
@@ -661,36 +638,22 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
                     continue;
                 }
 
-                // TODO: refactor "switch" to avoid code duplication
-
                 switch (object.getPersistenceState()) {
-                    case PersistenceState.COMMITTED:
-                        object.setPersistenceState(PersistenceState.HOLLOW);
-                        break;
-                    case PersistenceState.MODIFIED:
+                    case PersistenceState.COMMITTED ->
+                            object.setPersistenceState(PersistenceState.HOLLOW);
+                    case PersistenceState.MODIFIED -> {
                         DataContext context = (DataContext) object.getObjectContext();
                         DataRow diff = getSnapshot(oid);
-                        // consult delegate if it exists
                         DataContextDelegate delegate = context.nonNullDelegate();
                         if (delegate.shouldMergeChanges(object, diff)) {
                             ClassDescriptor descriptor = context
                                     .getEntityResolver()
                                     .getClassDescriptor(oid.getEntityName());
-                            DataRowUtils.forceMergeWithSnapshot(
-                                    context,
-                                    descriptor,
-                                    object,
-                                    diff);
+                            DataRowUtils.forceMergeWithSnapshot(context, descriptor, object, diff);
                             delegate.finishedMergeChanges(object);
                         }
-
-                    case PersistenceState.HOLLOW:
-                        // do nothing
-                        break;
-
-                    case PersistenceState.DELETED:
-                        // TODO: Do nothing? Or treat as merged?
-                        break;
+                    }
+                    case PersistenceState.HOLLOW, PersistenceState.DELETED -> { /* do nothing */ }
                 }
             }
         }
