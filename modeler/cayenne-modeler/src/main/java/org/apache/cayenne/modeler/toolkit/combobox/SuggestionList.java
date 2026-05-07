@@ -31,11 +31,11 @@ import java.awt.event.MouseListener;
 import java.util.function.Supplier;
 
 /**
- * SuggestionList is a combo-popup displaying all items matching for
- * autocompletion.
- *
+ * SuggestionList is a combo-popup displaying all items matching for autocompletion.
  */
-public class SuggestionList extends BasicComboPopup {
+class SuggestionList extends BasicComboPopup {
+
+    private static final int MAX_POPUP_WIDTH = 450;
 
     /**
      * 'Strict' matching, i.e. whether 'startWith' or 'contains' function
@@ -94,6 +94,19 @@ public class SuggestionList extends BasicComboPopup {
     @Override
     protected int getPopupHeightForRowCount(int maxRowCount) {
         return super.getPopupHeightForRowCount(Math.min(maxRowCount, list.getModel().getSize()));
+    }
+
+    /**
+     * Expands the popup width to fit the widest filtered item.
+     * Called by BasicComboPopup.show() before the scroll pane is constrained,
+     * so getScrollPane().getPreferredSize() still reflects natural content width.
+     */
+    @Override
+    protected Rectangle computePopupBounds(int px, int py, int pw, int ph) {
+        Rectangle bounds = super.computePopupBounds(px, py, pw, ph);
+        int naturalWidth = scroller.getPreferredSize().width;
+        int targetWidth = Math.min(Math.max(naturalWidth, pw), MAX_POPUP_WIDTH);
+        return new Rectangle(bounds.x, bounds.y, targetWidth, bounds.height);
     }
 
     /**

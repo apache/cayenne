@@ -40,24 +40,24 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
      * Property to mark combobox as 'auto-completing'
      */
     public static final String AUTOCOMPLETION_PROPERTY = "JComboBox.autoCompletion";
-    
+
     /**
      * A list with matching items
      */
-    private final SuggestionList suggestionList; 
+    private final SuggestionList suggestionList;
 
     /**
      * Combo with auto-completion
      */
     private final JComboBox comboBox;
-    
+
     private final JTextComponent textEditor;
-    
+
     private final boolean allowsUserValues;
-    
-    protected AutoCompletion(final JComboBox comboBox, boolean strict, boolean allowsUserValues, Supplier<MappingNamespace> namespaceSupplier) {
+
+    protected AutoCompletion(JComboBox comboBox, boolean strict, boolean allowsUserValues, Supplier<MappingNamespace> namespaceSupplier) {
         this.comboBox = comboBox;
-        textEditor = ((JTextComponent)comboBox.getEditor().getEditorComponent());
+        textEditor = ((JTextComponent) comboBox.getEditor().getEditorComponent());
         this.allowsUserValues = allowsUserValues;
         suggestionList = new SuggestionList(comboBox, strict, namespaceSupplier);
 
@@ -68,9 +68,9 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
     /**
      * Enables auto-completion for specified combobox
      *
-     * @param comboBox Combo to be featured
-     * @param strict Whether strict matching (check 'startWith' or 'contains') should be used
-     * @param allowsUserValues Whether non-present items are allowed
+     * @param comboBox          Combo to be featured
+     * @param strict            Whether strict matching (check 'startWith' or 'contains') should be used
+     * @param allowsUserValues  Whether non-present items are allowed
      * @param namespaceSupplier Supplies the {@link MappingNamespace} (typically the currently selected DataMap)
      *                          used to render entity labels.
      */
@@ -98,7 +98,8 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
         enable(comboBox, true, false, namespaceSupplier);
     }
 
-    public void focusGained(FocusEvent e) {}
+    public void focusGained(FocusEvent e) {
+    }
 
     public void focusLost(FocusEvent e) {
         suggestionList.hide();
@@ -119,7 +120,8 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
         }
     }
 
-    public void keyTyped(KeyEvent e) {}
+    public void keyTyped(KeyEvent e) {
+    }
 
     public void run() {
         String text = textEditor.getText();
@@ -136,7 +138,7 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
             }
         }
     }
-    
+
     /**
      * Calculates next selection row, according to a pressed key and selects it.
      * This might affect either suggestion list or original popup
@@ -154,7 +156,7 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
         suggestionListScrolling();
     }
 
-    private void processKeyPressedWhenSuggestionListIsInvisible(KeyEvent e){
+    private void processKeyPressedWhenSuggestionListIsInvisible(KeyEvent e) {
         int sel = comboBox.getSelectedIndex();
         int max = comboBox.getItemCount() - 1;
 
@@ -189,10 +191,10 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
                 return;
         }
         e.consume();
-        handleNavigationKeys(false,next,sel,max);
+        handleNavigationKeys(false, next, sel, max);
     }
 
-    private void processKeyPressedWhenSuggestionListIsVisible(KeyEvent e){
+    private void processKeyPressedWhenSuggestionListIsVisible(KeyEvent e) {
         int sel = suggestionList.getSelectedIndex();
         int max = suggestionList.getItemCount() - 1;
         int next;
@@ -229,10 +231,10 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
                 return;
         }
         e.consume();
-        handleNavigationKeys(true,next,sel,max);
+        handleNavigationKeys(true, next, sel, max);
     }
 
-    private void processEnterPressed(){
+    private void processEnterPressed() {
         Object value = suggestionList.getSelectedValue();
         if (!allowsUserValues && value == null && suggestionList.getItemCount() > 0) {
             value = suggestionList.getItemAt(0);
@@ -244,7 +246,7 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
         suggestionList.hide();
     }
 
-    private void handleNavigationKeys(boolean suggest, int next, int sel, int max){
+    private void handleNavigationKeys(boolean suggest, int next, int sel, int max) {
         if (!suggest && !comboBox.isPopupVisible()) {
             comboBox.setPopupVisible(true);
             return;
@@ -271,7 +273,7 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
         }
     }
 
-    private void suggestionListScrolling(){
+    private void suggestionListScrolling() {
         JList list = suggestionList.getList();
         int selectedIndex = suggestionList.getSelectedIndex();
         list.ensureIndexIsVisible(selectedIndex);

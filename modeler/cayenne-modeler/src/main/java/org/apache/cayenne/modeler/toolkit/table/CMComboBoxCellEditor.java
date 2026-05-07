@@ -23,9 +23,15 @@ import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.JComboBox;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.table.TableCellEditor;
 import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -45,6 +51,8 @@ public class CMComboBoxCellEditor extends AbstractCellEditor
     // is read by Swing's combo UI to keep the popup behavior table-friendly.
     static final String IS_TABLE_CELL_EDITOR_PROPERTY = "JComboBox.isTableCellEditor";
 
+    private static final int MAX_POPUP_WIDTH = 450;
+
     private final JComboBox<?> comboBox;
     private final boolean autocomplete;
 
@@ -57,6 +65,15 @@ public class CMComboBoxCellEditor extends AbstractCellEditor
             comboBox.putClientProperty(IS_TABLE_CELL_EDITOR_PROPERTY, Boolean.TRUE);
             comboBox.addActionListener(this);
         }
+
+        comboBox.addPopupMenuListener(new PopupMenuListener() {
+            @Override
+            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+                adjustPopupWidth();
+            }
+            @Override public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}
+            @Override public void popupMenuCanceled(PopupMenuEvent e) {}
+        });
     }
 
     @Override
@@ -69,6 +86,49 @@ public class CMComboBoxCellEditor extends AbstractCellEditor
                                                  boolean isSelected, int row, int column) {
         comboBox.setSelectedItem(value);
         return comboBox;
+    }
+
+    private void adjustPopupWidth() {
+        Object child = comboBox.getUI().getAccessibleChild(comboBox, 0);
+        if (!(child instanceof JPopupMenu)) {
+            return;
+        }
+        JPopupMenu popup = (JPopupMenu) child;
+        JScrollPane scrollPane = findScrollPane(popup);
+        if (scrollPane == null) {
+            return;
+        }
+
+        // BasicComboPopup.show() constrains the scroll pane's preferredSize and maximumSize
+        // to the column width before firing this listener. Reset them so the scroll pane
+        // reports its natural content-based width — which already incorporates item metrics,
+        // list insets, scrollbar width, and scroll pane borders — no manual overhead needed.
+        scrollPane.setPreferredSize(null);
+        scrollPane.setMaximumSize(null);
+        popup.setPreferredSize(null);
+
+        int naturalWidth = scrollPane.getPreferredSize().width;
+        int targetWidth = Math.min(Math.max(naturalWidth, comboBox.getWidth()), MAX_POPUP_WIDTH);
+
+        Dimension scrollSize = new Dimension(targetWidth, scrollPane.getPreferredSize().height);
+        scrollPane.setPreferredSize(scrollSize);
+        scrollPane.setMaximumSize(scrollSize);
+        popup.setPreferredSize(new Dimension(targetWidth, popup.getPreferredSize().height));
+    }
+
+    private static JScrollPane findScrollPane(Container container) {
+        for (Component c : container.getComponents()) {
+            if (c instanceof JScrollPane) {
+                return (JScrollPane) c;
+            }
+            if (c instanceof Container) {
+                JScrollPane found = findScrollPane((Container) c);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
     }
 
     @Override
