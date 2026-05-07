@@ -294,8 +294,7 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
 
             // check and merge flattened IDs snapshots
             GraphManager graphManager = object.getObjectContext().getGraphManager();
-            if(graphManager instanceof ObjectStore) {
-                ObjectStore store = (ObjectStore)graphManager;
+            if(graphManager instanceof ObjectStore store) {
                 store.getFlattenedIds(object.getObjectId()).forEach(flattenedId -> {
                     // map values of flattened ids from target to source
                     Map<String, Object> idSnapshot = flattenedId.getIdSnapshot();

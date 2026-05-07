@@ -365,15 +365,13 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
             // BUT in such as ":x = parameter" (where x=null) we don't do
             // anything
             // as a result it can be unsupported in some DB
-            if (expression.getChild(1) instanceof EJBQLNamedInputParameter) {
-                EJBQLNamedInputParameter par = (EJBQLNamedInputParameter) expression.getChild(1);
+            if (expression.getChild(1) instanceof EJBQLNamedInputParameter par) {
                 if (context.namedParameters.containsKey(par.getText())
                         && context.namedParameters.get(par.getText()) == null) {
                     context.append(toAppend);
                     return true;
                 }
-            } else if (expression.getChild(1) instanceof EJBQLPositionalInputParameter) {
-                EJBQLPositionalInputParameter par = (EJBQLPositionalInputParameter) expression.getChild(1);
+            } else if (expression.getChild(1) instanceof EJBQLPositionalInputParameter par) {
                 if (context.positionalParameters.containsKey(par.getPosition())
                         && context.positionalParameters.get(par.getPosition()) == null) {
                     context.append(toAppend);
@@ -817,12 +815,12 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         Object object = context.getBoundParameter(boundName);
 
         Map<?, ?> map = null;
-        if (object instanceof Persistent) {
-            map = ((Persistent) object).getObjectId().getIdSnapshot();
-        } else if (object instanceof ObjectId) {
-            map = ((ObjectId) object).getIdSnapshot();
-        } else if (object instanceof Map) {
-            map = (Map<?, ?>) object;
+        if (object instanceof Persistent persistent) {
+            map = persistent.getObjectId().getIdSnapshot();
+        } else if (object instanceof ObjectId objectId) {
+            map = objectId.getIdSnapshot();
+        } else if (object instanceof Map<?, ?> objectAsMap) {
+            map = objectAsMap;
         }
 
         if (map != null) {

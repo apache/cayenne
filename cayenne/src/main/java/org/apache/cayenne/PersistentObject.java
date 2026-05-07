@@ -131,8 +131,8 @@ public abstract class PersistentObject implements Persistent, Validating {
         }
 
         PropertyDescriptor property = descriptor.getProperty(relationshipName);
-        if (property instanceof ToManyMapProperty) {
-            return ((ToManyMapProperty) property).getMapKey(value);
+        if (property instanceof ToManyMapProperty toManyMapProperty) {
+            return toManyMapProperty.getMapKey(value);
         }
 
         throw new IllegalArgumentException("Relationship '"
@@ -173,8 +173,8 @@ public abstract class PersistentObject implements Persistent, Validating {
 
         Object object = readPropertyDirectly(propertyName);
 
-        if (object instanceof Fault) {
-            object = ((Fault) object).resolveFault(this, propertyName);
+        if (object instanceof Fault fault) {
+            object = fault.resolveFault(this, propertyName);
             writePropertyDirectly(propertyName, object);
         }
 
@@ -249,8 +249,8 @@ public abstract class PersistentObject implements Persistent, Validating {
         }
 
         CayennePath pathRemainder = path.tail(1);
-        if (property instanceof Persistent) {
-            return ((Persistent) property).readNestedProperty(pathRemainder);
+        if (property instanceof Persistent persistent) {
+            return persistent.readNestedProperty(pathRemainder);
         } else {
             return Cayenne.readNestedProperty(property, pathRemainder);
         }
@@ -429,8 +429,8 @@ public abstract class PersistentObject implements Persistent, Validating {
 
         if (setReverse) {
             // unset old reverse relationship
-            if (oldTarget instanceof Persistent) {
-                unsetReverseRelationship(relationshipName, (Persistent) oldTarget);
+            if (oldTarget instanceof Persistent persistentOldTarget) {
+                unsetReverseRelationship(relationshipName, persistentOldTarget);
             }
 
             // set new reverse relationship
@@ -480,8 +480,8 @@ public abstract class PersistentObject implements Persistent, Validating {
         ObjRelationship revRel = rel.getReverseRelationship();
         if (revRel != null) {
             Object oldTarget = val.readProperty(revRel.getName());
-            if (oldTarget != this && oldTarget instanceof Persistent && val instanceof PersistentObject) {
-                ((PersistentObject)val).unsetReverseRelationship(revRel.getName(), (Persistent) oldTarget);
+            if (oldTarget != this && oldTarget instanceof Persistent persistentOldTarget && val instanceof PersistentObject persistentObjectVal) {
+                persistentObjectVal.unsetReverseRelationship(revRel.getName(), persistentOldTarget);
             }
             if (revRel.isToMany()) {
                 val.addToManyTarget(revRel.getName(), this, false);
@@ -597,8 +597,8 @@ public abstract class PersistentObject implements Persistent, Validating {
                                 + dbAttribute.getMaxLength() + " bytes): " + len;
                         validationResult.addFailure(new BeanValidationFailure(this, next.getName(), message));
                     }
-                } else if (value instanceof CharSequence) {
-                    int len = ((CharSequence) value).length();
+                } else if (value instanceof CharSequence charSequence) {
+                    int len = charSequence.length();
                     if (len > dbAttribute.getMaxLength()) {
                         String message = "\"" + next.getName() + "\" exceeds maximum allowed length ("
                                 + dbAttribute.getMaxLength() + " chars): " + len;

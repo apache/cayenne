@@ -66,8 +66,7 @@ public class ToManyList<E> extends PersistentObjectList<E> implements Serializab
     protected boolean shouldAddToRemovedFromUnresolvedList(Object object) {
         // No point in adding a new or transient object -- these will never be fetched
         // from the database.
-        if (object instanceof Persistent) {
-            Persistent persistent = (Persistent) object;
+        if (object instanceof Persistent persistent) {
             if ((persistent.getPersistenceState() == PersistenceState.TRANSIENT)
                     || (persistent.getPersistenceState() == PersistenceState.NEW)) {
                 return false;

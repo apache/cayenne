@@ -58,8 +58,7 @@ class DataContextQueryAction extends ObjectContextQueryAction {
     }
 
     private boolean interceptObjectFromDataRowsQuery() {
-        if (query instanceof ObjectsFromDataRowsQuery) {
-            ObjectsFromDataRowsQuery objectsFromDataRowsQuery = (ObjectsFromDataRowsQuery) query;
+        if (query instanceof ObjectsFromDataRowsQuery objectsFromDataRowsQuery) {
             response = new ListResponse(actingDataContext.objectsFromDataRows(
                     objectsFromDataRowsQuery.getDescriptor(),
                     objectsFromDataRowsQuery.getDataRows()));
@@ -73,8 +72,7 @@ class DataContextQueryAction extends ObjectContextQueryAction {
      */
     @Override
     protected boolean interceptOIDQuery() {
-        if (query instanceof ObjectIdQuery) {
-            ObjectIdQuery oidQuery = (ObjectIdQuery) query;
+        if (query instanceof ObjectIdQuery oidQuery) {
 
             if (!oidQuery.isFetchMandatory()) {
                 Object object = polymorphicObjectFromCache(oidQuery.getObjectId());
@@ -151,8 +149,7 @@ class DataContextQueryAction extends ObjectContextQueryAction {
 
     @Override
     protected boolean interceptRefreshQuery() {
-        if (query instanceof RefreshQuery) {
-            RefreshQuery refreshQuery = (RefreshQuery) query;
+        if (query instanceof RefreshQuery refreshQuery) {
 
             DataContext context = (DataContext) actingContext;
 

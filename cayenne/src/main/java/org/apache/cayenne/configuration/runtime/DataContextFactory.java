@@ -65,11 +65,11 @@ public class DataContextFactory implements ObjectContextFactory {
     public ObjectContext createContext(DataChannel parent) {
 
         // this switch may go away once we figure out clean property configuration...
-        if (parent instanceof DataDomain) {
-            return createdFromDataDomain((DataDomain) parent);
+        if (parent instanceof DataDomain dataDomain) {
+            return createdFromDataDomain(dataDomain);
         }
-        else if (parent instanceof DataContext) {
-            return createFromDataContext((DataContext) parent);
+        else if (parent instanceof DataContext dataContext) {
+            return createFromDataContext(dataContext);
         }
         else {
             return createFromGenericChannel(parent);

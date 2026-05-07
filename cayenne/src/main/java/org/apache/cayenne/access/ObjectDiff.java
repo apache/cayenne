@@ -117,8 +117,8 @@ public class ObjectDiff extends NodeDiff {
                             ? property.readProperty(object)
                             : property.readPropertyDirectly(object);
 
-                    if (target instanceof Persistent) {
-                        target = ((Persistent) target).getObjectId();
+                    if (target instanceof Persistent persistentTarget) {
+                        target = persistentTarget.getObjectId();
                     }
                     // else - null || Fault
 
@@ -151,8 +151,8 @@ public class ObjectDiff extends NodeDiff {
     public ObjectId getArcSnapshotValue(String propertyName) {
         Object value = arcSnapshot != null ? arcSnapshot.get(propertyName) : null;
 
-        if (value instanceof Fault) {
-            Persistent target = (Persistent) ((Fault) value).resolveFault(object, propertyName);
+        if (value instanceof Fault fault) {
+            Persistent target = (Persistent) fault.resolveFault(object, propertyName);
 
             value = target != null ? target.getObjectId() : null;
             arcSnapshot.put(propertyName, value);
@@ -166,8 +166,8 @@ public class ObjectDiff extends NodeDiff {
      */
     public ObjectId getCurrentArcSnapshotValue(String propertyName) {
         Object value = currentArcSnapshot != null ? currentArcSnapshot.get(propertyName) : null;
-        if (value instanceof Fault) {
-            Persistent target = (Persistent) ((Fault) value).resolveFault(object, propertyName);
+        if (value instanceof Fault fault) {
+            Persistent target = (Persistent) fault.resolveFault(object, propertyName);
 
             value = target != null ? target.getObjectId() : null;
             currentArcSnapshot.put(propertyName, value);
@@ -206,9 +206,7 @@ public class ObjectDiff extends NodeDiff {
 
         boolean addDiff = true;
 
-        if (diff instanceof ArcOperation) {
-
-            ArcOperation arcDiff = (ArcOperation) diff;
+        if (diff instanceof ArcOperation arcDiff) {
             Object targetId = arcDiff.getTargetNodeId();
             ArcId arcId = arcDiff.getArcId();
 
@@ -490,11 +488,9 @@ public class ObjectDiff extends NodeDiff {
                 return false;
             }
 
-            if (!(object instanceof ArcOperation)) {
+            if (!(object instanceof ArcOperation other)) {
                 return false;
             }
-
-            ArcOperation other = (ArcOperation) object;
             return arcId.equals(other.arcId) && Util.nullSafeEquals(targetNodeId, other.targetNodeId);
         }
 

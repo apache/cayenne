@@ -37,8 +37,7 @@ public class ToManySet<E> extends PersistentObjectSet<E> implements Serializable
     protected boolean shouldAddToRemovedFromUnresolvedSet(E object) {
         // No point in adding a new or transient object -- these will never be fetched
         // from the database.
-        if (object instanceof Persistent) {
-            Persistent persistent = (Persistent) object;
+        if (object instanceof Persistent persistent) {
             return (persistent.getPersistenceState() != PersistenceState.TRANSIENT)
                     && (persistent.getPersistenceState() != PersistenceState.NEW);
         }

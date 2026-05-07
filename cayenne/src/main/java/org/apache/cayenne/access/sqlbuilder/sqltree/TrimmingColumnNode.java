@@ -144,8 +144,8 @@ public class TrimmingColumnNode extends Node {
                 continue;
             }
             if(sibling.getType() == NodeType.VALUE) {
-                if(((ValueNode)sibling).getValue() instanceof CharSequence) {
-                    int valLen = ((CharSequence) ((ValueNode)sibling).getValue()).length();
+                if(((ValueNode)sibling).getValue() instanceof CharSequence charSequence) {
+                    int valLen = charSequence.length();
                     return Math.max(1, valLen);
                 }
             }

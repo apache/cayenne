@@ -98,8 +98,8 @@ public class HybridPersistentObject extends PersistentObject {
             buffer.append(entry.getKey()).append("=>");
             Object value = entry.getValue();
 
-            if (value instanceof Persistent) {
-                buffer.append('{').append(((Persistent) value).getObjectId()).append('}');
+            if (value instanceof Persistent persistent) {
+                buffer.append('{').append(persistent.getObjectId()).append('}');
             } else if (value instanceof Collection) {
                 buffer.append("(..)");
             } else if (value instanceof Fault) {

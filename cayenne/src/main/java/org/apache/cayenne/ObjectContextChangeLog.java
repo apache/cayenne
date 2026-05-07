@@ -55,18 +55,18 @@ class ObjectContextChangeLog {
         while (it.hasNext()) {
             Object next = it.next();
 
-            if (next instanceof NodeDiff) {
+            if (next instanceof NodeDiff nodeDiff) {
 
-                if (nodeId.equals(((NodeDiff) next).getNodeId())) {
+                if (nodeId.equals(nodeDiff.getNodeId())) {
                     it.remove();
                 }
-                else if (next instanceof ArcCreateOperation) {
-                    if (nodeId.equals(((ArcCreateOperation) next).getTargetNodeId())) {
+                else if (next instanceof ArcCreateOperation arcCreate) {
+                    if (nodeId.equals(arcCreate.getTargetNodeId())) {
                         it.remove();
                     }
                 }
-                else if (next instanceof ArcDeleteOperation) {
-                    if (nodeId.equals(((ArcDeleteOperation) next).getTargetNodeId())) {
+                else if (next instanceof ArcDeleteOperation arcDelete) {
+                    if (nodeId.equals(arcDelete.getTargetNodeId())) {
                         it.remove();
                     }
                 }

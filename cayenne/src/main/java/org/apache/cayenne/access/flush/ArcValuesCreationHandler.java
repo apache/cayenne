@@ -115,8 +115,7 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
         while(dbPathIterator.hasNext()) {
             CayenneMapEntry entry = dbPathIterator.next();
             flattenedPath = flattenedPath.dot(entry.getName());
-            if(entry instanceof DbRelationship) {
-                DbRelationship relationship = (DbRelationship)entry;
+            if(entry instanceof DbRelationship relationship) {
                 // intermediate db entity to be inserted
                 DbEntity target = relationship.getTargetEntity();
                 // if ID is present, just use it, otherwise create new

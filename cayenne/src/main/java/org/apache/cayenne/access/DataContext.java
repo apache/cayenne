@@ -307,14 +307,14 @@ public class DataContext implements ObjectContext {
             return null;
         }
 
-        if (channel instanceof DataDomain) {
-            return (DataDomain) channel;
+        if (channel instanceof DataDomain dataDomain) {
+            return dataDomain;
         }
 
         List<?> response = channel.onQuery(this, new DataDomainQuery()).firstList();
 
-        if (response != null && response.size() > 0 && response.get(0) instanceof DataDomain) {
-            return (DataDomain) response.get(0);
+        if (response != null && response.size() > 0 && response.get(0) instanceof DataDomain dataDomain) {
+            return dataDomain;
         }
 
         return null;
@@ -858,8 +858,8 @@ public class DataContext implements ObjectContext {
                 catch (CayenneRuntimeException ex) {
                     Throwable unwound = Util.unwindException(ex);
 
-                    if (unwound instanceof CayenneRuntimeException) {
-                        throw (CayenneRuntimeException) unwound;
+                    if (unwound instanceof CayenneRuntimeException cayenneRuntimeException) {
+                        throw cayenneRuntimeException;
                     } else {
                         throw new CayenneRuntimeException("Commit Exception", unwound);
                     }

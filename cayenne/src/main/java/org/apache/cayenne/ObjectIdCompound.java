@@ -159,8 +159,8 @@ class ObjectIdCompound implements ObjectId {
 			return false;
 		}
 
-		if (o1 instanceof Number) {
-			return o2 instanceof Number && ((Number) o1).longValue() == ((Number) o2).longValue();
+		if (o1 instanceof Number n1) {
+			return o2 instanceof Number n2 && n1.longValue() == n2.longValue();
 		}
 
 		return Util.nullSafeEquals(o1, o2);
@@ -186,8 +186,8 @@ class ObjectIdCompound implements ObjectId {
 
 			Object value = objectIdKeys.get(keys[i]);
 			// must reconcile all possible numeric types
-			if (value instanceof Number) {
-				builder.append(((Number) value).longValue());
+			if (value instanceof Number number) {
+				builder.append(number.longValue());
 			} else {
 				builder.append(value);
 			}

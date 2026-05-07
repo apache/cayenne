@@ -110,9 +110,9 @@ public class EnumType<T extends Enum<T>> implements ExtendedType<T> {
 
         StringBuilder buffer = new StringBuilder();
         buffer.append(value.name());
-        if (value instanceof ExtendedEnumeration) {
+        if (value instanceof ExtendedEnumeration extendedEnumeration) {
             buffer.append("=");
-            Object dbValue = ((ExtendedEnumeration) value).getDatabaseValue();
+            Object dbValue = extendedEnumeration.getDatabaseValue();
             if (dbValue instanceof String) {
                 buffer.append("'");
             }

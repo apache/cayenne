@@ -179,8 +179,7 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
                         // DbRelationships not processed, because they will be processed later when appending table
                         if (pathPart == null) {
                             throw new CayenneRuntimeException("ObjAttribute has no component: %s", attribute.getName());
-                        } else if (pathPart instanceof DbAttribute) {
-                            DbAttribute dbAttribute = (DbAttribute) pathPart;
+                        } else if (pathPart instanceof DbAttribute dbAttribute) {
                             appendColumn(attribute.getType(),
                                     context.getTableAlias(lhsId.getEntityId(), context.getQuotingStrategy()
                                             .quotedFullyQualifiedName(dbAttribute.getEntity())),

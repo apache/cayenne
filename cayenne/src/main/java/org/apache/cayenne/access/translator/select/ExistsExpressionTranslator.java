@@ -64,8 +64,8 @@ class ExistsExpressionTranslator {
         }
 
         Expression translatedExpression;
-        if(child instanceof Expression) {
-            translatedExpression = (Expression) child;
+        if(child instanceof Expression expression) {
+            translatedExpression = expression;
         } else {
             throw new IllegalArgumentException("Expected expression as a child, got " + child);
         }
@@ -79,8 +79,8 @@ class ExistsExpressionTranslator {
 
         // 0. quick path for a simple case - exists query for a single path expression
         // maybe we should support path as a condition in a general translator too, not only here
-        if (translatedExpression instanceof ASTDbPath) {
-            DbPathMarker marker = createPathMarker(entity, (ASTDbPath) translatedExpression);
+        if (translatedExpression instanceof ASTDbPath astDbPathExpression) {
+            DbPathMarker marker = createPathMarker(entity, astDbPathExpression);
             Expression pathExistExp = markerToExpression(marker);
             if(marker.relationship == null) {
                 return pathExistExp;
@@ -90,7 +90,7 @@ class ExistsExpressionTranslator {
 
         // 1. transform all paths
         translatedExpression = translatedExpression.transform(
-                o -> o instanceof ASTDbPath ? createPathMarker(entity, (ASTDbPath) o) : o
+                o -> o instanceof ASTDbPath astDbPath ? createPathMarker(entity, astDbPath) : o
         );
 
         // 2. group paths with db relationship by their parent conditions and relationships
@@ -155,8 +155,8 @@ class ExistsExpressionTranslator {
         if (node instanceof ParentMarker) {
             return null;
         }
-        if (node instanceof DbPathMarker) {
-            return markerToExpression((DbPathMarker) node);
+        if (node instanceof DbPathMarker dbPathMarker) {
+            return markerToExpression(dbPathMarker);
         }
         return node.deepCopy();
     }
@@ -191,8 +191,7 @@ class ExistsExpressionTranslator {
             Expression expressionToTranslate) {
         Map<SimpleNode, Map<DbRelationship, List<DbPathMarker>>> parents = new HashMap<>(4);
         expressionToTranslate.traverse((SimpleTraversalHandler) (node, parentNode) -> {
-            if (node instanceof DbPathMarker) {
-                DbPathMarker marker = (DbPathMarker) node;
+            if (node instanceof DbPathMarker marker) {
                 if (marker.root()) {
                     return;
                 }

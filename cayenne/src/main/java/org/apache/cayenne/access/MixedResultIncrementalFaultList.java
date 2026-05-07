@@ -80,8 +80,7 @@ class MixedResultIncrementalFaultList<E> extends IncrementalFaultList<E> {
         indexToEntity = new HashMap<>();
         scalarResult = true;
         for(Object next : metadata.getResultSetMapping()) {
-            if(next instanceof EntityResultSegment) {
-                EntityResultSegment resultSegment = (EntityResultSegment)next;
+            if(next instanceof EntityResultSegment resultSegment) {
                 ObjEntity entity = resultSegment.getClassDescriptor().getEntity();
                 // store entity's PK position in result
                 indexToEntity.put(resultSegment.getColumnOffset(), entity);

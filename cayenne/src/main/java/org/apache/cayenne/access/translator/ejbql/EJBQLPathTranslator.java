@@ -199,8 +199,8 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 		Iterator<?> it = attribute.getDbPathIterator();
 		while (it.hasNext()) {
 			Object pathComponent = it.next();
-			if (pathComponent instanceof DbAttribute) {
-				table = ((DbAttribute) pathComponent).getEntity();
+			if (pathComponent instanceof DbAttribute dbAttribute) {
+				table = dbAttribute.getEntity();
 			}
 		}
 

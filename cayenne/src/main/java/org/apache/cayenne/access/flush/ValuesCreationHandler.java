@@ -67,7 +67,7 @@ class ValuesCreationHandler extends ArcValuesCreationHandler {
 
         DbAttribute dbAttribute = attribute.getDbAttribute();
         if(dbAttribute.isPrimaryKey()) {
-            if(!(newValue instanceof Number) || ((Number) newValue).longValue() != 0) {
+            if(!(newValue instanceof Number number) || number.longValue() != 0) {
                 id.getReplacementIdMap().put(dbAttribute.getName(), newValue);
             }
         }

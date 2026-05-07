@@ -38,8 +38,8 @@ public class DbRowOpMerger implements DbRowOpVisitor<DbRowOp>, BiFunction<DbRowO
 
     @Override
     public DbRowOp visitInsert(InsertDbRowOp other) {
-        if(dbRow instanceof DeleteDbRowOp) {
-            return new DeleteInsertDbRowOp((DeleteDbRowOp)dbRow, other);
+        if(dbRow instanceof DeleteDbRowOp deleteDbRowOp) {
+            return new DeleteInsertDbRowOp(deleteDbRowOp, other);
         }
         return mergeValues((DbRowOpWithValues) dbRow, other);
     }
@@ -59,8 +59,8 @@ public class DbRowOpMerger implements DbRowOpVisitor<DbRowOp>, BiFunction<DbRowO
             return other;
         }
         // clash of Insert/Delete with equal ObjectId
-        if(dbRow instanceof InsertDbRowOp) {
-            return new DeleteInsertDbRowOp(other, (InsertDbRowOp)dbRow);
+        if(dbRow instanceof InsertDbRowOp insertDbRowOp) {
+            return new DeleteInsertDbRowOp(other, insertDbRowOp);
         }
         return other;
     }

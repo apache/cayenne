@@ -56,8 +56,8 @@ public interface ObjectId extends Serializable {
      * @since 4.2
      */
     static ObjectId of(String entityName, String keyName, Object value) {
-        if (value instanceof Number) {
-            return new ObjectIdNumber(entityName, keyName, (Number) value);
+        if (value instanceof Number number) {
+            return new ObjectIdNumber(entityName, keyName, number);
         }
         return new ObjectIdSingle(entityName, keyName, value);
     }
@@ -69,13 +69,11 @@ public interface ObjectId extends Serializable {
      * @since 4.2
      */
     static ObjectId of(String entityName, ObjectId objectId) {
-        if (objectId instanceof ObjectIdNumber) {
-            ObjectIdNumber id = (ObjectIdNumber) objectId;
+        if (objectId instanceof ObjectIdNumber id) {
             return new ObjectIdNumber(entityName, id.getKeyName(), id.getValue());
         }
 
-        if (objectId instanceof ObjectIdSingle) {
-            ObjectIdSingle id = (ObjectIdSingle) objectId;
+        if (objectId instanceof ObjectIdSingle id) {
             return new ObjectIdSingle(entityName, id.getKeyName(), id.getValue());
         }
 

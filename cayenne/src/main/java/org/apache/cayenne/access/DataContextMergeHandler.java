@@ -94,8 +94,8 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
 
             // temp kludge - see TODO in ObjectStore.snapshotsChanged(..)
             GraphDiff diff = event.getDiff();
-            if (diff instanceof SnapshotEventDecorator) {
-                SnapshotEvent decoratedEvent = ((SnapshotEventDecorator) diff).getEvent();
+            if (diff instanceof SnapshotEventDecorator snapshotEventDecorator) {
+                SnapshotEvent decoratedEvent = snapshotEventDecorator.getEvent();
                 context.getObjectStore().processSnapshotEvent(decoratedEvent);
             } else {
                 synchronized (context.getObjectStore()) {

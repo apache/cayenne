@@ -81,12 +81,12 @@ public class ObjectStoreGraphDiff implements GraphDiff {
 
                 noop = false;
 
-                if (diff.getObject() instanceof Validating) {
+                if (diff.getObject() instanceof Validating validating) {
                     if (objectsToValidate == null) {
                         objectsToValidate = new ArrayList<>();
                     }
 
-                    objectsToValidate.add((Validating) diff.getObject());
+                    objectsToValidate.add(validating);
                 }
 
             }

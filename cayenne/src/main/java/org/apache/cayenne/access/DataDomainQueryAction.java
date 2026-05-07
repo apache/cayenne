@@ -152,8 +152,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     }
 
     private boolean interceptIteratedQuery() {
-        if (query instanceof IteratedQueryDecorator) {
-            noObjectConversion = ((IteratedQueryDecorator) query).isFetchingDataRows();
+        if (query instanceof IteratedQueryDecorator iteratedQueryDecorator) {
+            noObjectConversion = iteratedQueryDecorator.isFetchingDataRows();
             validateIteratedQuery();
             performIteratedQuery();
             return DONE;
@@ -352,8 +352,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     @SuppressWarnings("deprecation")
     private boolean interceptRefreshQuery() {
 
-        if (query instanceof RefreshQuery) {
-            RefreshQuery refreshQuery = (RefreshQuery) query;
+        if (query instanceof RefreshQuery refreshQuery) {
 
             if (refreshQuery.isRefreshAll()) {
 
@@ -463,8 +462,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             // Mark as cached result - lists need copying whether hit or miss
             cachedResult = true;
 
-            if (cachedResults instanceof ListWithPrefetches) {
-                this.prefetchResultsByPath = ((ListWithPrefetches) cachedResults).getPrefetchResultsByPath();
+            if (cachedResults instanceof ListWithPrefetches listWithPrefetches) {
+                this.prefetchResultsByPath = listWithPrefetches.getPrefetchResultsByPath();
             }
         } else {
             // on cache-refresh request, fetch without blocking and fill the cache
@@ -714,8 +713,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     }
 
     protected <T, R> void updateResponse(List<T> sourceObjects, List<? extends R> targetObjects) {
-        if (response instanceof GenericResponse) {
-            ((GenericResponse) response).replaceResult(sourceObjects, targetObjects);
+        if (response instanceof GenericResponse genericResponse) {
+            genericResponse.replaceResult(sourceObjects, targetObjects);
         } else if (response instanceof ListResponse) {
             response = new ListResponse(targetObjects);
         } else {
@@ -958,8 +957,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             List<PrefetchProcessorNode> segmentNodes = new ArrayList<>(width);
             for (int i = 0; i < width; i++) {
                 Object mapping = resultSetMapping.get(i);
-                if (mapping instanceof EntityResultSegment) {
-                    EntityResultSegment entitySegment = (EntityResultSegment) mapping;
+                if (mapping instanceof EntityResultSegment entitySegment) {
                     PrefetchProcessorNode nextResult = toResultsTree(entitySegment.getClassDescriptor(),
                             metadata.getPrefetchTree(), result, i);
 
@@ -970,8 +968,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                         Object[] row = result.get(j);
                         row[i] = objects.get(j);
                     }
-                } else if (mapping instanceof EmbeddableResultSegment) {
-                    EmbeddableResultSegment resultSegment = (EmbeddableResultSegment) mapping;
+                } else if (mapping instanceof EmbeddableResultSegment resultSegment) {
                     Embeddable embeddable = resultSegment.getEmbeddable();
                     Class<? extends EmbeddableObject> embeddableClass = objectFactory
                             .getJavaClass(embeddable.getClassName());

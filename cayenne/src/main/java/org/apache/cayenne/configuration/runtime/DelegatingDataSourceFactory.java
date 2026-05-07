@@ -87,8 +87,8 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
     protected void attachToScope(DataSource dataSource) {
 
         if (!managedDataSources.containsKey(dataSource)) {
-            if (dataSource instanceof ScopeEventListener) {
-                managedDataSources.put(dataSource, (ScopeEventListener) dataSource);
+            if (dataSource instanceof ScopeEventListener scopeEventListener) {
+                managedDataSources.put(dataSource, scopeEventListener);
             }
         }
     }

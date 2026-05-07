@@ -283,8 +283,8 @@ public class EJBQLJoinAppender {
 
         List<Object> resultSetMapping = context.getMetadata().getResultSetMapping();
         for (Object mapping : resultSetMapping) {
-            if (mapping instanceof EntityResultSegment) {
-                if (entityName.equals(((EntityResultSegment) mapping)
+            if (mapping instanceof EntityResultSegment entityResultSegment) {
+                if (entityName.equals(entityResultSegment
                         .getClassDescriptor()
                         .getEntity()
                         .getName())) {
@@ -308,8 +308,7 @@ public class EJBQLJoinAppender {
                     Iterator<CayenneMapEntry> dbPathIterator = objAttribute.getDbPathIterator();
                     while (dbPathIterator.hasNext()) {
                         CayenneMapEntry next = dbPathIterator.next();
-                        if (next instanceof DbRelationship) {
-                            DbRelationship rel = (DbRelationship) next;
+                        if (next instanceof DbRelationship rel) {
                             context.append(" LEFT OUTER JOIN ");
                             String targetEntityName = quoter.quotedFullyQualifiedName(rel.getTargetEntity());
                             String subqueryTargetAlias = context.getTableAlias(id.getEntityId(), targetEntityName);

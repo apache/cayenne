@@ -85,8 +85,8 @@ abstract public class NamespaceAwareNestedTagHandler extends SAXNestedTagHandler
         super.endElement(namespaceURI, localName, qName);
         String data = charactersBuffer.toString();
         if(!processCharData(localName, data)) {
-            if(namespaceURI.equals(targetNamespace) && parentHandler instanceof NamespaceAwareNestedTagHandler) {
-                ((NamespaceAwareNestedTagHandler)parentHandler).processCharData(localName, data);
+            if(namespaceURI.equals(targetNamespace) && parentHandler instanceof NamespaceAwareNestedTagHandler namespaceAwareNestedTagHandler) {
+                namespaceAwareNestedTagHandler.processCharData(localName, data);
             }
         }
     }

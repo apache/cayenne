@@ -108,8 +108,8 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
                         EJBQLTableId rhsId = new EJBQLTableId(lhsId, dr.getName());
                         joinAppender.appendOuterJoin(marker, lhsId, rhsId);
                         lhsId = rhsId;
-                    } else if (pathPart instanceof DbAttribute) {
-                        appendColumn(idVar, oa, (DbAttribute) pathPart, fields, oa.getType());
+                    } else if (pathPart instanceof DbAttribute dbAttribute) {
+                        appendColumn(idVar, oa, dbAttribute, fields, oa.getType());
                     }
                 }
                 return true;

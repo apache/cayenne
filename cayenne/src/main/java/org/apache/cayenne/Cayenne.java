@@ -163,17 +163,15 @@ public class Cayenne {
             return null;
         }
 
-        if (o instanceof Persistent) {
-            return ((Persistent) o).readNestedProperty(path);
+        if (o instanceof Persistent persistent) {
+            return persistent.readNestedProperty(path);
         }
 
         String firstSegment = path.first().value();
 
-        if (o instanceof Collection<?>) {
+        if (o instanceof Collection<?> collection) {
             // This allows people to put @size at the end of a property
             // path and be able to find out the size of a relationship.
-
-            Collection<?> collection = (Collection<?>) o;
 
             if (path.length() == 1 && PROPERTY_COLLECTION_SIZE.equals(firstSegment)) {
                 return collection.size();
@@ -182,13 +180,12 @@ public class Cayenne {
             // Support for collection property in the middle of the path
             Collection<Object> result = o instanceof List<?> ? new ArrayList<>() : new HashSet<>();
             for (Object item : collection) {
-                if (item instanceof Persistent) {
-                    Persistent cdo = (Persistent) item;
+                if (item instanceof Persistent cdo) {
                     Object rest = cdo.readNestedProperty(path);
-                    if (rest instanceof Collection<?>) {
+                    if (rest instanceof Collection<?> restCollection) {
                         // We don't want nested collections.
                         // E.g. readNestedProperty("paintingArray.paintingTitle") should return List<String>
-                        result.addAll((Collection<?>) rest);
+                        result.addAll(restCollection);
                     } else {
                         result.add(rest);
                     }

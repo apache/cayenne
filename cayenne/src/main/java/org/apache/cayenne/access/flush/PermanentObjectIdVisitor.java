@@ -118,7 +118,7 @@ class PermanentObjectIdVisitor implements DbRowOpVisitor<Void> {
                     if (value != null) {
                         // primitive 0 has to be treated as NULL, or otherwise we can't generate PK for POJO's
                         Class<?> javaClass = objAttr.getJavaClass();
-                        if (!javaClass.isPrimitive() || !(value instanceof Number) || ((Number) value).intValue() != 0) {
+                        if (!javaClass.isPrimitive() || !(value instanceof Number number) || number.intValue() != 0) {
                             idMap.put(dbAttrName, value);
                             continue;
                         }

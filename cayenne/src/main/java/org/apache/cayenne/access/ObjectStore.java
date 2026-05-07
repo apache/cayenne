@@ -122,10 +122,10 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
             throw new CayenneRuntimeException("Object map is null.");
         }
         this.objectMap = objectMap;
-        if(objectMap instanceof SoftValueMap) {
-            ((SoftValueMap<Object, Persistent>) objectMap).setKeyCleanupCallback(this::onObjectKeyCleanup);
-        } else if(objectMap instanceof WeakValueMap) {
-            ((WeakValueMap<Object, Persistent>) objectMap).setKeyCleanupCallback(this::onObjectKeyCleanup);
+        if(objectMap instanceof SoftValueMap<Object, Persistent> softValueMap) {
+            softValueMap.setKeyCleanupCallback(this::onObjectKeyCleanup);
+        } else if(objectMap instanceof WeakValueMap<Object, Persistent> weakValueMap) {
+            weakValueMap.setKeyCleanupCallback(this::onObjectKeyCleanup);
         }
     }
 
@@ -558,8 +558,8 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
         // SnapshotEvents are replaced with GraphEvents (in 2.0) we won't need it
         GraphDiff diff = new SnapshotEventDecorator(event);
 
-        ObjectContext originatingContext = (event.getPostedBy() instanceof ObjectContext)
-                ? (ObjectContext) event.getPostedBy()
+        ObjectContext originatingContext = (event.getPostedBy() instanceof ObjectContext objectContext)
+                ? objectContext
                 : null;
         context.fireDataChannelChanged(originatingContext, diff);
     }

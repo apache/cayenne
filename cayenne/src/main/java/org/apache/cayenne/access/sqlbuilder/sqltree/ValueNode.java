@@ -102,14 +102,14 @@ public class ValueNode extends Node {
                 throw new CayenneRuntimeException("Unsupported array type %s", val.getClass().getName());
             }
         } else {
-            if(val instanceof Persistent) {
-                appendValue((Persistent) val, buffer);
-            } else if(val instanceof ObjectId) {
-                appendValue((ObjectId) val, buffer);
-            } else if(val instanceof Supplier) {
-                appendValue(((Supplier<?>) val).get(), buffer);
-            } else if(val instanceof CharSequence) {
-                appendStringValue(buffer, (CharSequence)val);
+            if(val instanceof Persistent persistent) {
+                appendValue(persistent, buffer);
+            } else if(val instanceof ObjectId objectId) {
+                appendValue(objectId, buffer);
+            } else if(val instanceof Supplier<?> supplier) {
+                appendValue(supplier.get(), buffer);
+            } else if(val instanceof CharSequence charSequence) {
+                appendStringValue(buffer, charSequence);
             } else {
                 appendObjectValue(buffer, val);
             }

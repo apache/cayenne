@@ -156,9 +156,7 @@ class DataContextObjectCreator {
                             : (Collection<Map.Entry<?, ?>>) value;
 
                     for (Object target : collection) {
-                        if (target instanceof Persistent) {
-                            Persistent targetDO = (Persistent) target;
-
+                        if (target instanceof Persistent targetDO) {
                             // make sure it is registered
                             registerNewObject(targetDO);
                             context.getObjectStore().arcCreated(persistent.getObjectId(), targetDO.getObjectId(), new ArcId(property));
@@ -171,10 +169,7 @@ class DataContextObjectCreator {
             public boolean visitToOne(ToOneProperty property) {
                 Object target = property.readPropertyDirectly(persistent);
 
-                if (target instanceof Persistent) {
-
-                    Persistent targetDO = (Persistent) target;
-
+                if (target instanceof Persistent targetDO) {
                     // make sure it is registered
                     registerNewObject(targetDO);
                     context.getObjectStore().arcCreated(persistent.getObjectId(), targetDO.getObjectId(), new ArcId(property));
@@ -216,8 +211,8 @@ class DataContextObjectCreator {
         }
 
         if (entity != null) {
-            if (entity.getDeclaredQualifier() instanceof ValueInjector) {
-                ((ValueInjector) entity.getDeclaredQualifier()).injectValue(object);
+            if (entity.getDeclaredQualifier() instanceof ValueInjector valueInjector) {
+                valueInjector.injectValue(object);
             }
         }
 

@@ -60,8 +60,7 @@ class ObjectContextStateLog implements GraphChangeHandler {
         
         for (Object id : dirtyIds) {
             Object node = graphManager.getNode(id);
-            if (node instanceof Persistent) {
-                Persistent persistentNode = (Persistent) node;
+            if (node instanceof Persistent persistentNode) {
                 switch (persistentNode.getPersistenceState()) {
                     case PersistenceState.MODIFIED, PersistenceState.NEW ->
                             persistentNode.setPersistenceState(PersistenceState.COMMITTED);
@@ -86,8 +85,7 @@ class ObjectContextStateLog implements GraphChangeHandler {
     void graphReverted() {
         for (Object id : dirtyIds) {
             Object node = graphManager.getNode(id);
-            if (node instanceof Persistent) {
-                Persistent persistentNode = (Persistent) node;
+            if (node instanceof Persistent persistentNode) {
                 switch (persistentNode.getPersistenceState()) {
                     case PersistenceState.MODIFIED, PersistenceState.DELETED ->
                             persistentNode.setPersistenceState(PersistenceState.COMMITTED);

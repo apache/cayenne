@@ -100,8 +100,7 @@ public class ExtendedEnumType<T extends Enum<T>> implements ExtendedType<T> {
             int pos,
             int type,
             int precision) throws Exception {
-        if (value instanceof ExtendedEnumeration) {
-            ExtendedEnumeration e = (ExtendedEnumeration) value;
+        if (value instanceof ExtendedEnumeration e) {
             if (TypesMapping.isNumeric(type)) {
                 statement.setInt(pos, (Integer) e.getDatabaseValue());
             } else {
@@ -153,8 +152,8 @@ public class ExtendedEnumType<T extends Enum<T>> implements ExtendedType<T> {
         StringBuilder buffer = new StringBuilder();
         // buffer.append(object.getClass().getName()).append(".");
         buffer.append(value.name()).append("=");
-        if (value instanceof ExtendedEnumeration) {
-            Object dbValue = ((ExtendedEnumeration) value).getDatabaseValue();
+        if (value instanceof ExtendedEnumeration extendedEnumeration) {
+            Object dbValue = extendedEnumeration.getDatabaseValue();
             if (dbValue instanceof String) {
                 buffer.append("'");
             }

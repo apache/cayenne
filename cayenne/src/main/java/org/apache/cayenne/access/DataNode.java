@@ -117,8 +117,8 @@ public class DataNode implements QueryEngine {
 	 * @since 3.1
 	 */
 	public JdbcEventLogger getJdbcEventLogger() {
-		if (jdbcEventLogger == null && adapter instanceof JdbcAdapter) {
-			jdbcEventLogger = ((JdbcAdapter) adapter).getJdbcEventLogger();
+		if (jdbcEventLogger == null && adapter instanceof JdbcAdapter jdbcAdapter) {
+			jdbcEventLogger = jdbcAdapter.getJdbcEventLogger();
 		}
 
 		return jdbcEventLogger;

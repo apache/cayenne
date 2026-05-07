@@ -122,13 +122,13 @@ public final class SQLBuilder {
             return node(node);
         }
 
-        if(node instanceof FunctionNode) {
-            ((FunctionNode) node).setAlias(alias);
+        if(node instanceof FunctionNode functionNode) {
+            functionNode.setAlias(alias);
             return node(node);
         }
 
-        if(node instanceof ColumnNode) {
-            ((ColumnNode) node).setAlias(alias);
+        if(node instanceof ColumnNode columnNode) {
+            columnNode.setAlias(alias);
             return node(node);
         }
 
