@@ -291,9 +291,8 @@ class Compiler {
 
         // append inheritance discriminator columns...
         for (ObjAttribute column : descriptor.getDiscriminatorColumns()) {
-
-            if (visited.add(column.getName())) {
-                String dbAttributePath = column.getDbAttributePath().value();
+            String dbAttributePath = column.getDbAttributePath().value();
+            if (visited.add(dbAttributePath)) {
                 compiledResult.addDbField(
                         "fetch." + prefix + "." + dbAttributePath,
                         prefix + "." + dbAttributePath);
@@ -363,8 +362,9 @@ class Compiler {
 
         // append inheritance discriminator columns...
         for (ObjAttribute column : descriptor.getDiscriminatorColumns()) {
-            if (visited.add(column.getName())) {
-                entityResult.addDbField(column.getDbAttributePath().value(), prefix + index[0]++);
+            String dbAttributePath = column.getDbAttributePath().value();
+            if (visited.add(dbAttributePath)) {
+                entityResult.addDbField(dbAttributePath, prefix + index[0]++);
             }
         }
 

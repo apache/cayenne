@@ -52,6 +52,11 @@ class PersistentDescriptorResultMetadata implements EntityResultSegment {
 		return reverseFields.get(resultSetLabel);
 	}
 
+	@Override
+	public int getColumnCount() {
+		return fields.size();
+	}
+
 	void addObjectField(String attributeName, String column) {
 		ObjEntity entity = classDescriptor.getEntity();
 

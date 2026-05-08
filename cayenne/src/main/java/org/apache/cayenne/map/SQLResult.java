@@ -61,6 +61,7 @@ public class SQLResult {
             } else if (component instanceof EntityResult) {
                 EntityResult entityResult = (EntityResult) component;
                 Map<String, String> fields = entityResult.getDbFields(resolver);
+                int columnCount = entityResult.getFieldCount();
 
                 String entityName = entityResult.getEntityName();
                 if (entityName == null) {
@@ -68,8 +69,8 @@ public class SQLResult {
                 }
 
                 ClassDescriptor classDescriptor = resolver.getClassDescriptor(entityName);
-                resolvedComponents.add(new DefaultEntityResultSegment(classDescriptor, fields, offset));
-                offset = offset + fields.size();
+                resolvedComponents.add(new DefaultEntityResultSegment(classDescriptor, fields, offset, columnCount));
+                offset = offset + columnCount;
             } else if (component instanceof EmbeddedResult) {
                 EmbeddedResult embeddedResult = (EmbeddedResult)component;
                 Map<String, String> fields = embeddedResult.getFields();

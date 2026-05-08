@@ -31,12 +31,19 @@ public class DefaultEntityResultSegment implements EntityResultSegment {
     private ClassDescriptor classDescriptor;
     private Map<String, String> fields;
     private int offset;
+    private int columnCount;
 
     public DefaultEntityResultSegment(ClassDescriptor classDescriptor,
             Map<String, String> fields, int offset) {
+        this(classDescriptor, fields, offset, fields != null ? fields.size() : 0);
+    }
+
+    public DefaultEntityResultSegment(ClassDescriptor classDescriptor,
+            Map<String, String> fields, int offset, int columnCount) {
         this.classDescriptor = classDescriptor;
         this.fields = fields;
         this.offset = offset;
+        this.columnCount = columnCount;
     }
 
     public ClassDescriptor getClassDescriptor() {
@@ -45,6 +52,11 @@ public class DefaultEntityResultSegment implements EntityResultSegment {
 
     public Map<String, String> getFields() {
         return fields;
+    }
+
+    @Override
+    public int getColumnCount() {
+        return columnCount;
     }
 
     public int getColumnOffset() {
