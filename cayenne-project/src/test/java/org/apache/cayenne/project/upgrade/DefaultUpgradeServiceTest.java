@@ -142,7 +142,7 @@ public class DefaultUpgradeServiceTest {
     @Test
     public void readDocument() {
         Document document = Util.readDocument(getClass().getResource("../cayenne-PROJECT1.xml"));
-        assertEquals("11", document.getDocumentElement().getAttribute("project-version"));
+        assertEquals("12", document.getDocumentElement().getAttribute("project-version"));
     }
 
     private Document readDocument(URL url) throws Exception {

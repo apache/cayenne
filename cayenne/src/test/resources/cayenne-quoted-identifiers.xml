@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<domain xmlns="http://cayenne.apache.org/schema/11/domain"
+<domain xmlns="http://cayenne.apache.org/schema/12/domain"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/domain https://cayenne.apache.org/schema/11/domain.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/domain https://cayenne.apache.org/schema/12/domain.xsd"
+	 project-version="12">
 	<map name="quoted-identifiers"/>
 </domain>

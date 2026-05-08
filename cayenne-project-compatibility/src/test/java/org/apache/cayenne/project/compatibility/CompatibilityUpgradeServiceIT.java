@@ -52,12 +52,12 @@ public class CompatibilityUpgradeServiceIT {
         Document domainDocument = documentProvider.getDocument(resourceUrl);
 
         assertNotNull(domainDocument);
-        assertEquals("11", domainDocument.getDocumentElement().getAttribute("project-version"));
+        assertEquals("12", domainDocument.getDocumentElement().getAttribute("project-version"));
 
         URL dataMapUrl = getClass().getResource("test-map-v6.map.xml");
         Document dataMapDocument = documentProvider.getDocument(dataMapUrl);
         assertNotNull(dataMapDocument);
-        assertEquals("11", dataMapDocument.getDocumentElement().getAttribute("project-version"));
+        assertEquals("12", dataMapDocument.getDocumentElement().getAttribute("project-version"));
         assertEquals(1, dataMapDocument.getElementsByTagName("obj-entity").getLength());
         assertEquals(1, dataMapDocument.getElementsByTagName("db-entity").getLength());
         assertEquals(2, dataMapDocument.getElementsByTagName("db-attribute").getLength());
@@ -81,7 +81,7 @@ public class CompatibilityUpgradeServiceIT {
 
         dataMapDocument = documentProvider.getDocument(dataMapUrl);
         assertNotNull(dataMapDocument);
-        assertEquals("11", dataMapDocument.getDocumentElement().getAttribute("project-version"));
+        assertEquals("12", dataMapDocument.getDocumentElement().getAttribute("project-version"));
     }
 
     private Injector getInjector() {
