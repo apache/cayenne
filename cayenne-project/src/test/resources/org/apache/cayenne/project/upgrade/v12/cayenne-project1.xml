@@ -16,4 +16,7 @@
 		</data-source>
 	</node>
 	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="project1.graph.xml"/>
+	<validation xmlns="http://cayenne.apache.org/schema/11/validation">
+		<exclude>DATA_MAP_NODE_LINKAGE</exclude>
+	</validation>
 </domain>

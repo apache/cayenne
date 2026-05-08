@@ -41,7 +41,7 @@ import java.util.List;
  */
 public class UpgradeHandler_V12 implements UpgradeHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(UpgradeHandler_V12.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UpgradeHandler_V12.class);
 
     static final String GRAPH_SUFFIX = ".graph.xml";
 
@@ -54,11 +54,14 @@ public class UpgradeHandler_V12 implements UpgradeHandler {
     public void processProjectDom(UpgradeUnit upgradeUnit) {
         updateDomainSchemaAndVersion(upgradeUnit);
         removeGraphIncludes(upgradeUnit);
+        updateDomainExtensionSchema(upgradeUnit, VALIDATION);
     }
 
     @Override
     public void processDataMapDom(UpgradeUnit upgradeUnit) {
         updateDataMapSchemaAndVersion(upgradeUnit);
+        updateExtensionSchema(upgradeUnit, CGEN);
+        updateExtensionSchema(upgradeUnit, DB_IMPORT);
     }
 
     private void removeGraphIncludes(UpgradeUnit upgradeUnit) {
@@ -90,10 +93,10 @@ public class UpgradeHandler_V12 implements UpgradeHandler {
             File projectFile = new File(upgradeUnit.getResource().getURL().toURI());
             File graphFile = new File(projectFile.getParentFile(), href);
             if (!Files.deleteIfExists(graphFile.toPath())) {
-                logger.warn("Graph file not found, skipping deletion: {}", graphFile);
+                LOGGER.warn("Graph file not found, skipping deletion: {}", graphFile);
             }
         } catch (Exception e) {
-            logger.warn("Failed to delete graph file '{}': {}", href, e.getMessage());
+            LOGGER.warn("Failed to delete graph file '{}': {}", href, e.getMessage());
         }
     }
 }

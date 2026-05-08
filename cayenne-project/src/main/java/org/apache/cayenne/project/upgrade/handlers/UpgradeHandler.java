@@ -19,15 +19,15 @@
 
 package org.apache.cayenne.project.upgrade.handlers;
 
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.project.upgrade.UpgradeUnit;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 /**
  * Interface that upgrade handlers should implement.
@@ -54,6 +54,12 @@ public interface UpgradeHandler {
      * @since 5.0-M1
      */
     String GRAPH = "graph";
+
+    /**
+     * root tag for the validation extension
+     * @since 5.0-M2
+     */
+    String VALIDATION = "validation";
 
     /**
      * @return target version for this handler
@@ -108,15 +114,36 @@ public interface UpgradeHandler {
     }
 
     /**
-     * Update schema for the given extension
+     * Update schema for the given extension in a datamap file (root element: data-map)
      * @param upgradeUnit a unit to work with
-     * @param extension name of the extension (cgen, dbimport, graph )
+     * @param extension name of the extension (cgen, dbImport, etc.)
      */
     default void updateExtensionSchema(UpgradeUnit upgradeUnit, String extension) {
         XPath xpath = XPathFactory.newInstance().newXPath();
         NodeList nodes;
         try {
             nodes = (NodeList) xpath.evaluate("/data-map/*[local-name()='"+extension+"']",
+                    upgradeUnit.getDocument(), XPathConstants.NODESET);
+        } catch (XPathExpressionException e) {
+            return;
+        }
+        for (int j = 0; j < nodes.getLength(); j++) {
+            Element element = (Element) nodes.item(j);
+            element.setAttribute("xmlns", "http://cayenne.apache.org/schema/"+getVersion()+"/"+extension.toLowerCase());
+        }
+    }
+
+    /**
+     * Update schema for the given extension in a project file (root element: domain)
+     * @param upgradeUnit a unit to work with
+     * @param extension name of the extension (e.g. validation)
+     * @since 5.0-M2
+     */
+    default void updateDomainExtensionSchema(UpgradeUnit upgradeUnit, String extension) {
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        NodeList nodes;
+        try {
+            nodes = (NodeList) xpath.evaluate("/domain/*[local-name()='"+extension+"']",
                     upgradeUnit.getDocument(), XPathConstants.NODESET);
         } catch (XPathExpressionException e) {
             return;

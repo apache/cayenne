@@ -38,69 +38,69 @@ import java.net.URL;
 import java.util.Arrays;
 
 /**
- * @since 3.1
- * @since 4.1 moved from org.apache.cayenne.configuration package
+ * @since 4.1
  */
 public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoader {
 
-	private static final Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
 
-	/**
-	 * Versions of project XML files that this loader can read.
-	 */
-	static final String[] SUPPORTED_PROJECT_VERSIONS = {"11"};
-	static {
-		Arrays.sort(SUPPORTED_PROJECT_VERSIONS);
-	}
+    /**
+     * Versions of project XML files that this loader can read.
+     */
+    static final String[] SUPPORTED_PROJECT_VERSIONS = {"12"};
 
-	@Inject
-	protected Provider<XMLReader> xmlReaderProvider;
+    static {
+        Arrays.sort(SUPPORTED_PROJECT_VERSIONS);
+    }
 
-	@Inject
-	protected DataMapLoader dataMapLoader;
+    @Inject
+    protected Provider<XMLReader> xmlReaderProvider;
 
-	@Inject
-	protected ConfigurationNameMapper nameMapper;
+    @Inject
+    protected DataMapLoader dataMapLoader;
 
-	@Inject
-	protected AdhocObjectFactory objectFactory;
+    @Inject
+    protected ConfigurationNameMapper nameMapper;
 
-	@Inject
-	protected HandlerFactory handlerFactory;
+    @Inject
+    protected AdhocObjectFactory objectFactory;
 
-	@Override
-	public ConfigurationTree<DataChannelDescriptor> load(Resource configurationResource) throws ConfigurationException {
+    @Inject
+    protected HandlerFactory handlerFactory;
 
-		if (configurationResource == null) {
-			throw new NullPointerException("Null configurationResource");
-		}
+    @Override
+    public ConfigurationTree<DataChannelDescriptor> load(Resource configurationResource) throws ConfigurationException {
 
-		URL configurationURL = configurationResource.getURL();
+        if (configurationResource == null) {
+            throw new NullPointerException("Null configurationResource");
+        }
 
-		logger.info("Loading XML configuration resource from " + configurationURL);
+        URL configurationURL = configurationResource.getURL();
 
-		final DataChannelDescriptor descriptor = new DataChannelDescriptor();
-		descriptor.setConfigurationSource(configurationResource);
-		descriptor.setName(nameMapper.configurationNodeName(DataChannelDescriptor.class, configurationResource));
+        logger.info("Loading XML configuration resource from " + configurationURL);
 
-		try(InputStream in = configurationURL.openStream()) {
-			XMLReader parser = xmlReaderProvider.get();
-			LoaderContext loaderContext = new LoaderContext(parser, handlerFactory);
-			loaderContext.addDataMapListener(dataMap -> descriptor.getDataMaps().add(dataMap));
+        final DataChannelDescriptor descriptor = new DataChannelDescriptor();
+        descriptor.setConfigurationSource(configurationResource);
+        descriptor.setName(nameMapper.configurationNodeName(DataChannelDescriptor.class, configurationResource));
 
-			DataChannelHandler rootHandler = new DataChannelHandler(this, descriptor, loaderContext);
-			parser.setContentHandler(rootHandler);
-			parser.setErrorHandler(rootHandler);
-			InputSource input = new InputSource(in);
-			input.setSystemId(configurationURL.toString());
-			parser.parse(input);
+        try (InputStream in = configurationURL.openStream()) {
+            XMLReader parser = xmlReaderProvider.get();
+            LoaderContext loaderContext = new LoaderContext(parser, handlerFactory);
+            loaderContext.addDataMapListener(dataMap -> descriptor.getDataMaps().add(dataMap));
+
+            DataChannelHandler rootHandler = new DataChannelHandler(this, descriptor, loaderContext);
+            parser.setContentHandler(rootHandler);
+            parser.setErrorHandler(rootHandler);
+            InputSource input = new InputSource(in);
+            input.setSystemId(configurationURL.toString());
+            parser.parse(input);
 
             loaderContext.dataChannelLoaded(descriptor);
-		} catch (Exception e) {
-			throw new ConfigurationException("Error loading configuration from %s", e, configurationURL);
-		}
+        } catch (Exception e) {
+            throw new ConfigurationException("Error loading configuration from %s", e, configurationURL);
+        }
 
-		// TODO: andrus 03/10/2010 - actually provide load failures here...
-		return new ConfigurationTree<>(descriptor, null);
-	}
+        // TODO: andrus 03/10/2010 - actually provide load failures here...
+        return new ConfigurationTree<>(descriptor, null);
+    }
 }

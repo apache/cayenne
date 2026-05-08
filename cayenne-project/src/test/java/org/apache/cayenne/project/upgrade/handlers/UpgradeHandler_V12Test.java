@@ -72,6 +72,12 @@ public class UpgradeHandler_V12Test extends BaseUpgradeHandlerTest {
                 document, XPathConstants.NODESET);
         assertEquals("xi:include must be removed", 0, includes.getLength());
 
+        NodeList validation = (NodeList) xpath.evaluate("/domain/*[local-name()='validation']",
+                document, XPathConstants.NODESET);
+        assertEquals(1, validation.getLength());
+        assertEquals("http://cayenne.apache.org/schema/12/validation",
+                ((Element) validation.item(0)).getAttribute("xmlns"));
+
         assertFalse("graph file must be deleted", graphFile.exists());
     }
 
@@ -98,6 +104,19 @@ public class UpgradeHandler_V12Test extends BaseUpgradeHandlerTest {
         Element root = document.getDocumentElement();
         assertEquals("12", root.getAttribute("project-version"));
         assertEquals("http://cayenne.apache.org/schema/12/modelMap", root.getAttribute("xmlns"));
+
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        NodeList cgen = (NodeList) xpath.evaluate("/data-map/*[local-name()='cgen']",
+                document, XPathConstants.NODESET);
+        assertEquals(1, cgen.getLength());
+        assertEquals("http://cayenne.apache.org/schema/12/cgen",
+                ((Element) cgen.item(0)).getAttribute("xmlns"));
+
+        NodeList dbImport = (NodeList) xpath.evaluate("/data-map/*[local-name()='dbImport']",
+                document, XPathConstants.NODESET);
+        assertEquals(1, dbImport.getLength());
+        assertEquals("http://cayenne.apache.org/schema/12/dbimport",
+                ((Element) dbImport.item(0)).getAttribute("xmlns"));
     }
 
     @Test
