@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportModel;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportTreeModel;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportSorter;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportTree;
 
@@ -51,7 +51,7 @@ public class DragAndDropNodeAction extends TreeManipulationAction {
         if (dropLocationDuplicateFound()) {
             return;
         }
-        DbImportModel model = (DbImportModel) tree.getModel();
+        DbImportTreeModel model = (DbImportTreeModel) tree.getModel();
         ReverseEngineering reverseEngineeringOldCopy = new ReverseEngineering(tree.getReverseEngineering());
         List<DbImportTreeNode> nodesToExpand = Arrays.stream(nodes)
                 .filter(node -> tree.isExpanded(new TreePath(node.getPath())))

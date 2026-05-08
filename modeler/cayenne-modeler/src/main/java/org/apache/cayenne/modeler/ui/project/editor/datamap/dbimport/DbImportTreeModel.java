@@ -25,13 +25,17 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImpo
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 
-public class DbImportModel extends DefaultTreeModel {
+public class DbImportTreeModel extends DefaultTreeModel {
+
+    private final boolean canBeCleaned;
+    private final String emptyText;
 
     private DbImportTree dbSchemaTree;
-    private boolean canBeCleaned;
 
-    DbImportModel(TreeNode root) {
+    DbImportTreeModel(TreeNode root, boolean canBeCleaned, String emptyText) {
         super(root);
+        this.canBeCleaned = canBeCleaned;
+        this.emptyText = emptyText;
     }
 
     private void clearReverseEngineering(ReverseEngineering reverseEngineering) {
@@ -52,7 +56,7 @@ public class DbImportModel extends DefaultTreeModel {
             if (canBeCleaned) {
                 clearReverseEngineering(reverseEngineering);
             }
-            rootNode.add(new DbImportTreeNode(("Configuration is empty.")));
+            rootNode.add(new DbImportTreeNode(emptyText));
         }
     }
 
@@ -64,9 +68,5 @@ public class DbImportModel extends DefaultTreeModel {
 
     public void setDbSchemaTree(DbImportTree dbSchemaTree) {
         this.dbSchemaTree = dbSchemaTree;
-    }
-
-    public void setCanBeCleaned(boolean canBeCleaned) {
-        this.canBeCleaned = canBeCleaned;
     }
 }

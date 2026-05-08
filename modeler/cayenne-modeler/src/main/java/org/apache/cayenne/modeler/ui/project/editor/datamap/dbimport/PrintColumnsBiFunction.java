@@ -42,7 +42,7 @@ public class PrintColumnsBiFunction implements BiFunction<FilterContainer, DbImp
     }
 
     private void processTable(IncludeTable tableFilter, DbImportTreeNode root) {
-        DbImportModel model = (DbImportModel) dbImportTree.getModel();
+        DbImportTreeModel model = (DbImportTreeModel) dbImportTree.getModel();
         DbImportTreeNode container = dbImportTree
                 .findNodeInParent(root, tableFilter);
         if (container == null) {

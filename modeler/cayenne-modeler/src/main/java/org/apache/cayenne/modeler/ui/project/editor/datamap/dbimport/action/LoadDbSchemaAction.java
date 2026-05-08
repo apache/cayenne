@@ -27,7 +27,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.action.DBConnectionAwareAction;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DatabaseSchemaLoader;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportModel;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportTreeModel;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportView;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.SourceTargetPanel;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.PrintColumnsBiFunction;
@@ -126,7 +126,7 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
                 .translateReverseEngineeringToTree(databaseReverseEngineering, true);
         sourceTargetPanel
                 .bindReverseEngineeringToDatamap(getProjectSession().getSelectedDataMap(), databaseReverseEngineering);
-        ((DbImportModel) sourceTargetPanel.getSourceTree().getModel()).reload();
+        ((DbImportTreeModel) sourceTargetPanel.getSourceTree().getModel()).reload();
     }
 
     private void loadTables(DBConnector connectionInfo, TreePath tablePath) throws Exception {

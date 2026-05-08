@@ -31,7 +31,7 @@ import org.apache.cayenne.dbsync.reverse.dbimport.PatternParam;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportModel;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportTreeModel;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportTree;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportView;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
@@ -112,7 +112,7 @@ public class DeleteNodeAction extends TreeManipulationAction {
     }
 
     private void updateParentChilds() {
-        DbImportModel model = (DbImportModel) tree.getModel();
+        DbImportTreeModel model = (DbImportTreeModel) tree.getModel();
         model.removeNodeFromParent(selectedElement);
         getProjectSession().setDirty(true);
         tree.reloadModelKeepingExpanded(parentElement);

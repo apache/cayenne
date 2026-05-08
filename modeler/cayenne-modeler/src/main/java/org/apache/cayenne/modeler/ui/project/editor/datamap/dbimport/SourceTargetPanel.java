@@ -155,7 +155,7 @@ public class SourceTargetPanel extends JPanel {
     }
 
     public void updateTree(DataMap dataMap) {
-        DbImportModel model = (DbImportModel) sourceTree.getModel();
+        DbImportTreeModel model = (DbImportTreeModel) sourceTree.getModel();
         model.reload();
         if (databaseStructures.get(dataMap) != null) {
             sourceTree.setReverseEngineering(databaseStructures.get(dataMap));
@@ -304,7 +304,7 @@ public class SourceTargetPanel extends JPanel {
     private class TargetTreeSelectionListener implements TreeSelectionListener {
         @Override
         public void valueChanged(TreeSelectionEvent e) {
-            DbImportModel model = (DbImportModel) sourceTree.getModel();
+            DbImportTreeModel model = (DbImportTreeModel) sourceTree.getModel();
             DbImportTreeNode root = (DbImportTreeNode) model.getRoot();
             sourceTree.repaint();
             if (root.getChildCount() > 0) {

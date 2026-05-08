@@ -64,7 +64,7 @@ public class DbImportTree extends JTree {
     public void translateReverseEngineeringToTree(ReverseEngineering reverseEngineering, boolean isTransferable) {
         this.isTransferable = isTransferable;
         this.reverseEngineering = reverseEngineering;
-        DbImportModel model = (DbImportModel) this.getModel();
+        DbImportTreeModel model = (DbImportTreeModel) this.getModel();
         DbImportTreeNode root = (DbImportTreeNode) model.getRoot();
         root.removeAllChildren();
         root.setUserObject(reverseEngineering);
@@ -82,7 +82,7 @@ public class DbImportTree extends JTree {
 
     public void update(ReverseEngineering reverseEngineering,
                        BiFunction<FilterContainer, DbImportTreeNode, Void> processor) {
-        DbImportModel model = (DbImportModel) this.getModel();
+        DbImportTreeModel model = (DbImportTreeModel) this.getModel();
         DbImportTreeNode root = (DbImportTreeNode) model.getRoot();
         Collection<Catalog> catalogs = reverseEngineering.getCatalogs();
         if (!catalogs.isEmpty()) {
@@ -232,7 +232,7 @@ public class DbImportTree extends JTree {
     }
 
     public void reloadModelKeepingExpanded(DbImportTreeNode node) {
-        DbImportModel model = (DbImportModel) getModel();
+        DbImportTreeModel model = (DbImportTreeModel) getModel();
         List<DbImportTreeNode> nodesToExpand = getTreeExpandList();
         model.reload(node);
         expandTree(nodesToExpand);

@@ -221,16 +221,12 @@ public class ReverseEngineeringConfigPanel extends ProjectPanel {
             }
             if (!dbImportView.isInitFromModel()) {
                 session.setDirty(true);
+                dbImportView.invalidateDbSchema();
             }
         }
-    }
-
-    JComboBox<String> getStrategyCombo() {
-        return strategyCombo;
     }
 
     CMUndoableTextField getTableTypes() {
         return tableTypes;
     }
-
 }

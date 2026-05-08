@@ -56,36 +56,35 @@ public class DbImportView extends ProjectPanel {
     public DbImportView(ProjectSession session) {
         super(session);
 
-        DbImportTreeNode root = new DbImportTreeNode(new ReverseEngineering());
-        DbImportTreeNode draggableTreeRoot = new DbImportTreeNode(new ReverseEngineering());
-        DbImportTree reverseEngineeringTree = new DbImportTree(root);
-        DbImportTree draggableTree = new DbImportTree(new TransferableNode(draggableTreeRoot));
-        DbImportModel model = new DbImportModel(root);
-        model.setCanBeCleaned(true);
-        DbImportModel draggableTreeModel = new DbImportModel(draggableTreeRoot);
-        draggableTreeModel.setCanBeCleaned(false);
-        draggableTree.setRootVisible(false);
-        draggableTree.setShowsRootHandles(true);
-        draggableTree.setModel(draggableTreeModel);
-        reverseEngineeringTree.setRootVisible(false);
-        reverseEngineeringTree.setModel(model);
-        reverseEngineeringTree.setShowsRootHandles(true);
+        DbImportTreeNode configRoot = new DbImportTreeNode(new ReverseEngineering());
+        DbImportTree configTree = new DbImportTree(configRoot);
+        DbImportTreeModel configModel = new DbImportTreeModel(configRoot, true, "Configuration is empty.");
+        configTree.setRootVisible(false);
+        configTree.setModel(configModel);
+        configTree.setShowsRootHandles(true);
 
-        DbImportActions actions = new DbImportActions(app, this, reverseEngineeringTree, draggableTree);
-        this.sourceTargetPanel = new SourceTargetPanel(draggableTree, reverseEngineeringTree, actions);
-        draggableTree.setLoadDbSchemaAction(actions.getLoadDbSchemaAction());
-        this.treeToolbar = new TreeToolbarPanel(reverseEngineeringTree, actions);
-        this.treePanel = new ReverseEngineeringTreePanel(session, reverseEngineeringTree, draggableTree, this.sourceTargetPanel, actions);
+        DbImportTreeNode dbRoot = new DbImportTreeNode(new ReverseEngineering());
+        DbImportTree dbTree = new DbImportTree(new TransferableNode(dbRoot));
+        DbImportTreeModel dbModel = new DbImportTreeModel(dbRoot, false, "Click 'Refresh DB Schema' above to load the schema.");
+        dbTree.setRootVisible(false);
+        dbTree.setShowsRootHandles(true);
+        dbTree.setModel(dbModel);
+
+        DbImportActions actions = new DbImportActions(app, this, configTree, dbTree);
+        this.sourceTargetPanel = new SourceTargetPanel(dbTree, configTree, actions);
+        dbTree.setLoadDbSchemaAction(actions.getLoadDbSchemaAction());
+        this.treeToolbar = new TreeToolbarPanel(configTree, actions);
+        this.treePanel = new ReverseEngineeringTreePanel(session, configTree, dbTree, this.sourceTargetPanel, actions);
         treePanel.setTreeToolbar(treeToolbar);
-        model.setDbSchemaTree(draggableTree);
-        draggableTreeModel.setDbSchemaTree(draggableTree);
-        ((ColorTreeRenderer) sourceTargetPanel.getSourceTree().getCellRenderer())
-                .setReverseEngineeringTree(reverseEngineeringTree);
+
+        configModel.setDbSchemaTree(dbTree);
+        dbModel.setDbSchemaTree(dbTree);
+
+        ((ColorTreeRenderer) sourceTargetPanel.getSourceTree().getCellRenderer()).setReverseEngineeringTree(configTree);
         this.configPanel = new ReverseEngineeringConfigPanel(session, this);
         this.loadDbSchemaProgress = new JProgressBar();
         this.reverseEngineeringProgress = new JProgressBar();
-        this.loadDbSchemaButton = (AppAction.CayenneToolbarButton)
-                actions.getLoadDbSchemaAction().buildButton(0);
+        this.loadDbSchemaButton = (AppAction.CayenneToolbarButton) actions.getLoadDbSchemaAction().buildButton(0);
 
         initLayout(actions);
         initBindings();
@@ -240,6 +239,14 @@ public class DbImportView extends ProjectPanel {
 
     public boolean isInitFromModel() {
         return initFromModel;
+    }
+
+    void invalidateDbSchema() {
+        DbImportTree sourceTree = sourceTargetPanel.getSourceTree();
+        DbImportTreeNode root = sourceTree.getRootNode();
+        root.removeAllChildren();
+        sourceTree.setEnabled(false);
+        ((DbImportTreeModel) sourceTree.getModel()).reload();
     }
 
     public String[] getTableTypes() {
