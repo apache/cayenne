@@ -28,7 +28,6 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.gen.xml.CgenExtension;
 import org.apache.cayenne.modeler.pref.PreferencesRepository;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
-import org.apache.cayenne.modeler.service.graph.GraphExtension;
 import org.apache.cayenne.modeler.service.platform.DefaultPlatformInitializer;
 import org.apache.cayenne.modeler.service.platform.PlatformInitializer;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
@@ -59,7 +58,6 @@ public class ModelerModule implements Module {
 
         ProjectModule.extend(binder)
                 .addExtension(InfoExtension.class)
-                .addExtension(GraphExtension.class)
                 .addExtension(DbImportExtension.class)
                 .addExtension(CgenExtension.class)
                 .addExtension(ValidationExtension.class);

@@ -37,7 +37,6 @@ import org.apache.cayenne.modeler.ui.action.DbEntityCounterpartAction;
 import org.apache.cayenne.modeler.ui.action.DbEntitySyncAction;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.ExpressionConvertor;
-import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ShowGraphEntityAction;
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
@@ -103,8 +102,6 @@ public class DbEntityMainView extends ProjectPanel implements ExistingSelectionP
         toolBar.add(globalActions.getAction(CreateObjEntityFromDbAction.class).buildButton(1));
         toolBar.add(globalActions.getAction(DbEntitySyncAction.class).buildButton(2));
         toolBar.add(globalActions.getAction(DbEntityCounterpartAction.class).buildButton(3));
-        toolBar.addSeparator();
-        toolBar.add(globalActions.getAction(ShowGraphEntityAction.class).buildButton());
 
         pkGeneratorType.setEditable(false);
         pkGeneratorType.setModel(new DefaultComboBoxModel<>(PK_GENERATOR_TYPES));

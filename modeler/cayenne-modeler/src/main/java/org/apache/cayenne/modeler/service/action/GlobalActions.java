@@ -24,7 +24,6 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.action.*;
-import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ShowGraphEntityAction;
 import org.apache.cayenne.project.ConfigurationNodeParentGetter;
 
 import javax.swing.*;
@@ -118,8 +117,7 @@ public class GlobalActions {
                 CreateAttributeAction.class.getName(),
                 CreateRelationshipAction.class.getName(),
                 ObjEntityCounterpartAction.class.getName(),
-                ObjEntityToSuperEntityAction.class.getName(),
-                ShowGraphEntityAction.class.getName()));
+                ObjEntityToSuperEntityAction.class.getName()));
 
         dbEntityActions = new HashSet<>(dataMapActions);
 
@@ -128,7 +126,6 @@ public class GlobalActions {
                 CreateRelationshipAction.class.getName(),
                 DbEntitySyncAction.class.getName(),
                 DbEntityCounterpartAction.class.getName(),
-                ShowGraphEntityAction.class.getName(),
                 CreateObjEntityFromDbAction.class.getName()));
 
         embeddableActions = new HashSet<>(dataMapActions);
@@ -220,7 +217,6 @@ public class GlobalActions {
         registerAction(redoAction);
 
         registerAction(new CreateEmbeddableAction(application));
-        registerAction(new ShowGraphEntityAction(application));
 
         registerAction(new CollapseTreeAction(application));
         registerAction(new FilterAction(application));

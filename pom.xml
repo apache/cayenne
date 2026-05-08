@@ -376,11 +376,6 @@
 				<version>1.11.0</version>
 			</dependency>
 			<dependency>
-				<groupId>jgraph</groupId>
-				<artifactId>jgraph</artifactId>
-				<version>5.13.0.0</version>
-			</dependency>
-			<dependency>
 				<groupId>net.java.dev.inflector</groupId>
 				<artifactId>inflector</artifactId>
 				<version>0.7.0</version>

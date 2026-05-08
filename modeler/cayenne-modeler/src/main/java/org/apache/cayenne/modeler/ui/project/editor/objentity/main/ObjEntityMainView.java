@@ -44,7 +44,6 @@ import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.ExpressionConvertor;
-import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ShowGraphEntityAction;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.classname.ClassNameUpdaterController;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.duplicates.DuplicatedAttributesDialog;
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
@@ -109,8 +108,6 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
         toolBar.addSeparator();
         toolBar.add(globalActions.getAction(ObjEntitySyncAction.class).buildButton(1));
         toolBar.add(globalActions.getAction(ObjEntityCounterpartAction.class).buildButton(3));
-        toolBar.addSeparator();
-        toolBar.add(globalActions.getAction(ShowGraphEntityAction.class).buildButton());
         add(toolBar, BorderLayout.NORTH);
 
         tableLabel.setBorderPainted(false);

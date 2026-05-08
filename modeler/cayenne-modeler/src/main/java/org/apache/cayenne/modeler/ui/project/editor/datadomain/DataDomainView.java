@@ -26,8 +26,6 @@ import org.apache.cayenne.modeler.ui.action.ShowValidationConfigAction;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.cgen.DataDomainCgenTab;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.dbimport.DataDomainDbImportTab;
-import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.DataDomainGraphTab;
-import org.apache.cayenne.modeler.ui.project.editor.datadomain.graph.action.ShowGraphEntityAction;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.main.DataDomainMainView;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.validation.ValidationTab;
 
@@ -36,7 +34,6 @@ import javax.swing.event.ChangeEvent;
 
 public class DataDomainView extends ProjectTabbedPane {
 
-    private final DataDomainGraphTab graphTab;
     private final JComponent cgenView;
     private final DataDomainCgenTab cgenTab;
     private final JComponent dbImportView;
@@ -49,7 +46,6 @@ public class DataDomainView extends ProjectTabbedPane {
         this.dbImportView = new JScrollPane(dbImportTab);
         this.cgenTab = new DataDomainCgenTab(session);
         this.cgenView = new JScrollPane(cgenTab);
-        this.graphTab = new DataDomainGraphTab(session);
         this.validationTab = new ValidationTab(session);
         initLayout();
         initBindings();
@@ -60,7 +56,6 @@ public class DataDomainView extends ProjectTabbedPane {
         addTab("Main", new JScrollPane(new DataDomainMainView(session)));
         addTab("Db Import", dbImportView);
         addTab("Class Generation", cgenView);
-        addTab("Graph", graphTab);
         addTab("Validation", validationTab);
     }
 
@@ -72,21 +67,13 @@ public class DataDomainView extends ProjectTabbedPane {
     }
 
     private void onEntitySelected(ObjEntityDisplayEvent e) {
-        if (e.getSource() instanceof ShowGraphEntityAction) {
-            setSelectedComponent(graphTab);
-        }
     }
 
     private void onEntitySelected(DbEntityDisplayEvent e) {
-        if (e.getSource() instanceof ShowGraphEntityAction) {
-            setSelectedComponent(graphTab);
-        }
     }
 
     private void stateChanged(ChangeEvent e) {
-        if (getSelectedComponent() == graphTab) {
-            graphTab.refresh();
-        } else if (getSelectedComponent() == cgenView) {
+        if (getSelectedComponent() == cgenView) {
             cgenTab.initView();
         } else if (getSelectedComponent() == dbImportView) {
             dbImportTab.initView();
