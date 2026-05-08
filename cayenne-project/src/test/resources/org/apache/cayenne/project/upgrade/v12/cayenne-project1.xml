@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<domain xmlns="http://cayenne.apache.org/schema/11/domain"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/domain https://cayenne.apache.org/schema/11/domain.xsd"
+	 project-version="11">
+	<map name="map1"/>
+	<node name="node1"
+		 adapter="org.example.test.Adapter"
+		 factory="org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory">
+		<map-ref name="map1"/>
+		<data-source>
+			<driver/>
+			<url/>
+			<connectionPool min="1" max="1"/>
+			<login/>
+		</data-source>
+	</node>
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="project1.graph.xml"/>
+</domain>

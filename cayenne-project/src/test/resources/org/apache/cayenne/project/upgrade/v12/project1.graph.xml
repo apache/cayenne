@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<graphs xmlns="http://cayenne.apache.org/schema/11/graph">
+	<graph type="ER" scale="1.0">
+		<entity name="db_entity" x="36.0" y="178.5" width="75.0" height="50.0"/>
+		<entity name="db_entity1" x="183.0" y="176.5" width="75.0" height="50.0"/>
+	</graph>
+</graphs>

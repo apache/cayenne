@@ -68,9 +68,12 @@ public class DefaultUpgradeServiceTest {
         assertEquals(UpgradeType.UPGRADE_NEEDED, metaData.getUpgradeType());
 
         metaData = upgradeService.getUpgradeType(getResourceForVersion("11"));
-        assertEquals(UpgradeType.UPGRADE_NOT_NEEDED, metaData.getUpgradeType());
+        assertEquals(UpgradeType.UPGRADE_NEEDED, metaData.getUpgradeType());
 
         metaData = upgradeService.getUpgradeType(getResourceForVersion("12"));
+        assertEquals(UpgradeType.UPGRADE_NOT_NEEDED, metaData.getUpgradeType());
+
+        metaData = upgradeService.getUpgradeType(getResourceForVersion("13"));
         assertEquals(UpgradeType.DOWNGRADE_NEEDED, metaData.getUpgradeType());
     }
 
@@ -78,12 +81,13 @@ public class DefaultUpgradeServiceTest {
     public void getHandlersForVersion() throws Exception {
 
         List<UpgradeHandler> handlers = upgradeService.getHandlersForVersion("6");
-        assertEquals(5, handlers.size());
+        assertEquals(6, handlers.size());
 
         handlers = upgradeService.getHandlersForVersion("9");
-        assertEquals(2, handlers.size());
+        assertEquals(3, handlers.size());
         assertEquals("10", handlers.get(0).getVersion());
         assertEquals("11", handlers.get(1).getVersion());
+        assertEquals("12", handlers.get(2).getVersion());
     }
 
     @Test
@@ -148,7 +152,7 @@ public class DefaultUpgradeServiceTest {
 
     private void createHandlers() {
         handlers = new ArrayList<>();
-        String[] versions = {"7", "8", "9", "10", "11"};
+        String[] versions = {"7", "8", "9", "10", "11", "12"};
         for(String version : versions) {
             handlers.add(createHandler(version));
         }
