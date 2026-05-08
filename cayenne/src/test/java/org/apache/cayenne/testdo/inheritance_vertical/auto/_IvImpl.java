@@ -36,18 +36,22 @@ public abstract class _IvImpl extends IvBase {
     public static final StringProperty<String> ATTR1 = PropertyFactory.createString("attr1", String.class);
     public static final StringProperty<String> ATTR2 = PropertyFactory.createString("attr2", String.class);
     public static final ListProperty<IvOther> IMPL_OTHERS = PropertyFactory.createList("implOthers", IvOther.class);
+    public static final ListProperty<IvImpl> IMPLS = PropertyFactory.createList("impls", IvImpl.class);
     public static final EntityProperty<IvOther> OTHER1 = PropertyFactory.createEntity("other1", IvOther.class);
     public static final EntityProperty<IvOther> OTHER2 = PropertyFactory.createEntity("other2", IvOther.class);
     public static final EntityProperty<IvOther> OTHER3 = PropertyFactory.createEntity("other3", IvOther.class);
+    public static final EntityProperty<IvImpl> RELATED_IMPL = PropertyFactory.createEntity("relatedImpl", IvImpl.class);
 
     protected Date attr0;
     protected String attr1;
     protected String attr2;
 
     protected Object implOthers;
+    protected Object impls;
     protected Object other1;
     protected Object other2;
     protected Object other3;
+    protected Object relatedImpl;
 
     public void setAttr0(Date attr0) {
         beforePropertyWrite("attr0", this.attr0, attr0);
@@ -92,6 +96,19 @@ public abstract class _IvImpl extends IvBase {
         return (List<IvOther>)readProperty("implOthers");
     }
 
+    public void addToImpls(IvImpl obj) {
+        addToManyTarget("impls", obj, true);
+    }
+
+    public void removeFromImpls(IvImpl obj) {
+        removeToManyTarget("impls", obj, true);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<IvImpl> getImpls() {
+        return (List<IvImpl>)readProperty("impls");
+    }
+
     public void setOther1(IvOther other1) {
         setToOneTarget("other1", other1, true);
     }
@@ -116,6 +133,14 @@ public abstract class _IvImpl extends IvBase {
         return (IvOther)readProperty("other3");
     }
 
+    public void setRelatedImpl(IvImpl relatedImpl) {
+        setToOneTarget("relatedImpl", relatedImpl, true);
+    }
+
+    public IvImpl getRelatedImpl() {
+        return (IvImpl)readProperty("relatedImpl");
+    }
+
     @Override
     public Object readPropertyDirectly(String propName) {
         if(propName == null) {
@@ -131,12 +156,16 @@ public abstract class _IvImpl extends IvBase {
                 return this.attr2;
             case "implOthers":
                 return this.implOthers;
+            case "impls":
+                return this.impls;
             case "other1":
                 return this.other1;
             case "other2":
                 return this.other2;
             case "other3":
                 return this.other3;
+            case "relatedImpl":
+                return this.relatedImpl;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -161,6 +190,9 @@ public abstract class _IvImpl extends IvBase {
             case "implOthers":
                 this.implOthers = val;
                 break;
+            case "impls":
+                this.impls = val;
+                break;
             case "other1":
                 this.other1 = val;
                 break;
@@ -169,6 +201,9 @@ public abstract class _IvImpl extends IvBase {
                 break;
             case "other3":
                 this.other3 = val;
+                break;
+            case "relatedImpl":
+                this.relatedImpl = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);
@@ -190,9 +225,11 @@ public abstract class _IvImpl extends IvBase {
         out.writeObject(this.attr1);
         out.writeObject(this.attr2);
         out.writeObject(this.implOthers);
+        out.writeObject(this.impls);
         out.writeObject(this.other1);
         out.writeObject(this.other2);
         out.writeObject(this.other3);
+        out.writeObject(this.relatedImpl);
     }
 
     @Override
@@ -202,9 +239,11 @@ public abstract class _IvImpl extends IvBase {
         this.attr1 = (String)in.readObject();
         this.attr2 = (String)in.readObject();
         this.implOthers = in.readObject();
+        this.impls = in.readObject();
         this.other1 = in.readObject();
         this.other2 = in.readObject();
         this.other3 = in.readObject();
+        this.relatedImpl = in.readObject();
     }
 
 }
