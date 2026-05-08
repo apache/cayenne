@@ -19,14 +19,6 @@
 
 package org.apache.cayenne.project.upgrade;
 
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
@@ -37,7 +29,15 @@ import org.mockito.ArgumentMatchers;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
-import static org.junit.Assert.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -57,7 +57,7 @@ public class DefaultUpgradeServiceTest {
     }
 
     @Test
-    public void getUpgradeType() throws Exception {
+    public void getUpgradeType() {
         UpgradeMetaData metaData = upgradeService.getUpgradeType(getResourceForVersion("5"));
         assertEquals(UpgradeType.INTERMEDIATE_UPGRADE_NEEDED, metaData.getUpgradeType());
 
@@ -78,7 +78,7 @@ public class DefaultUpgradeServiceTest {
     }
 
     @Test
-    public void getHandlersForVersion() throws Exception {
+    public void getHandlersForVersion() {
 
         List<UpgradeHandler> handlers = upgradeService.getHandlersForVersion("6");
         assertEquals(6, handlers.size());
@@ -103,25 +103,25 @@ public class DefaultUpgradeServiceTest {
     }
 
     @Test
-    public void loadProjectVersion() throws Exception {
+    public void loadProjectVersion() {
         assertEquals("3.2.1.0", upgradeService.loadProjectVersion(getResourceForVersion("3.2.1.0")));
         assertEquals("10", upgradeService.loadProjectVersion(getResourceForVersion("10")));
     }
 
     @Test
-    public void decodeVersion() throws Exception {
+    public void decodeVersion() {
         assertEquals(1.2340, DefaultUpgradeService.decodeVersion("1.2.3.4"), 0.000001);
         assertEquals(1.0004, DefaultUpgradeService.decodeVersion("1.0.0.0.4"), 0.000001);
         assertEquals(10, DefaultUpgradeService.decodeVersion("10"), 0.000001);
     }
 
     @Test
-    public void upgradeDOM() throws Exception {
+    public void upgradeDOM() {
         Resource resource = new URLResource(getClass().getResource("../cayenne-PROJECT1.xml"));
 
         // Mock service so it will use actual reading but skip actual saving part
         upgradeService = mock(DefaultUpgradeService.class);
-        when(upgradeService.upgradeDOM(any(Resource.class), ArgumentMatchers.<UpgradeHandler>anyList()))
+        when(upgradeService.upgradeDOM(any(Resource.class), ArgumentMatchers.anyList()))
                 .thenCallRealMethod();
         when(upgradeService.getAdditionalDatamapResources(any(UpgradeUnit.class)))
                 .thenCallRealMethod();
@@ -140,7 +140,7 @@ public class DefaultUpgradeServiceTest {
     }
 
     @Test
-    public void readDocument() throws Exception {
+    public void readDocument() {
         Document document = Util.readDocument(getClass().getResource("../cayenne-PROJECT1.xml"));
         assertEquals("11", document.getDocumentElement().getAttribute("project-version"));
     }
