@@ -34,7 +34,9 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JTree;
+import javax.swing.UIManager;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.util.HashMap;
@@ -89,6 +91,14 @@ public class DbImportTreeCellRenderer extends DefaultTreeCellRenderer {
 
         super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
         node = (DbImportTreeNode) value;
+        if (node.getUserObject() instanceof String) {
+            setIcon(null);
+            if (!sel) {
+                Color disabled = UIManager.getColor("Label.disabledForeground");
+                setForeground(disabled != null ? disabled : Color.GRAY);
+            }
+            return this;
+        }
         setIcon(getIconByNodeType(node.getUserObject().getClass(), ((DbImportTree) tree).isTransferable()));
         return value instanceof DbImportTreeNode.ExpandableEnforcerNode
                 ? ExpandableEnforcer.getInstance()
