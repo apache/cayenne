@@ -64,6 +64,7 @@
 			<artifactId>cayenne-wocompat</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+
 	</dependencies>
 
     <profiles>

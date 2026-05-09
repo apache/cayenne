@@ -112,5 +112,12 @@
 				</excludes>
 			</unpackOptions>
 		</dependencySet>
+		<dependencySet>
+			<outputDirectory>CayenneModeler.app/Contents/Resources/mcp/</outputDirectory>
+			<includes>
+				<include>org.apache.cayenne:cayenne-mcp-server</include>
+			</includes>
+			<unpack>false</unpack>
+		</dependencySet>
 	</dependencySets>
 </assembly>

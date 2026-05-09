@@ -112,5 +112,12 @@
 				</excludes>
 			</unpackOptions>
 		</dependencySet>
+		<dependencySet>
+			<outputDirectory>bin</outputDirectory>
+			<includes>
+				<include>org.apache.cayenne:cayenne-mcp-server</include>
+			</includes>
+			<unpack>false</unpack>
+		</dependencySet>
 	</dependencySets>
 </assembly>

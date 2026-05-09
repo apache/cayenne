@@ -47,6 +47,8 @@
         <!-- Dependency versions -->
         <ant.version>1.10.15</ant.version>
         <junit.version>5.14.4</junit.version>
+        <logback.version>1.5.32</logback.version>
+        <mcp-sdk.version>1.1.2</mcp-sdk.version>
         <mockito.version>5.23.0</mockito.version>
         <mysql.connector.version>9.5.0</mysql.connector.version>
         <slf4j.version>2.0.17</slf4j.version>
@@ -83,6 +85,7 @@
         <maven-release-plugin.version>3.3.1</maven-release-plugin.version>
         <maven-remote-resources-plugin.version>3.3.0</maven-remote-resources-plugin.version>
         <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
+        <maven-shade-plugin.version>3.6.0</maven-shade-plugin.version>
         <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
         <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
     </properties>
@@ -101,6 +104,7 @@
         <module>cayenne-gradle-plugin</module>
         <module>cayenne-jcache</module>
         <module>cayenne-lifecycle</module>
+        <module>cayenne-mcp-server</module>
         <module>cayenne-project</module>
         <module>cayenne-project-compatibility</module>
         <module>cayenne-velocity</module>
@@ -471,6 +475,16 @@
                 <version>${slf4j.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.modelcontextprotocol.sdk</groupId>
+                <artifactId>mcp</artifactId>
+                <version>${mcp-sdk.version}</version>
+            </dependency>
             <!-- This dependency update the one provided by the testcontainers,
                  should be removed once testcontainers uses a version without active CVEs -->
             <dependency>
@@ -646,6 +660,10 @@
                 <plugin>
                     <artifactId>maven-surefire-report-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>${maven-shade-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-remote-resources-plugin</artifactId>
