@@ -94,6 +94,7 @@
                             <arguments>
                                 <argument>clean</argument>
                                 <argument>${gradle.task}</argument>
+                                <argument>--no-daemon</argument>
                             </arguments>
                         </configuration>
                         <goals>
