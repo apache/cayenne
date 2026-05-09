@@ -40,7 +40,7 @@
                     <dependency>
                         <groupId>io.bootique.tools</groupId>
                         <artifactId>hugo-asciidoctorj-extension</artifactId>
-                        <version>1.0-M2</version>
+                        <version>${hugo.asciidoctorj.extension.version}</version>
                     </dependency>
                 </dependencies>
 

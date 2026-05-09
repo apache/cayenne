@@ -53,6 +53,17 @@
         <testcontainers.version>1.21.4</testcontainers.version>
         <xmlunit.version>2.9.1</xmlunit.version>
 
+        <!-- Dependency versions (continued) -->
+        <build-helper-maven-plugin.version>1.12</build-helper-maven-plugin.version>
+        <ehcache.version>3.8.1</ehcache.version>
+        <javacc-maven-plugin.version>2.6</javacc-maven-plugin.version>
+        <jaxb-api.version>2.3.1</jaxb-api.version>
+        <jcache.version>1.0.0</jcache.version>
+        <maven-api.version>3.9.8</maven-api.version>
+        <maven-plugin-annotations.version>3.13.1</maven-plugin-annotations.version>
+        <maven-plugin-testing-harness.version>3.3.0</maven-plugin-testing-harness.version>
+        <orange-extensions.version>1.3.0</orange-extensions.version>
+
         <!-- Maven plugin versions -->
         <apache-rat-plugin.version>0.18</apache-rat-plugin.version>
         <dependency-maven-plugin.version>1.0</dependency-maven-plugin.version>
@@ -515,6 +526,51 @@
                 <artifactId>rsyntaxtextarea</artifactId>
                 <version>3.2.0</version>
             </dependency>
+            <dependency>
+                <groupId>org.ehcache</groupId>
+                <artifactId>ehcache</artifactId>
+                <version>${ehcache.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.cache</groupId>
+                <artifactId>cache-api</artifactId>
+                <version>${jcache.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>${jaxb-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-impl</artifactId>
+                <version>${jaxb-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-core</artifactId>
+                <version>${maven-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-compat</artifactId>
+                <version>${maven-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven.plugin-tools</groupId>
+                <artifactId>maven-plugin-annotations</artifactId>
+                <version>${maven-plugin-annotations.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven.plugin-testing</groupId>
+                <artifactId>maven-plugin-testing-harness</artifactId>
+                <version>${maven-plugin-testing-harness.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yuvimasory</groupId>
+                <artifactId>orange-extensions</artifactId>
+                <version>${orange-extensions.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -664,6 +720,16 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>
                     <version>${maven-gpg-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>javacc-maven-plugin</artifactId>
+                    <version>${javacc-maven-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>${build-helper-maven-plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

@@ -46,7 +46,19 @@
         <asciidoctorj.pdf.version>2.3.23</asciidoctorj.pdf.version>
         <cayenne.version>${project.version}</cayenne.version>
         <cayenne.major.version>5.0</cayenne.major.version>
+        <hugo.asciidoctorj.extension.version>1.0-M2</hugo.asciidoctorj.extension.version>
+        <jsoup.version>1.15.3</jsoup.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
