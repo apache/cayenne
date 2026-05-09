@@ -56,7 +56,6 @@
         <!-- Dependency versions (continued) -->
         <build-helper-maven-plugin.version>1.12</build-helper-maven-plugin.version>
         <ehcache.version>3.8.1</ehcache.version>
-        <javacc-maven-plugin.version>2.6</javacc-maven-plugin.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
         <jcache.version>1.0.0</jcache.version>
         <maven-api.version>3.9.8</maven-api.version>
@@ -69,6 +68,7 @@
         <dependency-maven-plugin.version>1.0</dependency-maven-plugin.version>
         <exec-maven-plugin.version>3.6.3</exec-maven-plugin.version>
         <japp-maven-plugin.version>3.4</japp-maven-plugin.version>
+        <javacc-maven-plugin.version>2.6</javacc-maven-plugin.version>
         <maven-antrun-plugin.version>3.2.0</maven-antrun-plugin.version>
         <maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
         <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
