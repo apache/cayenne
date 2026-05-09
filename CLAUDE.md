@@ -100,7 +100,9 @@ mvn test -Dtest=SomeTest -DcayenneTestConnection=h2
 ### Test Infrastructure
 
 Tests in `cayenne/src/test/` use a shared set of test mapping files and database scripts in `src/test/resources/`. The `DBHelper` and `UnitDbAdapter` utilities handle database-specific test setup. TestContainers is used for non-embedded databases.
-Test naming: `*Test.java` = unit tests (Surefire), `*IT.java` = integration tests (Failsafe). Tests use JUnit 4 and Mockito.
+Test naming: `*Test.java` = unit tests (Surefire), `*IT.java` = integration tests (Failsafe).
+
+**Test style:** JUnit 5 is the standard for all new tests. JUnit 4-style tests are legacy. New test classes and methods must be `public`; method names must not use the `test` prefix (e.g., use `someFeature()` not `testSomeFeature()`). Mockito is used for mocking for legacy reasons. Should avoid it in newer tests
 
 ## CI Matrix
 
