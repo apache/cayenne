@@ -19,6 +19,7 @@
 	<artifactId>cayenne-crypto</artifactId>
 	<name>cayenne-crypto: Cayenne Cryptography Extensions</name>
 	<packaging>jar</packaging>
+
 	<dependencies>
 
 		<!-- Compile dependencies -->

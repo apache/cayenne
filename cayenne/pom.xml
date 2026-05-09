@@ -28,7 +28,7 @@
 	<name>cayenne: Cayenne Core</name>
 	<description>Apache Cayenne core module</description>
 	<packaging>jar</packaging>
-	
+
 	<dependencies>
 
 		<!-- Compile dependencies -->
