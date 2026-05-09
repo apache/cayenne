@@ -105,7 +105,7 @@ Test naming: `*Test.java` = unit tests (Surefire), `*IT.java` = integration test
 ## CI Matrix
 
 GitHub Actions runs on push to master/STABLE-* branches:
-- JDK: 11, 17, 21 (22 experimental)
+- JDK: 21, 25
 - Databases: hsql, h2, derby, mysql-tc, postgres-tc, sqlserver-tc
 
 ## Issue Tracker
