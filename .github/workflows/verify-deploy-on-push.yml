@@ -28,7 +28,7 @@ jobs:
 
     strategy:
       matrix:
-        jdk: [21]
+        jdk: [21, 25]
         db-profile: [hsql, h2, derby, mysql-tc, postgres-tc, sqlserver-tc]
       fail-fast: false # finish all jobs anyway
 
