@@ -38,6 +38,7 @@ CAY-2933 Modeler: DB Type Column Unreadable for Selected Rows
 CAY-2935 Upgrade Cayenne 5.0 to Java 21
 CAY-2937 Decommission "graph" Support
 CAY-2938 Modeler: prettier DB Import - part 1
+CAY-2940 Upgrade to SLF4J version 2.0.17
 
 Bug Fixes:
 
