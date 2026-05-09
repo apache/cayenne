@@ -47,7 +47,7 @@ jobs:
           cache: 'maven'
 
       - name: mvn verify ${{ matrix.db-profile }}
-        run: mvn verify -q -DcayenneTestConnection=${{ matrix.db-profile }} -DcayenneLogLevel=ERROR
+        run: mvn verify -q -DcayenneTestConnection=${{ matrix.db-profile }} -DcayenneLogLevel=ERROR ${{ matrix.jdk != 21 && '--projects !cayenne-gradle-plugin' || '' }}
 
   deploy:
     needs: verify

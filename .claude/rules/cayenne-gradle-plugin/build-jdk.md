@@ -5,7 +5,11 @@ description: cayenne-gradle-plugin Gradle version compatibility
 ---
 
 The `cayenne-gradle-plugin` integration tests run Gradle builds via `exec-maven-plugin`.
-The Gradle version is selected in `GradlePluginIT.java` based on the running JDK:
+Gradle 8.x does not support Java > 21.
 
-- Java >= 25 → Gradle 8.12
-- Java 21 (minimum baseline) → Gradle 8.5
+CI excludes the module on Java 25+ by passing `--projects !cayenne-gradle-plugin`
+to Maven (see `verify-deploy-on-push.yml`). No pom changes are needed — Maven's
+built-in project exclusion handles it. Releases always use Java 21, so the module
+is always included there.
+
+The IT test (`GradlePluginIT`) tests Gradle 8.5 compatibility and only runs on Java 21.

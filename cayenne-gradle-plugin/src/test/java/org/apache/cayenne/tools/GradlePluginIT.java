@@ -51,14 +51,7 @@ public class GradlePluginIT extends BaseTaskIT {
     @Test
     public void testGradleVersionsCompatibility() {
 
-        String[] versions;
-
-        int javaMajorVersion = getJavaMajorVersion(System.getProperty("java.version"));
-        if(javaMajorVersion >= 25) {
-            versions = new String[]{"8.12"};
-        } else {
-            versions = new String[]{"8.5"};
-        }
+        String[] versions = {"8.5"};
 
         List<String> failedVersions = new ArrayList<>();
         for(String version : versions) {
