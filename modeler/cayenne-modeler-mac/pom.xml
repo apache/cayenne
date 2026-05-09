@@ -81,10 +81,8 @@
 							<mainClass>org.apache.cayenne.modeler.osx.OSXMain</mainClass>
 							<icon>src/japplication/resources/CayenneModeler.icns</icon>
 							<os>mac</os>
-							<jvm0>1.8</jvm0>
+							<jvm0>21</jvm0>
 							<jvm0Options>-Xmx500m -Dapple.laf.useScreenMenuBar=true</jvm0Options>
-							<jvm1>17</jvm1>
-							<jvm1Options>-Xmx500m -Dapple.laf.useScreenMenuBar=true --add-exports java.desktop/com.apple.eawt=ALL-UNNAMED</jvm1Options>
 						</configuration>
 						<executions>
 							<execution>
