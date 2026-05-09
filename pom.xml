@@ -35,19 +35,21 @@
 	</description>
 
 	<properties>
+		<maven.compiler.release>21</maven.compiler.release>
+
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
 		<maven.build.timestamp.format>MMM dd yyyy HH:mm:ss</maven.build.timestamp.format>
 		<project.build.datetime>${maven.build.timestamp}</project.build.datetime>
+
+		<!-- Dependency versions -->
 		<slf4j.version>1.7.36</slf4j.version>
 		<ant.version>1.10.15</ant.version>
 		<testcontainers.version>1.21.4</testcontainers.version>
 		<mysql.connector.version>9.5.0</mysql.connector.version>
         <xmlunit.version>2.9.1</xmlunit.version>
         <junit.version>5.14.4</junit.version>
-
-        <maven.compiler.release>21</maven.compiler.release>
-
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- Maven plugin versions -->
         <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
