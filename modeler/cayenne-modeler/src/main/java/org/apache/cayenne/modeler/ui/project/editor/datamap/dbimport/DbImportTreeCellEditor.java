@@ -39,6 +39,7 @@ import java.util.regex.Pattern;
 public class DbImportTreeCellEditor extends DefaultTreeCellEditor {
 
     private final DbImportActions actions;
+    private DbImportTreeNode editingNode;
 
     public DbImportTreeCellEditor(JTree tree, DefaultTreeCellRenderer renderer, DbImportActions actions) {
         super(tree, renderer);
@@ -70,10 +71,26 @@ public class DbImportTreeCellEditor extends DefaultTreeCellEditor {
     @Override
     public Component getTreeCellEditorComponent(JTree tree, Object value,
                                                 boolean isSelected, boolean expanded, boolean leaf, int row) {
-        if (value instanceof DbImportTreeNode) {
-            value = ((DbImportTreeNode) value).getSimpleNodeName();
+        editingNode = value instanceof DbImportTreeNode ? (DbImportTreeNode) value : null;
+        if (editingNode != null) {
+            value = editingNode.getSimpleNodeName();
         }
         return super.getTreeCellEditorComponent(tree, value, isSelected, expanded, leaf, row);
+    }
+
+    @Override
+    protected void determineOffset(JTree tree, Object value, boolean isSelected,
+                                   boolean expanded, boolean leaf, int row) {
+        if (renderer != null && editingNode != null) {
+            renderer.getTreeCellRendererComponent(tree, editingNode, isSelected, expanded, leaf, row, false);
+            editingIcon = renderer.getIcon();
+            offset = editingIcon != null
+                    ? renderer.getIconTextGap() + editingIcon.getIconWidth()
+                    : renderer.getIconTextGap();
+        } else {
+            editingIcon = null;
+            offset = 0;
+        }
     }
 
     @Override

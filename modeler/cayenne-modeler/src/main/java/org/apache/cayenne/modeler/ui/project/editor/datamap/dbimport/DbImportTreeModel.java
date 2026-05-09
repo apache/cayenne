@@ -30,8 +30,6 @@ public class DbImportTreeModel extends DefaultTreeModel {
     private final boolean canBeCleaned;
     private final String emptyText;
 
-    private DbImportTree dbSchemaTree;
-
     DbImportTreeModel(TreeNode root, boolean canBeCleaned, String emptyText) {
         super(root);
         this.canBeCleaned = canBeCleaned;
@@ -63,10 +61,5 @@ public class DbImportTreeModel extends DefaultTreeModel {
     public void reload(TreeNode node) {
         preprocessTree();
         super.reload(node);
-        dbSchemaTree.repaint();
-    }
-
-    public void setDbSchemaTree(DbImportTree dbSchemaTree) {
-        this.dbSchemaTree = dbSchemaTree;
     }
 }

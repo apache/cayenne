@@ -32,11 +32,18 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImpo
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.TransferableNode;
 
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Insets;
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -393,6 +400,40 @@ public class DbImportTree extends JTree {
                     && node.getFirstChild().getClass() == DbImportTreeNode.ExpandableEnforcerNode.class;
             return super.shouldPaintExpandControl(path, row, isExpanded, hasBeenExpanded, isLeaf)
                     && (childCount > 1 || !onlyEnforcerChild);
+        }
+
+        @Override
+        protected void paintRow(Graphics g, Rectangle clipBounds, Insets insets, Rectangle bounds,
+                                TreePath path, int row, boolean isExpanded, boolean hasBeenExpanded, boolean isLeaf) {
+            if (tree.isRowSelected(row)) {
+                Color selBg = UIManager.getColor("Tree.selectionBackground");
+                if (selBg != null) {
+                    g.setColor(selBg);
+                    g.fillRect(0, bounds.y, tree.getWidth(), bounds.height);
+                }
+            }
+            super.paintRow(g, clipBounds, insets, bounds, path, row, isExpanded, hasBeenExpanded, isLeaf);
+        }
+
+        @Override
+        protected boolean startEditing(TreePath path, MouseEvent event) {
+            boolean started = super.startEditing(path, event);
+            if (started) {
+                SwingUtilities.invokeLater(() -> {
+                    if (editingComponent != null) {
+                        Rectangle nodeBounds = getPathBounds(tree, path);
+                        if (nodeBounds != null) {
+                            int fullWidth = tree.getWidth() - nodeBounds.x;
+                            if (fullWidth > editingComponent.getWidth()) {
+                                editingComponent.setSize(fullWidth, editingComponent.getHeight());
+                                editingComponent.doLayout();
+                                tree.repaint();
+                            }
+                        }
+                    }
+                });
+            }
+            return started;
         }
     }
 }

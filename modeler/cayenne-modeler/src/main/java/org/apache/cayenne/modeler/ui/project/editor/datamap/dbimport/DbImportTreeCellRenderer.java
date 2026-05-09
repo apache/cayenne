@@ -91,6 +91,9 @@ public class DbImportTreeCellRenderer extends DefaultTreeCellRenderer {
 
         super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
         node = (DbImportTreeNode) value;
+        if (value instanceof DbImportTreeNode.ExpandableEnforcerNode) {
+            return ExpandableEnforcer.getInstance();
+        }
         if (node.getUserObject() instanceof String) {
             setIcon(null);
             if (!sel) {
@@ -100,9 +103,13 @@ public class DbImportTreeCellRenderer extends DefaultTreeCellRenderer {
             return this;
         }
         setIcon(getIconByNodeType(node.getUserObject().getClass(), ((DbImportTree) tree).isTransferable()));
-        return value instanceof DbImportTreeNode.ExpandableEnforcerNode
-                ? ExpandableEnforcer.getInstance()
-                : this;
+        return this;
+    }
+
+    @Override
+    public Dimension getPreferredSize() {
+        Dimension size = super.getPreferredSize();
+        return new Dimension(size.width, Math.max(size.height, 25));
     }
 
     @Override

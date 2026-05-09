@@ -55,7 +55,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SourceTargetPanel extends JPanel {
+public class DBSchemaPanel extends JPanel {
 
     private static final int ROOT_LEVEL = 14;
     private static final int FIRST_LEVEL = 11;
@@ -79,7 +79,7 @@ public class SourceTargetPanel extends JPanel {
 
     private ImportSourceTree importSourceTree;
 
-    public SourceTargetPanel(DbImportTree sourceTree, DbImportTree targetTree, DbImportActions actions) {
+    public DBSchemaPanel(DbImportTree sourceTree, DbImportTree targetTree, DbImportActions actions) {
         this.targetTree = targetTree;
         this.sourceTree = sourceTree;
         this.actions = actions;

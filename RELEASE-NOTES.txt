@@ -36,6 +36,7 @@ CAY-2930 Modeler: remove "rename" button from DB Import toolbar
 CAY-2932 Remove "Generate Classes" menu
 CAY-2933 Modeler: DB Type Column Unreadable for Selected Rows
 CAY-2937 Decommission "graph" Support
+CAY-2938 Modeler: prettier DB Import - part 1
 
 Bug Fixes:
 

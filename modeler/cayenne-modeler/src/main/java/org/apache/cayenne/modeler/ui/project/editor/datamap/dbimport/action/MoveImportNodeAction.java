@@ -33,7 +33,7 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImpo
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportSorter;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportTree;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportView;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.SourceTargetPanel;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DBSchemaPanel;
 import org.apache.cayenne.modeler.undo.DbImportTreeUndoableEdit;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 
@@ -124,7 +124,7 @@ public class MoveImportNodeAction extends AppAction {
         TreeManipulationAction action = null;
         DbImportTreeNode foundNode = null;
         String insertableName = EMPTY_NAME;
-        SourceTargetPanel panel = view.getDraggableTreePanel();
+        DBSchemaPanel panel = view.getDraggableTreePanel();
         view.getReverseEngineeringProgress().setVisible(true);
         if (paths != null) {
             boolean isChanged = false;

@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class TreeToolbarPanel extends JToolBar {
+class ConfigToolbar extends JToolBar {
 
     private final JButton schemaButton;
     private final JButton catalogButton;
@@ -45,13 +45,12 @@ class TreeToolbarPanel extends JToolBar {
     private final JButton includeProcedureButton;
     private final JButton excludeProcedureButton;
     private final JButton deleteButton;
-    private final JButton configureButton;
     private final JButton sortButton;
     private final DbImportTree reverseEngineeringTree;
 
     private final Map<Class<?>, List<JButton>> levels;
 
-    TreeToolbarPanel(DbImportTree reverseEngineeringTree, DbImportActions actions) {
+    ConfigToolbar(DbImportTree reverseEngineeringTree, DbImportActions actions) {
         this.reverseEngineeringTree = reverseEngineeringTree;
 
         this.schemaButton = actions.getAddSchemaAction().buildButton(0);
@@ -64,7 +63,6 @@ class TreeToolbarPanel extends JToolBar {
         this.excludeProcedureButton = actions.getAddExcludeProcedureAction().buildButton(3);
         this.sortButton = actions.getSortNodesAction().buildButton(0);
         this.deleteButton = actions.getDeleteNodeAction().buildButton(0);
-        this.configureButton = actions.getGetDbConnectionAction().buildButton(0);
 
         this.levels = initLevels();
         addButtons();
@@ -160,7 +158,6 @@ class TreeToolbarPanel extends JToolBar {
         this.add(sortButton);
         this.addSeparator();
         this.add(deleteButton);
-        this.add(configureButton);
     }
 
     void changeToolbarButtonsState(boolean state) {

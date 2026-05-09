@@ -52,17 +52,17 @@ class ReverseEngineeringTreePanel extends JPanel {
 
     private final ProjectSession session;
     private final DbImportActions actions;
-    private final SourceTargetPanel sourceTargetPanel;
-    private TreeToolbarPanel treeToolbar;
+    private final DBSchemaPanel dbSchemaPanel;
+    private ConfigToolbar treeToolbar;
     private final Map<Class<?>, DefaultPopUpMenu> popups;
 
     ReverseEngineeringTreePanel(ProjectSession session, DbImportTree reverseEngineeringTree,
-                                DbImportTree dbSchemaTree, SourceTargetPanel sourceTargetPanel,
+                                DbImportTree dbSchemaTree, DBSchemaPanel dbSchemaPanel,
                                 DbImportActions actions) {
         this.session = session;
         this.reverseEngineeringTree = reverseEngineeringTree;
         this.dbSchemaTree = dbSchemaTree;
-        this.sourceTargetPanel = sourceTargetPanel;
+        this.dbSchemaPanel = dbSchemaPanel;
         this.actions = actions;
         this.popups = new HashMap<>();
         initLayout();
@@ -158,7 +158,7 @@ class ReverseEngineeringTreePanel extends JPanel {
     private void scrollToNode(JTree tree, DbImportTreeNode node) {
         TreePath path = new TreePath(node.getPath());
         tree.scrollPathToVisible(path);
-        sourceTargetPanel.resetHorizontalScroll();
+        dbSchemaPanel.resetHorizontalScroll();
     }
 
     private ReverseEngineering getReverseEngineeringBySelectedMap() {
@@ -178,7 +178,7 @@ class ReverseEngineeringTreePanel extends JPanel {
         return reverseEngineeringTree;
     }
 
-    void setTreeToolbar(TreeToolbarPanel treeToolbar) {
+    void setTreeToolbar(ConfigToolbar treeToolbar) {
         this.treeToolbar = treeToolbar;
     }
 }

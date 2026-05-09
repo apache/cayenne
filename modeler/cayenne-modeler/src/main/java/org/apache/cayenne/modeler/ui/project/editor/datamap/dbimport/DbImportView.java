@@ -26,14 +26,12 @@ import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.DbImportActions;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.ModelerDbImportAction;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.ColorTreeRenderer;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.TransferableNode;
-import org.apache.cayenne.modeler.toolkit.AppAction;
-
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
@@ -43,13 +41,15 @@ public class DbImportView extends ProjectPanel {
     private static final ImageIcon rightArrow = IconFactory.buildIcon("icon-arrow-closed.png");
     private static final ImageIcon downArrow = IconFactory.buildIcon("icon-arrow-open.png");
 
-    private final TreeToolbarPanel treeToolbar;
-    private final ReverseEngineeringTreePanel treePanel;
+    private final ReverseEngineeringTreePanel configTree;
+    private final ConfigToolbar configToolbar;
     private final ReverseEngineeringConfigPanel configPanel;
-    private final SourceTargetPanel sourceTargetPanel;
+
+    private final DbSchemaToolbar dbSchemaToolbar;
+    private final DBSchemaPanel dbSchemaPanel;
+
     private final JProgressBar loadDbSchemaProgress;
     private final JProgressBar reverseEngineeringProgress;
-    private final AppAction.CayenneToolbarButton loadDbSchemaButton;
 
     private boolean initFromModel;
 
@@ -71,20 +71,26 @@ public class DbImportView extends ProjectPanel {
         dbTree.setModel(dbModel);
 
         DbImportActions actions = new DbImportActions(app, this, configTree, dbTree);
-        this.sourceTargetPanel = new SourceTargetPanel(dbTree, configTree, actions);
+        this.dbSchemaPanel = new DBSchemaPanel(dbTree, configTree, actions);
+        this.dbSchemaToolbar = new DbSchemaToolbar(actions);
+
         dbTree.setLoadDbSchemaAction(actions.getLoadDbSchemaAction());
-        this.treeToolbar = new TreeToolbarPanel(configTree, actions);
-        this.treePanel = new ReverseEngineeringTreePanel(session, configTree, dbTree, this.sourceTargetPanel, actions);
-        treePanel.setTreeToolbar(treeToolbar);
+        this.configToolbar = new ConfigToolbar(configTree, actions);
+        this.configTree = new ReverseEngineeringTreePanel(session, configTree, dbTree, this.dbSchemaPanel, actions);
+        this.configTree.setTreeToolbar(configToolbar);
 
-        configModel.setDbSchemaTree(dbTree);
-        dbModel.setDbSchemaTree(dbTree);
+        // repaint the db schema tree whenever the config tree changes so ColorTreeRenderer refreshes
+        configModel.addTreeModelListener(new TreeModelListener() {
+            public void treeNodesChanged(TreeModelEvent e) { dbTree.repaint(); }
+            public void treeNodesInserted(TreeModelEvent e) { dbTree.repaint(); }
+            public void treeNodesRemoved(TreeModelEvent e) { dbTree.repaint(); }
+            public void treeStructureChanged(TreeModelEvent e) { dbTree.repaint(); }
+        });
 
-        ((ColorTreeRenderer) sourceTargetPanel.getSourceTree().getCellRenderer()).setReverseEngineeringTree(configTree);
+        ((ColorTreeRenderer) dbSchemaPanel.getSourceTree().getCellRenderer()).setReverseEngineeringTree(configTree);
         this.configPanel = new ReverseEngineeringConfigPanel(session, this);
         this.loadDbSchemaProgress = new JProgressBar();
         this.reverseEngineeringProgress = new JProgressBar();
-        this.loadDbSchemaButton = (AppAction.CayenneToolbarButton) actions.getLoadDbSchemaAction().buildButton(0);
 
         initLayout(actions);
         initBindings();
@@ -96,45 +102,22 @@ public class DbImportView extends ProjectPanel {
 
         FormLayout buttonPanelLayout = new FormLayout("fill:50dlu");
         DefaultFormBuilder buttonBuilder = new DefaultFormBuilder(buttonPanelLayout);
-        buttonBuilder.append(sourceTargetPanel.getMoveButton());
-        buttonBuilder.append(sourceTargetPanel.getMoveInvertButton());
+        buttonBuilder.append(dbSchemaPanel.getMoveButton());
+        buttonBuilder.append(dbSchemaPanel.getMoveInvertButton());
+
+        JPanel leftPanel = new JPanel(new BorderLayout());
+        leftPanel.add(configToolbar, BorderLayout.NORTH);
+        leftPanel.add(configTree, BorderLayout.CENTER);
+
+        JPanel rightPanel = new JPanel(new BorderLayout());
+        rightPanel.add(dbSchemaToolbar, BorderLayout.NORTH);
+        rightPanel.add(dbSchemaPanel, BorderLayout.CENTER);
 
         FormLayout layout = new FormLayout("fill:160dlu:grow, 5dlu, fill:50dlu, 5dlu, fill:160dlu:grow");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
-        builder.append(treeToolbar, ALL_LINE_SPAN);
-
-        FormLayout headerLayout = new FormLayout("fill:80dlu:grow");
-        DefaultFormBuilder reverseEngineeringHeaderBuilder = new DefaultFormBuilder(headerLayout);
-        JLabel importLabel = new JLabel("Database Import Configuration");
-        importLabel.setBorder(new EmptyBorder(0, 5, 0, 0));
-        reverseEngineeringHeaderBuilder.append(importLabel);
-        builder.append(reverseEngineeringHeaderBuilder.getPanel());
-
-        DefaultFormBuilder databaseHeaderBuilder = new DefaultFormBuilder(headerLayout);
-        JLabel schemaLabel = new JLabel("Database Schema");
-        schemaLabel.setBorder(new EmptyBorder(0, 5, 0, 0));
-        databaseHeaderBuilder.append(schemaLabel);
-
-        loadDbSchemaButton.setShowingText(false);
-        loadDbSchemaButton.setText("Refresh DB Schema");
-        treeToolbar.add(loadDbSchemaButton);
-
-        ModelerDbImportAction dbImportAction = actions.getReverseEngineeringAction();
-        AppAction.CayenneToolbarButton reverseEngineeringButton =
-                (AppAction.CayenneToolbarButton) dbImportAction.buildButton(0);
-        reverseEngineeringButton.setShowingText(true);
-        reverseEngineeringButton.setText("Run Import");
-        JPanel reverseEngineeringButtonPanel = new JPanel();
-        reverseEngineeringButtonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-        reverseEngineeringButtonPanel.add(reverseEngineeringButton);
-        treeToolbar.addSeparator();
-        treeToolbar.add(reverseEngineeringButtonPanel);
-
-        builder.append("");
-        builder.append(databaseHeaderBuilder.getPanel());
-        builder.append(treePanel);
+        builder.append(leftPanel);
         builder.append(buttonBuilder.getPanel());
-        builder.append(sourceTargetPanel);
+        builder.append(rightPanel);
 
         loadDbSchemaProgress.setIndeterminate(true);
         loadDbSchemaProgress.setVisible(false);
@@ -151,7 +134,7 @@ public class DbImportView extends ProjectPanel {
         builder.append(configPanel, ALL_LINE_SPAN);
         setLayout(new BorderLayout());
         add(builder.getPanel(), BorderLayout.CENTER);
-        sourceTargetPanel.getSourceTree().repaint();
+        dbSchemaPanel.getSourceTree().repaint();
     }
 
     private void initBindings() {
@@ -182,10 +165,10 @@ public class DbImportView extends ProjectPanel {
     }
 
     public void initFromModel(DataMap map) {
-        treePanel.getReverseEngineeringTree().stopEditing();
+        configTree.getReverseEngineeringTree().stopEditing();
         if (map != null) {
             initFromModel = true;
-            treeToolbar.unlockButtons();
+            configToolbar.unlockButtons();
             ReverseEngineering reverseEngineering = DbImportView.this.app
                     .getMetaData().get(map, ReverseEngineering.class);
             if (reverseEngineering == null) {
@@ -203,12 +186,12 @@ public class DbImportView extends ProjectPanel {
                 configPanel.getTableTypes().setText("TABLE, VIEW");
                 configPanel.applyTableTypes("TABLE, VIEW");
             }
-            treePanel.updateTree();
-            DbImportTreeNode root = sourceTargetPanel.getSourceTree().getRootNode();
+            configTree.updateTree();
+            DbImportTreeNode root = dbSchemaPanel.getSourceTree().getRootNode();
             root.removeAllChildren();
-            sourceTargetPanel.updateTree(session.getSelectedDataMap());
-            sourceTargetPanel.getMoveButton().setEnabled(false);
-            sourceTargetPanel.getMoveInvertButton().setEnabled(false);
+            dbSchemaPanel.updateTree(session.getSelectedDataMap());
+            dbSchemaPanel.getMoveButton().setEnabled(false);
+            dbSchemaPanel.getMoveInvertButton().setEnabled(false);
         }
         initFromModel = false;
     }
@@ -218,11 +201,11 @@ public class DbImportView extends ProjectPanel {
     }
 
     public void lockToolbarButtons() {
-        treeToolbar.changeToolbarButtonsState(false);
+        configToolbar.changeToolbarButtonsState(false);
     }
 
     public void unlockToolbarButtons() {
-        treeToolbar.unlockButtons();
+        configToolbar.unlockButtons();
     }
 
     public JProgressBar getReverseEngineeringProgress() {
@@ -230,11 +213,11 @@ public class DbImportView extends ProjectPanel {
     }
 
     public JButton getLoadDbSchemaButton() {
-        return loadDbSchemaButton;
+        return dbSchemaToolbar.getLoadDbSchemaButton();
     }
 
-    public SourceTargetPanel getDraggableTreePanel() {
-        return sourceTargetPanel;
+    public DBSchemaPanel getDraggableTreePanel() {
+        return dbSchemaPanel;
     }
 
     public boolean isInitFromModel() {
@@ -242,7 +225,7 @@ public class DbImportView extends ProjectPanel {
     }
 
     void invalidateDbSchema() {
-        DbImportTree sourceTree = sourceTargetPanel.getSourceTree();
+        DbImportTree sourceTree = dbSchemaPanel.getSourceTree();
         DbImportTreeNode root = sourceTree.getRootNode();
         root.removeAllChildren();
         sourceTree.setEnabled(false);
