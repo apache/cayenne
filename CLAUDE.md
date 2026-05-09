@@ -5,6 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 
 Apache Cayenne is a Java ORM and persistence framework. This is a multi-module Maven project targeting Java 21+.
+When generating code, if appropraite use the latest Java syntax vs old (multiline-strings, new switches, etc.)
 
 ## Build Commands
 
