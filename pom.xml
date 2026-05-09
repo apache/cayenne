@@ -48,6 +48,30 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- Maven plugin versions -->
+        <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
+        <maven-plugin-plugin.version>3.13.1</maven-plugin-plugin.version>
+        <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
+        <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
+        <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
+        <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
+        <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
+        <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
+        <maven-project-info-reports-plugin.version>3.4.0</maven-project-info-reports-plugin.version>
+        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+        <maven-assembly-plugin.version>3.4.1</maven-assembly-plugin.version>
+        <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
+        <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
+        <maven-bundle-plugin.version>5.1.7</maven-bundle-plugin.version>
+        <taglist-maven-plugin.version>3.0.0</taglist-maven-plugin.version>
+        <maven-remote-resources-plugin.version>1.7.0</maven-remote-resources-plugin.version>
+        <maven-javadoc-plugin.version>3.4.0</maven-javadoc-plugin.version>
+        <dependency-maven-plugin.version>1.0</dependency-maven-plugin.version>
+        <apache-rat-plugin.version>0.14</apache-rat-plugin.version>
+        <japp-maven-plugin.version>3.4</japp-maven-plugin.version>
+        <maven-jar-plugin.version>3.2.2</maven-jar-plugin.version>
+        <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
     </properties>
 
 	<url>https://cayenne.apache.org/</url>
@@ -511,7 +535,7 @@
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
+					<version>${lifecycle-mapping.version}</version>
 					<configuration>
 						<lifecycleMappingMetadata>
 							<pluginExecutions>
@@ -666,70 +690,70 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-plugin-plugin</artifactId>
-                    <version>3.13.1</version>
+                    <version>${maven-plugin-plugin.version}</version>
                 </plugin>
 				<plugin>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.2.0</version>
+					<version>${maven-resources-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.10.1</version>
+					<version>${maven-compiler-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-deploy-plugin</artifactId>
-					<version>2.8.2</version>
+					<version>${maven-deploy-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-release-plugin</artifactId>
-					<version>2.5.3</version>
+					<version>${maven-release-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-enforcer-plugin</artifactId>
-					<version>3.5.0</version>
+					<version>${maven-enforcer-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>exec-maven-plugin</artifactId>
-					<version>3.1.0</version>
+					<version>${exec-maven-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-project-info-reports-plugin</artifactId>
-					<version>3.4.0</version>
+					<version>${maven-project-info-reports-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-source-plugin</artifactId>
-					<version>3.2.1</version>
+					<version>${maven-source-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-assembly-plugin</artifactId>
-					<version>3.4.1</version>
+					<version>${maven-assembly-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-antrun-plugin</artifactId>
-					<version>3.1.0</version>
+					<version>${maven-antrun-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>3.5.2</version>
+					<version>${maven-surefire-plugin.version}</version>
 				</plugin>
 				<plugin>   
 					<groupId>org.apache.felix</groupId>
   					<artifactId>maven-bundle-plugin</artifactId>
-					<version>5.1.7</version>
+					<version>${maven-bundle-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-surefire-report-plugin</artifactId>
-					<version>3.5.2</version>
+					<version>${maven-surefire-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>taglist-maven-plugin</artifactId>
-					<version>3.0.0</version>
+					<version>${taglist-maven-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-remote-resources-plugin</artifactId>
-					<version>1.7.0</version>
+					<version>${maven-remote-resources-plugin.version}</version>
 					<configuration>
 						<outputDirectory>
 								${project.build.directory}/classes
@@ -746,7 +770,7 @@
 				</plugin>
 				<plugin>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.4.0</version>
+					<version>${maven-javadoc-plugin.version}</version>
 					<configuration>
 						<!-- Suppress errors in the JavaDocs (it should be cleaned one day...)  -->
 						<doclint>none</doclint>
@@ -756,12 +780,12 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>dependency-maven-plugin</artifactId>
-					<version>1.0</version>
+					<version>${dependency-maven-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.rat</groupId>
 					<artifactId>apache-rat-plugin</artifactId>
-					<version>0.14</version>
+					<version>${apache-rat-plugin.version}</version>
 					<configuration>
 						<licenses>
 							<license implementation="org.apache.rat.analysis.license.ApacheSoftwareLicense20">
@@ -776,12 +800,12 @@
 				<plugin>
 					<groupId>org.objectstyle.japp</groupId>
 					<artifactId>japp-maven-plugin</artifactId>
-					<version>3.4</version>
+					<version>${japp-maven-plugin.version}</version>
 				</plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>3.5.2</version>
+                    <version>${maven-surefire-plugin.version}</version>
                     <executions>
                         <execution>
                             <id>integration-test</id>
@@ -794,12 +818,12 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.2.2</version>
+                    <version>${maven-jar-plugin.version}</version>
                 </plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-gpg-plugin</artifactId>
-					<version>3.0.1</version>
+					<version>${maven-gpg-plugin.version}</version>
 				</plugin>
             </plugins>
 		</pluginManagement>
