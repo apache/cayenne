@@ -62,6 +62,11 @@ mvn test -Dtest=SomeTest -DcayenneTestConnection=h2
 Test naming: `*Test.java` = unit tests (Surefire), `*IT.java` = integration tests (Failsafe).
 All new tests must use JUnit 5. Test classes and methods must be `public`. Method names must not use the `test` prefix (e.g. `someFeature()` not `testSomeFeature()`).
 
+## `pom.xml` Style
+
+All POM plugins from submodules must be delcared in the parent module `<pluginManagement>`. All plugin versions should be 
+declared as properties in the root pom.xml
+
 ### Legacy Tests
 
 JUnit 4 tests are still present but are considered legacy (run via `junit-vintage-engine`). They are being migrated to JUnit 5. Mockito is used for mocking and is also considered legacy and should be avoided in the new tests.
