@@ -26,9 +26,7 @@ import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.DbImportActions;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 
-import javax.swing.JButton;
-import javax.swing.JToolBar;
-import javax.swing.border.EmptyBorder;
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,7 +64,6 @@ class ConfigToolbar extends JToolBar {
 
         this.levels = initLevels();
         addButtons();
-        this.setBorder(new EmptyBorder(0, 0, 0, 0));
     }
 
     void unlockButtons() {

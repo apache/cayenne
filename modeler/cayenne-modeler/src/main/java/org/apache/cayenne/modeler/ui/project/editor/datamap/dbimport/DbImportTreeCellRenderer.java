@@ -96,6 +96,7 @@ public class DbImportTreeCellRenderer extends DefaultTreeCellRenderer {
         }
         if (node.getUserObject() instanceof String) {
             setIcon(null);
+            setEnabled(true);
             if (!sel) {
                 Color disabled = UIManager.getColor("Label.disabledForeground");
                 setForeground(disabled != null ? disabled : Color.GRAY);

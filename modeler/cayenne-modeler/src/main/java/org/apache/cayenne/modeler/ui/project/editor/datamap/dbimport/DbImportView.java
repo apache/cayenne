@@ -58,33 +58,33 @@ public class DbImportView extends ProjectPanel {
 
         DbImportTreeNode configRoot = new DbImportTreeNode(new ReverseEngineering());
         DbImportTree configTree = new DbImportTree(configRoot);
-        DbImportTreeModel configModel = new DbImportTreeModel(configRoot, true, "Configuration is empty.");
+        DbImportTreeModel configModel = new DbImportTreeModel(configRoot, true, "Create DB Import Rules");
         configTree.setRootVisible(false);
         configTree.setModel(configModel);
         configTree.setShowsRootHandles(true);
 
-        DbImportTreeNode dbRoot = new DbImportTreeNode(new ReverseEngineering());
-        DbImportTree dbTree = new DbImportTree(new TransferableNode(dbRoot));
-        DbImportTreeModel dbModel = new DbImportTreeModel(dbRoot, false, "Click 'Refresh DB Schema' above to load the schema.");
-        dbTree.setRootVisible(false);
-        dbTree.setShowsRootHandles(true);
-        dbTree.setModel(dbModel);
+        DbImportTreeNode dbSchemaRootNode = new DbImportTreeNode(new ReverseEngineering());
+        DbImportTree dbSchemaTree = new DbImportTree(new TransferableNode(dbSchemaRootNode));
+        DbImportTreeModel dbSchemaModel = new DbImportTreeModel(dbSchemaRootNode, false, "Click 'Refresh DB Schema' to load the schema.");
+        dbSchemaTree.setRootVisible(false);
+        dbSchemaTree.setShowsRootHandles(true);
+        dbSchemaTree.setModel(dbSchemaModel);
 
-        DbImportActions actions = new DbImportActions(app, this, configTree, dbTree);
-        this.dbSchemaPanel = new DBSchemaPanel(dbTree, configTree, actions);
+        DbImportActions actions = new DbImportActions(app, this, configTree, dbSchemaTree);
+        this.dbSchemaPanel = new DBSchemaPanel(dbSchemaTree, configTree, actions);
         this.dbSchemaToolbar = new DbSchemaToolbar(actions);
 
-        dbTree.setLoadDbSchemaAction(actions.getLoadDbSchemaAction());
+        dbSchemaTree.setLoadDbSchemaAction(actions.getLoadDbSchemaAction());
         this.configToolbar = new ConfigToolbar(configTree, actions);
-        this.configTree = new ReverseEngineeringTreePanel(session, configTree, dbTree, this.dbSchemaPanel, actions);
+        this.configTree = new ReverseEngineeringTreePanel(session, configTree, dbSchemaTree, this.dbSchemaPanel, actions);
         this.configTree.setTreeToolbar(configToolbar);
 
         // repaint the db schema tree whenever the config tree changes so ColorTreeRenderer refreshes
         configModel.addTreeModelListener(new TreeModelListener() {
-            public void treeNodesChanged(TreeModelEvent e) { dbTree.repaint(); }
-            public void treeNodesInserted(TreeModelEvent e) { dbTree.repaint(); }
-            public void treeNodesRemoved(TreeModelEvent e) { dbTree.repaint(); }
-            public void treeStructureChanged(TreeModelEvent e) { dbTree.repaint(); }
+            public void treeNodesChanged(TreeModelEvent e) { dbSchemaTree.repaint(); }
+            public void treeNodesInserted(TreeModelEvent e) { dbSchemaTree.repaint(); }
+            public void treeNodesRemoved(TreeModelEvent e) { dbSchemaTree.repaint(); }
+            public void treeStructureChanged(TreeModelEvent e) { dbSchemaTree.repaint(); }
         });
 
         ((ColorTreeRenderer) dbSchemaPanel.getSourceTree().getCellRenderer()).setReverseEngineeringTree(configTree);

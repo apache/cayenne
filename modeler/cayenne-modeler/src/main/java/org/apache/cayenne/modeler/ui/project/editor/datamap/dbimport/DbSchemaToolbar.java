@@ -22,9 +22,7 @@ package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.DbImportActions;
 
-import javax.swing.JButton;
-import javax.swing.JToolBar;
-import javax.swing.border.EmptyBorder;
+import javax.swing.*;
 
 class DbSchemaToolbar extends JToolBar {
 
@@ -43,7 +41,6 @@ class DbSchemaToolbar extends JToolBar {
         reverseEngineeringButton.setText("Run Import");
 
         setFloatable(false);
-        setBorder(new EmptyBorder(0, 0, 0, 0));
         add(configureButton);
         add(loadDbSchemaButton);
         add(reverseEngineeringButton);

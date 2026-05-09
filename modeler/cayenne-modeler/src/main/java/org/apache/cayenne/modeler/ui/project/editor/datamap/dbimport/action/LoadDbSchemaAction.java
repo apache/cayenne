@@ -70,7 +70,6 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
         view.getLoadDbSchemaButton().setEnabled(false);
         Thread thread = new Thread(() -> {
             LoadDbSchemaAction.this.setEnabled(false);
-            view.lockToolbarButtons();
             sourceTargetPanel.getMoveButton().setEnabled(false);
             sourceTargetPanel.getMoveInvertButton().setEnabled(false);
             try {
@@ -110,7 +109,6 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
             } finally {
                 view.getLoadDbSchemaButton().setEnabled(true);
                 view.getLoadDbSchemaProgress().setVisible(false);
-                view.unlockToolbarButtons();
             }
         });
         thread.start();
