@@ -18,17 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalTime;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LocalTimeConverterTest {
 
     @Test
-    public void testFromBytes() {
+    public void fromBytes() {
         assertEquals(LocalTime.of(11, 0, 2),
                 LocalTimeConverter.INSTANCE.fromBytes(new byte[]{0, 0, 36, 4, -113, 36, 116, 0}));
 
@@ -37,7 +37,7 @@ public class LocalTimeConverterTest {
     }
 
     @Test
-    public void testToBytes() {
+    public void toBytes() {
         assertArrayEquals(new byte[]{0, 0, 36, 4, -113, 36, 116, 0},
                 LocalTimeConverter.INSTANCE.toBytes(LocalTime.of(11, 0, 2)));
 

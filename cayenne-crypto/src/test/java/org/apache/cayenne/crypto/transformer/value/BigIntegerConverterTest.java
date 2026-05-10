@@ -18,11 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BigIntegerConverterTest {
 
@@ -30,19 +30,19 @@ public class BigIntegerConverterTest {
     private BigInteger negativeInt = BigInteger.valueOf(Long.MIN_VALUE).subtract(BigInteger.valueOf(Long.MIN_VALUE));
 
     @Test
-    public void testConverter() {
+    public void converter() {
         BigIntegerConverter converter = new BigIntegerConverter();
         assertEquals(positiveInt, converter.fromBytes(converter.toBytes(positiveInt)));
     }
 
     @Test
-    public void testConverter_Negative() {
+    public void converter_Negative() {
         BigIntegerConverter converter = new BigIntegerConverter();
         assertEquals(negativeInt, converter.fromBytes(converter.toBytes(negativeInt)));
     }
 
     @Test
-    public void testConverter_Zero() {
+    public void converter_Zero() {
         BigInteger originalValue = BigInteger.ZERO;
         BigIntegerConverter converter = new BigIntegerConverter();
         assertEquals(originalValue, converter.fromBytes(converter.toBytes(originalValue)));

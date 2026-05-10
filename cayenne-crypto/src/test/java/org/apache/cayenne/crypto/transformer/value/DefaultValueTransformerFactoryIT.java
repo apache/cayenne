@@ -22,9 +22,9 @@ import org.apache.cayenne.crypto.key.KeySource;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -33,10 +33,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -51,7 +51,7 @@ public class DefaultValueTransformerFactoryIT {
 
     private DefaultValueTransformerFactory f;
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws Exception {
         CayenneRuntime runtime = CayenneRuntime.builder().addConfig("cayenne-crypto.xml").build();
         t1 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE1");
@@ -63,13 +63,13 @@ public class DefaultValueTransformerFactoryIT {
         objectToBytes = getDefaultObjectConverters();
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         f = new DefaultValueTransformerFactory(mock(KeySource.class), dbToBytes, objectToBytes);
     }
 
     @Test
-    public void testGetJavaType() {
+    public void getJavaType() {
 
         DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
         assertEquals("java.lang.String", f.getJavaType(t1_ct));
@@ -96,7 +96,7 @@ public class DefaultValueTransformerFactoryIT {
     }
 
     @Test
-    public void testGetAmbiguousJavaType() {
+    public void getAmbiguousJavaType() {
         // this one have two bound ObjAttributes, warn should be in log
         DbAttribute a1 = t5.getAttribute("CRYPTO_INT1");
         assertEquals("java.lang.String", f.getJavaType(a1));
@@ -115,7 +115,7 @@ public class DefaultValueTransformerFactoryIT {
     }
 
     @Test
-    public void testCreateEncryptor() {
+    public void createEncryptor() {
 
         DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
 
@@ -135,7 +135,7 @@ public class DefaultValueTransformerFactoryIT {
     }
 
     @Test
-    public void testCreateDecryptor() {
+    public void createDecryptor() {
 
         DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
 
@@ -163,7 +163,7 @@ public class DefaultValueTransformerFactoryIT {
     }
 
     @Test
-    public void testEncryptor() {
+    public void encryptor() {
 
         DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
 
@@ -181,7 +181,7 @@ public class DefaultValueTransformerFactoryIT {
     }
 
     @Test
-    public void testDecryptor() {
+    public void decryptor() {
 
         DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
 

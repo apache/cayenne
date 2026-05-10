@@ -18,11 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.bytes;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
-import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
@@ -38,24 +38,21 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.cayenne.crypto.CayenneCryptoException;
 import org.apache.cayenne.crypto.unit.CryptoUnitUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class CbcEncryptorTest {
 
-    @Test(expected = CayenneCryptoException.class)
-    public void testConstructor() throws UnsupportedEncodingException, NoSuchAlgorithmException, NoSuchPaddingException {
-
+    @Test
+    public void constructor() throws NoSuchAlgorithmException, NoSuchPaddingException {
         byte[] iv = { 1, 2, 3, 4, 5, 6 };
         Key key = mock(Key.class);
         Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
         assertEquals(8, cipher.getBlockSize());
-
-        // must throw as IV sie and block size are different
-        new CbcEncryptor(cipher, key, iv);
+        assertThrows(CayenneCryptoException.class, () -> new CbcEncryptor(cipher, key, iv));
     }
 
     @Test
-    public void testEncrypt_AES() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
+    public void encrypt_AES() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
             InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
 
         byte[] ivBytes = CryptoUnitUtils.hexToBytes("0591849d87c93414f4405d32f4d69220");

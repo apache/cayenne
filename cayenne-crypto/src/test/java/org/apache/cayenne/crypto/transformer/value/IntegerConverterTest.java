@@ -18,37 +18,38 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 public class IntegerConverterTest {
 
     @Test
-    public void testFromBytes_InByteRange() {
+    public void fromBytes_InByteRange() {
         assertEquals(Integer.valueOf(6), new IntegerConverter().fromBytes(new byte[]{6}));
     }
 
     @Test
-    public void testFromBytes_InShortRange() {
+    public void fromBytes_InShortRange() {
         assertEquals(Integer.valueOf(1542), new IntegerConverter().fromBytes(new byte[]{6, 6}));
     }
 
     @Test
-    public void testFromBytes_InIntRange() {
+    public void fromBytes_InIntRange() {
         // 16 + 256*7 + 256*256* 6
         assertEquals(Integer.valueOf(395024), new IntegerConverter().fromBytes(new byte[]{0, 6, 7, 16}));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testFromBytes_TooLong() {
-        IntegerConverter.INSTANCE.fromBytes(new byte[]{6, 5, 4});
+    @Test
+    public void fromBytes_TooLong() {
+        assertThrows(IllegalArgumentException.class, () -> IntegerConverter.INSTANCE.fromBytes(new byte[]{6, 5, 4}));
     }
 
     @Test
-    public void testToBytes() {
+    public void toBytes() {
         assertArrayEquals(new byte[]{127, -1, -1, -2}, new IntegerConverter().toBytes(Integer.MAX_VALUE - 1));
         assertArrayEquals(new byte[]{127, -2}, new IntegerConverter().toBytes(Short.MAX_VALUE - 1));
         assertArrayEquals(new byte[]{-7}, new IntegerConverter().toBytes(-7));

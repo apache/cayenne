@@ -18,51 +18,51 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LocalDateTimeConverterTest {
 
     @Test
-    public void testFromBytes() {
+    public void fromBytes() {
         assertEquals(LocalDateTime.of(2015, 1, 7, 11, 0, 2),
                 LocalDateTimeConverter.INSTANCE.fromBytes(new byte[]{2, 64, 58, 0, 0, 36, 4, -113, 36, 116, 0}));
     }
 
     @Test
-    public void testToBytes() {
+    public void toBytes() {
         byte[] bytes = LocalDateTimeConverter.INSTANCE
                 .toBytes(LocalDateTime.of(2015, 1, 7, 11, 0, 2));
         assertArrayEquals(new byte[]{2, 64, 58, 0, 0, 36, 4, -113, 36, 116, 0}, bytes);
     }
 
     @Test
-    public void testToBytesBig() {
+    public void toBytesBig() {
         byte[] bytes = LocalDateTimeConverter.INSTANCE
                 .toBytes(LocalDateTime.MAX);
         assertArrayEquals(new byte[]{8, 0, 0, 0, 85, 10, 27, 72, -9, 0, 0, 78, -108, -111, 78, -1, -1}, bytes);
     }
 
     @Test
-    public void testFromBytesBig() {
+    public void fromBytesBig() {
         LocalDateTime localDateTime = LocalDateTimeConverter.INSTANCE
                 .fromBytes(new byte[]{8, 0, 0, 0, 85, 10, 27, 72, -9, 0, 0, 78, -108, -111, 78, -1, -1});
         assertEquals(LocalDateTime.MAX, localDateTime);
     }
 
     @Test
-    public void testToBytesSmall() {
+    public void toBytesSmall() {
         byte[] bytes = LocalDateTimeConverter.INSTANCE
                 .toBytes(LocalDateTime.of(0, 1, 1, 0, 0, 0));
         assertArrayEquals(new byte[]{4, -1, -11, 5, 88, 0}, bytes);
     }
 
     @Test
-    public void testFromBytesSmall() {
+    public void fromBytesSmall() {
         LocalDateTime localDateTime = LocalDateTimeConverter.INSTANCE
                 .fromBytes(new byte[]{4, -1, -11, 5, 88, 0});
         assertEquals(LocalDateTime.of(0, 1, 1, 0, 0, 0), localDateTime);

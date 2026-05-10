@@ -18,17 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.bytes;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import java.io.UnsupportedEncodingException;
 
 import org.apache.cayenne.crypto.unit.SwapBytesTransformer;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class HeaderEncryptorTest {
 
     @Test
-    public void testTransform() throws UnsupportedEncodingException {
+    public void transform() throws UnsupportedEncodingException {
 
         Header encryptionHeader = Header.create("mykey", false, false);
 

@@ -19,26 +19,27 @@
 package org.apache.cayenne.crypto.transformer.value;
 
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ByteConverterTest {
 
     @Test
-    public void testFromBytes() {
+    public void fromBytes() {
         assertEquals(Byte.valueOf((byte) 6), ByteConverter.INSTANCE.fromBytes(new byte[]{6}));
         assertEquals(Byte.valueOf((byte) -7), ByteConverter.INSTANCE.fromBytes(new byte[]{-7}));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testFromBytes_TooLong() {
-        ByteConverter.INSTANCE.fromBytes(new byte[]{6, 5, 4});
+    @Test
+    public void fromBytes_TooLong() {
+        assertThrows(IllegalArgumentException.class, () -> ByteConverter.INSTANCE.fromBytes(new byte[]{6, 5, 4}));
     }
 
     @Test
-    public void testToBytes() {
+    public void toBytes() {
         assertArrayEquals(new byte[]{6}, ByteConverter.INSTANCE.toBytes((byte) 6));
         assertArrayEquals(new byte[]{-7}, ByteConverter.INSTANCE.toBytes((byte) -7));
     }

@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.unit;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class CryptoUnitUtilsTest {
 
     @Test
-    public void testHexToBytes() {
+    public void hexToBytes() {
 
         String hexString = "0506AB";
         byte[] hexByte = { 5, 6, (byte) 0xAB };

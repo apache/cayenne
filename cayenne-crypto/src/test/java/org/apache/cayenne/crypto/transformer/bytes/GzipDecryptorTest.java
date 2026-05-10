@@ -19,19 +19,19 @@
 package org.apache.cayenne.crypto.transformer.bytes;
 
 import org.apache.cayenne.crypto.unit.CryptoUnitUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class GzipDecryptorTest {
 
 	@Test
-	public void testGunzip() throws IOException {
+	public void gunzip() throws IOException {
 
 		byte[] input1 = CryptoUnitUtils.hexToBytes("1f8b0800000000000000f348cdc9c957f0409000a91a078c11000000");
 		byte[] output1 = GzipDecryptor.gunzip(input1);
@@ -41,7 +41,7 @@ public class GzipDecryptorTest {
 	}
 
 	@Test
-	public void testGunzip_Large() throws IOException {
+	public void gunzip_Large() throws IOException {
 
 		byte[] input1 = readResource("plain.gz");
 		byte[] output1 = GzipDecryptor.gunzip(input1);

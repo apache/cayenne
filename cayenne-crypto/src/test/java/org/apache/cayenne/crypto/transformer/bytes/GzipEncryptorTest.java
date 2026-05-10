@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.bytes;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
@@ -29,13 +29,13 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.cayenne.crypto.unit.CryptoUnitUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 
 public class GzipEncryptorTest {
 
     @Test
-    public void testGzip() throws IOException {
+    public void gzip() throws IOException {
 
         byte[] input1 = "Hello Hello Hello".getBytes(StandardCharsets.UTF_8);
         byte[] output1 = GzipEncryptor.gzip(input1);
@@ -51,7 +51,7 @@ public class GzipEncryptorTest {
     }
 
     @Test
-    public void testEncrypt() {
+    public void encrypt() {
 
         BytesEncryptor delegate = mock(BytesEncryptor.class);
         when(delegate.encrypt(any(byte[].class), anyInt(), any(byte[].class))).thenAnswer((Answer<byte[]>) invocation -> {

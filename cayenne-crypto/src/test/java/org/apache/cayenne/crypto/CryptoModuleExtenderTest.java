@@ -24,18 +24,18 @@ import org.apache.cayenne.crypto.transformer.value.DefaultValueTransformerFactor
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.net.URL;
 import java.security.Key;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class CryptoModuleExtenderTest {
 
     @Test
-    public void testBuild_KeySource() {
+    public void build_KeySource() {
         URL ksUrl = JceksKeySourceTest.class.getResource(JceksKeySourceTest.KS1_JCEKS);
         Module m = b -> new CryptoModuleExtender(b).keyStore(ksUrl, JceksKeySourceTest.TEST_KEY_PASS, "k1")
                 .valueTransformer(DefaultValueTransformerFactory.class);
@@ -53,7 +53,7 @@ public class CryptoModuleExtenderTest {
     }
 
     @Test
-    public void testTypeName() {
+    public void typeName() {
         assertEquals("java.lang.String", CryptoModuleExtender.typeName(String.class));
         assertEquals("byte", CryptoModuleExtender.typeName(Byte.TYPE));
         assertEquals("java.lang.Byte", CryptoModuleExtender.typeName(Byte.class));

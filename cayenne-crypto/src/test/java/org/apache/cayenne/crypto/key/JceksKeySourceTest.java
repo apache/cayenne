@@ -18,9 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.key;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.net.URL;
 import java.security.Key;
@@ -29,22 +30,22 @@ import java.util.Map;
 
 import org.apache.cayenne.crypto.CayenneCryptoException;
 import org.apache.cayenne.crypto.CryptoConstants;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class JceksKeySourceTest {
 
     public static final char[] TEST_KEY_PASS = "testkeypass".toCharArray();
     public static final String KS1_JCEKS = "ks1.jceks";
 
-    @Test(expected = CayenneCryptoException.class)
-    public void testConstructor_NoUrl() {
+    @Test
+    public void constructor_NoUrl() {
         Map<String, String> props = new HashMap<>();
         Map<String, char[]> creds = new HashMap<>();
-        new JceksKeySource(props, creds);
+        assertThrows(CayenneCryptoException.class, () -> new JceksKeySource(props, creds));
     }
 
     @Test
-    public void testGetKey_JCEKS_DES() {
+    public void getKey_JCEKS_DES() {
 
         URL url = getClass().getResource(KS1_JCEKS);
         assertNotNull(url);

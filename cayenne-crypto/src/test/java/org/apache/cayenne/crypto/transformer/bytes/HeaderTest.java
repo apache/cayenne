@@ -18,17 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.bytes;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.cayenne.crypto.CayenneCryptoException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class HeaderTest {
 
     @Test
-    public void testSetCompressed() {
+    public void setCompressed() {
         assertEquals(1, Header.setCompressed((byte) 0, true));
         assertEquals(0, Header.setCompressed((byte) 0, false));
 
@@ -43,7 +44,7 @@ public class HeaderTest {
     }
 
     @Test
-    public void testCreate_WithKeyName() {
+    public void create_WithKeyName() {
 
         Header h1 = Header.create("bcd", false, false);
         Header h2 = Header.create("bc", true, false);
@@ -65,19 +66,17 @@ public class HeaderTest {
         assertTrue(h4.haveHMAC());
     }
 
-    @Test(expected = CayenneCryptoException.class)
-    public void testCreate_WithKeyName_TooLong() {
-
+    @Test
+    public void create_WithKeyName_TooLong() {
         StringBuilder buf = new StringBuilder();
         for (int i = 0; i < Byte.MAX_VALUE + 1; i++) {
             buf.append("a");
         }
-
-        Header.create(buf.toString(), false, false);
+        assertThrows(CayenneCryptoException.class, () -> Header.create(buf.toString(), false, false));
     }
 
     @Test
-    public void testCreate_WithData() {
+    public void create_WithData() {
         byte[] input1 = { 'C', 'C', '1', 9, 0, 'a', 'b', 'c', 'd', 'e' };
         Header h1 = Header.create(input1, 0);
         assertEquals("abcd", h1.getKeyName());

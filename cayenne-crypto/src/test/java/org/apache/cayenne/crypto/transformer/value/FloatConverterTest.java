@@ -18,42 +18,42 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FloatConverterTest {
 
     @Test
-    public void testConverter() {
+    public void converter() {
         Float originalValue = 36.6f;
         FloatConverter converter = new FloatConverter();
         assertEquals(originalValue, converter.fromBytes(converter.toBytes(originalValue)));
     }
 
     @Test
-    public void testConverter_Negative() {
+    public void converter_Negative() {
         Float originalValue = -36.6f;
         FloatConverter converter = new FloatConverter();
         assertEquals(originalValue, converter.fromBytes(converter.toBytes(originalValue)));
     }
 
     @Test
-    public void testConverter_MaxValue() {
+    public void converter_MaxValue() {
         Float originalValue = Float.MAX_VALUE;
         FloatConverter converter = new FloatConverter();
         assertEquals(originalValue, converter.fromBytes(converter.toBytes(originalValue)));
     }
 
     @Test
-    public void testConverter_MinValue() {
+    public void converter_MinValue() {
         Float originalValue = Float.MIN_VALUE;
         FloatConverter converter = new FloatConverter();
         assertEquals(originalValue, converter.fromBytes(converter.toBytes(originalValue)));
     }
 
     @Test
-    public void testConverter_Zero() {
+    public void converter_Zero() {
         Float originalValue = 0f;
         FloatConverter converter = new FloatConverter();
         assertEquals(originalValue, converter.fromBytes(converter.toBytes(originalValue)));

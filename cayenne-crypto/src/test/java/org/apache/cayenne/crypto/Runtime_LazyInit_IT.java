@@ -26,19 +26,19 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.security.Key;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class Runtime_LazyInit_IT extends Runtime_AES128_Base {
 
 
     protected static boolean UNLOCKED;
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         setUp(false, false);
         UNLOCKED = false;
@@ -55,7 +55,7 @@ public class Runtime_LazyInit_IT extends Runtime_AES128_Base {
     }
 
     @Test
-    public void testCryptoLocked() {
+    public void cryptoLocked() {
 
         assertFalse(UNLOCKED);
 
@@ -68,23 +68,19 @@ public class Runtime_LazyInit_IT extends Runtime_AES128_Base {
     }
 
     @Test
-    public void testCryptoLocked_Unlocked() {
+    public void cryptoLocked_Unlocked() {
 
 
         assertFalse(UNLOCKED);
 
-        try {
+        assertThrows(CayenneRuntimeException.class, () -> {
             Table1 t1 = runtime.newContext().newObject(Table1.class);
             t1.setPlainInt(56);
             t1.setCryptoInt(77);
             t1.setPlainString("XX");
             t1.setCryptoString("YY");
             t1.getObjectContext().commitChanges();
-
-            fail("Must have thrown on crypto access");
-        } catch (CayenneRuntimeException e) {
-            // expected
-        }
+        });
 
         UNLOCKED = true;
 

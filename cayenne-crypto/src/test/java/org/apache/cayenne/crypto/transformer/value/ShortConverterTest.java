@@ -18,30 +18,31 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ShortConverterTest {
 
     @Test
-    public void testFromBytes_InByteRange() {
+    public void fromBytes_InByteRange() {
         assertEquals(Short.valueOf((short) 6), ShortConverter.INSTANCE.fromBytes(new byte[]{6}));
     }
 
     @Test
-    public void testFromBytes_InShortRange() {
+    public void fromBytes_InShortRange() {
         assertEquals(Short.valueOf((short) 1287), ShortConverter.INSTANCE.fromBytes(new byte[]{5, 7}));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testFromBytes_TooLong() {
-        ShortConverter.INSTANCE.fromBytes(new byte[]{6, 5, 4});
+    @Test
+    public void fromBytes_TooLong() {
+        assertThrows(IllegalArgumentException.class, () -> ShortConverter.INSTANCE.fromBytes(new byte[]{6, 5, 4}));
     }
 
     @Test
-    public void testToBytes() {
+    public void toBytes() {
         assertArrayEquals(new byte[]{127, -2}, ShortConverter.INSTANCE.toBytes((short) (Short.MAX_VALUE - 1)));
         assertArrayEquals(new byte[]{-7}, ShortConverter.INSTANCE.toBytes((short) -7));
     }

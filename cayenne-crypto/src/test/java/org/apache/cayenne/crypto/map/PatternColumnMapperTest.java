@@ -18,16 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.map;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.cayenne.map.DbAttribute;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class PatternColumnMapperTest {
 
     @Test
-    public void testIsEncrypted() {
+    public void isEncrypted() {
         PatternColumnMapper mapper = new PatternColumnMapper("^bla_");
 
         assertTrue(mapper.isEncrypted(new DbAttribute("bla_")));

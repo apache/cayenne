@@ -18,15 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.unit;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import org.apache.cayenne.crypto.transformer.bytes.BytesEncryptor;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SwapBytesTransformerTest {
 
     @Test
-    public void testEncrypt_Odd() {
+    public void encrypt_Odd() {
 
         BytesEncryptor instance = SwapBytesTransformer.encryptor();
 
@@ -36,7 +36,7 @@ public class SwapBytesTransformerTest {
     }
 
     @Test
-    public void testEncrypt_Even() {
+    public void encrypt_Even() {
 
         BytesEncryptor instance = SwapBytesTransformer.encryptor();
 

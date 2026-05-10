@@ -29,24 +29,24 @@ import java.util.Base64;
 import org.apache.cayenne.crypto.transformer.bytes.BytesDecryptor;
 import org.apache.cayenne.crypto.transformer.bytes.BytesEncryptor;
 import org.apache.cayenne.crypto.unit.SwapBytesTransformer;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DefaultEncryptorTest {
 
     private BytesEncryptor encryptor;
     private BytesDecryptor decryptor;
 
-    @Before
+    @BeforeEach
     public void before() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
         this.encryptor = SwapBytesTransformer.encryptor();
         this.decryptor = SwapBytesTransformer.decryptor();
     }
 
     @Test
-    public void testEncrypt_BytesToBytes() throws IllegalBlockSizeException, BadPaddingException {
+    public void encrypt_BytesToBytes() throws IllegalBlockSizeException, BadPaddingException {
 
         DefaultValueEncryptor e = new DefaultValueEncryptor(BytesToBytesConverter.INSTANCE, BytesToBytesConverter.INSTANCE);
 
@@ -65,14 +65,14 @@ public class DefaultEncryptorTest {
     }
 
     @Test
-    public void testEncrypt_BytesToBytes_null() throws IllegalBlockSizeException, BadPaddingException {
+    public void encrypt_BytesToBytes_null() throws IllegalBlockSizeException, BadPaddingException {
 
         DefaultValueEncryptor e = new DefaultValueEncryptor(BytesToBytesConverter.INSTANCE, BytesToBytesConverter.INSTANCE);
         assertNull(e.encrypt(encryptor, null));
     }
 
     @Test
-    public void testEncrypt_StringToBytes() throws UnsupportedEncodingException, IllegalBlockSizeException,
+    public void encrypt_StringToBytes() throws UnsupportedEncodingException, IllegalBlockSizeException,
             BadPaddingException {
 
         DefaultValueEncryptor e = new DefaultValueEncryptor(Utf8StringConverter.INSTANCE, BytesToBytesConverter.INSTANCE);
@@ -92,7 +92,7 @@ public class DefaultEncryptorTest {
     }
 
     @Test
-    public void testEncrypt_StringToString() throws UnsupportedEncodingException, IllegalBlockSizeException,
+    public void encrypt_StringToString() throws UnsupportedEncodingException, IllegalBlockSizeException,
             BadPaddingException {
 
         DefaultValueEncryptor e = new DefaultValueEncryptor(Utf8StringConverter.INSTANCE, Base64StringConverter.INSTANCE);

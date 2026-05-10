@@ -21,10 +21,10 @@ package org.apache.cayenne.crypto.transformer.value;
 
 import java.time.Period;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @since 4.2
@@ -32,13 +32,13 @@ import static org.junit.Assert.assertEquals;
 public class PeriodConverterTest {
 
     @Test
-    public void testFromBytes() {
+    public void fromBytes() {
         assertEquals(Period.of(10, 5, 20),
                 PeriodConverter.INSTANCE.fromBytes(new byte[]{80, 49, 48, 89, 53, 77, 50, 48, 68}));
     }
 
     @Test
-    public void testToBytes() {
+    public void toBytes() {
         assertArrayEquals(new byte[]{80, 49, 48, 89, 53, 77, 50, 48, 68},
                 PeriodConverter.INSTANCE.toBytes(Period.of(10, 5, 20)));
     }

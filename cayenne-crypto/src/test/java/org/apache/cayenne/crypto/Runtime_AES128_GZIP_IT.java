@@ -24,31 +24,31 @@ import org.apache.cayenne.crypto.db.Table8;
 import org.apache.cayenne.crypto.transformer.bytes.Header;
 import org.apache.cayenne.crypto.unit.CryptoUnitUtils;
 import org.apache.cayenne.query.ObjectSelect;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Runtime_AES128_GZIP_IT extends Runtime_AES128_Base {
 
     private static final int GZIP_THRESHOLD = 150;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(true, false);
     }
 
     @Test
-    public void testInsert() throws SQLException {
+    public void insert() throws SQLException {
 
         ObjectContext context = runtime.newContext();
 
@@ -71,7 +71,7 @@ public class Runtime_AES128_GZIP_IT extends Runtime_AES128_Base {
     }
 
     @Test
-    public void testInsert_Small() throws SQLException {
+    public void insert_Small() throws SQLException {
 
         ObjectContext context = runtime.newContext();
 
@@ -93,7 +93,7 @@ public class Runtime_AES128_GZIP_IT extends Runtime_AES128_Base {
     }
 
     @Test
-    public void testInsert_MultipleObjects() throws SQLException {
+    public void insert_MultipleObjects() throws SQLException {
 
         ObjectContext context = runtime.newContext();
 
@@ -131,7 +131,7 @@ public class Runtime_AES128_GZIP_IT extends Runtime_AES128_Base {
     }
 
     @Test
-    public void test_SelectQuery() throws SQLException {
+    public void selectQuery() throws SQLException {
 
         // make sure compression is on...
         byte[] cryptoBytes1 = CryptoUnitUtils.bytesOfSize(GZIP_THRESHOLD + 101);
@@ -165,7 +165,7 @@ public class Runtime_AES128_GZIP_IT extends Runtime_AES128_Base {
     }
     
     @Test
-    public void test_SelectQueryWithOptimisticLocking() throws SQLException {
+    public void selectQueryWithOptimisticLocking() throws SQLException {
         ObjectContext context = runtime.newContext();
         
         StringBuilder builder = new StringBuilder();
@@ -191,7 +191,7 @@ public class Runtime_AES128_GZIP_IT extends Runtime_AES128_Base {
     }
 
     @Test
-    public void test_ScalarColumnQuery() throws SQLException {
+    public void scalarColumnQuery() throws SQLException {
         // make sure compression is on...
         byte[] cryptoBytes1 = CryptoUnitUtils.bytesOfSize(GZIP_THRESHOLD + 101);
         byte[] cryptoBytes2 = CryptoUnitUtils.bytesOfSize(GZIP_THRESHOLD + 102);
@@ -224,7 +224,7 @@ public class Runtime_AES128_GZIP_IT extends Runtime_AES128_Base {
     }
 
     @Test
-    public void test_MultipleColumnsQuery() throws SQLException {
+    public void multipleColumnsQuery() throws SQLException {
         // make sure compression is on...
         byte[] cryptoBytes1 = CryptoUnitUtils.bytesOfSize(GZIP_THRESHOLD + 101);
         byte[] cryptoBytes2 = CryptoUnitUtils.bytesOfSize(GZIP_THRESHOLD + 102);

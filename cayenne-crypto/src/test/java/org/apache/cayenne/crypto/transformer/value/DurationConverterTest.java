@@ -21,10 +21,10 @@ package org.apache.cayenne.crypto.transformer.value;
 
 import java.time.Duration;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @since 4.2
@@ -32,14 +32,14 @@ import static org.junit.Assert.assertEquals;
 public class DurationConverterTest {
 
     @Test
-    public void testFromBytes() {
+    public void fromBytes() {
         assertEquals(Duration.ofDays(10),
                 DurationConverter.INSTANCE.fromBytes(new byte[]{51, 127, -104, 0}));
 
     }
 
     @Test
-    public void testToBytes() {
+    public void toBytes() {
         assertArrayEquals(new byte[] {51, 127, -104, 0},
                 DurationConverter.INSTANCE.toBytes(Duration.ofDays(10)));
     }

@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.bytes;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -34,15 +34,15 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.cayenne.crypto.unit.CryptoUnitUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class CbcDecryptorTest {
 
     private Cipher cipher;
     private Key key;
 
-    @Before
+    @BeforeEach
     public void before() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
         byte[] keyBytes = CryptoUnitUtils.hexToBytes("a4cb499fa31a6a228e16b7e4741d4fa3");
         this.key = new SecretKeySpec(keyBytes, "AES");
@@ -52,7 +52,7 @@ public class CbcDecryptorTest {
     }
 
     @Test
-    public void testIv() {
+    public void iv() {
 
         CbcDecryptor decryptor = new CbcDecryptor(cipher);
 
@@ -64,7 +64,7 @@ public class CbcDecryptorTest {
     }
 
     @Test
-    public void testDecrypt() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
+    public void decrypt() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
             InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
 
         CbcDecryptor decryptor = new CbcDecryptor(cipher);

@@ -18,29 +18,29 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class LongConverterTest {
 
 
     @Test
-    public void testFromBytes_InIntRange() {
+    public void fromBytes_InIntRange() {
         // 256*256* 6 + 256*7 + 16
         assertEquals(Long.valueOf(395024L), new LongConverter().fromBytes(new byte[]{0, 6, 7, 16}));
     }
 
     @Test
-    public void testFromBytes_InLongRange() {
+    public void fromBytes_InLongRange() {
         // 6*256*256*256*256 + 7*256*256*256 + 16*256*256 + 17*256 + 99
         assertEquals(Long.valueOf(25888297315L), new LongConverter().fromBytes(new byte[]{0, 0, 0, 6, 7, 16, 17, 99}));
     }
 
     @Test
-    public void testToBytes() {
+    public void toBytes() {
         assertArrayEquals(new byte[]{127, -1, -1, -1, -1, -1, -1, -2}, new LongConverter().toBytes((long) (Long.MAX_VALUE - 1L)));
         assertArrayEquals(new byte[]{127, -1, -1, -2}, new LongConverter().toBytes((long) (Integer.MAX_VALUE - 1)));
         assertArrayEquals(new byte[]{127, -2}, new LongConverter().toBytes(Short.MAX_VALUE - 1L));

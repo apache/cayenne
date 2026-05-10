@@ -31,23 +31,23 @@ import org.apache.cayenne.crypto.transformer.value.IntegerConverter;
 import org.apache.cayenne.crypto.unit.CryptoUnitUtils;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.query.ObjectSelect;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Runtime_AES128_IT extends Runtime_AES128_Base {
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(false, false);
     }
 
     @Test
-    public void testInsert() throws SQLException {
+    public void insert() throws SQLException {
 
         ObjectContext context = runtime.newContext();
 
@@ -63,7 +63,7 @@ public class Runtime_AES128_IT extends Runtime_AES128_Base {
     }
 
     @Test
-    public void testInsert_Numeric() throws SQLException {
+    public void insert_Numeric() throws SQLException {
 
         ObjectContext context = runtime.newContext();
 
@@ -79,7 +79,7 @@ public class Runtime_AES128_IT extends Runtime_AES128_Base {
     }
 
     @Test
-    public void testInsert_MultipleObjects() throws SQLException {
+    public void insert_MultipleObjects() throws SQLException {
 
         ObjectContext context = runtime.newContext();
 
@@ -111,7 +111,7 @@ public class Runtime_AES128_IT extends Runtime_AES128_Base {
     }
 
     @Test
-    public void test_SelectQuery() {
+    public void selectQuery() {
 
         ObjectContext context = runtime.newContext();
 
@@ -142,7 +142,7 @@ public class Runtime_AES128_IT extends Runtime_AES128_Base {
 
 
     @Test
-    public void test_SelectNumeric() {
+    public void selectNumeric() {
 
         ObjectContext context = runtime.newContext();
 
@@ -160,7 +160,7 @@ public class Runtime_AES128_IT extends Runtime_AES128_Base {
     }
 
     @Test
-    public void test_ColumnQueryObject() {
+    public void columnQueryObject() {
 
         ObjectContext context = runtime.newContext();
 
@@ -179,7 +179,7 @@ public class Runtime_AES128_IT extends Runtime_AES128_Base {
     }
 
     @Test
-    public void test_ColumnQueryObjectWithPlainScalar() {
+    public void columnQueryObjectWithPlainScalar() {
 
         ObjectContext context = runtime.newContext();
 
@@ -202,7 +202,7 @@ public class Runtime_AES128_IT extends Runtime_AES128_Base {
     }
 
     @Test
-    public void test_ColumnQueryObjectWithEncryptedScalar() {
+    public void columnQueryObjectWithEncryptedScalar() {
 
         ObjectContext context = runtime.newContext();
 
@@ -226,7 +226,7 @@ public class Runtime_AES128_IT extends Runtime_AES128_Base {
     }
 
     @Test
-    public void testColumnQueryWithRelationshipWithTheSameNames() {
+    public void columnQueryWithRelationshipWithTheSameNames() {
         ObjectContext context = runtime.newContext();
 
         Table1 t1 = context.newObject(Table1.class);
@@ -261,7 +261,7 @@ public class Runtime_AES128_IT extends Runtime_AES128_Base {
     }
 
     @Test
-    public void testSelectWith2Objects() {
+    public void selectWith2Objects() {
         ObjectContext context = runtime.newContext();
 
         Table1 t1 = context.newObject(Table1.class);
@@ -290,7 +290,7 @@ public class Runtime_AES128_IT extends Runtime_AES128_Base {
     }
 
     @Test
-    public void testObjectSelectWithPrefetch() {
+    public void objectSelectWithPrefetch() {
         ObjectContext context = runtime.newContext();
 
         Table1 t1 = context.newObject(Table1.class);
@@ -317,7 +317,7 @@ public class Runtime_AES128_IT extends Runtime_AES128_Base {
     }
 
     @Test
-    public void test_ColumnQuerySingleScalar() {
+    public void columnQuerySingleScalar() {
         ObjectContext context = runtime.newContext();
 
         Table1 t1 = context.newObject(Table1.class);
@@ -334,7 +334,7 @@ public class Runtime_AES128_IT extends Runtime_AES128_Base {
     }
 
     @Test
-    public void test_ColumnQuerySingleScalarNull() {
+    public void columnQuerySingleScalarNull() {
         ObjectContext context = runtime.newContext();
 
         Table1 t1 = context.newObject(Table1.class);
@@ -351,7 +351,7 @@ public class Runtime_AES128_IT extends Runtime_AES128_Base {
     }
 
     @Test
-    public void test_ColumnQueryMultipleScalars() {
+    public void columnQueryMultipleScalars() {
         ObjectContext context = runtime.newContext();
 
         Table1 t1 = context.newObject(Table1.class);
