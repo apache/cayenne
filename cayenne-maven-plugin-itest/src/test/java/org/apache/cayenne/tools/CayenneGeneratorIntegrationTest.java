@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -26,9 +26,9 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class CayenneGeneratorIntegrationTest {
 
@@ -43,7 +43,7 @@ public class CayenneGeneratorIntegrationTest {
      * Test single classes with a non-standard template.
      */
     @Test
-    public void testSingleClassesCustTemplate() throws Exception {
+    public void singleClassesCustTemplate() throws Exception {
         startTest("single-classes-cust-template");
 
         assertContents("org/apache/cayenne/testdo/testmap/Artist.java", "Artist", "org.apache.cayenne.testdo.testmap",
@@ -53,7 +53,7 @@ public class CayenneGeneratorIntegrationTest {
 
     /** Test single classes generation including full package path. */
     @Test
-    public void testSingleClasses1() throws Exception {
+    public void singleClasses1() throws Exception {
         startTest("single-classes1");
 
         assertContents("org/apache/cayenne/testdo/testmap/Artist.java", "Artist", "org.apache.cayenne.testdo.testmap",
@@ -63,7 +63,7 @@ public class CayenneGeneratorIntegrationTest {
 
     /** Test single classes generation ignoring package path. */
     @Test
-    public void testSingleClasses2() throws Exception {
+    public void singleClasses2() throws Exception {
         startTest("single-classes2");
 
         assertContents("Artist.java", "Artist", "org.apache.cayenne.testdo.testmap", "PersistentObject");
@@ -73,7 +73,7 @@ public class CayenneGeneratorIntegrationTest {
 
     /** Test pairs generation including full package path. */
     @Test
-    public void testPairs1() throws Exception {
+    public void pairs1() throws Exception {
         startTest("pairs1");
 
         assertContents("org/apache/cayenne/testdo/testmap/Artist.java", "Artist", "org.apache.cayenne.testdo.testmap",
@@ -84,7 +84,7 @@ public class CayenneGeneratorIntegrationTest {
 
     /** Test pairs generation in the same directory. */
     @Test
-    public void testPairs2() throws Exception {
+    public void pairs2() throws Exception {
         startTest("pairs2");
 
         assertContents("Artist.java", "Artist", "org.apache.cayenne.testdo.testmap", "_Artist");
@@ -97,7 +97,7 @@ public class CayenneGeneratorIntegrationTest {
      * subclass in different packages.
      */
     @Test
-    public void testPairs3() throws Exception {
+    public void pairs3() throws Exception {
         startTest("pairs3");
 
         assertContents("org/apache/cayenne/testdo/testmap/Artist.java", "Artist", "org.apache.cayenne.testdo.testmap",
@@ -107,7 +107,7 @@ public class CayenneGeneratorIntegrationTest {
     }
 
     @Test
-    public void testPairsEmbeddable3() throws Exception {
+    public void pairsEmbeddable3() throws Exception {
         startTest("pairs-embeddables3");
 
         assertContents("org/apache/cayenne/testdo/embeddable/EmbedEntity1.java", "EmbedEntity1",
@@ -127,7 +127,7 @@ public class CayenneGeneratorIntegrationTest {
     private void assertContents(String filePath, String className, String packageName, String extendsName)
             throws Exception {
         File f = new File(testDir, convertPath(filePath));
-        assertTrue("Not a file: " + f.getAbsolutePath(), f.isFile());
+        assertTrue(f.isFile(), "Not a file: " + f.getAbsolutePath());
         assertContents(f, className, packageName, extendsName);
     }
 
