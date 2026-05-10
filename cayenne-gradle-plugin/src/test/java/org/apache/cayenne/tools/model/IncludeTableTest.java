@@ -24,9 +24,9 @@ import java.util.Collection;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeRelationship;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.0

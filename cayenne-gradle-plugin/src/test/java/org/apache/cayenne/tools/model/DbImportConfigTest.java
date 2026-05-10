@@ -20,9 +20,9 @@
 package org.apache.cayenne.tools.model;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.0

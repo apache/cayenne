@@ -24,10 +24,10 @@ import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeProcedure;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.0
@@ -36,7 +36,7 @@ public class PatternParamTest {
 
     private PatternParam param;
 
-    @Before
+    @BeforeEach
     public void createNewPatternParam() {
         param = new PatternParam("test");
     }

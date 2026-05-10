@@ -30,10 +30,10 @@ import org.apache.cayenne.tools.model.DbImportConfig;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -43,7 +43,7 @@ public class DbImportTaskTest {
 
     private DbImportTask task;
 
-    @Before
+    @BeforeEach
     public void createTask() {
         Project project = ProjectBuilder.builder().build();
 
@@ -52,13 +52,13 @@ public class DbImportTaskTest {
         task = (DbImportTask)project.task(parameters, "cdbimportTask");
     }
 
-    @Test(expected = InvalidUserDataException.class)
-    public void testRunWithNoConfig() {
-        task.runImport();
+    @Test
+    public void runWithNoConfig() {
+        assertThrows(InvalidUserDataException.class, () -> task.runImport());
     }
 
     @Test
-    public void testFullConfigCreation() {
+    public void fullConfigCreation() {
         File mockFile = mock(File.class);
 
         // configure task

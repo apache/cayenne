@@ -31,23 +31,22 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.gradle.testkit.runner.GradleRunner;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  * @since 4.0
  */
 public class BaseTaskIT {
 
-    @Rule
-    public TemporaryFolder tempFolder = new TemporaryFolder();
+    @TempDir
+    protected File tempFolder;
 
     protected File projectDir;
 
-    @Before
+    @BeforeEach
     public void createProjectDir() throws IOException {
-        projectDir = tempFolder.newFolder();
+        projectDir = tempFolder;
     }
 
     protected GradleRunner createRunner(String projectName, String... args) throws Exception {

@@ -22,7 +22,7 @@ package org.apache.cayenne.tools;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.net.URLDecoder;
@@ -30,9 +30,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @since 4.0
@@ -121,7 +121,7 @@ public class CgenTaskIT extends BaseTaskIT {
     }
 
     @Test
-    public void testWithConfigsInDmAndPom() throws Exception {
+    public void withConfigsInDmAndPom() throws Exception {
         GradleRunner runner = createRunner(
                 "cgen_with_configs",
                 "cgen",
@@ -148,7 +148,7 @@ public class CgenTaskIT extends BaseTaskIT {
     }
 
     @Test
-    public void testReplaceDatamapMode() throws Exception {
+    public void replaceDatamapMode() throws Exception {
         GradleRunner runner = createRunner(
                 "cgen_replaceDatamapMode",
                 "cgen",

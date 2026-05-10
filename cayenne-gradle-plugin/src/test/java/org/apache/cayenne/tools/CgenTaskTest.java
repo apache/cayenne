@@ -23,16 +23,15 @@ import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.CgenTemplate;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.gradle.api.logging.Logging;
 
 import java.io.File;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
@@ -40,8 +39,8 @@ import static org.mockito.Mockito.*;
  */
 public class CgenTaskTest {
 
-    @Rule
-    public TemporaryFolder temp = new TemporaryFolder();
+    @TempDir
+    File temp;
 
     DataMap dataMap = new DataMap();
 
@@ -71,7 +70,7 @@ public class CgenTaskTest {
     }
 
     @Test
-    public void testGeneratorCreation() {
+    public void generatorCreation() {
         CgenTask task = createCgenTaskMock();
         task.setEmbeddableSuperTemplate("superTemplate");
         task.setEmbeddableTemplate("template");
@@ -97,10 +96,10 @@ public class CgenTaskTest {
             assertNotNull(cgenConfiguration.getEmbeddableSuperTemplate());
             assertNotNull(cgenConfiguration.getEmbeddableTemplate());
 
-            assertEquals(cgenConfiguration.getEncoding(), "UTF-8");
-            assertEquals(cgenConfiguration.getArtifactsGenerationMode(), "entity");
-            assertEquals(cgenConfiguration.getOutputPattern(), "pattern");
-            assertEquals(cgenConfiguration.getSuperPkg(), "org.example.model.auto");
+            assertEquals("UTF-8", cgenConfiguration.getEncoding());
+            assertEquals("entity", cgenConfiguration.getArtifactsGenerationMode());
+            assertEquals("pattern", cgenConfiguration.getOutputPattern());
+            assertEquals("org.example.model.auto", cgenConfiguration.getSuperPkg());
             assertTrue(cgenTemplate.isFile());
             assertEquals("org/apache/cayenne/tools/velotemplate.vm", cgenTemplate.getData());
             assertTrue(cgenConfiguration.isMakePairs());

@@ -20,13 +20,13 @@
 package org.apache.cayenne.tools;
 
 import org.gradle.testkit.runner.GradleRunner;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GradlePluginIT extends BaseTaskIT {
 
@@ -49,7 +49,7 @@ public class GradlePluginIT extends BaseTaskIT {
     }
 
     @Test
-    public void testGradleVersionsCompatibility() {
+    public void gradleVersionsCompatibility() {
 
         String[] versions = {"8.5"};
 
@@ -67,11 +67,11 @@ public class GradlePluginIT extends BaseTaskIT {
         for(String version : failedVersions) {
             versionString.append(" ").append(version);
         }
-        assertTrue(versionString.toString(), failedVersions.isEmpty());
+        assertTrue(failedVersions.isEmpty(), versionString.toString());
     }
 
     @Test
-    public void testVersion() {
+    public void version() {
         assertEquals(7, getJavaMajorVersion("1.7.0_25-b15"));
         assertEquals(7, getJavaMajorVersion("1.7.2+123"));
         assertEquals(8, getJavaMajorVersion("1.8.145"));
