@@ -18,22 +18,22 @@
  ****************************************************************/
 package org.apache.cayenne.di;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class DIBootstrapTest {
 
     @Test
-	public void testCreateInjector_Empty() {
+	public void createInjector_Empty() {
 		Injector emptyInjector = DIBootstrap.createInjector();
 		assertNotNull(emptyInjector);
 	}
 
     @Test
-	public void testCreateInjector_SingleModule() {
+	public void createInjector_SingleModule() {
 		final boolean[] configureCalled = new boolean[1];
 
 		Module module = binder -> configureCalled[0] = true;
@@ -45,7 +45,7 @@ public class DIBootstrapTest {
 	}
 
     @Test
-	public void testCreateInjector_MultiModule() {
+	public void createInjector_MultiModule() {
 
 		final boolean[] configureCalled = new boolean[2];
 

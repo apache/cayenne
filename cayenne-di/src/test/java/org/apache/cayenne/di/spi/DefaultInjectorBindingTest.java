@@ -25,14 +25,14 @@ import org.apache.cayenne.di.mock.MockImplementation1Alt;
 import org.apache.cayenne.di.mock.MockImplementation1Alt2;
 import org.apache.cayenne.di.mock.MockInterface1;
 import org.apache.cayenne.di.mock.MockInterface1Provider;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DefaultInjectorBindingTest {
 
     @Test
-    public void testClassBinding() {
+    public void classBinding() {
 
         Module module = binder -> binder.bind(MockInterface1.class).to(MockImplementation1.class);
 
@@ -44,7 +44,7 @@ public class DefaultInjectorBindingTest {
     }
 
     @Test
-    public void testClassNamedBinding() {
+    public void classNamedBinding() {
 
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1.class);
@@ -74,7 +74,7 @@ public class DefaultInjectorBindingTest {
     }
 
     @Test
-    public void testProviderBinding() {
+    public void providerBinding() {
         Module module = binder -> binder
                 .bind(MockInterface1.class)
                 .toProvider(MockInterface1Provider.class);
@@ -87,7 +87,7 @@ public class DefaultInjectorBindingTest {
     }
 
     @Test
-    public void testInstanceBinding() {
+    public void instanceBinding() {
 
         final MockImplementation1 instance = new MockImplementation1();
 
@@ -101,7 +101,7 @@ public class DefaultInjectorBindingTest {
     }
 
     @Test
-    public void testClassReBinding() {
+    public void classReBinding() {
 
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1.class);

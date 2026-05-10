@@ -21,20 +21,20 @@ package org.apache.cayenne.di.spi;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.mock.MockImplementation1_EventAnnotations;
 import org.apache.cayenne.di.mock.MockInterface1;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DefaultInjectorTest {
 
     @Test
-    public void testConstructor_Empty() {
+    public void constructor_Empty() {
         new DefaultInjector();
         // no exceptions...
     }
 
     @Test
-    public void testConstructor_SingleModule() {
+    public void constructor_SingleModule() {
         final boolean[] configureCalled = new boolean[1];
 
         Module module = binder -> configureCalled[0] = true;
@@ -44,7 +44,7 @@ public class DefaultInjectorTest {
     }
 
     @Test
-    public void testConstructor_MultiModule() {
+    public void constructor_MultiModule() {
 
         final boolean[] configureCalled = new boolean[2];
 
@@ -58,7 +58,7 @@ public class DefaultInjectorTest {
     }
 
     @Test
-    public void testShutdown() {
+    public void shutdown() {
 
         MockImplementation1_EventAnnotations.reset();
 

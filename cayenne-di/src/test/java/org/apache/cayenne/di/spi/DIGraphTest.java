@@ -19,17 +19,18 @@
 package org.apache.cayenne.di.spi;
 
 import org.apache.cayenne.di.DIRuntimeException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class DIGraphTest {
 
     @Test
-    public void testTopSortNoCycles() {
+    public void topSortNoCycles() {
         DIGraph<String> graph = new DIGraph<>();
         graph.add("x", "y");
         graph.add("x", "z");
@@ -39,16 +40,16 @@ public class DIGraphTest {
         assertEquals(asList("y", "a", "z", "x"), sorted);
     }
 
-    @Test(expected = DIRuntimeException.class)
-    public void testTopSortDirectCycle() {
+    @Test
+    public void topSortDirectCycle() {
         DIGraph<String> graph = new DIGraph<>();
         graph.add("x", "y");
         graph.add("y", "x");
-        graph.topSort();
+        assertThrows(DIRuntimeException.class, graph::topSort);
     }
 
     @Test
-    public void testTopSortDirectCycleOverride() {
+    public void topSortDirectCycleOverride() {
         DIGraph<String> graph = new DIGraph<>();
         graph.addWithOverride("x", "y");
         graph.addWithOverride("y", "x");
@@ -56,12 +57,12 @@ public class DIGraphTest {
         assertEquals(asList("x", "y"), sorted);
     }
 
-    @Test(expected = DIRuntimeException.class)
-    public void testTopSortInDirectCycle() {
+    @Test
+    public void topSortInDirectCycle() {
         DIGraph<String> graph = new DIGraph<>();
         graph.add("x", "y");
         graph.add("y", "z");
         graph.add("z", "x");
-        graph.topSort();
+        assertThrows(DIRuntimeException.class, graph::topSort);
     }
 }

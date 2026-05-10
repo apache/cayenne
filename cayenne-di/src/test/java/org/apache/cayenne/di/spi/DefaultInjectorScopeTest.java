@@ -24,14 +24,14 @@ import org.apache.cayenne.di.mock.MockImplementation1;
 import org.apache.cayenne.di.mock.MockImplementation1_EventAnnotations;
 import org.apache.cayenne.di.mock.MockImplementation1_Provider;
 import org.apache.cayenne.di.mock.MockInterface1;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DefaultInjectorScopeTest {
 
     @Test
-    public void testDefaultScope_IsSingleton() {
+    public void defaultScope_IsSingleton() {
 
         Module module = binder -> binder.bind(MockInterface1.class).to(MockImplementation1.class);
 
@@ -50,7 +50,7 @@ public class DefaultInjectorScopeTest {
     }
 
     @Test
-    public void testNoScope() {
+    public void noScope() {
 
         Module module = binder -> binder
                 .bind(MockInterface1.class)
@@ -73,7 +73,7 @@ public class DefaultInjectorScopeTest {
     }
 
     @Test
-    public void testSingletonScope() {
+    public void singletonScope() {
 
         Module module = binder -> binder
                 .bind(MockInterface1.class)
@@ -95,7 +95,7 @@ public class DefaultInjectorScopeTest {
     }
 
     @Test
-    public void testSingletonScope_AnnotatedEvents() {
+    public void singletonScope_AnnotatedEvents() {
 
         MockImplementation1_EventAnnotations.reset();
 
@@ -119,7 +119,7 @@ public class DefaultInjectorScopeTest {
     }
 
     @Test
-    public void testSingletonScope_WithProvider() {
+    public void singletonScope_WithProvider() {
 
         Module module = binder -> binder
                 .bind(MockInterface1.class)
@@ -141,7 +141,7 @@ public class DefaultInjectorScopeTest {
     }
 
     @Test
-    public void testNoScope_WithProvider() {
+    public void noScope_WithProvider() {
 
         Module module = binder -> binder
                 .bind(MockInterface1.class)

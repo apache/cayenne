@@ -30,15 +30,15 @@ import org.apache.cayenne.di.mock.MockImplementation3;
 import org.apache.cayenne.di.mock.MockInterface1;
 import org.apache.cayenne.di.mock.MockInterface2;
 import org.apache.cayenne.di.mock.MockInterface3;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class DefaultInjectorCircularInjectionTest {
 
     @Test
-    public void testFieldInjection_CircularDependency() {
+    public void fieldInjection_CircularDependency() {
 
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1_DepOn2.class);
@@ -47,20 +47,12 @@ public class DefaultInjectorCircularInjectionTest {
 
         DefaultInjector injector = new DefaultInjector(module);
 
-        try {
-            injector.getInstance(MockInterface1.class);
-            fail("Circular dependency is not detected.");
-        }
-        catch (DIRuntimeException e) {
-            // expected
-        }
-        catch (StackOverflowError e) {
-            fail("Circular dependency is not detected, causing stack overflow");
-        }
+        assertThrows(DIRuntimeException.class, () -> injector.getInstance(MockInterface1.class),
+                "Circular dependency is not detected.");
     }
 
     @Test
-    public void testProviderInjection_CircularDependency() {
+    public void providerInjection_CircularDependency() {
 
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(
@@ -75,7 +67,7 @@ public class DefaultInjectorCircularInjectionTest {
     }
 
     @Test
-    public void testConstructorInjection_CircularDependency() {
+    public void constructorInjection_CircularDependency() {
 
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(
@@ -86,20 +78,12 @@ public class DefaultInjectorCircularInjectionTest {
 
         DefaultInjector injector = new DefaultInjector(module);
 
-        try {
-            injector.getInstance(MockInterface1.class);
-            fail("Circular dependency is not detected.");
-        }
-        catch (DIRuntimeException e) {
-            // expected
-        }
-        catch (StackOverflowError e) {
-            fail("Circular dependency is not detected, causing stack overflow");
-        }
+        assertThrows(DIRuntimeException.class, () -> injector.getInstance(MockInterface1.class),
+                "Circular dependency is not detected.");
     }
 
     @Test
-    public void testConstructorInjection_WithFieldInjectionDeps() {
+    public void constructorInjection_WithFieldInjectionDeps() {
 
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(
@@ -111,11 +95,7 @@ public class DefaultInjectorCircularInjectionTest {
 
         DefaultInjector injector = new DefaultInjector(module);
 
-        try {
-            injector.getInstance(MockInterface1.class);
-        }
-        catch (DIRuntimeException e) {
-            fail("Circular dependency is detected incorrectly: " + e.getMessage());
-        }
+        // Should not throw - no circular dependency
+        injector.getInstance(MockInterface1.class);
     }
 }

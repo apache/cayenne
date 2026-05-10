@@ -21,18 +21,18 @@ package org.apache.cayenne.di.spi;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.mock.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DefaultInjectorInjectionTest {
 
     @Test
-    public void testFieldInjection() {
+    public void fieldInjection() {
 
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1.class);
@@ -47,7 +47,7 @@ public class DefaultInjectorInjectionTest {
     }
 
     @Test
-    public void testFieldInjection_Named() {
+    public void fieldInjection_Named() {
 
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1.class);
@@ -64,7 +64,7 @@ public class DefaultInjectorInjectionTest {
     }
 
     @Test
-    public void testFieldInjectionSuperclass() {
+    public void fieldInjectionSuperclass() {
 
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1.class);
@@ -80,7 +80,7 @@ public class DefaultInjectorInjectionTest {
     }
 
     @Test
-    public void testConstructorInjection() {
+    public void constructorInjection() {
 
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1.class);
@@ -95,7 +95,7 @@ public class DefaultInjectorInjectionTest {
     }
 
     @Test
-    public void testConstructorInjection_Named() {
+    public void constructorInjection_Named() {
 
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1.class);
@@ -112,7 +112,7 @@ public class DefaultInjectorInjectionTest {
     }
 
     @Test
-    public void testConstructorInjection_Named_Mixed() {
+    public void constructorInjection_Named_Mixed() {
 
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1.class);
@@ -130,7 +130,7 @@ public class DefaultInjectorInjectionTest {
     }
 
     @Test
-    public void testProviderInjection_Constructor() {
+    public void providerInjection_Constructor() {
 
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1.class);
@@ -144,7 +144,7 @@ public class DefaultInjectorInjectionTest {
     }
 
     @Test
-    public void testMapInjection_Empty() {
+    public void mapInjection_Empty() {
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1_MapConfiguration.class);
 
@@ -160,7 +160,7 @@ public class DefaultInjectorInjectionTest {
     }
 
     @Test
-    public void testMapInjection() {
+    public void mapInjection() {
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1_MapConfiguration.class);
             binder.bindMap(Object.class, "xyz")
@@ -199,7 +199,7 @@ public class DefaultInjectorInjectionTest {
     }
 
     @Test
-    public void testMapInjection_Resumed() {
+    public void mapInjection_Resumed() {
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1_MapConfiguration.class);
             // bind 1
@@ -216,7 +216,7 @@ public class DefaultInjectorInjectionTest {
     }
 
     @Test
-    public void testMapInjection_OverrideExplicitlyBoundType() {
+    public void mapInjection_OverrideExplicitlyBoundType() {
         Module m1 = binder -> {
             binder.bind(MockInterface5.class).to(MockImplementation5.class);
             binder.bind(MockInterface1.class).to(MockImplementation1_MapConfiguration.class);
@@ -233,11 +233,11 @@ public class DefaultInjectorInjectionTest {
         });
 
         MockInterface1 service = new DefaultInjector(m1, m2).getInstance(MockInterface1.class);
-        assertEquals("Map element was not overridden in submodule", ";a=abc", service.getName());
+        assertEquals(";a=abc", service.getName(), "Map element was not overridden in submodule");
     }
 
     @Test
-    public void testMapInjection_OverrideImplicitlyBoundType() {
+    public void mapInjection_OverrideImplicitlyBoundType() {
         Module m1 = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1_MapConfiguration.class);
             binder.bindMap(Object.class, "xyz").put("a", MockImplementation5.class);
@@ -252,11 +252,11 @@ public class DefaultInjectorInjectionTest {
         });
 
         MockInterface1 service = new DefaultInjector(m1, m2).getInstance(MockInterface1.class);
-        assertEquals("Map element was not overridden in submodule", ";a=abc", service.getName());
+        assertEquals(";a=abc", service.getName(), "Map element was not overridden in submodule");
     }
 
     @Test
-    public void testListInjection_addValue() {
+    public void listInjection_addValue() {
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1_ListConfiguration.class);
             binder.bindList(Object.class, "xyz").add("xvalue").add("yvalue");
@@ -270,7 +270,7 @@ public class DefaultInjectorInjectionTest {
     }
 
     @Test
-    public void testListInjection_addOrderedValues() {
+    public void listInjection_addOrderedValues() {
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1_ListConfiguration.class);
             binder.bind(MockInterface5.class).to(MockImplementation5.class);
@@ -291,7 +291,7 @@ public class DefaultInjectorInjectionTest {
     }
 
     @Test
-    public void testListInjection_Instance_addOverrideValueOrdering() {
+    public void listInjection_Instance_addOverrideValueOrdering() {
 
         Integer i = Integer.valueOf(5);
 
@@ -317,7 +317,7 @@ public class DefaultInjectorInjectionTest {
     }
 
     @Test
-    public void testListInjection_Type_addOverrideValueOrdering() {
+    public void listInjection_Type_addOverrideValueOrdering() {
 
         Module m1 = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1_ListConfiguration.class);
@@ -340,7 +340,7 @@ public class DefaultInjectorInjectionTest {
     }
 
     @Test
-    public void testListInjection_addAllValues() {
+    public void listInjection_addAllValues() {
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1_ListConfiguration.class);
 
@@ -371,7 +371,7 @@ public class DefaultInjectorInjectionTest {
     }
 
     @Test
-    public void testListInjection_addType() {
+    public void listInjection_addType() {
         Module module = binder -> {
             binder.bind(MockInterface5.class).to(MockImplementation5.class);
             binder.bind(MockInterface1.class).to(MockImplementation1_ListConfiguration.class);
@@ -387,7 +387,7 @@ public class DefaultInjectorInjectionTest {
     }
 
     @Test
-    public void testListInjection_addOrderedTypes() {
+    public void listInjection_addOrderedTypes() {
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1_ListConfiguration.class);
             binder.bind(MockInterface5.class).to(MockImplementation5.class);
@@ -409,7 +409,7 @@ public class DefaultInjectorInjectionTest {
     }
 
     @Test
-    public void testListInjection_addTypeWithBinding() {
+    public void listInjection_addTypeWithBinding() {
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1_ListConfiguration.class);
             binder.bindList(Object.class, "xyz").add(MockImplementation5.class).add("yvalue");
@@ -423,7 +423,7 @@ public class DefaultInjectorInjectionTest {
     }
 
     @Test
-    public void testListInjection_empty() {
+    public void listInjection_empty() {
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1_ListConfiguration.class);
             binder.bindList(Object.class, "xyz");
@@ -437,7 +437,7 @@ public class DefaultInjectorInjectionTest {
     }
 
     @Test
-    public void testListInjection_resumed() {
+    public void listInjection_resumed() {
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1_ListConfiguration.class);
 
@@ -453,7 +453,7 @@ public class DefaultInjectorInjectionTest {
     }
 
     @Test
-    public void testTypedListInjection() {
+    public void typedListInjection() {
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1_ListConfigurationMock5.class);
             binder.bind(MockInterface2.class).to(MockImplementation2_ListConfiguration.class);
@@ -511,7 +511,7 @@ public class DefaultInjectorInjectionTest {
     }
 
     @Test
-    public void testListInjection_OverrideExplicitlyBoundType() {
+    public void listInjection_OverrideExplicitlyBoundType() {
         Module m1 = binder -> {
             binder.bind(MockInterface5.class).to(MockImplementation5.class);
             binder.bind(MockInterface1.class).to(MockImplementation1_ListConfiguration.class);
@@ -528,11 +528,11 @@ public class DefaultInjectorInjectionTest {
         });
 
         MockInterface1 service = new DefaultInjector(m1, m2).getInstance(MockInterface1.class);
-        assertEquals("List element was not overridden in submodule", ";abc", service.getName());
+        assertEquals(";abc", service.getName(), "List element was not overridden in submodule");
     }
 
     @Test
-    public void testListInjection_OverrideImplicitlyBoundType() {
+    public void listInjection_OverrideImplicitlyBoundType() {
         Module m1 = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1_ListConfiguration.class);
             binder.bindList(Object.class, "xyz").add(MockImplementation5.class);
@@ -547,12 +547,12 @@ public class DefaultInjectorInjectionTest {
         });
 
         MockInterface1 service = new DefaultInjector(m1, m2).getInstance(MockInterface1.class);
-        assertEquals("List element was not overridden in submodule", ";abc", service.getName());
+        assertEquals(";abc", service.getName(), "List element was not overridden in submodule");
     }
 
 
     @Test
-    public void testInjectorInjection() {
+    public void injectorInjection() {
         Module module = binder -> binder.bind(MockInterface1.class).to(
                 MockImplementation1_WithInjector.class);
 

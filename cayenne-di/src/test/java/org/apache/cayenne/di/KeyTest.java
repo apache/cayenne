@@ -20,17 +20,17 @@ package org.apache.cayenne.di;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class KeyTest {
 
     @Test
-    public void testEquals() {
+    public void equals() {
         Key<String> key1 = Key.get(String.class);
         Key<String> key2 = Key.get(String.class);
         Key<Integer> key3 = Key.get(Integer.class);
@@ -61,7 +61,7 @@ public class KeyTest {
     }
 
     @Test
-    public void testListKeysEquals() {
+    public void listKeysEquals() {
         Key<List<Integer>> key1 = Key.getListOf(Integer.class);
         Key<List<String>> key2 = Key.getListOf(String.class);
         Key<List<Integer>> key3 = Key.getListOf(Integer.class);
@@ -90,7 +90,7 @@ public class KeyTest {
      }
 
     @Test
-    public void testHashCode() {
+    public void hashCode_test() {
         Key<String> key1 = Key.get(String.class);
         Key<String> key2 = Key.get(String.class);
         Key<Integer> key3 = Key.get(Integer.class);
@@ -99,9 +99,7 @@ public class KeyTest {
         Key<Integer> key6 = Key.get(Integer.class, "b");
         Key<String> key7 = Key.get(String.class, "a");
 
-        assertTrue(
-                "generated different hashcode on second inocation",
-                key1.hashCode() == key1.hashCode());
+        assertTrue(key1.hashCode() == key1.hashCode(), "generated different hashcode on second inocation");
         assertTrue(key1.hashCode() == key2.hashCode());
         assertTrue(key4.hashCode() == key5.hashCode());
 
@@ -114,7 +112,7 @@ public class KeyTest {
     }
 
     @Test
-    public void testToString() {
+    public void toString_test() {
         assertEquals("<BindingKey: java.lang.String>",
                 Key.get(String.class).toString());
         assertEquals("<BindingKey: java.lang.String, 'xyz'>",

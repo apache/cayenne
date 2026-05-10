@@ -23,26 +23,27 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ModuleLoaderTest {
 
     @Test
-    public void testLoad() {
+    public void load() {
 
         List<Module> modules = new ModuleLoader().load(ModuleProvider.class);
         assertEquals(4, modules.size());
-        assertTrue(String.valueOf(modules.get(0)), modules.get(0) instanceof Module3);
-        assertTrue(String.valueOf(modules.get(1)), modules.get(1) instanceof Module4);
-        assertTrue(String.valueOf(modules.get(2)), modules.get(2) instanceof Module2);
-        assertTrue(String.valueOf(modules.get(3)), modules.get(3) instanceof Module1);
+        assertTrue(modules.get(0) instanceof Module3, String.valueOf(modules.get(0)));
+        assertTrue(modules.get(1) instanceof Module4, String.valueOf(modules.get(1)));
+        assertTrue(modules.get(2) instanceof Module2, String.valueOf(modules.get(2)));
+        assertTrue(modules.get(3) instanceof Module1, String.valueOf(modules.get(3)));
 
         Injector i = DIBootstrap.createInjector(modules);
         assertEquals("a", i.getInstance(String.class));
@@ -50,19 +51,19 @@ public class ModuleLoaderTest {
     }
 
     @Test
-    public void testLoadCustom() {
+    public void loadCustom() {
         List<Module> modules = new ModuleLoader().load(CustomModuleProvider.class);
         assertEquals(2, modules.size());
-        assertTrue(String.valueOf(modules.get(0)), modules.get(0) instanceof Module5);
-        assertTrue(String.valueOf(modules.get(1)), modules.get(1) instanceof Module6);
+        assertTrue(modules.get(0) instanceof Module5, String.valueOf(modules.get(0)));
+        assertTrue(modules.get(1) instanceof Module6, String.valueOf(modules.get(1)));
 
         Injector i = DIBootstrap.createInjector(modules);
         assertEquals(Integer.valueOf(66), i.getInstance(Integer.class));
     }
 
-    @Test(expected = DIRuntimeException.class)
-    public void testLoadCircularModules() {
-        new ModuleLoader().load(CircularModuleProvider.class);
+    @Test
+    public void loadCircularModules() {
+        assertThrows(DIRuntimeException.class, () -> new ModuleLoader().load(CircularModuleProvider.class));
     }
 
     public static class Module1 implements Module {

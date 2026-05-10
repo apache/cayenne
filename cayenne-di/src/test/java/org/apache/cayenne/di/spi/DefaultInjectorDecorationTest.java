@@ -26,15 +26,15 @@ import org.apache.cayenne.di.mock.MockInterface1_Decorator2;
 import org.apache.cayenne.di.mock.MockInterface1_Decorator3;
 import org.apache.cayenne.di.mock.MockInterface1_Decorator4;
 import org.apache.cayenne.di.mock.MockInterface1_Decorator5;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class DefaultInjectorDecorationTest {
 
     @Test
-    public void testSingleDecorator_After() {
+    public void singleDecorator_After() {
 
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1.class);
@@ -49,7 +49,7 @@ public class DefaultInjectorDecorationTest {
     }
 
     @Test
-    public void testSingleDecorator_Before() {
+    public void singleDecorator_Before() {
 
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1.class);
@@ -64,7 +64,7 @@ public class DefaultInjectorDecorationTest {
     }
 
     @Test
-    public void testDecoratorChain() {
+    public void decoratorChain() {
 
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1.class);
@@ -82,7 +82,7 @@ public class DefaultInjectorDecorationTest {
     }
 
     @Test
-    public void testSingleDecorator_Provider_ConstructorInjection() {
+    public void singleDecorator_Provider_ConstructorInjection() {
 
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1.class);
@@ -97,7 +97,7 @@ public class DefaultInjectorDecorationTest {
     }
 
     @Test
-    public void testSingleDecorator_Provider_FieldInjection() {
+    public void singleDecorator_Provider_FieldInjection() {
 
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1.class);
