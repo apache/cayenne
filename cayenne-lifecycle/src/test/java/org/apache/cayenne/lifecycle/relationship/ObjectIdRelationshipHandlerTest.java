@@ -27,13 +27,13 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class ObjectIdRelationshipHandlerTest {
 
@@ -42,7 +42,7 @@ public class ObjectIdRelationshipHandlerTest {
     private TableHelper rootTable;
     private TableHelper e1Table;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         runtime = CayenneRuntime.builder().addConfig("cayenne-lifecycle.xml").build();
 
@@ -60,13 +60,13 @@ public class ObjectIdRelationshipHandlerTest {
         e1Table.deleteAll();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         runtime.shutdown();
     }
 
     @Test
-    public void testRelate_Existing() throws Exception {
+    public void relate_Existing() throws Exception {
 
         e1Table.insert(1);
 
@@ -89,7 +89,7 @@ public class ObjectIdRelationshipHandlerTest {
     }
 
     @Test
-    public void testRelate_New() throws Exception {
+    public void relate_New() throws Exception {
 
         ObjectContext context = runtime.newContext();
         E1 e1 = context.newObject(E1.class);
@@ -113,7 +113,7 @@ public class ObjectIdRelationshipHandlerTest {
     }
 
     @Test
-    public void testRelate_Change() throws Exception {
+    public void relate_Change() throws Exception {
 
         e1Table.insert(1);
         rootTable.insert(1, "E1:1");

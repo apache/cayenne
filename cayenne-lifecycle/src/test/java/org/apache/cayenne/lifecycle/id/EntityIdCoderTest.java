@@ -23,16 +23,16 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -40,24 +40,24 @@ public class EntityIdCoderTest {
 
     private CayenneRuntime runtime;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         runtime = CayenneRuntime.builder().addConfig("cayenne-lifecycle.xml").build();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         runtime.shutdown();
     }
 
     @Test
-    public void testGetEntityName() {
+    public void getEntityName() {
         assertEquals("M", EntityIdCoder.getEntityName("M:N:K"));
         assertEquals("M", EntityIdCoder.getEntityName(".M:N:K"));
     }
 
     @Test
-    public void testTempId() {
+    public void tempId() {
 
         ObjEntity e1 = runtime.getChannel().getEntityResolver()
                 .getObjEntity("E1");
@@ -75,7 +75,7 @@ public class EntityIdCoderTest {
     }
 
     @Test
-    public void testSingleIntPk() {
+    public void singleIntPk() {
         DbEntity dbEntity = new DbEntity("X");
         DbAttribute pk = new DbAttribute("ID");
         pk.setType(Types.INTEGER);
@@ -97,7 +97,7 @@ public class EntityIdCoderTest {
     }
 
     @Test
-    public void testSingleLongPk() {
+    public void singleLongPk() {
         DbEntity dbEntity = new DbEntity("X");
         DbAttribute pk = new DbAttribute("ID");
         pk.setType(Types.BIGINT);
@@ -119,7 +119,7 @@ public class EntityIdCoderTest {
     }
 
     @Test
-    public void testSingleStringPk() {
+    public void singleStringPk() {
         DbEntity dbEntity = new DbEntity("X");
         DbAttribute pk = new DbAttribute("ID");
         pk.setType(Types.VARCHAR);
@@ -141,7 +141,7 @@ public class EntityIdCoderTest {
     }
 
     @Test
-    public void testIdEncoding() {
+    public void idEncoding() {
         DbEntity dbEntity = new DbEntity("X");
         DbAttribute pk = new DbAttribute("ID");
         pk.setType(Types.VARCHAR);
@@ -163,7 +163,7 @@ public class EntityIdCoderTest {
     }
 
     @Test
-    public void testMixedCompoundPk() {
+    public void mixedCompoundPk() {
         DbEntity dbEntity = new DbEntity("X");
         DbAttribute pk1 = new DbAttribute("ID");
         pk1.setType(Types.VARCHAR);

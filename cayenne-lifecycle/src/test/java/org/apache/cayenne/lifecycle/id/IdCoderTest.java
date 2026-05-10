@@ -21,28 +21,28 @@ package org.apache.cayenne.lifecycle.id;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.lifecycle.db.E1;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class IdCoderTest {
 
     private CayenneRuntime runtime;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         runtime = CayenneRuntime.builder().addConfig("cayenne-lifecycle.xml").build();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         runtime.shutdown();
     }
 
     @Test
-    public void testGetStringId() {
+    public void getStringId() {
         IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
 
         E1 e1 = new E1();
@@ -51,13 +51,13 @@ public class IdCoderTest {
     }
 
     @Test
-    public void testGetStringId_ObjectId() {
+    public void getStringId_ObjectId() {
         IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
         assertEquals("E1:5", handler.getStringId(ObjectId.of("E1", "ID", 5)));
     }
 
     @Test
-    public void testGetStringId_Temp() {
+    public void getStringId_Temp() {
         IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
 
         byte[] key = new byte[] { 1, 2, 10, 100 };
@@ -69,7 +69,7 @@ public class IdCoderTest {
     }
 
     @Test
-    public void testGetObjectId_Temp() {
+    public void getObjectId_Temp() {
         IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
 
         byte[] key = new byte[] { 1, (byte) 0xD7, 10, 100 };
@@ -79,7 +79,7 @@ public class IdCoderTest {
     }
 
     @Test
-    public void testGetSringId_TempWithReplacement() {
+    public void getSringId_TempWithReplacement() {
         IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
 
         byte[] key = new byte[] { 5, 2, 11, 99 };

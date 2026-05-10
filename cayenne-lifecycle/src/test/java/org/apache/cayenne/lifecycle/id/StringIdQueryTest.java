@@ -23,17 +23,17 @@ import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class StringIdQueryTest {
 
@@ -41,7 +41,7 @@ public class StringIdQueryTest {
     private TableHelper e1Helper;
     private TableHelper e2Helper;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         runtime = CayenneRuntime.builder().addConfig("cayenne-lifecycle.xml").build();
         DBHelper dbHelper = new DBHelper(runtime.getDataSource("lifecycle-db"));
@@ -49,13 +49,13 @@ public class StringIdQueryTest {
         e2Helper = new TableHelper(dbHelper, "E2", "ID");
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         runtime.shutdown();
     }
 
     @Test
-    public void testConstructor() {
+    public void constructor() {
         StringIdQuery q1 = new StringIdQuery();
         assertEquals(0, q1.getStringIds().size());
 
@@ -73,7 +73,7 @@ public class StringIdQueryTest {
     }
 
     @Test
-    public void testPerformQuery_SingleEntity() throws Exception {
+    public void performQuery_SingleEntity() throws Exception {
         e1Helper.deleteAll();
         e1Helper.insert(3).insert(4);
 
@@ -95,7 +95,7 @@ public class StringIdQueryTest {
     }
 
     @Test
-    public void testPerformQuery_MultipleEntities() throws Exception {
+    public void performQuery_MultipleEntities() throws Exception {
         e1Helper.deleteAll();
         e1Helper.insert(3).insert(4);
 
