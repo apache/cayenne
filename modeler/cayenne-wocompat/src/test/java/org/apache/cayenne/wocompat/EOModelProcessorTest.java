@@ -30,33 +30,33 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.util.XMLEncoder;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.PrintWriter;
 import java.net.URL;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EOModelProcessorTest {
 
     protected EOModelProcessor processor;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         processor = new EOModelProcessor();
     }
 
     @Test
-    public void testLoadModel() throws Exception {
+    public void loadModel() throws Exception {
         URL url = getClass().getClassLoader().getResource("wotests/art.eomodeld/");
         assertNotNull(url);
 
-        
+
         DataMap map = processor.loadEOModel(url);
         assertLoaded("art", map);
         assertLoadedQueries(map);
@@ -65,7 +65,7 @@ public class EOModelProcessorTest {
     }
 
     @Test
-    public void testLoadModelWithDependencies() throws Exception {
+    public void loadModelWithDependencies() throws Exception {
         URL url = getClass().getClassLoader().getResource("wotests/cross-model-relationships.eomodeld/");
         assertNotNull(url);
 
@@ -88,7 +88,7 @@ public class EOModelProcessorTest {
     }
 
     @Test
-    public void testLoadFlattened() throws Exception {
+    public void loadFlattened() throws Exception {
         URL url = getClass().getClassLoader().getResource("wotests/flattened.eomodeld/");
         assertNotNull(url);
 
@@ -102,7 +102,7 @@ public class EOModelProcessorTest {
     }
 
     @Test
-    public void testLoadBrokenModel() throws Exception {
+    public void loadBrokenModel() throws Exception {
         URL url = getClass().getClassLoader().getResource("art-with-errors.eomodeld/");
         assertNotNull(url);
 

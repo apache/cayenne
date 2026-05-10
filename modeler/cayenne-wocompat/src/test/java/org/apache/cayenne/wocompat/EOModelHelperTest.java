@@ -19,12 +19,12 @@
 
 package org.apache.cayenne.wocompat;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,14 +34,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class EOModelHelperTest {
 
 	protected EOModelHelper helper;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		URL url = getClass().getClassLoader().getResource("wotests/art.eomodeld/");
 		assertNotNull(url);
@@ -49,7 +49,7 @@ public class EOModelHelperTest {
 	}
 
 	@Test
-	public void testModelNames() throws Exception {
+	public void modelNames() throws Exception {
 		Iterator names = helper.modelNames();
 
 		// collect to list and then analyze
@@ -65,7 +65,7 @@ public class EOModelHelperTest {
 	}
 
 	@Test
-	public void testQueryNames() throws Exception {
+	public void queryNames() throws Exception {
 		Iterator artistNames = helper.queryNames("Artist");
 		assertFalse(artistNames.hasNext());
 
@@ -84,7 +84,7 @@ public class EOModelHelperTest {
 	}
 
 	@Test
-	public void testQueryPListMap() throws Exception {
+	public void queryPListMap() throws Exception {
 		assertNull(helper.queryPListMap("Artist", "AAA"));
 		assertNull(helper.queryPListMap("ExhibitType", "AAA"));
 
@@ -94,26 +94,21 @@ public class EOModelHelperTest {
 	}
 
 	@Test
-	public void testLoadQueryIndex() throws Exception {
+	public void loadQueryIndex() throws Exception {
 		Map index = helper.loadQueryIndex("ExhibitType");
 		assertNotNull(index);
 		assertTrue(index.containsKey("FetchAll"));
 	}
 
 	@Test
-	public void testOpenQueryStream() throws Exception {
+	public void openQueryStream() throws Exception {
 		try (InputStream in = helper.openQueryStream("ExhibitType");) {
 			assertNotNull(in);
 		}
 	}
 
 	@Test
-	public void testOpenNonExistentQueryStream() throws Exception {
-		try {
-			helper.openQueryStream("Artist");
-			fail("Exception expected - artist has no fetch spec.");
-		} catch (IOException ioex) {
-			// expected...
-		}
+	public void openNonExistentQueryStream() {
+		assertThrows(IOException.class, () -> helper.openQueryStream("Artist"));
 	}
 }

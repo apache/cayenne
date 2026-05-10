@@ -20,7 +20,7 @@
 package org.apache.cayenne.wocompat;
 
 import org.apache.cayenne.wocompat.unit.WOCompatCase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -28,15 +28,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PropertyListSerializationTest extends WOCompatCase {
 
     @Test
-    public void testListPlist() throws Exception {
-        File plistFile = new File(setupTestDirectory("testListPlist"), "test-array.plist");
+    public void listPlist() throws Exception {
+        File plistFile = new File(setupTestDirectory("listPlist"), "test-array.plist");
         List<Object> list = new ArrayList<>();
         list.add("str");
         list.add(5);
@@ -51,8 +51,8 @@ public class PropertyListSerializationTest extends WOCompatCase {
     }
 
     @Test
-    public void testMapPlist() throws Exception {
-        File plistFile = new File(setupTestDirectory("testMapPlist"), "test-map.plist");
+    public void mapPlist() throws Exception {
+        File plistFile = new File(setupTestDirectory("mapPlist"), "test-map.plist");
         Map<String, Object> map = new HashMap<>();
         map.put("key1", "val");
         map.put("key2", 5);
@@ -67,9 +67,9 @@ public class PropertyListSerializationTest extends WOCompatCase {
     }
 
     @Test
-    public void testEmptyString() throws Exception {
+    public void emptyString() throws Exception {
         File plistFile = new File(
-                setupTestDirectory("testEmptyString"),
+                setupTestDirectory("emptyString"),
                 "test-empty-string.plist");
         Map<String, Object> map = new HashMap<>();
         map.put("a", "");
@@ -84,9 +84,9 @@ public class PropertyListSerializationTest extends WOCompatCase {
     }
 
     @Test
-    public void testStringWithQuotes() throws Exception {
+    public void stringWithQuotes() throws Exception {
         File plistFile = new File(
-                setupTestDirectory("testStringWithQuotes"),
+                setupTestDirectory("stringWithQuotes"),
                 "test-quotes.plist");
         List<Object> list = new ArrayList<>();
         list.add("s\"tr");
@@ -102,9 +102,9 @@ public class PropertyListSerializationTest extends WOCompatCase {
     }
 
     @Test
-    public void testNestedPlist() throws Exception {
+    public void nestedPlist() throws Exception {
         File plistFile = new File(
-                setupTestDirectory("testNestedPlist"),
+                setupTestDirectory("nestedPlist"),
                 "test-nested.plist");
         Map<String, Object> map = new HashMap<>();
         map.put("key1", "val");
@@ -125,9 +125,9 @@ public class PropertyListSerializationTest extends WOCompatCase {
     }
 
     @Test
-    public void testStringWithSpaces() throws Exception {
+    public void stringWithSpaces() throws Exception {
         File plistFile = new File(
-                setupTestDirectory("testStringWithSpaces"),
+                setupTestDirectory("stringWithSpaces"),
                 "test-spaces.plist");
         List<Object> list = new ArrayList<>();
         list.add("s tr");
@@ -143,9 +143,9 @@ public class PropertyListSerializationTest extends WOCompatCase {
     }
 
     @Test
-    public void testStringWithBraces() throws Exception {
+    public void stringWithBraces() throws Exception {
         File plistFile = new File(
-                setupTestDirectory("testStringWithBraces"),
+                setupTestDirectory("stringWithBraces"),
                 "test-braces.plist");
         List<Object> list = new ArrayList<>();
         list.add("s{t)r");
@@ -161,9 +161,9 @@ public class PropertyListSerializationTest extends WOCompatCase {
     }
 
     @Test
-    public void testStringWithSlashes() throws Exception {
+    public void stringWithSlashes() throws Exception {
         File plistFile = new File(
-                setupTestDirectory("testStringWithSlashes"),
+                setupTestDirectory("stringWithSlashes"),
                 "test-slashes.plist");
         List<Object> list = new ArrayList<>();
         list.add("s/t\\r");
@@ -179,9 +179,9 @@ public class PropertyListSerializationTest extends WOCompatCase {
     }
 
     @Test
-    public void testStringWithQuotes1() throws Exception {
+    public void stringWithQuotes1() throws Exception {
         File plistFile = new File(
-                setupTestDirectory("testStringWithQuotes1"),
+                setupTestDirectory("stringWithQuotes1"),
                 "test-quotes1.plist");
         List<Object> list = new ArrayList<>();
         list.add("like");
@@ -198,9 +198,9 @@ public class PropertyListSerializationTest extends WOCompatCase {
     }
 
     @Test
-    public void testStringWithPlusMinus() throws Exception {
+    public void stringWithPlusMinus() throws Exception {
         File plistFile = new File(
-                setupTestDirectory("testStringWithPlusMinus"),
+                setupTestDirectory("stringWithPlusMinus"),
                 "test-plus-minus.plist");
         List<Object> list = new ArrayList<>();
         list.add("a+b");
@@ -217,9 +217,9 @@ public class PropertyListSerializationTest extends WOCompatCase {
     }
 
     @Test
-    public void testStringWithLessGreater() throws Exception {
+    public void stringWithLessGreater() throws Exception {
         File plistFile = new File(
-                setupTestDirectory("testStringWithLessGreater"),
+                setupTestDirectory("stringWithLessGreater"),
                 "test-less-greater.plist");
         List<Object> list = new ArrayList<>();
         list.add("a<b");

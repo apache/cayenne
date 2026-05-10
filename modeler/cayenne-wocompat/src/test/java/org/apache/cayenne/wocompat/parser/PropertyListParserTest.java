@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.wocompat.parser;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -28,8 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PropertyListParserTest {
 
@@ -38,7 +38,7 @@ public class PropertyListParserTest {
     }
 
     @Test
-    public void testListPlist() throws Exception {
+    public void listPlist() throws Exception {
         List list = new ArrayList();
         list.add("str");
         list.add(5);
@@ -48,7 +48,7 @@ public class PropertyListParserTest {
     }
 
     @Test
-    public void testMapPlist() throws Exception {
+    public void mapPlist() throws Exception {
         Map map = new HashMap();
         map.put("key1", "val");
         map.put("key2", 5);
@@ -58,7 +58,7 @@ public class PropertyListParserTest {
     }
 
     @Test
-    public void testStringWithQuotes() throws Exception {
+    public void stringWithQuotes() throws Exception {
         List list = new ArrayList();
         list.add("s\"tr");
         list.add(5);
@@ -68,7 +68,7 @@ public class PropertyListParserTest {
     }
 
     @Test
-    public void testNestedPlist() throws Exception {
+    public void nestedPlist() throws Exception {
         Map map = new HashMap();
         map.put("key1", "val");
         map.put("key2", 5);
@@ -82,7 +82,7 @@ public class PropertyListParserTest {
     }
 
     @Test
-    public void testStringWithSpaces() throws Exception {
+    public void stringWithSpaces() throws Exception {
         List list = new ArrayList();
         list.add("s tr");
         list.add(5);
@@ -92,7 +92,7 @@ public class PropertyListParserTest {
     }
 
     @Test
-    public void testStringWithBraces() throws Exception {
+    public void stringWithBraces() throws Exception {
         List list = new ArrayList();
         list.add("s{t)r");
         list.add(5);
@@ -101,7 +101,7 @@ public class PropertyListParserTest {
     }
 
     @Test
-    public void testStringWithSlashes() throws Exception {
+    public void stringWithSlashes() throws Exception {
         List list = new ArrayList();
         list.add("s/t\\r");
         list.add(5);
@@ -110,7 +110,7 @@ public class PropertyListParserTest {
     }
 
     @Test
-    public void testMapWithLastSemicolon() throws Exception {
+    public void mapWithLastSemicolon() throws Exception {
         Map map = new HashMap();
         map.put("key1", "val");
         map.put("key2", 5);
@@ -121,59 +121,59 @@ public class PropertyListParserTest {
     }
 
     @Test
-    public void testEmptyMap() throws Exception {
+    public void emptyMap() throws Exception {
         assertEquals(Collections.EMPTY_MAP, parser("{}").object(""));
     }
 
     @Test
-    public void testEmptyList() throws Exception {
+    public void emptyList() throws Exception {
         assertEquals(Collections.EMPTY_LIST, parser("()").object(""));
     }
 
     @Test
-    public void testOutsideComments() throws Exception {
+    public void outsideComments() throws Exception {
         List list = Collections.singletonList("str");
         assertEquals(list, parser("// comment\n ( str)").object(""));
     }
 
     @Test
-    public void testInsideComments() throws Exception {
+    public void insideComments() throws Exception {
         List list = Collections.singletonList("str");
         assertEquals(list, parser("(\n // comment\n str )").object(""));
     }
 
     @Test
-    public void testInsideKVComments() throws Exception {
+    public void insideKVComments() throws Exception {
         Map map = Collections.singletonMap("str", 5);
         assertEquals(map, parser("{\n str = // comment\n 5; }").object(""));
     }
 
     @Test
-    public void testTrailingComments() throws Exception {
+    public void trailingComments() throws Exception {
         List list = Collections.singletonList("str");
         assertEquals(list, parser("(// comment\n str)").object(""));
     }
 
     @Test
-    public void testDoubleslashInsideLiteral() throws Exception {
+    public void doubleslashInsideLiteral() throws Exception {
         List list = Collections.singletonList("s//tr");
         assertEquals(list, parser("( \"s//tr\" )").object(""));
     }
 
     @Test
-    public void testWindowsComments() throws Exception {
+    public void windowsComments() throws Exception {
         List list = Collections.singletonList("str");
         assertEquals(list, parser("// comment\r\n ( str)").object(""));
     }
 
     @Test
-    public void testMacComments() throws Exception {
+    public void macComments() throws Exception {
         List list = Collections.singletonList("str");
         assertEquals(list, parser("// comment\r ( str)").object(""));
     }
 
     @Test
-    public void testUNIXComments() throws Exception {
+    public void uNIXComments() throws Exception {
         List list = Collections.singletonList("str");
         assertEquals(list, parser("// comment\n ( str)").object(""));
     }

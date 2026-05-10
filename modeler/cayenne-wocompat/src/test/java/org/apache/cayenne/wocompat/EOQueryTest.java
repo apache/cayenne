@@ -21,22 +21,21 @@ package org.apache.cayenne.wocompat;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.PrefetchTreeNode;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.net.URL;
 import java.util.Collection;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EOQueryTest {
 
     @Test
-    public void testConstructor() throws Exception {
-        
+    public void constructor() throws Exception {
+
         URL url = getClass().getClassLoader().getResource("wotests/fetchspec.eomodeld/");
         assertNotNull(url);
 
@@ -57,13 +56,13 @@ public class EOQueryTest {
         assertEquals(
                 "(name = \"aa\") and (db:ID >= 7) and ((e2.name = \"bb\") or (db:e2.ID != 5))",
                 query.getWhere().toString());
-        
+
         assertNotNull(query.getPrefetches());
-        
-        Collection children= query.getPrefetches().getChildren();
+
+        Collection children = query.getPrefetches().getChildren();
         assertEquals(1, children.size());
         assertEquals("e2", ((PrefetchTreeNode) children.iterator().next()).getName());
-        
+
         assertTrue(query.isFetchingDataRows());
         assertEquals(500, query.getLimit());
         assertEquals(0, query.getPageSize());

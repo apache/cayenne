@@ -24,29 +24,29 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.net.URL;
 import java.sql.Types;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class EOModelPrototypesTest {
 
     private URL url;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         url = getClass().getClassLoader().getResource("prototypes.eomodeld/");
         assertNotNull(url);
     }
 
     @Test
-    public void testSkipPrototypes() throws Exception {
+    public void skipPrototypes() throws Exception {
         DataMap map = new EOModelProcessor().loadEOModel(url);
 
         assertNotNull(map.getObjEntity("Document"));
@@ -55,7 +55,7 @@ public class EOModelPrototypesTest {
     }
 
     @Test
-    public void testDbAttributeType() throws Exception {
+    public void dbAttributeType() throws Exception {
         DataMap map = new EOModelProcessor().loadEOModel(url);
 
         DbEntity dbe = map.getDbEntity("DOCUMENT");
@@ -78,7 +78,7 @@ public class EOModelPrototypesTest {
     // nothing
     // to do with prototypes...
     @Test
-    public void testSameColumnMapping() throws Exception {
+    public void sameColumnMapping() throws Exception {
         DataMap map = new EOModelProcessor().loadEOModel(url);
 
         ObjEntity estimateOE = map.getObjEntity("Estimate");
@@ -102,7 +102,7 @@ public class EOModelPrototypesTest {
     // TODO: move this test to EOModelProcessorInheritanceTst. The original problem had
     // nothing to do with prototypes...
     @Test
-    public void testOverridingAttributes() throws Exception {
+    public void overridingAttributes() throws Exception {
         DataMap map = new EOModelProcessor().loadEOModel(url);
 
         ObjEntity estimateOE = map.getObjEntity("Estimate");

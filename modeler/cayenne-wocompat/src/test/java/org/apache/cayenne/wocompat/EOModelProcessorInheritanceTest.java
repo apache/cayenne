@@ -22,21 +22,21 @@ package org.apache.cayenne.wocompat;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.net.URL;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class EOModelProcessorInheritanceTest {
 
     private URL url;
     protected EOModelProcessor processor;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         processor = new EOModelProcessor();
 
@@ -45,7 +45,7 @@ public class EOModelProcessorInheritanceTest {
     }
 
     @Test
-    public void testLoadAbstractEntity() throws Exception {
+    public void loadAbstractEntity() throws Exception {
         DataMap map = processor.loadEOModel(url);
 
         ObjEntity abstractE = map.getObjEntity("AbstractEntity");
@@ -55,7 +55,7 @@ public class EOModelProcessorInheritanceTest {
     }
 
     @Test
-    public void testLoadConcreteEntity() throws Exception {
+    public void loadConcreteEntity() throws Exception {
         DataMap map = processor.loadEOModel(url);
 
         ObjEntity concreteE = map.getObjEntity("ConcreteEntityOne");
@@ -68,7 +68,7 @@ public class EOModelProcessorInheritanceTest {
     }
 
     @Test
-    public void testLoadFlattenedRelationship() throws Exception {
+    public void loadFlattenedRelationship() throws Exception {
         DataMap map = processor.loadEOModel(url);
 
         ObjEntity e1 = map.getObjEntity("HelperFlatEntity");
