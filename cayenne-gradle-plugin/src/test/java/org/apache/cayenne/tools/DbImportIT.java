@@ -19,16 +19,18 @@
 
 package org.apache.cayenne.tools;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
-
-import org.apache.cayenne.test.jdbc.SQLReader;
-import org.apache.cayenne.test.resource.ResourceUtil;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
@@ -158,7 +160,7 @@ public class DbImportIT extends BaseTaskIT {
     }
 
     private String prepareDerbyDatabase(String sqlFile) throws Exception {
-        URL sqlUrl = Objects.requireNonNull(ResourceUtil.getResource(getClass(), sqlFile + ".sql"));
+        URL sqlUrl = Objects.requireNonNull(getClass().getResource(sqlFile + ".sql"), "Resource not found: " + sqlFile + ".sql");
         String dbUrl = "jdbc:derby:" + projectDir.getAbsolutePath() + "/build/" + sqlFile;
 
         // Try to open connection, it may fail at first time, so ignore it
@@ -168,7 +170,7 @@ public class DbImportIT extends BaseTaskIT {
 
         try (Connection connection = DriverManager.getConnection(dbUrl + ";create=true")) {
             try (Statement stmt = connection.createStatement()) {
-                for (String sql : SQLReader.statements(sqlUrl, ";")) {
+                for (String sql : parseSqlStatements(sqlUrl)) {
                     stmt.execute(sql);
                 }
             }
@@ -181,5 +183,23 @@ public class DbImportIT extends BaseTaskIT {
         }
 
         return dbUrl + ";create=true";
+    }
+
+    private static Collection<String> parseSqlStatements(URL sqlSource) throws Exception {
+        var statements = new ArrayList<String>();
+        try (var reader = new BufferedReader(new InputStreamReader(sqlSource.openStream(), StandardCharsets.UTF_8))) {
+            String line;
+            var statement = new StringBuilder();
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("-- ")) continue;
+                line = line.trim();
+                boolean end = line.endsWith(";");
+                if (end) line = line.substring(0, line.length() - 1);
+                if (!line.isEmpty()) statement.append('\n').append(line);
+                if (end) { statements.add(statement.toString()); statement = new StringBuilder(); }
+            }
+            if (!statement.isEmpty()) statements.add(statement.toString());
+        }
+        return statements;
     }
 }

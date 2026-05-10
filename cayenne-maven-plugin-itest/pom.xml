@@ -41,13 +41,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.cayenne.build-tools</groupId>
-			<artifactId>cayenne-test-utilities</artifactId>
-			<version>${project.version}</version>
-			<scope>compile</scope>
-		</dependency>
-
-		<dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-di</artifactId>
 			<version>${project.version}</version>
