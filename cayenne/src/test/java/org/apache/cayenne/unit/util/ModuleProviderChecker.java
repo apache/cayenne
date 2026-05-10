@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.ServiceLoader;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class ModuleProviderChecker {
 
@@ -42,7 +42,7 @@ public class ModuleProviderChecker {
                                     Class<? extends ModuleProvider> providerInterface) {
         this.expectedProvider = Objects.requireNonNull(expectedProvider);
         this.providerInterface = Objects.requireNonNull(providerInterface);
-        assertTrue("Provider interface expected", providerInterface.isInterface());
+        assertTrue(providerInterface.isInterface(), "Provider interface expected");
         if(expectedProvider.equals(providerInterface)) {
             fail("Expected provider class and required interface should be different.");
         }
