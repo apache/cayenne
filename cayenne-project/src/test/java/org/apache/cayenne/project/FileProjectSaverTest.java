@@ -28,13 +28,14 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.project.extension.ProjectExtension;
-import org.apache.cayenne.project.unit.Project2Case;
 import org.apache.cayenne.resource.URLResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
@@ -46,7 +47,10 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class FileProjectSaverTest extends Project2Case {
+public class FileProjectSaverTest {
+
+    @TempDir
+    public File tempDir;
 
     private FileProjectSaver saver;
 
@@ -64,13 +68,10 @@ public class FileProjectSaverTest extends Project2Case {
     @Test
     public void saveAs_Sorted() throws Exception {
 
-        File testFolder = setupTestDirectory("testSaveAs_Sorted");
-
         DataChannelDescriptor rootNode = new DataChannelDescriptor();
         rootNode.setName("test");
 
-        // add maps and nodes in reverse alpha order. Check that they are saved in alpha
-        // order
+        // add maps and nodes in reverse alpha order. Check that they are saved in alpha order
         rootNode.getDataMaps().add(new DataMap("C"));
         rootNode.getDataMaps().add(new DataMap("B"));
         rootNode.getDataMaps().add(new DataMap("A"));
@@ -86,18 +87,19 @@ public class FileProjectSaverTest extends Project2Case {
 
         rootNode.getNodeDescriptors().addAll(Arrays.asList(nodes));
 
-        Project project = new Project(new ConfigurationTree<DataChannelDescriptor>(
-                rootNode));
+        Project project = new Project(new ConfigurationTree<DataChannelDescriptor>(rootNode));
 
-        saver.saveAs(project, new URLResource(testFolder.toURI().toURL()));
+        saver.saveAs(project, new URLResource(tempDir.toURI().toURL()));
 
-        File target = new File(testFolder, "cayenne-test.xml");
+        File target = new File(tempDir, "cayenne-test.xml");
         assertTrue(target.isFile());
         assertSaveAs_Sorted(target);
     }
 
     private void assertSaveAs_Sorted(File file) throws Exception {
-        Document document = toDOMTree(file);
+        Document document = DocumentBuilderFactory.newInstance()
+                .newDocumentBuilder()
+                .parse(file);
 
         XPath xpath = XPathFactory.newInstance().newXPath();
         assertEquals("", xpath.evaluate("/domain/@name", document));
@@ -131,28 +133,26 @@ public class FileProjectSaverTest extends Project2Case {
         assertEquals("A", xpath.evaluate("@name", mapRefs.item(0)));
         assertEquals("B", xpath.evaluate("@name", mapRefs.item(1)));
         assertEquals("C", xpath.evaluate("@name", mapRefs.item(2)));
-
     }
 
     /**
-     * Method test fix for CAY-1780. If specify related fragments (for example ./../)
-     * in target file path then file must be created successfully.
-     *
-     * @throws Exception
+     * Regression test for CAY-1780: relative fragments (e.g. ./../) in target
+     * file path must be resolved correctly.
      */
     @Test
     public void saveForProjectFileWithRelatedPaths() throws Exception {
-        File testFolder = setupTestDirectory("testSaveForProjectFileWithRelatedPaths");
+        File subDir = new File(tempDir, "sub");
+        subDir.mkdirs();
 
-        String mapFilePath = testFolder.toURI() + "../test.map.xml";
         String mapFileName = "test";
+        String mapFilePath = subDir.toURI() + "../" + mapFileName + ".map.xml";
         DataMap testDataMap = new DataMap(mapFileName);
         testDataMap.setConfigurationSource(new URLResource(new URL(mapFilePath)));
         Project project = new Project(new ConfigurationTree<DataMap>(testDataMap));
 
         saver.save(project);
 
-        File target = new File(testFolder.getParentFile(), mapFileName + ".map.xml");
+        File target = new File(tempDir, mapFileName + ".map.xml");
         assertTrue(target.isFile());
     }
 

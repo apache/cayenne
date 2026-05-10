@@ -25,6 +25,8 @@ import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.util.Util;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentMatchers;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -56,25 +58,18 @@ public class DefaultUpgradeServiceTest {
         upgradeService = new DefaultUpgradeService(handlers);
     }
 
-    @Test
-    public void getUpgradeType() {
-        UpgradeMetaData metaData = upgradeService.getUpgradeType(getResourceForVersion("5"));
-        assertEquals(UpgradeType.INTERMEDIATE_UPGRADE_NEEDED, metaData.getUpgradeType());
-
-        metaData = upgradeService.getUpgradeType(getResourceForVersion("6"));
-        assertEquals(UpgradeType.UPGRADE_NEEDED, metaData.getUpgradeType());
-
-        metaData = upgradeService.getUpgradeType(getResourceForVersion("10"));
-        assertEquals(UpgradeType.UPGRADE_NEEDED, metaData.getUpgradeType());
-
-        metaData = upgradeService.getUpgradeType(getResourceForVersion("11"));
-        assertEquals(UpgradeType.UPGRADE_NEEDED, metaData.getUpgradeType());
-
-        metaData = upgradeService.getUpgradeType(getResourceForVersion("12"));
-        assertEquals(UpgradeType.UPGRADE_NOT_NEEDED, metaData.getUpgradeType());
-
-        metaData = upgradeService.getUpgradeType(getResourceForVersion("13"));
-        assertEquals(UpgradeType.DOWNGRADE_NEEDED, metaData.getUpgradeType());
+    @ParameterizedTest
+    @CsvSource({
+        "5,  INTERMEDIATE_UPGRADE_NEEDED",
+        "6,  UPGRADE_NEEDED",
+        "10, UPGRADE_NEEDED",
+        "11, UPGRADE_NEEDED",
+        "12, UPGRADE_NOT_NEEDED",
+        "13, DOWNGRADE_NEEDED"
+    })
+    public void getUpgradeType(String version, UpgradeType expectedType) {
+        UpgradeMetaData metaData = upgradeService.getUpgradeType(getResourceForVersion(version));
+        assertEquals(expectedType, metaData.getUpgradeType());
     }
 
     @Test
@@ -108,11 +103,14 @@ public class DefaultUpgradeServiceTest {
         assertEquals("10", upgradeService.loadProjectVersion(getResourceForVersion("10")));
     }
 
-    @Test
-    public void decodeVersion() {
-        assertEquals(1.2340, DefaultUpgradeService.decodeVersion("1.2.3.4"), 0.000001);
-        assertEquals(1.0004, DefaultUpgradeService.decodeVersion("1.0.0.0.4"), 0.000001);
-        assertEquals(10, DefaultUpgradeService.decodeVersion("10"), 0.000001);
+    @ParameterizedTest
+    @CsvSource({
+        "1.2.3.4,   1.234",
+        "1.0.0.0.4, 1.0004",
+        "10,        10.0"
+    })
+    public void decodeVersion(String version, double expected) {
+        assertEquals(expected, DefaultUpgradeService.decodeVersion(version), 0.000001);
     }
 
     @Test

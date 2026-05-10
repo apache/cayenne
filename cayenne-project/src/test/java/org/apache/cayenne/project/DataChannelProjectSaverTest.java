@@ -38,10 +38,10 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.project.extension.ProjectExtension;
-import org.apache.cayenne.project.unit.Project2Case;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.xml.sax.XMLReader;
 
 import java.io.File;
@@ -51,7 +51,10 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DataChannelProjectSaverTest extends Project2Case {
+public class DataChannelProjectSaverTest {
+
+    @TempDir
+    public File tempDir;
 
     @Test
     public void saveAs() throws Exception {
@@ -82,19 +85,17 @@ public class DataChannelProjectSaverTest extends Project2Case {
         Resource source = new URLResource(url);
         Project project = injector.getInstance(ProjectLoader.class).loadProject(source);
 
-        File outFile = setupTestDirectory("testSave");
+        saver.saveAs(project, new URLResource(tempDir.toURI().toURL()));
 
-        saver.saveAs(project, new URLResource(outFile.toURI().toURL()));
-
-        File rootFile = new File(outFile, "cayenne-PROJECT2.xml");
+        File rootFile = new File(tempDir, "cayenne-PROJECT2.xml");
         assertTrue(rootFile.exists());
         assertTrue(rootFile.length() > 0);
 
-        File map1File = new File(outFile, "testProjectMap2_1.map.xml");
+        File map1File = new File(tempDir, "testProjectMap2_1.map.xml");
         assertTrue(map1File.exists());
         assertTrue(map1File.length() > 0);
 
-        File map2File = new File(outFile, "testProjectMap2_2.map.xml");
+        File map2File = new File(tempDir, "testProjectMap2_2.map.xml");
         assertTrue(map2File.exists());
         assertTrue(map2File.length() > 0);
     }
@@ -133,19 +134,12 @@ public class DataChannelProjectSaverTest extends Project2Case {
         Resource source = new URLResource(url);
         Project project = injector.getInstance(ProjectLoader.class).loadProject(source);
 
-        File outFile = setupTestDirectory("testSaveAs_RecoverFromSaveError");
-        assertEquals(0, outFile.list().length);
+        assertEquals(0, tempDir.list().length);
 
-        try {
-            saver.saveAs(project, new URLResource(outFile.toURI().toURL()));
-            fail("No exception was thrown..");
-        }
-        catch (CayenneRuntimeException e) {
-            // expected
+        assertThrows(CayenneRuntimeException.class,
+                () -> saver.saveAs(project, new URLResource(tempDir.toURI().toURL())));
 
-            assertEquals(0, outFile.list().length);
-        }
-
+        assertEquals(0, tempDir.list().length);
     }
 
 }

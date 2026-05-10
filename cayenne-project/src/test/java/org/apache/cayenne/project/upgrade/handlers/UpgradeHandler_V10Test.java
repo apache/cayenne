@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-public class UpgradeHandler_V10Test extends BaseUpgradeHandlerTest{
+public class UpgradeHandler_V10Test extends BaseUpgradeHandlerTest {
 
     UpgradeHandler newHandler() {
         return new UpgradeHandler_V10();
