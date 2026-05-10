@@ -25,7 +25,7 @@ import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileList;
 import org.apache.tools.ant.types.Path;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -33,8 +33,8 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class CayenneGeneratorTaskCrossMapRelationshipsTest {
 
@@ -42,7 +42,7 @@ public class CayenneGeneratorTaskCrossMapRelationshipsTest {
 	 * Tests pairs generation with a cross-DataMap relationship.
 	 */
 	@Test
-	public void testCrossDataMapRelationships() throws Exception {
+	public void crossDataMapRelationships() throws Exception {
 
 		CayenneGeneratorTask task = new CayenneGeneratorTask();
 		task.setProject(new Project());

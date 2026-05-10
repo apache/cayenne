@@ -22,13 +22,13 @@ import org.apache.cayenne.test.file.FileUtil;
 import org.apache.cayenne.test.resource.ResourceUtil;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @since 4.1
@@ -47,7 +47,7 @@ public class CgenWithConfigTest {
 
     protected CayenneGeneratorTask task;
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         Project project = new Project();
@@ -60,7 +60,7 @@ public class CgenWithConfigTest {
     }
 
     @Test
-    public void testCgenWithDmConfig() {
+    public void cgenWithDmConfig() {
         File mapDir = new File(baseDir, "cgenConfigTest");
         assertTrue(mapDir.mkdirs());
 
@@ -84,7 +84,7 @@ public class CgenWithConfigTest {
     }
 
     @Test
-    public void testCgenWithDmAndPomConfigs() {
+    public void cgenWithDmAndPomConfigs() {
         File mapDir = new File(baseDir, "cgenDmPomTest");
         assertTrue(mapDir.mkdirs());
 
@@ -119,7 +119,7 @@ public class CgenWithConfigTest {
     }
 
     @Test
-    public void testReplaceDatamapMode() {
+    public void replaceDatamapMode() {
         File mapDir = new File(baseDir, "cgenReplaceMode");
         assertTrue(mapDir.mkdirs());
 

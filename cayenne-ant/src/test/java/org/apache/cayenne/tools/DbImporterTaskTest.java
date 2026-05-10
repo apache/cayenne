@@ -26,7 +26,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.UnknownElement;
 import org.apache.tools.ant.util.FileUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xmlunit.matchers.CompareMatcher;
 
 import java.io.File;
@@ -46,9 +46,9 @@ import static org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineeringUtils
 import static org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineeringUtils.assertTableTypes;
 import static org.apache.cayenne.util.Util.isBlank;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 // TODO: we are only testing on Derby. We may need to dynamically switch between DBs 
 // based on "cayenneTestConnection", like we do in cayenne-server, etc.
@@ -67,42 +67,42 @@ public class DbImporterTaskTest {
     }
 
     @Test
-    public void testLoadCatalog() throws Exception {
+    public void loadCatalog() throws Exception {
         assertCatalog(getCdbImport("build-catalog.xml").getReverseEngineering());
     }
 
     @Test
-    public void testLoadSchema() throws Exception {
+    public void loadSchema() throws Exception {
         assertSchema(getCdbImport("build-schema.xml").getReverseEngineering());
     }
 
     @Test
-    public void testLoadCatalogAndSchema() throws Exception {
+    public void loadCatalogAndSchema() throws Exception {
         assertCatalogAndSchema(getCdbImport("build-catalog-and-schema.xml").getReverseEngineering());
     }
 
     @Test
-    public void testLoadFlat() throws Exception {
+    public void loadFlat() throws Exception {
         assertFlat(getCdbImport("build-flat.xml").getReverseEngineering());
     }
 
     @Test
-    public void testSkipRelationshipsLoading() throws Exception {
+    public void skipRelationshipsLoading() throws Exception {
         assertSkipRelationshipsLoading(getCdbImport("build-skip-relationships-loading.xml").getReverseEngineering());
     }
 
     @Test
-    public void testTableTypes() throws Exception {
+    public void tableTypes() throws Exception {
         assertTableTypes(getCdbImport("build-table-types.xml").getReverseEngineering());
     }
 
     @Test
-    public void testBuildWithProject() throws Exception {
+    public void buildWithProject() throws Exception {
         assertNotNull(getCdbImport("build-with-project.xml").getCayenneProject());
     }
 
     @Test
-    public void testIncludeTable() throws Exception {
+    public void includeTable() throws Exception {
         test("build-include-table.xml");
     }
 

@@ -26,32 +26,32 @@ import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.slf4j.Logger;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public class DbGeneratorTaskTest {
 
     @Test
-    public void testSetUserName() throws Exception {
+    public void setUserName() throws Exception {
         DbGeneratorTask task = new DbGeneratorTask();
         task.setUserName("abc");
         assertEquals("abc", task.userName);
     }
 
     @Test
-    public void testSetPassword() throws Exception {
+    public void setPassword() throws Exception {
         DbGeneratorTask task = new DbGeneratorTask();
         task.setPassword("xyz");
         assertEquals("xyz", task.password);
     }
 
     @Test
-    public void testSetAdapter() throws Exception {
+    public void setAdapter() throws Exception {
         DataSource ds = mock(DataSource.class);
         Injector injector = DIBootstrap.createInjector(new ToolsModule(mock(Logger.class)));
 
@@ -67,7 +67,7 @@ public class DbGeneratorTaskTest {
     }
 
     @Test
-    public void testSetUrl() throws Exception {
+    public void setUrl() throws Exception {
         DbGeneratorTask task = new DbGeneratorTask();
         task.setUrl("jdbc:///");
         assertEquals("jdbc:///", task.url);
