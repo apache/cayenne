@@ -16,8 +16,10 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.mcp;
+package org.apache.cayenne.mcp.tools.hello;
 
+import org.apache.cayenne.mcp.McpHandle;
+import org.apache.cayenne.mcp.McpStarter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,9 +27,7 @@ import org.junit.jupiter.api.Test;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.concurrent.TimeUnit;
 
@@ -39,25 +39,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class HelloMcpIT {
 
-    private Process process;
+    private McpHandle handle;
     private BufferedWriter writer;
     private BufferedReader reader;
 
     @BeforeEach
     void startServer() throws Exception {
-        process = McpStarter.start();
-
-        Thread stderrDrain = new Thread(() -> {
-            try (InputStream in = process.getErrorStream()) {
-                in.transferTo(OutputStream.nullOutputStream());
-            } catch (IOException ignored) {
-            }
-        });
-        stderrDrain.setDaemon(true);
-        stderrDrain.start();
-
-        writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
-        reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        handle = McpStarter.start();
+        writer = new BufferedWriter(new OutputStreamWriter(handle.getOutputStream()));
+        reader = new BufferedReader(new InputStreamReader(handle.getInputStream()));
 
         sendMessage("""
                 {"jsonrpc":"2.0","id":1,"method":"initialize","params":{\
@@ -74,7 +64,7 @@ public class HelloMcpIT {
     @AfterEach
     void stopServer() throws Exception {
         writer.close();
-        assertTrue(process.waitFor(10, TimeUnit.SECONDS), "Server process did not exit after stdin was closed");
+        assertTrue(handle.waitFor(10, TimeUnit.SECONDS), "Server thread did not stop after stdin was closed");
     }
 
     @Test

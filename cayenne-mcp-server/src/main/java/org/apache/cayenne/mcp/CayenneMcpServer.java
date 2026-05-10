@@ -24,10 +24,13 @@ import io.modelcontextprotocol.server.McpServer;
 import io.modelcontextprotocol.server.McpSyncServer;
 import io.modelcontextprotocol.server.transport.StdioServerTransportProvider;
 import io.modelcontextprotocol.spec.McpSchema;
-import org.apache.cayenne.mcp.tools.HelloTool;
+import org.apache.cayenne.mcp.tools.cgen.CgenRunTool;
+import org.apache.cayenne.mcp.tools.hello.HelloTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ServiceLoader;
 
 /**
@@ -37,7 +40,7 @@ public class CayenneMcpServer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CayenneMcpServer.class);
 
-    public void run(String version) {
+    public void run(String version, InputStream in, OutputStream out) {
         LOGGER.info("Starting Cayenne MCP server {}", version);
 
         McpJsonMapper jsonMapper = ServiceLoader.load(McpJsonMapperSupplier.class)
@@ -45,21 +48,19 @@ public class CayenneMcpServer {
                 .orElseThrow(() -> new IllegalStateException("No McpJsonMapperSupplier found on classpath"))
                 .get();
 
-        StdioServerTransportProvider transport = new StdioServerTransportProvider(jsonMapper);
+        StdioServerTransportProvider transport = new StdioServerTransportProvider(jsonMapper, in, out);
 
         McpSyncServer server = McpServer.sync(transport)
                 .serverInfo("cayenne-mcp-server", version)
                 .capabilities(McpSchema.ServerCapabilities.builder().tools(true).build())
-                .tools(HelloTool.spec())
+                .tools(HelloTool.spec(), CgenRunTool.spec(jsonMapper))
                 .build();
 
-        // Close server cleanly on SIGTERM / ctrl-C
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             LOGGER.info("Cayenne MCP server stopping");
             server.closeGracefully();
         }));
 
         LOGGER.info("Cayenne MCP server started, listening on stdio");
-        // The transport's non-daemon threads keep the JVM alive until stdin closes.
     }
 }

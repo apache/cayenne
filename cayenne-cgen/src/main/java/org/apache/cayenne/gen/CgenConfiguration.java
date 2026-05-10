@@ -19,6 +19,15 @@
 
 package org.apache.cayenne.gen;
 
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.gen.xml.CgenExtension;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
+import org.apache.cayenne.validation.ValidationException;
+
 import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -28,15 +37,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.gen.xml.CgenExtension;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Embeddable;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.util.XMLEncoder;
-import org.apache.cayenne.util.XMLSerializable;
-import org.apache.cayenne.validation.ValidationException;
 
 /**
  * Stores configuration for the code generation tool.
@@ -371,7 +371,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         this.createPKProperties = createPKProperties;
     }
 
-    Collection<Artifact> getArtifacts() {
+    public Collection<Artifact> getArtifacts() {
         return artifacts;
     }
 

@@ -16,34 +16,36 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.mcp;
+package org.apache.cayenne.mcp.tools.hello;
 
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
-import org.apache.cayenne.mcp.tools.HelloTool;
-import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import java.util.List;
 
-public class HelloToolTest {
+/**
+ * Placeholder tool that returns "hello world". Verifies the MCP wiring is functional.
+ */
+public class HelloTool {
 
-    @Test
-    public void toolNameIsHello() {
-        McpServerFeatures.SyncToolSpecification spec = HelloTool.spec();
-        assertEquals("hello", spec.tool().name());
-    }
+    public static final String NAME = "hello";
 
-    @Test
-    public void callReturnsHelloWorld() {
-        McpServerFeatures.SyncToolSpecification spec = HelloTool.spec();
-        McpSchema.CallToolResult result = spec.callHandler().apply(null, null);
+    public static McpServerFeatures.SyncToolSpecification spec() {
+        McpSchema.Tool tool = new McpSchema.Tool(
+                NAME,
+                null,
+                "Returns a greeting. Use this to verify the Cayenne MCP server is running.",
+                new McpSchema.JsonSchema("object", null, null, null, null, null),
+                null,
+                null,
+                null
+        );
 
-        assertFalse(result.isError());
-        assertEquals(1, result.content().size());
-
-        McpSchema.TextContent first = assertInstanceOf(McpSchema.TextContent.class, result.content().get(0));
-        assertEquals("hello world", first.text());
+        return new McpServerFeatures.SyncToolSpecification(tool, (exchange, request) ->
+                McpSchema.CallToolResult.builder()
+                        .content(List.of(new McpSchema.TextContent("hello world")))
+                        .isError(false)
+                        .build()
+        );
     }
 }

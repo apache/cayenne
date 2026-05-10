@@ -18,13 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.mcp;
 
+import org.apache.cayenne.mcp.log.McpLoggingHandler;
+
 /**
  * Entry point for the Cayenne MCP server.
  */
 public class CayenneMcpMain {
 
     public static void main(String[] args) {
-        StderrLogging.install();
+        McpLoggingHandler.routeLogsToStderr();
 
         CayenneMcpOptions opts = CayenneMcpOptions.parse(args);
 
@@ -44,7 +46,7 @@ public class CayenneMcpMain {
             System.exit(0);
         }
 
-        new CayenneMcpServer().run(version);
+        new CayenneMcpServer().run(version, System.in, System.out);
     }
 
     static String version() {
