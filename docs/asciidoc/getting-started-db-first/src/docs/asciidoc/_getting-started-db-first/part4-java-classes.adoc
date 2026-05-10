@@ -53,7 +53,7 @@ Note that Cayenne code is unrecognized, that's because we need to include Cayenn
     </dependencies>
 ----
 
-Additionally we need to tell `Maven compiler plugin` that our code uses Java 11:
+Additionally we need to tell `Maven compiler plugin` that our code uses Java 21:
 [source,xml]
 ----
 <build>
@@ -62,8 +62,8 @@ Additionally we need to tell `Maven compiler plugin` that our code uses Java 11:
         <plugin>
             <artifactId>maven-compiler-plugin</artifactId>
             <configuration>
-                <source>11</source>
-                <target>11</target>
+                <source>21</source>
+                <target>21</target>
             </configuration>
         </plugin>
     ...

@@ -14,8 +14,8 @@
 
 == Java Version
 
-Minimum required JDK version is 11 or newer. If your project requires Java 8, you should keep using Cayenne 4.2.
-Cayenne 5.0 is fully tested with Java 11, 17 and 21.
+Minimum required JDK version is 21 or newer. If your project requires Java 8 or 11, you should keep using Cayenne 4.2.
+Cayenne 5.0 is fully tested with Java 21 and 25.
 
 == Incompatible Changes
 
