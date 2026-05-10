@@ -31,8 +31,8 @@ import org.apache.cayenne.commitlog.model.ObjectChangeType;
 import org.apache.cayenne.commitlog.unit.AuditableRuntimeCase;
 import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -41,7 +41,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -60,13 +60,13 @@ public class CommitLogFilter_ListenerInducedChangesIT extends AuditableRuntimeCa
 				b -> CommitLogModule.extend(b).addListener(mockListener));
 	}
 
-	@Before
+	@BeforeEach
 	public void before() {
 		context = runtime.newContext();
 	}
 
 	@Test
-	public void testPostCommit_Insert() {
+	public void postCommit_Insert() {
 
 		final InsertListener listener = new InsertListener();
 		runtime.getDataDomain().addListener(listener);
@@ -102,7 +102,7 @@ public class CommitLogFilter_ListenerInducedChangesIT extends AuditableRuntimeCa
 	}
 
 	@Test
-	public void testPostCommit_Delete() throws SQLException {
+	public void postCommit_Delete() throws SQLException {
 
 		auditable1.insert(1, "yy");
 		auditableChild1.insert(31, 1, "yyc");
@@ -143,7 +143,7 @@ public class CommitLogFilter_ListenerInducedChangesIT extends AuditableRuntimeCa
 	}
 
 	@Test
-	public void testPostCommit_Update() throws SQLException {
+	public void postCommit_Update() throws SQLException {
 
 		auditable1.insert(1, "yy");
 		auditableChild1.insert(31, 1, "yyc");

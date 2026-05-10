@@ -33,13 +33,13 @@ import org.apache.cayenne.commitlog.model.ToManyRelationshipChange;
 import org.apache.cayenne.commitlog.unit.AuditableRuntimeCase;
 import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 
 import java.sql.SQLException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -55,13 +55,13 @@ public class CommitLogFilter_FilteredIT extends AuditableRuntimeCase {
 				b -> CommitLogModule.extend(b).commitLogAnnotationEntitiesOnly().addListener(mockListener));
 	}
 
-	@Before
+	@BeforeEach
 	public void before() {
 		context = runtime.newContext();
 	}
 
 	@Test
-	public void testPostCommit_Insert() {
+	public void postCommit_Insert() {
 
 		doAnswer((Answer<Object>) invocation -> {
 
@@ -92,7 +92,7 @@ public class CommitLogFilter_FilteredIT extends AuditableRuntimeCase {
 	}
 
 	@Test
-	public void testPostCommit_Update() throws SQLException {
+	public void postCommit_Update() throws SQLException {
 		auditable2.insert(1, "P1_1", "P2_1");
 
 		doAnswer((Answer<Object>) invocation -> {
@@ -124,7 +124,7 @@ public class CommitLogFilter_FilteredIT extends AuditableRuntimeCase {
 	}
 
 	@Test
-	public void testPostCommit_Delete() throws SQLException {
+	public void postCommit_Delete() throws SQLException {
 		auditable2.insert(1, "P1_1", "P2_1");
 
 		doAnswer((Answer<Object>) invocation -> {
@@ -153,7 +153,7 @@ public class CommitLogFilter_FilteredIT extends AuditableRuntimeCase {
 	}
 
 	@Test
-	public void testPostCommit_UpdateToMany() throws SQLException {
+	public void postCommit_UpdateToMany() throws SQLException {
 		auditable1.insert(1, "xx");
 		auditableChild1.insert(1, 1, "cc1");
 		auditableChild1.insert(2, null, "cc2");
@@ -203,7 +203,7 @@ public class CommitLogFilter_FilteredIT extends AuditableRuntimeCase {
 	}
 
 	@Test
-	public void testPostCommit_IgnoreAttributes() throws SQLException {
+	public void postCommit_IgnoreAttributes() throws SQLException {
 
 		auditable3.insert(1, "31", "32");
 
@@ -228,7 +228,7 @@ public class CommitLogFilter_FilteredIT extends AuditableRuntimeCase {
 	}
 
 	@Test
-	public void testPostCommit_IgnoreToMany() throws SQLException {
+	public void postCommit_IgnoreToMany() throws SQLException {
 
 		auditable3.insert(1, "31", "32");
 		auditable4.insert(11, "41", "42", 1);
@@ -257,7 +257,7 @@ public class CommitLogFilter_FilteredIT extends AuditableRuntimeCase {
 	}
 
 	@Test
-	public void testPostCommit_IgnoreToOne() throws SQLException {
+	public void postCommit_IgnoreToOne() throws SQLException {
 
 		auditable3.insert(1, "31", "32");
 		auditable3.insert(2, "33", "34");

@@ -24,17 +24,17 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CommitLogModuleBuilderTest {
 
     @Test
-    public void testListener_Object() {
+    public void listener_Object() {
 
         L listener = new L();
         Module m = b -> CommitLogModule.extend(b).addListener(listener);
@@ -46,7 +46,7 @@ public class CommitLogModuleBuilderTest {
     }
 
     @Test
-    public void testListener_Class() {
+    public void listener_Class() {
 
         Module m = b -> CommitLogModule.extend(b).addListener(L.class);
 

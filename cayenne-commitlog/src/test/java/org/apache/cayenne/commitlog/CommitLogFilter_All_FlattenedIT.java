@@ -29,13 +29,13 @@ import org.apache.cayenne.commitlog.model.ToManyRelationshipChange;
 import org.apache.cayenne.commitlog.unit.FlattenedRuntimeCase;
 import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 
 import java.sql.SQLException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -51,13 +51,13 @@ public class CommitLogFilter_All_FlattenedIT extends FlattenedRuntimeCase {
 				.addModule(b -> CommitLogModule.extend(b).addListener(mockListener));
 	}
 
-	@Before
+	@BeforeEach
 	public void before() {
 		context = runtime.newContext();
 	}
 
 	@Test
-	public void testPostCommit_UpdateToMany() throws SQLException {
+	public void postCommit_UpdateToMany() throws SQLException {
 		e3.insert(1);
 		e4.insert(11);
 		e4.insert(12);

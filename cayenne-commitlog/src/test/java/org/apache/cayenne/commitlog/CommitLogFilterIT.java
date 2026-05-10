@@ -27,13 +27,13 @@ import org.apache.cayenne.commitlog.model.*;
 import org.apache.cayenne.commitlog.unit.AuditableRuntimeCase;
 import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.sql.SQLException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -49,13 +49,13 @@ public class CommitLogFilterIT extends AuditableRuntimeCase {
                 .addModule(b -> CommitLogModule.extend(b).addListener(mockListener));
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         context = runtime.newContext();
     }
 
     @Test
-    public void testPostCommit_Insert() {
+    public void postCommit_Insert() {
 
         Auditable1 a1 = context.newObject(Auditable1.class);
         a1.setCharProperty1("yy");
@@ -82,7 +82,7 @@ public class CommitLogFilterIT extends AuditableRuntimeCase {
     }
 
     @Test
-    public void testPostCommit_Update() throws SQLException {
+    public void postCommit_Update() throws SQLException {
 
         auditable1.insert(1, "xx");
 
@@ -114,7 +114,7 @@ public class CommitLogFilterIT extends AuditableRuntimeCase {
     }
 
     @Test
-    public void testPostCommit_Delete() throws SQLException {
+    public void postCommit_Delete() throws SQLException {
         auditable1.insert(1, "xx");
         auditableChild1.insert(1, 1, "cc1");
         auditableChild1.insert(2, 1, "cc2");
@@ -139,9 +139,9 @@ public class CommitLogFilterIT extends AuditableRuntimeCase {
         assertEquals("xx", masterChange.getAttributeChanges().get(Auditable1.CHAR_PROPERTY1.getName()).getOldValue());
         assertNull(masterChange.getAttributeChanges().get(Auditable1.CHAR_PROPERTY1.getName()).getNewValue());
 
-        assertEquals("1..N was explicitly unset as a part of delete. Expected to be recorded in changes",
-                1, masterChange.getToManyRelationshipChanges().size());
-        assertTrue("No N..1 relationships in the entity", masterChange.getToOneRelationshipChanges().isEmpty());
+        assertEquals(1, masterChange.getToManyRelationshipChanges().size(),
+                "1..N was explicitly unset as a part of delete. Expected to be recorded in changes");
+        assertTrue(masterChange.getToOneRelationshipChanges().isEmpty(), "No N..1 relationships in the entity");
 
         // check from the perspective of the child object
         ObjectChange childChange = changeMap.getValue().getChanges().get(ObjectId.of("AuditableChild1", AuditableChild1.ID_PK_COLUMN, 2));
@@ -152,13 +152,13 @@ public class CommitLogFilterIT extends AuditableRuntimeCase {
         assertEquals("cc2", childChange.getAttributeChanges().get(AuditableChild1.CHAR_PROPERTY1.getName()).getOldValue());
         assertNull(childChange.getAttributeChanges().get(AuditableChild1.CHAR_PROPERTY1.getName()).getNewValue());
 
-        assertTrue("No 1..N relationships in the entity", childChange.getToManyRelationshipChanges().isEmpty());
-        assertEquals("N..1 was explicitly unset as a part of delete. Expected to be recorded in changes",
-                1, childChange.getToOneRelationshipChanges().size());
+        assertTrue(childChange.getToManyRelationshipChanges().isEmpty(), "No 1..N relationships in the entity");
+        assertEquals(1, childChange.getToOneRelationshipChanges().size(),
+                "N..1 was explicitly unset as a part of delete. Expected to be recorded in changes");
     }
 
     @Test
-    public void testPostCommit_Delete_ToOneNullify() throws SQLException {
+    public void postCommit_Delete_ToOneNullify() throws SQLException {
         auditable1.insert(1, "xx");
         auditableChild1.insert(1, 1, "cc1");
         auditableChild1.insert(2, 1, "cc2");
@@ -181,14 +181,14 @@ public class CommitLogFilterIT extends AuditableRuntimeCase {
         assertEquals("cc2", change.getAttributeChanges().get(AuditableChild1.CHAR_PROPERTY1.getName()).getOldValue());
         assertNull(change.getAttributeChanges().get(AuditableChild1.CHAR_PROPERTY1.getName()).getNewValue());
 
-        assertTrue("No 1..N relationships in the entity", change.getToManyRelationshipChanges().isEmpty());
-        assertEquals("N..1 state was not captured", 1, change.getToOneRelationshipChanges().size());
+        assertTrue(change.getToManyRelationshipChanges().isEmpty(), "No 1..N relationships in the entity");
+        assertEquals(1, change.getToOneRelationshipChanges().size(), "N..1 state was not captured");
         assertEquals(ObjectId.of("Auditable1", Auditable1.ID_PK_COLUMN, 1),
                 change.getToOneRelationshipChanges().get(AuditableChild1.PARENT.getName()).getOldValue());
     }
 
     @Test
-    public void testPostCommit_Delete_ToOne_OneWay() throws SQLException {
+    public void postCommit_Delete_ToOne_OneWay() throws SQLException {
         auditable1.insert(1, "xx");
         auditableChild1x.insert(1, 1, "cc1");
         auditableChild1x.insert(2, 1, "cc2");
@@ -211,15 +211,15 @@ public class CommitLogFilterIT extends AuditableRuntimeCase {
         assertEquals("cc2", change.getAttributeChanges().get(AuditableChild1x.CHAR_PROPERTY1.getName()).getOldValue());
         assertNull(change.getAttributeChanges().get(AuditableChild1x.CHAR_PROPERTY1.getName()).getNewValue());
 
-        assertTrue("No 1..N relationships in the entity", change.getToManyRelationshipChanges().isEmpty());
-        assertEquals("N..1 state was not captured", 1, change.getToOneRelationshipChanges().size());
+        assertTrue(change.getToManyRelationshipChanges().isEmpty(), "No 1..N relationships in the entity");
+        assertEquals(1, change.getToOneRelationshipChanges().size(), "N..1 state was not captured");
         assertEquals(ObjectId.of("Auditable1", Auditable1.ID_PK_COLUMN, 1),
                 change.getToOneRelationshipChanges().get(AuditableChild1x.PARENT.getName()).getOldValue());
     }
 
 
     @Test
-    public void testPostCommit_UpdateToOne() throws SQLException {
+    public void postCommit_UpdateToOne() throws SQLException {
         auditable1.insert(1, "xx");
         auditable1.insert(2, "yy");
 
@@ -290,7 +290,7 @@ public class CommitLogFilterIT extends AuditableRuntimeCase {
     }
 
     @Test
-    public void testPostCommit_UpdateToMany() throws SQLException {
+    public void postCommit_UpdateToMany() throws SQLException {
         auditable1.insert(1, "xx");
         auditableChild1.insert(1, 1, "cc1");
         auditableChild1.insert(2, null, "cc2");

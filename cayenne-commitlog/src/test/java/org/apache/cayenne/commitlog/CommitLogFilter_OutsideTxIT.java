@@ -25,14 +25,14 @@ import org.apache.cayenne.commitlog.model.ObjectChange;
 import org.apache.cayenne.commitlog.unit.AuditableRuntimeCase;
 import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
 import org.apache.cayenne.tx.BaseTransaction;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class CommitLogFilter_OutsideTxIT extends AuditableRuntimeCase {
 
@@ -59,13 +59,13 @@ public class CommitLogFilter_OutsideTxIT extends AuditableRuntimeCase {
                         .addListener(listener));
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         this.context = runtime.newContext();
     }
 
     @Test
-    public void testCommitLog() throws SQLException {
+    public void commitLog() throws SQLException {
         Auditable2 a1 = context.newObject(Auditable2.class);
         a1.setCharProperty1("yy");
         a1.setCharProperty2("zz");

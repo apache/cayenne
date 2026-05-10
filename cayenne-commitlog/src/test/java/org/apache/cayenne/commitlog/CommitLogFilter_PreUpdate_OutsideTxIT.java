@@ -28,13 +28,13 @@ import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
 import org.apache.cayenne.tx.BaseTransaction;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CommitLogFilter_PreUpdate_OutsideTxIT extends AuditableRuntimeCase {
 
@@ -67,7 +67,7 @@ public class CommitLogFilter_PreUpdate_OutsideTxIT extends AuditableRuntimeCase 
                 );
     }
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         context = runtime.newContext();
         auditable5.insert(1, "yy");
@@ -75,7 +75,7 @@ public class CommitLogFilter_PreUpdate_OutsideTxIT extends AuditableRuntimeCase 
     }
 
     @Test
-    public void testCommitLog() throws SQLException {
+    public void commitLog() throws SQLException {
 
         AuditableChild5 auditableChild = ObjectSelect.query(AuditableChild5.class)
                 .selectOne(context);
