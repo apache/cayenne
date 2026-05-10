@@ -39,17 +39,17 @@ import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.XMLReader;
 
 import java.net.URL;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DataChannelProjectLoaderTest {
 
     @Test
-    public void testLoad() {
+    public void load() {
 
         DataChannelProjectLoader loader = new DataChannelProjectLoader();
 

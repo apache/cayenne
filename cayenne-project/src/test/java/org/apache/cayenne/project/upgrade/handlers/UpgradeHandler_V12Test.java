@@ -22,9 +22,8 @@ package org.apache.cayenne.project.upgrade.handlers;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.project.upgrade.UpgradeUnit;
 import org.apache.cayenne.resource.URLResource;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -38,17 +37,14 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-/**
- * @since 5.0
- */
 public class UpgradeHandler_V12Test extends BaseUpgradeHandlerTest {
 
-    @Rule
-    public TemporaryFolder tempFolder = new TemporaryFolder();
+    @TempDir
+    public File tempFolder;
 
     @Override
     UpgradeHandler newHandler() {
@@ -56,10 +52,10 @@ public class UpgradeHandler_V12Test extends BaseUpgradeHandlerTest {
     }
 
     @Test
-    public void testProjectDomUpgrade() throws Exception {
+    public void projectDomUpgrade() throws Exception {
         File projectFile = copyResourceToTemp("../v12/cayenne-project1.xml", "cayenne-project.xml");
         File graphFile = copyResourceToTemp("../v12/project1.graph.xml", "project1.graph.xml");
-        assertTrue("precondition: graph file exists", graphFile.exists());
+        assertTrue(graphFile.exists(), "precondition: graph file exists");
 
         Document document = processProjectDomFromFile(projectFile);
 
@@ -70,7 +66,7 @@ public class UpgradeHandler_V12Test extends BaseUpgradeHandlerTest {
         XPath xpath = XPathFactory.newInstance().newXPath();
         NodeList includes = (NodeList) xpath.evaluate("/domain/*[local-name()='include']",
                 document, XPathConstants.NODESET);
-        assertEquals("xi:include must be removed", 0, includes.getLength());
+        assertEquals(0, includes.getLength(), "xi:include must be removed");
 
         NodeList validation = (NodeList) xpath.evaluate("/domain/*[local-name()='validation']",
                 document, XPathConstants.NODESET);
@@ -78,11 +74,11 @@ public class UpgradeHandler_V12Test extends BaseUpgradeHandlerTest {
         assertEquals("http://cayenne.apache.org/schema/12/validation",
                 ((Element) validation.item(0)).getAttribute("xmlns"));
 
-        assertFalse("graph file must be deleted", graphFile.exists());
+        assertFalse(graphFile.exists(), "graph file must be deleted");
     }
 
     @Test
-    public void testProjectDomUpgradeNoGraphFile() throws Exception {
+    public void projectDomUpgradeNoGraphFile() throws Exception {
         File projectFile = copyResourceToTemp("../v12/cayenne-project1.xml", "cayenne-project.xml");
 
         // graph file intentionally absent — upgrade must complete without exception
@@ -94,11 +90,11 @@ public class UpgradeHandler_V12Test extends BaseUpgradeHandlerTest {
         XPath xpath = XPathFactory.newInstance().newXPath();
         NodeList includes = (NodeList) xpath.evaluate("/domain/*[local-name()='include']",
                 document, XPathConstants.NODESET);
-        assertEquals("xi:include must be removed", 0, includes.getLength());
+        assertEquals(0, includes.getLength(), "xi:include must be removed");
     }
 
     @Test
-    public void testDataMapDomUpgrade() throws Exception {
+    public void dataMapDomUpgrade() throws Exception {
         Document document = processDataMapDom("../v12/map1.map.xml");
 
         Element root = document.getDocumentElement();
@@ -120,14 +116,14 @@ public class UpgradeHandler_V12Test extends BaseUpgradeHandlerTest {
     }
 
     @Test
-    public void testModelUpgrade() {
+    public void modelUpgrade() {
         DataChannelDescriptor descriptor = mock(DataChannelDescriptor.class);
         handler.processModel(descriptor);
         verifyNoInteractions(descriptor);
     }
 
     private File copyResourceToTemp(String resourcePath, String targetName) throws Exception {
-        File target = new File(tempFolder.getRoot(), targetName);
+        File target = new File(tempFolder, targetName);
         try (InputStream in = getClass().getResourceAsStream(resourcePath)) {
             Files.copy(in, target.toPath());
         }

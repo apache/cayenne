@@ -30,8 +30,8 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.project.extension.ProjectExtension;
 import org.apache.cayenne.project.unit.Project2Case;
 import org.apache.cayenne.resource.URLResource;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -43,14 +43,14 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FileProjectSaverTest extends Project2Case {
 
     private FileProjectSaver saver;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         Module testModule = binder -> binder
                 .bind(ConfigurationNameMapper.class)
@@ -62,7 +62,7 @@ public class FileProjectSaverTest extends Project2Case {
     }
 
     @Test
-    public void testSaveAs_Sorted() throws Exception {
+    public void saveAs_Sorted() throws Exception {
 
         File testFolder = setupTestDirectory("testSaveAs_Sorted");
 
@@ -141,7 +141,7 @@ public class FileProjectSaverTest extends Project2Case {
      * @throws Exception
      */
     @Test
-    public void testSaveForProjectFileWithRelatedPaths() throws Exception {
+    public void saveForProjectFileWithRelatedPaths() throws Exception {
         File testFolder = setupTestDirectory("testSaveForProjectFileWithRelatedPaths");
 
         String mapFilePath = testFolder.toURI() + "../test.map.xml";

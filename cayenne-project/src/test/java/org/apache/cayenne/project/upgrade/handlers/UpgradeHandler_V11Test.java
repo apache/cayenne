@@ -20,22 +20,19 @@
 package org.apache.cayenne.project.upgrade.handlers;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-/**
- * @since 5.0
- */
 public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest {
 
     UpgradeHandler newHandler() {
@@ -43,7 +40,7 @@ public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest {
     }
 
     @Test
-    public void testProjectDomUpgrade() throws Exception {
+    public void projectDomUpgrade() throws Exception {
         Document document = processProjectDom("cayenne-project-v10.xml");
 
         Element root = document.getDocumentElement();
@@ -59,7 +56,7 @@ public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest {
     }
 
     @Test
-    public void testDataMapDomUpgrade() throws Exception {
+    public void dataMapDomUpgrade() throws Exception {
         Document document = processDataMapDom("test-map-v10.map.xml");
 
         Element root = document.getDocumentElement();
@@ -87,7 +84,7 @@ public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest {
     }
 
     @Test
-    public void testCgenDomUpgrade() throws Exception {
+    public void cgenDomUpgrade() throws Exception {
         Document document = processDataMapDom("test-map-v10.map.xml");
         Element root = document.getDocumentElement();
 
@@ -154,7 +151,7 @@ public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest {
     }
 
     @Test
-    public void testDbImportDomUpgrade() throws Exception {
+    public void dbImportDomUpgrade() throws Exception {
         Document document = processDataMapDom("test-map-v10.map.xml");
         Element root = document.getDocumentElement();
 
@@ -189,7 +186,7 @@ public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest {
     }
 
     @Test
-    public void testModelUpgrade() {
+    public void modelUpgrade() {
         DataChannelDescriptor descriptor = mock(DataChannelDescriptor.class);
         handler.processModel(descriptor);
         verifyNoInteractions(descriptor);

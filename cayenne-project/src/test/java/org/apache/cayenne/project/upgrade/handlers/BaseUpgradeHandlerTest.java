@@ -26,18 +26,15 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.cayenne.project.upgrade.UpgradeUnit;
 import org.apache.cayenne.resource.URLResource;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
-/**
- * @since 4.1
- */
 abstract class BaseUpgradeHandlerTest {
 
     UpgradeHandler handler;
 
-    @Before
+    @BeforeEach
     public void createHandler() {
         handler = newHandler();
     }
@@ -56,11 +53,6 @@ abstract class BaseUpgradeHandlerTest {
                 documentFromResource(xmlResourceName));
         handler.processDataMapDom(unit);
         return unit.getDocument();
-    }
-
-    Document documentFromString(String xml) throws Exception {
-        DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        return db.parse(new InputSource(new StringReader(xml)));
     }
 
     Document documentFromResource(String resource) throws Exception {

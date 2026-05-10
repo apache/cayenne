@@ -23,8 +23,8 @@ import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.util.Util;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -36,8 +36,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -50,7 +50,7 @@ public class DefaultUpgradeServiceTest {
 
     List<UpgradeHandler> handlers;
 
-    @Before
+    @BeforeEach
     public void createService() {
         createHandlers();
         upgradeService = new DefaultUpgradeService(handlers);

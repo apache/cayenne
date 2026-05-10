@@ -29,15 +29,12 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class Project2Case {
 
     /**
      * A helper method returning the contents of an XML source as a DOM Document.
-     * 
-     * @throws IOException
-     * @throws SAXException
      */
     protected Document toDOMTree(File file) {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();

@@ -20,19 +20,16 @@
 package org.apache.cayenne.project.upgrade.handlers;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-/**
- * @since 4.1
- */
 public class UpgradeHandler_V8Test extends BaseUpgradeHandlerTest {
 
     @Override
@@ -41,7 +38,7 @@ public class UpgradeHandler_V8Test extends BaseUpgradeHandlerTest {
     }
 
     @Test
-    public void testProjectDomUpgrade() throws Exception {
+    public void projectDomUpgrade() throws Exception {
         Document document = processProjectDom("cayenne-project-v7.xml");
 
         Element root = document.getDocumentElement();
@@ -51,7 +48,7 @@ public class UpgradeHandler_V8Test extends BaseUpgradeHandlerTest {
     }
 
     @Test
-    public void testDataMapDomUpgrade() throws Exception {
+    public void dataMapDomUpgrade() throws Exception {
         Document document = processDataMapDom("test-map-v7.map.xml");
 
         Element root = document.getDocumentElement();
@@ -88,7 +85,7 @@ public class UpgradeHandler_V8Test extends BaseUpgradeHandlerTest {
     }
 
     @Test
-    public void testModelUpgrade() throws Exception {
+    public void modelUpgrade() throws Exception {
         DataChannelDescriptor descriptor = mock(DataChannelDescriptor.class);
         handler.processModel(descriptor);
         verifyNoInteractions(descriptor);

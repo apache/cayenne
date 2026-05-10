@@ -41,7 +41,7 @@ import org.apache.cayenne.project.extension.ProjectExtension;
 import org.apache.cayenne.project.unit.Project2Case;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.XMLReader;
 
 import java.io.File;
@@ -49,12 +49,12 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Collections;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DataChannelProjectSaverTest extends Project2Case {
 
     @Test
-    public void testSaveAs() throws Exception {
+    public void saveAs() throws Exception {
 
         FileProjectSaver saver = new FileProjectSaver(Collections.<ProjectExtension>emptyList());
 
@@ -100,7 +100,7 @@ public class DataChannelProjectSaverTest extends Project2Case {
     }
 
     @Test
-    public void testSaveAs_RecoverFromSaveError() throws Exception {
+    public void saveAs_RecoverFromSaveError() throws Exception {
 
         FileProjectSaver saver = new FileProjectSaver(Collections.<ProjectExtension>emptyList()) {
 
