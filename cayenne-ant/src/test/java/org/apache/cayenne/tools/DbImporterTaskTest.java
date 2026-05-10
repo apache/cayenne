@@ -48,7 +48,6 @@ import static org.apache.cayenne.util.Util.isBlank;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 // TODO: we are only testing on Derby. We may need to dynamically switch between DBs 
 // based on "cayenneTestConnection", like we do in cayenne-server, etc.
@@ -173,15 +172,10 @@ public class DbImporterTaskTest {
     }
 
     @SuppressWarnings("unchecked")
-    private void verifyResult(File map, File mapFileCopy) {
-        try {
-            FileReader control = new FileReader(map.getAbsolutePath() + "-result");
-            FileReader test = new FileReader(mapFileCopy);
-            assertThat(test, CompareMatcher.isSimilarTo(control).ignoreWhitespace());
-        } catch (IOException e) {
-            e.printStackTrace();
-            fail();
-        }
+    private void verifyResult(File map, File mapFileCopy) throws IOException {
+        FileReader control = new FileReader(map.getAbsolutePath() + "-result");
+        FileReader test = new FileReader(mapFileCopy);
+        assertThat(test, CompareMatcher.isSimilarTo(control).ignoreWhitespace());
     }
 
     private void prepareDatabase(String sqlFile, DbImportConfiguration dbImportConfiguration) throws Exception {
