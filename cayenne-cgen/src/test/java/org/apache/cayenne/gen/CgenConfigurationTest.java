@@ -20,34 +20,34 @@
 package org.apache.cayenne.gen;
 
 import org.apache.cayenne.validation.ValidationException;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Locale;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@RunWith(Enclosed.class)
 public class CgenConfigurationTest {
 
-    public static class CgenWindowsConfigurationTest {
+    @Nested
+    public class CgenWindowsConfigurationTest {
 
         CgenConfiguration configuration;
 
-        @Before
+        @BeforeEach
         public void setUp() {
             configuration = new CgenConfiguration();
         }
 
-        @Before
+        @BeforeEach
         public void checkPlatform() {
-            Assume.assumeTrue(System.getProperty("os.name").toLowerCase(Locale.ROOT).startsWith("win"));
+            Assumptions.assumeTrue(System.getProperty("os.name").toLowerCase(Locale.ROOT).startsWith("win"));
         }
 
         @Test
@@ -110,14 +110,13 @@ public class CgenConfigurationTest {
             assertEquals(relPath, configuration.buildOutputPath());
         }
 
-        @Test(expected = ValidationException.class)
+        @Test
         public void emptyRootNotEmptyRelPath() {
-            configuration.setRootPath(Paths.get(""));
             Path relPath = Paths.get("E:\\");
-            configuration.updateOutputPath(relPath);
-
-            assertEquals(Paths.get("E:\\"), configuration.getRawOutputPath());
-            assertEquals(relPath, configuration.buildOutputPath());
+            assertThrows(ValidationException.class, () -> {
+                configuration.setRootPath(Paths.get(""));
+                configuration.updateOutputPath(relPath);
+            });
         }
 
         @Test
@@ -131,9 +130,9 @@ public class CgenConfigurationTest {
             assertEquals(Paths.get("E:\\"), configuration.buildOutputPath());
         }
 
-        @Test(expected = InvalidPathException.class)
+        @Test
         public void invalidRootPath() {
-            configuration.setRootPath(Paths.get("invalidRoot:\\test"));
+            assertThrows(InvalidPathException.class, () -> configuration.setRootPath(Paths.get("invalidRoot:\\test")));
         }
 
         @Test
@@ -144,18 +143,19 @@ public class CgenConfigurationTest {
         }
     }
 
-    public static class CgenUnixConfigurationTest {
+    @Nested
+    public class CgenUnixConfigurationTest {
 
         CgenConfiguration configuration;
 
-        @Before
+        @BeforeEach
         public void setUp() {
             configuration = new CgenConfiguration();
         }
 
-        @Before
+        @BeforeEach
         public void checkPlatform() {
-            Assume.assumeFalse(System.getProperty("os.name").toLowerCase(Locale.ROOT).startsWith("win"));
+            Assumptions.assumeFalse(System.getProperty("os.name").toLowerCase(Locale.ROOT).startsWith("win"));
         }
 
         @Test
@@ -199,14 +199,13 @@ public class CgenConfigurationTest {
             assertEquals(Paths.get("/test1/test2/test3/test1/test2/test3"), configuration.buildOutputPath());
         }
 
-        @Test(expected = ValidationException.class)
+        @Test
         public void emptyRootNotEmptyRelPath() {
-            configuration.setRootPath(Paths.get(""));
             Path relPath = Paths.get("/");
-            configuration.updateOutputPath(relPath);
-
-            assertEquals(Paths.get("/"), configuration.getRawOutputPath());
-            assertEquals(relPath, configuration.buildOutputPath());
+            assertThrows(ValidationException.class, () -> {
+                configuration.setRootPath(Paths.get(""));
+                configuration.updateOutputPath(relPath);
+            });
         }
 
         @Test
@@ -218,16 +217,20 @@ public class CgenConfigurationTest {
             assertEquals(Paths.get("/"), configuration.buildOutputPath());
         }
 
-        @Test(expected = ValidationException.class)
+        @Test
         public void invalidRootPath() {
-            configuration.setRootPath(Paths.get("invalidRoot:/test"));
-            configuration.updateOutputPath(Paths.get("/test1/test2/test3"));
+            assertThrows(ValidationException.class, () -> {
+                configuration.setRootPath(Paths.get("invalidRoot:/test"));
+                configuration.updateOutputPath(Paths.get("/test1/test2/test3"));
+            });
         }
 
-        @Test(expected = ValidationException.class)
+        @Test
         public void concatInvalidRootPathAndRelPath() {
-            configuration.setRootPath(Paths.get("invalidRoot:/test"));
-            configuration.updateOutputPath(Paths.get("test1/test2/test3"));
+            assertThrows(ValidationException.class, () -> {
+                configuration.setRootPath(Paths.get("invalidRoot:/test"));
+                configuration.updateOutputPath(Paths.get("test1/test2/test3"));
+            });
         }
 
         @Test

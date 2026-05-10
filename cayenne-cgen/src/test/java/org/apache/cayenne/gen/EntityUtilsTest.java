@@ -25,30 +25,30 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class EntityUtilsTest {
-    
+
     protected EntityUtils entityUtils = null;
     protected DataMap dataMap = null;
     protected ObjEntity objEntity = null;
-    
-    @Before
+
+    @BeforeEach
     public void setUp() throws Exception {
         dataMap = new DataMap();
         objEntity = new ObjEntity();
     }
-    
-    @After
+
+    @AfterEach
     public void tearDown() throws Exception {
         dataMap = null;
         objEntity = null;
@@ -56,8 +56,8 @@ public class EntityUtilsTest {
     }
 
     @Test
-    public void testAllCallbackNamesUnique() throws Exception {
-        
+    public void allCallbackNamesUnique() throws Exception {
+
         CallbackDescriptor[] callbacks = objEntity.getCallbackMap().getCallbacks();
         for (int i = 0; i < callbacks.length; i++) {
             callbacks[i].addCallbackMethod("callback1");
@@ -65,7 +65,7 @@ public class EntityUtilsTest {
             callbacks[i].addCallbackMethod("callback3");
         }
         entityUtils = new EntityUtils(dataMap, objEntity, "TestBaseClass", "TestSuperClass", "TestSubClass");
-        
+
         boolean hasNoDuplicates = true;
         Set<String> callbackNames = new LinkedHashSet<String>();
         for (String cbName : entityUtils.getCallbackNames()) {
@@ -73,12 +73,12 @@ public class EntityUtilsTest {
                 hasNoDuplicates = false;
             }
         }
-        
-        assertTrue("Contains duplicate callback names.", hasNoDuplicates);
+
+        assertTrue(hasNoDuplicates, "Contains duplicate callback names.");
     }
 
     @Test
-    public void testDeclaresDbAttribute() throws Exception {
+    public void declaresDbAttribute() throws Exception {
 
         DbEntity dbEntity = new DbEntity("test");
         DbAttribute exists = new DbAttribute("testKey");

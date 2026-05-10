@@ -29,10 +29,9 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SQLTemplateDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -46,19 +45,19 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BaseTemplatesGenerationTest {
 
-    @Rule
-    public TemporaryFolder folder= new TemporaryFolder();
+    @TempDir
+    public File folder;
 
     protected CgenConfiguration cgenConfiguration;
     protected ClassGenerationAction action;
     protected DataMap dataMap;
     protected ObjEntity objEntity;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         cgenConfiguration = new CgenConfiguration();
         action = new ClassGenerationAction(cgenConfiguration);
@@ -68,7 +67,7 @@ public class BaseTemplatesGenerationTest {
     }
 
     @Test
-    public void testSelectQuery() throws Exception {
+    public void selectQuery() throws Exception {
         dataMap.setName("SelectQuery");
 
         String param = "param";
@@ -97,7 +96,7 @@ public class BaseTemplatesGenerationTest {
     }
 
     @Test
-    public void testSQLTemplate() throws Exception {
+    public void sqlTemplate() throws Exception {
         dataMap.setName("SQLTemplate");
 
         DbEntity dbEntity = new DbEntity();
@@ -119,7 +118,7 @@ public class BaseTemplatesGenerationTest {
     }
 
     @Test
-    public void testGenClass() throws Exception {
+    public void genClass() throws Exception {
         dataMap.setName("ObjEntity");
 
         DbEntity dbEntity = new DbEntity();
@@ -144,7 +143,7 @@ public class BaseTemplatesGenerationTest {
     public void execute(Artifact artifact) throws Exception{
         cgenConfiguration.addArtifact(artifact);
 
-        cgenConfiguration.setRootPath(folder.getRoot().toPath());
+        cgenConfiguration.setRootPath(folder.toPath());
         cgenConfiguration.updateOutputPath(Paths.get("."));
         cgenConfiguration.loadEntity(objEntity);
         cgenConfiguration.setDataMap(dataMap);
@@ -162,7 +161,7 @@ public class BaseTemplatesGenerationTest {
         String expected = readResource(fileName);
 
         StringBuilder generated = new StringBuilder();
-        Files.readAllLines(new File(folder.getRoot() + "/test/" + fileName + ".java").toPath())
+        Files.readAllLines(new File(folder + "/test/" + fileName + ".java").toPath())
                 .forEach(generated::append);
 
         assertEquals(expected, generated.toString());

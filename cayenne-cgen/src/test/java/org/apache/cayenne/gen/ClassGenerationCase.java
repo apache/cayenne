@@ -28,7 +28,7 @@ import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
 public class ClassGenerationCase {
 
@@ -41,7 +41,7 @@ public class ClassGenerationCase {
         injector = DIBootstrap.createInjector(new CgenCaseModule(testScope), new CgenModule());
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         Properties props = new Properties();
 

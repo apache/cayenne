@@ -21,14 +21,14 @@ package org.apache.cayenne.gen;
 
 import org.apache.cayenne.tools.CayenneToolsModuleProvider;
 import org.apache.cayenne.unit.util.ModuleProviderChecker;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @since 4.2
  */
 public class CgenModuleProviderTest {
     @Test
-    public void testProviderPresent() {
+    public void providerPresent() {
         ModuleProviderChecker.testProviderPresent(CgenToolsModuleProvider.class, CayenneToolsModuleProvider.class);
     }
 }

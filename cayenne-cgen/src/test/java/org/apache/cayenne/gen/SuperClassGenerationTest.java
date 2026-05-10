@@ -26,19 +26,19 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.velocity.VelocityContext;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SuperClassGenerationTest extends ClassGenerationCase {
 
     Logger logger = LoggerFactory.getLogger(SuperClassGenerationTest.class);
 
     @Test
-    public void testNotContainsPropertyImport() throws Exception {
+    public void notContainsPropertyImport() throws Exception {
         ObjEntity objEntity = new ObjEntity("TEST1");
 
         VelocityContext context = new VelocityContext();
@@ -56,7 +56,7 @@ public class SuperClassGenerationTest extends ClassGenerationCase {
     }
 
     @Test
-    public void testContainsPropertyImportForAttributes() throws Exception {
+    public void containsPropertyImportForAttributes() throws Exception {
         ObjEntity objEntity = new ObjEntity("TEST1");
         ObjAttribute attr = new ObjAttribute("attr");
         attr.setType("int");
@@ -77,7 +77,7 @@ public class SuperClassGenerationTest extends ClassGenerationCase {
     }
 
     @Test
-    public void testContainsPropertyImportForRelationships() throws Exception {
+    public void containsPropertyImportForRelationships() throws Exception {
         ObjEntity objEntity = new ObjEntity("TEST1");
         ObjRelationship rel = new ObjRelationship("rel");
         objEntity.addRelationship(rel);
@@ -97,7 +97,7 @@ public class SuperClassGenerationTest extends ClassGenerationCase {
     }
 
     @Test
-    public void testContainsPropertyImport() throws Exception {
+    public void containsPropertyImport() throws Exception {
         ObjEntity objEntity = new ObjEntity("TEST1");
 
         ObjAttribute attr = new ObjAttribute("attr");

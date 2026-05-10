@@ -23,9 +23,9 @@ import java.net.URL;
 import java.nio.file.Paths;
 
 import org.apache.cayenne.gen.CgenConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.2
@@ -33,7 +33,7 @@ import static org.junit.Assert.*;
 public class CgenSaverDelegateTest {
 
     @Test
-    public void testExistingRootOverride() throws Exception {
+    public void existingRootOverride() throws Exception {
         CgenConfiguration config = new CgenConfiguration();
 
         config.setRootPath(Paths.get("/tmp/src/main/java").toAbsolutePath());
@@ -46,7 +46,7 @@ public class CgenSaverDelegateTest {
     }
 
     @Test
-    public void testExistingRootAndRelPath() throws Exception {
+    public void existingRootAndRelPath() throws Exception {
         CgenConfiguration config = new CgenConfiguration();
 
         config.setRootPath(Paths.get("/tmp/src/main/java").toAbsolutePath());
@@ -61,7 +61,7 @@ public class CgenSaverDelegateTest {
     }
 
     @Test
-    public void testEmptyRootInMavenTree() throws Exception {
+    public void emptyRootInMavenTree() throws Exception {
         CgenConfiguration config = new CgenConfiguration();
 
         URL baseURL = Paths.get("/tmp/src/main/resources").toUri().toURL();
@@ -73,7 +73,7 @@ public class CgenSaverDelegateTest {
     }
 
     @Test
-    public void testEmptyRoot() throws Exception {
+    public void emptyRoot() throws Exception {
         CgenConfiguration config = new CgenConfiguration();
 
         URL baseURL = Paths.get("/tmp/somefolder").toUri().toURL();

@@ -32,27 +32,26 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class ClassGenerationActionTest extends CgenCase {
 
-	@Rule
-	public TemporaryFolder tempFolder = new TemporaryFolder();
+	@TempDir
+	public File tempFolder;
 
 	protected ClassGenerationAction action;
 	protected Collection<StringWriter> writers;
 
 	protected CgenConfiguration cgenConfiguration;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		writers = new ArrayList<>(3);
 		cgenConfiguration = new CgenConfiguration();
@@ -60,14 +59,14 @@ public class ClassGenerationActionTest extends CgenCase {
 				.createAction(cgenConfiguration), writers);
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 		action = null;
 		writers = null;
 	}
 
 	@Test
-	public void testExecuteArtifactPairsImports() throws Exception {
+	public void executeArtifactPairsImports() throws Exception {
 
 		ObjEntity testEntity1 = new ObjEntity("TE1");
 		testEntity1.setClassName("org.example.TestClass1");
@@ -80,16 +79,16 @@ public class ClassGenerationActionTest extends CgenCase {
 		assertEquals(2, generated.size());
 
 		String superclass = generated.get(0);
-		assertTrue(superclass, superclass.contains("package org.example.auto;"));
-		assertTrue(superclass, superclass.contains("import org.apache.cayenne.PersistentObject;"));
+		assertTrue(superclass.contains("package org.example.auto;"), superclass);
+		assertTrue(superclass.contains("import org.apache.cayenne.PersistentObject;"), superclass);
 
 		String subclass = generated.get(1);
-		assertTrue(subclass, subclass.contains("package org.example;"));
-		assertTrue(subclass, subclass.contains("import org.example.auto._TestClass1;"));
+		assertTrue(subclass.contains("package org.example;"), subclass);
+		assertTrue(subclass.contains("import org.example.auto._TestClass1;"), subclass);
 	}
 
 	@Test
-	public void testExecuteArtifactPairsMapRelationships() throws Exception {
+	public void executeArtifactPairsMapRelationships() throws Exception {
 
 		ObjEntity testEntity1 = new ObjEntity("TE1");
 		testEntity1.setClassName("org.example.TestClass1");
@@ -121,11 +120,11 @@ public class ClassGenerationActionTest extends CgenCase {
 		assertEquals(2, generated.size());
 
 		String superclass = generated.get(0);
-		assertTrue(superclass, superclass.contains("import java.util.Map;"));
+		assertTrue(superclass.contains("import java.util.Map;"), superclass);
 	}
 
 	@Test
-	public void testExecuteArtifactPairsAttribute() throws Exception {
+	public void executeArtifactPairsAttribute() throws Exception {
 
 		ObjEntity testEntity1 = new ObjEntity("TE1");
 		testEntity1.setClassName("org.example.TestClass1");
@@ -148,22 +147,22 @@ public class ClassGenerationActionTest extends CgenCase {
 		assertEquals(2, generated.size());
 		String superclass = generated.get(0);
 
-		assertTrue(superclass, superclass.contains("public void setID(int ID)"));
-		assertTrue(superclass, superclass.contains("this.ID = ID;"));
+		assertTrue(superclass.contains("public void setID(int ID)"), superclass);
+		assertTrue(superclass.contains("this.ID = ID;"), superclass);
 
-		assertTrue(superclass, superclass.contains("public int getID()"));
-		assertTrue(superclass, superclass.contains("return this.ID;"));
+		assertTrue(superclass.contains("public int getID()"), superclass);
+		assertTrue(superclass.contains("return this.ID;"), superclass);
 
-		assertTrue(superclass, superclass.contains("public void setName(char name)"));
-		assertTrue(superclass, superclass.contains("this.name = name;"));
+		assertTrue(superclass.contains("public void setName(char name)"), superclass);
+		assertTrue(superclass.contains("this.name = name;"), superclass);
 
-		assertTrue(superclass, superclass.contains("public char getName()"));
-		assertTrue(superclass, superclass.contains("return this.name;"));
+		assertTrue(superclass.contains("public char getName()"), superclass);
+		assertTrue(superclass.contains("return this.name;"), superclass);
 
 	}
 
 	@Test
-	public void testExecuteDataMapQueryNames() throws Exception {
+	public void executeDataMapQueryNames() throws Exception {
 		runDataMapTest();
 	}
 
@@ -182,7 +181,7 @@ public class ClassGenerationActionTest extends CgenCase {
 	}
 
 	@Test
-	public void testCallbackMethodGeneration() throws Exception {
+	public void callbackMethodGeneration() throws Exception {
 		assertCallbacks();
 	}
 
@@ -202,15 +201,15 @@ public class ClassGenerationActionTest extends CgenCase {
 
 		String superclass = generated.get(0);
 
-		assertTrue(superclass, superclass.contains("public abstract class _TestClass1"));
+		assertTrue(superclass.contains("public abstract class _TestClass1"), superclass);
 
 		for (int j = 0; j < i; j++) {
-			assertTrue(superclass, superclass.contains("protected abstract void cb" + j + "();"));
+			assertTrue(superclass.contains("protected abstract void cb" + j + "();"), superclass);
 		}
 
 		String subclass = generated.get(1);
 		for (int j = 0; j < i; j++) {
-			assertTrue(subclass, subclass.contains("protected void cb" + j + "() {"));
+			assertTrue(subclass.contains("protected void cb" + j + "() {"), subclass);
 		}
 	}
 
@@ -226,7 +225,7 @@ public class ClassGenerationActionTest extends CgenCase {
 	}
 
 	@Test
-	public void testIsOld() {
+	public void isOld() {
 		File file = mock(File.class);
 		when(file.lastModified()).thenReturn(1000L);
 
@@ -238,7 +237,7 @@ public class ClassGenerationActionTest extends CgenCase {
 	}
 
 	@Test
-	public void testFileNeedUpdate() {
+	public void fileNeedUpdate() {
 		File file = mock(File.class);
 		when(file.lastModified()).thenReturn(1000L);
 
@@ -264,11 +263,11 @@ public class ClassGenerationActionTest extends CgenCase {
 	}
 
 	@Test
-	public void testFileForSuperclass() throws Exception {
+	public void fileForSuperclass() throws Exception {
 
 		TemplateType templateType = TemplateType.DATAMAP_SUPERCLASS;
 
-		cgenConfiguration.setRootPath(tempFolder.getRoot().toPath());
+		cgenConfiguration.setRootPath(tempFolder.toPath());
 		cgenConfiguration.updateOutputPath(Paths.get("."));
 		action = new ClassGenerationAction(cgenConfiguration);
 		ObjEntity testEntity1 = new ObjEntity("TEST");
@@ -276,7 +275,7 @@ public class ClassGenerationActionTest extends CgenCase {
 		action.context.put(Artifact.SUPER_PACKAGE_KEY, "");
 		action.context.put(Artifact.SUPER_CLASS_KEY, "TestClass1");
 
-		File outFile = new File(tempFolder.getRoot() + "/TestClass1.java");
+		File outFile = new File(tempFolder + "/TestClass1.java");
 		assertFalse(outFile.exists());
 
 		action.openWriter(templateType);
@@ -286,11 +285,11 @@ public class ClassGenerationActionTest extends CgenCase {
 	}
 
 	@Test
-	public void testFileForClass() throws Exception {
+	public void fileForClass() throws Exception {
 
 		TemplateType templateType = TemplateType.DATAMAP_SINGLE_CLASS;
 
-		cgenConfiguration.setRootPath(tempFolder.getRoot().toPath());
+		cgenConfiguration.setRootPath(tempFolder.toPath());
 		cgenConfiguration.updateOutputPath(Paths.get("."));
 		action = new ClassGenerationAction(cgenConfiguration);
 		ObjEntity testEntity1 = new ObjEntity("TEST");
@@ -298,7 +297,7 @@ public class ClassGenerationActionTest extends CgenCase {
 		action.context.put(Artifact.SUB_PACKAGE_KEY, "");
 		action.context.put(Artifact.SUB_CLASS_KEY, "TestClass1");
 
-		File outFile = new File(tempFolder.getRoot() + "/TestClass1.java");
+		File outFile = new File(tempFolder + "/TestClass1.java");
 		assertFalse(outFile.exists());
 
 		action.openWriter(templateType);

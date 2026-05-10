@@ -31,31 +31,31 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.SelectQueryDescriptor;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DataMapUtilsTest {
 
     protected DataMapUtils dataMapUtils = null;
     protected ObjEntity objEntity = null;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         dataMapUtils = new DataMapUtils();
         objEntity = new ObjEntity();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         dataMapUtils = null;
         objEntity = null;
     }
 
     @Test
-    public void testGetParameterNamesWithFilledQueriesMap() {
+    public void getParameterNamesWithFilledQueriesMap() {
 
         String param = "param";
         String qualifierString = "name = $" + param;
@@ -81,7 +81,7 @@ public class DataMapUtilsTest {
     }
 
     @Test
-    public void testGetParameterNamesWithEmptyQueriesMap() {
+    public void getParameterNamesWithEmptyQueriesMap() {
 
         DbEntity dbEntity = new DbEntity("test");
         ObjAttribute attribute = new ObjAttribute("name");

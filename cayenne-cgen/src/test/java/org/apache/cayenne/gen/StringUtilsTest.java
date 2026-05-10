@@ -19,28 +19,28 @@
 
 package org.apache.cayenne.gen;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class StringUtilsTest {
 
     protected StringUtils stringUtils;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         stringUtils = new StringUtils();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         stringUtils = null;
     }
 
     @Test
-    public void testPluralize() throws Exception {
+    public void pluralize() throws Exception {
         assertEquals("Words", stringUtils.pluralize("Word"));
         assertEquals("Statuses", stringUtils.pluralize("Status"));
         assertEquals("Indexes", stringUtils.pluralize("Index"));
@@ -51,55 +51,55 @@ public class StringUtilsTest {
 
 
     @Test
-    public void testCapitalizedAsConstant1() throws Exception {
+    public void capitalizedAsConstant1() throws Exception {
         String expected = "LAST_NAME";
         assertEquals(expected, stringUtils.capitalizedAsConstant("LastName"));
     }
 
     @Test
-    public void testCapitalizedAsConstant2() throws Exception {
+    public void capitalizedAsConstant2() throws Exception {
         String expected = "A_CLASS";
         assertEquals(expected, stringUtils.capitalizedAsConstant("aClass"));
     }
 
     @Test
-    public void testCapitalizedAsConstant3() throws Exception {
+    public void capitalizedAsConstant3() throws Exception {
         String expected = "VAR_A";
         assertEquals(expected, stringUtils.capitalizedAsConstant("varA"));
     }
 
     @Test
-    public void testCapitalizedAsConstant4() throws Exception {
+    public void capitalizedAsConstant4() throws Exception {
         String expected = "LAST_NAME";
         assertEquals(expected, stringUtils.capitalizedAsConstant("LAST_NAME"));
     }
 
     @Test
-    public void testCapitalizedAsConstant5() throws Exception {
+    public void capitalizedAsConstant5() throws Exception {
         String expected = "ABC_A";
         assertEquals(expected, stringUtils.capitalizedAsConstant("abc_A"));
     }
 
     @Test
-    public void testCapitalizedAsConstant6() throws Exception {
+    public void capitalizedAsConstant6() throws Exception {
         String expected = "A123";
         assertEquals(expected, stringUtils.capitalizedAsConstant("a123"));
     }
 
     @Test
-    public void testCapitalizedAsConstant7() throws Exception {
+    public void capitalizedAsConstant7() throws Exception {
         String expected = "AB_CDEF";
         assertEquals(expected, stringUtils.capitalizedAsConstant("abCDEF"));
     }
 
     @Test
-    public void testCapitalizedAsConstant8() throws Exception {
+    public void capitalizedAsConstant8() throws Exception {
         String expected = "AB_CE";
         assertEquals(expected, stringUtils.capitalizedAsConstant("abCe"));
     }
 
     @Test
-    public void testStripGeneric() throws Exception {
+    public void stripGeneric() throws Exception {
         assertEquals("List", stringUtils.stripGeneric("List"));
         assertEquals("List", stringUtils.stripGeneric("List<Integer>"));
         assertEquals("List", stringUtils.stripGeneric("List<List<Map<Integer,List<String>>>>"));
@@ -111,7 +111,7 @@ public class StringUtilsTest {
      * Test pattern expansion.
      */
     @Test
-    public void testReplaceWildcardInStringWithString() throws Exception {
+    public void replaceWildcardInStringWithString() throws Exception {
         assertEquals(null, stringUtils.replaceWildcardInStringWithString("*", null, "Entity"));
         assertEquals("*.java", stringUtils.replaceWildcardInStringWithString(null, "*.java", "Entity"));
         assertEquals("Entity.java", stringUtils.replaceWildcardInStringWithString("*", "*.java", "Entity"));

@@ -19,79 +19,71 @@
 
 package org.apache.cayenne.gen;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ImportUtilsTest {
 
     protected ImportUtils importUtils = null;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         importUtils = new ImportUtils();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         importUtils = null;
     }
 
     @Test
-    public void testSetPackageGeneratesPackageStatement() throws Exception {
+    public void setPackageGeneratesPackageStatement() throws Exception {
         final String packageName = "org.myPackage";
         final String expectedPackageStatement = "package " + packageName + ";";
 
         importUtils.setPackage(packageName);
 
         String generatedStatements = importUtils.generate();
-        assertTrue("<"
-                + generatedStatements
-                + "> does not start with <"
-                + expectedPackageStatement
-                + ">", generatedStatements.startsWith(expectedPackageStatement));
-        assertEquals("package statement appears multiple times.", generatedStatements
-                .lastIndexOf(expectedPackageStatement), generatedStatements
-                .lastIndexOf(expectedPackageStatement));
+        assertTrue(generatedStatements.startsWith(expectedPackageStatement),
+                "<" + generatedStatements + "> does not start with <" + expectedPackageStatement + ">");
+        assertEquals(generatedStatements.lastIndexOf(expectedPackageStatement),
+                generatedStatements.lastIndexOf(expectedPackageStatement),
+                "package statement appears multiple times.");
     }
 
     @Test
-    public void testAddTypeGeneratesImportStatement() throws Exception {
+    public void addTypeGeneratesImportStatement() throws Exception {
         final String type = "org.myPackage.myType";
         final String expectedImportStatement = "import " + type + ";";
 
         importUtils.addType(type);
 
         String generatedStatements = importUtils.generate();
-        assertFalse("<"
-                + generatedStatements
-                + "> does not contain <"
-                + expectedImportStatement
-                + ">", !generatedStatements.contains(expectedImportStatement));
-        assertEquals("import statement appears multiple times.", generatedStatements
-                .lastIndexOf(expectedImportStatement), generatedStatements
-                .lastIndexOf(expectedImportStatement));
+        assertFalse(!generatedStatements.contains(expectedImportStatement),
+                "<" + generatedStatements + "> does not contain <" + expectedImportStatement + ">");
+        assertEquals(generatedStatements.lastIndexOf(expectedImportStatement),
+                generatedStatements.lastIndexOf(expectedImportStatement),
+                "import statement appears multiple times.");
     }
 
     @Test
-    public void testAddReservedTypeGeneratesNoImportStatement() throws Exception {
+    public void addReservedTypeGeneratesNoImportStatement() throws Exception {
         final String type = "org.myPackage.myType";
 
         importUtils.addReservedType(type);
 
         String generatedStatements = importUtils.generate();
-        assertEquals(
-                "<" + generatedStatements + "> contains <" + type + ">",
-                -1,
-                generatedStatements.indexOf(type));
+        assertEquals(-1, generatedStatements.indexOf(type),
+                "<" + generatedStatements + "> contains <" + type + ">");
     }
 
     @Test
-    public void testAddTypeAfterReservedTypeGeneratesNoImportStatement() throws Exception {
+    public void addTypeAfterReservedTypeGeneratesNoImportStatement() throws Exception {
         final String baseType = "myType";
         final String reservedType = "org.myPackage." + baseType;
         final String nonReservedType = "org.myPackage2." + baseType;
@@ -100,18 +92,14 @@ public class ImportUtilsTest {
         importUtils.addType(nonReservedType);
 
         String generatedStatements = importUtils.generate();
-        assertEquals(
-                "<" + generatedStatements + "> contains <" + reservedType + ">",
-                -1,
-                generatedStatements.indexOf(reservedType));
-        assertEquals(
-                "<" + generatedStatements + "> contains <" + nonReservedType + ">",
-                -1,
-                generatedStatements.indexOf(nonReservedType));
+        assertEquals(-1, generatedStatements.indexOf(reservedType),
+                "<" + generatedStatements + "> contains <" + reservedType + ">");
+        assertEquals(-1, generatedStatements.indexOf(nonReservedType),
+                "<" + generatedStatements + "> contains <" + nonReservedType + ">");
     }
 
     @Test
-    public void testAddTypeAfterPackageReservedTypeGeneratesNoImportStatement()
+    public void addTypeAfterPackageReservedTypeGeneratesNoImportStatement()
             throws Exception {
         final String baseType = "myType";
         final String packageType = "org.myPackage";
@@ -124,18 +112,14 @@ public class ImportUtilsTest {
 
         String generatedStatements = importUtils.generate();
 
-        assertEquals(
-                "<" + generatedStatements + "> contains <" + reservedType + ">",
-                -1,
-                generatedStatements.indexOf(reservedType));
-        assertEquals(
-                "<" + generatedStatements + "> contains <" + nonReservedType + ">",
-                -1,
-                generatedStatements.indexOf(nonReservedType));
+        assertEquals(-1, generatedStatements.indexOf(reservedType),
+                "<" + generatedStatements + "> contains <" + reservedType + ">");
+        assertEquals(-1, generatedStatements.indexOf(nonReservedType),
+                "<" + generatedStatements + "> contains <" + nonReservedType + ">");
     }
 
     @Test
-    public void testAddTypeAfterTypeGeneratesNoImportStatement() throws Exception {
+    public void addTypeAfterTypeGeneratesNoImportStatement() throws Exception {
         final String baseType = "myType";
         final String firstType = "org.myPackage." + baseType;
         final String secondType = "org.myPackage2." + baseType;
@@ -147,23 +131,18 @@ public class ImportUtilsTest {
 
         String generatedStatements = importUtils.generate();
 
-        assertFalse("<"
-                + generatedStatements
-                + "> does not contain <"
-                + expectedImportStatement
-                + ">", !generatedStatements.contains(expectedImportStatement));
-        assertEquals("import statement appears multiple times.", generatedStatements
-                .lastIndexOf(expectedImportStatement), generatedStatements
-                .lastIndexOf(expectedImportStatement));
+        assertFalse(!generatedStatements.contains(expectedImportStatement),
+                "<" + generatedStatements + "> does not contain <" + expectedImportStatement + ">");
+        assertEquals(generatedStatements.lastIndexOf(expectedImportStatement),
+                generatedStatements.lastIndexOf(expectedImportStatement),
+                "import statement appears multiple times.");
 
-        assertEquals(
-                "<" + generatedStatements + "> contains <" + secondType + ">",
-                -1,
-                generatedStatements.indexOf(secondType));
+        assertEquals(-1, generatedStatements.indexOf(secondType),
+                "<" + generatedStatements + "> contains <" + secondType + ">");
     }
 
     @Test
-    public void testAddSimilarTypeTwiceBeforeFormatJavaTypeGeneratesCorrectFQNs()
+    public void addSimilarTypeTwiceBeforeFormatJavaTypeGeneratesCorrectFQNs()
             throws Exception {
         final String baseType = "myType";
         final String firstType = "org.myPackage." + baseType;
@@ -177,7 +156,7 @@ public class ImportUtilsTest {
     }
 
     @Test
-    public void testAddTypeBeforeFormatJavaTypeGeneratesCorrectFQNs() throws Exception {
+    public void addTypeBeforeFormatJavaTypeGeneratesCorrectFQNs() throws Exception {
         final String baseType = "myType";
         final String fullyQualifiedType = "org.myPackage." + baseType;
 
@@ -187,7 +166,7 @@ public class ImportUtilsTest {
     }
 
     @Test
-    public void testAddReservedTypeBeforeFormatJavaTypeGeneratesCorrectFQNs()
+    public void addReservedTypeBeforeFormatJavaTypeGeneratesCorrectFQNs()
             throws Exception {
         final String baseType = "myType";
         final String fullyQualifiedType = "org.myPackage." + baseType;
@@ -198,7 +177,7 @@ public class ImportUtilsTest {
     }
 
     @Test
-    public void testFormatJavaTypeWithPrimitives() throws Exception {
+    public void formatJavaTypeWithPrimitives() throws Exception {
         assertEquals("int", importUtils.formatJavaType("int", true));
         assertEquals("Integer", importUtils.formatJavaType("int", false));
 
@@ -214,7 +193,7 @@ public class ImportUtilsTest {
     }
 
     @Test
-    public void testFormatJavaTypeWithoutAddTypeGeneratesCorrectFQNs() throws Exception {
+    public void formatJavaTypeWithoutAddTypeGeneratesCorrectFQNs() throws Exception {
         final String baseType = "myType";
         final String fullyQualifiedType = "org.myPackage." + baseType;
 
@@ -222,7 +201,7 @@ public class ImportUtilsTest {
     }
 
     @Test
-    public void testPackageFormatJavaTypeWithoutAddTypeGeneratesCorrectFQNs()
+    public void packageFormatJavaTypeWithoutAddTypeGeneratesCorrectFQNs()
             throws Exception {
         final String baseType = "myType";
         final String packageType = "org.myPackage";
@@ -234,14 +213,14 @@ public class ImportUtilsTest {
     }
 
     @Test
-    public void testFormatJavaType() {
+    public void formatJavaType() {
         assertEquals("x.X", importUtils.formatJavaType("x.X"));
         assertEquals("X", importUtils.formatJavaType("java.lang.X"));
         assertEquals("java.lang.x.X", importUtils.formatJavaType("java.lang.x.X"));
     }
 
     @Test
-    public void testJavaLangTypeFormatJavaTypeWithoutAddTypeGeneratesCorrectFQNs()
+    public void javaLangTypeFormatJavaTypeWithoutAddTypeGeneratesCorrectFQNs()
             throws Exception {
         final String baseType = "myType";
         final String packageType = "java.lang";

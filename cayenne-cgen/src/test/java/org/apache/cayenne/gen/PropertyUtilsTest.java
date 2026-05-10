@@ -40,15 +40,15 @@ import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -62,7 +62,7 @@ public class PropertyUtilsTest {
     ImportUtils importUtils;
     Logger logger = LoggerFactory.getLogger(PropertyUtilsTest.class);
 
-    @Before
+    @BeforeEach
     public void setup() {
         importUtils = new ImportUtils();
 
@@ -76,7 +76,7 @@ public class PropertyUtilsTest {
     }
 
     @Test
-    public void testImportAttribute() throws Exception {
+    public void importAttribute() throws Exception {
         ObjAttribute attribute = new ObjAttribute();
         attribute.setName("test");
         attribute.setType(java.util.Date.class.getName());
@@ -93,7 +93,7 @@ public class PropertyUtilsTest {
     }
 
     @Test
-    public void testImportRelationship() {
+    public void importRelationship() {
         String typeName = "org.example.model.TargetEntity";
         ObjEntity entity = mock(ObjEntity.class);
         when(entity.getClassName()).thenReturn(typeName);
