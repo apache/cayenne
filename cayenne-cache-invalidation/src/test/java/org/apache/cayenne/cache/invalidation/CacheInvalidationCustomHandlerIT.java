@@ -23,13 +23,13 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.cache.invalidation.db.E1;
 import org.apache.cayenne.query.ObjectSelect;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Function;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @since 4.0
@@ -42,7 +42,7 @@ public class CacheInvalidationCustomHandlerIT extends CacheInvalidationCase {
     }
 
     @Test
-    public void testInvalidate() throws Exception {
+    public void invalidate() throws Exception {
         ObjectContext context = runtime.newContext();
 
         // no explicit cache group must still work - it lands inside default cache called 'cayenne.default.cache'

@@ -26,12 +26,12 @@ import org.apache.cayenne.cache.invalidation.db.E1;
 import org.apache.cayenne.cache.invalidation.db.E2;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.query.ObjectSelect;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @since 4.0
@@ -41,7 +41,7 @@ public class CacheInvalidationCacheGroupsHandlerIT extends CacheInvalidationCase
     private AtomicInteger removeGroupUntypedCounter;
     private AtomicInteger removeGroupTypedCounter;
 
-    @Before
+    @BeforeEach
     public void resetCounters() {
         removeGroupUntypedCounter = new AtomicInteger(0);
         removeGroupTypedCounter = new AtomicInteger(0);

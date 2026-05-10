@@ -23,8 +23,8 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 public abstract class CacheInvalidationCase {
 
@@ -34,7 +34,7 @@ public abstract class CacheInvalidationCase {
 
     protected TableHelper e2;
 
-    @Before
+    @BeforeEach
     public void startCayenne() throws Exception {
         this.runtime = configureCayenne().build();
 
@@ -63,7 +63,7 @@ public abstract class CacheInvalidationCase {
                 .addConfig("cayenne-lifecycle.xml");
     }
 
-    @After
+    @AfterEach
     public void shutdownCayenne() {
         if (runtime != null) {
             runtime.shutdown();
