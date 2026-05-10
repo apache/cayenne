@@ -25,7 +25,6 @@ import io.modelcontextprotocol.server.McpSyncServer;
 import io.modelcontextprotocol.server.transport.StdioServerTransportProvider;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.cayenne.mcp.tools.cgen.CgenRunTool;
-import org.apache.cayenne.mcp.tools.hello.HelloTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +52,7 @@ public class CayenneMcpServer {
         McpSyncServer server = McpServer.sync(transport)
                 .serverInfo("cayenne-mcp-server", version)
                 .capabilities(McpSchema.ServerCapabilities.builder().tools(true).build())
-                .tools(HelloTool.spec(), CgenRunTool.spec(jsonMapper))
+                .tools(CgenRunTool.spec(jsonMapper))
                 .build();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

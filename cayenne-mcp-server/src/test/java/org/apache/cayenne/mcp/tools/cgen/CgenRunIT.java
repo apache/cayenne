@@ -49,8 +49,7 @@ public class CgenRunIT {
     void setUp() throws IOException {
         tool = new CgenRunTool();
         destDir = tempDir.resolve("generated");
-        writeFixture("PersonMap", "com.example", destDir, true);
-        projectFile = tempDir.resolve("cayenne-project.xml");
+        projectFile = writeFixture("PersonMap", "com.example", destDir, true);
     }
 
     @Test
@@ -117,10 +116,12 @@ public class CgenRunIT {
         int skipped = result.summary().filesConsidered() - result.summary().filesWritten();
         assertTrue(skipped >= 1, "At least one file (the existing subclass) should have been skipped");
     }
-    
-    private void writeFixture(String mapName, String pkg, Path destDir, boolean makePairs) throws IOException {
+
+    private Path writeFixture(String mapName, String pkg, Path destDir, boolean makePairs) throws IOException {
+
         // Project descriptor
-        Files.writeString(tempDir.resolve("cayenne-project.xml"), String.format("""
+        Path projectDescriptor = tempDir.resolve("cayenne-project.xml");
+        Files.writeString(projectDescriptor, String.format("""
                 <?xml version="1.0" encoding="utf-8"?>
                 <domain xmlns="http://cayenne.apache.org/schema/12/domain" project-version="12">
                     <map name="%s"/>
@@ -144,5 +145,7 @@ public class CgenRunIT {
                     </cgen>
                 </data-map>
                 """, pkg, pkg, destDir.toAbsolutePath(), makePairs));
+
+        return projectDescriptor;
     }
 }

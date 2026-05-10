@@ -18,8 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.mcp.tools.cgen;
 
-import org.apache.cayenne.mcp.McpHandle;
-import org.apache.cayenne.mcp.McpStarter;
+import org.apache.cayenne.mcp.InProcessMcpServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,7 +51,7 @@ public class CgenRunMcpIT {
     @TempDir
     Path tempDir;
 
-    private McpHandle handle;
+    private InProcessMcpServer server;
     private BufferedWriter writer;
     private BufferedReader reader;
     private Path projectFile;
@@ -64,9 +63,9 @@ public class CgenRunMcpIT {
         writeFixture("PersonMap", "com.example", destDir, true);
         projectFile = tempDir.resolve("cayenne-project.xml");
 
-        handle = McpStarter.start();
-        writer = new BufferedWriter(new OutputStreamWriter(handle.getOutputStream()));
-        reader = new BufferedReader(new InputStreamReader(handle.getInputStream()));
+        server = InProcessMcpServer.start();
+        writer = new BufferedWriter(new OutputStreamWriter(server.getOutputStream()));
+        reader = new BufferedReader(new InputStreamReader(server.getInputStream()));
 
         send("""
                 {"jsonrpc":"2.0","id":1,"method":"initialize","params":{\
@@ -83,7 +82,7 @@ public class CgenRunMcpIT {
     @AfterEach
     void stopServer() throws Exception {
         writer.close();
-        assertTrue(handle.waitFor(10, TimeUnit.SECONDS), "Server thread did not stop after stdin was closed");
+        assertTrue(server.waitFor(10, TimeUnit.SECONDS), "Server thread did not stop after stdin was closed");
     }
 
     @Test
