@@ -26,7 +26,6 @@ import java.util.LinkedList;
 import groovy.lang.Closure;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
-import org.gradle.util.ConfigureUtil;
 
 /**
  * @since 4.0
@@ -117,11 +116,11 @@ public class DbImportConfig extends SchemaContainer {
     }
 
     public void catalog(Closure<?> closure) {
-        catalogs.add(ConfigureUtil.configure(closure, new SchemaContainer()));
+        catalogs.add(configure(closure, new SchemaContainer()));
     }
 
     public void catalog(String name, Closure<?> closure) {
-        catalogs.add(ConfigureUtil.configure(closure, new SchemaContainer(name)));
+        catalogs.add(configure(closure, new SchemaContainer(name)));
     }
 
     public ReverseEngineering toReverseEngineering() {

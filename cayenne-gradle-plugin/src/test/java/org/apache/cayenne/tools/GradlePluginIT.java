@@ -51,7 +51,7 @@ public class GradlePluginIT extends BaseTaskIT {
     @Test
     public void gradleVersionsCompatibility() {
 
-        String[] versions = {"8.5"};
+        String[] versions = {"9.4.0"};
 
         List<String> failedVersions = new ArrayList<>();
         for(String version : versions) {

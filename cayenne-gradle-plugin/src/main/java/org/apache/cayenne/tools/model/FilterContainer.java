@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import groovy.lang.Closure;
-import org.gradle.util.ConfigureUtil;
 
 /**
  * @since 4.0
@@ -55,11 +54,11 @@ public class FilterContainer {
     }
 
     public void includeTable(Closure<?> closure) {
-        includeTables.add(ConfigureUtil.configure(closure, new IncludeTable()));
+        includeTables.add(configure(closure, new IncludeTable()));
     }
 
     public void includeTable(String pattern, Closure<?> closure) {
-        includeTables.add(ConfigureUtil.configure(closure, new IncludeTable(pattern)));
+        includeTables.add(configure(closure, new IncludeTable(pattern)));
     }
 
     public void includeTables(String... patterns) {
@@ -138,6 +137,18 @@ public class FilterContainer {
 
     private static void addToCollection(Collection<PatternParam> collection, String name) {
         collection.add(new PatternParam(name));
+    }
+
+    static <T> T configure(Closure<?> closure, T target) {
+        Closure<?> clonedClosure = (Closure<?>) closure.clone();
+        clonedClosure.setDelegate(target);
+        clonedClosure.setResolveStrategy(Closure.DELEGATE_FIRST);
+        if (clonedClosure.getMaximumNumberOfParameters() == 0) {
+            clonedClosure.call();
+        } else {
+            clonedClosure.call(target);
+        }
+        return target;
     }
 
     <C extends org.apache.cayenne.dbsync.reverse.dbimport.FilterContainer> C fillContainer(final C container) {

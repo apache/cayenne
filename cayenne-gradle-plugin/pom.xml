@@ -69,15 +69,15 @@
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>enforce-jdk21</id>
+                        <id>enforce-gradle-jdk</id>
                         <goals>
                             <goal>enforce</goal>
                         </goals>
                         <configuration>
                             <rules>
                                 <requireJavaVersion>
-                                    <version>[21,22)</version>
-                                    <message>cayenne-gradle-plugin requires JDK 21 (Gradle 8.x does not support Java &gt; 21). Use JDK 21 to build this module.</message>
+                                    <version>[21,27)</version>
+                                    <message>cayenne-gradle-plugin requires JDK 21 through 26 to match Gradle 9.4.0 runtime support.</message>
                                 </requireJavaVersion>
                             </rules>
                         </configuration>
@@ -167,6 +167,11 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

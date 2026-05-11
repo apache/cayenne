@@ -32,6 +32,9 @@ plugins {
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+    withSourcesJar()
+    withJavadocJar()
 }
 
 repositories {
@@ -42,6 +45,10 @@ repositories {
 dependencies {
     implementation gradleApi()
     implementation localGroovy()
+}
+
+test {
+    useJUnitPlatform()
 }
 
 def projectVersion = getProjectVersion()
@@ -69,24 +76,24 @@ if (classpathFile.file) {
 
 // Create file with cayenne-gradle-plugin version
 task versionFile {
-    def resourceOutputDir = file("$buildDir/resources/main/")
     doFirst {
+        def resourceOutputDir = layout.buildDirectory.dir('resources/main').get().asFile
         resourceOutputDir.exists() || resourceOutputDir.mkdirs()
         // file name must be in sync with GradleCayenneExtension
-        def file = file("$buildDir/resources/main/cayenne.version")
+        def file = layout.buildDirectory.file('resources/main/cayenne.version').get().asFile
         file.write(cayenneVersion.toString())
     }
 }
 
 def processLicenseFile(fileName) {
     def context = new VelocityContext(Map.of("binary", false))
-    def outputWriter = new FileWriter(new File("$buildDir/resources/main/META-INF/cayenne/${fileName}.txt"))
+    def outputWriter = new FileWriter(layout.buildDirectory.file("resources/main/META-INF/cayenne/${fileName}.txt").get().asFile)
     def template
-    def templateFile = new File("$buildDir/resources/tpl/META-INF/cayenne/${fileName}.txt.vm");
+    def templateFile = layout.buildDirectory.file("resources/tpl/META-INF/cayenne/${fileName}.txt.vm").get().asFile
     if(templateFile.exists()) {
         template = templateFile.text
     } else {
-        throw new RuntimeException("Template file `$buildDir/resources/tpl/META-INF/cayenne/${fileName}.txt.vm` doesn't exist")
+        throw new RuntimeException("Template file `${templateFile}` doesn't exist")
     }
 
     try {
@@ -100,27 +107,12 @@ def processLicenseFile(fileName) {
 // Copy license and notice files
 task licenseFiles(type: Copy) {
     from '../build-tools/cayenne-legal/src/main/resources/'
-    into "$buildDir/resources/tpl/"
+    into layout.buildDirectory.dir('resources/tpl')
     doLast {
-        mkdir("$buildDir/resources/main/META-INF/cayenne/")
+        layout.buildDirectory.dir('resources/main/META-INF/cayenne').get().asFile.mkdirs()
         processLicenseFile("LICENSE")
         processLicenseFile("NOTICE")
     }
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    archiveClassifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    archiveClassifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
 }
 
 processResources.dependsOn licenseFiles

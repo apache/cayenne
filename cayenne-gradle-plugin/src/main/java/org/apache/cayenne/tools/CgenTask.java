@@ -571,7 +571,12 @@ public class CgenTask extends BaseCayenneTask {
         setExcludeEmbeddables(excludeEmbeddables);
     }
 
+    @Internal
     public Boolean isMakePairs() {
+        return makePairs;
+    }
+
+    public Boolean getMakePairs() {
         return makePairs;
     }
 
@@ -607,7 +612,12 @@ public class CgenTask extends BaseCayenneTask {
         setOutputPattern(outputPattern);
     }
 
+    @Internal
     public Boolean isOverwrite() {
+        return overwrite;
+    }
+
+    public Boolean getOverwrite() {
         return overwrite;
     }
 
@@ -679,7 +689,12 @@ public class CgenTask extends BaseCayenneTask {
         setEmbeddableTemplate(embeddableTemplate);
     }
 
+    @Internal
     public Boolean isUsePkgPath() {
+        return usePkgPath;
+    }
+
+    public Boolean getUsePkgPath() {
         return usePkgPath;
     }
 
@@ -691,7 +706,12 @@ public class CgenTask extends BaseCayenneTask {
         setUsePkgPath(usePkgPath);
     }
 
+    @Internal
     public Boolean isCreatePropertyNames() {
+        return createPropertyNames;
+    }
+
+    public Boolean getCreatePropertyNames() {
         return createPropertyNames;
     }
 

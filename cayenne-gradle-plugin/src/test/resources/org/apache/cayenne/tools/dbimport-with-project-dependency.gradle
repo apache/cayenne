@@ -38,10 +38,6 @@ dependencies {
     implementation 'mysql:mysql-connector-java:6.0.5'
 }
 
-configurations {
-    project.configurations.getByName("implementation").setCanBeResolved(true)
-}
-
 repositories {
     mavenLocal()
     mavenCentral()
