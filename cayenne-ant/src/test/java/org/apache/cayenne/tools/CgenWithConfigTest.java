@@ -18,14 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import org.apache.cayenne.test.file.FileUtil;
 import org.apache.cayenne.test.resource.ResourceUtil;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
+import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -35,11 +37,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class CgenWithConfigTest {
 
-    private static final File baseDir;
-    private static final File map;
+    @TempDir
+    static Path tempDir;
 
-    static {
-        baseDir = FileUtil.baseTestDirectory();
+    private static File baseDir;
+    private static File map;
+
+    @BeforeAll
+    static void setUpClass() {
+        baseDir = tempDir.toFile();
         map = new File(baseDir, "antmap-cgen.xml");
 
         ResourceUtil.copyResourceToFile("cgenTest.map.xml", map);

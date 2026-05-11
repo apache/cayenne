@@ -19,13 +19,13 @@
 
 package org.apache.cayenne.tools;
 
-import org.apache.cayenne.test.file.FileUtil;
 import org.apache.cayenne.test.resource.ResourceUtil;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileList;
 import org.apache.tools.ant.types.Path;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -37,6 +37,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class CayenneGeneratorTaskCrossMapRelationshipsTest {
+
+	@TempDir
+	File tempDir;
 
 	/**
 	 * Tests pairs generation with a cross-DataMap relationship.
@@ -51,7 +54,7 @@ public class CayenneGeneratorTaskCrossMapRelationshipsTest {
 
 		// prepare destination directory
 
-		File destDir = new File(FileUtil.baseTestDirectory(), "cgen12");
+		File destDir = new File(tempDir, "cgen12");
 		// prepare destination directory
 		if (!destDir.exists()) {
 			assertTrue(destDir.mkdirs());

@@ -19,7 +19,6 @@
 package org.apache.cayenne.tools;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
-import org.apache.cayenne.test.file.FileUtil;
 import org.apache.cayenne.test.jdbc.SQLReader;
 import org.apache.cayenne.test.resource.ResourceUtil;
 import org.apache.tools.ant.Project;
@@ -27,12 +26,14 @@ import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.UnknownElement;
 import org.apache.tools.ant.util.FileUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.xmlunit.matchers.CompareMatcher;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -53,9 +54,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 // based on "cayenneTestConnection", like we do in cayenne-server, etc.
 public class DbImporterTaskTest {
 
+    @TempDir
+    Path tempDir;
 
-    private static File distDir(String name) {
-        File distDir = new File(FileUtil.baseTestDirectory(), "cdbImport");
+    private File distDir(String name) {
+        File distDir = tempDir.resolve("cdbImport").toFile();
         File file = new File(distDir, name);
         distDir = file.getParentFile();
         // prepare destination directory

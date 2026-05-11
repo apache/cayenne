@@ -22,17 +22,19 @@ package org.apache.cayenne.tools;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.test.file.FileUtil;
 import org.apache.cayenne.test.resource.ResourceUtil;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -43,14 +45,17 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class CayenneGeneratorTaskTest {
 
-	private static final File baseDir;
-	private static final File map;
-	private static final File mapEmbeddables;
-	private static final File template;
+	@TempDir
+	static Path tempDir;
 
-	static {
+	private static File baseDir;
+	private static File map;
+	private static File mapEmbeddables;
+	private static File template;
 
-		baseDir = FileUtil.baseTestDirectory();
+	@BeforeAll
+	static void setUpClass() {
+		baseDir = tempDir.toFile();
 		map = new File(baseDir, "antmap.xml");
 		mapEmbeddables = new File(baseDir, "antmap-embeddables.xml");
 		template = new File(baseDir, "velotemplate.vm");
@@ -137,7 +142,7 @@ public class CayenneGeneratorTaskTest {
 			assertTrue(cgenConfiguration.isUsePkgPath());
 
 			assertTrue(cgenConfiguration.getTemplate().isFile());
-			assertEquals(convertPath("target/testrun/velotemplate.vm"), convertPath(cgenConfiguration.getTemplate().getData()));
+			assertEquals(template.getPath(), convertPath(cgenConfiguration.getTemplate().getData()));
 			assertEquals(TemplateType.ENTITY_SUBCLASS, cgenConfiguration.getTemplate().getType());
 
 			assertTrue(cgenConfiguration.getSuperTemplate().isFile());
