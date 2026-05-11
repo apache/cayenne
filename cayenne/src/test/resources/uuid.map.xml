@@ -11,10 +11,17 @@
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="UUID" type="VARCHAR" length="100"/>
 	</db-entity>
+	<db-entity name="UUID_BIN_TEST">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="UUID" type="BINARY" length="16"/>
+	</db-entity>
 	<obj-entity name="UuidPkEntity" className="org.apache.cayenne.testdo.uuid.UuidPkEntity" dbEntityName="UUID_PK_ENTITY">
 		<obj-attribute name="id" type="java.util.UUID" db-attribute-path="ID"/>
 	</obj-entity>
 	<obj-entity name="UuidTestEntity" className="org.apache.cayenne.testdo.uuid.UuidTestEntity" dbEntityName="UUID_TEST">
+		<obj-attribute name="uuid" type="java.util.UUID" db-attribute-path="UUID"/>
+	</obj-entity>
+	<obj-entity name="UuidBinTestEntity" className="org.apache.cayenne.testdo.uuid.UuidBinTestEntity" dbEntityName="UUID_BIN_TEST">
 		<obj-attribute name="uuid" type="java.util.UUID" db-attribute-path="UUID"/>
 	</obj-entity>
 </data-map>
