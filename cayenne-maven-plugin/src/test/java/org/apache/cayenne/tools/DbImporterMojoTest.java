@@ -23,7 +23,6 @@ import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.test.jdbc.SQLReader;
-import org.apache.cayenne.test.resource.ResourceUtil;
 import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoTest;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -530,7 +529,7 @@ public class DbImporterMojoTest {
 
     private void prepareDatabase(String sqlFile, DbImportDataSourceConfig dataSource) throws Exception {
 
-        URL sqlUrl = Objects.requireNonNull(ResourceUtil.getResource(DbImporterMojoTest.class, "dbimport/" + sqlFile + ".sql"));
+        URL sqlUrl = Objects.requireNonNull(DbImporterMojoTest.class.getResource("dbimport/" + sqlFile + ".sql"));
 
         // TODO: refactor to common DB management code... E.g. bootique-jdbc-test?
 

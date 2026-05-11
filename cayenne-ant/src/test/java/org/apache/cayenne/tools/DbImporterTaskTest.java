@@ -20,7 +20,6 @@ package org.apache.cayenne.tools;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
 import org.apache.cayenne.test.jdbc.SQLReader;
-import org.apache.cayenne.test.resource.ResourceUtil;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.UnknownElement;
@@ -33,6 +32,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -108,11 +108,11 @@ public class DbImporterTaskTest {
         test("build-include-table.xml");
     }
 
-    private DbImporterTask getCdbImport(String buildFile) {
+    private DbImporterTask getCdbImport(String buildFile) throws IOException {
         Project project = new Project();
 
         File map = distDir(buildFile);
-        ResourceUtil.copyResourceToFile(getPackagePath() + "/" + buildFile, map);
+        Files.copy(getClass().getResourceAsStream("/" + getPackagePath() + "/" + buildFile), map.toPath());
         ProjectHelper.configureProject(project, map);
 
         UnknownElement task = (UnknownElement) project.getTargets().get("dist").getTasks()[0];
@@ -131,8 +131,7 @@ public class DbImporterTaskTest {
 
         URL mapUrlRes = this.getClass().getResource(mapFile.getName() + "-result");
         assertTrue(mapUrlRes != null && new File(mapUrlRes.toURI()).exists());
-        assertTrue(ResourceUtil
-                .copyResourceToFile(mapUrlRes, new File(mapFile.getParentFile(), mapFile.getName() + "-result")));
+        Files.copy(mapUrlRes.openStream(), new File(mapFile.getParentFile(), mapFile.getName() + "-result").toPath());
 
 
         File mapFileCopy = distDir("copy-" + mapFile.getName());
@@ -183,7 +182,7 @@ public class DbImporterTaskTest {
 
     private void prepareDatabase(String sqlFile, DbImportConfiguration dbImportConfiguration) throws Exception {
 
-        URL sqlUrl = ResourceUtil.getResource(getClass(), sqlFile + ".sql");
+        URL sqlUrl = getClass().getResource(sqlFile + ".sql");
         assertNotNull(sqlUrl);
 
         Class.forName(dbImportConfiguration.getDriver()).getDeclaredConstructor().newInstance();

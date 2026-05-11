@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.tools;
 
-import org.apache.cayenne.test.resource.ResourceUtil;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileList;
@@ -31,6 +30,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -61,11 +61,11 @@ public class CayenneGeneratorTaskCrossMapRelationshipsTest {
 		}
 
 		File map = new File(destDir, "cgen-dependent.map.xml");
-		ResourceUtil.copyResourceToFile("org/apache/cayenne/tools/cgen-dependent.map.xml", map);
+		Files.copy(getClass().getResourceAsStream("/org/apache/cayenne/tools/cgen-dependent.map.xml"), map.toPath());
 
 		File additionalMaps[] = new File[1];
 		additionalMaps[0] = new File(destDir, "cgen.map.xml");
-		ResourceUtil.copyResourceToFile("org/apache/cayenne/tools/cgen.map.xml", additionalMaps[0]);
+		Files.copy(getClass().getResourceAsStream("/org/apache/cayenne/tools/cgen.map.xml"), additionalMaps[0].toPath());
 
 		FileList additionalMapsFilelist = new FileList();
 		additionalMapsFilelist.setDir(additionalMaps[0].getParentFile());
