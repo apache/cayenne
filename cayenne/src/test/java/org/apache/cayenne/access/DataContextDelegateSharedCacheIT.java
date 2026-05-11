@@ -32,14 +32,14 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.ExtraModules;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 @ExtraModules(RuntimeCaseSyncModule.class)
@@ -53,7 +53,7 @@ public class DataContextDelegateSharedCacheIT extends RuntimeCase {
 
     private Artist artist;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
         // prepare a single artist record
@@ -68,7 +68,7 @@ public class DataContextDelegateSharedCacheIT extends RuntimeCase {
      * the store.
      */
     @Test
-    public void testShouldMergeChanges() throws Exception {
+    public void shouldMergeChanges() throws Exception {
 
         final boolean[] methodInvoked = new boolean[1];
         DataContextDelegate delegate = new MockDataContextDelegate() {
@@ -100,7 +100,7 @@ public class DataContextDelegateSharedCacheIT extends RuntimeCase {
 
             @Override
             protected void assertResult() throws Exception {
-                assertTrue("Delegate was not consulted", methodInvoked[0]);
+                assertTrue(methodInvoked[0], "Delegate was not consulted");
             }
         };
         helper.runTest(3000);
@@ -112,7 +112,7 @@ public class DataContextDelegateSharedCacheIT extends RuntimeCase {
      * @throws Exception
      */
     @Test
-    public void testBlockedShouldMergeChanges() throws Exception {
+    public void blockedShouldMergeChanges() throws Exception {
         String oldName = artist.getArtistName();
 
         DataContextDelegate delegate = new MockDataContextDelegate() {
@@ -147,7 +147,7 @@ public class DataContextDelegateSharedCacheIT extends RuntimeCase {
      * @throws Exception
      */
     @Test
-    public void testShouldProcessDeleteOnExternalChange() throws Exception {
+    public void shouldProcessDeleteOnExternalChange() throws Exception {
 
         final boolean[] methodInvoked = new boolean[1];
         DataContextDelegate delegate = new MockDataContextDelegate() {
@@ -178,7 +178,7 @@ public class DataContextDelegateSharedCacheIT extends RuntimeCase {
 
             @Override
             protected void assertResult() throws Exception {
-                assertTrue("Delegate was not consulted", methodInvoked[0]);
+                assertTrue(methodInvoked[0], "Delegate was not consulted");
             }
         };
         helper.runTest(3000);
@@ -191,7 +191,7 @@ public class DataContextDelegateSharedCacheIT extends RuntimeCase {
      * @throws Exception
      */
     @Test
-    public void testBlockShouldProcessDeleteOnExternalChange() throws Exception {
+    public void blockShouldProcessDeleteOnExternalChange() throws Exception {
 
         final boolean[] methodInvoked = new boolean[1];
         DataContextDelegate delegate = new MockDataContextDelegate() {
@@ -222,7 +222,7 @@ public class DataContextDelegateSharedCacheIT extends RuntimeCase {
 
             @Override
             protected void assertResult() throws Exception {
-                assertTrue("Delegate was not consulted", methodInvoked[0]);
+                assertTrue(methodInvoked[0], "Delegate was not consulted");
             }
         };
         helper.runTest(3000);

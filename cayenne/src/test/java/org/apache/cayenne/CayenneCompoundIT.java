@@ -30,17 +30,17 @@ import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @UseCayenneRuntime(CayenneProjects.COMPOUND_PROJECT)
 public class CayenneCompoundIT extends RuntimeCase {
@@ -55,7 +55,7 @@ public class CayenneCompoundIT extends RuntimeCase {
 	private TableHelper tCharPKTest;
 	private TableHelper tCompoundIntPKTest;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		tCompoundPKTest = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
 		tCompoundPKTest.setColumns("KEY1", "KEY2", "NAME");
@@ -82,7 +82,7 @@ public class CayenneCompoundIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testObjectForPKEntityMapCompound() throws Exception {
+	public void objectForPKEntityMapCompound() throws Exception {
 		createOneCompoundPK();
 
 		Map<String, Object> pk = new HashMap<>();
@@ -95,7 +95,7 @@ public class CayenneCompoundIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testCompoundPKForObject() throws Exception {
+	public void compoundPKForObject() throws Exception {
 		createOneCompoundPK();
 
 		List<CompoundPkTestEntity> objects = ObjectSelect.query(CompoundPkTestEntity.class).select(context);
@@ -110,55 +110,40 @@ public class CayenneCompoundIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testIntPKForObjectFailureForCompound() throws Exception {
+	public void intPKForObjectFailureForCompound() throws Exception {
 		createOneCompoundPK();
 
 		List<CompoundPkTestEntity> objects = ObjectSelect.query(CompoundPkTestEntity.class).select(context);
 		assertEquals(1, objects.size());
 		CompoundPkTestEntity object = objects.get(0);
 
-		try {
-			Cayenne.intPKForObject(object);
-			fail("intPKForObject must fail for compound key");
-		} catch (CayenneRuntimeException ex) {
-			// expected
-		}
+		assertThrows(CayenneRuntimeException.class, () -> Cayenne.intPKForObject(object));
 	}
 
 	@Test
-	public void testIntPKForObjectFailureForNonNumeric() throws Exception {
+	public void intPKForObjectFailureForNonNumeric() throws Exception {
 		createOneCharPK();
 
 		List<CharPkTestEntity> objects = ObjectSelect.query(CharPkTestEntity.class).select(context);
 		assertEquals(1, objects.size());
 		CharPkTestEntity object = objects.get(0);
 
-		try {
-			Cayenne.intPKForObject(object);
-			fail("intPKForObject must fail for non-numeric key");
-		} catch (CayenneRuntimeException ex) {
-
-		}
+		assertThrows(CayenneRuntimeException.class, () -> Cayenne.intPKForObject(object));
 	}
 
 	@Test
-	public void testPKForObjectFailureForCompound() throws Exception {
+	public void pkForObjectFailureForCompound() throws Exception {
 		createOneCompoundPK();
 
 		List<CompoundPkTestEntity> objects = ObjectSelect.query(CompoundPkTestEntity.class).select(context);
 		assertEquals(1, objects.size());
 		CompoundPkTestEntity object = objects.get(0);
 
-		try {
-			Cayenne.pkForObject(object);
-			fail("pkForObject must fail for compound key");
-		} catch (CayenneRuntimeException ex) {
-
-		}
+		assertThrows(CayenneRuntimeException.class, () -> Cayenne.pkForObject(object));
 	}
 
 	@Test
-	public void testIntPKForObjectNonNumeric() throws Exception {
+	public void intPKForObjectNonNumeric() throws Exception {
 		createOneCharPK();
 
 		List<CharPkTestEntity> objects = ObjectSelect.query(CharPkTestEntity.class).select(context);
@@ -169,7 +154,7 @@ public class CayenneCompoundIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPaginatedColumnSelect() throws Exception {
+	public void paginatedColumnSelect() throws Exception {
 		createCompoundPKs(20);
 
 		List<Object[]> result = ObjectSelect.query(CompoundPkTestEntity.class)
@@ -185,7 +170,7 @@ public class CayenneCompoundIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testEjbqlCountSelect() throws Exception {
+	public void ejbqlCountSelect() throws Exception {
 		tCompoundIntPKTest.insert(1, 2, "test");
 		tCompoundIntPKTest.insert(2, 3, "test");
 		tCompoundIntPKTest.insert(1, 4, "test");

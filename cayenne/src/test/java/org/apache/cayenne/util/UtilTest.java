@@ -20,20 +20,20 @@
 package org.apache.cayenne.util;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UtilTest {
 
@@ -41,7 +41,7 @@ public class UtilTest {
 	private String fTmpFileName;
 	private File fTmpFileCopy;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		fTmpFileName = "." + File.separator + System.currentTimeMillis() + ".tmp";
 
@@ -51,11 +51,11 @@ public class UtilTest {
 		try (FileWriter fout = new FileWriter(fTmpFileInCurrentDir)) {
 			fout.write("This is total garbage..");
 		}
-		
+
 		fTmpFileCopy = new File(fTmpFileName + ".copy");
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 		if (!fTmpFileInCurrentDir.delete())
 			throw new Exception("Error deleting temporary file: " + fTmpFileInCurrentDir);
@@ -67,7 +67,7 @@ public class UtilTest {
 
 	@Test
 	@SuppressWarnings("deprecation")
-	public void testGetJavaClass() throws Exception {
+	public void getJavaClass() throws Exception {
 		assertEquals(byte.class.getName(), Util.getJavaClass("byte").getName());
 		assertEquals(byte[].class.getName(), Util.getJavaClass("byte[]").getName());
 		assertEquals(String[].class.getName(), Util.getJavaClass("java.lang.String[]").getName());
@@ -75,7 +75,7 @@ public class UtilTest {
 	}
 
 	@Test
-	public void testToMap() {
+	public void toMap() {
 		Object[] keys = new Object[] { "a", "b" };
 		Object[] values = new Object[] { "1", "2" };
 
@@ -94,16 +94,11 @@ public class UtilTest {
 
 		// check arrays with different sizes
 		Object[] values2 = new Object[] { "1" };
-		try {
-			Util.toMap(keys, values2);
-			fail("must have thrown");
-		} catch (IllegalArgumentException e) {
-			// expected
-		}
+		assertThrows(IllegalArgumentException.class, () -> Util.toMap(keys, values2));
 	}
 
 	@Test
-	public void testStripLineBreaks() {
+	public void stripLineBreaks() {
 
 		// no breaks
 		assertEquals("PnMusdkams34 H AnYtk M", Util.stripLineBreaks("PnMusdkams34 H AnYtk M", 'A'));
@@ -119,7 +114,7 @@ public class UtilTest {
 	}
 
 	@Test
-	public void testCloneViaSerialization() throws Exception {
+	public void cloneViaSerialization() throws Exception {
 		// need a special subclass of Object to make "clone" method public
 		MockSerializable o1 = new MockSerializable();
 		Object o2 = Util.cloneViaSerialization(o1);
@@ -128,13 +123,13 @@ public class UtilTest {
 	}
 
 	@Test
-	public void testPackagePath1() throws Exception {
+	public void packagePath1() throws Exception {
 		String expectedPath = "org/apache/cayenne/util";
 		assertEquals(expectedPath, Util.getPackagePath(UtilTest.class.getName()));
 	}
 
 	@Test
-	public void testPackagePath2() throws Exception {
+	public void packagePath2() throws Exception {
 		// inner class
 		class TmpTest extends Object {
 		}
@@ -144,34 +139,34 @@ public class UtilTest {
 	}
 
 	@Test
-	public void testPackagePath3() throws Exception {
+	public void packagePath3() throws Exception {
 		assertEquals("", Util.getPackagePath("ClassWithNoPackage"));
 	}
 
 	@Test
-	public void testIsEmptyString1() throws Exception {
+	public void isEmptyString1() throws Exception {
 		assertTrue(Util.isEmptyString(""));
 	}
 
 	@Test
-	public void testIsEmptyString2() throws Exception {
+	public void isEmptyString2() throws Exception {
 		assertFalse(Util.isEmptyString("  "));
 	}
 
 	@Test
-	public void testIsEmptyString3() throws Exception {
+	public void isEmptyString3() throws Exception {
 		assertTrue(Util.isEmptyString(null));
 	}
 
 	@Test
-	public void testBackslashFix() throws Exception {
+	public void backslashFix() throws Exception {
 		String strBefore = "abcd\\12345\\";
 		String strAfter = "abcd/12345/";
 		assertEquals(strAfter, Util.substBackslashes(strBefore));
 	}
 
 	@Test
-	public void testNullSafeEquals() throws Exception {
+	public void nullSafeEquals() throws Exception {
 		// need a special subclass of Object to make "clone" method public
 		class CloneableObject implements Cloneable {
 
@@ -206,90 +201,86 @@ public class UtilTest {
 	}
 
 	@Test
-	public void testExtractFileExtension1() throws Exception {
+	public void extractFileExtension1() throws Exception {
 		String fullName = "n.ext";
 		assertEquals("ext", Util.extractFileExtension(fullName));
 	}
 
 	@Test
-	public void testExtractFileExtension2() throws Exception {
+	public void extractFileExtension2() throws Exception {
 		String fullName = "n";
 		assertNull(Util.extractFileExtension(fullName));
 	}
 
 	@Test
-	public void testExtractFileExtension3() throws Exception {
+	public void extractFileExtension3() throws Exception {
 		String fullName = ".ext";
 		assertNull(Util.extractFileExtension(fullName));
 	}
 
 	@Test
-	public void testStripFileExtension1() throws Exception {
+	public void stripFileExtension1() throws Exception {
 		String fullName = "n.ext";
 		assertEquals("n", Util.stripFileExtension(fullName));
 	}
 
 	@Test
-	public void testStripFileExtension2() throws Exception {
+	public void stripFileExtension2() throws Exception {
 		String fullName = "n";
 		assertEquals("n", Util.stripFileExtension(fullName));
 	}
 
 	@Test
-	public void testStripFileExtension3() throws Exception {
+	public void stripFileExtension3() throws Exception {
 		String fullName = ".ext";
 		assertEquals(".ext", Util.stripFileExtension(fullName));
 	}
 
 	@Test
-	public void testEncodeXmlAttribute1() throws Exception {
+	public void encodeXmlAttribute1() throws Exception {
 		String unencoded = "normalstring";
 		assertEquals(unencoded, Util.encodeXmlAttribute(unencoded));
 	}
 
 	@Test
-	public void testEncodeXmlAttribute2() throws Exception {
+	public void encodeXmlAttribute2() throws Exception {
 		String unencoded = "<a>";
 		assertEquals("&lt;a&gt;", Util.encodeXmlAttribute(unencoded));
 	}
 
 	@Test
-	public void testEncodeXmlAttribute3() throws Exception {
+	public void encodeXmlAttribute3() throws Exception {
 		String unencoded = "a&b";
 		assertEquals("a&amp;b", Util.encodeXmlAttribute(unencoded));
 	}
 
 	@Test
-	public void testUnwindException1() throws Exception {
+	public void unwindException1() throws Exception {
 		Throwable e = new Throwable();
 		assertSame(e, Util.unwindException(e));
 	}
 
 	@Test
-	public void testUnwindException2() throws Exception {
+	public void unwindException2() throws Exception {
 		CayenneRuntimeException e = new CayenneRuntimeException();
 		assertSame(e, Util.unwindException(e));
 	}
 
 	@Test
-	public void testUnwindException3() throws Exception {
+	public void unwindException3() throws Exception {
 		Throwable root = new Throwable();
 		CayenneRuntimeException e = new CayenneRuntimeException(root);
 		assertSame(root, Util.unwindException(e));
 	}
 
 	@Test
-	public void testPrettyTrim1() throws Exception {
+	public void prettyTrim1() throws Exception {
 		// size is too short, must throw
-		try {
-			Util.prettyTrim("abc", 4);
-		} catch (IllegalArgumentException ex) {
-			// expected
-		}
+		assertThrows(IllegalArgumentException.class, () -> Util.prettyTrim("abc", 4));
 	}
 
 	@Test
-	public void testPrettyTrim2() throws Exception {
+	public void prettyTrim2() throws Exception {
 		assertEquals("123", Util.prettyTrim("123", 6));
 		assertEquals("123456", Util.prettyTrim("123456", 6));
 		assertEquals("1...67", Util.prettyTrim("1234567", 6));
@@ -297,7 +288,7 @@ public class UtilTest {
 	}
 
 	@Test
-	public void testUnderscoredToJava1() throws Exception {
+	public void underscoredToJava1() throws Exception {
 		String expected = "ClassNameIdentifier";
 		assertEquals(expected, Util.underscoredToJava(
 				"_CLASS_NAME_IDENTIFIER_",
@@ -305,7 +296,7 @@ public class UtilTest {
 	}
 
 	@Test
-	public void testUnderscoredToJava2() throws Exception {
+	public void underscoredToJava2() throws Exception {
 		String expected = "propNameIdentifier123";
 		assertEquals(expected, Util.underscoredToJava(
 				"_prop_name_Identifier_123",
@@ -313,25 +304,25 @@ public class UtilTest {
 	}
 
 	@Test
-	public void testUnderscoredToJava3() throws Exception {
+	public void underscoredToJava3() throws Exception {
 		String expected = "lastName";
 		assertEquals(expected, Util.underscoredToJava("lastName", false));
 	}
 
 	@Test
-	public void testUnderscoredToJava4() throws Exception {
+	public void underscoredToJava4() throws Exception {
 		String expected = "lastName";
 		assertEquals(expected, Util.underscoredToJava("LastName", false));
 	}
 
 	@Test
-	public void testUnderscoredToJava5() throws Exception {
+	public void underscoredToJava5() throws Exception {
 		String expected = "LastName";
 		assertEquals(expected, Util.underscoredToJava("LastName", true));
 	}
 
 	@Test
-	public void testUnderscoredToJavaSpecialChars() throws Exception {
+	public void underscoredToJavaSpecialChars() throws Exception {
 		assertEquals("ABCpoundXyz", Util.underscoredToJava("ABC#_XYZ", true));
 	}
 }

@@ -28,13 +28,13 @@ import org.apache.cayenne.testdo.testmap.CompoundPaintingLongNames;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DescriptorColumnExtractorIT extends RuntimeCase {
@@ -50,7 +50,7 @@ public class DescriptorColumnExtractorIT extends RuntimeCase {
             "toPaintingInfo.TEXT_REVIEW");
 
     @Test
-    public void testEntityResultAddDbFieldsForFlattenedAttributes() {
+    public void entityResultAddDbFieldsForFlattenedAttributes() {
 
         EntityResolver resolver = context.getEntityResolver();
         ClassDescriptor classDescriptor = resolver.getClassDescriptor("CompoundPaintingLongNames");

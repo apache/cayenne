@@ -27,10 +27,10 @@ import org.apache.cayenne.testdo.array_type.ArrayTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
 @UseCayenneRuntime(CayenneProjects.ARRAY_TYPE_PROJECT)
@@ -40,7 +40,7 @@ public class DataContextArrayTypeIT extends RuntimeCase {
     private DataContext context;
 
     @Test
-    public void testDoubleArray() {
+    public void doubleArray() {
         ArrayTestEntity arrayTest = context.newObject(ArrayTestEntity.class);
         Double[] doubleArray = {1.0, 2.0, 3.0};
 

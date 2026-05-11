@@ -28,13 +28,13 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.SchemaBuilder;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class JdbcPkGeneratorIT extends RuntimeCase {
@@ -48,12 +48,12 @@ public class JdbcPkGeneratorIT extends RuntimeCase {
     @Inject
     private SchemaBuilder schemaBuilder;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         schemaBuilder.dropPKSupport();
     }
     
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
 
         if (JdbcPkGenerator.class.isAssignableFrom(adapter.getPkGenerator().getClass())) {
@@ -68,7 +68,7 @@ public class JdbcPkGeneratorIT extends RuntimeCase {
     }
 
     @Test
-    public void testLongPk() throws Exception {
+    public void longPk() throws Exception {
 
         if (!JdbcPkGenerator.class.isAssignableFrom(adapter.getPkGenerator().getClass())) {
             return;
@@ -90,6 +90,6 @@ public class JdbcPkGeneratorIT extends RuntimeCase {
         
         Object pk = pkGenerator.generatePk(node, pkAttribute);
         assertTrue(pk instanceof Long);
-        assertTrue("PK is too small: " + pk, ((Long) pk).longValue() > Integer.MAX_VALUE);
+        assertTrue(((Long) pk).longValue() > Integer.MAX_VALUE, "PK is too small: " + pk);
     }
 }

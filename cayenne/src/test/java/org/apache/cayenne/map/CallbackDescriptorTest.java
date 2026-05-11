@@ -18,20 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CallbackDescriptorTest {
 
     @Test
-    public void testConstructor() {
+    public void constructor() {
         CallbackDescriptor m = new CallbackDescriptor(LifecycleEvent.POST_LOAD);
         assertEquals(LifecycleEvent.POST_LOAD, m.getCallbackType());
     }
 
     @Test
-    public void testAddCallbackMethod() {
+    public void addCallbackMethod() {
         CallbackDescriptor m = new CallbackDescriptor(LifecycleEvent.POST_ADD);
         assertEquals(0, m.getCallbackMethods().size());
         m.addCallbackMethod("a");

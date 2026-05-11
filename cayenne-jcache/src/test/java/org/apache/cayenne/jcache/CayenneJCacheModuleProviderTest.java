@@ -21,12 +21,12 @@ package org.apache.cayenne.jcache;
 
 import org.apache.cayenne.runtime.CayenneRuntimeModuleProvider;
 import org.apache.cayenne.unit.util.ModuleProviderChecker;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class CayenneJCacheModuleProviderTest {
 
     @Test
-    public void testAutoLoadable() {
+    public void autoLoadable() {
         ModuleProviderChecker.testProviderPresent(JCacheModuleProvider.class, CayenneRuntimeModuleProvider.class);
     }
 }

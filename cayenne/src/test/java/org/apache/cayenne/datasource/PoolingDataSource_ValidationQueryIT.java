@@ -18,13 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.datasource;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Connection;
 
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class PoolingDataSource_ValidationQueryIT extends BasePoolingDataSourceIT {
@@ -37,7 +37,7 @@ public class PoolingDataSource_ValidationQueryIT extends BasePoolingDataSourceIT
 	}
 
 	@Test
-	public void testGetConnection_ValidationQuery() throws Exception {
+	public void getConnection_ValidationQuery() throws Exception {
 
 		assertEquals(2, dataSource.poolSize());
 		assertEquals(2, dataSource.availableSize());

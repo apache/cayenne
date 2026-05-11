@@ -18,69 +18,69 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 // TODO: split it between AST* unit tests (partially done already)
 public class ExpressionEvaluateInMemoryTest {
 
 	@Test
-	public void testEvaluateADD() {
+	public void evaluateADD() {
 		Expression add = new ASTAdd(1, 5.5);
 		assertEquals(6.5, ((Number) add.evaluate(null)).doubleValue(), 0.0001);
 	}
 
 	@Test
-	public void testEvaluateSubtract() {
+	public void evaluateSubtract() {
 		Expression subtract = new ASTSubtract(1, 0.1, 0.2);
 		assertEquals(0.7, ((Number) subtract.evaluate(null)).doubleValue(), 0.0001);
 	}
 
 	@Test
-	public void testEvaluateMultiply() {
+	public void evaluateMultiply() {
 		Expression multiply = new ASTMultiply(2, 3.5);
 		assertEquals(7, ((Number) multiply.evaluate(null)).doubleValue(), 0.0001);
 	}
 
 	@Test
-	public void testEvaluateDivide() {
+	public void evaluateDivide() {
 		Expression divide = new ASTDivide(new BigDecimal("7.0"), new BigDecimal("2.0"));
 		assertEquals(3.5, ((Number) divide.evaluate(null)).doubleValue(), 0.0001);
 	}
 
 	@Test
-	public void testEvaluateNegate() {
+	public void evaluateNegate() {
 		assertEquals(-3, ((Number) new ASTNegate(Integer.valueOf(3)).evaluate(null)).intValue());
 		assertEquals(5, ((Number) new ASTNegate(Integer.valueOf(-5)).evaluate(null)).intValue());
 	}
 
 	@Test
-	public void testEvaluateTrue() {
+	public void evaluateTrue() {
 		assertEquals(Boolean.TRUE, new ASTTrue().evaluate(null));
 	}
 
 	@Test
-	public void testEvaluateFalse() {
+	public void evaluateFalse() {
 		assertEquals(Boolean.FALSE, new ASTFalse().evaluate(null));
 	}
 
 	@Test
-    public void testEvaluateNullCompare() throws Exception {
+    public void evaluateNullCompare() throws Exception {
         Expression expression = new ASTGreater(new ASTObjPath("artistName"), "A");
         assertFalse(expression.match(new Artist()));
         assertFalse(expression.notExp().match(new Artist()));
     }
 
     @Test
-    public void testEvaluateCompareNull() throws Exception {
+    public void evaluateCompareNull() throws Exception {
         Artist a1 = new Artist();
         a1.setArtistName("Name");
         Expression expression = new ASTGreater(new ASTObjPath("artistName"), null);
@@ -92,7 +92,7 @@ public class ExpressionEvaluateInMemoryTest {
     }
 
     @Test
-    public void testEvaluateEqualsNull() throws Exception {
+    public void evaluateEqualsNull() throws Exception {
         Artist a1 = new Artist();
         Expression isNull = Artist.ARTIST_NAME.isNull();
         assertTrue(isNull.match(a1));
@@ -100,14 +100,14 @@ public class ExpressionEvaluateInMemoryTest {
     }
 
     @Test
-    public void testEvaluateNotEqualsNullColumn() throws Exception {
+    public void evaluateNotEqualsNullColumn() throws Exception {
         Expression notEquals = ExpressionFactory.exp("artistName <> someOtherProperty");
         assertFalse(notEquals.match(new Artist()));
         assertTrue(notEquals.notExp().match(new Artist()));
     }
 
     @Test
-    public void testNullAnd() {
+    public void nullAnd() {
         Expression nullExp = ExpressionFactory.exp("null > 0");
 
         ASTAnd nullAndTrue = new ASTAnd(new Object[] {nullExp, new ASTTrue()});
@@ -120,7 +120,7 @@ public class ExpressionEvaluateInMemoryTest {
     }
 
     @Test
-    public void testNullOr() {
+    public void nullOr() {
         Expression nullExp = ExpressionFactory.exp("null > 0");
 
         ASTOr nullOrTrue = new ASTOr(new Object[] {nullExp, new ASTTrue()});

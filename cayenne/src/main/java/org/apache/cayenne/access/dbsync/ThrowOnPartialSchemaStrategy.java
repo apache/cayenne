@@ -49,18 +49,18 @@ public class ThrowOnPartialSchemaStrategy extends BaseSchemaUpdateStrategy {
         DatabaseMetaData md = null;
         try {
 
-            try (Connection connection = dataNode.getDataSource().getConnection();) {
+            try (Connection connection = dataNode.getDataSource().getConnection()) {
                 md = connection.getMetaData();
 
-                try (ResultSet rs = md.getSchemas();) {
+                try (ResultSet rs = md.getSchemas()) {
                     while (rs.next()) {
                         String schemaName = rs.getString(1);
                         schemas.add(schemaName);
                     }
                 }
-            }
 
-            analyzer.analyzeSchemas(schemas, md);
+                analyzer.analyzeSchemas(schemas, md);
+            }
         } catch (Exception e) {
             LOGGER.debug("Exception analyzing schema, ignoring", e);
         }

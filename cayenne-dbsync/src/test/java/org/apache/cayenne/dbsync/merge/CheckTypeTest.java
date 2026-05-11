@@ -24,13 +24,13 @@ import org.apache.cayenne.dbsync.merge.factory.MySQLMergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.PostgresMergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.map.*;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.Collection;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CheckTypeTest {
 
@@ -46,7 +46,7 @@ public class CheckTypeTest {
 
     DbAttributeMerger dbAttributeMerger;
 
-    @Before
+    @BeforeEach
     public void setUp(){
         dbEntity = new DbEntity("NEW_TABLE");
 
@@ -63,7 +63,7 @@ public class CheckTypeTest {
     }
 
     @Test
-    public void testCheckBooleanBitTypeMySQL() {
+    public void checkBooleanBitTypeMySQL() {
 
         original.setType(Types.BOOLEAN);
         imported.setType(Types.BIT);
@@ -73,7 +73,7 @@ public class CheckTypeTest {
     }
 
     @Test
-    public void testCheckBlobLongvarbinaryTypeMySQL() {
+    public void checkBlobLongvarbinaryTypeMySQL() {
 
         original.setType(Types.BLOB);
         imported.setType(Types.LONGVARBINARY);
@@ -83,7 +83,7 @@ public class CheckTypeTest {
     }
 
     @Test
-    public void testCheckBooleanIntegerTypeMySQL() {
+    public void checkBooleanIntegerTypeMySQL() {
 
         original.setType(Types.BOOLEAN);
         imported.setType(Types.INTEGER);
@@ -97,7 +97,7 @@ public class CheckTypeTest {
     }
 
     @Test
-    public void testCheckBooleanBitTypePostgres() {
+    public void checkBooleanBitTypePostgres() {
 
         original.setType(Types.BOOLEAN);
         imported.setType(Types.BIT);
@@ -115,7 +115,7 @@ public class CheckTypeTest {
     }
 
     @Test
-    public void testCheckNumericDecimalType() {
+    public void checkNumericDecimalType() {
 
         original.setType(Types.NUMERIC);
         imported.setType(Types.DECIMAL);
@@ -125,7 +125,7 @@ public class CheckTypeTest {
     }
 
     @Test
-    public void testCheckMaxLengthType() {
+    public void checkMaxLengthType() {
 
         original.setType(Types.CHAR);
         original.setMaxLength(1);
@@ -141,7 +141,7 @@ public class CheckTypeTest {
     }
 
     @Test
-    public void testCheckScaleType() {
+    public void checkScaleType() {
 
         original.setScale(1);
         imported.setScale(2);
@@ -155,7 +155,7 @@ public class CheckTypeTest {
     }
 
     @Test
-    public void testCheckAttributePrecisionType() {
+    public void checkAttributePrecisionType() {
 
         original.setAttributePrecision(1);
         imported.setAttributePrecision(2);
@@ -185,7 +185,7 @@ public class CheckTypeTest {
     }
 
     @Test
-    public void testCheckTypeWithoutChanges() {
+    public void checkTypeWithoutChanges() {
 
         diffPair = new MergerDiffPair<>(original, imported);
 

@@ -33,9 +33,9 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataDomainCallbacksIT extends RuntimeCase {
@@ -50,7 +50,7 @@ public class DataDomainCallbacksIT extends RuntimeCase {
     private ObjectContext context1;
 
     @Test
-    public void testPostLoad() throws Exception {
+    public void postLoad() throws Exception {
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
         registry.addCallback(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
@@ -104,7 +104,7 @@ public class DataDomainCallbacksIT extends RuntimeCase {
     }
 
     @Test
-    public void testPostLoad_MixedResult() throws Exception {
+    public void postLoad_MixedResult() throws Exception {
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
         registry.addCallback(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
@@ -128,7 +128,7 @@ public class DataDomainCallbacksIT extends RuntimeCase {
     }
 
     @Test
-    public void testPostLoad_Relationship() throws Exception {
+    public void postLoad_Relationship() throws Exception {
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
         registry.addCallback(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
@@ -162,7 +162,7 @@ public class DataDomainCallbacksIT extends RuntimeCase {
     }
 
     @Test
-    public void testPostLoad_Prefetch() throws Exception {
+    public void postLoad_Prefetch() throws Exception {
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
         registry.addCallback(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
@@ -192,7 +192,7 @@ public class DataDomainCallbacksIT extends RuntimeCase {
     }
 
     @Test
-    public void testPostLoad_LocalObject() throws Exception {
+    public void postLoad_LocalObject() throws Exception {
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
         Artist a1 = context.newObject(Artist.class);
@@ -219,7 +219,7 @@ public class DataDomainCallbacksIT extends RuntimeCase {
     }
 
     @Test
-    public void testPostLoad_ThatModifiesObject() {
+    public void postLoad_ThatModifiesObject() {
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
         registry.addCallback(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
@@ -261,7 +261,7 @@ public class DataDomainCallbacksIT extends RuntimeCase {
     }
 
     @Test
-    public void testPreUpdate() {
+    public void preUpdate() {
 
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
@@ -298,7 +298,7 @@ public class DataDomainCallbacksIT extends RuntimeCase {
     }
 
     @Test
-    public void testPostUpdate() {
+    public void postUpdate() {
 
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
@@ -337,7 +337,7 @@ public class DataDomainCallbacksIT extends RuntimeCase {
     }
 
     @Test
-    public void testPostRemove() {
+    public void postRemove() {
 
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
@@ -364,7 +364,7 @@ public class DataDomainCallbacksIT extends RuntimeCase {
     }
 
     @Test
-    public void testPostRemove_UpdatedDeleted() {
+    public void postRemove_UpdatedDeleted() {
 
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
@@ -396,7 +396,7 @@ public class DataDomainCallbacksIT extends RuntimeCase {
     }
 
     @Test
-    public void testPostRemove_InsertedUpdatedDeleted() {
+    public void postRemove_InsertedUpdatedDeleted() {
 
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
@@ -432,7 +432,7 @@ public class DataDomainCallbacksIT extends RuntimeCase {
     }
 
     @Test
-    public void testPostPersist() {
+    public void postPersist() {
 
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 

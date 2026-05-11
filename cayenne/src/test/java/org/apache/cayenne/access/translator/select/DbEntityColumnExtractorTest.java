@@ -25,18 +25,16 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.JoinType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DbEntityColumnExtractorTest extends BaseColumnExtractorTest {
 
     @Test
-    public void testExtractNoPrefix() {
+    public void extractNoPrefix() {
         TranslatableQueryWrapper wrapper = new MockQueryWrapperBuilder()
                 .withMetaData(new MockQueryMetadataBuilder()
                         .withDbEntity(createMockDbEntity("mock"))
@@ -54,7 +52,7 @@ public class DbEntityColumnExtractorTest extends BaseColumnExtractorTest {
 
         assertNull(descriptor0.getProperty());
         assertNotNull(descriptor0.getNode());
-        assertThat(descriptor0.getNode(), instanceOf(ColumnNode.class));
+        assertInstanceOf(ColumnNode.class, descriptor0.getNode());
         assertFalse(descriptor0.isAggregate());
         assertTrue(descriptor0.isInDataRow());
         assertEquals("id", descriptor0.getDataRowKey());
@@ -63,7 +61,7 @@ public class DbEntityColumnExtractorTest extends BaseColumnExtractorTest {
 
         assertNull(descriptor1.getProperty());
         assertNotNull(descriptor1.getNode());
-        assertThat(descriptor1.getNode(), instanceOf(ColumnNode.class));
+        assertInstanceOf(ColumnNode.class, descriptor1.getNode());
         assertFalse(descriptor1.isAggregate());
         assertTrue(descriptor1.isInDataRow());
         assertNotNull(descriptor1.getDbAttribute());
@@ -73,7 +71,7 @@ public class DbEntityColumnExtractorTest extends BaseColumnExtractorTest {
     }
 
     @Test
-    public void testExtractWithPrefix() {
+    public void extractWithPrefix() {
         DbEntity mockDbEntity = createMockDbEntity("mock1");
         DbEntity mock2DbEntity = createMockDbEntity("mock2");
         DataMap dataMap = new DataMap();
@@ -104,7 +102,7 @@ public class DbEntityColumnExtractorTest extends BaseColumnExtractorTest {
 
         assertNull(descriptor0.getProperty());
         assertNotNull(descriptor0.getNode());
-        assertThat(descriptor0.getNode(), instanceOf(ColumnNode.class));
+        assertInstanceOf(ColumnNode.class, descriptor0.getNode());
         assertFalse(descriptor0.isAggregate());
         assertTrue(descriptor0.isInDataRow());
         assertEquals("prefix.id", descriptor0.getDataRowKey());
@@ -113,7 +111,7 @@ public class DbEntityColumnExtractorTest extends BaseColumnExtractorTest {
 
         assertNull(descriptor1.getProperty());
         assertNotNull(descriptor1.getNode());
-        assertThat(descriptor1.getNode(), instanceOf(ColumnNode.class));
+        assertInstanceOf(ColumnNode.class, descriptor1.getNode());
         assertFalse(descriptor1.isAggregate());
         assertTrue(descriptor1.isInDataRow());
         assertNotNull(descriptor1.getDbAttribute());

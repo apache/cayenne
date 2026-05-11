@@ -30,9 +30,9 @@ import org.apache.cayenne.testdo.extended_type.StringET1;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.EXTENDED_TYPE_PROJECT)
 public class DataContextExtendedTypeOperationsIT extends RuntimeCase {
@@ -41,7 +41,7 @@ public class DataContextExtendedTypeOperationsIT extends RuntimeCase {
     protected ObjectContext context;
 
     @Test
-    public void testStoreExtendedType() {
+    public void storeExtendedType() {
         ExtendedTypeEntity e1 = context.newObject(ExtendedTypeEntity.class);
         e1.setName(new StringET1("X"));
         e1.getObjectContext().commitChanges();
@@ -55,7 +55,7 @@ public class DataContextExtendedTypeOperationsIT extends RuntimeCase {
     }
 
     @Test
-    public void testInExpressionExtendedTypeArray() {
+    public void inExpressionExtendedTypeArray() {
         ExtendedTypeEntity e1 = context.newObject(ExtendedTypeEntity.class);
         e1.setName(new StringET1("X"));
 
@@ -73,7 +73,7 @@ public class DataContextExtendedTypeOperationsIT extends RuntimeCase {
     }
 
     @Test
-    public void testInExpressionExtendedTypeList() {
+    public void inExpressionExtendedTypeList() {
         ExtendedTypeEntity e1 = context.newObject(ExtendedTypeEntity.class);
         e1.setName(new StringET1("X"));
 

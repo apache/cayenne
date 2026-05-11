@@ -28,9 +28,9 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
 public class QualifierTest {
 
     @Test
-    public void testScalarObjectIdQualifier() {
+    public void scalarObjectIdQualifier() {
         ObjectId id = ObjectId.of("test", "id", 123);
         Persistent persistent = mockObject(id);
         DbRowOp row = mockRow(persistent);
@@ -56,7 +56,7 @@ public class QualifierTest {
     }
 
     @Test
-    public void testMapObjectIdQualifier() {
+    public void mapObjectIdQualifier() {
         Map<String, Object> idMap = new HashMap<>();
         idMap.put("id1", 123);
         idMap.put("id2", 321);
@@ -74,7 +74,7 @@ public class QualifierTest {
     }
 
     @Test
-    public void testAdditionalQualifier() {
+    public void additionalQualifier() {
         ObjectId id = ObjectId.of("test", "id", 123);
         Persistent persistent = mockObject(id);
         DbRowOp row = mockRow(persistent);
@@ -96,7 +96,7 @@ public class QualifierTest {
     }
 
     @Test
-    public void testOptimisticQualifier() {
+    public void optimisticQualifier() {
         ObjectId id = ObjectId.of("test", "id", 123);
         Persistent persistent = mockObject(id);
         DbRowOp row = mockRow(persistent);
@@ -118,7 +118,7 @@ public class QualifierTest {
     }
 
     @Test
-    public void testSameBatch() {
+    public void sameBatch() {
         ObjectId id1 = ObjectId.of("test", "id", 123);
         Persistent persistent1 = mockObject(id1);
         DbRowOp row1 = mockRow(persistent1);

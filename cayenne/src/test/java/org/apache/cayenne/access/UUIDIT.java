@@ -33,11 +33,11 @@ import org.apache.cayenne.testdo.uuid.UuidTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @UseCayenneRuntime(CayenneProjects.UUID_PROJECT)
 public class UUIDIT extends RuntimeCase {
@@ -50,13 +50,13 @@ public class UUIDIT extends RuntimeCase {
 
     private TableHelper uuidPkEntity;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         uuidPkEntity = new TableHelper(dbHelper, "UUID_PK_ENTITY", "ID");
     }
 
     @Test
-    public void testUUID() throws Exception {
+    public void uuid() throws Exception {
 
         UuidTestEntity test = context.newObject(UuidTestEntity.class);
 
@@ -74,7 +74,7 @@ public class UUIDIT extends RuntimeCase {
     }
 
     @Test
-    public void testUUIDMeaningfulPkInsert() throws Exception {
+    public void uuidMeaningfulPkInsert() throws Exception {
         UUID id = UUID.randomUUID();
 
         UuidPkEntity o1 = context.newObject(UuidPkEntity.class);
@@ -87,7 +87,7 @@ public class UUIDIT extends RuntimeCase {
     }
 
     @Test
-    public void testUUIDMeaningfulPkSelect() throws Exception {
+    public void uuidMeaningfulPkSelect() throws Exception {
         UUID id = UUID.randomUUID();
 
         uuidPkEntity.insert(id.toString());
@@ -100,7 +100,7 @@ public class UUIDIT extends RuntimeCase {
     }
 
     @Test
-    public void testUUIDColumnSelect() throws Exception {
+    public void uuidColumnSelect() throws Exception {
         UuidTestEntity test = context.newObject(UuidTestEntity.class);
         UUID id = UUID.randomUUID();
         test.setUuid(id);

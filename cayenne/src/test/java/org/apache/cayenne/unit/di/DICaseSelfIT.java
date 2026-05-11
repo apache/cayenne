@@ -24,9 +24,9 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultScope;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DICaseSelfIT extends DICase {
 
@@ -62,7 +62,7 @@ public class DICaseSelfIT extends DICase {
     }
 
     @Test
-    public void testInjection() throws Exception {
+    public void injection() throws Exception {
 
         Object testScoped = this.testScoped;
         assertNotNull(testScoped);

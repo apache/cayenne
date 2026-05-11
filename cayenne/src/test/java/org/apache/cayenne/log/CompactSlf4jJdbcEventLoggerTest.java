@@ -25,18 +25,18 @@ import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.IntegerType;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.map.DbAttribute;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CompactSlf4jJdbcEventLoggerTest {
 
     private CompactSlf4jJdbcEventLogger logger;
 
-    @Before
+    @BeforeEach
     public void createLogger() {
         logger = new CompactSlf4jJdbcEventLogger(new DefaultRuntimeProperties(Collections.emptyMap()));
     }
@@ -85,14 +85,14 @@ public class CompactSlf4jJdbcEventLoggerTest {
                         " t0.PKEY AS ec0_3 FROM COMPOUND_FK_TEST t0 INNER JOIN COMPOUND_PK_TEST " +
                         "t1 ON (t0.F_KEY1 = t1.KEY1 AND t0.F_KEY2 = t1.KEY2) WHERE t1.NAME LIKE ?");
 
-        assertEquals(processedUnionSql,
-                "SELECT t0.NAME AS ec0_0, t0.F_KEY1 AS ec0_1, t0.PKEY AS ec0_3 FROM COMPOUND_FK_TEST t0 " +
+        assertEquals("SELECT t0.NAME AS ec0_0, t0.F_KEY1 AS ec0_1, t0.PKEY AS ec0_3 FROM COMPOUND_FK_TEST t0 " +
                 "INNER JOIN COMPOUND_PK_TEST t1 ON (t0.F_KEY1 = t1.KEY1 AND t0.F_KEY2 = t1.KEY2) " +
                 "WHERE t1.NAME LIKE ? UNION ALL SELECT t0.NAME AS ec0_0, t0.F_KEY1 AS ec0_1, t0.PKEY AS ec0_3 " +
                 "FROM COMPOUND_FK_TEST t0 INNER JOIN COMPOUND_PK_TEST t1 ON (t0.F_KEY1 = t1.KEY1 AND t0.F_KEY2 = t1.KEY2) " +
                 "WHERE t1.NAME LIKE ? UNION all SELECT (4 columns) FROM COMPOUND_FK_TEST t0 " +
                 "INNER JOIN COMPOUND_PK_TEST t1 ON (t0.F_KEY1 = t1.KEY1 AND t0.F_KEY2 = t1.KEY2) " +
-                "WHERE t1.NAME LIKE ?");
+                "WHERE t1.NAME LIKE ?",
+                processedUnionSql);
     }
 
     @Test
@@ -106,7 +106,7 @@ public class CompactSlf4jJdbcEventLoggerTest {
         };
         logger.appendParameters(buffer, "bind", bindings);
 
-        assertEquals(buffer.toString(), "[bind: 1->t0.NAME: {'', 52, 'true'}, 2->t0.F_KEY1: 'true']");
+        assertEquals("[bind: 1->t0.NAME: {'', 52, 'true'}, 2->t0.F_KEY1: 'true']", buffer.toString());
     }
 
     private DbAttributeBinding createBinding(String name, int position, Object object, ExtendedType type){

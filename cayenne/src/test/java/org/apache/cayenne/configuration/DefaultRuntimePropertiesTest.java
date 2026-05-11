@@ -18,19 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class DefaultRuntimePropertiesTest {
 
     @Test
-    public void testGet_FromMap() {
+    public void get_FromMap() {
         Map<String, String> propertiesMap = new HashMap<>();
         propertiesMap.put("key1", "v1");
 
@@ -40,7 +40,7 @@ public class DefaultRuntimePropertiesTest {
     }
 
     @Test
-    public void testGet_FromSystem() {
+    public void get_FromSystem() {
 
         String userDir = System.getProperty("user.dir");
         assertNotNull(userDir);
@@ -52,7 +52,7 @@ public class DefaultRuntimePropertiesTest {
     }
 
     @Test
-    public void testGet_FromSystemOverridesMap() {
+    public void get_FromSystemOverridesMap() {
 
         String userDir = System.getProperty("user.dir");
         assertNotNull(userDir);

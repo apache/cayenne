@@ -22,9 +22,9 @@ package org.apache.cayenne.access.flush;
 import java.util.Collections;
 
 import org.apache.cayenne.ObjectId;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.2
@@ -32,7 +32,7 @@ import static org.junit.Assert.*;
 public class EffectiveOpIdTest {
 
     @Test
-    public void testEqualsTempGeneratedId() {
+    public void equalsTempGeneratedId() {
         ObjectId id1 = ObjectId.of("test");
         id1.getReplacementIdMap().put("pk", IdGenerationMarker.marker());
         EffectiveOpId effectiveOpId1 = new EffectiveOpId("test", Collections.singletonMap("pk", IdGenerationMarker.marker()));

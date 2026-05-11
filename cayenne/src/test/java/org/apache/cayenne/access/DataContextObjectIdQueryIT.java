@@ -27,14 +27,14 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Date;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextObjectIdQueryIT extends RuntimeCase {
@@ -43,7 +43,7 @@ public class DataContextObjectIdQueryIT extends RuntimeCase {
     private DataContext context;
 
     @Test
-    public void testRefreshNullifiedValuesNew() {
+    public void refreshNullifiedValuesNew() {
 
         Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
@@ -67,7 +67,7 @@ public class DataContextObjectIdQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testNoRefreshValuesNew() {
+    public void noRefreshValuesNew() {
 
         Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
@@ -89,7 +89,7 @@ public class DataContextObjectIdQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testRefreshNullifiedValuesExisting() {
+    public void refreshNullifiedValuesExisting() {
 
         SQLTemplate insert = new SQLTemplate(
                 Artist.class,

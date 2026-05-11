@@ -37,13 +37,13 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class FlattenedPrefetchIT extends RuntimeCase {
@@ -62,7 +62,8 @@ public class FlattenedPrefetchIT extends RuntimeCase {
     protected TableHelper tArtgroup;
     protected TableHelper tArtistGroup;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
 
         tArtist = new TableHelper(dbHelper, "ARTIST");
@@ -114,7 +115,7 @@ public class FlattenedPrefetchIT extends RuntimeCase {
     }
 
     @Test
-    public void testManyToMany() throws Exception {
+    public void manyToMany() throws Exception {
         createPrefetchDataSet1();
 
         List<Artist> objects = ObjectSelect.query(Artist.class)
@@ -125,7 +126,7 @@ public class FlattenedPrefetchIT extends RuntimeCase {
     }
 
     @Test
-    public void testMultiPrefetch() throws Exception {
+    public void multiPrefetch() throws Exception {
         createPrefetchDataSet2();
 
         List<Painting> objects = ObjectSelect.query(Painting.class)
@@ -137,7 +138,7 @@ public class FlattenedPrefetchIT extends RuntimeCase {
     }
 
     @Test
-    public void testJointManyToMany() throws Exception {
+    public void jointManyToMany() throws Exception {
         createPrefetchDataSet1();
 
         List<Artist> objects = ObjectSelect.query(Artist.class)
@@ -149,7 +150,7 @@ public class FlattenedPrefetchIT extends RuntimeCase {
     }
 
     @Test
-    public void testJointMultiPrefetch() throws Exception {
+    public void jointMultiPrefetch() throws Exception {
         createPrefetchDataSet2();
 
         List<Painting> objects = ObjectSelect.query(Painting.class)
@@ -178,9 +179,7 @@ public class FlattenedPrefetchIT extends RuntimeCase {
 
     private void assertArtGroupResult(List<ArtGroup> list) {
         assertNotNull(list);
-        assertFalse(
-                "artist's groups not resolved: ",
-                ((ValueHolder) list).isFault());
+        assertFalse(((ValueHolder) list).isFault(), "artist's groups not resolved: ");
         assertTrue(list.size() > 0);
 
         for (ArtGroup g : list) {

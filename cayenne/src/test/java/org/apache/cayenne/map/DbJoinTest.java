@@ -19,18 +19,18 @@
 
 package org.apache.cayenne.map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  */
 public class DbJoinTest {
 
     @Test
-    public void testRelationship() throws Exception {
+    public void relationship() throws Exception {
         DbJoin join = new DbJoin(null);
         assertNull(join.getRelationship());
 
@@ -40,15 +40,15 @@ public class DbJoinTest {
     }
 
     @Test
-    public void testToString() {
+    public void toStringTest() {
         DbJoin join = new DbJoin();
         join.setSourceName("X");
         join.setTargetName("Y");
 
         String string = join.toString();
 
-        assertTrue(string, string.startsWith("org.apache.cayenne.map.DbJoin@"));
-        assertTrue(string, string.endsWith("[source=X,target=Y]"));
+        assertTrue(string.startsWith("org.apache.cayenne.map.DbJoin@"), string);
+        assertTrue(string.endsWith("[source=X,target=Y]"), string);
     }
 
 }

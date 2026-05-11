@@ -27,9 +27,9 @@ import org.apache.cayenne.testdo.inheritance_flat.User;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Special test cases per CAY-1378, CAY-1379.
@@ -41,7 +41,7 @@ public class SingleTableInheritance1IT extends RuntimeCase {
     private ObjectContext context;
 
     @Test
-    public void testGroupActions() throws Exception {
+    public void groupActions() throws Exception {
 
         User user = context.newObject(User.class);
         user.setName("test_user");
@@ -71,7 +71,7 @@ public class SingleTableInheritance1IT extends RuntimeCase {
     }
 
     @Test
-    public void testFlattenedNullifyNullifyDeleteRules() throws Exception {
+    public void flattenedNullifyNullifyDeleteRules() throws Exception {
 
         User user = context.newObject(User.class);
         user.setName("test_user");

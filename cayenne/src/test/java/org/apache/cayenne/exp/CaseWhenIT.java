@@ -30,15 +30,15 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.apache.cayenne.exp.ExpressionFactory.betweenExp;
 import static org.apache.cayenne.exp.ExpressionFactory.caseWhen;
 import static org.apache.cayenne.exp.ExpressionFactory.wrapScalarValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class CaseWhenIT extends RuntimeCase {
@@ -49,7 +49,7 @@ public class CaseWhenIT extends RuntimeCase {
     @Inject
     protected DBHelper dbHelper;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         new TableHelper(dbHelper, "PAINTING")
                 .setColumns("PAINTING_ID", "PAINTING_TITLE", "PAINTING_DESCRIPTION", "ESTIMATED_PRICE")
@@ -66,7 +66,7 @@ public class CaseWhenIT extends RuntimeCase {
 
         StringProperty<String> propertyNoDefault = PropertyFactory.createString(caseWhenNoDefault, String.class);
         String result = ObjectSelect.columnQuery(Painting.class, propertyNoDefault).selectFirst(context);
-        Assert.assertEquals("secondThenResult", result);
+        assertEquals("secondThenResult", result);
     }
 
     @Test
@@ -78,7 +78,7 @@ public class CaseWhenIT extends RuntimeCase {
 
         StringProperty<String> propertyNoDefault = PropertyFactory.createString(caseWhenNoDefault, String.class);
         String result = ObjectSelect.columnQuery(Painting.class, propertyNoDefault).selectFirst(context);
-        Assert.assertEquals("defaultResult", result.trim());
+        assertEquals("defaultResult", result.trim());
 
     }
 

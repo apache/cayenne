@@ -26,6 +26,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -47,6 +48,7 @@ public class SchemaUpdateStrategyBase extends RuntimeCase {
 	@Inject
 	protected DbAdapter adapter;
 
+	@BeforeEach
 	@Override
 	public void cleanUpDB() {
 		DataMap map = node.getEntityResolver().getDataMap("sus-map");

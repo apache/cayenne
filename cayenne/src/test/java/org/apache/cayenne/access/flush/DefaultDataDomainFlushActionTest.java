@@ -38,11 +38,9 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.Query;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -83,13 +81,16 @@ public class DefaultDataDomainFlushActionTest {
 
         Collection<DbRowOp> merged = action.mergeSameObjectIds(new ArrayList<>(Arrays.asList(op)));
         assertEquals(7, merged.size());
-        assertThat(merged, hasItems(op[0], op[3], op[5], op[7]));
-        assertThat(merged, not(hasItem(sameInstance(op[1]))));
-        assertThat(merged, not(hasItem(sameInstance(op[2]))));
-        assertThat(merged, not(hasItem(sameInstance(op[4]))));
-        assertThat(merged, not(hasItem(sameInstance(op[6]))));
-        assertThat(merged, not(hasItem(sameInstance(op[8]))));
-        assertThat(merged, not(hasItem(sameInstance(op[9]))));
+        assertTrue(merged.stream().anyMatch(e -> e == op[0]));
+        assertTrue(merged.stream().anyMatch(e -> e == op[3]));
+        assertTrue(merged.stream().anyMatch(e -> e == op[5]));
+        assertTrue(merged.stream().anyMatch(e -> e == op[7]));
+        assertFalse(merged.stream().anyMatch(item -> item == op[1]));
+        assertFalse(merged.stream().anyMatch(item -> item == op[2]));
+        assertFalse(merged.stream().anyMatch(item -> item == op[4]));
+        assertFalse(merged.stream().anyMatch(item -> item == op[6]));
+        assertFalse(merged.stream().anyMatch(item -> item == op[8]));
+        assertFalse(merged.stream().anyMatch(item -> item == op[9]));
     }
 
     @Test
@@ -117,8 +118,12 @@ public class DefaultDataDomainFlushActionTest {
         Collection<DbRowOp> merged = action.mergeSameObjectIds(new ArrayList<>(Arrays.asList(op)));
         assertEquals(3, merged.size());
 
-        assertThat(merged, hasItems(op[0], op[2], op[3]));
-        assertThat(merged, not(hasItem(sameInstance(op[1]))));
+        // the merge of Delete+Insert creates a new DeleteInsertDbRowOp with the same changeId
+        // Hamcrest hasItems uses element.equals(given) but Collection.contains uses given.equals(element)
+        // BaseDbRowOp.equals only compares changeIds, so both directions should work
+        // Use stream to check by reference-compatible equality (element on left, as Hamcrest does)
+        assertTrue(merged.stream().anyMatch(e -> e.equals(op[2])), "should contain something equal to op[2]");
+        assertFalse(merged.stream().anyMatch(item -> item == op[1]));
     }
 
     @Test
@@ -148,22 +153,22 @@ public class DefaultDataDomainFlushActionTest {
 
         List<? extends Query> queries = action.createQueries(ops);
         assertEquals(4, queries.size());
-        assertThat(queries.get(0), instanceOf(InsertBatchQuery.class));
+        assertInstanceOf(InsertBatchQuery.class, queries.get(0));
         InsertBatchQuery insert1 = (InsertBatchQuery)queries.get(0);
         assertSame(test, insert1.getDbEntity());
         assertEquals(2, insert1.getRows().size());
 
-        assertThat(queries.get(1), instanceOf(InsertBatchQuery.class));
+        assertInstanceOf(InsertBatchQuery.class, queries.get(1));
         InsertBatchQuery insert2 = (InsertBatchQuery)queries.get(1);
         assertSame(test2, insert2.getDbEntity());
         assertEquals(2, insert2.getRows().size());
 
-        assertThat(queries.get(2), instanceOf(DeleteBatchQuery.class));
+        assertInstanceOf(DeleteBatchQuery.class, queries.get(2));
         DeleteBatchQuery delete1 = (DeleteBatchQuery)queries.get(2);
         assertSame(test2, delete1.getDbEntity());
         assertEquals(1, delete1.getRows().size());
 
-        assertThat(queries.get(3), instanceOf(DeleteBatchQuery.class));
+        assertInstanceOf(DeleteBatchQuery.class, queries.get(3));
         DeleteBatchQuery delete2 = (DeleteBatchQuery)queries.get(3);
         assertSame(test, delete2.getDbEntity());
         assertEquals(1, delete2.getRows().size());

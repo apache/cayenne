@@ -27,9 +27,9 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.validation.ValidationResult;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_PROJECT)
 public class MeaningfulFKIT extends RuntimeCase {
@@ -38,22 +38,22 @@ public class MeaningfulFKIT extends RuntimeCase {
     private ObjectContext context;
 
     @Test
-    public void testValidateForSave1() throws Exception {
+    public void validateForSave1() throws Exception {
         MeaningfulFK testObject = context.newObject(MeaningfulFK.class);
 
         ValidationResult validation = new ValidationResult();
         testObject.validateForSave(validation);
         assertTrue(
-                "Must fail validation due to missing required relationship",
-                validation.hasFailures());
+                validation.hasFailures(),
+                "Must fail validation due to missing required relationship");
         assertEquals(
-                "Must fail validation due to missing required relationship",
                 1,
-                validation.getFailures().size());
+                validation.getFailures().size(),
+                "Must fail validation due to missing required relationship");
     }
 
     @Test
-    public void testValidateForSave2() throws Exception {
+    public void validateForSave2() throws Exception {
         MeaningfulFK testObject = context.newObject(MeaningfulFK.class);
 
         RelationshipHelper related = context.newObject(RelationshipHelper.class);

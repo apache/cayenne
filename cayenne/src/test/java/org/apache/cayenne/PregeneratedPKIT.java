@@ -27,10 +27,10 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * This test case ensures that PK pre-generated for the entity manually before commit is
@@ -46,7 +46,7 @@ public class PregeneratedPKIT extends RuntimeCase {
     private DataContext context;
 
     @Test
-    public void testLongPk() throws Exception {
+    public void longPk() throws Exception {
         Artist a = context.newObject(Artist.class);
         a.setArtistName("XXX");
 

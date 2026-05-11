@@ -26,14 +26,14 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ObjectSelectTest {
 
 	@Test
-	public void testDataRowQuery() {
+	public void dataRowQuery() {
 		ObjectSelect<DataRow> q = ObjectSelect.dataRowQuery(Artist.class);
 		assertNotNull(q);
 		assertTrue(q.isFetchingDataRows());
@@ -44,7 +44,7 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testQuery_RootType() {
+	public void query_RootType() {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 		assertNotNull(q);
 		assertNull(q.getWhere());
@@ -56,7 +56,7 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testQuery_RootType_WithQualifier() {
+	public void query_RootType_WithQualifier() {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class, ExpressionFactory.matchExp("a", "A"));
 		assertNotNull(q);
 		assertEquals("a = \"A\"", q.getWhere().toString());
@@ -68,7 +68,7 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testQuery_TypeAndEntity() {
+	public void query_TypeAndEntity() {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class, "Painting");
 		assertNotNull(q);
 		assertFalse(q.isFetchingDataRows());
@@ -79,7 +79,7 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testQuery_TypeAndDbEntity() {
+	public void query_TypeAndDbEntity() {
 		ObjectSelect<DataRow> q = ObjectSelect.dbQuery("PAINTING");
 		assertNotNull(q);
 		assertTrue(q.isFetchingDataRows());
@@ -90,7 +90,7 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testWhere() {
+	public void where() {
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
@@ -102,7 +102,7 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testAnd_Array() {
+	public void and_Array() {
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
@@ -114,7 +114,7 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testAnd_Collection() {
+	public void and_Collection() {
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
@@ -129,7 +129,7 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testAnd_ArrayNull() {
+	public void and_ArrayNull() {
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
@@ -141,7 +141,7 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testAnd_ArrayEmpty() {
+	public void and_ArrayEmpty() {
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
@@ -153,7 +153,7 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testAnd_CollectionEmpty() {
+	public void and_CollectionEmpty() {
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
@@ -165,7 +165,7 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testOr_Array() {
+	public void or_Array() {
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
@@ -177,7 +177,7 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testOr_Collection() {
+	public void or_Collection() {
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
@@ -192,7 +192,7 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testOrderBy_Array() {
+	public void orderBy_Array() {
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
@@ -213,7 +213,7 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testOrderBy_Collection() {
+	public void orderBy_Collection() {
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
@@ -234,7 +234,7 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testOrderBy_PropertyStrategy() {
+	public void orderBy_PropertyStrategy() {
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
@@ -252,7 +252,7 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testOrderBy_Property() {
+	public void orderBy_Property() {
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
@@ -271,7 +271,7 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testPrefetch() {
+	public void prefetch() {
 
 		PrefetchTreeNode root = PrefetchTreeNode.withPath("a.b", PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
@@ -285,7 +285,7 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testPrefetch_Path() {
+	public void prefetch_Path() {
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 		q.prefetch("a.b", PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
@@ -303,7 +303,7 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testPrefetch_Merge() {
+	public void prefetch_Merge() {
 
 		PrefetchTreeNode root = PrefetchTreeNode.withPath("a.b", PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
@@ -328,7 +328,7 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testLimit() {
+	public void limit() {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
 		assertEquals(0, q.getLimit());
@@ -340,7 +340,7 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testOffset() {
+	public void offset() {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
 		assertEquals(0, q.getOffset());
@@ -352,7 +352,7 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testStatementFetchSize() {
+	public void statementFetchSize() {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
 		assertEquals(0, q.getStatementFetchSize());
@@ -364,7 +364,7 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testCacheGroups_Collection() {
+	public void cacheGroups_Collection() {
 		ObjectSelect<DataRow> q = ObjectSelect.dataRowQuery(Artist.class);
 
 		assertEquals(QueryCacheStrategy.NO_CACHE, q.getCacheStrategy());
@@ -376,7 +376,7 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testCacheStrategy() {
+	public void cacheStrategy() {
 		ObjectSelect<DataRow> q = ObjectSelect.dataRowQuery(Artist.class);
 
 		assertEquals(QueryCacheStrategy.NO_CACHE, q.getCacheStrategy());
@@ -392,7 +392,7 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testLocalCache() {
+	public void localCache() {
 		ObjectSelect<DataRow> q = ObjectSelect.dataRowQuery(Artist.class);
 
 		assertEquals(QueryCacheStrategy.NO_CACHE, q.getCacheStrategy());
@@ -408,7 +408,7 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testSharedCache() {
+	public void sharedCache() {
 		ObjectSelect<DataRow> q = ObjectSelect.dataRowQuery(Artist.class);
 
 		assertEquals(QueryCacheStrategy.NO_CACHE, q.getCacheStrategy());
@@ -424,7 +424,7 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testQueryTimeout() {
+	public void queryTimeout() {
 		ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
 		assertEquals(-1, query.getQueryTimeout());
 

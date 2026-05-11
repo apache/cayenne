@@ -26,9 +26,9 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
 public class DbRowOpMergerTest {
 
     @Test
-    public void testMergeUpdateDelete() {
+    public void mergeUpdateDelete() {
         ObjectId id = ObjectId.of("test");
 
         UpdateDbRowOp row1 = new UpdateDbRowOp(mockObject(id), mockEntity(), id);
@@ -58,7 +58,7 @@ public class DbRowOpMergerTest {
     }
 
     @Test
-    public void testMergeInsertDelete() {
+    public void mergeInsertDelete() {
         ObjectId id = ObjectId.of("test");
 
         InsertDbRowOp row1 = new InsertDbRowOp(mockObject(id), mockEntity(), id);
@@ -72,7 +72,7 @@ public class DbRowOpMergerTest {
     }
 
     @Test
-    public void testMergeUpdateInsert() {
+    public void mergeUpdateInsert() {
         ObjectId id = ObjectId.of("test");
 
         UpdateDbRowOp row1 = new UpdateDbRowOp(mockObject(id), mockEntity(), id);
@@ -92,7 +92,7 @@ public class DbRowOpMergerTest {
     }
 
     @Test
-    public void testMergeInsertInsert() {
+    public void mergeInsertInsert() {
         ObjectId id = ObjectId.of("test");
 
         DbAttribute attr1 = new DbAttribute("attr1");
@@ -125,7 +125,7 @@ public class DbRowOpMergerTest {
     }
 
     @Test
-    public void testMergeUpdateUpdate() {
+    public void mergeUpdateUpdate() {
         ObjectId id = ObjectId.of("test");
 
         DbAttribute attr1 = new DbAttribute("attr1");

@@ -28,13 +28,13 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DbGeneratorIT extends RuntimeCase {
@@ -50,7 +50,8 @@ public class DbGeneratorIT extends RuntimeCase {
 
     private DbGenerator generator;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         generator = new DbGenerator(adapter, runtime
                 .getDataDomain()
@@ -58,12 +59,12 @@ public class DbGeneratorIT extends RuntimeCase {
     }
 
     @Test
-    public void testAdapter() throws Exception {
+    public void adapter() throws Exception {
         assertSame(adapter, generator.getAdapter());
     }
 
     @Test
-    public void testPkFilteringLogic() throws Exception {
+    public void pkFilteringLogic() throws Exception {
         DataMap map = runtime.getDataDomain().getDataMap("testmap");
         DbEntity artistExhibit = map.getDbEntity("ARTIST_EXHIBIT");
         DbEntity exhibit = map.getDbEntity("EXHIBIT");
@@ -79,7 +80,7 @@ public class DbGeneratorIT extends RuntimeCase {
     }
 
     @Test
-    public void testCreatePkSupport() throws Exception {
+    public void createPkSupport() throws Exception {
         assertTrue(generator.shouldCreatePKSupport());
         generator.setShouldCreatePKSupport(false);
         assertFalse(generator.shouldCreatePKSupport());
@@ -87,14 +88,14 @@ public class DbGeneratorIT extends RuntimeCase {
     }
 
     @Test
-    public void testShouldCreateTables() throws Exception {
+    public void shouldCreateTables() throws Exception {
         assertTrue(generator.shouldCreateTables());
         generator.setShouldCreateTables(false);
         assertFalse(generator.shouldCreateTables());
     }
 
     @Test
-    public void testDropPkSupport() throws Exception {
+    public void dropPkSupport() throws Exception {
 
         assertFalse(generator.shouldDropPKSupport());
         generator.setShouldDropPKSupport(true);
@@ -102,7 +103,7 @@ public class DbGeneratorIT extends RuntimeCase {
     }
 
     @Test
-    public void testShouldDropTables() throws Exception {
+    public void shouldDropTables() throws Exception {
         assertFalse(generator.shouldDropTables());
         generator.setShouldDropTables(true);
         assertTrue(generator.shouldDropTables());

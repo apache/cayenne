@@ -40,7 +40,7 @@
 					<dbimport>
                     	<defaultPackage>org.not.my.home</defaultPackage>
 					</dbimport>
-					<project implementation="org.apache.cayenne.stubs.CayenneProjectStub"/>
+
 
 				</configuration>
 			</plugin>

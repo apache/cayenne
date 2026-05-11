@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.runtime;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.util.List;
 
@@ -38,9 +38,9 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("deprecation")
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
@@ -58,7 +58,7 @@ public class CayenneRuntimeBuilderIT extends RuntimeCase {
 	private CayenneRuntime localRuntime;
 	private DataSource dataSource;
 
-	@After
+	@AfterEach
 	public void stopLocalRuntime() {
 
 		// even though we don't supply real configs here, we sometimes access
@@ -69,7 +69,7 @@ public class CayenneRuntimeBuilderIT extends RuntimeCase {
 		}
 	}
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -80,7 +80,7 @@ public class CayenneRuntimeBuilderIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testConfigFree_WithDBParams() {
+	public void configFree_WithDBParams() {
 
 		localRuntime = new CayenneRuntimeBuilder(null).jdbcDriver(dsi.getJdbcDriver()).url(dsi.getDataSourceUrl())
 				.password(dsi.getPassword()).user(dsi.getUserName()).minConnections(1).maxConnections(2).build();
@@ -90,7 +90,7 @@ public class CayenneRuntimeBuilderIT extends RuntimeCase {
 	}
 
 	@Test
-	public void tesConfigFree_WithDBParams() {
+	public void configFree_WithDBParams_WithProject() {
 
 		localRuntime = new CayenneRuntimeBuilder(null).addConfig(CayenneProjects.TESTMAP_PROJECT)
 				.jdbcDriver(dsi.getJdbcDriver()).url(dsi.getDataSourceUrl()).password(dsi.getPassword())
@@ -107,7 +107,7 @@ public class CayenneRuntimeBuilderIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testConfigFree_WithDataSource() {
+	public void configFree_WithDataSource() {
 
 		localRuntime = new CayenneRuntimeBuilder(null).dataSource(dataSource).build();
 
@@ -116,7 +116,7 @@ public class CayenneRuntimeBuilderIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testNoNodeConfig_WithDataSource() {
+	public void noNodeConfig_WithDataSource() {
 
 		localRuntime = new CayenneRuntimeBuilder(null).addConfig(CayenneProjects.TESTMAP_PROJECT).dataSource(dataSource)
 				.build();
@@ -132,7 +132,7 @@ public class CayenneRuntimeBuilderIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_UnnamedDomain_MultiLocation() {
+	public void unnamedDomain_MultiLocation() {
 		localRuntime = new CayenneRuntimeBuilder(null).addConfigs(CayenneProjects.TESTMAP_PROJECT,
 				CayenneProjects.EMBEDDABLE_PROJECT).build();
 
@@ -140,7 +140,7 @@ public class CayenneRuntimeBuilderIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_NamedDomain_MultiLocation() {
+	public void namedDomain_MultiLocation() {
 		localRuntime = new CayenneRuntimeBuilder("myd").addConfigs(CayenneProjects.TESTMAP_PROJECT,
 				CayenneProjects.EMBEDDABLE_PROJECT).build();
 		assertEquals("myd", localRuntime.getDataDomain().getName());
@@ -150,7 +150,7 @@ public class CayenneRuntimeBuilderIT extends RuntimeCase {
 	 * Test case for CAY-2265
 	 */
 	@Test
-	public void test_UnnamedDomain_CustomNameProjectFile() {
+	public void unnamedDomain_CustomNameProjectFile() {
 		localRuntime = new CayenneRuntimeBuilder(null).addConfigs(CayenneProjects.CUSTOM_NAME_PROJECT).build();
 		assertEquals("cayenne", localRuntime.getDataDomain().getName());
 

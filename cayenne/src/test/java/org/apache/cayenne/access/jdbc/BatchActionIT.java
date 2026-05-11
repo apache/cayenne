@@ -31,9 +31,9 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
@@ -46,7 +46,7 @@ public class BatchActionIT extends RuntimeCase {
     private AdhocObjectFactory objectFactory;
 
     @Test
-    public void testHasGeneratedKeys1() throws Exception {
+    public void hasGeneratedKeys1() throws Exception {
         EntityResolver resolver = runtime.getChannel().getEntityResolver();
 
         // test with adapter that supports keys
@@ -62,7 +62,7 @@ public class BatchActionIT extends RuntimeCase {
     }
 
     @Test
-    public void testHasGeneratedKeys2() throws Exception {
+    public void hasGeneratedKeys2() throws Exception {
         EntityResolver resolver = runtime.getChannel().getEntityResolver();
 
         // test with adapter that does not support keys...

@@ -30,12 +30,12 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 // TODO: renamed as it fails on DB's like Derby. See CAY-1480. 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
@@ -48,7 +48,7 @@ public class DataContextEJBQLFunctionalExpressionsIT extends RuntimeCase {
     private UnitDbAdapter accessStackAdapter;
 
     @Test
-    public void testSIZE() {
+    public void sIZE() {
 
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("a1");
@@ -80,7 +80,7 @@ public class DataContextEJBQLFunctionalExpressionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testCONCAT() {
+    public void cONCAT() {
 
         Painting a1 = context.newObject(Painting.class);
         a1.setPaintingTitle("a1");
@@ -97,7 +97,7 @@ public class DataContextEJBQLFunctionalExpressionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testSUBSTRING() {
+    public void sUBSTRING() {
 
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("12345678");
@@ -114,7 +114,7 @@ public class DataContextEJBQLFunctionalExpressionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testLOWER() {
+    public void lOWER() {
 
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("ABCDEFG");
@@ -136,7 +136,7 @@ public class DataContextEJBQLFunctionalExpressionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testUPPER() {
+    public void uPPER() {
 
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("ABCDEFG");
@@ -158,7 +158,7 @@ public class DataContextEJBQLFunctionalExpressionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testLENGTH() {
+    public void lENGTH() {
 
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("1234567");
@@ -179,7 +179,7 @@ public class DataContextEJBQLFunctionalExpressionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testLOCATE() {
+    public void lOCATE() {
 
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("___A___");
@@ -196,7 +196,7 @@ public class DataContextEJBQLFunctionalExpressionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testTRIM() {
+    public void tRIM() {
 
         // insert via a SQL template to prevent adapter trimming and such...
         QueryChain inserts = new QueryChain();
@@ -241,7 +241,7 @@ public class DataContextEJBQLFunctionalExpressionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testTRIMChar() {
+    public void tRIMChar() {
 
         if (!accessStackAdapter.supportsTrimChar()) {
             return;

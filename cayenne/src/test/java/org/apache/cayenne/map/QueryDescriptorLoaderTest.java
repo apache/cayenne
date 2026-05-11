@@ -19,10 +19,10 @@
 
 package org.apache.cayenne.map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  */
@@ -30,19 +30,19 @@ public class QueryDescriptorLoaderTest {
 
     protected QueryDescriptorLoader builder;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         builder = new QueryDescriptorLoader();
     }
 
     @Test
-    public void testSetName() throws Exception {
+    public void setName() throws Exception {
         builder.setName("aaa");
         assertEquals("aaa", builder.name);
     }
 
     @Test
-    public void testSetRootInfoDbEntity() throws Exception {
+    public void setRootInfoDbEntity() throws Exception {
         DataMap map = new DataMap("map");
         DbEntity entity = new DbEntity("DB1");
         map.addDbEntity(entity);
@@ -52,7 +52,7 @@ public class QueryDescriptorLoaderTest {
     }
 
     @Test
-    public void testSetRootObjEntity() throws Exception {
+    public void setRootObjEntity() throws Exception {
         DataMap map = new DataMap("map");
         ObjEntity entity = new ObjEntity("OBJ1");
         map.addObjEntity(entity);
@@ -62,7 +62,7 @@ public class QueryDescriptorLoaderTest {
     }
 
     @Test
-    public void testSetRootDataMap() throws Exception {
+    public void setRootDataMap() throws Exception {
         DataMap map = new DataMap("map");
 
         builder.setRoot(map, QueryDescriptor.DATA_MAP_ROOT, null);

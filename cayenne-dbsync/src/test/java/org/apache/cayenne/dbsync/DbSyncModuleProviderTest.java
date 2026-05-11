@@ -20,11 +20,11 @@ package org.apache.cayenne.dbsync;
 
 import org.apache.cayenne.runtime.CayenneRuntimeModuleProvider;
 import org.apache.cayenne.unit.util.ModuleProviderChecker;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DbSyncModuleProviderTest {
     @Test
-    public void testProviderPresent() {
+    public void providerPresent() {
         ModuleProviderChecker.testProviderPresent(DbSyncModuleProvider.class, CayenneRuntimeModuleProvider.class);
     }
 }

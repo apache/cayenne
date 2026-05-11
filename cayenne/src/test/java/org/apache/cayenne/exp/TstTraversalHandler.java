@@ -19,12 +19,10 @@
 
 package org.apache.cayenne.exp;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.junit.Assert;
 
 /**
  * Class that collects statistics of expression traversal.
@@ -55,7 +53,7 @@ public class TstTraversalHandler implements TraversalHandler {
 	}
 
 	public void assertConsistency() {
-		Assert.assertEquals(nodesStarted, nodes);
+		assertEquals(nodesStarted, nodes);
 	}
 
 	public void traverseExpression(Expression exp) {

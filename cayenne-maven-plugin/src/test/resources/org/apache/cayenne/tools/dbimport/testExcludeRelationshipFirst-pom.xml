@@ -45,7 +45,7 @@
                             <excludeRelationship>test1</excludeRelationship>
                         </schema>
                     </dbimport>
-                    <project implementation="org.apache.cayenne.stubs.CayenneProjectStub"/>
+
 
                 </configuration>
             </plugin>

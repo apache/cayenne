@@ -24,16 +24,16 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DbRelationshipIT extends RuntimeCase {
@@ -45,7 +45,7 @@ public class DbRelationshipIT extends RuntimeCase {
     protected DbEntity paintingEnt;
     protected DbEntity galleryEnt;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         artistEnt = runtime.getDataDomain().getEntityResolver().getDbEntity("ARTIST");
         paintingEnt = runtime.getDataDomain().getEntityResolver().getDbEntity("PAINTING");
@@ -53,7 +53,7 @@ public class DbRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testSrcFkSnapshotWithTargetSnapshot() throws Exception {
+    public void srcFkSnapshotWithTargetSnapshot() throws Exception {
         Map<String, Object> map = new HashMap<>();
         Integer id = 44;
         map.put("GALLERY_ID", id);
@@ -64,7 +64,7 @@ public class DbRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testGetReverseRelationship1() throws Exception {
+    public void getReverseRelationship1() throws Exception {
         // start with "to many"
         DbRelationship r1 = artistEnt.getRelationship("paintingArray");
         DbRelationship r2 = r1.getReverseRelationship();
@@ -74,7 +74,7 @@ public class DbRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testGetReverseRelationship2() throws Exception {
+    public void getReverseRelationship2() throws Exception {
         // start with "to one"
         DbRelationship r1 = paintingEnt.getRelationship("toArtist");
         DbRelationship r2 = r1.getReverseRelationship();
@@ -84,7 +84,7 @@ public class DbRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testGetReverseRelationshipToSelf() {
+    public void getReverseRelationshipToSelf() {
 
         // assemble mockup entity
         DataMap namespace = new DataMap();

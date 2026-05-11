@@ -22,12 +22,10 @@ package org.apache.cayenne.access.translator.select;
 import org.apache.cayenne.access.sqlbuilder.sqltree.LimitOffsetNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.map.DbEntity;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.2
@@ -36,7 +34,7 @@ public class LimitOffsetStageTest {
 
     private TranslatorContext context;
 
-    @Before
+    @BeforeEach
     public void prepareContext() {
         DbEntity entity = new DbEntity();
         entity.setName("mock");
@@ -57,7 +55,7 @@ public class LimitOffsetStageTest {
 
         Node select = context.getSelectBuilder().build();
         Node child = select.getChild(0);
-        assertThat(child, instanceOf(LimitOffsetNode.class));
+        assertInstanceOf(LimitOffsetNode.class, child);
 
         LimitOffsetNode limitOffsetNode = (LimitOffsetNode) child;
         assertEquals(123, limitOffsetNode.getLimit());

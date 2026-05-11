@@ -41,21 +41,21 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextExtrasIT extends RuntimeCase {
@@ -75,7 +75,8 @@ public class DataContextExtrasIT extends RuntimeCase {
     protected TableHelper tArtist;
     protected TableHelper tPainting;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -113,7 +114,7 @@ public class DataContextExtrasIT extends RuntimeCase {
     }
 
     @Test
-    public void testManualIdProcessingOnCommit() throws Exception {
+    public void manualIdProcessingOnCommit() throws Exception {
 
         Artist object = context.newObject(Artist.class);
         object.setArtistName("ABC");
@@ -131,7 +132,7 @@ public class DataContextExtrasIT extends RuntimeCase {
     }
 
     @Test
-    public void testResolveFault() throws Exception {
+    public void resolveFault() throws Exception {
 
         Artist o1 = context.newObject(Artist.class);
         o1.setArtistName("a");
@@ -156,22 +157,18 @@ public class DataContextExtrasIT extends RuntimeCase {
     }
 
     @Test
-    public void testResolveFaultFailure() {
+    public void resolveFaultFailure() {
 
         Persistent o1 = context.findOrCreateObject(ObjectId.of(
                 "Artist",
                 Artist.ARTIST_ID_PK_COLUMN,
                 234));
 
-        try {
-            context.prepareForAccess(o1, null, false);
-            fail("Must blow on non-existing fault.");
-        } catch (CayenneRuntimeException ignored) {
-        }
+        assertThrows(CayenneRuntimeException.class, () -> context.prepareForAccess(o1, null, false));
     }
 
     @Test
-    public void testUserProperties() {
+    public void userProperties() {
 
         assertNull(context.getUserProperty("ABC"));
         Object object = new Object();
@@ -181,7 +178,7 @@ public class DataContextExtrasIT extends RuntimeCase {
     }
 
     @Test
-    public void testUserPropertiesRemove() {
+    public void userPropertiesRemove() {
         Object object = new Object();
 
         context.setUserProperty("ABC", object);
@@ -201,17 +198,15 @@ public class DataContextExtrasIT extends RuntimeCase {
     }
 
     @Test
-    public void testHasChangesNew() {
+    public void hasChangesNew() {
 
-        assertTrue("No changes expected in context", !context.hasChanges());
+        assertTrue(!context.hasChanges(), "No changes expected in context");
         context.newObject("Artist");
-        assertTrue(
-                "Object added to context, expected to report changes",
-                context.hasChanges());
+        assertTrue(context.hasChanges(), "Object added to context, expected to report changes");
     }
 
     @Test
-    public void testNewObject() {
+    public void newObject() {
 
         Artist a1 = (Artist) context.newObject("Artist");
         assertTrue(context.getGraphManager().registeredNodes().contains(a1));
@@ -219,7 +214,7 @@ public class DataContextExtrasIT extends RuntimeCase {
     }
 
     @Test
-    public void testNewObjectWithClass() {
+    public void newObjectWithClass() {
 
         Artist a1 = context.newObject(Artist.class);
         assertTrue(context.getGraphManager().registeredNodes().contains(a1));
@@ -227,7 +222,7 @@ public class DataContextExtrasIT extends RuntimeCase {
     }
 
     @Test
-    public void testIdObjectFromDataRow() {
+    public void idObjectFromDataRow() {
 
         DataRow row = new DataRow(10);
         row.put("ARTIST_ID", 100000);
@@ -240,7 +235,7 @@ public class DataContextExtrasIT extends RuntimeCase {
     }
 
     @Test
-    public void testPartialObjectFromDataRow() {
+    public void partialObjectFromDataRow() {
 
         DataRow row = new DataRow(10);
         row.put("ARTIST_ID", 100001);
@@ -253,7 +248,7 @@ public class DataContextExtrasIT extends RuntimeCase {
     }
 
     @Test
-    public void testFullObjectFromDataRow() {
+    public void fullObjectFromDataRow() {
 
         DataRow row = new DataRow(10);
         row.put("ARTIST_ID", 123456);
@@ -268,7 +263,7 @@ public class DataContextExtrasIT extends RuntimeCase {
     }
 
     @Test
-    public void testCommitChangesError() {
+    public void commitChangesError() {
 
         DataDomain domain = context.getParentDataDomain();
 
@@ -299,15 +294,12 @@ public class DataContextExtrasIT extends RuntimeCase {
 
         adapter.setPkGenerator(newGenerator);
         try {
-            Artist newArtist = context.newObject(Artist.class);
-            newArtist.setArtistName("aaa");
-            context.commitChanges();
-            fail("Exception expected but not thrown due to missing PK generation routine.");
-        }
-        catch (CayenneRuntimeException ex) {
-            // exception expected
-        }
-        finally {
+            assertThrows(CayenneRuntimeException.class, () -> {
+                Artist newArtist = context.newObject(Artist.class);
+                newArtist.setArtistName("aaa");
+                context.commitChanges();
+            });
+        } finally {
             adapter.setPkGenerator(oldGenerator);
         }
     }
@@ -316,27 +308,21 @@ public class DataContextExtrasIT extends RuntimeCase {
      * Testing behavior of Cayenne when a database exception is thrown in SELECT query.
      */
     @Test
-    public void testSelectException() {
+    public void selectException() {
 
         SQLTemplate q = new SQLTemplate(Artist.class, "SELECT * FROM NON_EXISTENT_TABLE");
 
-        try {
-            context.performGenericQuery(q);
-            fail("Query was invalid and was supposed to fail.");
-        }
-        catch (RuntimeException ex) {
-            // exception expected
-        }
+        assertThrows(RuntimeException.class, () -> context.performGenericQuery(q));
 
     }
 
     @Test
-    public void testEntityResolver() {
+    public void entityResolver() {
         assertNotNull(context.getEntityResolver());
     }
 
     @Test
-    public void testPhantomModificationsValidate() throws Exception {
+    public void phantomModificationsValidate() throws Exception {
 
         createPhantomModificationDataSet();
 
@@ -369,7 +355,7 @@ public class DataContextExtrasIT extends RuntimeCase {
     }
 
     @Test
-    public void testPhantomModificationsValidateToOne() throws Exception {
+    public void phantomModificationsValidateToOne() throws Exception {
 
         createPhantomModificationsValidateToOneDataSet();
 
@@ -380,13 +366,11 @@ public class DataContextExtrasIT extends RuntimeCase {
         p1.resetValidationFlags();
         context.commitChanges();
 
-        assertFalse(
-                "To-one relationship presence caused incorrect validation call.",
-                p1.isValidateForSaveCalled());
+        assertFalse(p1.isValidateForSaveCalled(), "To-one relationship presence caused incorrect validation call.");
     }
 
     @Test
-    public void testValidateOnToManyChange() throws Exception {
+    public void validateOnToManyChange() throws Exception {
 
         createValidateOnToManyChangeDataSet();
 
@@ -403,7 +387,7 @@ public class DataContextExtrasIT extends RuntimeCase {
     }
 
     @Test
-    public void testPhantomAttributeModificationCommit() throws Exception {
+    public void phantomAttributeModificationCommit() throws Exception {
 
         createPhantomModificationDataSet();
 
@@ -420,7 +404,7 @@ public class DataContextExtrasIT extends RuntimeCase {
     }
 
     @Test
-    public void testPhantomRelationshipModificationCommit() throws Exception {
+    public void phantomRelationshipModificationCommit() throws Exception {
 
         createPhantomRelationshipModificationCommitDataSet();
 
@@ -445,7 +429,7 @@ public class DataContextExtrasIT extends RuntimeCase {
     }
 
     @Test
-    public void testPhantomRelationshipModificationValidate() throws Exception {
+    public void phantomRelationshipModificationValidate() throws Exception {
 
         createPhantomRelationshipModificationCommitDataSet();
 

@@ -27,18 +27,18 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class EntityResolverIT extends RuntimeCase {
@@ -50,32 +50,32 @@ public class EntityResolverIT extends RuntimeCase {
     private DataContext context;
 
     @Test
-    public void testGetObjEntity() {
+    public void getObjEntity() {
         EntityResolver resolver = new EntityResolver(runtime.getDataDomain().getDataMaps());
         assertIsArtistObjEntity(resolver.getObjEntity("Artist"));
     }
 
     @Test
-    public void testLookupObjEntityByClass() {
+    public void lookupObjEntityByClass() {
         EntityResolver resolver = new EntityResolver(runtime.getDataDomain().getDataMaps());
         assertIsArtistObjEntity(resolver.getObjEntity(Artist.class));
     }
 
     @Test
-    public void testLookupObjEntityByInstance() {
+    public void lookupObjEntityByInstance() {
         EntityResolver resolver = new EntityResolver(runtime.getDataDomain().getDataMaps());
         assertIsArtistObjEntity(resolver.getObjEntity(new Artist()));
     }
 
     @Test
-    public void testLookupObjEntityByPersistentObject() {
+    public void lookupObjEntityByPersistentObject() {
         EntityResolver resolver = new EntityResolver(runtime.getDataDomain().getDataMaps());
         Artist artist = (Artist) context.newObject("Artist");
         assertIsArtistObjEntity(resolver.getObjEntity(artist));
     }
 
     @Test
-    public void testGetDataMapList() {
+    public void getDataMapList() {
         DataMap m1 = new DataMap();
         DataMap m2 = new DataMap();
         List list = new ArrayList();
@@ -90,7 +90,7 @@ public class EntityResolverIT extends RuntimeCase {
     }
 
     @Test
-    public void testAddDataMap() {
+    public void addDataMap() {
 
         // create empty resolver
         EntityResolver resolver = new EntityResolver();
@@ -110,7 +110,7 @@ public class EntityResolverIT extends RuntimeCase {
     }
 
     @Test
-    public void testRemoveDataMap() {
+    public void removeDataMap() {
         // create a resolver with a single map
         DataMap m1 = new DataMap();
         ObjEntity oe1 = new ObjEntity("test");
@@ -130,7 +130,7 @@ public class EntityResolverIT extends RuntimeCase {
     }
 
     @Test
-    public void testAddObjEntity() {
+    public void addObjEntity() {
         // create a resolver with a single map
         DataMap m1 = new DataMap();
         ObjEntity oe1 = new ObjEntity("test1");
@@ -150,7 +150,7 @@ public class EntityResolverIT extends RuntimeCase {
     }
 
     @Test
-    public void testGetQuery() {
+    public void getQuery() {
         // create a resolver with a single map
         DataMap m1 = new DataMap();
         QueryDescriptor q = QueryDescriptor.selectQueryDescriptor();

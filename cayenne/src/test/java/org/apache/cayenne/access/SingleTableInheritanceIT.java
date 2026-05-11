@@ -39,13 +39,13 @@ import org.apache.cayenne.testdo.inheritance_people.Manager;
 import org.apache.cayenne.testdo.inheritance_people.PersonNotes;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.PeopleProjectCase;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SingleTableInheritanceIT extends PeopleProjectCase {
 
@@ -63,7 +63,7 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
     private TableHelper tClientCompany;
     private TableHelper tDepartment;
 
-    @Before
+    @BeforeEach
 	public void setUp() {
 		tAddress = new TableHelper(dbHelper, "ADDRESS");
 		tAddress.setColumns("ADDRESS_ID", "CITY", "PERSON_ID");
@@ -127,7 +127,7 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
     }
 
     @Test
-    public void testMatchingOnSuperAttributes() throws Exception {
+    public void matchingOnSuperAttributes() throws Exception {
         create2PersonDataSet();
 
         // fetch on leaf, but match on a super attribute
@@ -139,7 +139,7 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
     }
 
     @Test
-    public void testMatchingOnSuperAttributesWithPrefetch() throws Exception {
+    public void matchingOnSuperAttributesWithPrefetch() throws Exception {
         create2PersonDataSet();
 
         // fetch on leaf, but match on a super attribute
@@ -152,7 +152,7 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
     }
 
     @Test
-    public void testPaginatedQueries() throws Exception {
+    public void paginatedQueries() throws Exception {
         create5PersonDataSet();
 
         List<AbstractPerson> results = ObjectSelect.query(AbstractPerson.class)
@@ -171,7 +171,7 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
     }
 
     @Test
-    public void testRelationshipToAbstractSuper() {
+    public void relationshipToAbstractSuper() {
         context
                 .performGenericQuery(new SQLTemplate(
                         AbstractPerson.class,
@@ -188,7 +188,7 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
     }
 
     @Test
-    public void testRelationshipAbstractFromSuperPrefetchingJoint() {
+    public void relationshipAbstractFromSuperPrefetchingJoint() {
         context
                 .performGenericQuery(new SQLTemplate(
                         AbstractPerson.class,
@@ -224,7 +224,7 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
     }
 
     @Test
-    public void testRelationshipAbstractFromSuperPrefetchingDisjoint() {
+    public void relationshipAbstractFromSuperPrefetchingDisjoint() {
         context
                 .performGenericQuery(new SQLTemplate(
                         AbstractPerson.class,
@@ -259,7 +259,7 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
     }
 
     @Test
-    public void testRelationshipAbstractToSuperPrefetchingDisjoint() {
+    public void relationshipAbstractToSuperPrefetchingDisjoint() {
         context
                 .performGenericQuery(new SQLTemplate(
                         AbstractPerson.class,
@@ -284,7 +284,7 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
     }
 
     @Test
-    public void testRelationshipAbstractToSuperPrefetchingJoint() {
+    public void relationshipAbstractToSuperPrefetchingJoint() {
         context
                 .performGenericQuery(new SQLTemplate(
                         AbstractPerson.class,
@@ -304,7 +304,7 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
     }
 
     @Test
-    public void testSave() throws Exception {
+    public void save() throws Exception {
         ClientCompany company = context.newObject(ClientCompany.class);
         company.setName("Boeing");
 
@@ -331,7 +331,7 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
      * Tests that to-one relationship produces correct subclass.
      */
     @Test
-    public void testEmployeeAddress() throws Exception {
+    public void employeeAddress() throws Exception {
         createEmployeeAddressDataSet();
 
         List<?> addresses = ObjectSelect.query(Address.class)
@@ -346,7 +346,7 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
      * Tests that to-one relationship produces correct subclass.
      */
     @Test
-    public void testManagerAddress() throws Exception {
+    public void managerAddress() throws Exception {
         createManagerAddressDataSet();
 
         List<Address> addresses = ObjectSelect.query(Address.class)
@@ -360,7 +360,7 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
     }
 
     @Test
-    public void testCAY592() throws Exception {
+    public void cay592() throws Exception {
         createManagerAddressDataSet();
 
         List<Address> addresses = ObjectSelect.query(Address.class)
@@ -385,7 +385,7 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
      * Tests that to-one relationship produces correct subclass.
      */
     @Test
-    public void testRepCompany() throws Exception {
+    public void repCompany() throws Exception {
         createRepCompanyDataSet();
 
         List<ClientCompany> companies = ObjectSelect.query(ClientCompany.class)
@@ -402,7 +402,7 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
      * Tests that to-many relationship produces correct subclasses.
      */
     @Test
-    public void testDepartmentEmployees() throws Exception {
+    public void departmentEmployees() throws Exception {
         createDepartmentEmployeesDataSet();
 
         List<Department> departments = ObjectSelect.query(Department.class)
@@ -417,7 +417,7 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
     }
 
     @Test
-    public void testSelectInheritanceResolving() throws Exception {
+    public void selectInheritanceResolving() throws Exception {
         createSelectDataSet();
 
         List<AbstractPerson> abstractPpl = ObjectSelect.query(AbstractPerson.class)

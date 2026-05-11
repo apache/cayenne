@@ -19,16 +19,16 @@
 
 package org.apache.cayenne.reflect;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class BeanAccessorTest {
 
     @Test
-    public void testByteArrayProperty() {
+    public void byteArrayProperty() {
 
         BeanAccessor accessor = new BeanAccessor(
                 TstJavaBean.class,
@@ -47,7 +47,7 @@ public class BeanAccessorTest {
     }
 
     @Test
-    public void testStringProperty() {
+    public void stringProperty() {
 
         BeanAccessor accessor = new BeanAccessor(
                 TstJavaBean.class,
@@ -63,7 +63,7 @@ public class BeanAccessorTest {
     }
 
     @Test
-    public void testIntProperty() {
+    public void intProperty() {
 
         BeanAccessor accessor = new BeanAccessor(
                 TstJavaBean.class,
@@ -78,11 +78,11 @@ public class BeanAccessorTest {
         assertEquals(5, accessor.getValue(o1));
 
         accessor.setValue(o1, null);
-        assertEquals("Incorrectly set null default", 0, o1.getIntField());
+        assertEquals(0, o1.getIntField(), "Incorrectly set null default");
     }
 
     @Test
-    public void testInheritedCovariantProperty() {
+    public void inheritedCovariantProperty() {
 
     	BeanAccessor accessor = new BeanAccessor(
     			TstJavaBeanChild.class,

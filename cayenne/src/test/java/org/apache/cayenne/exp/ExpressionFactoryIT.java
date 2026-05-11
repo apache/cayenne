@@ -31,7 +31,7 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
@@ -40,9 +40,9 @@ import static org.apache.cayenne.exp.ExpressionFactory.greaterExp;
 import static org.apache.cayenne.exp.FunctionExpressionFactory.lengthExp;
 import static org.apache.cayenne.exp.FunctionExpressionFactory.substringExp;
 import static org.apache.cayenne.exp.FunctionExpressionFactory.trimExp;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ExpressionFactoryIT extends RuntimeCase {
@@ -55,7 +55,7 @@ public class ExpressionFactoryIT extends RuntimeCase {
 
     // CAY-416
     @Test
-    public void testCollectionMatch() {
+    public void collectionMatch() {
         Artist artist = context.newObject(Artist.class);
         artist.setArtistName("artist");
         Painting p1 = context.newObject(Painting.class),
@@ -85,7 +85,7 @@ public class ExpressionFactoryIT extends RuntimeCase {
     }
 
     @Test
-    public void testIn() {
+    public void in() {
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("a1");
         Painting p1 = context.newObject(Painting.class);
@@ -100,7 +100,7 @@ public class ExpressionFactoryIT extends RuntimeCase {
     }
 
     @Test
-    public void testEscapeCharacter() {
+    public void escapeCharacter() {
         if (!accessStackAdapter.supportsEscapeInLike()) {
             return;
         }
@@ -121,7 +121,7 @@ public class ExpressionFactoryIT extends RuntimeCase {
     }
 
     @Test
-    public void testContains_Escape() {
+    public void contains_Escape() {
 
         if (!accessStackAdapter.supportsEscapeInLike()) {
             return;
@@ -143,7 +143,7 @@ public class ExpressionFactoryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSplitExpressions() {
+    public void splitExpressions() {
         Artist artist1 = context.newObject(Artist.class),
                 artist2 = context.newObject(Artist.class);
         artist1.setArtistName("a1");
@@ -182,7 +182,7 @@ public class ExpressionFactoryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSplitExpressions_EndsWithRelationship() {
+    public void splitExpressions_EndsWithRelationship() {
         Artist artist1 = context.newObject(Artist.class),
                 artist2 = context.newObject(Artist.class);
         artist1.setArtistName("a1");
@@ -210,7 +210,7 @@ public class ExpressionFactoryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSplitExpressions_EndsWithRelationship_DifferentObjDbPath() {
+    public void splitExpressions_EndsWithRelationship_DifferentObjDbPath() {
         Artist artist1 = context.newObject(Artist.class),
                 artist2 = context.newObject(Artist.class);
         artist1.setArtistName("a1");
@@ -238,7 +238,7 @@ public class ExpressionFactoryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSplitExpressions_EndsWithRelationship_Flattened() {
+    public void splitExpressions_EndsWithRelationship_Flattened() {
         Artist a1 = context.newObject(Artist.class),
                 a2 = context.newObject(Artist.class);
         a1.setArtistName("a1");
@@ -266,7 +266,7 @@ public class ExpressionFactoryIT extends RuntimeCase {
     }
 
     @Test
-    public void testDifferentExpressionAPI() {
+    public void differentExpressionAPI() {
         List<Artist> res;
 
         // First version via expression string

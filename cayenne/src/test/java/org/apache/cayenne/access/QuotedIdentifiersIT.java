@@ -34,14 +34,14 @@ import org.apache.cayenne.testdo.quotemap.Quote_Person;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.QUOTED_IDENTIFIERS_PROJECT)
 public class QuotedIdentifiersIT extends RuntimeCase {
@@ -52,7 +52,7 @@ public class QuotedIdentifiersIT extends RuntimeCase {
     @Inject
     protected DBHelper dbHelper;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         QuoteAdress quoteAdress = context.newObject(QuoteAdress.class);
         quoteAdress.setCity("city");
@@ -80,7 +80,7 @@ public class QuotedIdentifiersIT extends RuntimeCase {
     }
 
     @Test
-    public void testDataSetup() {
+    public void dataSetup() {
         List<QuoteAdress> objects = ObjectSelect.query(QuoteAdress.class).select(context);
         assertEquals(2, objects.size());
 
@@ -89,7 +89,7 @@ public class QuotedIdentifiersIT extends RuntimeCase {
     }
 
     @Test
-    public void testInsert() {
+    public void insert() {
         QuoteAdress quoteAdress = context.newObject(QuoteAdress.class);
         quoteAdress.setCity("city");
         quoteAdress.setGroup("324");
@@ -122,7 +122,7 @@ public class QuotedIdentifiersIT extends RuntimeCase {
     }
 
     @Test
-    public void testPrefetchQuote() {
+    public void prefetchQuote() {
         DbEntity entity = context.getEntityResolver().getObjEntity(QuoteAdress.class).getDbEntity();
         List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("City"));
         List<DbAttribute> updatedAttributes = Collections.singletonList(entity.getAttribute("City"));
@@ -161,7 +161,7 @@ public class QuotedIdentifiersIT extends RuntimeCase {
     }
 
     @Test
-    public void testQuotedEJBQLQuery() {
+    public void quotedEJBQLQuery() {
         String ejbql = "select a from QuoteAdress a where a.group = '324'";
         EJBQLQuery queryEJBQL = new EJBQLQuery(ejbql);
         List objects11 = context.performQuery(queryEJBQL);
@@ -169,7 +169,7 @@ public class QuotedIdentifiersIT extends RuntimeCase {
     }
 
     @Test
-    public void testQuotedEJBQLQueryWithJoin() {
+    public void quotedEJBQLQueryWithJoin() {
         String ejbql = "select p from Quote_Person p join p.address_Rel a where p.name = 'Arcadi'";
         EJBQLQuery queryEJBQL = new EJBQLQuery(ejbql);
         List resultList = context.performQuery(queryEJBQL);
@@ -177,7 +177,7 @@ public class QuotedIdentifiersIT extends RuntimeCase {
     }
 
     @Test
-    public void testQuotedEJBQLQueryWithOrderBy() {
+    public void quotedEJBQLQueryWithOrderBy() {
         EJBQLQuery query = new EJBQLQuery("select p from Quote_Person p order by p.name");
 
         @SuppressWarnings("unchecked")
@@ -189,7 +189,7 @@ public class QuotedIdentifiersIT extends RuntimeCase {
     }
 
     @Test
-    public void testQuotedEJBQLCountQuery() {
+    public void quotedEJBQLCountQuery() {
         EJBQLQuery query = new EJBQLQuery("select count(p) from Quote_Person p");
         assertEquals(Collections.singletonList(2L), context.performQuery(query));
 

@@ -27,16 +27,16 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.tx.TransactionFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 public class DataContextTest {
     @Test
-    public void testUserPropertiesLazyInit() {
+    public void userPropertiesLazyInit() {
         DataContext context = new DataContext();
         assertNull(context.userProperties);
 
@@ -46,7 +46,7 @@ public class DataContextTest {
     }
 
     @Test
-    public void testAttachToRuntimeIfNeeded() {
+    public void attachToRuntimeIfNeeded() {
 
         final DataChannel channel = mock(DataChannel.class);
         final QueryCache cache = mock(QueryCache.class);
@@ -81,18 +81,12 @@ public class DataContextTest {
     }
 
     @Test
-    public void testAttachToRuntimeIfNeeded_NoStack() {
+    public void attachToRuntimeIfNeeded_NoStack() {
 
         DataContext context = new DataContext();
         assertNull(context.channel);
         assertNull(context.queryCache);
 
-        try {
-            context.attachToRuntimeIfNeeded();
-            fail("No thread stack, must have thrown");
-        }
-        catch (CayenneRuntimeException e) {
-            // expected
-        }
+        assertThrows(CayenneRuntimeException.class, context::attachToRuntimeIfNeeded);
     }
 }

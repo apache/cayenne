@@ -20,10 +20,10 @@
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
 import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.2
@@ -44,13 +44,13 @@ public class NodeTest {
 
     private Node node;
 
-    @Before
+    @BeforeEach
     public void createNewNode() {
         node = new TestNode();
     }
 
     @Test
-    public void testInsert() {
+    public void insert() {
         assertEquals(0, node.childrenCount);
         assertNull(node.children);
 
@@ -84,7 +84,7 @@ public class NodeTest {
     }
 
     @Test
-    public void testAdd() {
+    public void add() {
         assertEquals(0, node.childrenCount);
         assertNull(node.children);
 

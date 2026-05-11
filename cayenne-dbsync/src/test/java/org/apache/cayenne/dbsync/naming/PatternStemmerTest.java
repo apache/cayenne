@@ -18,43 +18,43 @@
  */
 package org.apache.cayenne.dbsync.naming;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PatternStemmerTest {
 
     @Test
-    public void testStemNoMatch() {
+    public void stemNoMatch() {
         assertEquals("xyzabc", new PatternStemmer("^pre", false).stem("xyzabc"));
     }
 
     @Test
-    public void testStemCaseSensitive() {
+    public void stemCaseSensitive() {
         assertEquals("PREUPPERCASE", new PatternStemmer("^pre", true).stem("PREUPPERCASE"));
         assertEquals("UPPERCASE", new PatternStemmer("^pre", true).stem("preUPPERCASE"));
     }
 
     @Test
-    public void testStemCaseInsensitive() {
+    public void stemCaseInsensitive() {
         assertEquals("lowercase", new PatternStemmer("^pre", false).stem("prelowercase"));
         assertEquals("UPPERCASE", new PatternStemmer("^pre", false).stem("PREUPPERCASE"));
     }
 
     @Test
-    public void testStemHead() {
+    public void stemHead() {
         assertEquals("name", new PatternStemmer("^strip_", false).stem("strip_name"));
         assertEquals("strip_name", new PatternStemmer("^strip_", false).stem("strip_strip_name"));
     }
 
     @Test
-    public void testStemTail() {
+    public void stemTail() {
         assertEquals("name", new PatternStemmer("_strip$", false).stem("name_strip"));
         assertEquals("name_strip", new PatternStemmer("_strip$", false).stem("name_strip_strip"));
     }
 
     @Test
-    public void testStemMiddle() {
+    public void stemMiddle() {
         assertEquals("start_end", new PatternStemmer("_strip", false).stem("start_strip_end"));
         assertEquals("start_end", new PatternStemmer("_strip", false).stem("start_strip_strip_end"));
     }

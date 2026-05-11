@@ -26,12 +26,12 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class HSQLDBAdapterIT extends RuntimeCase {
@@ -40,7 +40,7 @@ public class HSQLDBAdapterIT extends RuntimeCase {
     private AdhocObjectFactory objectFactory;
 
     @Test
-    public void testCreateTableIgnoresDoublePrecision() {
+    public void createTableIgnoresDoublePrecision() {
         HSQLDBAdapter adapter = objectFactory.newInstance(
                 HSQLDBAdapter.class, 
                 HSQLDBAdapter.class.getName());
@@ -59,7 +59,7 @@ public class HSQLDBAdapterIT extends RuntimeCase {
     }
 
     @Test
-    public void testCreateTableAddsCachedKeyword() {
+    public void createTableAddsCachedKeyword() {
         HSQLDBAdapter adapter = objectFactory.newInstance(
                 HSQLDBAdapter.class, 
                 HSQLDBAdapter.class.getName());

@@ -25,9 +25,9 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class QueryTimeoutIT extends RuntimeCase {
@@ -36,7 +36,7 @@ public class QueryTimeoutIT extends RuntimeCase {
     private ObjectContext context;
 
     @Test
-    public void testObjectSelect() {
+    public void objectSelect() {
         ObjectSelect<Artist> objectSelect = ObjectSelect.query(Artist.class)
                 .queryTimeout(10);
         assertEquals(10, objectSelect
@@ -46,7 +46,7 @@ public class QueryTimeoutIT extends RuntimeCase {
     }
 
     @Test
-    public void testSQLTemplate() {
+    public void sqlTemplate() {
         SQLTemplate sqlTemplate = new SQLTemplate();
         sqlTemplate.setDefaultTemplate("SELECT * FROM ARTIST");
         sqlTemplate.setQueryTimeout(10);
@@ -57,7 +57,7 @@ public class QueryTimeoutIT extends RuntimeCase {
     }
 
     @Test
-    public void testColumnSelect() {
+    public void columnSelect() {
         ColumnSelect<String> columnSelect = ObjectSelect
                 .columnQuery(Artist.class, Artist.ARTIST_NAME)
                 .queryTimeout(10);
@@ -68,7 +68,7 @@ public class QueryTimeoutIT extends RuntimeCase {
     }
 
     @Test
-    public void testEjbql() {
+    public void ejbql() {
         EJBQLQuery ejbqlQuery = new EJBQLQuery("select a from Artist a");
         ejbqlQuery.setQueryTimeout(10);
         assertEquals(10, ejbqlQuery
@@ -78,7 +78,7 @@ public class QueryTimeoutIT extends RuntimeCase {
     }
 
     @Test
-    public void testSqlSelect() {
+    public void sqlSelect() {
         SQLSelect<Artist> sqlSelect = SQLSelect
                 .query(Artist.class, "SELECT * FROM ARTIST")
                 .queryTimeout(10);
@@ -89,7 +89,7 @@ public class QueryTimeoutIT extends RuntimeCase {
     }
 
     @Test
-    public void testSqlExec() {
+    public void sqlExec() {
         SQLExec sqlExec = SQLExec
                 .query("SELECT * FROM ARTIST")
                 .queryTimeout(10);
@@ -100,7 +100,7 @@ public class QueryTimeoutIT extends RuntimeCase {
     }
 
     @Test
-    public void testMappedSelect() {
+    public void mappedSelect() {
         MappedSelect<Artist> mappedSelect = MappedSelect
                 .query("SelectTestUpper", Artist.class)
                 .queryTimeout(10);

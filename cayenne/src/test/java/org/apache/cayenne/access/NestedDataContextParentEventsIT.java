@@ -29,12 +29,12 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.ExtraModules;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 @ExtraModules(RuntimeCaseSyncModule.class)
@@ -47,7 +47,7 @@ public class NestedDataContextParentEventsIT extends RuntimeCase {
     private DataContext context;
 
     @Test
-    public void testParentUpdatedId() throws Exception {
+    public void parentUpdatedId() throws Exception {
         ObjectContext child1 = runtime.newContext(context);
 
         final Artist ac = child1.newObject(Artist.class);

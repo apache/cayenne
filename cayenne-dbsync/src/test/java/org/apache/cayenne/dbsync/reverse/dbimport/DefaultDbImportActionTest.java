@@ -52,8 +52,8 @@ import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -71,7 +71,8 @@ import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbAttr;
 import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbEntity;
 import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.objAttr;
 import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.objEntity;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -94,7 +95,7 @@ public class DefaultDbImportActionTest {
     private DbLoaderDelegate mockDelegate;
     private ObjectNameGenerator mockNameGenerator;
 
-    @Before
+    @BeforeEach
     public void before() {
         mockAdapter = mock(DbAdapter.class);
         mockConnection = mock(Connection.class);
@@ -103,7 +104,7 @@ public class DefaultDbImportActionTest {
     }
 
     @Test
-    public void testNewDataMapImport() throws Exception {
+    public void newDataMapImport() throws Exception {
 
         DbImportConfiguration config = mock(DbImportConfiguration.class);
         when(config.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
@@ -134,11 +135,11 @@ public class DefaultDbImportActionTest {
 
         action.execute(config);
 
-        assertTrue("We should try to save.", haveWeTriedToSave[0]);
+        assertTrue(haveWeTriedToSave[0], "We should try to save.");
     }
 
     @Test
-    public void testImportWithFieldChanged() throws Exception {
+    public void importWithFieldChanged() throws Exception {
 
         DbImportConfiguration config = mock(DbImportConfiguration.class);
 
@@ -202,11 +203,11 @@ public class DefaultDbImportActionTest {
 
         action.execute(config);
 
-        assertTrue("We should try to save.", haveWeTriedToSave[0]);
+        assertTrue(haveWeTriedToSave[0], "We should try to save.");
     }
 
     @Test
-    public void testImportWithoutChanges() throws Exception {
+    public void importWithoutChanges() throws Exception {
         DbImportConfiguration config = mock(DbImportConfiguration.class);
         when(config.getTargetDataMap()).thenReturn(FILE_STUB);
         when(config.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
@@ -243,7 +244,7 @@ public class DefaultDbImportActionTest {
     }
 
     @Test
-    public void testImportWithDbError() throws Exception {
+    public void importWithDbError() throws Exception {
         DbLoader dbLoader = mock(DbLoader.class);
         doThrow(new SQLException()).when(dbLoader).load();
 
@@ -257,12 +258,7 @@ public class DefaultDbImportActionTest {
 
         DefaultDbImportAction action = buildDbImportAction(projectSaver, mapLoader, dbLoader);
 
-        try {
-            action.execute(params);
-            fail();
-        } catch (SQLException e) {
-            // expected
-        }
+        assertThrows(SQLException.class, () -> action.execute(params));
 
         verify(projectSaver, never()).save(any(Project.class));
         verify(mapLoader, never()).load(any(Resource.class));
@@ -307,7 +303,7 @@ public class DefaultDbImportActionTest {
     }
 
     @Test
-    public void testSaveLoadedNoProject() throws Exception {
+    public void saveLoadedNoProject() throws Exception {
         Logger log = mock(Logger.class);
         Injector i = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(log), new DbImportModule());
         DbImportConfiguration params = mock(DbImportConfiguration.class);
@@ -329,11 +325,11 @@ public class DefaultDbImportActionTest {
         assertTrue(out.isFile());
 
         String contents = Util.stringFromFile(out);
-        assertTrue("Has no project version saved", contents.contains("project-version=\""));
+        assertTrue(contents.contains("project-version=\""), "Has no project version saved");
     }
 
     @Test
-    public void testSaveLoadedWithEmptyProject() throws Exception {
+    public void saveLoadedWithEmptyProject() throws Exception {
         Logger log = mock(Logger.class);
         Injector i = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(log), new DbImportModule());
         DbImportConfiguration params = mock(DbImportConfiguration.class);
@@ -361,15 +357,15 @@ public class DefaultDbImportActionTest {
         assertTrue(projectFile.isFile());
 
         String dataMapContents = Util.stringFromFile(dataMapFile);
-        assertTrue("Has no project version saved", dataMapContents.contains("project-version=\""));
+        assertTrue(dataMapContents.contains("project-version=\""), "Has no project version saved");
 
         String projectContents = Util.stringFromFile(projectFile);
-        assertTrue("Has no project version saved", projectContents.contains("project-version=\""));
-        assertTrue("Has no datamap in project", projectContents.contains("<map name=\"testSaveLoaded2\"/>"));
+        assertTrue(projectContents.contains("project-version=\""), "Has no project version saved");
+        assertTrue(projectContents.contains("<map name=\"testSaveLoaded2\"/>"), "Has no datamap in project");
     }
 
     @Test
-    public void testSaveLoadedWithNonEmptyProject() throws Exception {
+    public void saveLoadedWithNonEmptyProject() throws Exception {
         Logger log = mock(Logger.class);
         Injector i = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(log), new DbImportModule());
         DbImportConfiguration params = mock(DbImportConfiguration.class);
@@ -406,15 +402,15 @@ public class DefaultDbImportActionTest {
         assertTrue(projectFile.isFile());
 
         String dataMapContents = Util.stringFromFile(dataMapFile);
-        assertTrue("Has no project version saved", dataMapContents.contains("project-version=\""));
+        assertTrue(dataMapContents.contains("project-version=\""), "Has no project version saved");
 
         String projectContents = Util.stringFromFile(projectFile);
-        assertTrue("Has no project version saved", projectContents.contains("project-version=\""));
-        assertTrue("Has no datamap in project", projectContents.contains("<map name=\"testSaveLoaded3\"/>"));
+        assertTrue(projectContents.contains("project-version=\""), "Has no project version saved");
+        assertTrue(projectContents.contains("<map name=\"testSaveLoaded3\"/>"), "Has no datamap in project");
     }
 
     @Test
-    public void testSaveLoadedWithNonEmptyProjectAndNonEmptyDataMap() throws Exception {
+    public void saveLoadedWithNonEmptyProjectAndNonEmptyDataMap() throws Exception {
         Logger log = mock(Logger.class);
         Injector i = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(log), new DbImportModule());
         DbImportConfiguration params = mock(DbImportConfiguration.class);
@@ -463,16 +459,16 @@ public class DefaultDbImportActionTest {
         assertTrue(projectFile.isFile());
 
         String dataMapContents = Util.stringFromFile(dataMapFile);
-        assertTrue("Has no project version saved", dataMapContents.contains("project-version=\""));
+        assertTrue(dataMapContents.contains("project-version=\""), "Has no project version saved");
         assertFalse(dataMapContents.contains("<db-entity"));
 
         String projectContents = Util.stringFromFile(projectFile);
-        assertTrue("Has no project version saved", projectContents.contains("project-version=\""));
-        assertEquals("Has no or too many datamaps in project", 1, Util.countMatches(projectContents, "<map name=\"testSaveLoaded4\"/>"));
+        assertTrue(projectContents.contains("project-version=\""), "Has no project version saved");
+        assertEquals(1, Util.countMatches(projectContents, "<map name=\"testSaveLoaded4\"/>"), "Has no or too many datamaps in project");
     }
 
     @Test
-    public void testMergeTokensSorting() {
+    public void mergeTokensSorting() {
         LinkedList<MergerToken> tokens = new LinkedList<>();
         tokens.add(new AddColumnToModel(null, null));
         tokens.add(new AddRelationshipToModel(null, null));

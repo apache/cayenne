@@ -30,10 +30,10 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.jdbc.SQLStatement;
 import org.apache.cayenne.access.translator.ParameterBinding;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.1
@@ -42,13 +42,13 @@ public class CayenneSQLTemplateProcessorTest {
 
     private CayenneSQLTemplateProcessor processor;
 
-    @Before
+    @BeforeEach
     public void before() {
         processor = new CayenneSQLTemplateProcessor(new DefaultTemplateContextFactory());
     }
 
     @Test
-    public void testProcessTemplateUnchanged1() throws Exception {
+    public void processTemplateUnchanged1() throws Exception {
         String sqlTemplate = "SELECT * FROM ME";
 
         SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.emptyMap());
@@ -58,7 +58,7 @@ public class CayenneSQLTemplateProcessorTest {
     }
 
     @Test
-    public void testProcessTemplateUnchanged2() throws Exception {
+    public void processTemplateUnchanged2() throws Exception {
         String sqlTemplate = "SELECT a.b as XYZ FROM $SYSTEM_TABLE";
 
         SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.emptyMap());
@@ -68,7 +68,7 @@ public class CayenneSQLTemplateProcessorTest {
     }
 
     @Test
-    public void testProcessTemplateSimpleDynamicContent() throws Exception {
+    public void processTemplateSimpleDynamicContent() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE $a";
 
         Map<String, Object> map = Collections.singletonMap("a", "VALUE_OF_A");
@@ -81,7 +81,7 @@ public class CayenneSQLTemplateProcessorTest {
     }
 
     @Test
-    public void testProcessTemplateBind() throws Exception {
+    public void processTemplateBind() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE "
                 + "COLUMN1 = #bind($a 'VARCHAR') AND COLUMN2 = #bind($b 'INTEGER')";
         Map<String, Object> map = Collections.singletonMap("a", "VALUE_OF_A");
@@ -94,7 +94,7 @@ public class CayenneSQLTemplateProcessorTest {
     }
 
     @Test
-    public void testProcessTemplateBindGuessVarchar() throws Exception {
+    public void processTemplateBindGuessVarchar() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE COLUMN1 = #bind($a)";
         Map<String, Object> map = Collections.singletonMap("a", "VALUE_OF_A");
 
@@ -105,7 +105,7 @@ public class CayenneSQLTemplateProcessorTest {
     }
 
     @Test
-    public void testProcessTemplateBindGuessInteger() throws Exception {
+    public void processTemplateBindGuessInteger() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE COLUMN1 = #bind($a)";
         Map<String, Object> map = Collections.singletonMap("a", 4);
 
@@ -116,7 +116,7 @@ public class CayenneSQLTemplateProcessorTest {
     }
 
     @Test
-    public void testProcessTemplateBindEqual() throws Exception {
+    public void processTemplateBindEqual() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE COLUMN #bindEqual($a 'VARCHAR')";
 
         SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.emptyMap());
@@ -134,7 +134,7 @@ public class CayenneSQLTemplateProcessorTest {
     }
 
     @Test
-    public void testProcessTemplateBindNotEqual() throws Exception {
+    public void processTemplateBindNotEqual() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE COLUMN #bindNotEqual($a 'VARCHAR')";
 
         SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.emptyMap());
@@ -152,7 +152,7 @@ public class CayenneSQLTemplateProcessorTest {
     }
 
     @Test
-    public void testProcessTemplateID() throws Exception {
+    public void processTemplateID() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE COLUMN1 = #bind($helper.cayenneExp($a, 'db:ID_COLUMN'))";
 
         Persistent persistent = new GenericPersistentObject();
@@ -168,7 +168,7 @@ public class CayenneSQLTemplateProcessorTest {
     }
 
     @Test
-    public void testProcessTemplateNotEqualID() throws Exception {
+    public void processTemplateNotEqualID() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE "
                 + "COLUMN1 #bindNotEqual($helper.cayenneExp($a, 'db:ID_COLUMN1')) "
                 + "AND COLUMN2 #bindNotEqual($helper.cayenneExp($a, 'db:ID_COLUMN2'))";
@@ -191,7 +191,7 @@ public class CayenneSQLTemplateProcessorTest {
     }
 
     @Test
-    public void testProcessTemplateConditions() throws Exception {
+    public void processTemplateConditions() throws Exception {
         String sqlTemplate = "SELECT * FROM ME #if($a) WHERE COLUMN1 > #bind($a)#end";
 
         Map<String, Object> map = Collections.singletonMap("a", "VALUE_OF_A");
@@ -209,7 +209,7 @@ public class CayenneSQLTemplateProcessorTest {
     }
 
     @Test
-    public void testProcessTemplateBindCollection() throws Exception {
+    public void processTemplateBindCollection() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE COLUMN IN (#bind($list 'VARCHAR'))";
 
         Map<String, Object> map = Collections.singletonMap("list", Arrays.asList("a", "b", "c"));
@@ -223,19 +223,19 @@ public class CayenneSQLTemplateProcessorTest {
     }
 
     @Test
-    public void testUnknownDirective() throws Exception {
+    public void unknownDirective() throws Exception {
         String sqlTemplate = "SELECT #from(1) FROM a";
         SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.emptyMap());
         assertEquals("SELECT  FROM a", compiled.getSql());
     }
 
     private void assertBindingValue(Object expectedValue, Object binding) {
-        assertTrue("Not a binding!", binding instanceof ParameterBinding);
+        assertTrue(binding instanceof ParameterBinding, "Not a binding!");
         assertEquals(expectedValue, ((ParameterBinding) binding).getValue());
     }
 
     private void assertBindingType(Integer expectedType, Object binding) {
-        assertTrue("Not a binding!", binding instanceof ParameterBinding);
+        assertTrue(binding instanceof ParameterBinding, "Not a binding!");
         assertEquals(expectedType, ((ParameterBinding) binding).getJdbcType());
     }
 

@@ -36,19 +36,19 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class CayenneIT extends RuntimeCase {
@@ -62,7 +62,7 @@ public class CayenneIT extends RuntimeCase {
     protected TableHelper tArtist;
     protected TableHelper tPainting;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -82,7 +82,7 @@ public class CayenneIT extends RuntimeCase {
     }
 
     @Test
-    public void testReadNestedProperty_ToMany() throws Exception {
+    public void readNestedProperty_ToMany() throws Exception {
 
         tArtist.insert(1, "a");
         tPainting.insert(1, 1, "a1");
@@ -102,7 +102,7 @@ public class CayenneIT extends RuntimeCase {
     }
 
     @Test
-    public void testScalarObjectForQuery() throws Exception {
+    public void scalarObjectForQuery() throws Exception {
         createTwoArtists();
 
         String sql = "SELECT count(1) AS X FROM ARTIST";
@@ -128,28 +128,27 @@ public class CayenneIT extends RuntimeCase {
     }
 
     @Test
-    public void testScalarObjectForQuery2() throws Exception {
+    public void scalarObjectForQuery2() throws Exception {
         createTwoArtists();
 
         String ejbql = "SELECT count(a) from Artist a";
         EJBQLQuery query = new EJBQLQuery(ejbql);
         Object object = Cayenne.objectForQuery(context, query);
         assertNotNull(object);
-        assertTrue(
-                "Object class: " + object.getClass().getName(),
-                object instanceof Number);
+        assertTrue(object instanceof Number,
+                "Object class: " + object.getClass().getName());
         assertEquals(2, ((Number) object).intValue());
     }
 
     @Test
-    public void testMakePath() {
+    public void makePath() {
         assertEquals("", Cayenne.makePath());
         assertEquals("a", Cayenne.makePath("a"));
         assertEquals("a.b", Cayenne.makePath("a", "b"));
     }
 
     @Test
-    public void testObjectForQuery() throws Exception {
+    public void objectForQuery() throws Exception {
         createOneArtist();
 
         ObjectId id = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 33002);
@@ -164,7 +163,7 @@ public class CayenneIT extends RuntimeCase {
     }
 
     @Test
-    public void testObjectForSelect() throws Exception {
+    public void objectForSelect() throws Exception {
         createOneArtist();
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, ExpressionFactory.matchDbExp("ARTIST_NAME", "artist2"));
@@ -176,7 +175,7 @@ public class CayenneIT extends RuntimeCase {
     }
 
     @Test
-    public void testObjectForQueryNoObject() throws Exception {
+    public void objectForQueryNoObject() throws Exception {
 
         ObjectId id = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 44001);
 
@@ -185,7 +184,7 @@ public class CayenneIT extends RuntimeCase {
     }
 
     @Test
-    public void testNoObjectForPK() throws Exception {
+    public void noObjectForPK() throws Exception {
         createOneArtist();
 
         // use bogus non-existent PK
@@ -194,7 +193,7 @@ public class CayenneIT extends RuntimeCase {
     }
 
     @Test
-    public void testObjectForPKTemporary() throws Exception {
+    public void objectForPKTemporary() throws Exception {
 
         Persistent o1 = context.newObject(Artist.class);
         Persistent o2 = context.newObject(Artist.class);
@@ -205,7 +204,7 @@ public class CayenneIT extends RuntimeCase {
     }
 
     @Test
-    public void testObjectForPKObjectId() throws Exception {
+    public void objectForPKObjectId() throws Exception {
         createOneArtist();
 
         Object object = Cayenne.objectForPK(context, ObjectId.of(
@@ -219,7 +218,7 @@ public class CayenneIT extends RuntimeCase {
     }
 
     @Test
-    public void testObjectForPKClassInt() throws Exception {
+    public void objectForPKClassInt() throws Exception {
         createOneArtist();
 
         Object object = Cayenne.objectForPK(context, Artist.class, 33002);
@@ -230,7 +229,7 @@ public class CayenneIT extends RuntimeCase {
     }
 
     @Test
-    public void testObjectForPKEntityInt() throws Exception {
+    public void objectForPKEntityInt() throws Exception {
         createOneArtist();
 
         Object object = Cayenne.objectForPK(context, "Artist", 33002);
@@ -241,7 +240,7 @@ public class CayenneIT extends RuntimeCase {
     }
 
     @Test
-    public void testObjectForPKClassMap() throws Exception {
+    public void objectForPKClassMap() throws Exception {
         createOneArtist();
 
         Map<String, Integer> pk = Collections.singletonMap(
@@ -255,7 +254,7 @@ public class CayenneIT extends RuntimeCase {
     }
 
     @Test
-    public void testIntPKForObject() throws Exception {
+    public void intPKForObject() throws Exception {
         createOneArtist();
 
         List<Artist> objects = ObjectSelect.query(Artist.class).select(context);
@@ -266,7 +265,7 @@ public class CayenneIT extends RuntimeCase {
     }
 
     @Test
-    public void testPKForObject() throws Exception {
+    public void pkForObject() throws Exception {
         createOneArtist();
 
         List<Artist> objects = ObjectSelect.query(Artist.class).select(context);
@@ -277,7 +276,7 @@ public class CayenneIT extends RuntimeCase {
     }
 
     @Test
-    public void testEjbql() throws Exception {
+    public void ejbql() throws Exception {
         createOneArtist();
 
         List<?> objects = context.performQuery(new EJBQLQuery("select a from Artist a"));

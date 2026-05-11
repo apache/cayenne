@@ -21,25 +21,27 @@ package org.apache.cayenne.tools;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.map.DataMap;
-import org.apache.commons.io.FileUtils;
-import org.apache.maven.plugin.testing.AbstractMojoTestCase;
+import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoTest;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CayenneGeneratorMojoTest extends AbstractMojoTestCase {
+@MojoTest
+public class CayenneGeneratorMojoTest {
 
     public static final String TEST_TEMPLATE_PATH = "src/test/resources/cgen/project-to-test/testTemplate.vm";
 
-    public void testCgenExecution() throws Exception {
-
-        File pom = getTestFile("src/test/resources/cgen/project-to-test/pom.xml");
-        assertNotNull(pom);
-        assertTrue(pom.exists());
-
-        CayenneGeneratorMojo myMojo = (CayenneGeneratorMojo) lookupMojo("cgen", pom);
+    @Test
+    public void cgenExecution(@InjectMojo(goal = "cgen", pom = "src/test/resources/cgen/project-to-test/pom.xml")
+                              CayenneGeneratorMojo myMojo) throws Exception {
         assertNotNull(myMojo);
         myMojo.execute();
 
@@ -68,20 +70,17 @@ public class CayenneGeneratorMojoTest extends AbstractMojoTestCase {
         assertFalse(superExcludedEntity.exists());
         assertFalse(excludedEntity.exists());
 
-        String content = FileUtils.readFileToString(superTestEntity);
+        String content = Files.readString(superTestEntity.toPath());
         assertTrue(content.contains("public static final ListProperty<TestRelEntity> ADDITIONAL_REL = PropertyFactory.createList(\"additionalRel\", TestRelEntity.class);"));
         assertTrue(content.contains("public void addToAdditionalRel(TestRelEntity obj)"));
         assertTrue(content.contains("public void removeFromAdditionalRel(TestRelEntity obj)"));
     }
 
-    public void testTransferPluginDataToCgenConfiguration() throws Exception {
-        File pom = getTestFile("src/test/resources/cgen/project-to-test/pomTransferPluginToCgen.xml");
-        assertNotNull(pom);
-        assertTrue(pom.exists());
-
-        CayenneGeneratorMojo myMojo = (CayenneGeneratorMojo) lookupMojo("cgen", pom);
+    @Test
+    public void transferPluginDataToCgenConfiguration(
+            @InjectMojo(goal = "cgen", pom = "src/test/resources/cgen/project-to-test/pomTransferPluginToCgen.xml")
+            CayenneGeneratorMojo myMojo) throws Exception {
         assertNotNull(myMojo);
-
         myMojo.execute();
         List<CgenConfiguration> cgenConfigurations = myMojo.buildConfigurations(new DataMap());
         for (CgenConfiguration cgenConfiguration : cgenConfigurations) {
@@ -120,12 +119,10 @@ public class CayenneGeneratorMojoTest extends AbstractMojoTestCase {
         }
     }
 
-    public void testCgenDataMapConfig() throws Exception {
-        File pom = getTestFile("src/test/resources/cgen/project-to-test/cgen-pom.xml");
-        assertNotNull(pom);
-        assertTrue(pom.exists());
-
-        CayenneGeneratorMojo myMojo = (CayenneGeneratorMojo) lookupMojo("cgen", pom);
+    @Test
+    public void cgenDataMapConfig(
+            @InjectMojo(goal = "cgen", pom = "src/test/resources/cgen/project-to-test/cgen-pom.xml")
+            CayenneGeneratorMojo myMojo) throws Exception {
         assertNotNull(myMojo);
         myMojo.execute();
 
@@ -144,12 +141,10 @@ public class CayenneGeneratorMojoTest extends AbstractMojoTestCase {
         assertFalse(notIncludedEmbeddable.exists());
     }
 
-    public void testCgenWithDmAndPomConfigs() throws Exception {
-        File pom = getTestFile("src/test/resources/cgen/project-to-test/datamap-and-pom.xml");
-        assertNotNull(pom);
-        assertTrue(pom.exists());
-
-        CayenneGeneratorMojo myMojo = (CayenneGeneratorMojo) lookupMojo("cgen", pom);
+    @Test
+    public void cgenWithDmAndPomConfigs(
+            @InjectMojo(goal = "cgen", pom = "src/test/resources/cgen/project-to-test/datamap-and-pom.xml")
+            CayenneGeneratorMojo myMojo) throws Exception {
         assertNotNull(myMojo);
         myMojo.execute();
 
@@ -168,12 +163,10 @@ public class CayenneGeneratorMojoTest extends AbstractMojoTestCase {
         assertFalse(superDataMap.exists());
     }
 
-    public void testDatamapModeReplace() throws Exception {
-        File pom = getTestFile("src/test/resources/cgen/project-to-test/replaceDatamapMode-pom.xml");
-        assertNotNull(pom);
-        assertTrue(pom.exists());
-
-        CayenneGeneratorMojo myMojo = (CayenneGeneratorMojo) lookupMojo("cgen", pom);
+    @Test
+    public void datamapModeReplace(
+            @InjectMojo(goal = "cgen", pom = "src/test/resources/cgen/project-to-test/replaceDatamapMode-pom.xml")
+            CayenneGeneratorMojo myMojo) throws Exception {
         assertNotNull(myMojo);
         myMojo.execute();
 

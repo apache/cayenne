@@ -29,18 +29,18 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.slf4j.Logger;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public class ToolsModuleTest {
 
     @Test
-    public void testModuleContents() {
+    public void moduleContents() {
 
         Logger log = mock(Logger.class);
         Injector i = DIBootstrap.createInjector(new ToolsModule(log));
@@ -52,7 +52,7 @@ public class ToolsModuleTest {
     }
 
     @Test
-    public void testDbApdater() throws Exception {
+    public void dbApdater() throws Exception {
         Logger log = mock(Logger.class);
         Injector i = DIBootstrap.createInjector(new ToolsModule(log));
 

@@ -30,9 +30,9 @@ import org.apache.cayenne.testdo.table_primitives.TablePrimitives;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @since 4.0
@@ -51,7 +51,7 @@ public class ASTFunctionCallMathIT extends RuntimeCase {
     }
 
     @Test
-    public void testASTAbs() throws Exception {
+    public void aSTAbs() throws Exception {
         TablePrimitives p1 = createPrimitives(-10);
 
         TablePrimitives p2 = ObjectSelect.query(TablePrimitives.class)
@@ -60,7 +60,7 @@ public class ASTFunctionCallMathIT extends RuntimeCase {
     }
 
     @Test
-    public void testASTSqrt() throws Exception {
+    public void aSTSqrt() throws Exception {
         TablePrimitives p1 = createPrimitives(9);
 
         TablePrimitives p2 = ObjectSelect.query(TablePrimitives.class)
@@ -69,7 +69,7 @@ public class ASTFunctionCallMathIT extends RuntimeCase {
     }
 
     @Test
-    public void testASTMod() throws Exception {
+    public void aSTMod() throws Exception {
         TablePrimitives p1 = createPrimitives(10);
 
         TablePrimitives p2 = ObjectSelect.query(TablePrimitives.class)
@@ -78,25 +78,25 @@ public class ASTFunctionCallMathIT extends RuntimeCase {
     }
 
     @Test
-    public void testASTAbsParse() {
+    public void aSTAbsParse() {
         Expression exp = ExpressionFactory.exp("abs(-3)");
         assertEquals(3.0, exp.evaluate(new Object()));
     }
 
     @Test
-    public void testASTSqrtParse() {
+    public void aSTSqrtParse() {
         Expression exp = ExpressionFactory.exp("sqrt(16)");
         assertEquals(4.0, exp.evaluate(new Object()));
     }
 
     @Test
-    public void testASTModParse() {
+    public void aSTModParse() {
         Expression exp = ExpressionFactory.exp("mod(11,2)");
         assertEquals(1.0, exp.evaluate(new Object()));
     }
 
     @Test
-    public void testComplexParse() {
+    public void complexParse() {
         Expression exp = ExpressionFactory.exp("10 - mod(sqrt(abs(-9)), 2)");
         assertEquals(BigDecimal.valueOf(9L), exp.evaluate(new Object()));
     }

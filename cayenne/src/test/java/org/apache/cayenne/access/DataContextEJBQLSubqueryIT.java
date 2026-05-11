@@ -30,16 +30,16 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextEJBQLSubqueryIT extends RuntimeCase {
@@ -56,7 +56,8 @@ public class DataContextEJBQLSubqueryIT extends RuntimeCase {
     private TableHelper tArtist;
     private TableHelper tPainting;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -83,7 +84,7 @@ public class DataContextEJBQLSubqueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSubqueryNoQualifier() throws Exception {
+    public void subqueryNoQualifier() throws Exception {
         if (!accessStackAdapter.supportsAllAnySome()) {
             return;
         }
@@ -109,7 +110,7 @@ public class DataContextEJBQLSubqueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testDifferentEntity() throws Exception {
+    public void differentEntity() throws Exception {
         createTwoArtistsFourPaintings();
 
         String ejbql = "SELECT a FROM Artist a"
@@ -130,11 +131,11 @@ public class DataContextEJBQLSubqueryIT extends RuntimeCase {
 
         assertTrue(ids.contains(33001L));
 
-        assertTrue("" + objects.get(0), objects.get(0) instanceof Artist);
+        assertTrue(objects.get(0) instanceof Artist, "" + objects.get(0));
     }
 
     @Test
-    public void testExists() throws Exception {
+    public void exists() throws Exception {
         createTwoArtistsFourPaintings();
 
         String ejbql = "SELECT p FROM Painting p"
@@ -159,7 +160,7 @@ public class DataContextEJBQLSubqueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testAll() throws Exception {
+    public void all() throws Exception {
         if (!accessStackAdapter.supportsAllAnySome()) {
             return;
         }
@@ -187,7 +188,7 @@ public class DataContextEJBQLSubqueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testAny() throws Exception {
+    public void any() throws Exception {
         if (!accessStackAdapter.supportsAllAnySome()) {
             return;
         }
@@ -216,7 +217,7 @@ public class DataContextEJBQLSubqueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSome() throws Exception {
+    public void some() throws Exception {
         if (!accessStackAdapter.supportsAllAnySome()) {
             return;
         }

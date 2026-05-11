@@ -29,10 +29,10 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @UseCayenneRuntime(CayenneProjects.LOB_PROJECT)
 public class DataContextBlobIT extends RuntimeCase {
@@ -58,7 +58,7 @@ public class DataContextBlobIT extends RuntimeCase {
     }
 
     @Test
-    public void testManyBlobsInOneTX() throws Exception {
+    public void manyBlobsInOneTX() throws Exception {
         if (skipTests()) {
             return;
         }
@@ -81,7 +81,7 @@ public class DataContextBlobIT extends RuntimeCase {
     }
 
     @Test
-    public void testEmptyBlob() throws Exception {
+    public void emptyBlob() throws Exception {
         if (skipTests()) {
             return;
         }
@@ -92,7 +92,7 @@ public class DataContextBlobIT extends RuntimeCase {
     }
 
     @Test
-    public void test5ByteBlob() throws Exception {
+    public void fiveByteBlob() throws Exception {
         if (skipTests()) {
             return;
         }
@@ -100,7 +100,7 @@ public class DataContextBlobIT extends RuntimeCase {
     }
 
     @Test
-    public void test5KByteBlob() throws Exception {
+    public void fiveKByteBlob() throws Exception {
         if (skipTests()) {
             return;
         }
@@ -108,7 +108,7 @@ public class DataContextBlobIT extends RuntimeCase {
     }
 
     @Test
-    public void test1MBBlob() throws Exception {
+    public void oneMBBlob() throws Exception {
         if (skipTests()) {
             return;
         }
@@ -116,7 +116,7 @@ public class DataContextBlobIT extends RuntimeCase {
     }
 
     @Test
-    public void testNullBlob() throws Exception {
+    public void nullBlob() throws Exception {
         if (skipTests()) {
             return;
         }

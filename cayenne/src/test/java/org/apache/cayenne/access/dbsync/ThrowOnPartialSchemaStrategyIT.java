@@ -24,19 +24,17 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @UseCayenneRuntime(CayenneProjects.SUS_PROJECT)
 public class ThrowOnPartialSchemaStrategyIT extends SchemaUpdateStrategyBase {
 
     @Test
-	public void testThrowOnPartialStrategyTableNoExist() throws Exception {
+	public void throwOnPartialStrategyTableNoExist() throws Exception {
 
 		String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
 		SQLTemplate query = new SQLTemplate(Object.class, template);
@@ -47,18 +45,18 @@ public class ThrowOnPartialSchemaStrategyIT extends SchemaUpdateStrategyBase {
 		try {
 			node.performQueries(Collections.singletonList((Query) query), observer);
 		} catch (CayenneRuntimeException e) {
-			assertNotNull(e);
+			// expected
 		}
 
 		try {
 			node.performQueries(Collections.singletonList((Query) query), observer);
 		} catch (CayenneRuntimeException e) {
-			assertNotNull(e);
+			// expected
 		}
 	}
 
     @Test
-	public void testThrowOnPartialStrategyTableExist() throws Exception {
+	public void throwOnPartialStrategyTableExist() throws Exception {
 
 		String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
 		SQLTemplate query = new SQLTemplate(Object.class, template);
@@ -72,7 +70,7 @@ public class ThrowOnPartialSchemaStrategyIT extends SchemaUpdateStrategyBase {
 	}
 
     @Test
-	public void testThrowOnPartialStrategyWithOneTable() throws Exception {
+	public void throwOnPartialStrategyWithOneTable() throws Exception {
 		createOneTable("SUS1");
 
 		setStrategy(ThrowOnPartialSchemaStrategy.class);
@@ -81,13 +79,8 @@ public class ThrowOnPartialSchemaStrategyIT extends SchemaUpdateStrategyBase {
 		SQLTemplate query = new SQLTemplate(Object.class, template);
 		MockOperationObserver observer = new MockOperationObserver();
 
-		try {
-			node.performQueries(Collections.singletonList(query), observer);
-			assertEquals(1, existingTables().size());
-			fail("Must have thrown on partial schema");
-		} catch (CayenneRuntimeException e) {
-			// expected
-		}
+		assertThrows(CayenneRuntimeException.class, () ->
+			node.performQueries(Collections.singletonList(query), observer));
 	}
 
 }

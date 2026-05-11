@@ -34,12 +34,12 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ASTExistsIT extends RuntimeCase {
@@ -53,7 +53,7 @@ public class ASTExistsIT extends RuntimeCase {
     @Inject
     private DataChannelInterceptor queryInterceptor;
 
-    @Before
+    @BeforeEach
     public void createArtistsDataSet() throws Exception {
         TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
@@ -74,16 +74,22 @@ public class ASTExistsIT extends RuntimeCase {
         }
     }
 
-    @Test(expected = ExpressionException.class)
-    public void testEvaluateInMemoryExistsSubquery() {
-        ObjectSelect<Painting> subQuery = ObjectSelect.query(Painting.class)
-                .where(Painting.TO_ARTIST.eq(Artist.ARTIST_ID_PK_PROPERTY.enclosing()));
+    @Test
 
-        doEvaluateWithQuery(ExpressionFactory.notExists(subQuery));
+    public void evaluateInMemoryExistsSubquery() {
+        assertThrows(ExpressionException.class, () -> {
+
+            ObjectSelect<Painting> subQuery = ObjectSelect.query(Painting.class)
+                    .where(Painting.TO_ARTIST.eq(Artist.ARTIST_ID_PK_PROPERTY.enclosing()));
+
+            doEvaluateWithQuery(ExpressionFactory.notExists(subQuery));
+    
+        });
     }
 
+
     @Test
-    public void testEvaluateInMemoryExistsExpression() {
+    public void evaluateInMemoryExistsExpression() {
         doEvaluateNoQuery(Artist.PAINTING_ARRAY.exists());
 
         doEvaluateNoQuery(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).like("p%").exists());
@@ -130,7 +136,7 @@ public class ASTExistsIT extends RuntimeCase {
 
         queryInterceptor.runWithQueriesBlocked(() -> {
             List<Artist> artistsFiltered = exp.filterObjects(artists);
-            assertEquals(exp.toString(), artistSelected, artistsFiltered);
+            assertEquals(artistSelected, artistsFiltered, exp.toString());
         });
     }
 
@@ -145,6 +151,6 @@ public class ASTExistsIT extends RuntimeCase {
                 .select(context);
 
         List<Artist> artistsFiltered = exp.filterObjects(artists);
-        assertEquals(exp.toString(), artistSelected, artistsFiltered);
+        assertEquals(artistSelected, artistsFiltered, exp.toString());
     }
 }

@@ -20,42 +20,25 @@
 package org.apache.cayenne.event;
 
 import org.apache.cayenne.util.Util;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class EventSubjectTest {
 
     @Test
-    public void testIllegalArguments() {
-        try {
-            EventSubject.getSubject(null, "Subject");
-            fail();
-        } catch (IllegalArgumentException ex) {
-            // OK
-        }
-
-        try {
-            EventSubject.getSubject(Object.class, null);
-            fail();
-        } catch (IllegalArgumentException ex) {
-            // OK
-        }
-
-        try {
-            EventSubject.getSubject(Object.class, "");
-            fail();
-        } catch (IllegalArgumentException ex) {
-            // OK
-        }
+    public void illegalArguments() {
+        assertThrows(IllegalArgumentException.class, () -> EventSubject.getSubject(null, "Subject"));
+        assertThrows(IllegalArgumentException.class, () -> EventSubject.getSubject(Object.class, null));
+        assertThrows(IllegalArgumentException.class, () -> EventSubject.getSubject(Object.class, ""));
     }
 
     @Test
-    public void testEqualityOfClonedSubjects() throws Exception {
+    public void equalityOfClonedSubjects() throws Exception {
         EventSubject s1 = EventSubject.getSubject(EventSubjectTest.class, "MySubject");
         EventSubject s2 = (EventSubject) Util.cloneViaSerialization(s1);
 
@@ -65,35 +48,35 @@ public class EventSubjectTest {
     }
 
     @Test
-    public void testIdenticalSubject() {
+    public void identicalSubject() {
         EventSubject s1 = EventSubject.getSubject(EventSubjectTest.class, "MySubject");
         EventSubject s2 = EventSubject.getSubject(EventSubjectTest.class, "MySubject");
         assertSame(s1, s2);
     }
 
     @Test
-    public void testEqualityOfIdenticalSubjects() {
+    public void equalityOfIdenticalSubjects() {
         EventSubject s1 = EventSubject.getSubject(EventSubjectTest.class, "MySubject");
         EventSubject s2 = EventSubject.getSubject(EventSubjectTest.class, "MySubject");
         assertEquals(s1, s2);
     }
 
     @Test
-    public void testEqualityOfSubjectsByDifferentOwner() {
+    public void equalityOfSubjectsByDifferentOwner() {
         EventSubject s1 = EventSubject.getSubject(EventSubject.class, "MySubject");
         EventSubject s2 = EventSubject.getSubject(EventSubjectTest.class, "MySubject");
         assertFalse(s1.equals(s2));
     }
 
     @Test
-    public void testEqualityOfSubjectsByDifferentTopic() {
+    public void equalityOfSubjectsByDifferentTopic() {
         EventSubject s1 = EventSubject.getSubject(EventSubjectTest.class, "Subject1");
         EventSubject s2 = EventSubject.getSubject(EventSubjectTest.class, "Subject2");
         assertFalse(s1.equals(s2));
     }
 
     @Test
-    public void testSubjectEqualsNull() {
+    public void subjectEqualsNull() {
         EventSubject s1 = EventSubject.getSubject(EventSubjectTest.class, "MySubject");
         assertFalse(s1.equals(null));
     }

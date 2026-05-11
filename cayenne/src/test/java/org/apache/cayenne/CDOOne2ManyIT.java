@@ -34,16 +34,16 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class CDOOne2ManyIT extends RuntimeCase {
@@ -60,7 +60,7 @@ public class CDOOne2ManyIT extends RuntimeCase {
     protected TableHelper tArtist;
     protected TableHelper tPainting;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -70,7 +70,7 @@ public class CDOOne2ManyIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectWithToManyDBQualifier() {
+    public void selectWithToManyDBQualifier() {
 
         // intentionally add more than 1 painting to artist
         // since this reduces a chance that painting and artist primary keys
@@ -103,7 +103,7 @@ public class CDOOne2ManyIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectWithToManyQualifier() {
+    public void selectWithToManyQualifier() {
 
         // intentionally add more than 1 painting to artist
         // since this reduces a chance that painting and artist primary keys
@@ -136,7 +136,7 @@ public class CDOOne2ManyIT extends RuntimeCase {
     }
 
     @Test
-    public void testNewAdd() throws Exception {
+    public void newAdd() throws Exception {
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XyzQ");
 
@@ -166,7 +166,7 @@ public class CDOOne2ManyIT extends RuntimeCase {
     }
 
     @Test
-    public void testNewAddMultiples() {
+    public void newAddMultiples() {
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XyzV");
 
@@ -193,7 +193,7 @@ public class CDOOne2ManyIT extends RuntimeCase {
     }
 
     @Test
-    public void testRemove1() {
+    public void remove1() {
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XyzE");
 
@@ -229,7 +229,7 @@ public class CDOOne2ManyIT extends RuntimeCase {
     }
 
     @Test
-    public void testRemove2() {
+    public void remove2() {
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XyzQ");
 
@@ -267,7 +267,7 @@ public class CDOOne2ManyIT extends RuntimeCase {
     }
 
     @Test
-    public void testPropagatePK() {
+    public void propagatePK() {
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XyBn");
 
@@ -296,7 +296,7 @@ public class CDOOne2ManyIT extends RuntimeCase {
     }
 
     @Test
-    public void testReplace() {
+    public void replace() {
 
         Painting p1 = context.newObject(Painting.class);
         p1.setPaintingTitle("xa");
@@ -340,7 +340,7 @@ public class CDOOne2ManyIT extends RuntimeCase {
     }
 
     @Test
-    public void testReplaceToSame() {
+    public void replaceToSame() {
 
         Painting p1 = context.newObject(Painting.class);
         p1.setPaintingTitle("xa");

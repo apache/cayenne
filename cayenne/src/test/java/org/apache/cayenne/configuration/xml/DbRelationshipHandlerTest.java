@@ -22,9 +22,9 @@ package org.apache.cayenne.configuration.xml;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.1
@@ -32,7 +32,7 @@ import static org.junit.Assert.*;
 public class DbRelationshipHandlerTest extends BaseHandlerTest {
 
     @Test
-    public void testParsing()throws Exception {
+    public void parsing() throws Exception {
         final DataMap map = new DataMap();
         DbEntity entity = new DbEntity("ARTIST");
         map.addDbEntity(entity);

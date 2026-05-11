@@ -38,10 +38,10 @@ import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test prefetching of various obscure cases.
@@ -60,7 +60,8 @@ public class DataContextPrefetchExtrasIT extends RuntimeCase {
     protected TableHelper tCompoundPkTest;
     protected TableHelper tCompoundFkTest;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tCharPkTest = new TableHelper(dbHelper, "CHAR_PK_TEST");
         tCharPkTest.setColumns("PK_COL", "OTHER_COL");
@@ -97,7 +98,7 @@ public class DataContextPrefetchExtrasIT extends RuntimeCase {
     }
 
     @Test
-    public void testPrefetchToManyOnCharKey() throws Exception {
+    public void prefetchToManyOnCharKey() throws Exception {
         createPrefetchToManyOnCharKeyDataSet();
 
         ObjectSelect<CharPkTestEntity> q = ObjectSelect.query(CharPkTestEntity.class)
@@ -123,7 +124,7 @@ public class DataContextPrefetchExtrasIT extends RuntimeCase {
      * Tests to-one prefetching over relationships with compound keys.
      */
     @Test
-    public void testPrefetch10() throws Exception {
+    public void prefetch10() throws Exception {
         createCompoundDataSet();
 
         ObjectSelect<CompoundFkTestEntity> q = ObjectSelect.query(CompoundFkTestEntity.class)
@@ -137,8 +138,8 @@ public class DataContextPrefetchExtrasIT extends RuntimeCase {
         Object toOnePrefetch = fk1.readNestedProperty("toCompoundPk");
         assertNotNull(toOnePrefetch);
         assertTrue(
-                "Expected Persistent, got: " + toOnePrefetch.getClass().getName(),
-                toOnePrefetch instanceof Persistent);
+                toOnePrefetch instanceof Persistent,
+                "Expected Persistent, got: " + toOnePrefetch.getClass().getName());
 
         Persistent pk1 = (Persistent) toOnePrefetch;
         assertEquals(PersistenceState.COMMITTED, pk1.getPersistenceState());
@@ -149,7 +150,7 @@ public class DataContextPrefetchExtrasIT extends RuntimeCase {
      * Tests to-many prefetching over relationships with compound keys.
      */
     @Test
-    public void testPrefetch11() throws Exception {
+    public void prefetch11() throws Exception {
         createCompoundDataSet();
 
         ObjectSelect<CompoundPkTestEntity> q = ObjectSelect.query(CompoundPkTestEntity.class)

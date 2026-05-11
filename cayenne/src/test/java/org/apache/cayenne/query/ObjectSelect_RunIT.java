@@ -35,15 +35,11 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assume.assumeFalse;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ObjectSelect_RunIT extends RuntimeCase {
@@ -57,7 +53,7 @@ public class ObjectSelect_RunIT extends RuntimeCase {
 	@Inject
 	private DBHelper dbHelper;
 
-	@Before
+	@BeforeEach
 	public void createArtistsDataSet() throws Exception {
 		TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
@@ -79,10 +75,10 @@ public class ObjectSelect_RunIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_SelectObjects() {
+	public void selectObjects() {
 		List<Artist> result = ObjectSelect.query(Artist.class).select(context);
 		assertEquals(20, result.size());
-		assertThat(result.get(0), instanceOf(Artist.class));
+		assertInstanceOf(Artist.class, result.get(0));
 
 		Artist a = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.in("artist14", "at1", "12", "asdas")).selectOne(context);
 		assertNotNull(a);
@@ -90,7 +86,7 @@ public class ObjectSelect_RunIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_Iterate() {
+	public void iterate() {
 		final int[] count = new int[1];
 		ObjectSelect.query(Artist.class).iterate(context, object -> {
 			assertNotNull(object.getArtistName());
@@ -101,7 +97,7 @@ public class ObjectSelect_RunIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_Iterator() {
+	public void iterator() {
 		try (ResultIterator<Artist> it = ObjectSelect.query(Artist.class).iterator(context)) {
 			int count = 0;
 
@@ -114,7 +110,7 @@ public class ObjectSelect_RunIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_BatchIterator() {
+	public void batchIterator() {
 		try (ResultBatchIterator<Artist> it = ObjectSelect.query(Artist.class).batchIterator(context, 5)) {
 			int count = 0;
 
@@ -128,10 +124,10 @@ public class ObjectSelect_RunIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_SelectDataRows() {
+	public void selectDataRows() {
 		List<DataRow> result = ObjectSelect.dataRowQuery(Artist.class).select(context);
 		assertEquals(20, result.size());
-		assertThat(result.get(0), instanceOf(DataRow.class));
+		assertInstanceOf(DataRow.class, result.get(0));
 
 		DataRow a = ObjectSelect.dataRowQuery(Artist.class).where(Artist.ARTIST_NAME.eq("artist14")).selectOne(context);
 		assertNotNull(a);
@@ -139,32 +135,33 @@ public class ObjectSelect_RunIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_SelectOne() {
+	public void selectOne() {
 		Artist a = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("artist13")).selectOne(context);
 		assertNotNull(a);
 		assertEquals("artist13", a.getArtistName());
 	}
 
 	@Test
-	public void test_SelectOne_NoMatch() {
+	public void selectOne_NoMatch() {
 		Artist a = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("artist33")).selectOne(context);
 		assertNull(a);
 	}
 
-	@Test(expected = CayenneRuntimeException.class)
-	public void test_SelectOne_MoreThanOneMatch() {
-		ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.like("artist%")).selectOne(context);
+	@Test
+	public void selectOne_MoreThanOneMatch() {
+		assertThrows(CayenneRuntimeException.class,
+				() -> ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.like("artist%")).selectOne(context));
 	}
 
 	@Test
-	public void test_SelectFirst() {
+	public void selectFirst() {
 		Artist a = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("artist13")).selectFirst(context);
 		assertNotNull(a);
 		assertEquals("artist13", a.getArtistName());
 	}
 
 	@Test
-	public void test_SelectFirstByContext() {
+	public void selectFirstByContext() {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("artist13"));
 		Artist a = context.selectFirst(q);
 		assertNotNull(a);
@@ -172,13 +169,13 @@ public class ObjectSelect_RunIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_SelectFirst_NoMatch() {
+	public void selectFirst_NoMatch() {
 		Artist a = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("artist33")).selectFirst(context);
 		assertNull(a);
 	}
 
 	@Test
-	public void test_SelectFirst_MoreThanOneMatch() {
+	public void selectFirst_MoreThanOneMatch() {
 		Artist a = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.like("artist%"))
 				.orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc()).selectFirst(context);
 		assertNotNull(a);
@@ -186,7 +183,7 @@ public class ObjectSelect_RunIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_SelectFirst_TrimInWhere() {
+	public void selectFirst_TrimInWhere() {
 		Artist a = ObjectSelect.query(Artist.class)
 				.where(Artist.ARTIST_NAME.trim().likeIgnoreCase("artist%"))
 				.orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc()).selectFirst(context);
@@ -195,7 +192,7 @@ public class ObjectSelect_RunIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_SelectFirst_SubstringInWhere() {
+	public void selectFirst_SubstringInWhere() {
 		Artist a = ObjectSelect.query(Artist.class)
 				.where(Artist.ARTIST_NAME.substring(2, 3).eq("rti"))
 				.orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc()).selectFirst(context);
@@ -204,7 +201,7 @@ public class ObjectSelect_RunIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_Select_CustomFunction() {
+	public void select_CustomFunction() {
 		// TODO: This will fail for Oracle, so skip for now.
 		//       It is necessary to provide connection with "fixedString=true" property somehow.
 		//       Also see CAY-1470.
@@ -217,7 +214,7 @@ public class ObjectSelect_RunIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_Select_Having() {
+	public void select_Having() {
 		List<Artist> artists = ObjectSelect.query(Artist.class)
 				.having(Artist.PAINTING_ARRAY.count().gt(3L))
 				.select(context);
@@ -226,7 +223,7 @@ public class ObjectSelect_RunIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_Select_Where_Having() {
+	public void select_Where_Having() {
 		List<Artist> artists = ObjectSelect.query(Artist.class)
 				.where(Artist.ARTIST_NAME.eq("artist1"))
 				.having(Artist.PAINTING_ARRAY.count().gt(3L))
@@ -236,7 +233,7 @@ public class ObjectSelect_RunIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_CAY_2092() {
+	public void cay_2092() {
 		List<Artist> artists = ObjectSelect.query(Artist.class)
 				.orderBy(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).asc())
 				.pageSize(5)
@@ -248,7 +245,7 @@ public class ObjectSelect_RunIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_CAY_2836_countWithOrdering() {
+	public void cay_2836_countWithOrdering() {
 		long count = ObjectSelect.query(Artist.class)
 				.orderBy(Artist.ARTIST_NAME.asc())
 				.selectCount(context);

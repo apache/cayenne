@@ -33,12 +33,12 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * @since 4.0
@@ -55,7 +55,7 @@ public class ASTFunctionCallDateIT extends RuntimeCase {
     @Inject
     private UnitDbAdapter unitDbAdapter;
 
-    @Before
+    @BeforeEach
     public void createDataSet() throws Exception {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.MILLISECOND, 0);
@@ -84,7 +84,7 @@ public class ASTFunctionCallDateIT extends RuntimeCase {
     }
 
     @Test
-    public void testCurrentDate() throws Exception {
+    public void currentDate() throws Exception {
         Expression exp = ExpressionFactory.greaterOrEqualExp("dateColumn", new ASTCurrentDate());
         DateTestEntity res1 = ObjectSelect.query(DateTestEntity.class, exp).selectOne(context);
         assertNotNull(res1);
@@ -97,7 +97,7 @@ public class ASTFunctionCallDateIT extends RuntimeCase {
     }
 
     @Test
-    public void testCurrentTime() throws Exception {
+    public void currentTime() throws Exception {
         Expression exp = ExpressionFactory.greaterOrEqualExp("timeColumn", new ASTCurrentTime());
         List<DateTestEntity> res = ObjectSelect.query(DateTestEntity.class, exp).select(context);
         if(!unitDbAdapter.supportsTimeSqlType()) {
@@ -116,7 +116,7 @@ public class ASTFunctionCallDateIT extends RuntimeCase {
     }
 
     @Test
-    public void testCurrentTimestamp() throws Exception {
+    public void currentTimestamp() throws Exception {
         Expression exp = ExpressionFactory.greaterOrEqualExp("timestampColumn", new ASTCurrentTimestamp());
         DateTestEntity res1 = ObjectSelect.query(DateTestEntity.class, exp).selectOne(context);
         assertNotNull(res1);
@@ -129,14 +129,14 @@ public class ASTFunctionCallDateIT extends RuntimeCase {
     }
 
     @Test
-    public void testASTCurrentDateParse() {
+    public void aSTCurrentDateParse() {
         Expression exp = ExpressionFactory.exp("dateColumn > currentDate()");
         DateTestEntity res = ObjectSelect.query(DateTestEntity.class, exp).selectOne(context);
         assertNotNull(res);
     }
 
     @Test
-    public void testASTCurrentTimeParse() {
+    public void aSTCurrentTimeParse() {
         Expression exp = ExpressionFactory.exp("timeColumn > currentTime()");
         DateTestEntity res = ObjectSelect.query(DateTestEntity.class, exp).selectOne(context);
         if(!unitDbAdapter.supportsTimeSqlType()) {
@@ -146,7 +146,7 @@ public class ASTFunctionCallDateIT extends RuntimeCase {
     }
 
     @Test
-    public void testASTCurrentTimestampParse() {
+    public void aSTCurrentTimestampParse() {
         Expression exp = ExpressionFactory.exp("timestampColumn > now()");
         DateTestEntity res = ObjectSelect.query(DateTestEntity.class, exp).selectOne(context);
         assertNotNull(res);

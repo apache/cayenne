@@ -31,15 +31,15 @@ import org.apache.cayenne.testdo.map_to_many.MapToManyTarget;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.MAP_TO_MANY_PROJECT)
 public class CDOMapRelationshipIT extends RuntimeCase {
@@ -55,7 +55,7 @@ public class CDOMapRelationshipIT extends RuntimeCase {
     protected TableHelper tIdMapToMany;
     protected TableHelper tIdMapToManyTarget;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tMapToMany = new TableHelper(dbHelper, "MAP_TO_MANY");
         tMapToMany.setColumns("ID");
@@ -89,7 +89,7 @@ public class CDOMapRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testReadToMany() throws Exception {
+    public void readToMany() throws Exception {
         createTestDataSet();
 
         MapToMany o1 = Cayenne.objectForPK(context, MapToMany.class, 1);
@@ -110,7 +110,7 @@ public class CDOMapRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testReadToManyId() throws Exception {
+    public void readToManyId() throws Exception {
         createTestIdDataSet();
 
         IdMapToMany o1 = Cayenne.objectForPK(context, IdMapToMany.class, 1);
@@ -131,7 +131,7 @@ public class CDOMapRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testReadToManyPrefetching() throws Exception {
+    public void readToManyPrefetching() throws Exception {
         createTestDataSet();
 
         MapToMany o1 = SelectById.query(MapToMany.class, 1).prefetch(MapToMany.TARGETS.disjoint()).selectOne(context);
@@ -147,7 +147,7 @@ public class CDOMapRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testAddToMany() throws Exception {
+    public void addToMany() throws Exception {
         createTestDataSet();
 
         MapToMany o1 = Cayenne.objectForPK(context, MapToMany.class, 1);
@@ -173,7 +173,7 @@ public class CDOMapRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testRemoveToMany() throws Exception {
+    public void removeToMany() throws Exception {
         createTestDataSet();
 
         MapToMany o1 = Cayenne.objectForPK(context, MapToMany.class, 1);
@@ -197,7 +197,7 @@ public class CDOMapRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testAddToManyViaReverse() throws Exception {
+    public void addToManyViaReverse() throws Exception {
         createTestDataSet();
 
         MapToMany o1 = Cayenne.objectForPK(context, MapToMany.class, 1);
@@ -223,7 +223,7 @@ public class CDOMapRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testModifyToManyKey() throws Exception {
+    public void modifyToManyKey() throws Exception {
         createTestDataSet();
 
         MapToMany o1 = Cayenne.objectForPK(context, MapToMany.class, 1);

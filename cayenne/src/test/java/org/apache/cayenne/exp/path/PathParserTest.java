@@ -19,21 +19,21 @@
 
 package org.apache.cayenne.exp.path;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PathParserTest {
 
     @Test
-    public void testParseSingle() {
+    public void parseSingle() {
         assertNull(PathParser.parseAllSegments(""));
         assertNull(PathParser.parseAllSegments("bd:test+"));
         assertNull(PathParser.parseAllSegments("test"));
     }
 
     @Test
-    public void testTwoSegmentsSimple() {
+    public void twoSegmentsSimple() {
         CayennePathSegment[] segments = PathParser.parseAllSegments("abc.bed");
         assertNotNull(segments);
         assertEquals(4, segments.length);
@@ -46,7 +46,7 @@ public class PathParserTest {
     }
 
     @Test
-    public void testTwoSegmentsOuter() {
+    public void twoSegmentsOuter() {
         CayennePathSegment[] segments = PathParser.parseAllSegments("a+.b+");
         assertNotNull(segments);
         assertEquals(4, segments.length);
@@ -59,7 +59,7 @@ public class PathParserTest {
     }
 
     @Test
-    public void testThreeSegments() {
+    public void threeSegments() {
         CayennePathSegment[] segments = PathParser.parseAllSegments("a.b.c");
         assertNotNull(segments);
         assertEquals(4, segments.length);
@@ -73,7 +73,7 @@ public class PathParserTest {
     }
 
     @Test
-    public void testFourSegments() {
+    public void fourSegments() {
         CayennePathSegment[] segments = PathParser.parseAllSegments("a.b+.c+.d");
         assertNotNull(segments);
         assertEquals(4, segments.length);
@@ -88,7 +88,7 @@ public class PathParserTest {
     }
 
     @Test
-    public void testFiveSegments() {
+    public void fiveSegments() {
         CayennePathSegment[] segments = PathParser.parseAllSegments("a.b+.c+.d.e");
         assertNotNull(segments);
         assertEquals(8, segments.length);

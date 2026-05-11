@@ -18,26 +18,26 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SQLTemplate_LegacyTest {
 
 	@Test
 	@SuppressWarnings("unchecked")
 	@Deprecated
-	public void testQueryWithParameters() {
+	public void queryWithParameters() {
 		SQLTemplate q1 = new SQLTemplate("E1", "SELECT");
 
 		Query q2 = q1.queryWithParameters(Collections.EMPTY_MAP);
@@ -57,7 +57,7 @@ public class SQLTemplate_LegacyTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	@Deprecated
-	public void testSetParameters_SingleParameterSet() throws Exception {
+	public void setParameters_SingleParameterSet() throws Exception {
 		SQLTemplate query = new SQLTemplate();
 
 		assertNotNull(query.getParameters());
@@ -83,7 +83,7 @@ public class SQLTemplate_LegacyTest {
 	@Test
 	@SuppressWarnings("unchecked")
 	@Deprecated
-	public void testSetParameters_BatchParameterSet() throws Exception {
+	public void setParameters_BatchParameterSet() throws Exception {
 		SQLTemplate query = new SQLTemplate();
 
 		assertNotNull(query.getParameters());

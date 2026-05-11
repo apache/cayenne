@@ -35,8 +35,8 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.sql.Types;
@@ -45,8 +45,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextPerformQueryAPIIT extends RuntimeCase {
@@ -72,7 +72,8 @@ public class DataContextPerformQueryAPIIT extends RuntimeCase {
     private TableHelper tArtist;
     private TableHelper tPainting;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -95,7 +96,7 @@ public class DataContextPerformQueryAPIIT extends RuntimeCase {
     }
 
     @Test
-    public void testObjectQueryStringBoolean() throws Exception {
+    public void objectQueryStringBoolean() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
 
         List<?> paintings = context.performQuery("ObjectQuery", true);
@@ -104,7 +105,7 @@ public class DataContextPerformQueryAPIIT extends RuntimeCase {
     }
 
     @Test
-    public void testObjectQueryStringMapBoolean() throws Exception {
+    public void objectQueryStringMapBoolean() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
 
         Artist a = Cayenne.objectForPK(context, Artist.class, 11);
@@ -116,7 +117,7 @@ public class DataContextPerformQueryAPIIT extends RuntimeCase {
     }
 
     @Test
-    public void testProcedureQueryStringMapBoolean() throws Exception {
+    public void procedureQueryStringMapBoolean() throws Exception {
 
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
@@ -152,7 +153,7 @@ public class DataContextPerformQueryAPIIT extends RuntimeCase {
     }
 
     @Test
-    public void testNonSelectingQueryString() throws Exception {
+    public void nonSelectingQueryString() throws Exception {
 
         int[] counts = context.performNonSelectingQuery("NonSelectingQuery");
 
@@ -165,7 +166,7 @@ public class DataContextPerformQueryAPIIT extends RuntimeCase {
     }
 
     @Test
-    public void testNonSelectingQueryStringMap() throws Exception {
+    public void nonSelectingQueryStringMap() throws Exception {
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", 300);
@@ -183,7 +184,7 @@ public class DataContextPerformQueryAPIIT extends RuntimeCase {
     }
 
     @Test
-    public void testPerfomQueryNonSelecting() throws Exception {
+    public void perfomQueryNonSelecting() throws Exception {
 
         Artist a = context.newObject(Artist.class);
         a.setArtistName("aa");
@@ -200,7 +201,7 @@ public class DataContextPerformQueryAPIIT extends RuntimeCase {
     }
 
     @Test
-    public void testObjectQueryWithLocalCache() throws Exception {
+    public void objectQueryWithLocalCache() throws Exception {
         createTwoArtists();
 
         List<?> artists = context.performQuery("QueryWithLocalCache", true);
@@ -213,7 +214,7 @@ public class DataContextPerformQueryAPIIT extends RuntimeCase {
     }
 
     @Test
-    public void testObjectQueryWithSharedCache() throws Exception {
+    public void objectQueryWithSharedCache() throws Exception {
         createTwoArtists();
 
         List<?> artists = context.performQuery("QueryWithSharedCache", true);

@@ -34,9 +34,9 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.ExtraModules;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.sql.Types;
@@ -46,7 +46,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @UseCayenneRuntime(CayenneProjects.INHERITANCE_VERTICAL_PROJECT)
 // Default sorter fails to properly sort all the relationships in the test schema used
@@ -66,7 +67,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 
 	TableHelper ivConcreteTable;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		ivAbstractTable = new TableHelper(dbHelper, "IV_ABSTRACT");
 		ivAbstractTable.setColumns("ID", "PARENT_ID", "TYPE")
@@ -76,7 +77,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 				.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
 	}
 
-	@After
+	@AfterEach
 	public void cleanUpConcrete() throws SQLException {
 		ivConcreteTable.deleteAll();
 		ivAbstractTable.deleteAll();
@@ -86,7 +87,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
     @Test
-	public void testInsert_Root() throws Exception {
+	public void insertRoot() throws Exception {
 
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
 		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
@@ -108,7 +109,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
     @Test
-	public void testInsert_Sub1() throws Exception {
+	public void insertSub1() throws Exception {
 
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
 		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
@@ -152,7 +153,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
     @Test
-	public void testInsert_Sub2() throws Exception {
+	public void insertSub2() throws Exception {
 
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
 		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
@@ -215,25 +216,18 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	/**
 	 * @link https://issues.apache.org/jira/browse/CAY-2146
 	 */
-    @Test(expected = org.apache.cayenne.validation.ValidationException.class)
-    public void testValidationOnInsert_Sub3_Exception() {
-
-        TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
-        ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
-
-        TableHelper ivSub3Table = new TableHelper(dbHelper, "IV_SUB3");
-        ivSub3Table.setColumns("ID", "IV_ROOT_ID");
-
+    @Test
+    public void validationOnInsertSub3Exception() {
         IvSub3 sub3 = context.newObject(IvSub3.class);
         sub3.setName("XyZX");
-		context.commitChanges();
+        assertThrows(org.apache.cayenne.validation.ValidationException.class, context::commitChanges);
     }
 
 	/**
 	 * @link https://issues.apache.org/jira/browse/CAY-2146
 	 */
 	@Test
-	public void testValidationOnInsert_Sub3_Ok() throws Exception {
+	public void validationOnInsertSub3Ok() throws Exception {
 
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
 		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
@@ -254,7 +248,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	 * @link https://issues.apache.org/jira/browse/CAY-2282
 	 */
 	@Test
-	public void testUpdateRelation_Sub3() throws Exception {
+	public void updateRelationSub3() throws Exception {
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
 		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
 		ivRootTable.insert(1, "root1", null);
@@ -287,7 +281,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
     @Test
-	public void testInsert_Sub1Sub1() throws Exception {
+	public void insertSub1Sub1() throws Exception {
 
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
 		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
@@ -330,7 +324,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
     @Test
-	public void testSelectQuery_SuperSub() throws Exception {
+	public void selectQuerySuperSub() throws Exception {
 
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
 		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
@@ -372,7 +366,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
     @Test
-	public void testSelectQuery_DeepAndWide() throws Exception {
+	public void selectQueryDeepAndWide() throws Exception {
 
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
 		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
@@ -442,7 +436,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
     @Test
-	public void testSelectQuery_MiddleLeaf() throws Exception {
+	public void selectQueryMiddleLeaf() throws Exception {
 
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
 		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
@@ -501,7 +495,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
     @Test
-	public void testDelete_Mix() throws Exception {
+	public void deleteMix() throws Exception {
 
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
 		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
@@ -560,7 +554,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
     @Test
-	public void testSelectQuery_AttributeOverrides() throws Exception {
+	public void selectQueryAttributeOverrides() throws Exception {
 
 		TableHelper iv1RootTable = new TableHelper(dbHelper, "IV1_ROOT");
 		iv1RootTable.setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
@@ -601,7 +595,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
     @Test
-	public void testInsertWithRelationship() throws SQLException {
+	public void insertWithRelationship() throws SQLException {
 		TableHelper xTable = new TableHelper(dbHelper, "IV2_X");
 		TableHelper rootTable = new TableHelper(dbHelper, "IV2_ROOT");
 		TableHelper sub1Table = new TableHelper(dbHelper, "IV2_SUB1");
@@ -622,7 +616,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testUpdateWithRelationship() throws SQLException {
+	public void updateWithRelationship() throws SQLException {
 		IvConcrete parent1 = context.newObject(IvConcrete.class);
 		parent1.setName("Parent1");
 		context.commitChanges();
@@ -650,7 +644,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
      * @link https://issues.apache.org/jira/browse/CAY-2838
      */
 	@Test
-	public void testNullifyFlattenedAttribute() throws SQLException {
+	public void nullifyFlattenedAttribute() throws SQLException {
 		IvConcrete concrete = context.newObject(IvConcrete.class);
 		concrete.setName("Concrete");
 		context.commitChanges();
@@ -669,7 +663,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testNullifyFlattenedRelationship() {
+	public void nullifyFlattenedRelationship() {
 		IvOther other = context.newObject(IvOther.class);
 		other.setName("other");
 
@@ -693,7 +687,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testUpdateFlattenedRelationshipWithInverse() throws SQLException {
+	public void updateFlattenedRelationshipWithInverse() throws SQLException {
 		TableHelper ivOtherTable = new TableHelper(dbHelper, "IV_OTHER");
 		ivOtherTable.setColumns("ID", "NAME").setColumnTypes(Types.INTEGER, Types.VARCHAR);
 
@@ -728,7 +722,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testDeleteFlattenedNoValues() throws SQLException {
+	public void deleteFlattenedNoValues() throws SQLException {
 		ivAbstractTable.insert(1, null, "S");
 
 		IvConcrete concrete = SelectById.query(IvConcrete.class, 1).selectOne(context);
@@ -743,7 +737,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testDeleteFlattenedNullValues() throws SQLException {
+	public void deleteFlattenedNullValues() throws SQLException {
 		ivAbstractTable.insert(1, null, "S");
 		ivConcreteTable.insert(1, null, null);
 
@@ -759,7 +753,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testDeleteFlattenedNullifyValues() throws SQLException {
+	public void deleteFlattenedNullifyValues() throws SQLException {
 		ivAbstractTable.insert(1, null, "S");
 		ivConcreteTable.insert(1, "test", null);
 
@@ -782,7 +776,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testNullifyFlattenedRelationshipConcreteToAbstract() throws SQLException {
+	public void nullifyFlattenedRelationshipConcreteToAbstract() throws SQLException {
 		ivAbstractTable.insert(1, null, "S");
 		ivConcreteTable.insert(1, "One", null);
 		ivAbstractTable.insert(2, null, "S");
@@ -803,7 +797,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
 	@Test//(expected = ValidationException.class) // other2 is not mandatory for now
-	public void testInsertWithAttributeAndRelationship() {
+	public void insertWithAttributeAndRelationship() {
 		IvOther other = context.newObject(IvOther.class);
 		other.setName("other");
 
@@ -816,7 +810,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testInsertWithMultipleAttributeAndMultipleRelationship() {
+	public void insertWithMultipleAttributeAndMultipleRelationship() {
 		IvOther other1 = context.newObject(IvOther.class);
 		other1.setName("other1");
 
@@ -839,7 +833,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testInsertTwoObjectsWithMultipleAttributeAndMultipleRelationship() {
+	public void insertTwoObjectsWithMultipleAttributeAndMultipleRelationship() {
 		IvOther other1 = context.newObject(IvOther.class);
 		other1.setName("other1");
 
@@ -869,7 +863,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	 * @link https://issues.apache.org/jira/browse/CAY-2840
 	 */
 	@Test
-	public void testBaseJointPrefetchBelongsTo() throws SQLException {
+	public void baseJointPrefetchBelongsTo() throws SQLException {
 		TableHelper ivOtherTable = new TableHelper(dbHelper, "IV_OTHER");
 		ivOtherTable.setColumns("ID", "NAME", "BASE_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
 
@@ -899,7 +893,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	 * @link https://issues.apache.org/jira/browse/CAY-2840
 	 */
 	@Test
-	public void testBaseDisjointPrefetchBelongsTo() throws SQLException {
+	public void baseDisjointPrefetchBelongsTo() throws SQLException {
 		TableHelper ivOtherTable = new TableHelper(dbHelper, "IV_OTHER");
 		ivOtherTable.setColumns("ID", "NAME", "BASE_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
 
@@ -929,7 +923,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	 * @link https://issues.apache.org/jira/browse/CAY-2840
 	 */
 	@Test
-	public void testBaseDisjointByIdPrefetchBelongsTo() throws SQLException {
+	public void baseDisjointByIdPrefetchBelongsTo() throws SQLException {
 		TableHelper ivOtherTable = new TableHelper(dbHelper, "IV_OTHER");
 		ivOtherTable.setColumns("ID", "NAME", "BASE_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
 
@@ -959,7 +953,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	 * @link https://issues.apache.org/jira/browse/CAY-2855
 	 */
 	@Test
-	public void testImplJointPrefetchBelongsTo() throws SQLException {
+	public void implJointPrefetchBelongsTo() throws SQLException {
 		TableHelper ivOtherTable = new TableHelper(dbHelper, "IV_OTHER");
 		ivOtherTable.setColumns("ID", "NAME", "IMPL_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
 
@@ -994,7 +988,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	 * @link https://issues.apache.org/jira/browse/CAY-2855
 	 */
 	@Test
-	public void testImplDisjointPrefetchBelongsTo() throws SQLException {
+	public void implDisjointPrefetchBelongsTo() throws SQLException {
 		TableHelper ivOtherTable = new TableHelper(dbHelper, "IV_OTHER");
 		ivOtherTable.setColumns("ID", "NAME", "IMPL_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
 
@@ -1031,7 +1025,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	 * @link https://issues.apache.org/jira/browse/CAY-2855
 	 */
 	@Test
-	public void testImplDisjointByIdPrefetchBelongsTo() throws SQLException {
+	public void implDisjointByIdPrefetchBelongsTo() throws SQLException {
 		TableHelper ivOtherTable = new TableHelper(dbHelper, "IV_OTHER");
 		ivOtherTable.setColumns("ID", "NAME", "IMPL_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
 
@@ -1068,7 +1062,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	 * @link https://issues.apache.org/jira/browse/CAY-2282
 	 */
 	@Test
-	public void testUpdateWithOptimisticLocks() throws SQLException {
+	public void updateWithOptimisticLocks() throws SQLException {
 		TableHelper ivOtherTable = new TableHelper(dbHelper, "IV_OTHER");
 		ivOtherTable.setColumns("ID", "NAME").setColumnTypes(Types.INTEGER, Types.VARCHAR);
 
@@ -1098,7 +1092,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testCountEjbqlQuery() throws Exception {
+	public void countEjbqlQuery() throws Exception {
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
 		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
 
@@ -1131,7 +1125,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPropagatedGeneratedPK() {
+	public void propagatedGeneratedPK() {
 		IvGenKeySub sub = context.newObject(IvGenKeySub.class);
 		sub.setName("test");
 		context.commitChanges();
@@ -1140,7 +1134,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testColumnSelectVerticalInheritance_Sub1() throws SQLException {
+	public void columnSelectVerticalInheritanceSub1() throws SQLException {
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
 		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
 
@@ -1188,7 +1182,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testColumnSelectVerticalInheritance_Sub1Sub1() throws SQLException {
+	public void columnSelectVerticalInheritanceSub1Sub1() throws SQLException {
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
 		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
 
@@ -1237,15 +1231,15 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testInsertTwoGenericVerticalInheritanceObjects() {
+	public void insertTwoGenericVerticalInheritanceObjects() {
 		// Generic DataObjects play nicer with a DataContext
 		final DataContext dataContext = (DataContext) context;
 
 		final Persistent girlEmma = dataContext.newObject("GenGirl");
 		final Persistent boyLuke = dataContext.newObject("GenBoy");
 
-		assertEquals("Girl is type G", girlEmma.readProperty("type"), "G");
-		assertEquals("Boy is type B", boyLuke.readProperty("type"), "B");
+		assertEquals(girlEmma.readProperty("type"), "G", "Girl is type G");
+		assertEquals(boyLuke.readProperty("type"), "B", "Boy is type B");
 
 		girlEmma.writeProperty("reference", "g1");
 		girlEmma.writeProperty("name", "Emma");

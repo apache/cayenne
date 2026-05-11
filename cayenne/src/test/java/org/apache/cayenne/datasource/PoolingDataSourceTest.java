@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.datasource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -33,8 +33,8 @@ import javax.sql.DataSource;
 import org.apache.cayenne.datasource.PoolAwareConnection;
 import org.apache.cayenne.datasource.UnmanagedPoolingDataSource;
 import org.apache.cayenne.datasource.PoolingDataSourceParameters;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -43,7 +43,7 @@ public class PoolingDataSourceTest {
 	private DataSource nonPooling;
 	private PoolingDataSourceParameters params;
 
-	@Before
+	@BeforeEach
 	public void before() throws SQLException {
 		nonPooling = mock(DataSource.class);
 		when(nonPooling.getConnection()).thenAnswer(new Answer<Connection>() {
@@ -56,7 +56,7 @@ public class PoolingDataSourceTest {
 	}
 
 	@Test
-	public void testManagePool_High() throws SQLException {
+	public void managePool_High() throws SQLException {
 
 		int max = 5;
 
@@ -92,7 +92,7 @@ public class PoolingDataSourceTest {
 	}
 
 	@Test
-	public void testManagePool_Low() throws SQLException {
+	public void managePool_Low() throws SQLException {
 
 		int min = 2;
 
@@ -126,7 +126,7 @@ public class PoolingDataSourceTest {
 	}
 
 	@Test
-	public void testManagePool_Empty() throws SQLException {
+	public void managePool_Empty() throws SQLException {
 
 		int max = 5;
 
@@ -148,7 +148,7 @@ public class PoolingDataSourceTest {
 	}
 
 	@Test
-	public void testValidateUnchecked() {
+	public void validateUnchecked() {
 
 		final PoolAwareConnection[] connections = validConnections(4);
 
@@ -177,7 +177,7 @@ public class PoolingDataSourceTest {
 	}
 
 	@Test
-	public void testGetConnection_UpperCap() throws SQLException {
+	public void getConnection_UpperCap() throws SQLException {
 		int max = 5;
 		params.setMaxConnections(max);
 		params.setMaxQueueWaitTime(1000);
@@ -189,12 +189,7 @@ public class PoolingDataSourceTest {
 			unchecked[i] = ds.getConnection();
 		}
 
-		try {
-			ds.getConnection();
-			fail("Pool overflow not checked");
-		} catch (SQLException e) {
-			// expected ... all connections are taken
-		}
+		assertThrows(SQLException.class, ds::getConnection);
 
 		// return one connection ... it should become immediately available
 		unchecked[0].close();

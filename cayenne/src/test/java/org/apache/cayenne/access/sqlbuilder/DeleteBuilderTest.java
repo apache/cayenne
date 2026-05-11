@@ -22,53 +22,52 @@ package org.apache.cayenne.access.sqlbuilder;
 import org.apache.cayenne.access.sqlbuilder.sqltree.DeleteNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.map.DbEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public class DeleteBuilderTest extends BaseSqlBuilderTest {
 
     @Test
-    public void testDelete() {
+    public void delete() {
         DeleteBuilder builder = new DeleteBuilder("test");
         Node node = builder.build();
-        assertThat(node, instanceOf(DeleteNode.class));
+        assertInstanceOf(DeleteNode.class, node);
         assertSQL("DELETE FROM test", node);
     }
 
     @Test
-    public void testDeleteWithQualifier() {
+    public void deleteWithQualifier() {
         DeleteBuilder builder = new DeleteBuilder("test");
         Node node = builder.where(
                 column("col1").eq(value(1))
                         .and(column("col2").eq(value("test")))
                         .and(column("col3").eq(value(null)))
         ).build();
-        assertThat(node, instanceOf(DeleteNode.class));
+        assertInstanceOf(DeleteNode.class, node);
         assertSQL("DELETE FROM test WHERE ( ( col1 = 1 ) AND ( col2 = 'test' ) ) AND ( col3 IS NULL )", node);
     }
 
     @Test
-    public void testDeleteDbEntityCatalog() {
+    public void deleteDbEntityCatalog() {
         DbEntity entity = new DbEntity("test");
         entity.setCatalog("catalog");
         DeleteBuilder builder = new DeleteBuilder(entity);
         Node node = builder.build();
-        assertThat(node, instanceOf(DeleteNode.class));
+        assertInstanceOf(DeleteNode.class, node);
         assertSQL("DELETE FROM catalog.test", node);
         assertQuotedSQL("DELETE FROM `catalog`.`test`", node);
     }
 
     @Test
-    public void testDeleteDbEntityCatalogAndSchema() {
+    public void deleteDbEntityCatalogAndSchema() {
         DbEntity entity = new DbEntity("test");
         entity.setSchema("schema");
         entity.setCatalog("catalog");
         DeleteBuilder builder = new DeleteBuilder(entity);
         Node node = builder.build();
-        assertThat(node, instanceOf(DeleteNode.class));
+        assertInstanceOf(DeleteNode.class, node);
         assertSQL("DELETE FROM catalog.schema.test", node);
         assertQuotedSQL("DELETE FROM `catalog`.`schema`.`test`", node);
     }

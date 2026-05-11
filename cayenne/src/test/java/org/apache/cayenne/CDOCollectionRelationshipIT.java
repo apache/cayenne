@@ -29,17 +29,17 @@ import org.apache.cayenne.testdo.relationships_collection_to_many.CollectionToMa
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_COLLECTION_TO_MANY_PROJECT)
 public class CDOCollectionRelationshipIT extends RuntimeCase {
@@ -50,7 +50,7 @@ public class CDOCollectionRelationshipIT extends RuntimeCase {
     @Inject
     private DBHelper dbHelper;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         TableHelper tCollectionToMany = new TableHelper(dbHelper, "COLLECTION_TO_MANY");
         tCollectionToMany.setColumns("ID");
@@ -66,7 +66,7 @@ public class CDOCollectionRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testReadToMany() throws Exception {
+    public void readToMany() throws Exception {
 
         CollectionToMany o1 = Cayenne.objectForPK(context, CollectionToMany.class, 1);
 
@@ -92,7 +92,7 @@ public class CDOCollectionRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testReadToManyPrefetching() throws Exception {
+    public void readToManyPrefetching() throws Exception {
         CollectionToMany o1 = ObjectSelect.query(CollectionToMany.class)
                 .where(ExpressionFactory.matchDbExp(CollectionToMany.ID_PK_COLUMN, 1))
                 .prefetch(CollectionToMany.TARGETS.disjoint())
@@ -120,7 +120,7 @@ public class CDOCollectionRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testAddToMany() throws Exception {
+    public void addToMany() throws Exception {
 
         CollectionToMany o1 = Cayenne.objectForPK(context, CollectionToMany.class, 1);
 
@@ -143,7 +143,7 @@ public class CDOCollectionRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testRemoveToMany() throws Exception {
+    public void removeToMany() throws Exception {
 
         CollectionToMany o1 = Cayenne.objectForPK(context, CollectionToMany.class, 1);
 
@@ -168,7 +168,7 @@ public class CDOCollectionRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testAddToManyViaReverse() throws Exception {
+    public void addToManyViaReverse() throws Exception {
 
         CollectionToMany o1 = Cayenne.objectForPK(context, CollectionToMany.class, 1);
 

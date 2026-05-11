@@ -41,18 +41,18 @@ import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.sql.Types;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextFlattenedAttributesIT extends RuntimeCase {
@@ -71,7 +71,7 @@ public class DataContextFlattenedAttributesIT extends RuntimeCase {
     private TableHelper tPaintingInfo;
     private TableHelper tGallery;
 
-    @Before
+    @BeforeEach
     public void createTestDataSetStructure() {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
@@ -127,39 +127,39 @@ public class DataContextFlattenedAttributesIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectCompound1() throws Exception {
+    public void selectCompound1() throws Exception {
         createTestDataSet();
         List<CompoundPainting> objects = ObjectSelect.query(CompoundPainting.class).select(context);
 
         assertNotNull(objects);
         assertEquals(8, objects.size());
-        assertNotNull("CompoundPainting expected, got null", objects.get(0));
+        assertNotNull(objects.get(0), "CompoundPainting expected, got null");
 
         for (CompoundPainting painting : objects) {
             Number id = (Number) painting.getObjectId().getIdSnapshot().get("PAINTING_ID");
             assertEquals(
-                    "CompoundPainting.getPaintingTitle(): " + painting.getPaintingTitle(),
                     "painting" + id,
-                    painting.getPaintingTitle());
+                    painting.getPaintingTitle(),
+                    "CompoundPainting.getPaintingTitle(): " + painting.getPaintingTitle());
             if (painting.getToPaintingInfo() == null) {
                 assertNull(painting.getTextReview());
             } else {
                 assertEquals(
-                        "CompoundPainting.getTextReview(): " + painting.getTextReview(),
                         "painting review" + id,
-                        painting.getTextReview());
+                        painting.getTextReview(),
+                        "CompoundPainting.getTextReview(): " + painting.getTextReview());
             }
             assertEquals(
-                    "CompoundPainting.getArtistName(): " + painting.getArtistName(),
                     painting.getToArtist().getArtistName(),
-                    painting.getArtistName());
+                    painting.getArtistName(),
+                    "CompoundPainting.getArtistName(): " + painting.getArtistName());
             if (painting.getToGallery() == null) {
                 assertNull(painting.getGalleryName());
             } else {
                 assertEquals(
-                        "CompoundPainting.getGalleryName(): " + painting.getGalleryName(),
                         painting.getToGallery().getGalleryName(),
-                        painting.getGalleryName());
+                        painting.getGalleryName(),
+                        "CompoundPainting.getGalleryName(): " + painting.getGalleryName());
             }
         }
     }
@@ -168,7 +168,7 @@ public class DataContextFlattenedAttributesIT extends RuntimeCase {
     // attributes, while EJBQLQuery does an OUTER JOIN... which seems like a better idea...
     // 14/01/2010 now it uses LEFT JOIN
     @Test
-    public void testSelectCompound2() throws Exception {
+    public void selectCompound2() throws Exception {
         createTestDataSet();
 
         List<CompoundPainting> objects = ObjectSelect.query(CompoundPainting.class, CompoundPainting.ARTIST_NAME.eq("artist2"))
@@ -176,19 +176,19 @@ public class DataContextFlattenedAttributesIT extends RuntimeCase {
 
         assertNotNull(objects);
         assertEquals(2, objects.size());
-        assertTrue("CompoundPainting expected, got null", objects.get(0) != null);
+        assertNotNull(objects.get(0), "CompoundPainting expected, got null");
 
         for (CompoundPainting painting : objects) {
             assertEquals(PersistenceState.COMMITTED, painting.getPersistenceState());
 
             assertEquals(
-                    "CompoundPainting.getArtistName(): " + painting.getArtistName(),
                     "artist2",
-                    painting.getArtistName());
+                    painting.getArtistName(),
+                    "CompoundPainting.getArtistName(): " + painting.getArtistName());
             assertEquals(
-                    "CompoundPainting.getGalleryName(): " + painting.getGalleryName(),
                     painting.getToGallery().getGalleryName(),
-                    painting.getGalleryName());
+                    painting.getGalleryName(),
+                    "CompoundPainting.getGalleryName(): " + painting.getGalleryName());
         }
     }
 
@@ -199,7 +199,7 @@ public class DataContextFlattenedAttributesIT extends RuntimeCase {
      * SelectQuery statement, CAY-1484
      */
     @Test
-    public void testSelectCompoundLongNames() throws Exception {
+    public void selectCompoundLongNames() throws Exception {
         createTestDataSet();
         // the error was thrown on query execution
         List<?> objects = ObjectSelect.query(CompoundPaintingLongNames.class).select(context);
@@ -207,7 +207,7 @@ public class DataContextFlattenedAttributesIT extends RuntimeCase {
     }
 
     @Test
-    public void testColumnQueryWithFlattenedAttribute() throws Exception {
+    public void columnQueryWithFlattenedAttribute() throws Exception {
         createTestDataSet();
         ColumnSelect<Object[]> originalQuery = ObjectSelect.query(CompoundPaintingLongNames.class)
                 .columns(CompoundPaintingLongNames.SELF);
@@ -229,7 +229,7 @@ public class DataContextFlattenedAttributesIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectColumnQuery() throws Exception {
+    public void selectColumnQuery() throws Exception {
         createTestDataWithDeletion();
 
         ColumnSelect<CompoundPaintingLongNames> originalQuery = ObjectSelect.query(CompoundPaintingLongNames.class)
@@ -273,7 +273,7 @@ public class DataContextFlattenedAttributesIT extends RuntimeCase {
     }
 
     @Test
-    public void testObjectSelectQuery() throws Exception {
+    public void objectSelectQuery() throws Exception {
         createTestDataWithDeletion();
 
         ObjectSelect<CompoundPaintingLongNames> originalQuery = ObjectSelect.query(CompoundPaintingLongNames.class);
@@ -316,7 +316,7 @@ public class DataContextFlattenedAttributesIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectEJQBQL() throws Exception {
+    public void selectEJQBQL() throws Exception {
         createTestDataSet();
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT a FROM CompoundPainting a WHERE a.artistName = 'artist2'");
@@ -325,8 +325,8 @@ public class DataContextFlattenedAttributesIT extends RuntimeCase {
         assertNotNull(objects);
         assertEquals(2, objects.size());
         assertTrue(
-                "CompoundPainting expected, got " + objects.get(0).getClass(),
-                objects.get(0) instanceof CompoundPainting);
+                objects.get(0) instanceof CompoundPainting,
+                "CompoundPainting expected, got " + objects.get(0).getClass());
         for (Object object : objects) {
             CompoundPainting painting = (CompoundPainting) object;
             assertEquals(PersistenceState.COMMITTED, painting.getPersistenceState());
@@ -334,7 +334,7 @@ public class DataContextFlattenedAttributesIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectEJQBQLCollectionTheta() throws Exception {
+    public void selectEJQBQLCollectionTheta() throws Exception {
         createTestDataSet();
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT DISTINCT a FROM CompoundPainting cp, Artist a "
@@ -354,7 +354,7 @@ public class DataContextFlattenedAttributesIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectEJQBQLLike() throws Exception {
+    public void selectEJQBQLLike() throws Exception {
         createTestDataSet();
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT a FROM CompoundPainting a WHERE a.artistName LIKE 'artist%' "
@@ -374,7 +374,7 @@ public class DataContextFlattenedAttributesIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectEJQBQLBetween() throws Exception {
+    public void selectEJQBQLBetween() throws Exception {
         createTestDataSet();
         EJBQLQuery query = new EJBQLQuery("SELECT a FROM CompoundPainting a "
                 + "WHERE a.artistName BETWEEN 'artist1' AND 'artist4' "
@@ -394,7 +394,7 @@ public class DataContextFlattenedAttributesIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectEJQBQLSubquery() throws Exception {
+    public void selectEJQBQLSubquery() throws Exception {
         createTestDataSet();
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT g FROM Gallery g WHERE "
@@ -410,7 +410,7 @@ public class DataContextFlattenedAttributesIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectEJQBQLHaving() throws Exception {
+    public void selectEJQBQLHaving() throws Exception {
         createTestDataSet();
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT cp.galleryName, COUNT(a) from  Artist a, CompoundPainting cp "
@@ -428,7 +428,7 @@ public class DataContextFlattenedAttributesIT extends RuntimeCase {
     }
 
     @Test
-    public void testInsert() {
+    public void insert() {
         CompoundPainting o1 = context.newObject(CompoundPainting.class);
         o1.setArtistName("A1");
         o1.setEstimatedPrice(new BigDecimal(1.0d));
@@ -451,7 +451,7 @@ public class DataContextFlattenedAttributesIT extends RuntimeCase {
     }
 
     @Test
-    public void testDelete() throws Exception {
+    public void delete() throws Exception {
         // throw in a bit of random overlapping data, to make sure FK/PK correspondence is
         // not purely coincidental
         Artist a = context.newObject(Artist.class);
@@ -483,24 +483,24 @@ public class DataContextFlattenedAttributesIT extends RuntimeCase {
     }
 
     @Test
-    public void testDelete2() throws Exception {
+    public void delete2() throws Exception {
         createTestDataSet();
 
         long infoCount = ObjectSelect.query(PaintingInfo.class).selectCount(context);
-        assertEquals("PaintingInfo", 8, infoCount);
+        assertEquals(8, infoCount, "PaintingInfo");
 
         List<CompoundPainting> objects = ObjectSelect.query(CompoundPainting.class)
                 .where(CompoundPainting.ARTIST_NAME.eq("artist2"))
                 .select(context);
 
         // Should have two paintings by the same artist
-        assertEquals("Paintings", 2, objects.size());
+        assertEquals(2, objects.size(), "Paintings");
 
         CompoundPainting cp0 = objects.get(0);
         CompoundPainting cp1 = objects.get(1);
 
         // Both paintings are at the same gallery
-        assertEquals("Gallery", cp0.getGalleryName(), cp1.getGalleryName());
+        assertEquals(cp0.getGalleryName(), cp1.getGalleryName(), "Gallery");
 
         context.invalidateObjects(cp0);
         context.deleteObjects(cp1);
@@ -514,18 +514,18 @@ public class DataContextFlattenedAttributesIT extends RuntimeCase {
                 .select(runtime.newContext());
         
         // Should now only have one painting by artist2
-        assertEquals("Painting", 1, objects.size());
+        assertEquals(1, objects.size(), "Painting");
         // and that painting should have a valid gallery
-        assertNotNull("Gallery is null", objects.get(0).getToGallery());
-        assertNotNull("GalleryName is null", objects.get(0).getToGallery().getGalleryName());
+        assertNotNull(objects.get(0).getToGallery(), "Gallery is null");
+        assertNotNull(objects.get(0).getToGallery().getGalleryName(), "GalleryName is null");
         
         // There should be one less painting info now
         infoCount = ObjectSelect.query(PaintingInfo.class).selectCount(context);
-        assertEquals("PaintingInfo", 7, infoCount);
+        assertEquals(7, infoCount, "PaintingInfo");
     }
 
     @Test
-    public void testUpdate() {
+    public void update() {
         CompoundPainting o1 = context.newObject(CompoundPainting.class);
         o1.setArtistName("A1");
         o1.setEstimatedPrice(new BigDecimal(1d));
@@ -545,7 +545,7 @@ public class DataContextFlattenedAttributesIT extends RuntimeCase {
     }
 
     @Test
-    public void testUpdateDifferentContext() {
+    public void updateDifferentContext() {
         Object id;
         {
             // insert

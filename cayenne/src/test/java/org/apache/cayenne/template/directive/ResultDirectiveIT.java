@@ -34,10 +34,10 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test for Result directive to check if we could use ResultDirective
@@ -52,13 +52,13 @@ public class ResultDirectiveIT extends RuntimeCase {
 	@Inject
 	protected DBHelper dbHelper;
 
-	@Before
+	@BeforeEach
 	public void before() throws SQLException {
 		new TableHelper(dbHelper, "ARTIST").setColumns("ARTIST_ID", "ARTIST_NAME").insert(1L, "ArtistToTestResult");
 	}
 
 	@Test
-	public void testWithoutResultDirective() throws Exception {
+	public void withoutResultDirective() throws Exception {
 		String sql = "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST";
 		Map<String, Object> selectResult = selectForQuery(sql);
 
@@ -67,7 +67,7 @@ public class ResultDirectiveIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testWithOnlyResultDirective() throws Exception {
+	public void withOnlyResultDirective() throws Exception {
 		String sql = "SELECT #result('ARTIST_ID' 'java.lang.Integer'), #result('ARTIST_NAME' 'java.lang.String')"
 				+ " FROM ARTIST";
 		Map<String, Object> selectResult = selectForQuery(sql);
@@ -79,7 +79,7 @@ public class ResultDirectiveIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testWithMixedDirectiveUse1() throws Exception {
+	public void withMixedDirectiveUse1() throws Exception {
 		String sql = "SELECT ARTIST_ID, #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST";
 		Map<String, Object> selectResult = selectForQuery(sql);
 
@@ -88,7 +88,7 @@ public class ResultDirectiveIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testWithMixedDirectiveUse2() throws Exception {
+	public void withMixedDirectiveUse2() throws Exception {
 		String sql = "SELECT #result('ARTIST_ID' 'java.lang.Integer'), ARTIST_NAME FROM ARTIST";
 		Map<String, Object> selectResult = selectForQuery(sql);
 

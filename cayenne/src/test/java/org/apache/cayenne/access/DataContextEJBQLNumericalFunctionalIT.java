@@ -36,12 +36,12 @@ import org.apache.cayenne.testdo.numeric_types.BooleanTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.NUMERIC_TYPES_PROJECT)
 public class DataContextEJBQLNumericalFunctionalIT extends RuntimeCase {
@@ -54,14 +54,15 @@ public class DataContextEJBQLNumericalFunctionalIT extends RuntimeCase {
 
     private TableHelper tBigIntegerEntity;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tBigIntegerEntity = new TableHelper(dbHelper, "BIGINTEGER_ENTITY");
         tBigIntegerEntity.setColumns("ID", "BIG_INTEGER_FIELD");
     }
 
     @Test
-    public void testABS() {
+    public void aBS() {
 
         BigDecimalEntity o1 = context.newObject(BigDecimalEntity.class);
         o1.setBigDecimalNumeric(new BigDecimal("4.1"));
@@ -79,7 +80,7 @@ public class DataContextEJBQLNumericalFunctionalIT extends RuntimeCase {
     }
 
     @Test
-    public void testSQRT() {
+    public void sQRT() {
 
         BigDecimalEntity o1 = context.newObject(BigDecimalEntity.class);
         o1.setBigDecimalNumeric(new BigDecimal("9"));
@@ -97,7 +98,7 @@ public class DataContextEJBQLNumericalFunctionalIT extends RuntimeCase {
     }
 
     @Test
-    public void testMOD() {
+    public void mOD() {
 
         BigIntegerEntity o1 = context.newObject(BigIntegerEntity.class);
         o1.setBigIntegerField(new BigInteger("9"));
@@ -115,7 +116,7 @@ public class DataContextEJBQLNumericalFunctionalIT extends RuntimeCase {
     }
 
     @Test
-    public void testUpdateNoQualifierBoolean() throws Exception {
+    public void updateNoQualifierBoolean() throws Exception {
 
         BooleanTestEntity o1 = context.newObject(BooleanTestEntity.class);
         o1.setBooleanColumn(Boolean.TRUE);

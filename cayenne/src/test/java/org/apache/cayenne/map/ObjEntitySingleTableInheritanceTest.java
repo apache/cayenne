@@ -19,15 +19,15 @@
 
 package org.apache.cayenne.map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  */
@@ -57,7 +57,7 @@ public class ObjEntitySingleTableInheritanceTest {
     protected ObjRelationship relationship2;
     protected ObjRelationship relationship3;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         map = new DataMap();
 
@@ -107,7 +107,7 @@ public class ObjEntitySingleTableInheritanceTest {
     }
 
     @Test
-    public void testInheritedAttributes() throws Exception {
+    public void inheritedAttributes() throws Exception {
         assertSame(attribute1, entity1.getAttribute("a1"));
         assertNull(entity1.getAttribute("a2"));
 
@@ -122,7 +122,7 @@ public class ObjEntitySingleTableInheritanceTest {
     }
 
     @Test
-    public void testInheritedRelationships() throws Exception {
+    public void inheritedRelationships() throws Exception {
         assertSame(relationship1, entity1.getRelationship("r1"));
         assertNull(entity1.getRelationship("r2"));
 
@@ -135,7 +135,7 @@ public class ObjEntitySingleTableInheritanceTest {
     }
 
     @Test
-    public void testAttributeForDbAttribute() throws Exception {
+    public void attributeForDbAttribute() throws Exception {
         entity1.setSuperEntityName("e2");
         entity2.setDbEntityName(dbEntity.getName());
 
@@ -150,7 +150,7 @@ public class ObjEntitySingleTableInheritanceTest {
     }
 
     @Test
-    public void testRelationshipForDbRelationship() throws Exception {
+    public void relationshipForDbRelationship() throws Exception {
         entity1.setSuperEntityName("e2");
         entity2.setDbEntityName(dbEntity.getName());
 

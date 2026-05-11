@@ -19,13 +19,13 @@
 
 package org.apache.cayenne.reflect;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -40,12 +40,12 @@ import java.util.Map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.types.MockEnum;
 import org.apache.cayenne.access.types.MockEnumHolder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class PropertyUtilsTest {
 
 	@Test
-	public void testAccessor() {
+	public void accessor() {
 
 		Accessor accessor = PropertyUtils.accessor("byteArrayField");
 		assertNotNull(accessor);
@@ -61,7 +61,7 @@ public class PropertyUtilsTest {
 	}
 
 	@Test
-	public void testAccessor_Cache() {
+	public void accessor_Cache() {
 
 		Accessor accessor = PropertyUtils.accessor("p1");
 		assertNotNull(accessor);
@@ -71,7 +71,7 @@ public class PropertyUtilsTest {
 	}
 	
 	@Test
-	public void testAccessor_CacheNested() {
+	public void accessor_CacheNested() {
 
 		Accessor accessor = PropertyUtils.accessor("p1.p2");
 		assertNotNull(accessor);
@@ -81,7 +81,7 @@ public class PropertyUtilsTest {
 	}
 
 	@Test
-	public void testAccessorNested() {
+	public void accessorNested() {
 
 		Accessor accessor = PropertyUtils.accessor("related.byteArrayField");
 		assertNotNull(accessor);
@@ -100,7 +100,7 @@ public class PropertyUtilsTest {
 	}
 
 	@Test
-	public void testAccessorNested_Null() {
+	public void accessorNested_Null() {
 
 		Accessor accessor = PropertyUtils.accessor("related.byteArrayField");
 		assertNotNull(accessor);
@@ -110,7 +110,7 @@ public class PropertyUtilsTest {
 	}
 
 	@Test
-	public void testGetProperty() {
+	public void getProperty() {
 		TstJavaBean o1 = createBean();
 
 		assertSame(o1.getByteArrayField(), PropertyUtils.getProperty(o1, "byteArrayField"));
@@ -123,7 +123,7 @@ public class PropertyUtilsTest {
 	}
 
 	@Test
-	public void testGetProperty_Nested() {
+	public void getProperty_Nested() {
 		TstJavaBean o1 = createBean();
 		assertNull(PropertyUtils.getProperty(o1, "related.integerField"));
 
@@ -135,7 +135,7 @@ public class PropertyUtilsTest {
 	}
 
 	@Test
-	public void testGetProperty_NestedOuter() {
+	public void getProperty_NestedOuter() {
 		TstJavaBean o1 = createBean();
 		assertNull(PropertyUtils.getProperty(o1, "related+.integerField"));
 
@@ -147,7 +147,7 @@ public class PropertyUtilsTest {
 	}
 
 	@Test
-	public void testSetProperty() {
+	public void setProperty() {
 		TstJavaBean o1 = createBean();
 		TstJavaBean o2 = new TstJavaBean();
 
@@ -161,7 +161,7 @@ public class PropertyUtilsTest {
 	}
 
 	@Test
-	public void testGetPropertyMap() {
+	public void getPropertyMap() {
 		Map<String, Object> o1 = createMap();
 
 		assertSame(o1.get("byteArrayField"), PropertyUtils.getProperty(o1, "byteArrayField"));
@@ -174,7 +174,7 @@ public class PropertyUtilsTest {
 	}
 
 	@Test
-	public void testSetProperty_Nested() {
+	public void setProperty_Nested() {
 		TstJavaBean o1 = createBean();
 		TstJavaBean o1related = new TstJavaBean();
 		o1related.setIntegerField(44);
@@ -185,14 +185,14 @@ public class PropertyUtilsTest {
 	}
 
 	@Test
-	public void testSetProperty_Null() {
+	public void setProperty_Null() {
 		TstJavaBean o1 = createBean();
 
 		PropertyUtils.setProperty(o1, "related.integerField", 55);
 	}
 
 	@Test
-	public void testSetPropertyMap() {
+	public void setPropertyMap() {
 		Map<String, Object> o1 = createMap();
 		Map<String, Object> o2 = new HashMap<>();
 
@@ -208,7 +208,7 @@ public class PropertyUtilsTest {
 	}
 
 	@Test
-	public void testSetConverted() {
+	public void setConverted() {
 		TstJavaBean o1 = new TstJavaBean();
 
 		// Object -> String
@@ -276,7 +276,7 @@ public class PropertyUtilsTest {
 	}
 
 	@Test
-	public void testSetConvertedWithCustomConverter() {
+	public void setConvertedWithCustomConverter() {
 		// save old converter for restore
 		Converter<Date> oldConverter = ConverterFactory.factory.getConverter(Date.class);
 
@@ -313,7 +313,7 @@ public class PropertyUtilsTest {
 	}
 
 	@Test
-	public void testSetNull() {
+	public void setNull() {
 		TstJavaBean o1 = new TstJavaBean();
 
 		o1.setStringField("xyz");
@@ -350,7 +350,7 @@ public class PropertyUtilsTest {
 	}
 
 	@Test
-	public void testSetConvertedEnum() {
+	public void setConvertedEnum() {
 		MockEnumHolder o1 = new MockEnumHolder();
 
 		// String to Enum

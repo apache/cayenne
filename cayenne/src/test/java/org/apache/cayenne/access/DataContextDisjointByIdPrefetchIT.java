@@ -33,18 +33,18 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextDisjointByIdPrefetchIT extends RuntimeCase {
@@ -62,7 +62,7 @@ public class DataContextDisjointByIdPrefetchIT extends RuntimeCase {
     private TableHelper tPainting;
     private TableHelper tPaintingInfo;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -112,7 +112,7 @@ public class DataContextDisjointByIdPrefetchIT extends RuntimeCase {
     }
 
     @Test
-    public void testOneToMany() throws Exception {
+    public void oneToMany() throws Exception {
         createArtistWithTwoPaintingsDataSet();
 
         List<Artist> result = ObjectSelect.query(Artist.class)
@@ -140,7 +140,7 @@ public class DataContextDisjointByIdPrefetchIT extends RuntimeCase {
     }
 
     @Test
-    public void testOneToMany_SQLSelect() throws Exception {
+    public void oneToMany_SQLSelect() throws Exception {
         createArtistWithTwoPaintingsDataSet();
 
         List<Artist> result = SQLSelect.query(Artist.class, "SELECT "
@@ -173,7 +173,7 @@ public class DataContextDisjointByIdPrefetchIT extends RuntimeCase {
     }
 
     @Test
-    public void testManyToOne() throws Exception {
+    public void manyToOne() throws Exception {
         createArtistWithTwoPaintingsDataSet();
 
         final List<Painting> result = ObjectSelect.query(Painting.class)
@@ -190,7 +190,7 @@ public class DataContextDisjointByIdPrefetchIT extends RuntimeCase {
     }
 
     @Test
-    public void testManyToOne_SQLSelect() throws Exception {
+    public void manyToOne_SQLSelect() throws Exception {
         createArtistWithTwoPaintingsDataSet();
 
         List<Painting> result = SQLSelect.query(Painting.class, "SELECT "
@@ -216,7 +216,7 @@ public class DataContextDisjointByIdPrefetchIT extends RuntimeCase {
     }
 
     @Test
-    public void testFetchLimit() throws Exception {
+    public void fetchLimit() throws Exception {
         createThreeArtistsWithPlentyOfPaintingsDataSet();
 
         // There will be only 2 bags in a result. The first bag has 5 boxes and
@@ -245,7 +245,7 @@ public class DataContextDisjointByIdPrefetchIT extends RuntimeCase {
     }
 
     @Test
-    public void testOneToOneRelationship() throws Exception {
+    public void oneToOneRelationship() throws Exception {
         createTwoPaintingsWithInfosDataSet();
 
         final List<Painting> result = ObjectSelect.query(Painting.class)

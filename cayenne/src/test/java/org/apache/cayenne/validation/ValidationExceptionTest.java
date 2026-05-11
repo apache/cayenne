@@ -18,15 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.validation;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class ValidationExceptionTest {
 
     @Test
-    public void testValidationExceptionValidationResult() {
+    public void validationExceptionValidationResult() {
         ValidationResult valResult = new ValidationResult();
         String message = "Error message with a % literal (should be escaped)";
         valResult.addFailure(new SimpleValidationFailure("source", message));

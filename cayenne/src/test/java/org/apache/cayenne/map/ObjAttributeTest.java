@@ -20,17 +20,17 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.util.Util;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class ObjAttributeTest {
 
     @Test
-    public void testDbAttribute() {
+    public void dbAttribute() {
         ObjAttribute attribute = new ObjAttribute("a1");
 
         DbAttribute dbAttr = new DbAttribute("tst_name", Types.INTEGER, null);
@@ -39,7 +39,7 @@ public class ObjAttributeTest {
     }
 
     @Test
-    public void testDbAttributePath() {
+    public void dbAttributePath() {
         ObjAttribute attribute = new ObjAttribute("a1");
         attribute.setDbAttributePath("a");
         assertEquals("a", attribute.getDbAttributePath().value());
@@ -51,7 +51,7 @@ public class ObjAttributeTest {
     }
 
     @Test
-    public void testType() {
+    public void type() {
         ObjAttribute attribute = new ObjAttribute("a1");
 
         String type = "org.aa.zz";
@@ -60,7 +60,7 @@ public class ObjAttributeTest {
     }
 
     @Test
-    public void testSerializability() throws Exception {
+    public void serializability() throws Exception {
         ObjAttribute a1 = new ObjAttribute("a1");
 
         ObjAttribute a2 = Util.cloneViaSerialization(a1);
@@ -68,7 +68,7 @@ public class ObjAttributeTest {
     }
 
     @Test
-    public void testGetJavaClass() throws Exception {
+    public void getJavaClass() throws Exception {
 
         ObjAttribute a1 = new ObjAttribute("test");
         a1.setType("byte");

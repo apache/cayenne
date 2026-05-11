@@ -25,9 +25,9 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class StatementFetchSizeIT extends RuntimeCase {
@@ -36,7 +36,7 @@ public class StatementFetchSizeIT extends RuntimeCase {
     private ObjectContext context;
 
     @Test
-    public void testObjectSelect() {
+    public void objectSelect() {
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).statementFetchSize(10);
 
         assertEquals(10, query
@@ -46,7 +46,7 @@ public class StatementFetchSizeIT extends RuntimeCase {
     }
 
     @Test
-    public void testSQLTemplate() {
+    public void sqlTemplate() {
         SQLTemplate template = new SQLTemplate(
                 Artist.class,
                 "SELECT ARTIST_ID FROM ARTIST");
@@ -59,7 +59,7 @@ public class StatementFetchSizeIT extends RuntimeCase {
     }
 
     @Test
-    public void testEJBQLQuery() {
+    public void ejbqlQuery() {
         EJBQLQuery ejbql = new EJBQLQuery("select a from Artist a");
         ejbql.setStatementFetchSize(10);
 
@@ -70,7 +70,7 @@ public class StatementFetchSizeIT extends RuntimeCase {
     }
 
     @Test
-    public void testRelationshipQuery() {
+    public void relationshipQuery() {
         ObjectId id = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 1);
         RelationshipQuery relationshipQuery = new RelationshipQuery(
                 id,

@@ -28,11 +28,11 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Procedure;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbAttr;
 import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbEntity;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @since 4.0.
@@ -40,7 +40,7 @@ import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbEntity;
 public class TokensReverseTest {
 
     @Test
-    public void testReverses() {
+    public void reverses() {
         DbAttribute attr = dbAttr().build();
         DbEntity entity = dbEntity().attributes(attr).build();
         DbRelationship rel = new DbRelationship("rel");
@@ -86,9 +86,9 @@ public class TokensReverseTest {
     private void testOneToOneReverse(MergerToken token) {
         MergerToken token2 = token.createReverse(factory()).createReverse(factory());
 
-        Assert.assertEquals(token.getTokenName(), token2.getTokenName());
-        Assert.assertEquals(token.getTokenValue(), token2.getTokenValue());
-        Assert.assertEquals(token.getDirection(), token2.getDirection());
+        assertEquals(token.getTokenName(), token2.getTokenName());
+        assertEquals(token.getTokenValue(), token2.getTokenValue());
+        assertEquals(token.getDirection(), token2.getDirection());
     }
 
     private MergerTokenFactory factory() {

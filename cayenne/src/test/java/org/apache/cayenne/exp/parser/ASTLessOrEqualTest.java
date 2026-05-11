@@ -18,19 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ASTLessOrEqualTest {
 
 	@Test
-	public void testEvaluate() {
+	public void evaluate() {
 		Expression e = new ASTLessOrEqual(new ASTObjPath("estimatedPrice"), new BigDecimal(10000d));
 
 		Painting noMatch = new Painting();
@@ -43,11 +43,11 @@ public class ASTLessOrEqualTest {
 
 		Painting match = new Painting();
 		match.setEstimatedPrice(new BigDecimal(9999));
-		assertTrue("Failed: " + e, e.match(match));
+		assertTrue(e.match(match), "Failed: " + e);
 	}
 
 	@Test
-	public void testEvaluate_Null() {
+	public void evaluate_Null() {
 		Expression ltNull = new ASTLessOrEqual(new ASTObjPath("estimatedPrice"), null);
 		Expression ltNotNull = new ASTLessOrEqual(new ASTObjPath("estimatedPrice"), new BigDecimal(10000d));
 

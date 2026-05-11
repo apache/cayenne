@@ -18,15 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.datasource;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.apache.cayenne.datasource.UnmanagedPoolingDataSource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class PoolingDataSource_StaticsTest {
 
 	@Test
-	public void testMaxIdleConnections() {
+	public void maxIdleConnections() {
 
 		assertEquals(1, UnmanagedPoolingDataSource.maxIdleConnections(1, 1));
 		assertEquals(2, UnmanagedPoolingDataSource.maxIdleConnections(1, 2));

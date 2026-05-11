@@ -36,10 +36,10 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Here we compare Expression evaluation in-memory vs execution in database.
@@ -62,7 +62,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
 
     private TableHelper tArtist, tGallery, tPaintings;
 
-    @Before
+    @BeforeEach
     public void createArtistsDataSet() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
@@ -87,7 +87,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testSimpleLike() {
+    public void simpleLike() {
         Expression exp = Artist.ARTIST_NAME
                 .like("artist%");
 
@@ -95,7 +95,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testSimpleNotLike() {
+    public void simpleNotLike() {
         Expression exp = Artist.ARTIST_NAME
                 .nlike("artist%");
 
@@ -103,7 +103,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testSimpleEqual() {
+    public void simpleEqual() {
         Expression exp = Artist.ARTIST_NAME
                 .eq("artist2");
 
@@ -111,7 +111,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testSimpleNotEqual() {
+    public void simpleNotEqual() {
         Expression exp = Artist.ARTIST_NAME
                 .ne("artist2");
 
@@ -119,7 +119,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testLikeIgnoreCase() {
+    public void likeIgnoreCase() {
         Expression exp = Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE)
                 .likeIgnoreCase("painting%");
 
@@ -127,7 +127,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testNotLikeIgnoreCase() {
+    public void notLikeIgnoreCase() {
         Expression exp = Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE)
                 .likeIgnoreCase("PaInTing%");
 
@@ -135,7 +135,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testLike() {
+    public void like() {
         Expression exp = Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE)
                 .like("painting%");
 
@@ -143,7 +143,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testNotLike() {
+    public void notLike() {
         Expression exp = Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE)
                 .like("painting%");
 
@@ -151,7 +151,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testEqual() {
+    public void equal() {
         Expression exp = Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE)
                 .eq("painting1");
 
@@ -159,7 +159,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testNotEqual1() {
+    public void notEqual1() {
         Expression exp = Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE)
                 .ne("painting1");
 
@@ -167,7 +167,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testNotEqual2() {
+    public void notEqual2() {
         Expression exp = Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE)
                 .ne("painting11");
 
@@ -175,7 +175,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testNotEqual3() {
+    public void notEqual3() {
         Expression exp = Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE)
                 .ne("zyz");
 
@@ -183,7 +183,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testBetween() {
+    public void between() {
         Expression exp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE)
                 .between(new BigDecimal(300), new BigDecimal(600));
 
@@ -191,7 +191,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testNotBetween() {
+    public void notBetween() {
         Expression exp = ExpressionFactory.notBetweenExp(
                 "paintingArray.estimatedPrice",
                 new BigDecimal(300), new BigDecimal(600));
@@ -200,7 +200,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testGreater() {
+    public void greater() {
         Expression exp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE)
                 .gt(new BigDecimal(799));
 
@@ -208,7 +208,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testGreaterEqual() {
+    public void greaterEqual() {
         Expression exp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE)
                 .gte(new BigDecimal(800));
 
@@ -216,7 +216,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testIn() {
+    public void in() {
         Expression exp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE)
                 .in(new BigDecimal(800), new BigDecimal(300), new BigDecimal(700));
 
@@ -224,7 +224,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testInEmpty() {
+    public void inEmpty() {
         Expression exp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE)
                 .in(Collections.emptyList());
 
@@ -232,7 +232,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testNotIn() {
+    public void notIn() {
         Expression exp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE)
                 .nin(new BigDecimal(800), new BigDecimal(200), new BigDecimal(300), new BigDecimal(400), new BigDecimal(700));
 
@@ -240,7 +240,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testNotInEmpty() {
+    public void notInEmpty() {
         Expression exp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE)
                 .nin(Collections.emptyList());
 
@@ -248,7 +248,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testLess() {
+    public void less() {
         Expression exp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE)
                 .lt(new BigDecimal(801));
 
@@ -256,7 +256,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testLessOrEqual() {
+    public void lessOrEqual() {
         Expression exp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE)
                 .lte(new BigDecimal(800));
 
@@ -264,7 +264,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testCollectionWithNull() {
+    public void collectionWithNull() {
         Expression exp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE)
                 .lt(new BigDecimal(200));
 
@@ -272,7 +272,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testGreaterWithNull() throws Exception {
+    public void greaterWithNull() throws Exception {
         tPaintings.deleteAll();
         tArtist.deleteAll();
         tArtist.insert(7, "artist7", null);
@@ -287,7 +287,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testGreaterEqualWithNull() throws Exception {
+    public void greaterEqualWithNull() throws Exception {
         tPaintings.deleteAll();
         tArtist.deleteAll();
         tArtist.insert(7, "artist7", null);
@@ -302,7 +302,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testLessWithNull() throws Exception {
+    public void lessWithNull() throws Exception {
         tPaintings.deleteAll();
         tArtist.deleteAll();
         tArtist.insert(7, "artist7", null);
@@ -317,7 +317,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testLessEqualWithNull() throws Exception {
+    public void lessEqualWithNull() throws Exception {
         tPaintings.deleteAll();
         tArtist.deleteAll();
         tArtist.insert(7, "artist7", null);
@@ -332,7 +332,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testAndWithNull() throws Exception {
+    public void andWithNull() throws Exception {
         tPaintings.deleteAll();
         tArtist.deleteAll();
         tArtist.insert(7, "artist7", null);
@@ -347,7 +347,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testAndWithNull2() throws Exception {
+    public void andWithNull2() throws Exception {
         tPaintings.deleteAll();
         tArtist.deleteAll();
         tArtist.insert(7, "artist7", null);
@@ -362,7 +362,7 @@ public class ExpressionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testOrWithNull() throws Exception {
+    public void orWithNull() throws Exception {
         tPaintings.deleteAll();
         tArtist.deleteAll();
         tArtist.insert(7, "artist7", null);

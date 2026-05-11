@@ -22,11 +22,10 @@ package org.apache.cayenne.access.sqlbuilder;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.sqlbuilder.sqltree.UpdateNode;
 import org.apache.cayenne.map.DbEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 /**
  * @since 4.2
@@ -34,38 +33,38 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class UpdateBuilderTest extends BaseSqlBuilderTest {
 
     @Test
-    public void testUpdate() {
+    public void update() {
         UpdateBuilder builder = new UpdateBuilder("test");
         Node node = builder.build();
-        assertThat(node, instanceOf(UpdateNode.class));
+        assertInstanceOf(UpdateNode.class, node);
         assertSQL("UPDATE test", node);
     }
 
     @Test
-    public void testUpdateDbEntityCatalog() {
+    public void updateDbEntityCatalog() {
         DbEntity entity = new DbEntity("test");
         entity.setCatalog("catalog");
         UpdateBuilder builder = new UpdateBuilder(entity);
         Node node = builder.build();
-        assertThat(node, instanceOf(UpdateNode.class));
+        assertInstanceOf(UpdateNode.class, node);
         assertSQL("UPDATE catalog.test", node);
         assertQuotedSQL("UPDATE `catalog`.`test`", node);
     }
 
     @Test
-    public void testUpdateDbEntityCatalogAndSchema() {
+    public void updateDbEntityCatalogAndSchema() {
         DbEntity entity = new DbEntity("test");
         entity.setSchema("schema");
         entity.setCatalog("catalog");
         UpdateBuilder builder = new UpdateBuilder(entity);
         Node node = builder.build();
-        assertThat(node, instanceOf(UpdateNode.class));
+        assertInstanceOf(UpdateNode.class, node);
         assertSQL("UPDATE catalog.schema.test", node);
         assertQuotedSQL("UPDATE `catalog`.`schema`.`test`", node);
     }
 
     @Test
-    public void testUpdateWithFields() {
+    public void updateWithFields() {
         UpdateBuilder builder = new UpdateBuilder("test");
         builder
                 .set(column("col1").eq(value(1)))
@@ -73,19 +72,19 @@ public class UpdateBuilderTest extends BaseSqlBuilderTest {
                 .set(column("col3").eq(value(null)));
         Node node = builder.build();
 
-        assertThat(node, instanceOf(UpdateNode.class));
+        assertInstanceOf(UpdateNode.class, node);
         assertSQL("UPDATE test SET col1 = 1, col2 = 'test', col3 = NULL", node);
     }
 
     @Test
-    public void testUpdateWithWhere() {
+    public void updateWithWhere() {
         UpdateBuilder builder = new UpdateBuilder("test");
         builder
                 .set(column("col1").eq(value(1)))
                 .where(column("id").eq(value(123L)));
         Node node = builder.build();
 
-        assertThat(node, instanceOf(UpdateNode.class));
+        assertInstanceOf(UpdateNode.class, node);
         assertSQL("UPDATE test SET col1 = 1 WHERE id = 123", node);
     }
 

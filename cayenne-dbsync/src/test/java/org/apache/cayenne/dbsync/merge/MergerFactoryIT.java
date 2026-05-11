@@ -18,10 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.merge;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import java.sql.Types;
 
 import org.apache.cayenne.GenericPersistentObject;
@@ -33,7 +29,11 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class MergerFactoryIT extends MergeCase {
 
@@ -41,7 +41,7 @@ public class MergerFactoryIT extends MergeCase {
     private DataContext context;
 
     @Test
-    public void testAddAndDropColumnToDb() throws Exception {
+    public void addAndDropColumnToDb() throws Exception {
         DbEntity dbEntity = map.getDbEntity("PAINTING");
         assertNotNull(dbEntity);
 
@@ -63,7 +63,7 @@ public class MergerFactoryIT extends MergeCase {
     }
 
     @Test
-    public void testChangeVarcharSizeToDb() throws Exception {
+    public void changeVarcharSizeToDb() throws Exception {
         DbEntity dbEntity = map.getDbEntity("PAINTING");
         assertNotNull(dbEntity);
 
@@ -94,7 +94,7 @@ public class MergerFactoryIT extends MergeCase {
     }
 
     @Test
-    public void testMultipleTokensToDb() throws Exception {
+    public void multipleTokensToDb() throws Exception {
         DbEntity dbEntity = map.getDbEntity("PAINTING");
         assertNotNull(dbEntity);
 
@@ -130,7 +130,7 @@ public class MergerFactoryIT extends MergeCase {
     }
 
     @Test
-    public void testAddTableToDb() throws Exception {
+    public void addTableToDb() throws Exception {
         dropTableIfPresent("NEW_TABLE");
 
         assertTokensAndExecute(0, 0);
@@ -180,7 +180,7 @@ public class MergerFactoryIT extends MergeCase {
     }
 
     @Test
-    public void testAddForeignKeyWithTable() throws Exception {
+    public void addForeignKeyWithTable() throws Exception {
         dropTableIfPresent("NEW_TABLE");
 
         assertTokensAndExecute(0, 0);
@@ -239,7 +239,7 @@ r2 =     * Db -Rel 'toNewTableR2' - ARTIST 1 -> * NEW_TABLE" -- Not generated an
     }
 
     @Test
-    public void testAddForeignKeyAfterTable() throws Exception {
+    public void addForeignKeyAfterTable() throws Exception {
         dropTableIfPresent("NEW_TABLE");
 
         assertTokensAndExecute(0, 0);

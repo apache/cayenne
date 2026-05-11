@@ -34,14 +34,12 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class MappedQueryIT extends RuntimeCase {
@@ -70,7 +68,7 @@ public class MappedQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectQuery() throws Exception {
+    public void selectQuery() throws Exception {
         createArtistsDataSet();
 
         Artist a = MappedSelect.query("ParameterizedQueryWithLocalCache", Artist.class)
@@ -80,7 +78,7 @@ public class MappedQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testButchIterator() throws Exception {
+    public void butchIterator() throws Exception {
         createArtistsDataSet();
 
         try (ResultBatchIterator<Artist> iterator = MappedSelect
@@ -103,16 +101,16 @@ public class MappedQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSQLTemplateSelect() throws Exception {
+    public void sqlTemplateSelect() throws Exception {
         createArtistsDataSet();
 
         List<DataRow> result = MappedSelect.query("SelectTestLower", DataRow.class).select(context);
         assertEquals(20, result.size());
-        assertThat(result.get(0), instanceOf(DataRow.class));
+        assertInstanceOf(DataRow.class, result.get(0));
     }
 
     @Test
-    public void testSQLTemplateUpdate() throws Exception {
+    public void sqlTemplateUpdate() throws Exception {
         int updated = MappedExec.query("NonSelectingQuery").update(context)[0];
 
         assertEquals(1, updated);
@@ -123,7 +121,7 @@ public class MappedQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testProcedureQuery() throws Exception {
+    public void procedureQuery() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
@@ -149,23 +147,23 @@ public class MappedQueryIT extends RuntimeCase {
                 .param("paintingPrice", 3000).forceNoCache()).firstList();
 
         // check the results
-        assertNotNull("Null result from StoredProcedure.", artists);
+        assertNotNull(artists, "Null result from StoredProcedure.");
         assertEquals(1, artists.size());
         Artist artistRow = (Artist) artists.get(0);
         assertEquals("An Artist", artistRow.getArtistName());
     }
 
     @Test
-    public void testEJBQLQuery() throws Exception {
+    public void ejbqlQuery() throws Exception {
         createArtistsDataSet();
 
         List result = MappedSelect.query("EjbqlQueryTest").select(context);
         assertEquals(20, result.size());
-        assertThat(result.get(0), instanceOf(DataRow.class));
+        assertInstanceOf(DataRow.class, result.get(0));
     }
 
     @Test
-    public void testCacheKey() {
+    public void cacheKey() {
         // ensure queries initialized with different parameters receive different cache keys
         MappedSelect<Artist> query1 = MappedSelect
                 .query("ParameterizedQueryWithLocalCache", Artist.class).param("name", "artist1");

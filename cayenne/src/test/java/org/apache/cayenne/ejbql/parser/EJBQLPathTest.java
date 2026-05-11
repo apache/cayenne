@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class EJBQLPathTest {
 
     @Test
-    public void testGetAbsolutePath() {
+    public void getAbsolutePath() {
         EJBQLPath path = new EJBQLPath(-1);
         EJBQLIdentifier id = new EJBQLIdentifier(-1);
         id.setText("x");

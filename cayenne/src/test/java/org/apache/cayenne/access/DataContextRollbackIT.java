@@ -31,11 +31,11 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextRollbackIT extends RuntimeCase {
@@ -47,7 +47,7 @@ public class DataContextRollbackIT extends RuntimeCase {
     private CayenneRuntime runtime;
 
     @Test
-    public void testRollbackNew() {
+    public void rollbackNew() {
         Artist artist = (Artist) context.newObject("Artist");
         artist.setArtistName("a");
 
@@ -74,7 +74,7 @@ public class DataContextRollbackIT extends RuntimeCase {
     }
 
     @Test
-    public void testRollbackNewObject() {
+    public void rollbackNewObject() {
         String artistName = "revertTestArtist";
         Artist artist = (Artist) context.newObject("Artist");
         artist.setArtistName(artistName);
@@ -100,7 +100,7 @@ public class DataContextRollbackIT extends RuntimeCase {
     // modifying the collection the iterator was iterating over
     // (ConcurrentModificationException)
     @Test
-    public void testRollbackWithMultipleNewObjects() {
+    public void rollbackWithMultipleNewObjects() {
         String artistName = "rollbackTestArtist";
         String paintingTitle = "rollbackTestPainting";
         Artist artist = (Artist) context.newObject("Artist");
@@ -129,7 +129,7 @@ public class DataContextRollbackIT extends RuntimeCase {
     }
 
     @Test
-    public void testRollbackRelationshipModification() {
+    public void rollbackRelationshipModification() {
         String artistName = "relationshipModArtist";
         String paintingTitle = "relationshipTestPainting";
         Artist artist = (Artist) context.newObject("Artist");
@@ -166,7 +166,7 @@ public class DataContextRollbackIT extends RuntimeCase {
     }
 
     @Test
-    public void testRollbackDeletedObject() {
+    public void rollbackDeletedObject() {
         String artistName = "deleteTestArtist";
         Artist artist = (Artist) context.newObject("Artist");
         artist.setArtistName(artistName);
@@ -193,7 +193,7 @@ public class DataContextRollbackIT extends RuntimeCase {
     }
 
     @Test
-    public void testRollbackModifiedObject() {
+    public void rollbackModifiedObject() {
         String artistName = "initialTestArtist";
         Artist artist = (Artist) context.newObject("Artist");
         artist.setArtistName(artistName);

@@ -20,18 +20,18 @@
 package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.access.translator.ParameterBinding;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  */
 public class SQLStatementTest {
 
     @Test
-    public void testConstructor() throws Exception {
+    public void constructor() throws Exception {
         ParameterBinding[] bindings = new ParameterBinding[0];
         SQLStatement statement = new SQLStatement("abc", bindings);
         assertEquals("abc", statement.getSql());
@@ -39,7 +39,7 @@ public class SQLStatementTest {
     }
 
     @Test
-    public void testSQL() throws Exception {
+    public void sql() throws Exception {
         SQLStatement statement = new SQLStatement();
         statement.setSql("abc");
         assertEquals("abc", statement.getSql());

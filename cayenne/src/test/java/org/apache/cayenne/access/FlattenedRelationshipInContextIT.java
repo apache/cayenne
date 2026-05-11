@@ -33,12 +33,12 @@ import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest3;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_FLATTENED_PROJECT)
 public class FlattenedRelationshipInContextIT extends RuntimeCase {
@@ -53,7 +53,8 @@ public class FlattenedRelationshipInContextIT extends RuntimeCase {
     private TableHelper tFlattenedTest2;
     private TableHelper tFlattenedTest3;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tFlattenedTest1 = new TableHelper(dbHelper, "FLATTENED_TEST_1");
         tFlattenedTest1.setColumns("FT1_ID", "NAME");
@@ -73,7 +74,7 @@ public class FlattenedRelationshipInContextIT extends RuntimeCase {
     }
 
     @Test
-    public void testIsToOneTargetModifiedFlattenedFault1() throws Exception {
+    public void isToOneTargetModifiedFlattenedFault1() throws Exception {
 
         createFlattenedTestDataSet();
 

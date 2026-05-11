@@ -25,12 +25,12 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SQLServerAdapterIT extends RuntimeCase {
@@ -39,7 +39,7 @@ public class SQLServerAdapterIT extends RuntimeCase {
     private AdhocObjectFactory objectFactory;
 
     @Test
-    public void testCreateTableWithFloatAttributeWithScale () {
+    public void createTableWithFloatAttributeWithScale() {
         SQLServerAdapter adapter = objectFactory.newInstance(
                 SQLServerAdapter.class, 
                 SQLServerAdapter.class.getName());

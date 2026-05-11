@@ -32,10 +32,10 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.project.compatibility.CompatibilityTestModule;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.XMLReader;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.1
@@ -43,7 +43,7 @@ import static org.junit.Assert.*;
 public class CompatibilityDataChannelDescriptorLoaderIT {
 
     @Test
-    public void testLoad() {
+    public void load() {
         Injector injector = getInjector();
 
         DataChannelDescriptorLoader loader = injector.getInstance(DataChannelDescriptorLoader.class);

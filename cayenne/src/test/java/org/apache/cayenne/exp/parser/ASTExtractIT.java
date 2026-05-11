@@ -34,11 +34,11 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @since 4.0
@@ -55,7 +55,7 @@ public class ASTExtractIT extends RuntimeCase {
     @Inject
     private UnitDbAdapter unitDbAdapter;
 
-    @Before
+    @BeforeEach
     public void createDataSet() throws Exception {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.MILLISECOND, 0);
@@ -89,7 +89,7 @@ public class ASTExtractIT extends RuntimeCase {
 
 
     @Test
-    public void testYear() {
+    public void year() {
         Expression exp = ExpressionFactory.exp("year(dateColumn) = 2015");
 
         try {
@@ -103,7 +103,7 @@ public class ASTExtractIT extends RuntimeCase {
     }
 
     @Test
-    public void testMonth() {
+    public void month() {
         Expression exp = ExpressionFactory.exp("month(dateColumn) = 3");
 
         try {
@@ -117,7 +117,7 @@ public class ASTExtractIT extends RuntimeCase {
     }
 
     @Test
-    public void testWeek() {
+    public void week() {
         // 13 or 14 depends of first day in week in current db
         Expression exp = ExpressionFactory.exp("week(dateColumn) in (13, 14)");
         try {
@@ -131,7 +131,7 @@ public class ASTExtractIT extends RuntimeCase {
     }
 
     @Test
-    public void testDayOfYear() {
+    public void dayOfYear() {
         // day can start from 0
         Expression exp = ExpressionFactory.exp("dayOfYear(dateColumn) in (59, 58)");
         try {
@@ -145,7 +145,7 @@ public class ASTExtractIT extends RuntimeCase {
     }
 
     @Test
-    public void testDayOfYearSelect() {
+    public void dayOfYearSelect() {
         try {
             List<Integer> res = ObjectSelect.query(DateTestEntity.class)
                     .column(DateTestEntity.DATE_COLUMN.dayOfYear()).select(context);
@@ -160,7 +160,7 @@ public class ASTExtractIT extends RuntimeCase {
     }
 
     @Test
-    public void testDay() {
+    public void day() {
         Expression exp = ExpressionFactory.exp("day(dateColumn) = 28");
         try {
             long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(context);
@@ -173,7 +173,7 @@ public class ASTExtractIT extends RuntimeCase {
     }
 
     @Test
-    public void testDayOfMonth() {
+    public void dayOfMonth() {
         Expression exp = ExpressionFactory.exp("dayOfMonth(dateColumn) = 28");
         try {
             long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(context);
@@ -186,7 +186,7 @@ public class ASTExtractIT extends RuntimeCase {
     }
 
     @Test
-    public void testDayOfWeek() {
+    public void dayOfWeek() {
         Expression exp = ExpressionFactory.exp("dayOfWeek(dateColumn) in (2, 3)");
         try {
             long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(context);
@@ -199,7 +199,7 @@ public class ASTExtractIT extends RuntimeCase {
     }
 
     @Test
-    public void testHour() {
+    public void hour() {
         Expression exp = ExpressionFactory.exp("hour(timestampColumn) = 23");
         try {
             long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(context);
@@ -212,7 +212,7 @@ public class ASTExtractIT extends RuntimeCase {
     }
 
     @Test
-    public void testMinute() {
+    public void minute() {
         Expression exp = ExpressionFactory.exp("minute(timestampColumn) = 59");
         try {
             long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(context);
@@ -225,7 +225,7 @@ public class ASTExtractIT extends RuntimeCase {
     }
 
     @Test
-    public void testSecond() {
+    public void second() {
         Expression exp = ExpressionFactory.exp("second(timestampColumn) = 39");
         try {
             long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(context);

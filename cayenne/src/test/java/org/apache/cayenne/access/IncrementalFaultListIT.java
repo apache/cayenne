@@ -25,12 +25,12 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.util.Util;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class IncrementalFaultListIT extends RuntimeCase {
@@ -39,7 +39,7 @@ public class IncrementalFaultListIT extends RuntimeCase {
 	protected DataContext context;
 
     @Test
-	public void testSerialization() throws Exception {
+	public void serialization() throws Exception {
 		ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
 				.pageSize(10);
 

@@ -20,11 +20,11 @@
 package org.apache.cayenne.exp.property;
 
 import org.apache.cayenne.exp.path.CayennePath;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.apache.cayenne.exp.ExpressionFactory.exp;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.2
@@ -34,7 +34,7 @@ public class StringPropertyTest {
     private StringProperty<String> property;
     private StringProperty<String> other;
 
-    @Before
+    @BeforeEach
     public void createProperty() {
         property = new StringProperty<>(CayennePath.of("path"), null, String.class);
         other = new StringProperty<>(CayennePath.of("other"), null, String.class);

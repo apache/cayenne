@@ -21,16 +21,16 @@ package org.apache.cayenne.unit.jira;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  */
 public class CAY_10062004_ExpTest {
 
     @Test
-    public void testDeepCopy() throws Exception {
+    public void deepCopy() throws Exception {
 
         Expression parsed = ExpressionFactory.exp("(a = 1 and a = 2) or (a != 1 and a != 2)");
         Expression finalExpression = parsed.deepCopy();
@@ -40,7 +40,7 @@ public class CAY_10062004_ExpTest {
     }
 
     @Test
-    public void testAndExpOrExp() throws Exception {
+    public void andExpOrExp() throws Exception {
 
         Expression parsed = ExpressionFactory.exp("(a = 1 and a = 2) or (a != 1 and a != 2)");
 

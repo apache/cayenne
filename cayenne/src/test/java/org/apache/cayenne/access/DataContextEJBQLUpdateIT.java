@@ -29,13 +29,13 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextEJBQLUpdateIT extends RuntimeCase {
@@ -49,7 +49,8 @@ public class DataContextEJBQLUpdateIT extends RuntimeCase {
     private TableHelper tArtist;
     private TableHelper tPainting;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -76,7 +77,7 @@ public class DataContextEJBQLUpdateIT extends RuntimeCase {
     }
 
     @Test
-    public void testUpdateQualifier() throws Exception {
+    public void updateQualifier() throws Exception {
         createThreeArtistsTwoPaintings();
 
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
@@ -100,7 +101,7 @@ public class DataContextEJBQLUpdateIT extends RuntimeCase {
     }
 
     @Test
-    public void testUpdateNoQualifierString() throws Exception {
+    public void updateNoQualifierString() throws Exception {
         createThreeArtistsTwoPaintings();
 
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
@@ -124,7 +125,7 @@ public class DataContextEJBQLUpdateIT extends RuntimeCase {
     }
 
     @Test
-    public void testUpdateNoQualifierNull() throws Exception {
+    public void updateNoQualifierNull() throws Exception {
         createThreeArtistsTwoPaintings();
 
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
@@ -149,7 +150,7 @@ public class DataContextEJBQLUpdateIT extends RuntimeCase {
 
     // This fails until we implement arithmetic exps
 
-    // public void testUpdateNoQualifierArithmeticExpression() throws Exception {
+    // public void updateNoQualifierArithmeticExpression() throws Exception {
     // createThreeArtistsTwoPaintings();
     //
     //
@@ -174,7 +175,7 @@ public class DataContextEJBQLUpdateIT extends RuntimeCase {
     // }
 
     @Test
-    public void testUpdateNoQualifierMultipleItems() throws Exception {
+    public void updateNoQualifierMultipleItems() throws Exception {
         createThreeArtistsTwoPaintings();
 
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
@@ -198,7 +199,7 @@ public class DataContextEJBQLUpdateIT extends RuntimeCase {
     }
 
     @Test
-    public void testUpdateNoQualifierDecimal() throws Exception {
+    public void updateNoQualifierDecimal() throws Exception {
         createThreeArtistsTwoPaintings();
 
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
@@ -222,7 +223,7 @@ public class DataContextEJBQLUpdateIT extends RuntimeCase {
     }
 
     @Test
-    public void testUpdateNoQualifierToOne() throws Exception {
+    public void updateNoQualifierToOne() throws Exception {
         createThreeArtistsTwoPaintings();
 
         Artist object = Cayenne.objectForPK(context, Artist.class, 33003);

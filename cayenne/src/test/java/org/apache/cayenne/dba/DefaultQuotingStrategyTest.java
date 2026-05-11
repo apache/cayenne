@@ -20,14 +20,14 @@ package org.apache.cayenne.dba;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DefaultQuotingStrategyTest {
 
     @Test
-    public void testQuotedIdentifier() {
+    public void quotedIdentifier() {
 
         DataMap dm = new DataMap();
         dm.setQuotingSQLIdentifiers(true);
@@ -41,7 +41,7 @@ public class DefaultQuotingStrategyTest {
     }
 
     @Test
-    public void testUnQuotedIdentifier() {
+    public void unQuotedIdentifier() {
 
         DataMap dm = new DataMap();
         dm.setQuotingSQLIdentifiers(false);

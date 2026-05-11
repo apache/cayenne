@@ -35,11 +35,11 @@ import org.apache.cayenne.testdo.enum_test.EnumEntity3;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @UseCayenneRuntime(CayenneProjects.ENUM_PROJECT)
 public class EnumIT extends RuntimeCase {
@@ -59,14 +59,14 @@ public class EnumIT extends RuntimeCase {
     }
 
     @Test
-    public void testInsert() {
+    public void insert() {
         EnumEntity e = context.newObject(EnumEntity.class);
         e.setEnumAttribute(Enum1.one);
         context.commitChanges();
     }
 
     @Test
-    public void testObjectSelect() throws Exception {
+    public void objectSelect() throws Exception {
         createDataSet();
 
         EnumEntity e = ObjectSelect.query(EnumEntity.class)
@@ -78,7 +78,7 @@ public class EnumIT extends RuntimeCase {
     }
 
     @Test
-    public void testSQLTemplate() throws Exception {
+    public void sQLTemplate() throws Exception {
         createDataSet();
 
         SQLTemplate q = new SQLTemplate(
@@ -100,7 +100,7 @@ public class EnumIT extends RuntimeCase {
     }
 
     @Test
-    public void testEnumMappedToChar() {
+    public void enumMappedToChar() {
         EnumEntity3 enumEntity3 = context.newObject(EnumEntity3.class);
         enumEntity3.setEnumAttribute(Enum1.two);
         context.commitChanges();

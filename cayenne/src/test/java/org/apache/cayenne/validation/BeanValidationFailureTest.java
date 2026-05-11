@@ -19,15 +19,15 @@
 
 package org.apache.cayenne.validation;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class BeanValidationFailureTest {
 
     @Test
-    public void testValidateJavaClassName() {
+    public void validateJavaClassName() {
 
         Object source = new Object();
         String attribute = "xyz";

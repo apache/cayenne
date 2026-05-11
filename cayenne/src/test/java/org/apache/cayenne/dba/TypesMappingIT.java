@@ -26,7 +26,7 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -38,8 +38,8 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.EMPTY_PROJECT)
 public class TypesMappingIT extends RuntimeCase {
@@ -48,7 +48,7 @@ public class TypesMappingIT extends RuntimeCase {
     private RuntimeCaseDataSourceFactory dataSourceFactory;
 
     @Test
-    public void testGetSqlTypeByJava() throws Exception {
+    public void getSqlTypeByJava() throws Exception {
         assertEquals(Types.VARCHAR, TypesMapping.getSqlTypeByJava(String.class));
 
         // make sure we can handle arrays...
@@ -69,7 +69,7 @@ public class TypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testGetSqlTypeByJavaString() throws Exception {
+    public void getSqlTypeByJavaString() throws Exception {
         assertEquals(Types.VARCHAR, TypesMapping.getSqlTypeByJava(String.class.getName()));
 
         // make sure we can handle arrays...
@@ -97,13 +97,13 @@ public class TypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testGetSqlTypeByJavaPrimitive() throws Exception {
+    public void getSqlTypeByJavaPrimitive() throws Exception {
         assertEquals(Types.INTEGER, TypesMapping.getSqlTypeByJava(Integer.TYPE));
         assertEquals(Types.BIGINT, TypesMapping.getSqlTypeByJava(Long.TYPE));
     }
 
     @Test
-    public void testDecimalType() {
+    public void decimalType() {
         DbAttribute attribute = new DbAttribute("test");
         attribute.setType(Types.DECIMAL);
 
@@ -129,7 +129,7 @@ public class TypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testTypeInfoCompleteness() throws Exception {
+    public void typeInfoCompleteness() throws Exception {
         // check counts
         // since more then 1 database type can map to a single JDBC type
         int len = 0;

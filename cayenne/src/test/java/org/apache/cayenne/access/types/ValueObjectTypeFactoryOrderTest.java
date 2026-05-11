@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.access.types;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -34,7 +34,7 @@ public class ValueObjectTypeFactoryOrderTest {
     ValueObjectType valueObjectType1, valueObjectType2;
     ExtendedType tstType1, tstType2;
 
-    @Before
+    @BeforeEach
     public void setUpRegistry(){
         valueObjectType1 = createMockValueType(UUID.class, byte[].class);
         valueObjectType2 = createMockValueType(UUID.class, String.class);
@@ -57,7 +57,7 @@ public class ValueObjectTypeFactoryOrderTest {
     }
 
     @Test
-    public void testByteFirstOrder(){
+    public void byteFirstOrder(){
         List<ValueObjectType<?, ?>> list = new ArrayList<>();
         list.add(valueObjectType1);
         list.add(valueObjectType2);
@@ -72,7 +72,7 @@ public class ValueObjectTypeFactoryOrderTest {
     }
 
     @Test
-    public void testStringFirstOrder(){
+    public void stringFirstOrder(){
         List<ValueObjectType<?, ?>> list = new ArrayList<>();
         list.add(valueObjectType2);
         list.add(valueObjectType1);

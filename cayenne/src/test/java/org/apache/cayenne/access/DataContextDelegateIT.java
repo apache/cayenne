@@ -31,13 +31,13 @@ import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests various DataContextDelegate methods invocation and consequences on DataContext
@@ -49,7 +49,7 @@ public class DataContextDelegateIT extends RuntimeCase {
     @Inject
     private DataContext context;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         // prepare a single gallery record
         Gallery gallery = (Gallery) context.newObject("Gallery");
@@ -63,7 +63,7 @@ public class DataContextDelegateIT extends RuntimeCase {
     }
 
     @Test
-    public void testWillPerformGenericQuery() throws Exception {
+    public void willPerformGenericQuery() throws Exception {
 
         final List<Query> queriesPerformed = new ArrayList<Query>(1);
         DataContextDelegate delegate = new MockDataContextDelegate() {
@@ -80,14 +80,13 @@ public class DataContextDelegateIT extends RuntimeCase {
         MockQuery query = new MockQuery();
         context.performGenericQuery(query);
 
-        assertTrue("Delegate is not notified of a query being run.", queriesPerformed
-                .contains(query));
+        assertTrue(queriesPerformed.contains(query), "Delegate is not notified of a query being run.");
         assertEquals(1, queriesPerformed.size());
-        assertTrue("Delegate unexpectedly blocked the query.", query.isRouteCalled());
+        assertTrue(query.isRouteCalled(), "Delegate unexpectedly blocked the query.");
     }
 
     @Test
-    public void testWillPerformGenericQueryBlocked() throws Exception {
+    public void willPerformGenericQueryBlocked() throws Exception {
 
         final List<Query> queriesPerformed = new ArrayList<Query>(1);
         DataContextDelegate delegate = new MockDataContextDelegate() {
@@ -103,14 +102,13 @@ public class DataContextDelegateIT extends RuntimeCase {
         MockQuery query = new MockQuery();
         context.performGenericQuery(query);
 
-        assertTrue("Delegate is not notified of a query being run.", queriesPerformed
-                .contains(query));
+        assertTrue(queriesPerformed.contains(query), "Delegate is not notified of a query being run.");
         assertEquals(1, queriesPerformed.size());
-        assertFalse("Delegate couldn't block the query.", query.isRouteCalled());
+        assertFalse(query.isRouteCalled(), "Delegate couldn't block the query.");
     }
 
     @Test
-    public void testWillPerformQuery() throws Exception {
+    public void willPerformQuery() throws Exception {
 
         final List<Query> queriesPerformed = new ArrayList<Query>(1);
         DataContextDelegate delegate = new MockDataContextDelegate() {
@@ -127,14 +125,13 @@ public class DataContextDelegateIT extends RuntimeCase {
         ObjectSelect<Gallery> query = ObjectSelect.query(Gallery.class);
         List<Gallery> results = query.select(context);
 
-        assertTrue("Delegate is not notified of a query being run.", queriesPerformed
-                .contains(query));
+        assertTrue(queriesPerformed.contains(query), "Delegate is not notified of a query being run.");
         assertEquals(1, queriesPerformed.size());
         assertNotNull(results);
     }
 
     @Test
-    public void testWillPerformQueryBlocked() throws Exception {
+    public void willPerformQueryBlocked() throws Exception {
 
         final List<Query> queriesPerformed = new ArrayList<Query>(1);
         DataContextDelegate delegate = new MockDataContextDelegate() {
@@ -150,13 +147,12 @@ public class DataContextDelegateIT extends RuntimeCase {
         ObjectSelect<Gallery> query = ObjectSelect.query(Gallery.class);
         List<Gallery> results = query.select(context);
 
-        assertTrue("Delegate is not notified of a query being run.", queriesPerformed
-                .contains(query));
+        assertTrue(queriesPerformed.contains(query), "Delegate is not notified of a query being run.");
         assertEquals(1, queriesPerformed.size());
 
         assertNotNull(results);
 
         // blocked
-        assertEquals("Delegate couldn't block the query.", 0, results.size());
+        assertEquals(0, results.size(), "Delegate couldn't block the query.");
     }
 }

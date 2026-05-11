@@ -21,14 +21,14 @@ package org.apache.cayenne.reflect;
 import org.apache.cayenne.access.types.MockEnum2;
 import org.apache.cayenne.access.types.MockEnum3;
 import org.apache.cayenne.access.types.MockEnum4;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class EnumConverterTest {
 
     @Test
-    public void testConvert() {
+    public void convert() {
         EnumConverter converter = new EnumConverter();
 
         assertSame(MockEnum2.x, converter.convert("x", MockEnum2.class));
@@ -36,7 +36,7 @@ public class EnumConverterTest {
     }
 
     @Test
-    public void testConvertExtendedEnumeration() {
+    public void convertExtendedEnumeration() {
         EnumConverter converter = new EnumConverter();
 
         assertSame(MockEnum3.B, converter.convert(2, MockEnum3.class));
@@ -44,7 +44,7 @@ public class EnumConverterTest {
     }
 
     @Test
-    public void testConvertExtendedEnumerationWithNull() {
+    public void convertExtendedEnumerationWithNull() {
         EnumConverter converter = new EnumConverter();
 
         assertSame(MockEnum4.B, converter.convert(null, MockEnum4.class));

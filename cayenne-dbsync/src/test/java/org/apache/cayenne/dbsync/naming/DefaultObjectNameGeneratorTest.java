@@ -22,9 +22,9 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DefaultObjectNameGeneratorTest {
 
@@ -43,7 +43,7 @@ public class DefaultObjectNameGeneratorTest {
     }
 
     @Test
-    public void testRelationshipName_LowerCase_Underscores() {
+    public void relationshipName_LowerCase_Underscores() {
 
         DbRelationship r1 = makeRelationship("painting", "artist_id", "artist", "artist_id", false);
         assertEquals("artist", generator.relationshipName(r1));
@@ -65,7 +65,7 @@ public class DefaultObjectNameGeneratorTest {
     }
 
     @Test
-    public void testRelationshipName_UpperCase_Underscores() {
+    public void relationshipName_UpperCase_Underscores() {
 
         DbRelationship r1 = makeRelationship("PAINTING", "ARTIST_ID", "ARTIST", "ARTIST_ID", false);
         assertEquals("artist", generator.relationshipName(r1));
@@ -87,13 +87,13 @@ public class DefaultObjectNameGeneratorTest {
     }
 
     @Test
-    public void testObjEntityName() {
+    public void objEntityName() {
         assertEquals("Artist", generator.objEntityName(new DbEntity("ARTIST")));
         assertEquals("ArtistWork", generator.objEntityName(new DbEntity("ARTIST_WORK")));
     }
 
     @Test
-    public void testObjAttributeName() {
+    public void objAttributeName() {
         assertEquals("name", generator.objAttributeName(new DbAttribute("NAME")));
         assertEquals("artistName", generator.objAttributeName(new DbAttribute("ARTIST_NAME")));
     }

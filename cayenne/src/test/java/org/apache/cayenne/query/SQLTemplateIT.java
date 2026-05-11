@@ -37,8 +37,8 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -46,9 +46,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SQLTemplateIT extends RuntimeCase {
@@ -71,7 +69,7 @@ public class SQLTemplateIT extends RuntimeCase {
 
 	private TableHelper tArtistCt;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		tArtist = new TableHelper(dbHelper, "ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
@@ -136,35 +134,38 @@ public class SQLTemplateIT extends RuntimeCase {
 		} catch (CayenneRuntimeException e) {
 			gotRuntimeException = true;
 		}
-		assertTrue("If fetchingDataRows is false and ObjectEntity not set, should be thrown exception",
-				gotRuntimeException);
+		assertTrue(gotRuntimeException, "If fetchingDataRows is false and ObjectEntity not set, should be thrown exception");
 	}
 
-	@Test(expected = CayenneRuntimeException.class)
-	public void testExceptionWhenUsingColumnsTypesAndSQLResult() throws SQLException {
+	@Test
+	public void exceptionWhenUsingColumnsTypesAndSQLResult() throws SQLException {
 		createArtistDataSet();
 
-		SQLTemplate query = new SQLTemplate("SELECT ARTIST_ID P FROM ARTIST", true);
-		query.setResultColumnsTypes(Float.class);
-		SQLResult resultDescriptor = new SQLResult();
-		resultDescriptor.addColumnResult("P");
-		query.setResult(resultDescriptor);
-		context.performQuery(query);
+		assertThrows(CayenneRuntimeException.class, () -> {
+			SQLTemplate query = new SQLTemplate("SELECT ARTIST_ID P FROM ARTIST", true);
+			query.setResultColumnsTypes(Float.class);
+			SQLResult resultDescriptor = new SQLResult();
+			resultDescriptor.addColumnResult("P");
+			query.setResult(resultDescriptor);
+			context.performQuery(query);
+		});
 	}
 
-	@Test(expected = CayenneRuntimeException.class)
-	public void testExceptionWhenUsingColumnsTypesAndSQLResultUsingScalar() throws SQLException {
+	@Test
+	public void exceptionWhenUsingColumnsTypesAndSQLResultUsingScalar() throws SQLException {
 		createArtistDataSet();
 
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		SQLTemplate query = new SQLTemplate(testDataMap, "SELECT ARTIST_ID, ARTIST_NAME P FROM ARTIST", false);
-		query.setResultColumnsTypes(Float.class, String.class);
-		query.setUseScalar(true);
-		SQLResult resultDescriptor = new SQLResult();
-		resultDescriptor.addColumnResult("P");
-		resultDescriptor.addColumnResult("N");
-		query.setResult(resultDescriptor);
-		context.performQuery(query);
+		assertThrows(CayenneRuntimeException.class, () -> {
+			DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
+			SQLTemplate query = new SQLTemplate(testDataMap, "SELECT ARTIST_ID, ARTIST_NAME P FROM ARTIST", false);
+			query.setResultColumnsTypes(Float.class, String.class);
+			query.setUseScalar(true);
+			SQLResult resultDescriptor = new SQLResult();
+			resultDescriptor.addColumnResult("P");
+			resultDescriptor.addColumnResult("N");
+			query.setResult(resultDescriptor);
+			context.performQuery(query);
+		});
 	}
 
 	@Test
@@ -191,26 +192,30 @@ public class SQLTemplateIT extends RuntimeCase {
 		List<DataRow> result = context.performQuery(q3);
 		assertEquals(2, result.size());
 		assertTrue(result.get(0) instanceof DataRow);
-		assertThat(result.get(0).get("ARTIST_ID"), instanceOf(Double.class));
+		assertInstanceOf(Double.class, result.get(0).get("ARTIST_ID"));
 	}
 
-	@Test(expected = CayenneRuntimeException.class)
-	public void testWithRootException() throws SQLException {
+	@Test
+	public void withRootException() throws SQLException {
 		createArtistDataSet();
 
-		SQLTemplate q3 = new SQLTemplate(Artist.class, "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST");
-		q3.setResultColumnsTypes(Double.class, String.class);
-		context.performQuery(q3);
+		assertThrows(CayenneRuntimeException.class, () -> {
+			SQLTemplate q3 = new SQLTemplate(Artist.class, "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST");
+			q3.setResultColumnsTypes(Double.class, String.class);
+			context.performQuery(q3);
+		});
 	}
 
-	@Test(expected = CayenneRuntimeException.class)
-	public void testUsingScalarAndDataRow() throws SQLException {
+	@Test
+	public void usingScalarAndDataRow() throws SQLException {
 		createArtistDataSet();
 
-		SQLTemplate q3 = new SQLTemplate(Artist.class, "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST");
-		q3.setUseScalar(true);
-		q3.setFetchingDataRows(true);
-		context.performQuery(q3);
+		assertThrows(CayenneRuntimeException.class, () -> {
+			SQLTemplate q3 = new SQLTemplate(Artist.class, "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST");
+			q3.setUseScalar(true);
+			q3.setFetchingDataRows(true);
+			context.performQuery(q3);
+		});
 	}
 
 	@Test
@@ -224,7 +229,7 @@ public class SQLTemplateIT extends RuntimeCase {
 		List<DataRow> artists = context.performQuery(q3);
 		assertEquals(2, artists.size());
 		assertTrue(artists.get(0) instanceof DataRow);
-		assertThat(artists.get(0).get("ARTIST_ID"), instanceOf(Double.class));
+		assertInstanceOf(Double.class, artists.get(0).get("ARTIST_ID"));
 	}
 
 	@Test
@@ -241,14 +246,16 @@ public class SQLTemplateIT extends RuntimeCase {
 		assertTrue(result.get(0).get("ARTIST_NAME") instanceof String);
 	}
 
-	@Test(expected = CayenneRuntimeException.class)
-	public void testDataRowReturnAndDirectivesExc() throws SQLException {
+	@Test
+	public void dataRowReturnAndDirectivesExc() throws SQLException {
 		createArtistDataSet();
 
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST", true);
-		q3.setResultColumnsTypes(Integer.class, String.class);
-		context.performQuery(q3);
+		assertThrows(CayenneRuntimeException.class, () -> {
+			DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
+			SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST", true);
+			q3.setResultColumnsTypes(Integer.class, String.class);
+			context.performQuery(q3);
+		});
 	}
 
 	@Test
@@ -266,15 +273,17 @@ public class SQLTemplateIT extends RuntimeCase {
 		assertTrue(result.get(0)[1] instanceof String);
 	}
 
-	@Test(expected = CayenneRuntimeException.class)
-	public void testObjectArrayReturnAndDirectivesException() throws SQLException {
+	@Test
+	public void objectArrayReturnAndDirectivesException() throws SQLException {
 		createArtistDataSet();
 
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST", false);
-		q3.setResultColumnsTypes(Integer.class, String.class);
-		q3.setUseScalar(true);
-		context.performQuery(q3);
+		assertThrows(CayenneRuntimeException.class, () -> {
+			DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
+			SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST", false);
+			q3.setResultColumnsTypes(Integer.class, String.class);
+			q3.setUseScalar(true);
+			context.performQuery(q3);
+		});
 	}
 
 	@Test
@@ -291,15 +300,17 @@ public class SQLTemplateIT extends RuntimeCase {
 		assertTrue(result.get(0)[0] instanceof Long);
 	}
 
-	@Test(expected = CayenneRuntimeException.class)
-	public void testObjectArrayReturnWithException() throws SQLException {
+	@Test
+	public void objectArrayReturnWithException() throws SQLException {
 		createArtistDataSet();
 
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST", false);
-		q3.setResultColumnsTypes(Integer.class);
-		q3.setUseScalar(true);
-		context.performQuery(q3);
+		assertThrows(CayenneRuntimeException.class, () -> {
+			DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
+			SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST", false);
+			q3.setResultColumnsTypes(Integer.class);
+			q3.setUseScalar(true);
+			context.performQuery(q3);
+		});
 	}
 
 	@Test
@@ -316,7 +327,7 @@ public class SQLTemplateIT extends RuntimeCase {
 
         // TODO: JDBC's BIGINT matches Oracle's NUMERIC, which matches BigDecimal.
         Class<?> idType = unitDbAdapter instanceof OracleUnitDbAdapter ? BigDecimal.class : Long.class;
-        assertThat(artists.get(0)[0], instanceOf(idType));
+        assertInstanceOf(idType, artists.get(0)[0]);
 	}
 
 	@Test
@@ -333,7 +344,7 @@ public class SQLTemplateIT extends RuntimeCase {
 
         // JDBC's BIGINT matches Oracle's NUMERIC, which matches BigDecimal.
         Class<?> idType = unitDbAdapter instanceof OracleUnitDbAdapter ? BigDecimal.class : Long.class;
-		assertThat(artists.get(0)[0], instanceOf(idType));
+		assertInstanceOf(idType, artists.get(0)[0]);
 	}
 
 	@Test
@@ -395,8 +406,8 @@ public class SQLTemplateIT extends RuntimeCase {
 		assertEquals(11.d, tPainting.getDouble("ESTIMATED_PRICE"), 0.001);
 	}
 
-	@Test(expected = CayenneRuntimeException.class)
-	public void testSQLTemplate_PositionalParams_ToFewParams() {
+	@Test
+	public void sqlTemplate_PositionalParams_ToFewParams() {
 
 		String sql = "INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) "
 				+ "VALUES ($b, '$n', #bind($c 'INTEGER'))";
@@ -404,11 +415,11 @@ public class SQLTemplateIT extends RuntimeCase {
 		SQLTemplate q1 = new SQLTemplate(Painting.class, sql);
 		q1.setParamsArray(11, "The Fiddler");
 
-		context.performNonSelectingQuery(q1);
+		assertThrows(CayenneRuntimeException.class, () -> context.performNonSelectingQuery(q1));
 	}
 
 	@Test
-	public void testSQLTemplate_PositionalParams_ToManyParams() throws SQLException {
+	public void sqlTemplate_PositionalParams_ToManyParams() throws SQLException {
 
 		String sql = "INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) "
 				+ "VALUES ($b, '$n', #bind($b 'INTEGER'))";
@@ -416,12 +427,8 @@ public class SQLTemplateIT extends RuntimeCase {
 		SQLTemplate q1 = new SQLTemplate(Painting.class, sql);
 		q1.setParamsArray(11, "The Fiddler", 2345, 333);
 
-		try {
-			context.performNonSelectingQuery(q1);
-			fail("Exception not thrown on parameter length mismatch");
-		} catch (CayenneRuntimeException e) {
-			// expected
-		}
+		assertThrows(CayenneRuntimeException.class, () -> context.performNonSelectingQuery(q1),
+				"Exception not thrown on parameter length mismatch");
 	}
 
 	@Test
@@ -437,16 +444,18 @@ public class SQLTemplateIT extends RuntimeCase {
 		assertNull(galleries.get(0));
 	}
 
-	@Test(expected = CayenneRuntimeException.class)
-	public void testSQLTemplateSelectInvalid() throws Exception {
+	@Test
+	public void sqlTemplateSelectInvalid() throws Exception {
 		tPainting.insert(1, null, "p1", 10);
 
-		String sql = "SELECT p.PAINTING_TITLE FROM PAINTING p";
-		SQLTemplate q1 = new SQLTemplate(Gallery.class, sql);
-		q1.setColumnNamesCapitalization(CapsStrategy.UPPER);
+		assertThrows(CayenneRuntimeException.class, () -> {
+			String sql = "SELECT p.PAINTING_TITLE FROM PAINTING p";
+			SQLTemplate q1 = new SQLTemplate(Gallery.class, sql);
+			q1.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
-		// this should fail as result can't be converted to Gallery class
-		context.performQuery(q1);
+			// this should fail as result can't be converted to Gallery class
+			context.performQuery(q1);
+		});
 	}
 
 	@Test
@@ -472,10 +481,12 @@ public class SQLTemplateIT extends RuntimeCase {
 		});
 	}
 
-	@Test(expected = CayenneRuntimeException.class)
-	public void testSQLTemplateWithDisjointPrefetch() {
-		String sql = "SELECT p.* FROM PAINTING p";
-		SQLTemplate q1 = new SQLTemplate(Painting.class, sql);
-		q1.addPrefetch(Painting.TO_ARTIST.disjoint());
+	@Test
+	public void sqlTemplateWithDisjointPrefetch() {
+		assertThrows(CayenneRuntimeException.class, () -> {
+			String sql = "SELECT p.* FROM PAINTING p";
+			SQLTemplate q1 = new SQLTemplate(Painting.class, sql);
+			q1.addPrefetch(Painting.TO_ARTIST.disjoint());
+		});
 	}
 }

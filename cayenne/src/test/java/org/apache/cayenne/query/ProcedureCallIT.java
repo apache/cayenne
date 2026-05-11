@@ -32,14 +32,14 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.sql.Types;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ProcedureCallIT extends RuntimeCase {
@@ -59,7 +59,7 @@ public class ProcedureCallIT extends RuntimeCase {
     private JdbcEventLogger jdbcEventLogger;
 
     @Test
-    public void testUpdate() throws Exception {
+    public void update() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
@@ -79,7 +79,7 @@ public class ProcedureCallIT extends RuntimeCase {
     }
 
     @Test
-    public void testUpdateNoParam() throws Exception {
+    public void updateNoParam() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
@@ -99,7 +99,7 @@ public class ProcedureCallIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelect() throws Exception {
+    public void select() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
@@ -114,7 +114,7 @@ public class ProcedureCallIT extends RuntimeCase {
         ).firstList();
 
         // check the results
-        assertNotNull("Null result from StoredProcedure.", artists);
+        assertNotNull(artists, "Null result from StoredProcedure.");
         assertEquals(1, artists.size());
         DataRow artistRow = (DataRow) artists.get(0);
         Artist a = context.objectFromDataRow(Artist.class, uppercaseConverter(artistRow));
@@ -126,7 +126,7 @@ public class ProcedureCallIT extends RuntimeCase {
     }
 
     @Test
-    public void testFetchLimit() throws Exception {
+    public void fetchLimit() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
@@ -147,7 +147,7 @@ public class ProcedureCallIT extends RuntimeCase {
     }
 
     @Test
-    public void testFetchOffset() throws Exception {
+    public void fetchOffset() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
@@ -168,7 +168,7 @@ public class ProcedureCallIT extends RuntimeCase {
     }
 
     @Test
-    public void testColumnNameCapitalization() throws Exception {
+    public void columnNameCapitalization() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
@@ -196,7 +196,7 @@ public class ProcedureCallIT extends RuntimeCase {
     }
 
     @Test
-    public void testOutParams() throws Exception {
+    public void outParams() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
@@ -211,7 +211,7 @@ public class ProcedureCallIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectPersistentObject() throws Exception {
+    public void selectPersistentObject() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
@@ -228,7 +228,7 @@ public class ProcedureCallIT extends RuntimeCase {
         ).firstList();
 
         // check the results
-        assertNotNull("Null result from StoredProcedure.", artists);
+        assertNotNull(artists, "Null result from StoredProcedure.");
         assertEquals(1, artists.size());
         Artist a = (Artist) artists.get(0);
         Painting p = a.getPaintingArray().get(0);
@@ -239,7 +239,7 @@ public class ProcedureCallIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectWithRowDescriptor() throws Exception {
+    public void selectWithRowDescriptor() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
@@ -263,7 +263,7 @@ public class ProcedureCallIT extends RuntimeCase {
         ).firstList();
 
         // check the results
-        assertNotNull("Null result from StoredProcedure.", rows);
+        assertNotNull(rows, "Null result from StoredProcedure.");
         assertEquals(1, rows.size());
         DataRow artistRow = (DataRow) rows.get(0);
 
@@ -273,7 +273,7 @@ public class ProcedureCallIT extends RuntimeCase {
 
         Object id = artistRow.get("ARTIST_ID");
         assertNotNull(id);
-        assertTrue("Expected Long, got: " + id.getClass().getName(), id instanceof Long);
+        assertTrue(id instanceof Long, "Expected Long, got: " + id.getClass().getName());
     }
 
     private <T> ProcedureResult<T> runProcedureSelect(ProcedureCall<T> q) {

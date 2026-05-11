@@ -18,17 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ASTNotEqualTest {
 
 	@Test
-	public void testEvaluate() {
+	public void evaluate() {
 		Expression notEqualTo = new ASTNotEqual(new ASTObjPath("artistName"), "abc");
 
 		Artist match = new Artist();
@@ -37,11 +37,11 @@ public class ASTNotEqualTest {
 
 		Artist noMatch = new Artist();
 		noMatch.setArtistName("123");
-		assertTrue("Failed: " + notEqualTo, notEqualTo.match(noMatch));
+		assertTrue(notEqualTo.match(noMatch), "Failed: " + notEqualTo);
 	}
 
 	@Test
-	public void testEvaluate_Null() {
+	public void evaluate_Null() {
 		Expression notEqualToNull = new ASTNotEqual(new ASTObjPath("artistName"), null);
 		Expression notEqualToNotNull = new ASTNotEqual(new ASTObjPath("artistName"), "abc");
 
@@ -51,7 +51,7 @@ public class ASTNotEqualTest {
 
 		Artist noMatch = new Artist();
 		noMatch.setArtistName("123");
-		assertTrue("Failed: " + notEqualToNull, notEqualToNull.match(noMatch));
+		assertTrue(notEqualToNull.match(noMatch), "Failed: " + notEqualToNull);
 	}
 
 }

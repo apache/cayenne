@@ -30,14 +30,14 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextEJBQLDeleteIT extends RuntimeCase {
@@ -53,7 +53,8 @@ public class DataContextEJBQLDeleteIT extends RuntimeCase {
 
     protected TableHelper tPainting;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tPainting = new TableHelper(dbHelper, "PAINTING");
         tPainting.setColumns(
@@ -73,7 +74,7 @@ public class DataContextEJBQLDeleteIT extends RuntimeCase {
     }
 
     @Test
-    public void testDeleteNoIdVar() throws Exception {
+    public void deleteNoIdVar() throws Exception {
         createPaintingsDataSet();
 
         String ejbql = "delete from Painting";
@@ -88,7 +89,7 @@ public class DataContextEJBQLDeleteIT extends RuntimeCase {
     }
 
     @Test
-    public void testDeleteNoQualifier() throws Exception {
+    public void deleteNoQualifier() throws Exception {
         createPaintingsDataSet();
 
         String ejbql = "delete from Painting AS p";
@@ -103,7 +104,7 @@ public class DataContextEJBQLDeleteIT extends RuntimeCase {
     }
 
     @Test
-    public void testDeleteSameEntityQualifier() throws Exception {
+    public void deleteSameEntityQualifier() throws Exception {
         createPaintingsDataSet();
 
         String ejbql = "delete from Painting AS p WHERE p.paintingTitle = 'P2'";

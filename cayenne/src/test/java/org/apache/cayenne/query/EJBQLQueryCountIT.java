@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collections;
 
@@ -29,8 +29,8 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class EJBQLQueryCountIT extends RuntimeCase {
@@ -45,7 +45,7 @@ public class EJBQLQueryCountIT extends RuntimeCase {
 	protected TableHelper tPainting;
 	protected TableHelper tGallery;
 
-	@Before
+	@BeforeEach
 	public void before() throws Exception {
 		tArtist = new TableHelper(dbHelper, "ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -55,7 +55,7 @@ public class EJBQLQueryCountIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_SimpleCount() throws Exception {
+	public void simpleCount() throws Exception {
 		tArtist.insert(1, "A1");
 		tArtist.insert(2, "A2");
 		tArtist.insert(3, "A3");
@@ -67,7 +67,7 @@ public class EJBQLQueryCountIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_ToOne() throws Exception {
+	public void toOne() throws Exception {
 		tArtist.insert(1, "A1");
 		tArtist.insert(2, "A2");
 		tArtist.insert(3, "A3");
@@ -83,7 +83,7 @@ public class EJBQLQueryCountIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_DistinctToOne() throws Exception {
+	public void distinctToOne() throws Exception {
 		tArtist.insert(1, "A1");
 		tArtist.insert(2, "A2");
 		tArtist.insert(3, "A3");
@@ -98,7 +98,7 @@ public class EJBQLQueryCountIT extends RuntimeCase {
 	}
 	
 	@Test
-	public void test_DistinctToOneAttribute() throws Exception {
+	public void distinctToOneAttribute() throws Exception {
 		tArtist.insert(1, "A1");
 		tArtist.insert(2, "A1");
 		tArtist.insert(3, "A1");

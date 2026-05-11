@@ -19,19 +19,19 @@
 
 package org.apache.cayenne.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class IndexPropertyListTest {
 
     @Test
-    public void testSort() {
+    public void sort() {
 
         IndexedObject o1 = new IndexedObject(1);
         IndexedObject o2 = new IndexedObject(2);
@@ -60,7 +60,7 @@ public class IndexPropertyListTest {
     }
 
     @Test
-    public void testAppend() {
+    public void append() {
         IndexedObject o1 = new IndexedObject(1);
         IndexedObject o2 = new IndexedObject(2);
         IndexedObject o3 = new IndexedObject(3);
@@ -78,7 +78,7 @@ public class IndexPropertyListTest {
     }
 
     @Test
-    public void testInsert() {
+    public void insert() {
         IndexedObject o1 = new IndexedObject(1);
         IndexedObject o2 = new IndexedObject(2);
         IndexedObject o3 = new IndexedObject(3);

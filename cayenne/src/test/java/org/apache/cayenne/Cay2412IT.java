@@ -30,11 +30,11 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @since 4.1
@@ -48,7 +48,7 @@ public class Cay2412IT extends RuntimeCase {
     @Inject
     private DBHelper dbHelper;
 
-    @Before
+    @BeforeEach
     public void prepareData() throws Exception {
         TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
@@ -66,9 +66,9 @@ public class Cay2412IT extends RuntimeCase {
         }
     }
 
-    @Ignore("selectFirst() call corrupts object state in context, and because of cache it's also returned for unrelated query")
+    @Disabled("selectFirst() call corrupts object state in context, and because of cache it's also returned for unrelated query")
     @Test
-    public void testJoinPrefetch() {
+    public void joinPrefetch() {
         Artist artist0 = ObjectSelect.query(Artist.class)
                 .prefetch(Artist.PAINTING_ARRAY.joint())
                 .localCache("test")
@@ -88,7 +88,7 @@ public class Cay2412IT extends RuntimeCase {
     }
 
     @Test
-    public void testDisjointByIdPrefetch() {
+    public void disjointByIdPrefetch() {
         Artist artist0 = ObjectSelect.query(Artist.class)
                 .prefetch(Artist.PAINTING_ARRAY.disjointById())
                 .localCache("test")

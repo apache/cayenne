@@ -19,14 +19,14 @@
 
 package org.apache.cayenne;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class DataRowTest {
 
     @Test
-    public void testVersion() throws Exception {
+    public void version() throws Exception {
         DataRow s1 = new DataRow(10);
         DataRow s2 = new DataRow(10);
         DataRow s3 = new DataRow(10);

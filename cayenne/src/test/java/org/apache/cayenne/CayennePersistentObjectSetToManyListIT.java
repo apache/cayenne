@@ -30,15 +30,15 @@ import org.apache.cayenne.testdo.testmap.ROPainting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class CayennePersistentObjectSetToManyListIT extends RuntimeCase {
@@ -55,7 +55,7 @@ public class CayennePersistentObjectSetToManyListIT extends RuntimeCase {
 	protected TableHelper tArtist;
 	protected TableHelper tPainting;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		tArtist = new TableHelper(dbHelper, "ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -75,7 +75,7 @@ public class CayennePersistentObjectSetToManyListIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testReadRO1() {
+	public void readRO1() {
 		Artist a1 = Cayenne.objectForPK(context, Artist.class, 8);
 		assertNotNull(a1);
 
@@ -89,39 +89,39 @@ public class CayennePersistentObjectSetToManyListIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testSetEmptyList1() {
+	public void setEmptyList1() {
 		Artist artist = Cayenne.objectForPK(context, Artist.class, 8);
 		artist.setToManyTarget(Artist.PAINTING_ARRAY.getName(), new ArrayList<ROPainting>(0), true);
 		List<Painting> paints = artist.getPaintingArray();
 		assertEquals(0, paints.size());
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testSetEmptyList2() {
+	@Test
+	public void setEmptyList2() {
 		Artist artist = Cayenne.objectForPK(context, Artist.class, 8);
-		artist.setToManyTarget(Artist.PAINTING_ARRAY.getName(), null, true);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testNonExistentRelName() {
-		Artist artist = Cayenne.objectForPK(context, Artist.class, 8);
-		artist.setToManyTarget("doesnotexist", new ArrayList<ROPainting>(0), true);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testEmptyRelName() {
-		Artist artist = Cayenne.objectForPK(context, Artist.class, 8);
-		artist.setToManyTarget("", new ArrayList<ROPainting>(0), true);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testNullRelName() {
-		Artist artist = Cayenne.objectForPK(context, Artist.class, 8);
-		artist.setToManyTarget(null, new ArrayList<ROPainting>(0), true);
+		assertThrows(IllegalArgumentException.class, () -> artist.setToManyTarget(Artist.PAINTING_ARRAY.getName(), null, true));
 	}
 
 	@Test
-	public void testTotalDifferentPaintings() {
+	public void nonExistentRelName() {
+		Artist artist = Cayenne.objectForPK(context, Artist.class, 8);
+		assertThrows(IllegalArgumentException.class, () -> artist.setToManyTarget("doesnotexist", new ArrayList<ROPainting>(0), true));
+	}
+
+	@Test
+	public void emptyRelName() {
+		Artist artist = Cayenne.objectForPK(context, Artist.class, 8);
+		assertThrows(IllegalArgumentException.class, () -> artist.setToManyTarget("", new ArrayList<ROPainting>(0), true));
+	}
+
+	@Test
+	public void nullRelName() {
+		Artist artist = Cayenne.objectForPK(context, Artist.class, 8);
+		assertThrows(IllegalArgumentException.class, () -> artist.setToManyTarget(null, new ArrayList<ROPainting>(0), true));
+	}
+
+	@Test
+	public void totalDifferentPaintings() {
 		Artist artist = Cayenne.objectForPK(context, Artist.class, 8);
 
 		// copy the paintings list. Replacing paintings wont change the copy
@@ -150,7 +150,7 @@ public class CayennePersistentObjectSetToManyListIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testSamePaintings() {
+	public void samePaintings() {
 		Artist artist = Cayenne.objectForPK(context, Artist.class, 8);
 		List<Painting> oldPaints = new ArrayList<>(artist.getPaintingArray());
 
@@ -172,7 +172,7 @@ public class CayennePersistentObjectSetToManyListIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testOldPlusNewPaintings() {
+	public void oldPlusNewPaintings() {
 		Artist artist = Cayenne.objectForPK(context, Artist.class, 8);
 		List<Painting> oldPaints = artist.getPaintingArray();
 
@@ -207,7 +207,7 @@ public class CayennePersistentObjectSetToManyListIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testRemoveOneOldAndAddOneNewPaintings() {
+	public void removeOneOldAndAddOneNewPaintings() {
 		Artist artist = Cayenne.objectForPK(context, Artist.class, 8);
 
 		List<Painting> newPaints = new ArrayList<>();
@@ -244,14 +244,10 @@ public class CayennePersistentObjectSetToManyListIT extends RuntimeCase {
 	 * Testing if collection type is list, everything should work fine without a RuntimeException
 	 */
 	@Test
-	public void testRelationCollectionTypeList() {
+	public void relationCollectionTypeList() {
 		Artist artist = Cayenne.objectForPK(context, Artist.class, 8);
 		assertTrue(artist.readProperty(Artist.PAINTING_ARRAY.getName()) instanceof List);
-		try {
-			artist.setToManyTarget(Artist.PAINTING_ARRAY.getName(), new ArrayList<Painting>(0), true);
-		} catch (UnsupportedOperationException e) {
-			fail();
-		}
+		assertDoesNotThrow(() -> artist.setToManyTarget(Artist.PAINTING_ARRAY.getName(), new ArrayList<Painting>(0), true));
 		assertEquals(0, artist.getPaintingArray().size());
 	}
 }

@@ -34,13 +34,13 @@ import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @UseCayenneRuntime(CayenneProjects.LOCKING_PROJECT)
 public class OptimisticLockingIT extends RuntimeCase {
@@ -55,7 +55,7 @@ public class OptimisticLockingIT extends RuntimeCase {
     protected TableHelper tRelLockingTest;
     protected TableHelper tLockingHelper;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tSimpleLockingTest = new TableHelper(dbHelper, "SIMPLE_LOCKING_TEST");
         tSimpleLockingTest.setColumns("LOCKING_TEST_ID", "NAME", "DESCRIPTION", "INT_COLUMN_NOTNULL")
@@ -110,7 +110,7 @@ public class OptimisticLockingIT extends RuntimeCase {
     }
 
     @Test
-    public void testSuccessSimpleLockingOnDelete() throws Exception {
+    public void successSimpleLockingOnDelete() throws Exception {
         createSimpleLockingDataSet();
 
         List<SimpleLockingTestEntity> allObjects = ObjectSelect
@@ -129,7 +129,7 @@ public class OptimisticLockingIT extends RuntimeCase {
     }
 
     @Test
-    public void testSuccessSimpleLockingOnDeleteFollowedByInvalidate() throws Exception {
+    public void successSimpleLockingOnDeleteFollowedByInvalidate() throws Exception {
         createSimpleLockingDataSet();
 
         List<SimpleLockingTestEntity> allObjects = ObjectSelect
@@ -149,7 +149,7 @@ public class OptimisticLockingIT extends RuntimeCase {
     }
 
     @Test
-    public void testSuccessSimpleLockingOnDeleteFollowedByForgetSnapshot()
+    public void successSimpleLockingOnDeleteFollowedByForgetSnapshot()
             throws Exception {
         createSimpleLockingDataSet();
 
@@ -170,7 +170,7 @@ public class OptimisticLockingIT extends RuntimeCase {
     }
 
     @Test
-    public void testSuccessSimpleLockingOnDeletePrecededByInvalidate() throws Exception {
+    public void successSimpleLockingOnDeletePrecededByInvalidate() throws Exception {
         createSimpleLockingDataSet();
 
         List<SimpleLockingTestEntity> allObjects = ObjectSelect
@@ -190,7 +190,7 @@ public class OptimisticLockingIT extends RuntimeCase {
     }
 
     @Test
-    public void testSuccessSimpleLockingOnDeletePrecededByForgetSnapshot()
+    public void successSimpleLockingOnDeletePrecededByForgetSnapshot()
             throws Exception {
         createSimpleLockingDataSet();
 
@@ -211,7 +211,7 @@ public class OptimisticLockingIT extends RuntimeCase {
     }
 
     @Test
-    public void testFailSimpleLockingOnDelete() throws Exception {
+    public void failSimpleLockingOnDelete() throws Exception {
         createSimpleLockingDataSet();
 
         List<SimpleLockingTestEntity> allObjects = ObjectSelect
@@ -230,17 +230,11 @@ public class OptimisticLockingIT extends RuntimeCase {
 
         context.deleteObjects(object);
 
-        try {
-            context.commitChanges();
-            fail("Optimistic lock failure expected.");
-        }
-        catch (OptimisticLockException ex) {
-            // optimistic lock failure expected...
-        }
+        assertThrows(OptimisticLockException.class, context::commitChanges);
     }
 
     @Test
-    public void testSuccessSimpleLockingOnUpdate() throws Exception {
+    public void successSimpleLockingOnUpdate() throws Exception {
         createSimpleLockingDataSet();
 
         List<SimpleLockingTestEntity> allObjects = ObjectSelect
@@ -260,7 +254,7 @@ public class OptimisticLockingIT extends RuntimeCase {
     }
 
     @Test
-    public void testSuccessSimpleLockingNullablePrimitiveColumn() throws Exception {
+    public void successSimpleLockingNullablePrimitiveColumn() throws Exception {
         createSimpleLockingDataSet();
 
         SimpleLockingTestEntity object = ObjectSelect.query(SimpleLockingTestEntity.class).selectOne(context);
@@ -281,7 +275,7 @@ public class OptimisticLockingIT extends RuntimeCase {
     }
 
     @Test
-    public void testSuccessSimpleLockingOnUpdateFollowedByInvalidate() throws Exception {
+    public void successSimpleLockingOnUpdateFollowedByInvalidate() throws Exception {
         createSimpleLockingDataSet();
 
         List<SimpleLockingTestEntity> allObjects = ObjectSelect
@@ -302,7 +296,7 @@ public class OptimisticLockingIT extends RuntimeCase {
     }
 
     @Test
-    public void testSuccessSimpleLockingOnUpdatePrecededByInvalidate() throws Exception {
+    public void successSimpleLockingOnUpdatePrecededByInvalidate() throws Exception {
         createSimpleLockingDataSet();
 
         List<SimpleLockingTestEntity> allObjects = ObjectSelect
@@ -323,7 +317,7 @@ public class OptimisticLockingIT extends RuntimeCase {
     }
 
     @Test
-    public void testSuccessSimpleLockingOnUpdateFollowedByForgetSnapshot()
+    public void successSimpleLockingOnUpdateFollowedByForgetSnapshot()
             throws Exception {
         createSimpleLockingDataSet();
 
@@ -345,7 +339,7 @@ public class OptimisticLockingIT extends RuntimeCase {
     }
 
     @Test
-    public void testSuccessSimpleLockingOnUpdatePrecededByForgetSnapshot()
+    public void successSimpleLockingOnUpdatePrecededByForgetSnapshot()
             throws Exception {
         createSimpleLockingDataSet();
 
@@ -367,7 +361,7 @@ public class OptimisticLockingIT extends RuntimeCase {
     }
 
     @Test
-    public void testFailSimpleLocking() throws Exception {
+    public void failSimpleLocking() throws Exception {
         createSimpleLockingDataSet();
 
         List<SimpleLockingTestEntity> allObjects = ObjectSelect
@@ -387,17 +381,11 @@ public class OptimisticLockingIT extends RuntimeCase {
 
         object.setDescription("second update");
 
-        try {
-            context.commitChanges();
-            fail("Optimistic lock failure expected.");
-        }
-        catch (OptimisticLockException ex) {
-            // optimistic lock failure expected...
-        }
+        assertThrows(OptimisticLockException.class, context::commitChanges);
     }
 
     @Test
-    public void testFailLockingOnNull() throws Exception {
+    public void failLockingOnNull() throws Exception {
         createLockingOnNullDataSet();
 
         List<SimpleLockingTestEntity> allObjects = ObjectSelect
@@ -417,18 +405,12 @@ public class OptimisticLockingIT extends RuntimeCase {
 
         object.setDescription("second update");
 
-        try {
-            context.commitChanges();
-            fail("Optimistic lock failure expected.");
-        }
-        catch (OptimisticLockException ex) {
-            // optimistic lock failure expected...
-            assertEquals(object.getObjectId(), ex.getFailedObjectId());
-        }
+        OptimisticLockException ex = assertThrows(OptimisticLockException.class, context::commitChanges);
+        assertEquals(object.getObjectId(), ex.getFailedObjectId());
     }
 
     @Test
-    public void testSuccessLockingOnMixed() throws Exception {
+    public void successLockingOnMixed() throws Exception {
         createLockingOnMixedDataSet();
 
         List<SimpleLockingTestEntity> allObjects = ObjectSelect.query(SimpleLockingTestEntity.class)
@@ -452,7 +434,7 @@ public class OptimisticLockingIT extends RuntimeCase {
     }
 
     @Test
-    public void testSuccessLockingOnToOneNull() throws Exception {
+    public void successLockingOnToOneNull() throws Exception {
         createLockingOnToOneDataSet();
 
         List<RelLockingTestEntity> allObjects = ObjectSelect
@@ -473,7 +455,7 @@ public class OptimisticLockingIT extends RuntimeCase {
     }
 
     @Test
-    public void testFailLockingOnToOne() throws Exception {
+    public void failLockingOnToOne() throws Exception {
         createLockingOnToOneDataSet();
 
         List<RelLockingTestEntity> allObjects = ObjectSelect
@@ -499,17 +481,11 @@ public class OptimisticLockingIT extends RuntimeCase {
 
         object.setName("third update");
 
-        try {
-            context.commitChanges();
-            fail("Optimistic lock failure expected.");
-        }
-        catch (OptimisticLockException ex) {
-            // optimistic lock failure expected...
-        }
+        assertThrows(OptimisticLockException.class, context::commitChanges);
     }
 
     @Test
-    public void testFailRetrieveRow() throws Exception {
+    public void failRetrieveRow() throws Exception {
         createSimpleLockingDataSet();
 
         List<SimpleLockingTestEntity> allObjects = ObjectSelect
@@ -524,19 +500,14 @@ public class OptimisticLockingIT extends RuntimeCase {
         // expected
         createSimpleLockUpdate();
 
-        try {
-            context.commitChanges();
-            fail("Optimistic lock failure expected.");
-        }
-        catch (OptimisticLockException ex) {
-            Map<?, ?> freshFailedRow = ex.getFreshSnapshot(context);
-            assertNotNull(freshFailedRow);
-            assertEquals("LockTest1Updated", freshFailedRow.get("NAME"));
-        }
+        OptimisticLockException ex = assertThrows(OptimisticLockException.class, context::commitChanges);
+        Map<?, ?> freshFailedRow = ex.getFreshSnapshot(context);
+        assertNotNull(freshFailedRow);
+        assertEquals("LockTest1Updated", freshFailedRow.get("NAME"));
     }
 
     @Test
-    public void testFailRetrieveDeletedRow() throws Exception {
+    public void failRetrieveDeletedRow() throws Exception {
         createSimpleLockingDataSet();
 
         List<SimpleLockingTestEntity> allObjects = ObjectSelect
@@ -552,13 +523,8 @@ public class OptimisticLockingIT extends RuntimeCase {
         // expected
         createSimpleLockDelete();
 
-        try {
-            context.commitChanges();
-            fail("Optimistic lock failure expected.");
-        }
-        catch (OptimisticLockException ex) {
-            Map<?, ?> freshFailedRow = ex.getFreshSnapshot(context);
-            assertNull("" + freshFailedRow, freshFailedRow);
-        }
+        OptimisticLockException ex = assertThrows(OptimisticLockException.class, context::commitChanges);
+        Map<?, ?> freshFailedRow = ex.getFreshSnapshot(context);
+        assertNull(freshFailedRow, "" + freshFailedRow);
     }
 }

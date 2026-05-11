@@ -34,13 +34,13 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Test suite covering possible scenarios of refreshing updated objects. This includes
@@ -62,7 +62,8 @@ public class DataContextRefreshingIT extends RuntimeCase {
     protected TableHelper tArtist;
     protected TableHelper tPainting;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -100,7 +101,7 @@ public class DataContextRefreshingIT extends RuntimeCase {
     }
 
     @Test
-    public void testRefetchRootWithUpdatedAttributes() throws Exception {
+    public void refetchRootWithUpdatedAttributes() throws Exception {
 
         createSingleArtistDataSet();
 
@@ -128,7 +129,7 @@ public class DataContextRefreshingIT extends RuntimeCase {
     }
 
     @Test
-    public void testRefetchRootWithNullifiedToOne() throws Exception {
+    public void refetchRootWithNullifiedToOne() throws Exception {
         createSingleArtistAndPaintingDataSet();
 
         Painting painting = (Painting) context.performQuery(
@@ -148,7 +149,7 @@ public class DataContextRefreshingIT extends RuntimeCase {
     }
 
     @Test
-    public void testRefetchRootWithChangedToOneTarget() throws Exception {
+    public void refetchRootWithChangedToOneTarget() throws Exception {
         createTwoArtistsAndPaintingDataSet();
 
         Painting painting = (Painting) context.performQuery(
@@ -169,7 +170,7 @@ public class DataContextRefreshingIT extends RuntimeCase {
     }
 
     @Test
-    public void testRefetchRootWithNullToOneTargetChangedToNotNull() throws Exception {
+    public void refetchRootWithNullToOneTargetChangedToNotNull() throws Exception {
         createSingleArtistAndUnrelatedPaintingDataSet();
 
         Painting painting = (Painting) context.performQuery(
@@ -188,7 +189,7 @@ public class DataContextRefreshingIT extends RuntimeCase {
     }
 
     @Test
-    public void testRefetchRootWithDeletedToMany() throws Exception {
+    public void refetchRootWithDeletedToMany() throws Exception {
         createSingleArtistAndPaintingDataSet();
 
         Artist artist = (Artist) context.performQuery(ObjectSelect.query(Artist.class)).get(
@@ -212,7 +213,7 @@ public class DataContextRefreshingIT extends RuntimeCase {
     }
 
     @Test
-    public void testRefetchRootWithAddedToMany() throws Exception {
+    public void refetchRootWithAddedToMany() throws Exception {
 
         createSingleArtistDataSet();
 
@@ -234,7 +235,7 @@ public class DataContextRefreshingIT extends RuntimeCase {
     }
 
     @Test
-    public void testInvalidateRootWithUpdatedAttributes() throws Exception {
+    public void invalidateRootWithUpdatedAttributes() throws Exception {
         createSingleArtistDataSet();
 
         String nameBefore = "artist2";
@@ -252,7 +253,7 @@ public class DataContextRefreshingIT extends RuntimeCase {
     }
 
     @Test
-    public void testInvalidateRootWithNullifiedToOne() throws Exception {
+    public void invalidateRootWithNullifiedToOne() throws Exception {
 
         createSingleArtistAndPaintingDataSet();
 
@@ -268,7 +269,7 @@ public class DataContextRefreshingIT extends RuntimeCase {
     }
 
     @Test
-    public void testInvalidateRootWithChangedToOneTarget() throws Exception {
+    public void invalidateRootWithChangedToOneTarget() throws Exception {
         createTwoArtistsAndPaintingDataSet();
 
         Painting painting = (Painting) context.performQuery(
@@ -285,7 +286,7 @@ public class DataContextRefreshingIT extends RuntimeCase {
     }
 
     @Test
-    public void testInvalidateRootWithNullToOneTargetChangedToNotNull() throws Exception {
+    public void invalidateRootWithNullToOneTargetChangedToNotNull() throws Exception {
         createSingleArtistAndUnrelatedPaintingDataSet();
 
         Painting painting = (Painting) context.performQuery(
@@ -300,7 +301,7 @@ public class DataContextRefreshingIT extends RuntimeCase {
     }
 
     @Test
-    public void testInvalidateRootWithDeletedToMany() throws Exception {
+    public void invalidateRootWithDeletedToMany() throws Exception {
         createSingleArtistAndPaintingDataSet();
 
         Artist artist = (Artist) context.performQuery(ObjectSelect.query(Artist.class)).get(0);
@@ -313,7 +314,7 @@ public class DataContextRefreshingIT extends RuntimeCase {
     }
 
     @Test
-    public void testInvaliateRootWithAddedToMany() throws Exception {
+    public void invaliateRootWithAddedToMany() throws Exception {
 
         createSingleArtistDataSet();
 
@@ -328,7 +329,7 @@ public class DataContextRefreshingIT extends RuntimeCase {
     }
 
     @Test
-    public void testInvalidateThenModify() throws Exception {
+    public void invalidateThenModify() throws Exception {
 
         createSingleArtistDataSet();
 
@@ -350,7 +351,7 @@ public class DataContextRefreshingIT extends RuntimeCase {
     }
 
     @Test
-    public void testModifyHollow() throws Exception {
+    public void modifyHollow() throws Exception {
 
         createSingleArtistAndPaintingDataSet();
 

@@ -41,7 +41,7 @@
                     <dbimport>
                         <skipPrimaryKeyLoading>true</skipPrimaryKeyLoading>
                     </dbimport>
-					<project implementation="org.apache.cayenne.stubs.CayenneProjectStub"/>
+
 
 				</configuration>
 			</plugin>

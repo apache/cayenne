@@ -39,10 +39,10 @@ import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ObjRelationshipIT extends RuntimeCase {
@@ -56,7 +56,7 @@ public class ObjRelationshipIT extends RuntimeCase {
     private DbEntity paintingDbEntity;
     private DbEntity galleryDBEntity;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
 
@@ -68,7 +68,7 @@ public class ObjRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testEncodeAsXML() {
+    public void encodeAsXML() {
         StringWriter buffer = new StringWriter();
         PrintWriter out = new PrintWriter(buffer);
         XMLEncoder encoder = new XMLEncoder(out);
@@ -95,7 +95,7 @@ public class ObjRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testCollectionType() {
+    public void collectionType() {
         ObjRelationship r = new ObjRelationship("X");
         assertNull(r.getCollectionType());
         r.setCollectionType("java.util.Map");
@@ -103,7 +103,7 @@ public class ObjRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testSerializability() throws Exception {
+    public void serializability() throws Exception {
         ObjEntity artistObjEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
 
         // start with "to many"
@@ -115,7 +115,7 @@ public class ObjRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testGetReverseDbRelationshipPath() {
+    public void getReverseDbRelationshipPath() {
         ObjEntity artistObjEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
         ObjEntity paintingObjEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Painting");
 
@@ -130,7 +130,7 @@ public class ObjRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testSetDbRelationshipPath() {
+    public void setDbRelationshipPath() {
         ObjEntity artistObjEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
 
         ObjRelationship r = new ObjRelationship("r");
@@ -140,17 +140,12 @@ public class ObjRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testRefreshFromPath() {
+    public void refreshFromPath() {
         ObjRelationship relationship = new ObjRelationship();
 
         // attempt to resolve must fail - relationship is outside of context,
         // plus the path is random
-        try {
-            relationship.setDbRelationshipPath("dummy.path");
-            fail("set random path should have failed.");
-        } catch (CayenneRuntimeException ex) {
-            // expected
-        }
+        assertThrows(CayenneRuntimeException.class, () -> relationship.setDbRelationshipPath("dummy.path"));
 
         DataMap map = new DataMap();
         ObjEntity entity = new ObjEntity("Test");
@@ -159,12 +154,7 @@ public class ObjRelationshipIT extends RuntimeCase {
         relationship.setSourceEntity(entity);
         // attempt to resolve must fail - relationship is outside of context,
         // plus the path is random
-        try {
-            relationship.refreshFromPath(CayennePath.of("dummy.path"), false);
-            fail("refresh over a dummy path should have failed.");
-        } catch (ExpressionException ex) {
-            // expected
-        }
+        assertThrows(ExpressionException.class, () -> relationship.refreshFromPath(CayennePath.of("dummy.path"), false));
 
         // finally assemble ObjEntity to make the path valid
         DbEntity dbEntity1 = new DbEntity("TEST1");
@@ -192,7 +182,7 @@ public class ObjRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testCalculateToMany() {
+    public void calculateToMany() {
         // assemble fixture....
         DataMap map = new DataMap();
         ObjEntity entity = new ObjEntity("Test");
@@ -242,7 +232,7 @@ public class ObjRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testCalculateToManyFromPath() {
+    public void calculateToManyFromPath() {
         // assemble fixture....
         DataMap map = new DataMap();
         ObjEntity entity = new ObjEntity("Test");
@@ -294,16 +284,11 @@ public class ObjRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testTargetEntity() throws Exception {
+    public void targetEntity() throws Exception {
         ObjRelationship relationship = new ObjRelationship("some_rel");
         relationship.setTargetEntityName("targ");
 
-        try {
-            relationship.getTargetEntity();
-            fail("Without a container, getTargetEntity() must fail.");
-        } catch (CayenneRuntimeException ex) {
-            // expected
-        }
+        assertThrows(CayenneRuntimeException.class, relationship::getTargetEntity);
 
         // assemble container
         DataMap map = new DataMap();
@@ -320,7 +305,7 @@ public class ObjRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testGetReverseRel1() {
+    public void getReverseRel1() {
 
         ObjEntity artistObjEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
         ObjEntity paintingObjEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Painting");
@@ -334,7 +319,7 @@ public class ObjRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testGetReverseRel2() {
+    public void getReverseRel2() {
         ObjEntity artistEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
         ObjEntity paintingEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Painting");
 
@@ -347,7 +332,7 @@ public class ObjRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testSingleDbRelationship() {
+    public void singleDbRelationship() {
         ObjRelationship relationship = new ObjRelationship();
         DbRelationship r1 = new DbRelationship("X");
         relationship.addDbRelationship(r1);
@@ -361,7 +346,7 @@ public class ObjRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testFlattenedRelationship() {
+    public void flattenedRelationship() {
         DbRelationship r1 = new DbRelationship("X");
         DbRelationship r2 = new DbRelationship("Y");
 
@@ -394,7 +379,7 @@ public class ObjRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testReadOnly_Flattened1_1__N_1() {
+    public void readOnly_Flattened1_1__N_1() {
 
         // check common vertical inheritance relationships
 
@@ -410,7 +395,7 @@ public class ObjRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testReadOnlyMoreThan3DbRelsRelationship() {
+    public void readOnlyMoreThan3DbRelsRelationship() {
         // Readonly is a flattened relationship that isn't over a single
         // many->many link
         // table
@@ -442,7 +427,7 @@ public class ObjRelationshipIT extends RuntimeCase {
     // dbrel
     // sequence is "incorrect" (or rather, unsupported)
     @Test
-    public void testIncorrectSequenceReadOnlyRelationship() {
+    public void incorrectSequenceReadOnlyRelationship() {
         DbRelationship r1 = new DbRelationship("X");
         DbRelationship r2 = new DbRelationship("Y");
 
@@ -464,7 +449,7 @@ public class ObjRelationshipIT extends RuntimeCase {
     // Test a relationship loaded from the test datamap that we know should be
     // flattened
     @Test
-    public void testKnownFlattenedRelationship() {
+    public void knownFlattenedRelationship() {
         ObjEntity artistEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
         ObjRelationship theRel = artistEnt.getRelationship("groupArray");
         assertNotNull(theRel);
@@ -473,27 +458,16 @@ public class ObjRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testBadDeleteRuleValue() {
+    public void badDeleteRuleValue() {
         ObjRelationship relationship = new ObjRelationship();
-
-        try {
-            relationship.setDeleteRule(999);
-            fail("Should have failed with IllegalArgumentException");
-        } catch (IllegalArgumentException e) {
-            // Good... it should throw an exception
-        }
+        assertThrows(IllegalArgumentException.class, () -> relationship.setDeleteRule(999));
     }
 
     @Test
-    public void testOkDeleteRuleValue() {
+    public void okDeleteRuleValue() {
         ObjRelationship relationship = new ObjRelationship();
-        try {
-            relationship.setDeleteRule(DeleteRule.CASCADE);
-            relationship.setDeleteRule(DeleteRule.DENY);
-            relationship.setDeleteRule(DeleteRule.NULLIFY);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            fail("Should not have thrown an exception :" + e.getMessage());
-        }
+        relationship.setDeleteRule(DeleteRule.CASCADE);
+        relationship.setDeleteRule(DeleteRule.DENY);
+        relationship.setDeleteRule(DeleteRule.NULLIFY);
     }
 }

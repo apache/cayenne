@@ -26,15 +26,15 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.util.Util;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class PersistentObjectSerializationIT extends RuntimeCase {
@@ -69,8 +69,9 @@ public class PersistentObjectSerializationIT extends RuntimeCase {
         assertTrue(deserialized.getObjectId().isTemporary());
         assertEquals("artist1", deserialized.getArtistName());
 
-        assertNull("CDO serialized by itself shouldn't have a DataContext: "
-                + deserialized.getObjectContext(), deserialized.getObjectContext());
+        assertNull(deserialized.getObjectContext(),
+                "CDO serialized by itself shouldn't have a DataContext: "
+                + deserialized.getObjectContext());
 
         // test that to-many relationships are initialized
         List<?> paintings = deserialized.getPaintingArray();
@@ -90,8 +91,9 @@ public class PersistentObjectSerializationIT extends RuntimeCase {
         assertTrue(deserialized.getObjectId().isTemporary());
         assertEquals("artist1", deserialized.getArtistName());
 
-        assertNull("CDO serialized by itself shouldn't have a DataContext: "
-                + deserialized.getObjectContext(), deserialized.getObjectContext());
+        assertNull(deserialized.getObjectContext(),
+                "CDO serialized by itself shouldn't have a DataContext: "
+                + deserialized.getObjectContext());
 
         // test that to-many relationships are initialized
         assertTrue(deserialized.readPropertyDirectly("paintingArray") instanceof ToManyList);
@@ -116,10 +118,9 @@ public class PersistentObjectSerializationIT extends RuntimeCase {
         // everything must be deserialized, but DataContext link should stay null,
         // and properties shouldn't be populated
         // deserizalized committed object is HOLLOW
-        assertEquals("Unexpected persistence state: "
-                + PersistenceState.persistenceStateName(deserialized
-                        .getPersistenceState()), PersistenceState.HOLLOW, deserialized
-                .getPersistenceState());
+        assertEquals(PersistenceState.HOLLOW, deserialized.getPersistenceState(),
+                "Unexpected persistence state: "
+                + PersistenceState.persistenceStateName(deserialized.getPersistenceState()));
 
         assertEquals(id, deserialized.getObjectId());
 

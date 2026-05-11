@@ -40,7 +40,7 @@
                     <dbImport>
                         <includeTable>.*</includeTable>
                     </dbImport>
-                    <project implementation="org.apache.cayenne.stubs.CayenneProjectStub"/>
+
                 </configuration>
             </plugin>
         </plugins>

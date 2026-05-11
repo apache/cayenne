@@ -19,8 +19,8 @@
 package org.apache.cayenne.unit.di;
 
 import org.apache.cayenne.di.Injector;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * A unit test superclass that supports injection of members based on the standard unit
@@ -30,12 +30,12 @@ public abstract class DICase {
 
     protected abstract Injector getUnitTestInjector();
 
-    @Before
+    @BeforeEach
     public final void setUpLifecycleManager() throws Exception {
         getUnitTestInjector().getInstance(UnitTestLifecycleManager.class).setUp(this);
     }
 
-    @After
+    @AfterEach
     public final void tearDownLifecycleManager() throws Exception {
         getUnitTestInjector().getInstance(UnitTestLifecycleManager.class).tearDown(this);
     }

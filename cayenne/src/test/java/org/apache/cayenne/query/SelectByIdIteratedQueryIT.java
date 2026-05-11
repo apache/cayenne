@@ -30,15 +30,15 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
@@ -55,7 +55,7 @@ public class SelectByIdIteratedQueryIT extends RuntimeCase {
     private TableHelper tArtist;
 
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         tPainting = new TableHelper(dbHelper, "PAINTING")
                 .setColumns("PAINTING_ID", "PAINTING_TITLE", "ESTIMATED_PRICE", "ARTIST_ID")

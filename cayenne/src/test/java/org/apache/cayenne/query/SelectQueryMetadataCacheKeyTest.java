@@ -27,10 +27,10 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.TraversalHandler;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -47,7 +47,7 @@ public class SelectQueryMetadataCacheKeyTest {
     private StringBuilder cacheKey;
 
     @SuppressWarnings("unchecked")
-    @Before
+    @BeforeEach
     public void createObjects() {
         registry = mock(ValueObjectTypeRegistry.class);
 
@@ -212,14 +212,14 @@ public class SelectQueryMetadataCacheKeyTest {
     }
 
     @Test
-    public void testPrefetchEmpty() {
+    public void prefetchEmpty() {
         PrefetchTreeNode prefetchTreeNode = new PrefetchTreeNode();
         prefetchTreeNode.traverse(newPrefetchProcessor());
         assertTrue(cacheKey.toString().isEmpty());
     }
 
     @Test
-    public void testPrefetchSingle() {
+    public void prefetchSingle() {
         PrefetchTreeNode prefetchTreeNode;
 
         prefetchTreeNode = new PrefetchTreeNode();
@@ -237,7 +237,7 @@ public class SelectQueryMetadataCacheKeyTest {
     }
 
     @Test
-    public void testPrefetchSemantics() {
+    public void prefetchSemantics() {
         PrefetchTreeNode prefetchTreeNode;
 
         prefetchTreeNode = new PrefetchTreeNode();
@@ -266,7 +266,7 @@ public class SelectQueryMetadataCacheKeyTest {
     }
 
     @Test
-    public void testPrefetchMultiNodes() {
+    public void prefetchMultiNodes() {
         PrefetchTreeNode prefetchTreeNode;
 
         prefetchTreeNode = new PrefetchTreeNode();
@@ -300,7 +300,7 @@ public class SelectQueryMetadataCacheKeyTest {
     }
 
     @Test
-    public void testPrefetchLongPaths() {
+    public void prefetchLongPaths() {
         PrefetchTreeNode prefetchTreeNode;
 
         prefetchTreeNode = new PrefetchTreeNode();

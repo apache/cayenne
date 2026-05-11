@@ -36,11 +36,11 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DeleteObjectIT extends RuntimeCase {
@@ -54,7 +54,8 @@ public class DeleteObjectIT extends RuntimeCase {
     protected TableHelper tArtist;
     protected TableHelper tPainting;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -85,7 +86,7 @@ public class DeleteObjectIT extends RuntimeCase {
     }
 
     @Test
-    public void testDeleteObject() throws Exception {
+    public void deleteObject() throws Exception {
         createObjectDataSet();
 
         Artist artist = Cayenne.objectForPK(context, Artist.class, 1);
@@ -98,7 +99,7 @@ public class DeleteObjectIT extends RuntimeCase {
     }
 
     @Test
-    public void testDeleteObjects1() throws Exception {
+    public void deleteObjects1() throws Exception {
         createObjectsDataSet();
 
         List<Artist> artists = ObjectSelect.query(Artist.class).select(context);
@@ -118,7 +119,7 @@ public class DeleteObjectIT extends RuntimeCase {
     // Similar to testDeleteObjects2, but extract ObjectContext instead of
     // DataContext.
     @Test
-    public void testDeleteObjects2() throws Exception {
+    public void deleteObjects2() throws Exception {
         createObjectsDataSet();
 
         List<Artist> artists = ObjectSelect.query(Artist.class).select(context);
@@ -142,7 +143,7 @@ public class DeleteObjectIT extends RuntimeCase {
     }
 
     @Test
-    public void testDeleteObjectsRelationshipCollection() throws Exception {
+    public void deleteObjectsRelationshipCollection() throws Exception {
         createObjectsRelationshipCollectionDataSet();
 
         Artist artist = Cayenne.objectForPK(context, Artist.class, 1);
@@ -172,7 +173,7 @@ public class DeleteObjectIT extends RuntimeCase {
     }
 
     @Test
-    public void testDeleteObjectInIterator() throws Exception {
+    public void deleteObjectInIterator() throws Exception {
         createObjectsRelationshipCollectionDataSet();
 
         Artist artist = Cayenne.objectForPK(context, Artist.class, 1);
@@ -204,7 +205,7 @@ public class DeleteObjectIT extends RuntimeCase {
     }
 
     @Test
-    public void testDeleteHollow() throws Exception {
+    public void deleteHollow() throws Exception {
         createHollowDataSet();
 
         List<Painting> paintings = ObjectSelect.query(Painting.class).select(context);
@@ -218,7 +219,7 @@ public class DeleteObjectIT extends RuntimeCase {
     }
 
     @Test
-    public void testDeleteNew() throws Exception {
+    public void deleteNew() throws Exception {
         Artist artist = context.newObject(Artist.class);
         artist.setArtistName("a");
 

@@ -18,15 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.util.concurrentlinkedhashmap;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class ConcurrentLinkedHashMapTest {
 
 	@Test
-	public void testPutGet() {
+	public void putGet() {
 		ConcurrentLinkedHashMap<String, Object> m = new ConcurrentLinkedHashMap.Builder<String, Object>()
 				.maximumWeightedCapacity(10).build();
 
@@ -42,7 +42,7 @@ public class ConcurrentLinkedHashMapTest {
 	}
 
 	@Test
-	public void testLRU() {
+	public void lru() {
 		ConcurrentLinkedHashMap<String, Object> m = new ConcurrentLinkedHashMap.Builder<String, Object>()
 				.maximumWeightedCapacity(5).build();
 

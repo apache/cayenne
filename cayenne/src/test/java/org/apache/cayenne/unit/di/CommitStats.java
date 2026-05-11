@@ -25,7 +25,6 @@ import org.apache.cayenne.DataChannelSyncFilterChain;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.graph.GraphDiff;
-import org.junit.rules.ExternalResource;
 
 import java.util.function.Supplier;
 

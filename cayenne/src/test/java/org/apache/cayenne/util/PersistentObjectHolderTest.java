@@ -23,18 +23,18 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public class PersistentObjectHolderTest {
 
     @Test
-    public void testSetInitialValue() {
+    public void setInitialValue() {
 
         ObjectContext context = mock(ObjectContext.class);
 
@@ -53,7 +53,7 @@ public class PersistentObjectHolderTest {
     }
 
     @Test
-    public void testInvalidate() {
+    public void invalidate() {
         ObjectContext context = mock(ObjectContext.class);
 
         ClientMtTable2 o = new ClientMtTable2();

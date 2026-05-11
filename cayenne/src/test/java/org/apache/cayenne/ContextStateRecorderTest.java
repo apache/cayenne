@@ -19,29 +19,29 @@
 
 package org.apache.cayenne;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.apache.cayenne.graph.GraphManager;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ContextStateRecorderTest {
 
 	private ObjectContextStateLog recorder;
 	private GraphManager mockGraphManager;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		this.mockGraphManager = mock(GraphManager.class);
 		this.recorder = new ObjectContextStateLog(mockGraphManager);
 	}
 
 	@Test
-	public void testDirtyNodesInState() {
+	public void dirtyNodesInState() {
 
 		// check for null collections
 		assertNotNull(recorder.dirtyNodes(PersistenceState.MODIFIED));
@@ -87,7 +87,7 @@ public class ContextStateRecorderTest {
 	}
 
 	@Test
-	public void testDirtyNodes() {
+	public void dirtyNodes() {
 
 		assertNotNull(recorder.dirtyNodes());
 		assertTrue(recorder.dirtyNodes().isEmpty());
@@ -110,7 +110,7 @@ public class ContextStateRecorderTest {
 	}
 
 	@Test
-	public void testHasChanges() {
+	public void hasChanges() {
 
 		assertFalse(recorder.hasChanges());
 

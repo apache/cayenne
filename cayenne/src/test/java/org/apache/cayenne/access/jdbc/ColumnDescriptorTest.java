@@ -21,34 +21,34 @@ package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  */
 public class ColumnDescriptorTest {
 
     @Test
-    public void testName() {
+    public void name() {
         ColumnDescriptor column = new ColumnDescriptor();
         column.setName("abc");
         assertEquals("abc", column.getName());
     }
 
     @Test
-    public void testLabel() {
+    public void label() {
         ColumnDescriptor column = new ColumnDescriptor();
         column.setDataRowKey("abc");
         assertEquals("abc", column.getDataRowKey());
     }
 
     @Test
-    public void testDbAttributeConstructor() {
+    public void dbAttributeConstructor() {
         DbEntity entity = new DbEntity("entity");
         DbAttribute a = new DbAttribute();
         a.setName("name");
@@ -67,7 +67,7 @@ public class ColumnDescriptorTest {
     }
 
     @Test
-    public void testEquals() {
+    public void equals() {
         ColumnDescriptor column1 = new ColumnDescriptor();
         column1.setName("n1");
         column1.namePrefix = "np1";
@@ -92,7 +92,7 @@ public class ColumnDescriptorTest {
     }
 
     @Test
-    public void testHashCode() {
+    public void hashCodeTest() {
         ColumnDescriptor column1 = new ColumnDescriptor();
         column1.setName("n1");
         column1.namePrefix = "np1";

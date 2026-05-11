@@ -40,13 +40,13 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.ExtraModules;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 @ExtraModules(DataContextSharedCacheEmpiricIT.SyncContextsModule.class)
@@ -65,7 +65,8 @@ public class DataContextSharedCacheEmpiricIT extends RuntimeCase {
 
     private DefaultEventManager eventManager;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
 
         eventManager = new DefaultEventManager();
@@ -85,7 +86,8 @@ public class DataContextSharedCacheEmpiricIT extends RuntimeCase {
         tArtist.insert(1, "version1");
     }
 
-    @After
+    
+    @AfterEach
     public void tearDown() {
         if(eventManager != null) {
             eventManager.shutdown();
@@ -93,7 +95,7 @@ public class DataContextSharedCacheEmpiricIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectSelectCommitRefresh() throws Exception {
+    public void selectSelectCommitRefresh() throws Exception {
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
 
@@ -114,7 +116,7 @@ public class DataContextSharedCacheEmpiricIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectSelectCommitRefreshReverse() throws Exception {
+    public void selectSelectCommitRefreshReverse() throws Exception {
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
 
@@ -134,7 +136,7 @@ public class DataContextSharedCacheEmpiricIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectUpdateSelectCommitRefresh() throws Exception {
+    public void selectUpdateSelectCommitRefresh() throws Exception {
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
 
@@ -159,7 +161,7 @@ public class DataContextSharedCacheEmpiricIT extends RuntimeCase {
                 .getObjectStore()
                 .getDataRowCache()
                 .getCachedSnapshot(a2.getObjectId());
-        assertNotNull("No snapshot for artist", freshSnapshot);
+        assertNotNull(freshSnapshot, "No snapshot for artist");
         assertEquals(NEW_NAME, freshSnapshot.get("ARTIST_NAME"));
 
         // check peer artist
@@ -168,9 +170,9 @@ public class DataContextSharedCacheEmpiricIT extends RuntimeCase {
             @Override
             protected void assertResult() throws Exception {
                 assertEquals(
-                        "Snapshot change is not propagated: " + freshSnapshot,
                         NEW_NAME,
-                        a2.getArtistName());
+                        a2.getArtistName(),
+                        "Snapshot change is not propagated: " + freshSnapshot);
             }
         };
         helper.runTest(3000);

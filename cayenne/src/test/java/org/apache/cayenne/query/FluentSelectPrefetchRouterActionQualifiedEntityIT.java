@@ -27,10 +27,10 @@ import org.apache.cayenne.testdo.inheritance_people.Department;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
 import org.apache.cayenne.unit.di.runtime.PeopleProjectCase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class FluentSelectPrefetchRouterActionQualifiedEntityIT extends PeopleProjectCase {
 
@@ -38,7 +38,7 @@ public class FluentSelectPrefetchRouterActionQualifiedEntityIT extends PeoplePro
     private EntityResolver resolver;
 
     @Test
-    public void testPrefetchEmployee() {
+    public void prefetchEmployee() {
         ObjEntity departmentEntity = resolver.getObjEntity(Department.class);
         ObjectSelect<Employee> query = ObjectSelect.query(Employee.class, Employee.NAME.eq("abc"))
                 .prefetch(Employee.TO_DEPARTMENT.disjoint());
@@ -57,7 +57,7 @@ public class FluentSelectPrefetchRouterActionQualifiedEntityIT extends PeoplePro
     }
 
     @Test
-    public void testPrefetchManager() {
+    public void prefetchManager() {
         ObjEntity departmentEntity = resolver.getObjEntity(Department.class);
 
         ObjectSelect<Manager> query = ObjectSelect.query(Manager.class, Employee.NAME.eq("abc"))

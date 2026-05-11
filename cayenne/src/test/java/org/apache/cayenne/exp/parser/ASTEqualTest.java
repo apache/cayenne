@@ -18,21 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ASTEqualTest {
 
 	@Test
-	public void testToEJBQL() {
+	public void toEJBQL() {
 		ASTEqual e = new ASTEqual(new ASTObjPath("artistName"), "bla");
 
 		// note single quotes - EJBQL does not support doublequotes...
@@ -40,7 +40,7 @@ public class ASTEqualTest {
 	}
 
 	@Test
-	public void testAppendAsEJBQL() throws IOException {
+	public void appendAsEJBQL() throws IOException {
 
 		ASTEqual e = new ASTEqual(new ASTObjPath("artistName"), "bla");
 
@@ -51,7 +51,7 @@ public class ASTEqualTest {
 	}
 
 	@Test
-	public void testEvaluate() {
+	public void evaluate() {
 		ASTEqual equalTo = new ASTEqual(new ASTObjPath("artistName"), "abc");
 
 		Artist match = new Artist();
@@ -60,11 +60,11 @@ public class ASTEqualTest {
 
 		Artist noMatch = new Artist();
 		noMatch.setArtistName("123");
-		assertFalse("Failed: " + equalTo, equalTo.match(noMatch));
+		assertFalse(equalTo.match(noMatch), "Failed: " + equalTo);
 	}
 
 	@Test
-	public void testEvaluate_Null() {
+	public void evaluate_Null() {
 		ASTEqual equalToNull = new ASTEqual(new ASTObjPath("artistName"), null);
 		ASTEqual equalToNotNull = new ASTEqual(new ASTObjPath("artistName"), "abc");
 
@@ -78,7 +78,7 @@ public class ASTEqualTest {
 	}
 
 	@Test
-	public void testEvaluate_BigDecimal() {
+	public void evaluate_BigDecimal() {
 		BigDecimal bd1 = new BigDecimal("2.0");
 		BigDecimal bd2 = new BigDecimal("2.0");
 		BigDecimal bd3 = new BigDecimal("2.00");
@@ -100,7 +100,7 @@ public class ASTEqualTest {
 	}
 
 	@Test
-	public void testEvaluateUnicodeChars() {
+	public void evaluateUnicodeChars() {
 		ASTEqual equalToFull = new ASTEqual(new ASTObjPath("artistName"), "àбçğþ");
 		ASTEqual equalToSimple = new ASTEqual(new ASTObjPath("artistName"), "àğç");
 

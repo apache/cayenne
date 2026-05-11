@@ -27,7 +27,9 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class PoolingDataSource_FailingValidationQueryIT extends RuntimeCase {
@@ -47,17 +49,19 @@ public class PoolingDataSource_FailingValidationQueryIT extends RuntimeCase {
 		return poolParameters;
 	}
 
-	@Test(expected = CayenneRuntimeException.class)
-	public void testConstructor() throws Exception {
-		Driver driver = objectFactory.newInstance(Driver.class, dataSourceInfo.getJdbcDriver());
-		DriverDataSource nonPooling = new DriverDataSource(driver, dataSourceInfo.getDataSourceUrl(),
-				dataSourceInfo.getUserName(), dataSourceInfo.getPassword());
+	@Test
+	public void constructor() {
+		assertThrows(CayenneRuntimeException.class, () -> {
+			Driver driver = objectFactory.newInstance(Driver.class, dataSourceInfo.getJdbcDriver());
+			DriverDataSource nonPooling = new DriverDataSource(driver, dataSourceInfo.getDataSourceUrl(),
+					dataSourceInfo.getUserName(), dataSourceInfo.getPassword());
 
-		PoolingDataSourceParameters poolParameters = createParameters();
-		UnmanagedPoolingDataSource ds = new UnmanagedPoolingDataSource(nonPooling, poolParameters);
+			PoolingDataSourceParameters poolParameters = createParameters();
+			UnmanagedPoolingDataSource ds = new UnmanagedPoolingDataSource(nonPooling, poolParameters);
 
-		// the exception should happen in the line above... this line is to
-		// prevent compiler warnings
-		ds.close();
+			// the exception should happen in the line above... this line is to
+			// prevent compiler warnings
+			ds.close();
+		});
 	}
 }

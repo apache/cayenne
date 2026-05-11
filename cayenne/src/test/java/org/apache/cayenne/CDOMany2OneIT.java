@@ -33,17 +33,17 @@ import org.apache.cayenne.testdo.testmap.ROPainting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class CDOMany2OneIT extends RuntimeCase {
@@ -61,7 +61,7 @@ public class CDOMany2OneIT extends RuntimeCase {
     protected TableHelper tPainting;
     protected TableHelper tGallery;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -89,7 +89,7 @@ public class CDOMany2OneIT extends RuntimeCase {
     }
 
     @Test
-    public void testMultipleToOneDeletion() {
+    public void multipleToOneDeletion() {
 
         // was a problem per CAY-901
 
@@ -123,7 +123,7 @@ public class CDOMany2OneIT extends RuntimeCase {
     }
 
     @Test
-    public void testReadRO1() throws Exception {
+    public void readRO1() throws Exception {
 
         createArtistWithPaintingDataSet();
 
@@ -137,7 +137,7 @@ public class CDOMany2OneIT extends RuntimeCase {
     }
 
     @Test
-    public void testReadRO2() throws Exception {
+    public void readRO2() throws Exception {
 
         createArtistWithPaintingDataSet();
 
@@ -155,7 +155,7 @@ public class CDOMany2OneIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectViaRelationship() throws Exception {
+    public void selectViaRelationship() throws Exception {
 
         createArtistWithPaintingDataSet();
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 8);
@@ -167,7 +167,7 @@ public class CDOMany2OneIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectViaMultiRelationship() throws Exception {
+    public void selectViaMultiRelationship() throws Exception {
 
         createArtistWithPaintingsInGalleryDataSet();
 
@@ -182,7 +182,7 @@ public class CDOMany2OneIT extends RuntimeCase {
     }
 
     @Test
-    public void testNewAdd() throws Exception {
+    public void newAdd() throws Exception {
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("bL");
 
@@ -202,7 +202,7 @@ public class CDOMany2OneIT extends RuntimeCase {
     }
 
     @Test
-    public void testRemove() {
+    public void remove() {
         Painting p1 = context.newObject(Painting.class);
         p1.setPaintingTitle("xa");
 
@@ -236,7 +236,7 @@ public class CDOMany2OneIT extends RuntimeCase {
     }
 
     @Test
-    public void testReplace() {
+    public void replace() {
 
         Painting p1 = context.newObject(Painting.class);
         p1.setPaintingTitle("xa");
@@ -280,7 +280,7 @@ public class CDOMany2OneIT extends RuntimeCase {
     }
 
     @Test
-    public void testSavedAdd() {
+    public void savedAdd() {
         Painting p1 = context.newObject(Painting.class);
         p1.setPaintingTitle("xa");
 

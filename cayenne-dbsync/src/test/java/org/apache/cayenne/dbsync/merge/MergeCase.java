@@ -51,7 +51,7 @@ import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.slf4j.Logger;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
@@ -61,7 +61,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 @ExtraModules(DbSyncModule.class)
@@ -82,13 +82,14 @@ public abstract class MergeCase extends RuntimeCase {
     @Inject
     private RuntimeCaseDataSourceFactory dataSourceFactory;
 
+    @BeforeEach
     @Override
     public void cleanUpDB() throws Exception {
         dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
         super.cleanUpDB();
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
         // this map can't be safely modified in this test, as it is reset by DI
@@ -251,8 +252,8 @@ public abstract class MergeCase extends RuntimeCase {
             }
         }
 
-        assertEquals("tokens to db", expectedToDb, actualToDb);
-        assertEquals("tokens to model", expectedToModel, actualToModel);
+        assertEquals(expectedToDb, actualToDb, "tokens to db");
+        assertEquals(expectedToModel, actualToModel, "tokens to model");
     }
 
     protected void assertTokensAndExecute(int expectedToDb, int expectedToModel) {

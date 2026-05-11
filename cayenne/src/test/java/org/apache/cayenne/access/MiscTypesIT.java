@@ -31,11 +31,11 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @UseCayenneRuntime(CayenneProjects.MISC_TYPES_PROJECT)
 public class MiscTypesIT extends RuntimeCase {
@@ -47,7 +47,7 @@ public class MiscTypesIT extends RuntimeCase {
     private UnitDbAdapter accessStackAdapter;
 
     @Test
-    public void testSerializable() throws Exception {
+    public void serializable() throws Exception {
 
         // this test requires BLOB support
         if(!accessStackAdapter.supportsLobs()) {
@@ -72,7 +72,7 @@ public class MiscTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testByteArray() {
+    public void byteArray() {
         ArraysEntity test = context.newObject(ArraysEntity.class);
 
         byte[] a = new byte[] {
@@ -92,7 +92,7 @@ public class MiscTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testCharArray() {
+    public void charArray() {
         ArraysEntity test = context.newObject(ArraysEntity.class);
 
         char[] a = new char[] {
@@ -111,7 +111,7 @@ public class MiscTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testCharacterArray() {
+    public void characterArray() {
         ArraysEntity test = context.newObject(ArraysEntity.class);
 
         Character[] a = new Character[] {
@@ -130,7 +130,7 @@ public class MiscTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testCharacter() {
+    public void character() {
         CharacterEntity test = context.newObject(CharacterEntity.class);
 
         test.setCharacterField('c');
@@ -147,7 +147,7 @@ public class MiscTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testByteWrapperArray() {
+    public void byteWrapperArray() {
         ArraysEntity test = context.newObject(ArraysEntity.class);
 
         Byte[] a = new Byte[] {
@@ -182,7 +182,7 @@ public class MiscTypesIT extends RuntimeCase {
 
         assertEquals(Array.getLength(a1), Array.getLength(a2));
         for (int i = 0; i < Array.getLength(a1); i++) {
-            assertEquals("Difference at index " + i, Array.get(a1, i), Array.get(a2, i));
+            assertEquals(Array.get(a1, i), Array.get(a2, i), "Difference at index " + i);
         }
     }
 }

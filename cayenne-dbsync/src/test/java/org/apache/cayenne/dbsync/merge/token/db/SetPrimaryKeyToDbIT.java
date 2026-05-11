@@ -24,7 +24,7 @@ import java.sql.Types;
 import org.apache.cayenne.dbsync.merge.MergeCase;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SetPrimaryKeyToDbIT extends MergeCase {
 

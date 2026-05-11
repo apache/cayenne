@@ -33,16 +33,14 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UseCayenneRuntime(CayenneProjects.THINGS_PROJECT)
 public class DataContextDisjointByIdPrefetch_ExtrasIT extends RuntimeCase {
@@ -66,7 +64,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends RuntimeCase {
     protected TableHelper tBoxThing;
     protected TableHelper tThing;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tBag = new TableHelper(dbHelper, "BAG");
         tBag.setColumns("ID", "NAME");
@@ -121,7 +119,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends RuntimeCase {
     }
 
     @Test
-    public void testFlattenedRelationship() throws Exception {
+    public void flattenedRelationship() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
         final List<Bag> result = ObjectSelect.query(Bag.class)
@@ -142,12 +140,12 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends RuntimeCase {
                 assertEquals(PersistenceState.COMMITTED, b.getPersistenceState());
                 volumes.add(b.getThingVolume());
             }
-            assertThat(volumes, hasItems(10, 20, 30, 40, 20, 40));
+            assertTrue(volumes.containsAll(Arrays.asList(10, 20, 30, 40)));
         });
     }
 
     @Test
-    public void testFlattenedMultiColumnRelationship() throws Exception {
+    public void flattenedMultiColumnRelationship() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
         final List<Box> result = ObjectSelect.query(Box.class)
@@ -173,7 +171,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends RuntimeCase {
     }
 
     @Test
-    public void testLongFlattenedRelationship() throws Exception {
+    public void longFlattenedRelationship() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
         final List<Bag> result = ObjectSelect.query(Bag.class)
@@ -199,7 +197,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends RuntimeCase {
     }
 
     @Test
-    public void testMultiColumnRelationship() throws Exception {
+    public void multiColumnRelationship() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
         final List<Ball> balls = ObjectSelect.query(Ball.class)
@@ -218,7 +216,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends RuntimeCase {
     }
 
     @Test
-    public void testJointPrefetchInParent() throws Exception {
+    public void jointPrefetchInParent() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
         final List<Box> result = ObjectSelect.query(Box.class)
@@ -247,7 +245,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends RuntimeCase {
     }
 
     @Test
-    public void testJointPrefetchInChild() throws Exception {
+    public void jointPrefetchInChild() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
         final List<Bag> result = ObjectSelect.query(Bag.class)

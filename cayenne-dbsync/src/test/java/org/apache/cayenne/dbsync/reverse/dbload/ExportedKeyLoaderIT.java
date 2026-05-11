@@ -26,10 +26,10 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class ExportedKeyLoaderIT extends BaseLoaderIT {
 
@@ -37,7 +37,7 @@ public class ExportedKeyLoaderIT extends BaseLoaderIT {
     DbAdapter adapter;
 
     @Test
-    public void testExportedKeyLoad() throws Exception {
+    public void exportedKeyLoad() throws Exception {
         boolean supportsFK = accessStackAdapter.supportsFKConstraints();
         if(!supportsFK) {
             return;

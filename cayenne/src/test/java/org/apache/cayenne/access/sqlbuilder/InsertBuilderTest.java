@@ -22,47 +22,46 @@ package org.apache.cayenne.access.sqlbuilder;
 import org.apache.cayenne.access.sqlbuilder.sqltree.InsertNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.map.DbEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public class InsertBuilderTest extends BaseSqlBuilderTest  {
 
     @Test
-    public void testInsert() {
+    public void insert() {
         InsertBuilder builder = new InsertBuilder("test");
         Node node = builder.build();
-        assertThat(node, instanceOf(InsertNode.class));
+        assertInstanceOf(InsertNode.class, node);
         assertSQL("INSERT INTO test", node);
     }
 
     @Test
-    public void testInsertDbEntityCatalog() {
+    public void insertDbEntityCatalog() {
         DbEntity entity = new DbEntity("test");
         entity.setCatalog("catalog");
         InsertBuilder builder = new InsertBuilder(entity);
         Node node = builder.build();
-        assertThat(node, instanceOf(InsertNode.class));
+        assertInstanceOf(InsertNode.class, node);
         assertSQL("INSERT INTO catalog.test", node);
         assertQuotedSQL("INSERT INTO `catalog`.`test`", node);
     }
 
     @Test
-    public void testInsertDbEntityCatalogAndSchema() {
+    public void insertDbEntityCatalogAndSchema() {
         DbEntity entity = new DbEntity("test");
         entity.setSchema("schema");
         entity.setCatalog("catalog");
         InsertBuilder builder = new InsertBuilder(entity);
         Node node = builder.build();
-        assertThat(node, instanceOf(InsertNode.class));
+        assertInstanceOf(InsertNode.class, node);
         assertSQL("INSERT INTO catalog.schema.test", node);
         assertQuotedSQL("INSERT INTO `catalog`.`schema`.`test`", node);
     }
 
     @Test
-    public void testInsertWithColumns() {
+    public void insertWithColumns() {
         InsertBuilder builder = new InsertBuilder("test");
         builder
                 .column(column("col1"))
@@ -70,12 +69,12 @@ public class InsertBuilderTest extends BaseSqlBuilderTest  {
                 .column(column("col3"));
         Node node = builder.build();
 
-        assertThat(node, instanceOf(InsertNode.class));
+        assertInstanceOf(InsertNode.class, node);
         assertSQL("INSERT INTO test( col1, col2, col3)", node);
     }
 
     @Test
-    public void testInsertWithValues() {
+    public void insertWithValues() {
         InsertBuilder builder = new InsertBuilder("test");
         builder
                 .value(value(1))
@@ -83,12 +82,12 @@ public class InsertBuilderTest extends BaseSqlBuilderTest  {
                 .value(value(null));
         Node node = builder.build();
 
-        assertThat(node, instanceOf(InsertNode.class));
+        assertInstanceOf(InsertNode.class, node);
         assertSQL("INSERT INTO test VALUES( 1, 'test', NULL)", node);
     }
 
     @Test
-    public void testInsertWithColumnsAndValues() {
+    public void insertWithColumnsAndValues() {
         InsertBuilder builder = new InsertBuilder("test");
         builder
                 .column(column("col1"))
@@ -99,7 +98,7 @@ public class InsertBuilderTest extends BaseSqlBuilderTest  {
                 .value(value(null));
         Node node = builder.build();
 
-        assertThat(node, instanceOf(InsertNode.class));
+        assertInstanceOf(InsertNode.class, node);
         assertSQL("INSERT INTO test( col1, col2, col3) VALUES( 1, 'test', NULL)", node);
     }
 

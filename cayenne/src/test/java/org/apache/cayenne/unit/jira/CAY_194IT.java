@@ -28,14 +28,14 @@ import org.apache.cayenne.testdo.relationships.ReflexiveAndToOne;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Testing qualifier translator correctness on reflexive relationships.
@@ -51,7 +51,7 @@ public class CAY_194IT extends RuntimeCase {
     @Inject
     private DBHelper dbHelper;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         TableHelper tReflexive = new TableHelper(dbHelper, "REFLEXIVE_AND_TO_ONE");
         tReflexive.setColumns("REFLEXIVE_AND_TO_ONE_ID", "PARENT_ID");
@@ -62,7 +62,7 @@ public class CAY_194IT extends RuntimeCase {
     }
 
     @Test
-    public void testQualifyOnToMany() {
+    public void qualifyOnToMany() {
 
         ReflexiveAndToOne ox = context.newObject(ReflexiveAndToOne.class);
         ox.setName("ox");
@@ -84,7 +84,7 @@ public class CAY_194IT extends RuntimeCase {
     }
 
     @Test
-    public void testQualifyOnToOne() {
+    public void qualifyOnToOne() {
 
         ReflexiveAndToOne ox = context.newObject(ReflexiveAndToOne.class);
         ox.setName("ox");

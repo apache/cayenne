@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CallbackMapTest {
 
     @Test
-    public void testGetCallbacks() {
+    public void getCallbacks() {
         CallbackDescriptor[] callbacks = new CallbackMap().getCallbacks();
         assertEquals(LifecycleEvent.values().length, callbacks.length);
 

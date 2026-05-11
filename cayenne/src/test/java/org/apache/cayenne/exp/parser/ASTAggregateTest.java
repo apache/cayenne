@@ -22,10 +22,11 @@ package org.apache.cayenne.exp.parser;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @since 4.0
@@ -33,19 +34,25 @@ import static org.junit.Assert.assertTrue;
 public class ASTAggregateTest {
 
     @Test
-    public void testAvgConstruct() {
+    public void avgConstruct() {
         ASTAvg avg = new ASTAvg(null);
         assertEquals("AVG", avg.getFunctionName());
     }
 
-    @Test(expected = ExpressionException.class)
-    public void testAvgEvaluate() {
-        ASTAvg avg = new ASTAvg(null);
-        avg.evaluate(new Object());
+    @Test
+
+    public void avgEvaluate() {
+        assertThrows(ExpressionException.class, () -> {
+
+            ASTAvg avg = new ASTAvg(null);
+            avg.evaluate(new Object());
+    
+        });
     }
 
+
     @Test
-    public void testAvgParse() {
+    public void avgParse() {
         String expressionString = "avg(artistName)";
         Expression exp = ExpressionFactory.exp(expressionString);
         assertTrue(exp instanceof ASTAvg);
@@ -56,13 +63,13 @@ public class ASTAggregateTest {
     }
 
     @Test
-    public void testCountConstruct() {
+    public void countConstruct() {
         ASTCount count = new ASTCount();
         assertEquals("COUNT", count.getFunctionName());
     }
 
     @Test
-    public void testCountExpParse() {
+    public void countExpParse() {
         String expressionString = "count(artistName)";
         Expression exp = ExpressionFactory.exp(expressionString);
         assertTrue(exp instanceof ASTCount);
@@ -73,7 +80,7 @@ public class ASTAggregateTest {
     }
 
     @Test
-    public void testCountAsteriskParse() {
+    public void countAsteriskParse() {
         String expressionString = "count(*)";
         Expression exp = ExpressionFactory.exp(expressionString);
         assertTrue(exp instanceof ASTCount);
@@ -84,7 +91,7 @@ public class ASTAggregateTest {
     }
 
     @Test
-    public void testCountDistinctParse() {
+    public void countDistinctParse() {
         String expressionString = "count(distinct(artistName))";
         Expression exp = ExpressionFactory.exp(expressionString);
         assertTrue(exp instanceof ASTCount);
@@ -98,13 +105,13 @@ public class ASTAggregateTest {
     }
 
     @Test
-    public void testMinConstruct() {
+    public void minConstruct() {
         ASTMin min = new ASTMin(null);
         assertEquals("MIN", min.getFunctionName());
     }
 
     @Test
-    public void testMinParse() {
+    public void minParse() {
         String expressionString = "min(artistName)";
         Expression exp = ExpressionFactory.exp(expressionString);
         assertTrue(exp instanceof ASTMin);
@@ -115,13 +122,13 @@ public class ASTAggregateTest {
     }
 
     @Test
-    public void testMaxConstruct() {
+    public void maxConstruct() {
         ASTMax max = new ASTMax(null);
         assertEquals("MAX", max.getFunctionName());
     }
 
     @Test
-    public void testMaxParse() {
+    public void maxParse() {
         String expressionString = "max(artistName)";
         Expression exp = ExpressionFactory.exp(expressionString);
         assertTrue(exp instanceof ASTMax);
@@ -132,13 +139,13 @@ public class ASTAggregateTest {
     }
 
     @Test
-    public void testSumConstruct() {
+    public void sumConstruct() {
         ASTSum sum = new ASTSum(null);
         assertEquals("SUM", sum.getFunctionName());
     }
 
     @Test
-    public void testSumParse() {
+    public void sumParse() {
         String expressionString = "sum(artistName)";
         Expression exp = ExpressionFactory.exp(expressionString);
         assertTrue(exp instanceof ASTSum);
@@ -152,7 +159,7 @@ public class ASTAggregateTest {
      * @since 5.0
      */
     @Test
-    public void testCustomConstruct() {
+    public void customConstruct() {
         AggregateCustom sum = new AggregateCustom();
         assertEquals(AggregateCustom.FUNCTION_NAME, sum.getFunctionName());
     }

@@ -27,13 +27,13 @@ import org.apache.cayenne.testdo.inheritance_people.PersonNotes;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.runtime.PeopleProjectCase;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.sql.Types;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DataContextRelationshipQuery_PolymorphicIT extends PeopleProjectCase {
 
@@ -49,7 +49,7 @@ public class DataContextRelationshipQuery_PolymorphicIT extends PeopleProjectCas
     private TableHelper tPerson;
     private TableHelper tPersonNotes;
 
-    @Before
+    @BeforeEach
     public void before() {
         tPerson = new TableHelper(dbHelper, "PERSON").setColumns("PERSON_ID", "NAME", "PERSON_TYPE")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR);
@@ -58,7 +58,7 @@ public class DataContextRelationshipQuery_PolymorphicIT extends PeopleProjectCas
     }
 
     @Test
-    public void testPolymorphicSharedCache() throws SQLException {
+    public void polymorphicSharedCache() throws SQLException {
 
 
         // see CAY-2101... we are trying to get a snapshot from a new object in the shared cache, and then read this

@@ -26,10 +26,9 @@ import org.apache.cayenne.testdo.annotation.ArtistAnnotation;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.2
@@ -41,7 +40,7 @@ public class AnnotationIT extends RuntimeCase {
     private ObjectContext objectContext;
 
     @Test
-    public void testAvailableCallback() {
+    public void availableCallback() {
 
         LifecycleCallbackRegistry lifecycleCallbackRegistry = objectContext.getEntityResolver().getCallbackRegistry();
 
@@ -56,7 +55,7 @@ public class AnnotationIT extends RuntimeCase {
     }
 
     @Test
-    public void testWorkCallback() {
+    public void workCallback() {
         ArtistAnnotation artist = objectContext.newObject(ArtistAnnotation.class);
         assertEquals(artist.getPostCallback(), "testPostAdd");
         assertNull(artist.getPreCallback());

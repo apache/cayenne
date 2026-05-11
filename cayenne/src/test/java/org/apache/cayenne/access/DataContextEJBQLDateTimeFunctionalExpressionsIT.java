@@ -27,13 +27,13 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Calendar;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.LEGACY_DATE_TIME_PROJECT)
 public class DataContextEJBQLDateTimeFunctionalExpressionsIT extends RuntimeCase {
@@ -45,7 +45,7 @@ public class DataContextEJBQLDateTimeFunctionalExpressionsIT extends RuntimeCase
     private UnitDbAdapter unitDbAdapter;
 
     @Test
-    public void testCURRENT_DATE() {
+    public void cURRENT_DATE() {
 
         Calendar cal = Calendar.getInstance();
         int year = cal.get(Calendar.YEAR);
@@ -68,7 +68,7 @@ public class DataContextEJBQLDateTimeFunctionalExpressionsIT extends RuntimeCase
     }
 
     @Test
-    public void testCURRENT_TIME() {
+    public void cURRENT_TIME() {
 
         Calendar cal = Calendar.getInstance();
         int year = cal.get(Calendar.YEAR);
@@ -98,7 +98,7 @@ public class DataContextEJBQLDateTimeFunctionalExpressionsIT extends RuntimeCase
     }
 
     @Test
-    public void testCURRENT_TIMESTAMP() {
+    public void cURRENT_TIMESTAMP() {
 
         Calendar cal = Calendar.getInstance();
         int year = cal.get(Calendar.YEAR);

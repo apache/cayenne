@@ -28,20 +28,21 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
-import org.junit.Test;
 
 import java.sql.Types;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EntityMergeSupportIT extends MergeCase {
 
 	@Test
-	public void testMerging() {
+	public void merging() {
 		DbEntity dbEntity1 = new DbEntity("NEW_TABLE");
 
 		DbAttribute e1col1 = new DbAttribute("ID", Types.INTEGER, dbEntity1);

@@ -28,12 +28,12 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
 
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class EntityLoaderIT extends BaseLoaderIT {
@@ -42,7 +42,7 @@ public class EntityLoaderIT extends BaseLoaderIT {
     private UnitDbAdapter unitDbAdapter;
 
     @Test
-    public void testGetTablesWithWrongCatalog() throws Exception {
+    public void getTablesWithWrongCatalog() throws Exception {
         if(unitDbAdapter.supportsCatalogs()) {
             DbLoaderConfiguration config = new DbLoaderConfiguration();
             config.setFiltersConfig(
@@ -57,12 +57,12 @@ public class EntityLoaderIT extends BaseLoaderIT {
                 assertTrue(ex.getMessage().contains("WRONG")); // just check that message is about "WRONG" catalog
             }
 
-            assertTrue("Store is not empty", store.getDbEntities().isEmpty());
+            assertTrue(store.getDbEntities().isEmpty(), "Store is not empty");
         }
     }
 
     @Test
-    public void testGetTablesWithWrongSchema() throws Exception {
+    public void getTablesWithWrongSchema() throws Exception {
         DbLoaderConfiguration config = new DbLoaderConfiguration();
         config.setFiltersConfig(
                 FiltersConfig.create(null, "WRONG", TableFilter.everything(), PatternFilter.INCLUDE_NOTHING)
@@ -71,16 +71,16 @@ public class EntityLoaderIT extends BaseLoaderIT {
         EntityLoader loader = new EntityLoader(adapter, config, new DefaultDbLoaderDelegate());
         loader.load(connection.getMetaData(), store);
 
-        assertTrue("Store is not empty", store.getDbEntities().isEmpty());
+        assertTrue(store.getDbEntities().isEmpty(), "Store is not empty");
     }
 
     @Test
-    public void testLoad() throws Exception {
+    public void load() throws Exception {
 
         EntityLoader loader = new EntityLoader(adapter, EMPTY_CONFIG, new DefaultDbLoaderDelegate());
         loader.load(connection.getMetaData(), store);
 
-        assertFalse("Store not empty", store.getDbEntities().isEmpty());
+        assertFalse(store.getDbEntities().isEmpty(), "Store not empty");
         assertDbEntities();
 
         if(accessStackAdapter.supportsLobs()) {
@@ -90,12 +90,12 @@ public class EntityLoaderIT extends BaseLoaderIT {
 
     private void assertDbEntities() {
         DbEntity dae = getDbEntity("ARTIST");
-        assertNotNull("Null 'ARTIST' entity, other DbEntities: " + store.getDbEntityMap(), dae);
+        assertNotNull(dae, "Null 'ARTIST' entity, other DbEntities: " + store.getDbEntityMap());
         assertEquals("ARTIST", dae.getName().toUpperCase());
 
         if (adapter.supportsGeneratedKeys()) {
             DbEntity bag = getDbEntity("GENERATED_COLUMN_TEST");
-            assertNotNull("Null 'GENERATED_COLUMN_TEST' entity, other DbEntities: " + store.getDbEntityMap(), bag);
+            assertNotNull(bag, "Null 'GENERATED_COLUMN_TEST' entity, other DbEntities: " + store.getDbEntityMap());
         }
     }
 

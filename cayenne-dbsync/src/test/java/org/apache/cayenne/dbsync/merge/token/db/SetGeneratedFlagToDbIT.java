@@ -29,14 +29,14 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test synchronization of generated keys to DB (SetGeneratedFlagToDB merge token)
@@ -150,7 +150,7 @@ public class SetGeneratedFlagToDbIT extends MergeCase {
         return withGenKey;
     }
 
-    @After
+    @AfterEach
     public void dropTestTables() throws Exception {
         if(map.getDbEntity("NEW_TABLE") != null) {
             map.removeDbEntity("NEW_TABLE");

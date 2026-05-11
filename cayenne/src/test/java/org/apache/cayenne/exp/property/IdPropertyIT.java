@@ -36,14 +36,10 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.2
@@ -57,7 +53,7 @@ public class IdPropertyIT extends RuntimeCase {
     @Inject
     private DBHelper dbHelper;
 
-    @Before
+    @BeforeEach
     public void createArtistsDataSet() throws Exception {
         TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
@@ -206,22 +202,22 @@ public class IdPropertyIT extends RuntimeCase {
     }
 
     @Test
-    public void testEvaluateObject() {
+    public void evaluateObject() {
         Expression exp = Painting.TO_ARTIST.dot(Artist.ARTIST_ID_PK_PROPERTY).getExpression();
         Painting painting = ObjectSelect.query(Painting.class).selectFirst(context);
         Object result = exp.evaluate(painting);
         assertNotNull(result);
-        assertThat(result, instanceOf(Long.class));
+        assertInstanceOf(Long.class, result);
         assertEquals(painting.getToArtist().getObjectId().getIdSnapshot().get("ARTIST_ID"), result);
     }
 
     @Test
-    public void testEvaluateCollection() {
+    public void evaluateCollection() {
         Expression exp = Painting.TO_ARTIST.dot(Artist.ARTIST_ID_PK_PROPERTY).getExpression();
         List<Painting> paintings = ObjectSelect.query(Painting.class).select(context);
         Object result = exp.evaluate(paintings);
         assertNotNull(result);
-        assertThat(result, instanceOf(List.class));
+        assertInstanceOf(List.class, result);
         @SuppressWarnings("unchecked")
         List<Long> ids = (List<Long>)result;
         assertEquals(paintings.size(), ids.size());
@@ -231,12 +227,12 @@ public class IdPropertyIT extends RuntimeCase {
     }
 
     @Test
-    public void testEvaluateEntity() {
+    public void evaluateEntity() {
         Expression exp = Painting.TO_ARTIST.dot(Artist.ARTIST_ID_PK_PROPERTY).getExpression();
         ObjEntity painting = context.getEntityResolver().getObjEntity(Painting.class);
         Object result = exp.evaluate(painting);
         assertNotNull(result);
-        assertThat(result, instanceOf(DbAttribute.class));
+        assertInstanceOf(DbAttribute.class, result);
         DbAttribute pk = (DbAttribute)result;
         assertEquals("ARTIST_ID", pk.getName());
         assertTrue(pk.isPrimaryKey());

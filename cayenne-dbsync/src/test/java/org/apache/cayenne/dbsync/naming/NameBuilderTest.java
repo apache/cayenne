@@ -32,19 +32,19 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NameBuilderTest {
 
     @Test
-    public void testName_Root() {
+    public void name_Root() {
         assertEquals("project", NameBuilder.builder(new DataChannelDescriptor()).name());
     }
 
     @Test
-    public void testName_DataChannelDescriptorContext() throws Exception {
+    public void name_DataChannelDescriptorContext() throws Exception {
         DataChannelDescriptor descriptor = new DataChannelDescriptor();
 
         DataMap m0 = new DataMap();
@@ -70,7 +70,7 @@ public class NameBuilderTest {
 
 
     @Test
-    public void testName_DataMapContext() {
+    public void name_DataMapContext() {
         DataMap map = new DataMap();
         map.setDefaultPackage("com.foo");
 
@@ -96,7 +96,7 @@ public class NameBuilderTest {
 
         ObjEntity oe2 = new ObjEntity();
         oe2.setName(NameBuilder.builder(oe0).in(map).baseName("db_entity").name());
-        assertEquals("Should not conflict with similarly named DbEntity", "Db_entity", oe2.getName());
+        assertEquals("Db_entity", oe2.getName(), "Should not conflict with similarly named DbEntity");
         map.addObjEntity(oe2);
 
         Procedure p0 = new Procedure();
@@ -111,7 +111,7 @@ public class NameBuilderTest {
 
         Procedure p2 = new Procedure();
         p2.setName(NameBuilder.builder(p1).in(map).baseName("db_enity").name());
-        assertEquals("Should not conflict with similarly named DbEntity", "db_enity", p2.getName());
+        assertEquals("db_enity", p2.getName(), "Should not conflict with similarly named DbEntity");
         map.addProcedure(p2);
 
         QueryDescriptor q0 = QueryDescriptor.selectQueryDescriptor();
@@ -136,7 +136,7 @@ public class NameBuilderTest {
     }
 
     @Test
-    public void testName_ObjEntityContext() {
+    public void name_ObjEntityContext() {
 
         ObjEntity entity = new ObjEntity();
 
@@ -156,7 +156,7 @@ public class NameBuilderTest {
 
         ObjAttribute a2 = new ObjAttribute();
         String na2 = NameBuilder.builder(a2).in(entity).baseName("me").name();
-        assertEquals("Conflict with callback method was not detected", "me1", na2);
+        assertEquals("me1", na2, "Conflict with callback method was not detected");
         a2.setName(na2);
         entity.addAttribute(a2);
 
@@ -174,7 +174,7 @@ public class NameBuilderTest {
     }
 
     @Test
-    public void testName_DbEntityContext() {
+    public void name_DbEntityContext() {
         DbEntity entity = new DbEntity();
 
         DbAttribute a0 = new DbAttribute();
@@ -203,7 +203,7 @@ public class NameBuilderTest {
     }
 
     @Test
-    public void testName_ProcedureContext() {
+    public void name_ProcedureContext() {
         Procedure procedure = new Procedure();
 
         ProcedureParameter p0 = new ProcedureParameter();
@@ -218,7 +218,7 @@ public class NameBuilderTest {
     }
 
     @Test
-    public void testName_EmbeddableContext() {
+    public void name_EmbeddableContext() {
         Embeddable embeddable = new Embeddable();
 
         EmbeddableAttribute ea0 = new EmbeddableAttribute();
@@ -233,7 +233,7 @@ public class NameBuilderTest {
     }
 
     @Test
-    public void testName_UncapitalizeAttributeNames() throws Exception {
+    public void name_UncapitalizeAttributeNames() throws Exception {
 
         ObjEntity entity = new ObjEntity();
 
@@ -251,7 +251,7 @@ public class NameBuilderTest {
     }
 
     @Test
-    public void testName_Callbacks_ObjEntityContext() {
+    public void name_Callbacks_ObjEntityContext() {
 
         ObjEntity entity = new ObjEntity();
 

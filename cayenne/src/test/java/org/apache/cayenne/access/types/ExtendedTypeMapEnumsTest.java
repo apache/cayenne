@@ -19,33 +19,33 @@
 
 package org.apache.cayenne.access.types;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.cayenne.access.types.InnerEnumHolder.InnerEnum;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ExtendedTypeMapEnumsTest {
 
 	private ExtendedTypeMap map;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		this.map = new ExtendedTypeMap();
 	}
 
 	@Test
-	public void testCreateType_NoFactory() {
+	public void createType_NoFactory() {
 		assertNull(map.createType(Object.class.getName()));
 	}
 
 	@Test
-	public void testCreateType_Enum() {
+	public void createType_Enum() {
 
 		ExtendedType type1 = map.createType(MockEnum.class.getName());
 		assertTrue(type1 instanceof EnumType);
@@ -56,7 +56,7 @@ public class ExtendedTypeMapEnumsTest {
 	}
 
 	@Test
-	public void testCreateType_InnerEnum() {
+	public void createType_InnerEnum() {
 
 		ExtendedType type = map.createType(InnerEnumHolder.InnerEnum.class.getName());
 		assertTrue(type instanceof EnumType);
@@ -74,7 +74,7 @@ public class ExtendedTypeMapEnumsTest {
 	}
 
 	@Test
-	public void testGetRegisteredType() {
+	public void getRegisteredType() {
 		ExtendedType type = map.getRegisteredType(MockEnum.class);
 		assertNotNull(type);
 		assertTrue(type instanceof EnumType);
@@ -84,7 +84,7 @@ public class ExtendedTypeMapEnumsTest {
 	}
 
 	@Test
-	public void testGetRegisteredType_InnerEnum() {
+	public void getRegisteredType_InnerEnum() {
 
 		assertEquals(0, map.extendedTypeFactories.size());
 

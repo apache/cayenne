@@ -27,11 +27,11 @@ import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyRoot2;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 // TODO: this mapping scenario is really unsupported ... this is just an attempt at partial solution
 @UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_TO_MANY_FK_PROJECT)
@@ -41,7 +41,7 @@ public class CDOOneToManyFKIT extends RuntimeCase {
     protected DataContext context;
 
     @Test
-    public void testReadRelationship() {
+    public void readRelationship() {
 
         ToManyRoot2 src2 = context.newObject(ToManyRoot2.class);
         ToManyFkRoot src = context.newObject(ToManyFkRoot.class);

@@ -28,12 +28,12 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SQLServerSnifferIT extends RuntimeCase {
@@ -48,7 +48,7 @@ public class SQLServerSnifferIT extends RuntimeCase {
 	private AdhocObjectFactory objectFactory;
 
 	@Test
-	public void testCreateAdapter() throws Exception {
+	public void createAdapter() throws Exception {
 
 		SQLServerSniffer sniffer = new SQLServerSniffer(objectFactory);
 

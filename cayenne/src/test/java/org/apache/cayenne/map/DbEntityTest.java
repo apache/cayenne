@@ -20,18 +20,18 @@ package org.apache.cayenne.map;
 
 import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Types;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DbEntityTest {
 
     @Test
-    public void testEncodeAsXML() {
+    public void encodeAsXML() {
         DbEntity entity = new DbEntity("X");
         entity.setSchema("s");
         entity.setCatalog("c");

@@ -24,8 +24,8 @@ import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -36,7 +36,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.*;
 public class DataMapTest {
 
     @Test
-    public void testSerializability() throws Exception {
+    public void serializability() throws Exception {
         DataMap m1 = new DataMap("abc");
         DataMap d1 = (DataMap) Util.cloneViaSerialization(m1);
         assertEquals(m1.getName(), d1.getName());
@@ -58,7 +58,7 @@ public class DataMapTest {
     }
 
     @Test
-    public void testDefaultSchema() {
+    public void defaultSchema() {
         DataMap map = new DataMap();
         String tstSchema = "tst_schema";
         assertNull(map.getDefaultSchema());
@@ -70,7 +70,7 @@ public class DataMapTest {
     }
 
     @Test
-    public void testDefaultPackage() {
+    public void defaultPackage() {
         DataMap map = new DataMap();
         String tstPackage = "tst.pkg";
         assertNull(map.getDefaultPackage());
@@ -82,7 +82,7 @@ public class DataMapTest {
     }
 
     @Test
-    public void testDefaultSuperclass() {
+    public void defaultSuperclass() {
         DataMap map = new DataMap();
         String tstSuperclass = "tst_superclass";
         assertNull(map.getDefaultSuperclass());
@@ -94,7 +94,7 @@ public class DataMapTest {
     }
 
     @Test
-    public void testDefaultLockType() {
+    public void defaultLockType() {
         DataMap map = new DataMap();
         assertEquals(ObjEntity.LOCK_TYPE_NONE, map.getDefaultLockType());
         map.setDefaultLockType(ObjEntity.LOCK_TYPE_OPTIMISTIC);
@@ -105,7 +105,7 @@ public class DataMapTest {
     }
 
     @Test
-    public void testName() {
+    public void name() {
         DataMap map = new DataMap();
         String tstName = "tst_name";
         map.setName(tstName);
@@ -113,7 +113,7 @@ public class DataMapTest {
     }
 
     @Test
-    public void testLocation() {
+    public void location() {
         DataMap map = new DataMap();
         String tstName = "tst_name";
         assertNull(map.getLocation());
@@ -122,7 +122,7 @@ public class DataMapTest {
     }
 
     @Test
-    public void testAddObjEntity() {
+    public void addObjEntity() {
         DataMap map = new DataMap();
         ObjEntity e = new ObjEntity("b");
         e.setClassName("b");
@@ -132,7 +132,7 @@ public class DataMapTest {
     }
 
     @Test
-    public void testAddEntityWithSameName() {
+    public void addEntityWithSameName() {
         DataMap map = new DataMap();
 
         // Give them different class-names... we are only testing for the same
@@ -143,15 +143,11 @@ public class DataMapTest {
         ObjEntity e2 = new ObjEntity("c");
         e2.setClassName("c2");
         map.addObjEntity(e1);
-        try {
-            map.addObjEntity(e2);
-            fail("Should not be able to add more than one entity with the same name");
-        } catch (Exception ignored) {
-        }
+        assertThrows(Exception.class, () -> map.addObjEntity(e2));
     }
 
     @Test
-    public void testRemoveThenAddNullClassName() {
+    public void removeThenAddNullClassName() {
         DataMap map = new DataMap();
         // It should be possible to cleanly remove and then add the same entity
         // again.
@@ -165,7 +161,7 @@ public class DataMapTest {
     }
 
     @Test
-    public void testRemoveObjEntity() {
+    public void removeObjEntity() {
         // make sure deleting an ObjEntity & other entity's relationships to it
         // works & does not cause a ConcurrentModificationException
 
@@ -202,7 +198,7 @@ public class DataMapTest {
     }
 
     @Test
-    public void testMultipleNullClassNames() {
+    public void multipleNullClassNames() {
         // Now possible to have more than one objEntity with a null class name.
         // This test proves it
 
@@ -215,7 +211,7 @@ public class DataMapTest {
     }
 
     @Test
-    public void testRemoveThenAddRealClassName() {
+    public void removeThenAddRealClassName() {
         ObjEntity e = new ObjEntity("f");
         e.setClassName("f");
 
@@ -227,7 +223,7 @@ public class DataMapTest {
     }
 
     @Test
-    public void testAddEmbeddable() {
+    public void addEmbeddable() {
         Embeddable e = new Embeddable("XYZ");
 
         DataMap map = new DataMap();
@@ -238,7 +234,7 @@ public class DataMapTest {
     }
 
     @Test
-    public void testRemoveEmbeddable() {
+    public void removeEmbeddable() {
         Embeddable e = new Embeddable("XYZ");
 
         DataMap map = new DataMap();
@@ -252,7 +248,7 @@ public class DataMapTest {
     }
 
     @Test
-    public void testAddDbEntity() {
+    public void addDbEntity() {
         DbEntity e = new DbEntity("b");
 
         DataMap map = new DataMap();
@@ -262,7 +258,7 @@ public class DataMapTest {
     }
 
     @Test
-    public void testAddQueryDescriptor() {
+    public void addQueryDescriptor() {
         QueryDescriptor q = QueryDescriptor.selectQueryDescriptor();
         q.setName("a");
         DataMap map = new DataMap();
@@ -271,7 +267,7 @@ public class DataMapTest {
     }
 
     @Test
-    public void testRemoveQueryDescriptor() {
+    public void removeQueryDescriptor() {
         QueryDescriptor q = QueryDescriptor.selectQueryDescriptor();
         q.setName("a");
 
@@ -283,7 +279,7 @@ public class DataMapTest {
     }
 
     @Test
-    public void testGetQueryMap() {
+    public void getQueryMap() {
         QueryDescriptor q = QueryDescriptor.selectQueryDescriptor();
         q.setName("a");
         DataMap map = new DataMap();
@@ -296,7 +292,7 @@ public class DataMapTest {
     // make sure deleting a DbEntity & other entity's relationships to it
     // works & does not cause a ConcurrentModificationException
     @Test
-    public void testRemoveDbEntity() {
+    public void removeDbEntity() {
 
         DataMap map = new DataMap();
 
@@ -338,7 +334,7 @@ public class DataMapTest {
     }
 
     @Test
-    public void testChildProcedures() throws Exception {
+    public void childProcedures() throws Exception {
         DataMap map = new DataMap();
         checkProcedures(map, new String[0]);
 
@@ -369,10 +365,10 @@ public class DataMapTest {
         }
     }
 
-    @Ignore("this test is broken for many reasons " +
+    @Disabled("this test is broken for many reasons " +
             "(URL can't be mocked, encoder doesn't provide version, loader requires XMLReader proovider)")
     @Test
-    public void testQuoteSqlIdentifiersEncodeAsXML() {
+    public void quoteSqlIdentifiersEncodeAsXML() {
         DataMap map = new DataMap("aaa");
         map.setQuotingSQLIdentifiers(true);
         StringWriter w = new StringWriter();

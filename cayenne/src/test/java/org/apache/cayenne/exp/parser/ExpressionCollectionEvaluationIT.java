@@ -35,10 +35,10 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @since 4.0
@@ -52,7 +52,7 @@ public class ExpressionCollectionEvaluationIT extends RuntimeCase {
     @Inject
     private DBHelper dbHelper;
 
-    @Before
+    @BeforeEach
     public void createArtistsDataSet() throws Exception {
         TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
@@ -73,37 +73,37 @@ public class ExpressionCollectionEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testSubstringWithCollection() {
+    public void substringWithCollection() {
         testExpression("substring(paintingArray.paintingTitle, 1, 1)", String.class);
     }
 
     @Test
-    public void testTrimWithCollection() {
+    public void trimWithCollection() {
         testExpression("trim(paintingArray.paintingTitle)", String.class);
     }
 
     @Test
-    public void testUpperWithCollection() {
+    public void upperWithCollection() {
         testExpression("upper(paintingArray.paintingTitle)", String.class);
     }
 
     @Test
-    public void testLowerWithCollection() {
+    public void lowerWithCollection() {
         testExpression("lower(paintingArray.paintingTitle)", String.class);
     }
 
     @Test
-    public void testLengthWithCollection() {
+    public void lengthWithCollection() {
         testExpression("length(paintingArray.paintingTitle)", Integer.class);
     }
 
     @Test
-    public void testConcatWithCollection() {
+    public void concatWithCollection() {
         testExpression("concat(paintingArray.paintingTitle, ' ', 'xyz')", String.class);
     }
 
     @Test
-    public void testMathWithCollection() {
+    public void mathWithCollection() {
         testExpression("paintingArray.estimatedPrice + 2", BigDecimal.class);
     }
 

@@ -43,7 +43,7 @@
                         <defaultPackage>com.example.test</defaultPackage>
                         <schema>SCHEMA_01</schema>
                     </dbimport>
-                    <project implementation="org.apache.cayenne.stubs.CayenneProjectStub"/>
+
 
                 </configuration>
             </plugin>

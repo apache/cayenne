@@ -31,11 +31,11 @@ import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test join on compound primary key
@@ -57,7 +57,7 @@ public class QueryWithCompoundJoinIT extends RuntimeCase {
     private TableHelper tCompoundPk;
     private TableHelper tCompoundFk;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tCompoundPk = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
         tCompoundPk.setColumns("KEY1", "KEY2", "NAME");
@@ -77,7 +77,7 @@ public class QueryWithCompoundJoinIT extends RuntimeCase {
     }
 
     @Test
-    public void testEJBQLCompoundJoin() throws Exception {
+    public void ejbqlCompoundJoin() throws Exception {
         EJBQLQuery query = new EJBQLQuery(
                 "select f from CompoundFkTestEntity f inner join f.toCompoundPk p where p.name like 'a%'");
         List res = context.performQuery(query);
@@ -87,7 +87,7 @@ public class QueryWithCompoundJoinIT extends RuntimeCase {
     }
 
     @Test
-    public void testObjectSelectCompoundJoin() throws Exception {
+    public void objectSelectCompoundJoin() throws Exception {
         List<CompoundFkTestEntity> res = ObjectSelect.query(CompoundFkTestEntity.class)
                 .where(CompoundFkTestEntity.TO_COMPOUND_PK.dot(CompoundPkTestEntity.NAME).like("a%"))
                 .select(context);

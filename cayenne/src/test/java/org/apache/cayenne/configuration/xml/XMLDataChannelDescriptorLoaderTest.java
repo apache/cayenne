@@ -35,21 +35,21 @@ import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.URLResource;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.XMLReader;
 
 import java.net.URL;
 import java.util.Collection;
 import java.util.Iterator;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class XMLDataChannelDescriptorLoaderTest {
 
     private Injector injector;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         Module testModule = binder -> {
             binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
@@ -65,7 +65,7 @@ public class XMLDataChannelDescriptorLoaderTest {
     }
 
     @Test
-    public void testLoadEmpty() {
+    public void loadEmpty() {
 
         // create and initialize loader instance to test
         XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
@@ -82,40 +82,36 @@ public class XMLDataChannelDescriptorLoaderTest {
     }
 
     @Test
-    public void testLoad_MissingConfig() throws Exception {
+    public void load_MissingConfig() throws Exception {
 
         // create and initialize loader instance to test
         XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
         injector.injectMembers(loader);
 
-        try {
-            loader.load(new URLResource(new URL("file:///no_such_resource")));
-            fail("No exception was thrown on bad absent config name");
-        } catch (ConfigurationException e) {
-            // expected
-        }
+        assertThrows(ConfigurationException.class, () ->
+                loader.load(new URLResource(new URL("file:///no_such_resource"))));
     }
 
-    @Test(expected = CayenneRuntimeException.class)
+    @Test
     public void loadInvalidVersion() throws Exception {
         XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
         injector.injectMembers(loader);
 
         URL url = getClass().getResource("cayenne-testConfig4.xml");
-        loader.load(new URLResource(url));
+        assertThrows(CayenneRuntimeException.class, () -> loader.load(new URLResource(url)));
     }
 
-    @Test(expected = CayenneRuntimeException.class)
+    @Test
     public void loadInvalidNamespace() throws Exception {
         XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
         injector.injectMembers(loader);
 
         URL url = getClass().getResource("cayenne-testConfig5.xml");
-        loader.load(new URLResource(url));
+        assertThrows(CayenneRuntimeException.class, () -> loader.load(new URLResource(url)));
     }
 
     @Test
-    public void testLoadDataMap() {
+    public void loadDataMap() {
 
         // create and initialize loader instance to test
         XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
@@ -137,7 +133,7 @@ public class XMLDataChannelDescriptorLoaderTest {
     }
 
     @Test
-    public void testLoadDataEverything() {
+    public void loadDataEverything() {
 
         // create and initialize loader instance to test
         XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();

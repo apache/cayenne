@@ -20,15 +20,15 @@ package org.apache.cayenne.reflect;
 
 import org.apache.cayenne.access.MockCallingBackListener;
 import org.apache.cayenne.map.MockCallingBackEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class CallbackOnListenerTest {
 
     @Test
-    public void testPublicCallbackMethod() {
+    public void publicCallbackMethod() {
 
         MockCallingBackListener listener = new MockCallingBackListener();
         CallbackOnListener callback = new CallbackOnListener(

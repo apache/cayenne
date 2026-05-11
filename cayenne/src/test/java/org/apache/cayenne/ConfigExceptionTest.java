@@ -19,33 +19,33 @@
 
 package org.apache.cayenne;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  */
 public class ConfigExceptionTest {
 
     @Test
-    public void testConstructor1() throws Exception {
+    public void constructor1() throws Exception {
         ConfigurationException ex = new ConfigurationException();
         assertNull(ex.getCause());
         assertTrue(ex.getMessage().startsWith(CayenneRuntimeException.getExceptionLabel()));
     }
 
     @Test
-    public void testConstructor2() throws Exception {
+    public void constructor2() throws Exception {
         ConfigurationException ex = new ConfigurationException("abc");
         assertNull(ex.getCause());
         assertEquals(CayenneRuntimeException.getExceptionLabel() + "abc", ex.getMessage());
     }
 
     @Test
-    public void testConstructor3() throws Exception {
+    public void constructor3() throws Exception {
         Throwable cause = new Throwable();
         ConfigurationException ex = new ConfigurationException(cause);
         assertSame(cause, ex.getCause());
@@ -55,7 +55,7 @@ public class ConfigExceptionTest {
     }
 
     @Test
-    public void testConstructor4() throws Exception {
+    public void constructor4() throws Exception {
         Throwable cause = new Throwable();
         ConfigurationException ex = new ConfigurationException("abc", cause);
         assertSame(cause, ex.getCause());

@@ -30,14 +30,14 @@ import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
 @UseCayenneRuntime(CayenneProjects.COMPOUND_PROJECT)
@@ -52,7 +52,8 @@ public class DataContextEJBQLUpdateCompoundIT extends RuntimeCase {
     private TableHelper tCompoundPk;
     private TableHelper tCompoundFk;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tCompoundPk = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
         tCompoundPk.setColumns("KEY1", "KEY2");
@@ -69,7 +70,7 @@ public class DataContextEJBQLUpdateCompoundIT extends RuntimeCase {
     }
 
     @Test
-    public void testUpdateNoQualifierToOneCompoundPK() throws Exception {
+    public void updateNoQualifierToOneCompoundPK() throws Exception {
         createTwoCompoundPKTwoFK();
 
         Map<String, String> key1 = new HashMap<>();

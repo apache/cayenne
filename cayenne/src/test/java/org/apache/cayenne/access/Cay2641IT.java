@@ -33,15 +33,15 @@ import org.apache.cayenne.testdo.cay_2641.PaintingLazy;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.testcontainers.shaded.org.hamcrest.MatcherAssert;
 import org.testcontainers.shaded.org.hamcrest.Matchers;
 
 import java.sql.Types;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.2
@@ -58,7 +58,7 @@ public class Cay2641IT extends RuntimeCase {
     @Inject
     private DbAdapter adapter;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         TableHelper th = new TableHelper(dbHelper, "ArtistLazy")
                 .setColumns("ID", "NAME", "SURNAME")
@@ -72,7 +72,7 @@ public class Cay2641IT extends RuntimeCase {
     }
 
     @Test
-    public void testTranslatorSql() {
+    public void translatorSql() {
         ObjectSelect<ArtistLazy> artists = ObjectSelect.query(ArtistLazy.class);
 
         DefaultSelectTranslator translator = new DefaultSelectTranslator(artists, adapter, context.getEntityResolver());
@@ -91,7 +91,7 @@ public class Cay2641IT extends RuntimeCase {
     }
 
     @Test
-    public void testTypeAttributes() {
+    public void typeAttributes() {
         List<ArtistLazy> artists = ObjectSelect.query(ArtistLazy.class).select(context);
 
         Object object = artists.get(0).readPropertyDirectly("name");
@@ -102,7 +102,7 @@ public class Cay2641IT extends RuntimeCase {
     }
 
     @Test
-    public void testTypeLazyAttribute() {
+    public void typeLazyAttribute() {
         ArtistLazy artist = ObjectSelect.query(ArtistLazy.class).selectFirst(context);
 
         Object object = artist.readPropertyDirectly("name");
@@ -114,7 +114,7 @@ public class Cay2641IT extends RuntimeCase {
     }
 
     @Test
-    public void testPrefetchLazyTranslatorSql() {
+    public void prefetchLazyTranslatorSql() {
         ObjectSelect<PaintingLazy> paintingLazyObjectSelect = ObjectSelect.query(PaintingLazy.class).prefetch(PaintingLazy.ARTIST.joint());
         DefaultSelectTranslator translator = new DefaultSelectTranslator(paintingLazyObjectSelect, adapter, context.getEntityResolver());
         String sql = translator.getSql();
@@ -126,7 +126,7 @@ public class Cay2641IT extends RuntimeCase {
     }
 
     @Test
-    public void testPrefetchLazyTypeAttributes() {
+    public void prefetchLazyTypeAttributes() {
         List<PaintingLazy> paintingLazyList = ObjectSelect.query(PaintingLazy.class)
                 .prefetch(PaintingLazy.ARTIST.joint())
                 .select(context);
@@ -151,7 +151,7 @@ public class Cay2641IT extends RuntimeCase {
     }
 
     @Test
-    public void testsSimpleSelectCustomer() {
+    public void simpleSelectCustomer() {
         DatamapLazy optimistic = DatamapLazy.getInstance();
         List<ArtistLazy> artistLazies = optimistic.performSimpleSelect(context);
 
@@ -164,7 +164,7 @@ public class Cay2641IT extends RuntimeCase {
     }
 
     @Test
-    public void testsPrefetchSelectCustomer() {
+    public void prefetchSelectCustomer() {
         DatamapLazy optimistic = DatamapLazy.getInstance();
         List<PaintingLazy> paintingLazies = optimistic.performPrefetchSelect(context);
 

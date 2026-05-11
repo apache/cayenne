@@ -19,11 +19,11 @@
 
 package org.apache.cayenne.access;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Types;
 import java.util.List;
@@ -42,7 +42,8 @@ import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 // TODO: redefine all test cases in terms of entities in "relationships" map
 // and merge this test case with DeleteRulesTst that inherits
@@ -56,6 +57,7 @@ public class DataContextDeleteRulesIT extends RuntimeCase {
 	@Inject
 	private DBHelper dbHelper;
 
+	@BeforeEach
 	@Override
 	public void cleanUpDB() throws Exception {
 		dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
@@ -63,7 +65,7 @@ public class DataContextDeleteRulesIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testNullifyToOne() {
+	public void nullifyToOne() {
 		// ArtGroup toParentGroup
 		ArtGroup parentGroup = (ArtGroup) context.newObject("ArtGroup");
 		parentGroup.setName("Parent");
@@ -97,7 +99,7 @@ public class DataContextDeleteRulesIT extends RuntimeCase {
 	 * rule results in deleting a join and a target.
 	 */
 	@Test
-	public void testCascadeToManyFlattened() {
+	public void cascadeToManyFlattened() {
 		// testing Artist.groupArray relationship
 		ArtGroup aGroup = context.newObject(ArtGroup.class);
 		aGroup.setName("Group Name");
@@ -128,7 +130,7 @@ public class DataContextDeleteRulesIT extends RuntimeCase {
 	 * rule results in deleting a join together with the object deleted.
 	 */
 	@Test
-	public void testNullifyToManyFlattened() {
+	public void nullifyToManyFlattened() {
 		// testing ArtGroup.artistArray relationship
 		ArtGroup aGroup = context.newObject(ArtGroup.class);
 		aGroup.setName("Group Name");
@@ -156,7 +158,7 @@ public class DataContextDeleteRulesIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testNullifyToMany() {
+	public void nullifyToMany() {
 		// ArtGroup childGroupsArray
 		ArtGroup parentGroup = (ArtGroup) context.newObject("ArtGroup");
 		parentGroup.setName("Parent");
@@ -182,7 +184,7 @@ public class DataContextDeleteRulesIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testCascadeToOne() {
+	public void cascadeToOne() {
 		// Painting toPaintingInfo
 		Painting painting = (Painting) context.newObject("Painting");
 		painting.setPaintingTitle("A Title");
@@ -204,7 +206,7 @@ public class DataContextDeleteRulesIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testCascadeToMany() {
+	public void cascadeToMany() {
 		// Artist artistExhibitArray
 		Artist anArtist = (Artist) context.newObject("Artist");
 		anArtist.setArtistName("A Name");
@@ -234,7 +236,7 @@ public class DataContextDeleteRulesIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testDenyToMany() {
+	public void denyToMany() {
 		// Gallery paintingArray
 		Gallery gallery = (Gallery) context.newObject("Gallery");
 		gallery.setGalleryName("A Name");
@@ -243,12 +245,7 @@ public class DataContextDeleteRulesIT extends RuntimeCase {
 		gallery.addToPaintingArray(painting);
 		context.commitChanges();
 
-		try {
-			context.deleteObjects(gallery);
-			fail("Should have thrown an exception");
-		} catch (Exception e) {
-			// GOOD!
-		}
+		assertThrows(Exception.class, () -> context.deleteObjects(gallery));
 		context.commitChanges();
 	}
 }

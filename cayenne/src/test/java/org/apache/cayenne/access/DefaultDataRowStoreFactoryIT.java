@@ -51,17 +51,17 @@ import org.apache.cayenne.tx.TransactionManager;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @UseCayenneRuntime(CayenneProjects.MULTI_TIER_PROJECT)
 public class DefaultDataRowStoreFactoryIT extends RuntimeCase {
 
     @Test
-    public void testGetDataRowStore() {
+    public void getDataRowStore() {
         CayenneRuntime runtime = getUnitTestInjector().getInstance(CayenneRuntime.class);
         DataRowStore dataStore = runtime.getInjector().getInstance(DataRowStoreFactory.class)
                 .createDataRowStore("test");
@@ -70,7 +70,7 @@ public class DefaultDataRowStoreFactoryIT extends RuntimeCase {
     }
 
     @Test
-    public void testGetDataRowStoreWithParameters() {
+    public void getDataRowStoreWithParameters() {
         final DataDomain DOMAIN = new DataDomain("test");
         final EventManager EVENT_MANAGER = new DefaultEventManager();
         final int CACHE_SIZE = 500;
@@ -97,7 +97,7 @@ public class DefaultDataRowStoreFactoryIT extends RuntimeCase {
     }
 
     @Test
-    public void testGetDataRowStoreWithBridge() {
+    public void getDataRowStoreWithBridge() {
         final DataDomain DOMAIN = new DataDomain("test");
         final EventManager EVENT_MANAGER = new DefaultEventManager();
 

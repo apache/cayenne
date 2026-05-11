@@ -37,11 +37,11 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 
 @UseCayenneRuntime(CayenneProjects.LOCKING_PROJECT)
@@ -60,7 +60,7 @@ public class UpdateBatchTranslatorIT extends RuntimeCase {
     private AdhocObjectFactory objectFactory;
 
     @Test
-    public void testConstructor() {
+    public void constructor() {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         UpdateBatchQuery query = mock(UpdateBatchQuery.class);
         UpdateBatchTranslator builder = new UpdateBatchTranslator(query, adapter);
@@ -70,7 +70,7 @@ public class UpdateBatchTranslatorIT extends RuntimeCase {
     }
 
     @Test
-    public void testCreateSqlString() {
+    public void createSqlString() {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
 
@@ -88,7 +88,7 @@ public class UpdateBatchTranslatorIT extends RuntimeCase {
     }
 
     @Test
-    public void testCreateSqlStringWithNulls() {
+    public void createSqlStringWithNulls() {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
 
@@ -110,7 +110,7 @@ public class UpdateBatchTranslatorIT extends RuntimeCase {
     }
 
     @Test
-    public void testCreateSqlStringWithIdentifiersQuote() {
+    public void createSqlStringWithIdentifiersQuote() {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
         try {
@@ -139,7 +139,7 @@ public class UpdateBatchTranslatorIT extends RuntimeCase {
     }
 
     @Test
-    public void testCreateSqlStringWithNullsWithIdentifiersQuote() {
+    public void createSqlStringWithNullsWithIdentifiersQuote() {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
         try {

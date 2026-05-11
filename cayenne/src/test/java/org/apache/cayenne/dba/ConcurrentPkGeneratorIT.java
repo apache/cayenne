@@ -32,8 +32,8 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -43,8 +43,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @UseCayenneRuntime(CayenneProjects.QUALIFIED_PROJECT)
 public class ConcurrentPkGeneratorIT extends RuntimeCase {
@@ -55,7 +55,7 @@ public class ConcurrentPkGeneratorIT extends RuntimeCase {
 	@Inject
 	private UnitDbAdapter unitDbAdapter;
 
-	@Before
+	@BeforeEach
 	public void prepareDerbyDb() {
 		//use to fix random test failures on derby db
 		if(unitDbAdapter instanceof DerbyUnitDbAdapter) {
@@ -76,7 +76,7 @@ public class ConcurrentPkGeneratorIT extends RuntimeCase {
      * Attempts to discover any problems regarding thread locking in the PkGenerator
      */
     @Test
-    public void testConcurrentInserts() {
+    public void concurrentInserts() {
     	if(!unitDbAdapter.supportsPKGeneratorConcurrency()) {
     		return;
 		}

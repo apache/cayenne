@@ -18,16 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.datasource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
 import java.sql.SQLException;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -36,19 +36,19 @@ public class PoolDataSourceManagerTest {
 	private UnmanagedPoolingDataSource mockPoolingDataSource;
 	private PoolingDataSourceManager dataSourceManager;
 
-	@Before
+	@BeforeEach
 	public void before() throws SQLException {
 		this.mockPoolingDataSource = mock(UnmanagedPoolingDataSource.class);
 		this.dataSourceManager = new PoolingDataSourceManager(mockPoolingDataSource, 100);
 	}
 
-	@After
+	@AfterEach
 	public void after() {
 		dataSourceManager.shutdown();
 	}
 
 	@Test
-	public void testRun_Manage() throws InterruptedException {
+	public void run_Manage() throws InterruptedException {
 
 		final int[] counter = new int[1];
 

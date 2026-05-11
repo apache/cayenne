@@ -29,10 +29,10 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class FluentSelectPrefetchRouterActionIT extends RuntimeCase {
@@ -41,7 +41,7 @@ public class FluentSelectPrefetchRouterActionIT extends RuntimeCase {
     private EntityResolver resolver;
 
     @Test
-    public void testPaintings1() {
+    public void paintings1() {
         ObjEntity paintingEntity = resolver.getObjEntity(Painting.class);
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("abc"))
@@ -60,7 +60,7 @@ public class FluentSelectPrefetchRouterActionIT extends RuntimeCase {
     }
 
     @Test
-    public void testPrefetchPaintings2() {
+    public void prefetchPaintings2() {
         ObjEntity paintingEntity = resolver.getObjEntity(Painting.class);
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
@@ -81,7 +81,7 @@ public class FluentSelectPrefetchRouterActionIT extends RuntimeCase {
     }
 
     @Test
-    public void testGalleries() {
+    public void galleries() {
         ObjEntity galleryEntity = resolver.getObjEntity(Gallery.class);
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("abc"))

@@ -40,12 +40,13 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @since 4.2
@@ -59,7 +60,7 @@ public class PathAliasesIT extends RuntimeCase {
     @Inject
     private DBHelper dbHelper;
 
-    @Before
+    @BeforeEach
     public void createArtistsDataSet() throws Exception {
         TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
@@ -87,7 +88,7 @@ public class PathAliasesIT extends RuntimeCase {
     }
 
     @Test
-    public void testBeginAlias() {
+    public void beginAlias() {
         List<Artist> artists = ObjectSelect.query(Artist.class)
                 .where(Artist.PAINTING_ARRAY.alias("p1").dot(Painting.PAINTING_TITLE).eq("painting2"))
                 .and(Artist.PAINTING_ARRAY.alias("p2").dot(Painting.PAINTING_TITLE).eq("painting4"))
@@ -97,7 +98,7 @@ public class PathAliasesIT extends RuntimeCase {
     }
 
     @Test
-    public void testTheSameAliases() {
+    public void theSameAliases() {
         List<Object[]> results = ObjectSelect.columnQuery(Artist.class,
                 Artist.ARTIST_NAME,
                 Artist.PAINTING_ARRAY.alias("p1").dot(Painting.PAINTING_TITLE),
@@ -112,7 +113,7 @@ public class PathAliasesIT extends RuntimeCase {
     }
 
     @Test
-    public void testMiddleAlias() {
+    public void middleAlias() {
         List<Artist> artists = ObjectSelect.query(Artist.class)
                 .where(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).dot(Gallery.PAINTING_ARRAY).alias("p1").dot(Painting.PAINTING_TITLE).eq("painting2"))
                 .and(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).dot(Gallery.PAINTING_ARRAY).alias("p2").dot(Painting.PAINTING_TITLE).eq("painting4"))
@@ -122,7 +123,7 @@ public class PathAliasesIT extends RuntimeCase {
     }
 
     @Test
-    public void testEntityPropertyAliases() {
+    public void entityPropertyAliases() {
         Artist artist = Cayenne.objectForPK(context, Artist.class, 1);
 
         List<Painting> paintings = ObjectSelect.query(Painting.class)
@@ -134,7 +135,7 @@ public class PathAliasesIT extends RuntimeCase {
     }
 
     @Test
-    public void testAliases() {
+    public void aliases() {
         List<Artist> artists = ObjectSelect.query(Artist.class)
                 .where(Artist.PAINTING_ARRAY.alias("p1").dot(Painting.PAINTING_TITLE).eq("painting2"))
                 .and(Artist.PAINTING_ARRAY.alias("p2").dot(Painting.PAINTING_TITLE).eq("painting4"))
@@ -145,7 +146,7 @@ public class PathAliasesIT extends RuntimeCase {
     }
 
     @Test
-    public void testAliasForPath() {
+    public void aliasForPath() {
         ASTPath astPath = new ASTObjPath("paintingArray.a.galleryName");
         astPath.setPathAliases(Collections.singletonMap("a", "toGallery"));
         ASTEqual astEqual = new ASTEqual(astPath, "tate modern");
@@ -158,7 +159,7 @@ public class PathAliasesIT extends RuntimeCase {
     }
 
     @Test
-    public void testAggregationWithAliases() {
+    public void aggregationWithAliases() {
         List<Object[]> artistAndPaintingCount = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.count())
                 .having(Artist.PAINTING_ARRAY.alias("p1").count().lt(5L))
                 .select(context);
@@ -167,7 +168,7 @@ public class PathAliasesIT extends RuntimeCase {
     }
 
     @Test
-    public void testOrderWithAlias() {
+    public void orderWithAlias() {
         ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
                 .orderBy(Painting.TO_ARTIST.alias("p1").dot(Artist.ARTIST_NAME).asc())
                 .prefetch(Painting.TO_ARTIST.disjoint());
@@ -177,23 +178,35 @@ public class PathAliasesIT extends RuntimeCase {
         assertEquals("artist1", paintings.get(0).getToArtist().getArtistName());
     }
 
-    @Test(expected = CayenneRuntimeException.class)
-    public void testPrefetchWithAliases() {
-        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
-        query.prefetch(Artist.PAINTING_ARRAY.alias("p1").disjoint());
-        query.select(context);
+    @Test
+
+    public void prefetchWithAliases() {
+        assertThrows(CayenneRuntimeException.class, () -> {
+
+            ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
+            query.prefetch(Artist.PAINTING_ARRAY.alias("p1").disjoint());
+            query.select(context);
+    
+        });
     }
 
-    @Test(expected = CayenneRuntimeException.class)
-    public void testTheSameAliasesToDifferentProperties() {
-        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
-        query.where(Artist.PAINTING_ARRAY.alias("p1").dot(Painting.PAINTING_TITLE).eq("p1"));
-        query.and(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).alias("p1").dot(Gallery.GALLERY_NAME).eq("g1"));
-        query.select(context);
-    }
 
     @Test
-    public void testExpWithAliases() {
+
+    public void theSameAliasesToDifferentProperties() {
+        assertThrows(CayenneRuntimeException.class, () -> {
+
+            ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
+            query.where(Artist.PAINTING_ARRAY.alias("p1").dot(Painting.PAINTING_TITLE).eq("p1"));
+            query.and(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).alias("p1").dot(Gallery.GALLERY_NAME).eq("g1"));
+            query.select(context);
+    
+        });
+    }
+
+
+    @Test
+    public void expWithAliases() {
         Expression e1 = ExpressionFactory.exp("paintingArray#p1.paintingTitle = 'painting2'");
         Expression e2 = ExpressionFactory.exp("paintingArray#p2.paintingTitle = 'painting4'");
         List<Artist> artists = ObjectSelect.query(Artist.class)
@@ -205,7 +218,7 @@ public class PathAliasesIT extends RuntimeCase {
     }
 
     @Test
-    public void testExpWithSeveralAliases() {
+    public void expWithSeveralAliases() {
         Expression e1 = ExpressionFactory.exp("paintingArray#p1.toGallery#g1.galleryName = 'tate modern'");
         List<Artist> artists = ObjectSelect.query(Artist.class)
                 .where(e1)
@@ -216,7 +229,7 @@ public class PathAliasesIT extends RuntimeCase {
     }
 
     @Test
-    public void testMiddleAliasForExp() {
+    public void middleAliasForExp() {
         Expression e1 = ExpressionFactory.exp("paintingArray.toGallery.paintingArray#p1.paintingTitle = 'painting2'");
         Expression e2 = ExpressionFactory.exp("paintingArray.toGallery.paintingArray#p2.paintingTitle = 'painting4'");
         List<Artist> artists = ObjectSelect.query(Artist.class)
@@ -228,7 +241,7 @@ public class PathAliasesIT extends RuntimeCase {
     }
 
     @Test
-    public void testEntityPropertyAliasesInExp() {
+    public void entityPropertyAliasesInExp() {
         Painting painting2 = Cayenne.objectForPK(context, Painting.class, 2);
         Painting painting4 = Cayenne.objectForPK(context, Painting.class, 4);
 
@@ -241,7 +254,7 @@ public class PathAliasesIT extends RuntimeCase {
     }
 
     @Test
-    public void testAliasForPathExp() {
+    public void aliasForPathExp() {
         ASTPath astPath = new ASTObjPath("paintingArray.p1.galleryName");
         astPath.setPathAliases(Collections.singletonMap("a", "toGallery"));
         ASTEqual astEqual = new ASTEqual(astPath, "test gallery");
@@ -255,7 +268,7 @@ public class PathAliasesIT extends RuntimeCase {
     }
 
     @Test
-    public void testTheSameAliasesForExp() {
+    public void theSameAliasesForExp() {
         Expression e1 = ExpressionFactory.exp("paintingArray#p1.paintingTitle");
         Expression e2 = ExpressionFactory.exp("paintingArray#p2.paintingTitle");
         Expression e3 = ExpressionFactory.exp("paintingArray#p1.paintingTitle = 'painting2'");
@@ -274,7 +287,7 @@ public class PathAliasesIT extends RuntimeCase {
     }
 
     @Test
-    public void testOrderWithAliasForExp() {
+    public void orderWithAliasForExp() {
         Expression e1 = ExpressionFactory.exp("toArtist#p1.artistName");
         ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
                 .orderBy(PropertyFactory.createBase(e1, String.class).asc())
@@ -286,7 +299,7 @@ public class PathAliasesIT extends RuntimeCase {
     }
 
     @Test
-    public void testAggregationWithAliasesForExp() {
+    public void aggregationWithAliasesForExp() {
         Expression e1 = ExpressionFactory.exp("paintingArray#p1");
         List<Object[]> artistAndPaintingCount = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.count())
                 .having(PropertyFactory.createBase(e1, Number.class).count().lt(5L))
@@ -295,19 +308,31 @@ public class PathAliasesIT extends RuntimeCase {
         assertTrue((Long)artistAndPaintingCount.get(0)[1] < 5);
     }
 
-    @Test(expected = CayenneRuntimeException.class)
-    public void testPrefetchWithAliasesForExp() {
-        Expression e1 = ExpressionFactory.exp("paintingArray#p1");
-        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
-        query.prefetch(PropertyFactory.createList("p1", e1, Painting.class).disjoint());
-        query.select(context);
+    @Test
+
+    public void prefetchWithAliasesForExp() {
+        assertThrows(CayenneRuntimeException.class, () -> {
+
+            Expression e1 = ExpressionFactory.exp("paintingArray#p1");
+            ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
+            query.prefetch(PropertyFactory.createList("p1", e1, Painting.class).disjoint());
+            query.select(context);
+    
+        });
     }
 
-    @Test(expected = CayenneRuntimeException.class)
-    public void testExpWithAliasNotToRelSegment() {
-        Expression e1 = ExpressionFactory.exp("paintingArray.paintingTitle#p1 = 'painting2'");
-        ObjectSelect.query(Artist.class)
-               .where(e1)
-               .select(context);
+
+    @Test
+
+    public void expWithAliasNotToRelSegment() {
+        assertThrows(CayenneRuntimeException.class, () -> {
+
+            Expression e1 = ExpressionFactory.exp("paintingArray.paintingTitle#p1 = 'painting2'");
+            ObjectSelect.query(Artist.class)
+                   .where(e1)
+                   .select(context);
+    
+        });
     }
+
 }

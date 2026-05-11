@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.ashwood;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Types;
 import java.util.Collections;
@@ -35,8 +35,8 @@ import org.apache.cayenne.testdo.relationships.ReflexiveAndToOne;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_PROJECT)
 public class AshwoodEntitySorter_RelationshipsIT extends RuntimeCase {
@@ -52,7 +52,7 @@ public class AshwoodEntitySorter_RelationshipsIT extends RuntimeCase {
 
 	private AshwoodEntitySorter sorter;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		this.sorter = new AshwoodEntitySorter();
 		sorter.setEntityResolver(context.getEntityResolver());
@@ -66,7 +66,7 @@ public class AshwoodEntitySorter_RelationshipsIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testSortObjectsForEntityReflexiveWithFaults() throws Exception {
+	public void sortObjectsForEntityReflexiveWithFaults() throws Exception {
 
 		tRelationshipHelper.insert(1, "rh1");
 		tReflexiveAndToOne.insert(1, null, 1, "r1");

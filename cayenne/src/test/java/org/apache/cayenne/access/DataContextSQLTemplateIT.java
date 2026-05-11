@@ -38,16 +38,16 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextSQLTemplateIT extends RuntimeCase {
@@ -67,7 +67,8 @@ public class DataContextSQLTemplateIT extends RuntimeCase {
 	protected TableHelper tPainting;
 	protected TableHelper tArtist;
 
-	@Before
+	
+	@BeforeEach
 	public void setUp() throws Exception {
 		tArtist = new TableHelper(dbHelper, "ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -93,7 +94,7 @@ public class DataContextSQLTemplateIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testSQLResultSetMappingMixed() throws Exception {
+	public void sQLResultSetMappingMixed() throws Exception {
 		createFourArtistsAndThreePaintingsDataSet();
 
 		String sql = "SELECT #result('t0.ARTIST_ID' 'long' 'X'), #result('t0.ARTIST_NAME' 'String' 'Y'), #result('t0.DATE_OF_BIRTH' 'Date' 'Z'), #result('count(t1.PAINTING_ID)' 'int' 'C') "
@@ -118,7 +119,7 @@ public class DataContextSQLTemplateIT extends RuntimeCase {
 		assertEquals(4, objects.size());
 
 		Object o1 = objects.get(0);
-		assertTrue("Expected Object[]: " + o1, o1 instanceof Object[]);
+		assertTrue(o1 instanceof Object[], "Expected Object[]: " + o1);
 		Object[] array1 = (Object[]) o1;
 		assertEquals(2, array1.length);
 		Object[] array2 = (Object[]) objects.get(1);
@@ -132,11 +133,11 @@ public class DataContextSQLTemplateIT extends RuntimeCase {
 		assertEquals(1, array2[1]);
 		assertEquals(0, array3[1]);
 		assertEquals(0, array4[1]);
-		assertTrue("Unexpected Persistent: " + array1[0], array1[0] instanceof Artist);
+		assertTrue(array1[0] instanceof Artist, "Unexpected Persistent: " + array1[0]);
 	}
 
 	@Test
-	public void testRootless_DataNodeName() throws Exception {
+	public void rootless_DataNodeName() throws Exception {
 		createFourArtists();
 
 		SQLTemplate query = new SQLTemplate("SELECT * FROM ARTIST", true);
@@ -145,14 +146,14 @@ public class DataContextSQLTemplateIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testRootless_DefaultDataNode() throws Exception {
+	public void rootless_DefaultDataNode() throws Exception {
 		createFourArtists();
 		SQLTemplate query = new SQLTemplate("SELECT * FROM ARTIST", true);
 		assertEquals(4, context.performQuery(query).size());
 	}
 
 	@Test
-	public void testSQLResultSetMappingScalar() throws Exception {
+	public void sQLResultSetMappingScalar() throws Exception {
 		createFourArtists();
 
 		String sql = "SELECT count(1) AS X FROM ARTIST";
@@ -170,12 +171,12 @@ public class DataContextSQLTemplateIT extends RuntimeCase {
 		assertEquals(1, objects.size());
 
 		Object o = objects.get(0);
-		assertTrue("Expected Number: " + o, o instanceof Number);
+		assertTrue(o instanceof Number, "Expected Number: " + o);
 		assertEquals(4, ((Number) o).intValue());
 	}
 
 	@Test
-	public void testSQLResultSetMappingScalarArray() throws Exception {
+	public void sQLResultSetMappingScalarArray() throws Exception {
 		createFourArtists();
 
 		String sql = "SELECT count(1) AS X, 77 AS Y FROM ARTIST";
@@ -204,7 +205,7 @@ public class DataContextSQLTemplateIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testColumnNamesCapitalization() throws Exception {
+	public void columnNamesCapitalization() throws Exception {
 		createFourArtistsAndThreePaintingsDataSet();
 
 		String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
@@ -236,7 +237,7 @@ public class DataContextSQLTemplateIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testFetchDataRows() throws Exception {
+	public void fetchDataRows() throws Exception {
 		createFourArtists();
 
 		String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
@@ -256,7 +257,7 @@ public class DataContextSQLTemplateIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testFetchObjects() throws Exception {
+	public void fetchObjects() throws Exception {
 		createFourArtists();
 
 		String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
@@ -273,7 +274,7 @@ public class DataContextSQLTemplateIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testBindObjectEqualShort() throws Exception {
+	public void bindObjectEqualShort() throws Exception {
 		createFourArtistsAndThreePaintingsDataSet();
 
 		Artist a = Cayenne.objectForPK(context, Artist.class, 101);
@@ -291,7 +292,7 @@ public class DataContextSQLTemplateIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testBindObjectNotEqualShort() throws Exception {
+	public void bindObjectNotEqualShort() throws Exception {
 		createFourArtistsAndThreePaintingsDataSet();
 
 		Artist a = Cayenne.objectForPK(context, Artist.class, 101);
@@ -313,7 +314,7 @@ public class DataContextSQLTemplateIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testBindObjectEqualFull() throws Exception {
+	public void bindObjectEqualFull() throws Exception {
 		createFourArtistsAndThreePaintingsDataSet();
 
 		Artist a = Cayenne.objectForPK(context, Artist.class, 101);
@@ -332,7 +333,7 @@ public class DataContextSQLTemplateIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testBindObjectEqualFullNonArray() throws Exception {
+	public void bindObjectEqualFullNonArray() throws Exception {
 		createFourArtistsAndThreePaintingsDataSet();
 
 		Artist a = Cayenne.objectForPK(context, Artist.class, 101);
@@ -351,7 +352,7 @@ public class DataContextSQLTemplateIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testBindObjectEqualNull() throws Exception {
+	public void bindObjectEqualNull() throws Exception {
 		createFourArtistsAndThreePaintingsDataSet();
 
 		String template = "SELECT * FROM PAINTING t0"
@@ -368,7 +369,7 @@ public class DataContextSQLTemplateIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testBindObjectNotEqualFull() throws Exception {
+	public void bindObjectNotEqualFull() throws Exception {
 		createFourArtistsAndThreePaintingsDataSet();
 
 		Artist a = Cayenne.objectForPK(context, Artist.class, 101);
@@ -390,7 +391,7 @@ public class DataContextSQLTemplateIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testBindObjectNotEqualNull() throws Exception {
+	public void bindObjectNotEqualNull() throws Exception {
 		createFourArtistsAndThreePaintingsDataSet();
 
 		String template = "SELECT * FROM PAINTING t0"
@@ -410,7 +411,7 @@ public class DataContextSQLTemplateIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testBindEqualNull() throws Exception {
+	public void bindEqualNull() throws Exception {
 		createFourArtistsAndThreePaintingsDataSet();
 
 		String template = "SELECT * FROM PAINTING t0" + " WHERE t0.ARTIST_ID #bindEqual($id) ORDER BY PAINTING_ID";
@@ -426,7 +427,7 @@ public class DataContextSQLTemplateIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testFetchLimit() throws Exception {
+	public void fetchLimit() throws Exception {
 		createFourArtists();
 
 		int fetchLimit = 2;
@@ -443,7 +444,7 @@ public class DataContextSQLTemplateIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testFetchOffset() throws Exception {
+	public void fetchOffset() throws Exception {
 		createFourArtists();
 
 		int fetchOffset = 2;
@@ -460,7 +461,7 @@ public class DataContextSQLTemplateIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testFetchOffsetFetchLimit() throws Exception {
+	public void fetchOffsetFetchLimit() throws Exception {
 		createFourArtists();
 
 		String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
@@ -474,7 +475,7 @@ public class DataContextSQLTemplateIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPageSize() throws Exception {
+	public void pageSize() throws Exception {
 		createFourArtists();
 
 		int pageSize = 3;
@@ -508,7 +509,7 @@ public class DataContextSQLTemplateIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testIteratedQuery() throws Exception {
+	public void iteratedQuery() throws Exception {
 		createFourArtists();
 
 		String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
@@ -531,7 +532,7 @@ public class DataContextSQLTemplateIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testQueryWithLineBreakAfterMacro() throws Exception {
+	public void queryWithLineBreakAfterMacro() throws Exception {
 		createFourArtists();
 
 		// see CAY-726 for details

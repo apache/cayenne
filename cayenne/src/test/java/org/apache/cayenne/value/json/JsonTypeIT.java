@@ -29,10 +29,10 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.value.Json;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.JSON_PROJECT)
 public class JsonTypeIT extends RuntimeCase {
@@ -44,12 +44,12 @@ public class JsonTypeIT extends RuntimeCase {
     private UnitDbAdapter unitDbAdapter;
 
     @Test
-    public void testJsonBasic() {
+    public void jsonBasic() {
         testJson("{\"id\": 1, \"property\": \"value\"}");
     }
 
     @Test
-    public void testJsonOver4k() {
+    public void jsonOver4k() {
         testJson("[\n" +
                          "  {\n" +
                          "    \"_id\": \"63f151cd2df4280fe4258ef3\",\n" +
@@ -280,7 +280,7 @@ public class JsonTypeIT extends RuntimeCase {
     }
 
     @Test
-    public void testJsonOver16k() {
+    public void jsonOver16k() {
         testJson("[\n" +
                          "  {\n" +
                          "    \"_id\": \"63f153352d42c0451f6f18a1\",\n" +
@@ -646,12 +646,12 @@ public class JsonTypeIT extends RuntimeCase {
     }
 
     @Test
-    public void testJsonEmptyString() {
+    public void jsonEmptyString() {
         assertThrows(MalformedJsonException.class, () -> testJson(""));
     }
 
     @Test
-    public void testJsonBlankString() {
+    public void jsonBlankString() {
         assertThrows(MalformedJsonException.class, () -> testJson("  "));
     }
 

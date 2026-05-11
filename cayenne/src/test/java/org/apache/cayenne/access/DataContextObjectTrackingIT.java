@@ -32,17 +32,17 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.Collections;
 import java.util.Date;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Tests objects registration in DataContext, transferring objects between contexts and
@@ -66,7 +66,8 @@ public class DataContextObjectTrackingIT extends RuntimeCase {
     protected TableHelper tArtist;
     protected TableHelper tPainting;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -96,7 +97,7 @@ public class DataContextObjectTrackingIT extends RuntimeCase {
     }
 
     @Test
-    public void testUnregisterObject() {
+    public void unregisterObject() {
 
         DataRow row = new DataRow(10);
         row.put("ARTIST_ID", 1);
@@ -119,7 +120,7 @@ public class DataContextObjectTrackingIT extends RuntimeCase {
     }
 
     @Test
-    public void testInvalidateObjects_Vararg() {
+    public void invalidateObjects_Vararg() {
 
         DataRow row = new DataRow(10);
         row.put("ARTIST_ID", 1);

@@ -32,10 +32,10 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class QualifierTranslatorExistExpressionIT extends RuntimeCase {
@@ -47,7 +47,7 @@ public class QualifierTranslatorExistExpressionIT extends RuntimeCase {
     private ObjectContext context;
 
     @Test
-    public void testExistsSimplePath() {
+    public void existsSimplePath() {
         Expression exp = ExpressionFactory
                 .exp("paintingArray")
                 .exists();
@@ -68,7 +68,7 @@ public class QualifierTranslatorExistExpressionIT extends RuntimeCase {
     }
 
     @Test
-    public void testExistsSimplePathParsed() {
+    public void existsSimplePathParsed() {
         Expression exp = ExpressionFactory
                 .exp("exists paintingArray");
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, exp);
@@ -87,7 +87,7 @@ public class QualifierTranslatorExistExpressionIT extends RuntimeCase {
     }
 
     @Test
-    public void testExistsSimplePathNoRelationship() {
+    public void existsSimplePathNoRelationship() {
         Expression exp = ExpressionFactory
                 .exp("artistName")
                 .exists();
@@ -105,7 +105,7 @@ public class QualifierTranslatorExistExpressionIT extends RuntimeCase {
     }
 
     @Test
-    public void testExistsLongPathSimpleAttribute() {
+    public void existsLongPathSimpleAttribute() {
         Expression exp = ExpressionFactory
                 .exp("paintingArray.paintingTitle")
                 .exists();
@@ -126,7 +126,7 @@ public class QualifierTranslatorExistExpressionIT extends RuntimeCase {
     }
 
     @Test
-    public void testExistsLongToOnePath() {
+    public void existsLongToOnePath() {
         Expression exp = ExpressionFactory
                 .exp("paintingArray.toGallery")
                 .exists();
@@ -147,7 +147,7 @@ public class QualifierTranslatorExistExpressionIT extends RuntimeCase {
     }
 
     @Test
-    public void testExistsLongToManyPath() {
+    public void existsLongToManyPath() {
         Expression exp = ExpressionFactory
                 .exp("groupArray.childGroupsArray")
                 .exists();
@@ -170,7 +170,7 @@ public class QualifierTranslatorExistExpressionIT extends RuntimeCase {
     }
 
     @Test
-    public void testExistsSimpleCondition() {
+    public void existsSimpleCondition() {
         Expression exp = ExpressionFactory
                 .exp("paintingArray.paintingTitle = 'test'")
                 .exists();
@@ -191,7 +191,7 @@ public class QualifierTranslatorExistExpressionIT extends RuntimeCase {
     }
 
     @Test
-    public void testExistsAggConditionSameRoot() {
+    public void existsAggConditionSameRoot() {
         Expression exp = ExpressionFactory
                 .exp("paintingArray.paintingTitle = 'test' " +
                         "or paintingArray.paintingTitle = 'test2'")
@@ -214,7 +214,7 @@ public class QualifierTranslatorExistExpressionIT extends RuntimeCase {
     }
 
     @Test
-    public void testExistsAggConditionSameRootParser() {
+    public void existsAggConditionSameRootParser() {
         Expression exp = ExpressionFactory
                 .exp("exists (paintingArray.paintingTitle = 'test' " +
                         "or paintingArray.paintingTitle = 'test2')");
@@ -236,7 +236,7 @@ public class QualifierTranslatorExistExpressionIT extends RuntimeCase {
     }
 
     @Test
-    public void testExistsAggConditionMultipleRoots() {
+    public void existsAggConditionMultipleRoots() {
         Expression exp = ExpressionFactory
                 .exp("(paintingArray.paintingTitle = 'test' " +
                         "or paintingArray.paintingTitle = 'test2') and groupArray.name = 'test'")
@@ -263,7 +263,7 @@ public class QualifierTranslatorExistExpressionIT extends RuntimeCase {
     }
 
     @Test
-    public void testExistsAggDifferentRoots() {
+    public void existsAggDifferentRoots() {
         Expression exp = ExpressionFactory
                 .exp("paintingArray.paintingTitle = 'test' " +
                         "and (groupArray.name = 'test' or paintingArray.paintingTitle = 'test2')")
@@ -297,7 +297,7 @@ public class QualifierTranslatorExistExpressionIT extends RuntimeCase {
     }
 
     @Test
-    public void testExistsComplexConditionsDifferentRoots() {
+    public void existsComplexConditionsDifferentRoots() {
         Expression exp = ExpressionFactory
                 .exp("(length(paintingArray.paintingTitle) in (1, 2, 3)) " +
                     "or (length(groupArray.name) < 10)")

@@ -31,12 +31,12 @@ import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 
 @Deprecated
@@ -47,7 +47,7 @@ public class DefaultBatchTranslatorIT extends RuntimeCase {
     private AdhocObjectFactory objectFactory;
 
     @Test
-    public void testConstructor() throws Exception {
+    public void constructor() throws Exception {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         DefaultBatchTranslator builder = new DefaultBatchTranslator(mock(BatchQuery.class), adapter, null) {
             @Override
@@ -70,7 +70,7 @@ public class DefaultBatchTranslatorIT extends RuntimeCase {
     }
 
     @Test
-    public void testAppendDbAttribute1() throws Exception {
+    public void appendDbAttribute1() throws Exception {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         String trimFunction = "testTrim";
 
@@ -107,7 +107,7 @@ public class DefaultBatchTranslatorIT extends RuntimeCase {
     }
 
     @Test
-    public void testAppendDbAttribute2() throws Exception {
+    public void appendDbAttribute2() throws Exception {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
 
         DefaultBatchTranslator builder = new DefaultBatchTranslator(mock(BatchQuery.class), adapter, null) {

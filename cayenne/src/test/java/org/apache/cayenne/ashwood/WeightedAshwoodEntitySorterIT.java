@@ -28,10 +28,10 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.WEIGHTED_SORT_PROJECT)
 public class WeightedAshwoodEntitySorterIT extends RuntimeCase {
@@ -41,13 +41,13 @@ public class WeightedAshwoodEntitySorterIT extends RuntimeCase {
 
     EntityResolver resolver;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         this.resolver = context.getEntityResolver();
     }
 
     @Test
-    public void testSortDbEntities() {
+    public void sortDbEntities() {
         // since it is impossible to ensure non-coincidental sort order of unrelated
         // DbEntities (without overriding DbEntity.hashCode()), we'll test on 2 entities
         // with a relationship, and reverse the topological order with SortWeight annotation.

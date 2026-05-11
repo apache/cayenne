@@ -19,12 +19,12 @@
 
 package org.apache.cayenne.dbsync.reverse.filters;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class IncludeFilterTest {
 
     @Test
-    public void testIsInclude() throws Exception {
+    public void isInclude() throws Exception {
 //        IncludeFilter filter = new IncludeFilter(pattern("^v_.*$"));
 //        assertTrue(filter.isInclude("v_new_view"));
 //        assertFalse(filter.isInclude("new_view"));

@@ -40,10 +40,10 @@ import org.apache.cayenne.unit.di.runtime.ExtraModules;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test suite for testing behavior of multiple DataContexts that share the same underlying
@@ -64,7 +64,8 @@ public class DataContextSharedCacheIT extends RuntimeCase {
 
     private Artist artist;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         // prepare a single artist record
         artist = (Artist) context.newObject("Artist");
@@ -78,7 +79,7 @@ public class DataContextSharedCacheIT extends RuntimeCase {
      * be propagated across DataContexts.
      */
     @Test
-    public void testSnapshotChangePropagationOnSelect() throws Exception {
+    public void snapshotChangePropagationOnSelect() throws Exception {
         String originalName = artist.getArtistName();
         final String newName = "version2";
 
@@ -117,10 +118,7 @@ public class DataContextSharedCacheIT extends RuntimeCase {
 
             @Override
             protected void assertResult() throws Exception {
-                assertEquals(
-                        "Peer object state wasn't refreshed on fetch",
-                        newName,
-                        artist.getArtistName());
+                assertEquals(newName, artist.getArtistName(), "Peer object state wasn't refreshed on fetch");
             }
         };
         helper.runTest(3000);
@@ -132,7 +130,7 @@ public class DataContextSharedCacheIT extends RuntimeCase {
      * DataRowCache.
      */
     @Test
-    public void testSnapshotChangePropagation() throws Exception {
+    public void snapshotChangePropagation() throws Exception {
         String originalName = artist.getArtistName();
         final String newName = "version2";
 
@@ -174,7 +172,7 @@ public class DataContextSharedCacheIT extends RuntimeCase {
      * DataRowCache. E.g. modified objects will be merged so that no new changes are lost.
      */
     @Test
-    public void testSnapshotChangePropagationToModifiedObjects() throws Exception {
+    public void snapshotChangePropagationToModifiedObjects() throws Exception {
         String originalName = artist.getArtistName();
         Date originalDate = artist.getDateOfBirth();
         String newName = "version2";
@@ -224,7 +222,7 @@ public class DataContextSharedCacheIT extends RuntimeCase {
      * default COMMITTED objects will be changed to TRANSIENT.
      */
     @Test
-    public void testSnapshotDeletePropagationToCommitted() throws Exception {
+    public void snapshotDeletePropagationToCommitted() throws Exception {
 
         // make sure we have a fully resolved copy of an artist object
         // in the second context
@@ -262,7 +260,7 @@ public class DataContextSharedCacheIT extends RuntimeCase {
      * default HOLLOW objects will be changed to TRANSIENT.
      */
     @Test
-    public void testSnapshotDeletePropagationToHollow() throws Exception {
+    public void snapshotDeletePropagationToHollow() throws Exception {
 
         final Artist altArtist = context1.localObject(artist);
 
@@ -298,7 +296,7 @@ public class DataContextSharedCacheIT extends RuntimeCase {
      * default MODIFIED objects will be changed to NEW.
      */
     @Test
-    public void testSnapshotDeletePropagationToModified() throws Exception {
+    public void snapshotDeletePropagationToModified() throws Exception {
 
         // make sure we have a fully resolved copy of an artist object
         // in the second context
@@ -349,7 +347,7 @@ public class DataContextSharedCacheIT extends RuntimeCase {
      * default DELETED objects will be changed to TRANSIENT.
      */
     @Test
-    public void testSnapshotDeletePropagationToDeleted() throws Exception {
+    public void snapshotDeletePropagationToDeleted() throws Exception {
 
         // make sure we have a fully resolved copy of an artist object
         // in the second context
@@ -391,7 +389,7 @@ public class DataContextSharedCacheIT extends RuntimeCase {
      * including proper processing of deleted object being held in to-many collections.
      */
     @Test
-    public void testSnapshotDeletePropagationToManyRefresh() throws Exception {
+    public void snapshotDeletePropagationToManyRefresh() throws Exception {
 
         Painting painting1 = (Painting) context.newObject("Painting");
         painting1.setPaintingTitle("p1");
@@ -460,7 +458,7 @@ public class DataContextSharedCacheIT extends RuntimeCase {
      * This would mean refreshing to-many collections.
      */
     @Test
-    public void testSnapshotInsertPropagationToManyRefresh() throws Exception {
+    public void snapshotInsertPropagationToManyRefresh() throws Exception {
 
         Painting painting1 = (Painting) context.newObject("Painting");
         painting1.setPaintingTitle("p1");
@@ -496,7 +494,7 @@ public class DataContextSharedCacheIT extends RuntimeCase {
             @Override
             protected void assertResult() throws Exception {
                 Object value = altArtist.readPropertyDirectly("paintingArray");
-                assertTrue("Unexpected: " + value, value instanceof ToManyList);
+                assertTrue(value instanceof ToManyList, "Unexpected: " + value);
                 assertTrue(((ToManyList) value).isFault());
             }
         };
@@ -510,7 +508,7 @@ public class DataContextSharedCacheIT extends RuntimeCase {
      * true.
      */
     @Test
-    public void testCacheRefreshingOnSelect() throws Exception {
+    public void cacheRefreshingOnSelect() throws Exception {
         String originalName = artist.getArtistName();
         final String newName = "version2";
 
@@ -554,7 +552,7 @@ public class DataContextSharedCacheIT extends RuntimeCase {
     }
 
     @Test
-    public void testSnapshotEvictedForHollow() throws Exception {
+    public void snapshotEvictedForHollow() throws Exception {
         String originalName = artist.getArtistName();
 
         context.invalidateObjects(artist);
@@ -575,7 +573,7 @@ public class DataContextSharedCacheIT extends RuntimeCase {
     }
 
     @Test
-    public void testSnapshotEvictedAndObjectsHollowedForInvalidate() throws Exception {
+    public void snapshotEvictedAndObjectsHollowedForInvalidate() throws Exception {
         String originalName = artist.getArtistName();
 
         // make sure we have a fully resolved copy of an artist object
@@ -618,7 +616,7 @@ public class DataContextSharedCacheIT extends RuntimeCase {
     }
 
     @Test
-    public void testSnapshotEvictedForCommitted() throws Exception {
+    public void snapshotEvictedForCommitted() throws Exception {
         String newName = "version2";
 
         assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
@@ -643,7 +641,7 @@ public class DataContextSharedCacheIT extends RuntimeCase {
     }
 
     @Test
-    public void testSnapshotEvictedForModified() throws Exception {
+    public void snapshotEvictedForModified() throws Exception {
         String newName = "version2";
 
         assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
@@ -669,7 +667,7 @@ public class DataContextSharedCacheIT extends RuntimeCase {
     }
 
     @Test
-    public void testSnapshotEvictedAndChangedForModified() throws Exception {
+    public void snapshotEvictedAndChangedForModified() throws Exception {
         String originalName = artist.getArtistName();
         String newName = "version2";
         String backendName = "version3";
@@ -707,7 +705,7 @@ public class DataContextSharedCacheIT extends RuntimeCase {
     }
 
     @Test
-    public void testSnapshotEvictedForDeleted() throws Exception {
+    public void snapshotEvictedForDeleted() throws Exception {
         // remember ObjectId
         ObjectId id = artist.getObjectId();
 

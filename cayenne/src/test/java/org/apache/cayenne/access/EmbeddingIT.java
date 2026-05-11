@@ -34,14 +34,14 @@ import org.apache.cayenne.testdo.embeddable.Embeddable1;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.EMBEDDABLE_PROJECT)
 public class EmbeddingIT extends RuntimeCase {
@@ -57,7 +57,8 @@ public class EmbeddingIT extends RuntimeCase {
     protected TableHelper tEmbedRoot;
     protected TableHelper tEmbedChild;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tEmbedEntity1 = new TableHelper(dbHelper, "EMBED_ENTITY1");
         tEmbedEntity1.setColumns("ID", "NAME", "EMBEDDED10", "EMBEDDED20", "EMBEDDED30", "EMBEDDED40");
@@ -94,7 +95,7 @@ public class EmbeddingIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelect() throws Exception {
+    public void select() throws Exception {
         createSelectDataSet();
 
         List<EmbedEntity1> results = ObjectSelect.query(EmbedEntity1.class).orderBy(EmbedEntity1.NAME.asc()).select(context);
@@ -128,7 +129,7 @@ public class EmbeddingIT extends RuntimeCase {
     }
 
     @Test
-    public void testEmbeddablePropertiesInWhere() throws Exception {
+    public void embeddablePropertiesInWhere() throws Exception {
         createSelectDataSet();
 
         List<EmbedEntity1> result = ObjectSelect.query(EmbedEntity1.class)
@@ -140,7 +141,7 @@ public class EmbeddingIT extends RuntimeCase {
     }
 
     @Test
-    public void testInsert() {
+    public void insert() {
 
         EmbedEntity1 o1 = context.newObject(EmbedEntity1.class);
         o1.setName("NAME");
@@ -170,7 +171,7 @@ public class EmbeddingIT extends RuntimeCase {
     }
 
     @Test
-    public void testUpdateEmbeddedProperties() throws Exception {
+    public void updateEmbeddedProperties() throws Exception {
         createUpdateDataSet();
 
         List<EmbedEntity1> results = ObjectSelect.query(EmbedEntity1.class).orderBy(EmbedEntity1.NAME.asc()).select(context);
@@ -189,7 +190,7 @@ public class EmbeddingIT extends RuntimeCase {
     }
 
     @Test
-    public void testUpdateEmbedded() throws Exception {
+    public void updateEmbedded() throws Exception {
         createUpdateDataSet();
 
         List<EmbedEntity1> results = ObjectSelect.query(EmbedEntity1.class).orderBy(EmbedEntity1.NAME.asc()).select(context);
@@ -210,7 +211,7 @@ public class EmbeddingIT extends RuntimeCase {
     }
 
     @Test
-    public void testPropertyExpression() throws Exception {
+    public void propertyExpression() throws Exception {
         createSelectDataSet();
 
         List<EmbedEntity1> result = ObjectSelect.query(EmbedEntity1.class)
@@ -222,7 +223,7 @@ public class EmbeddingIT extends RuntimeCase {
     }
 
     @Test
-    public void testRelatedEmbedded() throws Exception {
+    public void relatedEmbedded() throws Exception {
         createSelectDataSet2();
 
         List<EmbedEntity2> result = ObjectSelect.query(EmbedEntity2.class)
@@ -234,7 +235,7 @@ public class EmbeddingIT extends RuntimeCase {
     }
 
     @Test
-    public void testPrefetchWithEmbedded() throws Exception {
+    public void prefetchWithEmbedded() throws Exception {
         createSelectDataSet2();
 
         List<EmbedEntity2> result = ObjectSelect.query(EmbedEntity2.class)
@@ -247,7 +248,7 @@ public class EmbeddingIT extends RuntimeCase {
     }
 
     @Test
-    public void testInMemoryFilteringByEmbeddable() throws Exception {
+    public void inMemoryFilteringByEmbeddable() throws Exception {
         createSelectDataSet();
 
         List<EmbedEntity1> result = ObjectSelect.query(EmbedEntity1.class).select(context);
@@ -259,7 +260,7 @@ public class EmbeddingIT extends RuntimeCase {
     }
 
     @Test
-    public void testColumnSelect() throws Exception {
+    public void columnSelect() throws Exception {
         createSelectDataSet2();
 
         List<Embeddable1> result = ObjectSelect.columnQuery(EmbedEntity1.class, EmbedEntity1.EMBEDDED2)
@@ -276,7 +277,7 @@ public class EmbeddingIT extends RuntimeCase {
      }
 
     @Test
-    public void testColumnSelectMultiple() throws Exception {
+    public void columnSelectMultiple() throws Exception {
         createSelectDataSet2();
 
         List<Object[]> result = ObjectSelect.columnQuery(EmbedEntity1.class, EmbedEntity1.EMBEDDED1, EmbedEntity1.EMBEDDED2)
@@ -290,7 +291,7 @@ public class EmbeddingIT extends RuntimeCase {
     }
 
     @Test
-    public void testColumnSelectMixed() throws Exception {
+    public void columnSelectMixed() throws Exception {
         createSelectDataSet2();
 
         List<Object[]> result = ObjectSelect.columnQuery(EmbedEntity1.class, EmbedEntity1.EMBEDDED1.dot(Embeddable1.EMBEDDED10), EmbedEntity1.EMBEDDED2)
@@ -304,7 +305,7 @@ public class EmbeddingIT extends RuntimeCase {
     }
 
     @Test
-    public void testWhere() throws Exception {
+    public void where() throws Exception {
         createSelectDataSet2();
 
         Embeddable1 embeddable1 = new Embeddable1();
@@ -318,7 +319,7 @@ public class EmbeddingIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectWithInheritance() throws Exception {
+    public void selectWithInheritance() throws Exception {
         createSelectDataSetInheritance();
 
         List<EmbedRoot> roots = ObjectSelect.query(EmbedRoot.class)
@@ -340,7 +341,7 @@ public class EmbeddingIT extends RuntimeCase {
     }
 
     @Test
-    public void testInsertWithInheritance() {
+    public void insertWithInheritance() {
         {
             EmbedRoot root = context.newObject(EmbedRoot.class);
             root.setName("root");
@@ -363,7 +364,7 @@ public class EmbeddingIT extends RuntimeCase {
     }
 
     @Test
-    public void testQueryWithBatchIterator() throws Exception {
+    public void queryWithBatchIterator() throws Exception {
         createSelectDataSet2();
         try (ResultBatchIterator<EmbedEntity1> iterator = ObjectSelect.query(EmbedEntity1.class)
                 .batchIterator(context, 2)) {

@@ -22,8 +22,8 @@ package org.apache.cayenne.access;
 import java.util.Collection;
 import java.util.Map;
 
-import org.junit.Assert;
-import junit.framework.AssertionFailedError;
+import org.junit.jupiter.api.Assertions;
+import org.opentest4j.AssertionFailedError;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
@@ -75,7 +75,7 @@ public class UnitTestDomain extends DataDomain {
     public void checkQueryAllowed(Collection<? extends Query> queries)
             throws AssertionFailedError {
         if (blockingQueries) {
-            Assert.fail("Query is unexpected: " + queries);
+            Assertions.fail("Query is unexpected: " + queries);
         }
 
         queryCount++;

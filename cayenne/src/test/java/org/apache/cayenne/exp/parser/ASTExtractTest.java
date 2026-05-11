@@ -22,10 +22,10 @@ package org.apache.cayenne.exp.parser;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.FunctionExpressionFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @since 4.0
@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 public class ASTExtractTest {
 
     @Test
-    public void testYear() {
+    public void year() {
         String expStr = "year(dateColumn)";
         Expression expParsed = ExpressionFactory.exp(expStr);
         Expression expFromFactory = FunctionExpressionFactory.yearExp("dateColumn");
@@ -46,7 +46,7 @@ public class ASTExtractTest {
     }
 
     @Test
-    public void testMonth() {
+    public void month() {
         String expStr = "month(dateColumn)";
         Expression expParsed = ExpressionFactory.exp(expStr);
         Expression expFromFactory = FunctionExpressionFactory.monthExp("dateColumn");
@@ -59,7 +59,7 @@ public class ASTExtractTest {
     }
 
     @Test
-    public void testWeek() {
+    public void week() {
         String expStr = "week(dateColumn)";
         Expression expParsed = ExpressionFactory.exp(expStr);
         Expression expFromFactory = FunctionExpressionFactory.weekExp("dateColumn");
@@ -72,7 +72,7 @@ public class ASTExtractTest {
     }
 
     @Test
-    public void testDayOfYear() {
+    public void dayOfYear() {
         String expStr = "dayOfYear(dateColumn)";
         Expression expParsed = ExpressionFactory.exp(expStr);
         Expression expFromFactory = FunctionExpressionFactory.dayOfYearExp("dateColumn");
@@ -85,7 +85,7 @@ public class ASTExtractTest {
     }
 
     @Test
-    public void testDay() {
+    public void day() {
         String expStr = "day(dateColumn)";
         Expression expParsed = ExpressionFactory.exp(expStr);
 
@@ -95,7 +95,7 @@ public class ASTExtractTest {
     }
 
     @Test
-    public void testDayOfMonth() {
+    public void dayOfMonth() {
         String expStr = "dayOfMonth(dateColumn)";
         Expression expParsed = ExpressionFactory.exp(expStr);
         Expression expFromFactory = FunctionExpressionFactory.dayOfMonthExp("dateColumn");
@@ -108,7 +108,7 @@ public class ASTExtractTest {
     }
 
     @Test
-    public void testDayOfWeek() {
+    public void dayOfWeek() {
         String expStr = "dayOfWeek(dateColumn)";
         Expression expParsed = ExpressionFactory.exp(expStr);
         Expression expFromFactory = FunctionExpressionFactory.dayOfWeekExp("dateColumn");
@@ -121,7 +121,7 @@ public class ASTExtractTest {
     }
 
     @Test
-    public void testHour() {
+    public void hour() {
         String expStr = "hour(dateColumn)";
         Expression expParsed = ExpressionFactory.exp(expStr);
         Expression expFromFactory = FunctionExpressionFactory.hourExp("dateColumn");
@@ -134,7 +134,7 @@ public class ASTExtractTest {
     }
 
     @Test
-    public void testMinute() {
+    public void minute() {
         String expStr = "minute(dateColumn)";
         Expression expParsed = ExpressionFactory.exp(expStr);
         Expression expFromFactory = FunctionExpressionFactory.minuteExp("dateColumn");
@@ -147,7 +147,7 @@ public class ASTExtractTest {
     }
 
     @Test
-    public void testSecond() {
+    public void second() {
         String expStr = "second(dateColumn)";
         Expression expParsed = ExpressionFactory.exp(expStr);
         Expression expFromFactory = FunctionExpressionFactory.secondExp("dateColumn");

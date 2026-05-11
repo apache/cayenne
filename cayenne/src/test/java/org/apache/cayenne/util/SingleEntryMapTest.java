@@ -25,12 +25,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.2
@@ -39,7 +39,7 @@ public class SingleEntryMapTest {
 
     private SingleEntryMap<String, Integer> map;
 
-    @Before
+    @BeforeEach
     public void createMap() {
         map = new SingleEntryMap<>("test");
     }
@@ -56,9 +56,9 @@ public class SingleEntryMapTest {
         assertNull(map.getValue());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void constructorWithNullKey() {
-        new SingleEntryMap<>(null);
+        assertThrows(NullPointerException.class, () -> new SingleEntryMap<>(null));
     }
 
     @Test
@@ -84,9 +84,9 @@ public class SingleEntryMapTest {
         assertEquals(321, (int)mapWithValue.get("test"));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void constructorWithNullKeyAndValue() {
-        new SingleEntryMap<>(null, 123);
+        assertThrows(NullPointerException.class, () -> new SingleEntryMap<>(null, 123));
     }
 
     @Test
@@ -169,9 +169,9 @@ public class SingleEntryMapTest {
         assertNull(map.put("test", 123));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void putWrongKey() {
-        map.put("test2", 321);
+        assertThrows(IllegalArgumentException.class, () -> map.put("test2", 321));
     }
 
     @Test
@@ -196,13 +196,13 @@ public class SingleEntryMapTest {
         assertEquals(123, (int)map.get("test"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void putAllWrongKey() {
         assertNull(map.get("test"));
         assertNull(map.get("test2"));
 
         Map<String, Integer> map2 = Collections.singletonMap("test2", 123);
-        map.putAll(map2);
+        assertThrows(IllegalArgumentException.class, () -> map.putAll(map2));
     }
 
     @Test
@@ -372,9 +372,9 @@ public class SingleEntryMapTest {
         assertEquals(123, (int)map.putIfAbsent("test", 456));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void putIfAbsentWrongKey() {
-        map.putIfAbsent("test2", 321);
+        assertThrows(IllegalArgumentException.class, () -> map.putIfAbsent("test2", 321));
     }
 
     @Test
@@ -384,9 +384,9 @@ public class SingleEntryMapTest {
         assertEquals(123, (int)map.computeIfAbsent("test", k -> 456));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void computeIfAbsentWrongKey() {
-        map.computeIfAbsent("test2", k -> 123);
+        assertThrows(IllegalArgumentException.class, () -> map.computeIfAbsent("test2", k -> 123));
     }
 
     @Test
@@ -406,9 +406,9 @@ public class SingleEntryMapTest {
         assertEquals(125, (int)map.compute("test", (k, v) -> v == null ? 123 : v + 1));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void computeWrongKey() {
-        map.compute("test2", (k, v) -> 123);
+        assertThrows(IllegalArgumentException.class, () -> map.compute("test2", (k, v) -> 123));
     }
 
     @Test
@@ -418,9 +418,9 @@ public class SingleEntryMapTest {
         assertEquals(3, (int)map.merge("test", 1, Integer::sum));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void mergeWrongKey() {
-        map.merge("test2", 123, (oldV, newV) -> oldV + newV);
+        assertThrows(IllegalArgumentException.class, () -> map.merge("test2", 123, (oldV, newV) -> oldV + newV));
     }
 
     @Test

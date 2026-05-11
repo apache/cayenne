@@ -28,10 +28,10 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class MySQLAdapterIT extends RuntimeCase {
@@ -40,7 +40,7 @@ public class MySQLAdapterIT extends RuntimeCase {
     private AdhocObjectFactory objectFactory;
 
     @Test
-    public void testCreateTableAppendPKClause() {
+    public void createTableAppendPKClause() {
         MySQLAdapter adapter = objectFactory.newInstance(
                 MySQLAdapter.class, 
                 MySQLAdapter.class.getName());
@@ -72,7 +72,7 @@ public class MySQLAdapterIT extends RuntimeCase {
     }
 
     @Test
-    public void testCreateTableAppendColumnWithTimeAndTimestamp() {
+    public void createTableAppendColumnWithTimeAndTimestamp() {
         MySQLAdapter adapter = objectFactory.newInstance(
                 MySQLAdapter.class,
                 MySQLAdapter.class.getName());
@@ -97,7 +97,7 @@ public class MySQLAdapterIT extends RuntimeCase {
     }
 
     @Test
-    public void testCreateTableAppendColumnWithTimeAndTimestampWihoutScale() {
+    public void createTableAppendColumnWithTimeAndTimestampWihoutScale() {
         MySQLAdapter adapter = objectFactory.newInstance(
                 MySQLAdapter.class,
                 MySQLAdapter.class.getName());

@@ -27,11 +27,11 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.validation.ValidationException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class NestedDataContextValidationIT extends RuntimeCase {
@@ -43,22 +43,16 @@ public class NestedDataContextValidationIT extends RuntimeCase {
     private DataContext context;
 
     @Test
-    public void testValidateOnCommitToParent() {
+    public void validateOnCommitToParent() {
         context.setValidatingObjectsOnCommit(true);
 
         ObjectContext childContext = runtime.newContext(context);
         assertTrue(
-                "Child context must have inherited the validation flag from parent",
-                ((DataContext) childContext).isValidatingObjectsOnCommit());
+                ((DataContext) childContext).isValidatingObjectsOnCommit(),
+                "Child context must have inherited the validation flag from parent");
 
         Artist a1 = childContext.newObject(Artist.class);
-        try {
-            childContext.commitChangesToParent();
-            fail("No validation was performed");
-        }
-        catch (ValidationException e) {
-            // expected
-        }
+        assertThrows(ValidationException.class, childContext::commitChangesToParent);
 
         assertFalse(context.hasChanges());
 

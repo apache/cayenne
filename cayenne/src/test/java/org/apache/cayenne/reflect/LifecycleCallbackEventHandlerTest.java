@@ -20,18 +20,18 @@ package org.apache.cayenne.reflect;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistentObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LifecycleCallbackEventHandlerTest {
 
     @Test
-    public void testDefaultListeners() {
+    public void defaultListeners() {
 
         LifecycleCallbackEventHandler map = new LifecycleCallbackEventHandler();
         L1 l1 = new L1();
@@ -47,7 +47,7 @@ public class LifecycleCallbackEventHandlerTest {
     }
 
     @Test
-    public void testDefaultListenersCallbackOrder() {
+    public void defaultListenersCallbackOrder() {
 
         LifecycleCallbackEventHandler map = new LifecycleCallbackEventHandler();
         L2 l1 = new L2();
@@ -69,7 +69,7 @@ public class LifecycleCallbackEventHandlerTest {
     }
 
     @Test
-    public void testCallbackOnSuperclass() {
+    public void callbackOnSuperclass() {
 
         LifecycleCallbackEventHandler map = new LifecycleCallbackEventHandler();
         map.addListener(C1.class, "c1Callback");
@@ -83,7 +83,7 @@ public class LifecycleCallbackEventHandlerTest {
     }
 
     @Test
-    public void testCallbackOnSuperclassWithSublcassOverrides() {
+    public void callbackOnSuperclassWithSublcassOverrides() {
 
         LifecycleCallbackEventHandler map = new LifecycleCallbackEventHandler();
         map.addListener(C1.class, "c1Callback");
@@ -98,7 +98,7 @@ public class LifecycleCallbackEventHandlerTest {
     }
 
     @Test
-    public void testCallbackOrderInInheritanceHierarchy() {
+    public void callbackOrderInInheritanceHierarchy() {
 
         LifecycleCallbackEventHandler map = new LifecycleCallbackEventHandler();
         map.addListener(C2.class, "c2Callback");

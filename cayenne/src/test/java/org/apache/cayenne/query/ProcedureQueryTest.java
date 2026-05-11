@@ -20,25 +20,25 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  */
 public class ProcedureQueryTest {
 
     @Test
-    public void testCreateQuery() {
+    public void createQuery() {
         ProcedureQuery template = new ProcedureQuery();
         Query clone = template.createQuery(Collections.EMPTY_MAP);
         assertTrue(clone instanceof ProcedureQuery);
@@ -46,7 +46,7 @@ public class ProcedureQueryTest {
     }
 
     @Test
-    public void testColumnNameCapitalization() {
+    public void columnNameCapitalization() {
         ProcedureQuery q1 = new ProcedureQuery();
         assertSame(CapsStrategy.DEFAULT, q1.getColumnNamesCapitalization());
         q1.setColumnNamesCapitalization(CapsStrategy.UPPER);
@@ -54,7 +54,7 @@ public class ProcedureQueryTest {
     }
 
     @Test
-    public void testCreateQueryWithParameters() {
+    public void createQueryWithParameters() {
         Map params = new HashMap();
         params.put("a", "1");
         params.put("b", "2");
@@ -66,7 +66,7 @@ public class ProcedureQueryTest {
     }
 
     @Test
-    public void testResultEntityName() {
+    public void resultEntityName() {
         ProcedureQuery query = new ProcedureQuery();
         assertNull(query.getResultEntityName());
 
@@ -75,7 +75,7 @@ public class ProcedureQueryTest {
     }
 
     @Test
-    public void testResultDescriptors() {
+    public void resultDescriptors() {
         ProcedureQuery query = new ProcedureQuery();
 
         assertNotNull(query.getResultDescriptors());

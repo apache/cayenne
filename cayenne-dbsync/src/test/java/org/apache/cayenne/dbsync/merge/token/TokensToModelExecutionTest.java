@@ -25,13 +25,13 @@ import org.apache.cayenne.dbsync.merge.factory.DefaultMergerTokenFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dataMap;
 import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbAttr;
 import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbEntity;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @since 4.0.
@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 public class TokensToModelExecutionTest {
 
     @Test
-    public void testCreateAndDropTable() throws Exception {
+    public void createAndDropTable() throws Exception {
         DbEntity entity = dbEntity().build();
 
         DataMap dataMap = dataMap().build();
@@ -59,7 +59,7 @@ public class TokensToModelExecutionTest {
     }
 
     @Test
-    public void testCreateAndDropColumn() throws Exception {
+    public void createAndDropColumn() throws Exception {
         DbAttribute attr = dbAttr("attr").build();
         DbEntity entity = dbEntity().build();
 

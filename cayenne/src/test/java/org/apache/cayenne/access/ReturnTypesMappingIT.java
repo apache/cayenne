@@ -36,13 +36,13 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * Test Types mapping for selected columns
@@ -61,7 +61,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
      */
 
     @Test
-    public void testBIGINT() throws Exception {
+    public void bigint() throws Exception {
         String columnName = "BIGINT_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -82,7 +82,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testBIGINT2() throws Exception {
+    public void bigint2() throws Exception {
        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
         Long bigintValue = 5326457654783454355L;
@@ -99,7 +99,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testBINARY() throws Exception {
+    public void binary() throws Exception {
         if (unitDbAdapter.supportsLobs()) {
             String columnName = "BINARY_COLUMN";
             ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
@@ -119,7 +119,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testBINARY2() throws Exception {
+    public void binary2() throws Exception {
         if (unitDbAdapter.supportsLobs()) {
             ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
 
@@ -140,7 +140,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testBIT() throws Exception {
+    public void bit() throws Exception {
         String columnName = "BIT_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -158,7 +158,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testBIT2() throws Exception {
+    public void bit2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
         Boolean bitValue = true;
@@ -175,9 +175,9 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testBLOB() throws Exception {
-        assumeTrue("In postresql blob_column has OID type, but in JAVA it converts into long not into byte.",
-                !(unitDbAdapter instanceof PostgresUnitDbAdapter));
+    public void blob() throws Exception {
+        assumeTrue(!(unitDbAdapter instanceof PostgresUnitDbAdapter),
+                "In postresql blob_column has OID type, but in JAVA it converts into long not into byte.");
 
         if (unitDbAdapter.supportsLobs()) {
             String columnName = "BLOB_COLUMN";
@@ -198,7 +198,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testBLOB2() throws Exception {
+    public void blob2() throws Exception {
         if (unitDbAdapter.supportsLobs()) {
             ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
 
@@ -219,7 +219,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testBOOLEAN() throws Exception {
+    public void booleanType() throws Exception {
         String columnName = "BOOLEAN_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -238,7 +238,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testBOOLEAN2() throws Exception {
+    public void booleanType2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
         Boolean booleanValue = true;
@@ -255,7 +255,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testCHAR() throws Exception {
+    public void charType() throws Exception {
         String columnName = "CHAR_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -271,7 +271,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testNCHAR() throws Exception {
+    public void nchar() throws Exception {
         String columnName = "NCHAR_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -287,7 +287,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testCHAR2() throws Exception {
+    public void charType2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
         String charValue = "Char string for tests!";
@@ -304,7 +304,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testCLOB() throws Exception {
+    public void clob() throws Exception {
         if (unitDbAdapter.supportsLobs()) {
             String columnName = "CLOB_COLUMN";
             ReturnTypesMapLobs1 test = context.newObject(ReturnTypesMapLobs1.class);
@@ -329,7 +329,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testNCLOB() throws Exception {
+    public void nclob() throws Exception {
         if (unitDbAdapter.supportsLobs()) {
             String columnName = "NCLOB_COLUMN";
             ReturnTypesMapLobs1 test = context.newObject(ReturnTypesMapLobs1.class);
@@ -355,7 +355,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testCLOB2() throws Exception {
+    public void clob2() throws Exception {
         if (unitDbAdapter.supportsLobs()) {
             ReturnTypesMapLobs1 test = context.newObject(ReturnTypesMapLobs1.class);
 
@@ -378,7 +378,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testDATE() throws Exception {
+    public void date() throws Exception {
         String columnName = "DATE_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -397,7 +397,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testDATE2() throws Exception {
+    public void date2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
         Calendar cal = Calendar.getInstance();
@@ -418,7 +418,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testDECIMAL() throws Exception {
+    public void decimal() throws Exception {
         String columnName = "DECIMAL_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -434,7 +434,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testDECIMAL2() throws Exception {
+    public void decimal2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
         BigDecimal decimalValue = new BigDecimal("578438.57843");
@@ -451,7 +451,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testDOUBLE() throws Exception {
+    public void doubleType() throws Exception {
         String columnName = "DOUBLE_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -472,7 +472,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testDOUBLE2() throws Exception {
+    public void doubleType2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
         Double doubleValue = 3298.4349783d;
@@ -489,7 +489,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testFLOAT() throws Exception {
+    public void floatType() throws Exception {
         String columnName = "FLOAT_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -510,7 +510,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testFLOAT2() throws Exception {
+    public void floatType2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
         Float floatValue = 375.437f;
@@ -527,7 +527,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testINTEGER() throws Exception {
+    public void integer() throws Exception {
         String columnName = "INTEGER_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -543,7 +543,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testINTEGER2() throws Exception {
+    public void integer2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
         Integer integerValue = 54235;
@@ -560,7 +560,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testLONGVARBINARY() throws Exception {
+    public void longVarBinary() throws Exception {
         if (unitDbAdapter.supportsLobs()) {
             String columnName = "LONGVARBINARY_COLUMN";
             ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
@@ -580,7 +580,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testLONGVARBINARY2() throws Exception {
+    public void longVarBinary2() throws Exception {
         if (unitDbAdapter.supportsLobs()) {
             ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
 
@@ -601,7 +601,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testLONGVARCHAR() throws Exception {
+    public void longVarChar() throws Exception {
         String columnName = "LONGVARCHAR_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -621,7 +621,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testLONGNVARCHAR() throws Exception {
+    public void longNVarChar() throws Exception {
         String columnName = "LONGNVARCHAR_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -641,7 +641,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testLONGVARCHAR2() throws Exception {
+    public void longVarChar2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
         StringBuffer buffer = new StringBuffer();
@@ -662,7 +662,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testNUMERIC() throws Exception {
+    public void numeric() throws Exception {
         String columnName = "NUMERIC_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -678,7 +678,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testNUMERIC2() throws Exception {
+    public void numeric2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
         BigDecimal numericValue = new BigDecimal("578438.57843");
@@ -695,7 +695,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testREAL() throws Exception {
+    public void real() throws Exception {
         String columnName = "REAL_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -723,7 +723,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testREAL2() throws Exception {
+    public void real2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
         Float realValue = 5788.57843f;
@@ -740,7 +740,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testSMALLINT() throws Exception {
+    public void smallint() throws Exception {
         String columnName = "SMALLINT_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -762,7 +762,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testSMALLINT2() throws Exception {
+    public void smallint2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
         Short smallintValue = 32564;
@@ -779,7 +779,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testTIME() throws Exception {
+    public void time() throws Exception {
         String columnName = "TIME_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -799,7 +799,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testTIME2() throws Exception {
+    public void time2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
         Calendar cal = Calendar.getInstance();
@@ -819,7 +819,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testTIMESTAMP() throws Exception {
+    public void timestamp() throws Exception {
         String columnName = "TIMESTAMP_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -839,7 +839,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testTIMESTAMP2() throws Exception {
+    public void timestamp2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
         Date timestampValue = Calendar.getInstance().getTime();
@@ -859,7 +859,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
         assertTrue(delta < 1000);    }
 
     @Test
-    public void testTINYINT() throws Exception {
+    public void tinyint() throws Exception {
         String columnName = "TINYINT_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -880,7 +880,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testTINYINT2() throws Exception {
+    public void tinyint2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
         Byte tinyintValue = 89;
@@ -897,7 +897,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testVARBINARY() throws Exception {
+    public void varBinary() throws Exception {
         if (unitDbAdapter.supportsLobs()) {
             String columnName = "VARBINARY_COLUMN";
             ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
@@ -917,7 +917,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testVARBINARY2() throws Exception {
+    public void varBinary2() throws Exception {
         if (unitDbAdapter.supportsLobs()) {
             ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
 
@@ -938,7 +938,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testVARCHAR() throws Exception {
+    public void varChar() throws Exception {
         String columnName = "VARCHAR_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -954,7 +954,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testNVARCHAR() throws Exception {
+    public void nVarChar() throws Exception {
         String columnName = "NVARCHAR_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -970,7 +970,7 @@ public class ReturnTypesMappingIT extends RuntimeCase {
     }
 
     @Test
-    public void testVARCHAR2() throws Exception {
+    public void varChar2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
         String varcharValue = "VARChar string for tests!";

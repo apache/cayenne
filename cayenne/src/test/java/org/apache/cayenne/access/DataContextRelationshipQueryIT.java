@@ -28,13 +28,13 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextRelationshipQueryIT extends RuntimeCase {
@@ -48,7 +48,8 @@ public class DataContextRelationshipQueryIT extends RuntimeCase {
     private TableHelper tArtist;
     private TableHelper tPainting;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -63,7 +64,7 @@ public class DataContextRelationshipQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testUnrefreshingToOne() throws Exception {
+    public void unrefreshingToOne() throws Exception {
 
         createOneArtistOnePaintingDataSet();
 
@@ -93,14 +94,11 @@ public class DataContextRelationshipQueryIT extends RuntimeCase {
         assertTrue(related.contains(a));
         assertEquals("a1", a.getArtistName());
         assertEquals(v, a.getSnapshotVersion());
-        assertEquals(
-                "Looks like relationship query caused snapshot refresh",
-                writeCalls,
-                a.getPropertyWrittenDirectly());
+        assertEquals(writeCalls, a.getPropertyWrittenDirectly(), "Looks like relationship query caused snapshot refresh");
     }
 
     @Test
-    public void testRefreshingToOne() throws Exception {
+    public void refreshingToOne() throws Exception {
 
         createOneArtistOnePaintingDataSet();
 
@@ -129,10 +127,7 @@ public class DataContextRelationshipQueryIT extends RuntimeCase {
         assertEquals(1, related.size());
         assertTrue(related.contains(a));
         assertEquals("a2", a.getArtistName());
-        assertTrue("Looks like relationship query didn't cause a snapshot refresh", v < a
-                .getSnapshotVersion());
-        assertTrue(
-                "Looks like relationship query didn't cause a snapshot refresh",
-                writeCalls < a.getPropertyWrittenDirectly());
+        assertTrue(v < a.getSnapshotVersion(), "Looks like relationship query didn't cause a snapshot refresh");
+        assertTrue(writeCalls < a.getPropertyWrittenDirectly(), "Looks like relationship query didn't cause a snapshot refresh");
     }
 }

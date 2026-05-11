@@ -32,12 +32,10 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Ordering;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.2
@@ -46,7 +44,7 @@ public class OrderingStageTest {
 
     private TranslatorContext context;
 
-    @Before
+    @BeforeEach
     public void prepareContext() {
         DbEntity dbEntity = new DbEntity();
         dbEntity.setName("mock");
@@ -98,12 +96,12 @@ public class OrderingStageTest {
 
         Node child = select.getChild(0);
         assertEquals(1, select.getChildrenCount());
-        assertThat(child, instanceOf(OrderByNode.class));
+        assertInstanceOf(OrderByNode.class, child);
         assertEquals(1, child.getChildrenCount());
-        assertThat(child.getChild(0), instanceOf(EmptyNode.class));
+        assertInstanceOf(EmptyNode.class, child.getChild(0));
         assertEquals(2, child.getChild(0).getChildrenCount());
-        assertThat(child.getChild(0).getChild(0), instanceOf(ColumnNode.class));
-        assertThat(child.getChild(0).getChild(1), instanceOf(TextNode.class));
+        assertInstanceOf(ColumnNode.class, child.getChild(0).getChild(0));
+        assertInstanceOf(TextNode.class, child.getChild(0).getChild(1));
 
         ColumnNode columnNode = (ColumnNode)child.getChild(0).getChild(0);
         assertEquals("path", columnNode.getColumn());
@@ -111,7 +109,7 @@ public class OrderingStageTest {
     }
     
     @Test
-    public void testNoDuplicateColumnsWhenDistinct() {
+    public void noDuplicateColumnsWhenDistinct() {
         ColumnExtractorStage columnStage = new ColumnExtractorStage();
         columnStage.perform(context);
 

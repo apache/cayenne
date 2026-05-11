@@ -30,15 +30,15 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextMaxIdQualifierIT extends RuntimeCase {
@@ -58,7 +58,7 @@ public class DataContextMaxIdQualifierIT extends RuntimeCase {
     private TableHelper tArtist;
     private TableHelper tPainting;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -85,7 +85,7 @@ public class DataContextMaxIdQualifierIT extends RuntimeCase {
     }
 
     @Test
-    public void testDisjointByIdPrefetch() throws Exception {
+    public void disjointByIdPrefetch() throws Exception {
         insertData();
         runtime.getDataDomain().setMaxIdQualifierSize(10);
 
@@ -98,7 +98,7 @@ public class DataContextMaxIdQualifierIT extends RuntimeCase {
     }
 
     @Test
-    public void testDisjointByIdPrefetch_Zero() throws Exception {
+    public void disjointByIdPrefetch_Zero() throws Exception {
         insertData();
         runtime.getDataDomain().setMaxIdQualifierSize(0);
 
@@ -111,7 +111,7 @@ public class DataContextMaxIdQualifierIT extends RuntimeCase {
     }
 
     @Test
-    public void testDisjointByIdPrefetch_Negative() throws Exception {
+    public void disjointByIdPrefetch_Negative() throws Exception {
         insertData();
         runtime.getDataDomain().setMaxIdQualifierSize(-1);
 
@@ -124,7 +124,7 @@ public class DataContextMaxIdQualifierIT extends RuntimeCase {
     }
 
     @Test
-    public void testIncrementalFaultList_Lower() throws Exception {
+    public void incrementalFaultList_Lower() throws Exception {
         insertData_OneBag_100Boxes();
 
         runtime.getDataDomain().setMaxIdQualifierSize(5);
@@ -149,7 +149,7 @@ public class DataContextMaxIdQualifierIT extends RuntimeCase {
     }
 
     @Test
-    public void testIncrementalFaultList_Higher() throws Exception {
+    public void incrementalFaultList_Higher() throws Exception {
         insertData_OneBag_100Boxes();
 
         runtime.getDataDomain().setMaxIdQualifierSize(101);
@@ -174,7 +174,7 @@ public class DataContextMaxIdQualifierIT extends RuntimeCase {
     }
 
     @Test
-    public void testIncrementalFaultList_Zero() throws Exception {
+    public void incrementalFaultList_Zero() throws Exception {
         insertData_OneBag_100Boxes();
 
         runtime.getDataDomain().setMaxIdQualifierSize(0);
@@ -190,7 +190,7 @@ public class DataContextMaxIdQualifierIT extends RuntimeCase {
     }
 
     @Test
-    public void testIncrementalFaultList_Negative() throws Exception {
+    public void incrementalFaultList_Negative() throws Exception {
         insertData_OneBag_100Boxes();
 
         runtime.getDataDomain().setMaxIdQualifierSize(-1);

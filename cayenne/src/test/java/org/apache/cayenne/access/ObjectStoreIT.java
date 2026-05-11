@@ -31,15 +31,15 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Date;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ObjectStoreIT extends RuntimeCase {
@@ -48,7 +48,7 @@ public class ObjectStoreIT extends RuntimeCase {
     private DataContext context;
 
     @Test
-    public void testRegisteredObjectsCount() throws Exception {
+    public void registeredObjectsCount() throws Exception {
 
         assertEquals(0, context.getObjectStore().registeredObjectsCount());
 
@@ -71,7 +71,7 @@ public class ObjectStoreIT extends RuntimeCase {
     }
 
     @Test
-    public void testObjectsUnregistered() throws Exception {
+    public void objectsUnregistered() throws Exception {
 
         DataRow row = new DataRow(10);
         row.put("ARTIST_ID", 1);
@@ -95,7 +95,7 @@ public class ObjectStoreIT extends RuntimeCase {
     }
 
     @Test
-    public void testUnregisterThenRegister() throws Exception {
+    public void unregisterThenRegister() throws Exception {
 
         // Create a gallery.
         Gallery g = context.newObject(Gallery.class);

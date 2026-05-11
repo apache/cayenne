@@ -19,23 +19,23 @@ package org.apache.cayenne.map;
  *  under the License.
  ****************************************************************/
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  */
 public class ProcedureTest {
     protected Procedure procedure;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         procedure = new Procedure();
     }
 
     @Test
-    public void testFullyQualifiedName() throws Exception {
+    public void fullyQualifiedName() throws Exception {
         String tstName = "tst_name";
         String schemaName = "tst_schema_name";
         procedure.setName(tstName);

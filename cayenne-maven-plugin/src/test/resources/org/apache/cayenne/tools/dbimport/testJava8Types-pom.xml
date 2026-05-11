@@ -43,7 +43,7 @@
                         <schema>SCHEMA_01</schema>
                         <useJava7Types>false</useJava7Types>
                     </dbimport>
-                    <project implementation="org.apache.cayenne.stubs.CayenneProjectStub"/>
+
                 </configuration>
             </plugin>
         </plugins>

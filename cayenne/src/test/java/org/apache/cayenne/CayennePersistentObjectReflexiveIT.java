@@ -26,9 +26,9 @@ import org.apache.cayenne.testdo.reflexive.Reflexive;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.REFLEXIVE_PROJECT)
 public class CayennePersistentObjectReflexiveIT extends RuntimeCase {
@@ -68,7 +68,7 @@ public class CayennePersistentObjectReflexiveIT extends RuntimeCase {
         }
 
         // then no error occurred
-        assertEquals(String.format("Failed on %s of %s attempts.", errors, attempts), 0, errors);
+        assertEquals(0, errors, String.format("Failed on %s of %s attempts.", errors, attempts));
     }
 
     @Test
@@ -110,7 +110,7 @@ public class CayennePersistentObjectReflexiveIT extends RuntimeCase {
         }
 
         // then no error occurred
-        assertEquals(String.format("Failed on %s of %s attempts.", errors, attempts), 0, errors);
+        assertEquals(0, errors, String.format("Failed on %s of %s attempts.", errors, attempts));
     }
 
 }

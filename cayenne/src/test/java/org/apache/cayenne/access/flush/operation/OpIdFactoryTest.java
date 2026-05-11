@@ -20,14 +20,14 @@
 package org.apache.cayenne.access.flush.operation;
 
 import org.apache.cayenne.ObjectId;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class OpIdFactoryTest {
 
     @Test
-    public void testEqualsAndHashCode() {
+    public void equalsAndHashCode() {
         ObjectId idSource1 = ObjectId.of("db:test");
         idSource1.getReplacementIdMap().put("id", 1);
 

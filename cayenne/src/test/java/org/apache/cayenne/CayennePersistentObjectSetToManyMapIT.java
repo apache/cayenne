@@ -26,13 +26,13 @@ import org.apache.cayenne.testdo.map_to_many.MapToMany;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UseCayenneRuntime(CayenneProjects.MAP_TO_MANY_PROJECT)
 public class CayennePersistentObjectSetToManyMapIT extends RuntimeCase {
@@ -48,7 +48,7 @@ public class CayennePersistentObjectSetToManyMapIT extends RuntimeCase {
     protected TableHelper tIdMapToMany;
     protected TableHelper tIdMapToManyTarget;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tMapToMany = new TableHelper(dbHelper, "MAP_TO_MANY");
         tMapToMany.setColumns("ID");
@@ -78,14 +78,10 @@ public class CayennePersistentObjectSetToManyMapIT extends RuntimeCase {
      * Testing if collection type is map, everything should work fine without a runtime exception
      */
     @Test
-    public void testRelationCollectionTypeMap() {
+    public void relationCollectionTypeMap() {
         MapToMany o1 = Cayenne.objectForPK(context, MapToMany.class, 1);
         assertTrue(o1.readProperty(MapToMany.TARGETS.getName()) instanceof Map);
-        try {
-            o1.setToManyTarget(MapToMany.TARGETS.getName(), new ArrayList<MapToMany>(0), true);
-        } catch (RuntimeException e) {
-            fail();
-        }
-        assertEquals(0, o1.getTargets().size(), 0);
+        assertDoesNotThrow(() -> o1.setToManyTarget(MapToMany.TARGETS.getName(), new ArrayList<MapToMany>(0), true));
+        assertEquals(0, o1.getTargets().size());
     }
 }

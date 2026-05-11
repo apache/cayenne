@@ -35,8 +35,8 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.time.Duration;
@@ -48,7 +48,7 @@ import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalField;
 import java.util.TimeZone;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UseCayenneRuntime(CayenneProjects.DATE_TIME_PROJECT)
 public class DateTimeTypesIT extends RuntimeCase {
@@ -62,7 +62,7 @@ public class DateTimeTypesIT extends RuntimeCase {
     @Inject
     private DBHelper dbHelper;
 
-    @Before
+    @BeforeEach
     public void before() throws SQLException {
         dbHelper.deleteAll("LOCAL_DATE_TEST");
         dbHelper.deleteAll("LOCAL_DATETIME_TEST");
@@ -72,7 +72,7 @@ public class DateTimeTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testLocalDate_Null() {
+    public void localDate_Null() {
         LocalDateTestEntity localDateTestEntity = context.newObject(LocalDateTestEntity.class);
         localDateTestEntity.setDate(null);
 
@@ -84,7 +84,7 @@ public class DateTimeTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testLocalDate() {
+    public void localDate() {
         LocalDateTestEntity localDateTestEntity = context.newObject(LocalDateTestEntity.class);
         LocalDate localDate = LocalDate.now();
         localDateTestEntity.setDate(localDate);
@@ -99,7 +99,7 @@ public class DateTimeTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testLocalTime() {
+    public void localTime() {
         LocalTimeTestEntity localTimeTestEntity = context.newObject(LocalTimeTestEntity.class);
         LocalTime localTime = LocalTime.now();
         localTimeTestEntity.setTime(localTime);
@@ -119,7 +119,7 @@ public class DateTimeTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testLocalDateTime() {
+    public void localDateTime() {
         LocalDateTimeTestEntity localDateTimeTestEntity = context.newObject(LocalDateTimeTestEntity.class);
         // round up seconds fraction
         // reason: on MySQL field should be defined as TIMESTAMP(fractionSecondsPrecision) to support it
@@ -137,7 +137,7 @@ public class DateTimeTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testLocalDateTime_DST_Select() {
+    public void localDateTime_DST_Select() {
 
         if (!(unitDbAdapter instanceof MySQLUnitDbAdapter)) {
             // skip other DB's for now until we can test across all of them
@@ -165,7 +165,7 @@ public class DateTimeTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testLocalDateTime_DST_Insert() {
+    public void localDateTime_DST_Insert() {
 
         if (!(unitDbAdapter instanceof MySQLUnitDbAdapter)) {
             // skip other DB's for now until we can test across all of them
@@ -215,7 +215,7 @@ public class DateTimeTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testDuration() {
+    public void duration() {
         DurationTestEntity durationTestEntity = context.newObject(DurationTestEntity.class);
         Duration duration = Duration.ofDays(10);
         durationTestEntity.setDurationBigInt(duration);
@@ -255,7 +255,7 @@ public class DateTimeTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testPeriod() {
+    public void period() {
         PeriodTestEntity periodTestEntity = context.newObject(PeriodTestEntity.class);
         Period period = Period.of(100, 10, 5);
         periodTestEntity.setPeriodField(period);

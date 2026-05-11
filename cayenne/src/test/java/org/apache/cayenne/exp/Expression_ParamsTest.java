@@ -19,12 +19,13 @@
 
 package org.apache.cayenne.exp;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,12 +36,12 @@ import java.util.Map;
 import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.parser.ASTList;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class Expression_ParamsTest {
 
 	@Test
-	public void testParams_Positional1() {
+	public void params_Positional1() {
 		Expression e = ExpressionFactory.exp("a = $a or x = $x");
 		Expression ep = e.paramsArray("A", 5);
 		assertNotSame(e, ep);
@@ -48,7 +49,7 @@ public class Expression_ParamsTest {
 	}
 
 	@Test
-	public void testParams_Positional_Repeating() {
+	public void params_Positional_Repeating() {
 		Expression e = ExpressionFactory.exp("a = $a or x = $x and y = $x");
 		Expression ep = e.paramsArray("A", 5);
 		assertNotSame(e, ep);
@@ -56,32 +57,50 @@ public class Expression_ParamsTest {
 	}
 
 	@Test
-	public void testParams_Positional_InAsValues() throws Exception {
+	public void params_Positional_InAsValues() throws Exception {
 		Expression inExp = ExpressionFactory.exp("k1 in ($ap, $bp)");
 		Expression transformed = inExp.paramsArray("a", "b");
 		assertEquals("k1 in (\"a\", \"b\")", transformed.toString());
 	}
 
-	@Test(expected = ExpressionException.class)
-	public void testParams_Positional_MoreParams() {
-		Expression e = ExpressionFactory.exp("a = $a or x = $x");
-		e.paramsArray("A", 5, "B");
+	@Test
+
+	public void params_Positional_MoreParams() {
+		assertThrows(ExpressionException.class, () -> {
+
+			Expression e = ExpressionFactory.exp("a = $a or x = $x");
+			e.paramsArray("A", 5, "B");
+	
+		});
 	}
 
-	@Test(expected = ExpressionException.class)
-	public void testParams_Positional_LessParams() {
-		Expression e = ExpressionFactory.exp("a = $a or x = $x");
-		e.paramsArray("B");
-	}
-
-	@Test(expected = ExpressionException.class)
-	public void testParams_Positional_NoParams() {
-		Expression e = ExpressionFactory.exp("a = $a or x = $x");
-		e.paramsArray();
-	}
 
 	@Test
-	public void testParams_NullHandling_CAY847() {
+
+	public void params_Positional_LessParams() {
+		assertThrows(ExpressionException.class, () -> {
+
+			Expression e = ExpressionFactory.exp("a = $a or x = $x");
+			e.paramsArray("B");
+	
+		});
+	}
+
+
+	@Test
+
+	public void params_Positional_NoParams() {
+		assertThrows(ExpressionException.class, () -> {
+
+			Expression e = ExpressionFactory.exp("a = $a or x = $x");
+			e.paramsArray();
+	
+		});
+	}
+
+
+	@Test
+	public void params_NullHandling_CAY847() {
 		Expression e = ExpressionFactory.exp("X = $x");
 
 		e = e.params(Collections.singletonMap("x", null));
@@ -89,7 +108,7 @@ public class Expression_ParamsTest {
 	}
 
 	@Test
-	public void testParams_Map_Full() {
+	public void params_Map_Full() {
 		Expression e = ExpressionFactory.exp("a = $a or x = $x");
 		@SuppressWarnings("serial")
 		Expression ep = e.params(new HashMap<String, Object>() {
@@ -103,7 +122,7 @@ public class Expression_ParamsTest {
 	}
 
 	@Test
-	public void testParams_Map_Partial_Prune() {
+	public void params_Map_Partial_Prune() {
 		Expression e = ExpressionFactory.exp("a = $a or x = $x");
 		@SuppressWarnings("serial")
 		Expression ep = e.params(new HashMap<String, Object>() {
@@ -116,22 +135,28 @@ public class Expression_ParamsTest {
 	}
 
 	@SuppressWarnings("serial")
-	@Test(expected = ExpressionException.class)
-	public void testParams_Map_Partial_NoPrune() {
-		Expression e = ExpressionFactory.exp("a = $a or x = $x");
-		e.params(new HashMap<String, Object>() {
-			{
-				put("a", "A");
-			}
-		}, false);
+	@Test
+
+	public void params_Map_Partial_NoPrune() {
+		assertThrows(ExpressionException.class, () -> {
+
+			Expression e = ExpressionFactory.exp("a = $a or x = $x");
+			e.params(new HashMap<String, Object>() {
+				{
+					put("a", "A");
+				}
+			}, false);
+	
+		});
 	}
+
 
 	/**
 	 * Tests how parameter substitution algorithm works on an expression with no
 	 * parameters.
 	 */
 	@Test
-	public void testCopy1() throws Exception {
+	public void copy1() throws Exception {
 		Expression e1 = ExpressionFactory.matchExp("k1", "v1");
 		e1 = e1.orExp(ExpressionFactory.matchExp("k2", "v2"));
 		e1 = e1.orExp(ExpressionFactory.matchExp("k3", "v3"));
@@ -146,7 +171,7 @@ public class Expression_ParamsTest {
 	 * parameters.
 	 */
 	@Test
-	public void testCopy2() throws Exception {
+	public void copy2() throws Exception {
 		Expression andExp = ExpressionFactory.matchExp("k1", "v1");
 		andExp = andExp.andExp(ExpressionFactory.matchExp("k2", "v2"));
 		andExp = andExp.andExp(ExpressionFactory.matchExp("k3", "v3"));
@@ -166,7 +191,7 @@ public class Expression_ParamsTest {
 	 * parameters.
 	 */
 	@Test
-	public void testInParameter() throws Exception {
+	public void inParameter() throws Exception {
 		Expression inExp = ExpressionFactory.exp("k1 in $test");
 		Expression e1 = ExpressionFactory.exp("k1 in ('a', 'b')");
 
@@ -185,7 +210,7 @@ public class Expression_ParamsTest {
 	}
 
 	@Test
-	public void testInParameter_AsValues() throws Exception {
+	public void inParameter_AsValues() throws Exception {
 		Expression inExp = ExpressionFactory.exp("k1 in ($ap, $bp)");
 
 		String e1String = "k1 in (\"a\", \"b\")";
@@ -209,18 +234,24 @@ public class Expression_ParamsTest {
 		assertFalse(transformed.match(o2));
 	}
 
-	@Test(expected = ExpressionException.class)
-	public void testFailOnMissingParams() throws Exception {
-		Expression e1 = ExpressionFactory.matchExp("k1",
-				new ExpressionParameter("test"));
-		e1 = e1.orExp(ExpressionFactory.matchExp("k2", "v2"));
-		e1 = e1.orExp(ExpressionFactory.matchExp("k3", "v3"));
+	@Test
 
-		e1.params(new HashMap(), false);
+	public void failOnMissingParams() throws Exception {
+		assertThrows(ExpressionException.class, () -> {
+
+			Expression e1 = ExpressionFactory.matchExp("k1",
+					new ExpressionParameter("test"));
+			e1 = e1.orExp(ExpressionFactory.matchExp("k2", "v2"));
+			e1 = e1.orExp(ExpressionFactory.matchExp("k3", "v3"));
+
+			e1.params(new HashMap(), false);
+	
+		});
 	}
 
+
 	@Test
-	public void testParams1() throws Exception {
+	public void params1() throws Exception {
 		Expression e1 = ExpressionFactory.matchExp("k1",
 				new ExpressionParameter("test"));
 
@@ -234,7 +265,7 @@ public class Expression_ParamsTest {
 	}
 
 	@Test
-	public void testParams2() throws Exception {
+	public void params2() throws Exception {
 		Expression e1 = ExpressionFactory.likeExp("k1",
 				new ExpressionParameter("test"));
 
@@ -248,7 +279,7 @@ public class Expression_ParamsTest {
 	}
 
 	@Test
-	public void testNoParams1() throws Exception {
+	public void noParams1() throws Exception {
 		Expression e1 = ExpressionFactory.matchExp("k1",
 				new ExpressionParameter("test"));
 
@@ -259,7 +290,7 @@ public class Expression_ParamsTest {
 	}
 
 	@Test
-	public void testNoParams2() throws Exception {
+	public void noParams2() throws Exception {
 		List list = new ArrayList();
 		list.add(ExpressionFactory.matchExp("k1", new ExpressionParameter(
 				"test1")));
@@ -289,7 +320,7 @@ public class Expression_ParamsTest {
 	}
 
 	@Test
-	public void testNoParams3() throws Exception {
+	public void noParams3() throws Exception {
 		List list = new ArrayList();
 		list.add(ExpressionFactory.matchExp("k1", new ExpressionParameter(
 				"test1")));
@@ -307,7 +338,7 @@ public class Expression_ParamsTest {
 
 		// some expression nodes must be pruned
 		assertNotNull(e2);
-		assertTrue("List expression: " + e2, !(e2 instanceof ASTList));
+		assertTrue(!(e2 instanceof ASTList), "List expression: " + e2);
 
 		assertEquals(2, e2.getOperandCount());
 		assertEquals("123", e2.getOperand(1));
@@ -315,7 +346,7 @@ public class Expression_ParamsTest {
 	}
 
 	@Test
-	public void testNullOptionalParameter() throws Exception {
+	public void nullOptionalParameter() throws Exception {
 		Expression e = ExpressionFactory.exp("abc = 3 and x = $a");
 
 		Expression e1 = e.params(Collections.EMPTY_MAP, true);
@@ -331,15 +362,21 @@ public class Expression_ParamsTest {
 		assertEquals(ExpressionFactory.exp("abc = 3 and x = null"), e2);
 	}
 
-	@Test(expected = ExpressionException.class)
-	public void testNullRequiredParameter1() throws Exception {
-		Expression e1 = ExpressionFactory.exp("abc = 3 and x = $a");
+	@Test
 
-		e1.params(Collections.EMPTY_MAP, false);
+	public void nullRequiredParameter1() throws Exception {
+		assertThrows(ExpressionException.class, () -> {
+
+			Expression e1 = ExpressionFactory.exp("abc = 3 and x = $a");
+
+			e1.params(Collections.EMPTY_MAP, false);
+	
+		});
 	}
 
+
 	@Test
-	public void testNullRequiredParameter2() throws Exception {
+	public void nullRequiredParameter2() throws Exception {
 		Expression e1 = ExpressionFactory.exp("abc = 3 and x = $a");
 
 		Map params = new HashMap();
@@ -351,7 +388,7 @@ public class Expression_ParamsTest {
 	}
 
 	@Test
-	public void testNulls() {
+	public void nulls() {
 		Expression e1 = ExpressionFactory.exp("x = null");
 		Expression e2 = e1.params(Collections.EMPTY_MAP, true);
 		assertNotNull(e2);
@@ -359,7 +396,7 @@ public class Expression_ParamsTest {
 	}
 
 	@Test
-	public void testCopy1_FromString() {
+	public void copy1_FromString() {
 		Expression e1 = ExpressionFactory
 				.exp("k1 = 'v1' or k2 = 'v2' or k3 = 'v3'");
 		Expression e2 = e1.params(Collections.EMPTY_MAP);
@@ -371,7 +408,7 @@ public class Expression_ParamsTest {
 	 * parameters.
 	 */
 	@Test
-	public void testCopy2_FromString() {
+	public void copy2_FromString() {
 		Expression e1 = ExpressionFactory
 				.exp("(k1 = 'v1' and k2 = 'v2' and k3 = 'v3') or (k1 = 'v1')");
 		Expression e2 = e1.params(Collections.EMPTY_MAP);
@@ -379,7 +416,7 @@ public class Expression_ParamsTest {
 	}
 
 	@Test
-	public void testCopy3_FromString() {
+	public void copy3_FromString() {
 		Expression e1 = ExpressionFactory.exp("(k1 / 2) = (k2 * 2)");
 		Expression e2 = e1.params(Collections.EMPTY_MAP);
 		TstTraversalHandler.compareExps(e1, e2);
@@ -389,16 +426,22 @@ public class Expression_ParamsTest {
 	 * Tests how parameter substitution algorithm works on an expression with no
 	 * parameters.
 	 */
-	@Test(expected = ExpressionException.class)
-	public void testFailOnMissingParams_FromString() {
-		Expression e1 = ExpressionFactory
-				.exp("k1 = $test or k2 = 'v2' or k3 = 'v3'");
+	@Test
 
-		e1.params(Collections.EMPTY_MAP, false);
+	public void failOnMissingParams_FromString() {
+		assertThrows(ExpressionException.class, () -> {
+
+			Expression e1 = ExpressionFactory
+					.exp("k1 = $test or k2 = 'v2' or k3 = 'v3'");
+
+			e1.params(Collections.EMPTY_MAP, false);
+	
+		});
 	}
 
+
 	@Test
-	public void testParams1_FromString() {
+	public void params1_FromString() {
 		Expression e1 = ExpressionFactory.exp("k1 = $test");
 
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -411,7 +454,7 @@ public class Expression_ParamsTest {
 	}
 
 	@Test
-	public void testParams2_FromString() {
+	public void params2_FromString() {
 		Expression e1 = ExpressionFactory.exp("k1 like $test");
 
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -424,7 +467,7 @@ public class Expression_ParamsTest {
 	}
 
 	@Test
-	public void testNoParams1_FromString() {
+	public void noParams1_FromString() {
 		Expression e1 = ExpressionFactory.exp("k1 = $test");
 		Expression e2 = e1.params(Collections.EMPTY_MAP);
 
@@ -433,7 +476,7 @@ public class Expression_ParamsTest {
 	}
 
 	@Test
-	public void testNoParams2_FromString() {
+	public void noParams2_FromString() {
 		Expression e1 = ExpressionFactory
 				.exp("k1 = $test1 or k2 = $test2 or k3 = $test3 or k4 = $test4");
 
@@ -454,7 +497,7 @@ public class Expression_ParamsTest {
 	}
 
 	@Test
-	public void testNoParams3_FromString() {
+	public void noParams3_FromString() {
 		Expression e1 = ExpressionFactory
 				.exp("k1 = $test1 or k2 = $test2 or k3 = $test3 or k4 = $test4");
 

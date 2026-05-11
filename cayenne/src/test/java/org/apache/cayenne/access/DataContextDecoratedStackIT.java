@@ -35,13 +35,13 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextDecoratedStackIT extends RuntimeCase {
@@ -50,7 +50,7 @@ public class DataContextDecoratedStackIT extends RuntimeCase {
     private CayenneRuntime runtime;
 
     @Test
-    public void testCommitDecorated() {
+    public void commitDecorated() {
         DataDomain dd = runtime.getDataDomain();
         DataChannel decorator = new DataChannelDecorator(dd);
         DataContext context = (DataContext) runtime.newContext(decorator);
@@ -75,7 +75,7 @@ public class DataContextDecoratedStackIT extends RuntimeCase {
     }
 
     @Test
-    public void testGetParentDataDomain() {
+    public void getParentDataDomain() {
         DataDomain dd = runtime.getDataDomain();
         DataChannel decorator = new DataChannelDecorator(dd);
         DataContext context = (DataContext) runtime.newContext(decorator);

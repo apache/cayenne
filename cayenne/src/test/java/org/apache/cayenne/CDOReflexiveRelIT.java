@@ -24,7 +24,7 @@ import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Some more tests regarding reflexive relationships, especially related to delete rules
@@ -37,7 +37,7 @@ public class CDOReflexiveRelIT extends RuntimeCase {
     private ObjectContext context;
 
     @Test
-    public void testAddDeleteNoCommit() {
+    public void addDeleteNoCommit() {
         ArtGroup parentGroup = context.newObject(ArtGroup.class);
         parentGroup.setName("parent");
 
@@ -49,7 +49,7 @@ public class CDOReflexiveRelIT extends RuntimeCase {
     }
 
     @Test
-    public void testAdd() {
+    public void add() {
         ArtGroup parentGroup = context.newObject(ArtGroup.class);
         parentGroup.setName("parent");
 
@@ -61,7 +61,7 @@ public class CDOReflexiveRelIT extends RuntimeCase {
     }
 
     @Test
-    public void testAddDeleteWithCommit() {
+    public void addDeleteWithCommit() {
         ArtGroup parentGroup = context.newObject(ArtGroup.class);
         parentGroup.setName("parent");
 
@@ -75,7 +75,7 @@ public class CDOReflexiveRelIT extends RuntimeCase {
     }
 
     @Test
-    public void testReplaceDeleteNoCommit() {
+    public void replaceDeleteNoCommit() {
         ArtGroup parentGroup1 = context.newObject(ArtGroup.class);
         parentGroup1.setName("parent1");
         ArtGroup parentGroup2 = context.newObject(ArtGroup.class);
@@ -92,7 +92,7 @@ public class CDOReflexiveRelIT extends RuntimeCase {
     }
 
     @Test
-    public void testReplaceDeleteWithCommit() {
+    public void replaceDeleteWithCommit() {
         ArtGroup parentGroup1 = context.newObject(ArtGroup.class);
         parentGroup1.setName("parent1");
         ArtGroup parentGroup2 = context.newObject(ArtGroup.class);
@@ -110,7 +110,7 @@ public class CDOReflexiveRelIT extends RuntimeCase {
     }
 
     @Test
-    public void testCommitReplaceCommit() {
+    public void commitReplaceCommit() {
         ArtGroup parentGroup1 = context.newObject(ArtGroup.class);
         parentGroup1.setName("parent1");
         ArtGroup parentGroup2 = context.newObject(ArtGroup.class);
@@ -125,7 +125,7 @@ public class CDOReflexiveRelIT extends RuntimeCase {
     }
 
     @Test
-    public void testComplexInsertUpdateOrdering() {
+    public void complexInsertUpdateOrdering() {
         ArtGroup parentGroup = context.newObject(ArtGroup.class);
         parentGroup.setName("parent");
         context.commitChanges();

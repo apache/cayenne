@@ -18,19 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ASTBetweenTest {
 
 	@Test
-	public void testEvaluate() {
+	public void evaluate() {
 		// evaluate both BETWEEN and NOT_BETWEEN
 		Expression between = new ASTBetween(new ASTObjPath("estimatedPrice"), new BigDecimal(10d), new BigDecimal(20d));
 		Expression notBetween = new ASTNotBetween(new ASTObjPath("estimatedPrice"), new BigDecimal(10d),
@@ -48,17 +48,17 @@ public class ASTBetweenTest {
 
 		Painting match2 = new Painting();
 		match2.setEstimatedPrice(new BigDecimal(10));
-		assertTrue("Failed: " + between, between.match(match2));
-		assertFalse("Failed: " + notBetween, notBetween.match(match2));
+		assertTrue(between.match(match2), "Failed: " + between);
+		assertFalse(notBetween.match(match2), "Failed: " + notBetween);
 
 		Painting match3 = new Painting();
 		match3.setEstimatedPrice(new BigDecimal(11));
-		assertTrue("Failed: " + between, between.match(match3));
-		assertFalse("Failed: " + notBetween, notBetween.match(match3));
+		assertTrue(between.match(match3), "Failed: " + between);
+		assertFalse(notBetween.match(match3), "Failed: " + notBetween);
 	}
 
 	@Test
-	public void testEvaluate_Null() {
+	public void evaluate_Null() {
 		Expression btNull = new ASTBetween(new ASTObjPath("estimatedPrice"), new BigDecimal(10d), new BigDecimal(20d));
 		Expression btNotNull = new ASTNotBetween(new ASTObjPath("estimatedPrice"), new BigDecimal(10d), new BigDecimal(
 				20d));

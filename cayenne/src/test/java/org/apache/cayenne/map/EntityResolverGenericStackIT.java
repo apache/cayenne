@@ -24,14 +24,14 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @UseCayenneRuntime(CayenneProjects.GENERIC_PROJECT)
 public class EntityResolverGenericStackIT extends RuntimeCase {
@@ -40,7 +40,7 @@ public class EntityResolverGenericStackIT extends RuntimeCase {
     private EntityResolver resolver;
 
     @Test
-    public void testObjEntityLookupDuplicates() {
+    public void objEntityLookupDuplicates() {
 
         DataMap generic = resolver.getDataMap("generic");
         EntityResolver resolver = new EntityResolver(Collections.singleton(generic));
@@ -54,12 +54,6 @@ public class EntityResolverGenericStackIT extends RuntimeCase {
         assertNotSame(g1, g2);
         assertNull(resolver.getObjEntity(Object.class));
 
-        try {
-            resolver.getObjEntity(GenericPersistentObject.class);
-            fail("two entities mapped to the same class... resolver must have thrown.");
-        }
-        catch (CayenneRuntimeException e) {
-            // expected
-        }
+        assertThrows(CayenneRuntimeException.class, () -> resolver.getObjEntity(GenericPersistentObject.class));
     }
 }

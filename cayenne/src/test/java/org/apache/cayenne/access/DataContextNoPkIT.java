@@ -30,14 +30,15 @@ import org.apache.cayenne.testdo.no_pk.NoPkTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.NO_PK_PROJECT)
 public class DataContextNoPkIT extends RuntimeCase {
@@ -48,7 +49,8 @@ public class DataContextNoPkIT extends RuntimeCase {
     @Inject
     protected DBHelper dbHelper;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         TableHelper noPkTestTable = new TableHelper(dbHelper, "NO_PK_TEST", "ATTRIBUTE1");
         noPkTestTable.deleteAll();
@@ -57,13 +59,13 @@ public class DataContextNoPkIT extends RuntimeCase {
         noPkTestTable.insert(2);
     }
 
-    @Test(expected = CayenneRuntimeException.class)
-    public void testNoPkFetchObjects() {
-        ObjectSelect.query(NoPkTestEntity.class).select(context);
+    @Test
+    public void noPkFetchObjects() {
+        assertThrows(CayenneRuntimeException.class, () -> ObjectSelect.query(NoPkTestEntity.class).select(context));
     }
 
     @Test
-    public void testNoPkFetchDataRows() {
+    public void noPkFetchDataRows() {
 
         List<DataRow> rows = ObjectSelect.dataRowQuery(NoPkTestEntity.class).select(context);
         assertNotNull(rows);

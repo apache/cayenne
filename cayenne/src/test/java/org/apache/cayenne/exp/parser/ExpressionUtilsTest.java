@@ -19,14 +19,15 @@
 
 package org.apache.cayenne.exp.parser;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ExpressionUtilsTest {
 
     @Test
-    public void testParsePath() throws ParseException {
+    public void parsePath() throws ParseException {
         ASTPath path = new ASTObjPath();
         ExpressionUtils.parsePath(path, "a.b.c.d");
 
@@ -35,7 +36,7 @@ public class ExpressionUtilsTest {
     }
 
     @Test
-    public void testParsePathOuterJoin() throws ParseException {
+    public void parsePathOuterJoin() throws ParseException {
         ASTPath path = new ASTObjPath();
         ExpressionUtils.parsePath(path, "a.b+.c+.d");
 
@@ -44,7 +45,7 @@ public class ExpressionUtilsTest {
     }
 
     @Test
-    public void testParsePathWithAlias() throws ParseException {
+    public void parsePathWithAlias() throws ParseException {
         ASTPath path = new ASTObjPath();
         ExpressionUtils.parsePath(path, "a.b.c#p1.d#p2");
 
@@ -55,7 +56,7 @@ public class ExpressionUtilsTest {
     }
 
     @Test
-    public void testParsePathWithAliasAndOuterJoin() throws ParseException {
+    public void parsePathWithAliasAndOuterJoin() throws ParseException {
         ASTPath path = new ASTObjPath();
         ExpressionUtils.parsePath(path, "a.b+.c#p1+.d#p2");
 
@@ -65,9 +66,15 @@ public class ExpressionUtilsTest {
         assertEquals("d", path.getPathAliases().get("p2"));
     }
 
-    @Test(expected = ParseException.class)
-    public void testParseInvalidPath() throws ParseException {
-        ASTPath path = new ASTObjPath();
-        ExpressionUtils.parsePath(path, "a.b.c#p1.d#p1");
+    @Test
+
+    public void parseInvalidPath() throws ParseException {
+        assertThrows(ParseException.class, () -> {
+
+            ASTPath path = new ASTObjPath();
+            ExpressionUtils.parsePath(path, "a.b.c#p1.d#p1");
+    
+        });
     }
+
 }

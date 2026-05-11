@@ -19,12 +19,6 @@
 
 package org.apache.cayenne.dbsync.merge.token.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.sql.Types;
 import java.util.List;
 
@@ -33,12 +27,18 @@ import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CreateTableToModelIT extends MergeCase {
 
 	@Test
-	public void testAddTable() throws Exception {
+	public void addTable() throws Exception {
 		dropTableIfPresent("NEW_TABLE");
 		assertTokensAndExecute(0, 0);
 
@@ -63,7 +63,7 @@ public class CreateTableToModelIT extends MergeCase {
 		if (token.getDirection().isToDb()) {
 			token = token.createReverse(mergerFactory());
 		}
-		assertTrue(token.getClass().getName(), token instanceof CreateTableToModel);
+		assertTrue(token instanceof CreateTableToModel, token.getClass().getName());
 
 		execute(token);
 

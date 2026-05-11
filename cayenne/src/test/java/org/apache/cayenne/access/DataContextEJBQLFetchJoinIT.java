@@ -34,8 +34,8 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Date;
 import java.sql.Types;
@@ -43,10 +43,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextEJBQLFetchJoinIT extends RuntimeCase {
@@ -66,7 +66,8 @@ public class DataContextEJBQLFetchJoinIT extends RuntimeCase {
     protected TableHelper tExhibit;
     protected TableHelper tArtistExhibit;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -118,7 +119,7 @@ public class DataContextEJBQLFetchJoinIT extends RuntimeCase {
     }
 
     @Test
-    public void testFetchJoinForOneEntity() throws Exception {
+    public void fetchJoinForOneEntity() throws Exception {
         createOneFetchJoinDataSet();
 
         String ejbql = "SELECT a FROM Artist a JOIN FETCH a.paintingArray ";
@@ -148,7 +149,7 @@ public class DataContextEJBQLFetchJoinIT extends RuntimeCase {
     }
 
     @Test
-    public void testSeveralFetchJoins() throws Exception {
+    public void severalFetchJoins() throws Exception {
         createMultipleFetchJoinsDataSet();
 
         String ejbql = "SELECT a "
@@ -196,7 +197,7 @@ public class DataContextEJBQLFetchJoinIT extends RuntimeCase {
     }
 
     @Test
-    public void testSeveralEntitiesFetchJoins() throws Exception {
+    public void severalEntitiesFetchJoins() throws Exception {
         createMultipleFetchJoinsDataSet();
 
         String ejbql = "SELECT DISTINCT a , g "
@@ -215,7 +216,7 @@ public class DataContextEJBQLFetchJoinIT extends RuntimeCase {
     }
 
     @Test
-    public void testSeveralEntitiesAndScalarFetchInnerJoins() throws Exception {
+    public void severalEntitiesAndScalarFetchInnerJoins() throws Exception {
         createMultipleFetchJoinsDataSet();
 
         String ejbql = "SELECT DISTINCT a, a.artistName , g "
@@ -292,7 +293,7 @@ public class DataContextEJBQLFetchJoinIT extends RuntimeCase {
     }
 
     @Test
-    public void testSeveralEntitiesAndScalarFetchOuterJoins() throws Exception {
+    public void severalEntitiesAndScalarFetchOuterJoins() throws Exception {
         createMultipleFetchJoinsDataSet();
 
         String ejbql = "SELECT DISTINCT a, a.artistName , g "

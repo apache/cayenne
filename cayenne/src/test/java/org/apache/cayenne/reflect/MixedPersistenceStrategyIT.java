@@ -30,11 +30,11 @@ import org.apache.cayenne.testdo.mixed_persistence_strategy.MixedPersistenceStra
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests conflicts between field and map-based persistence.
@@ -51,7 +51,7 @@ public class MixedPersistenceStrategyIT extends RuntimeCase {
     protected TableHelper tMixedPersistenceStrategy;
     protected TableHelper tMixedPersistenceStrategy2;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tMixedPersistenceStrategy = new TableHelper(
                 dbHelper,
@@ -71,7 +71,7 @@ public class MixedPersistenceStrategyIT extends RuntimeCase {
     }
 
     @Test
-    public void testConflictingField1() throws Exception {
+    public void conflictingField1() throws Exception {
 
         createConflictingFieldDataSet();
 
@@ -88,7 +88,7 @@ public class MixedPersistenceStrategyIT extends RuntimeCase {
      * This test case reproduces CAY-582 bug.
      */
     @Test
-    public void testConflictingField2() throws Exception {
+    public void conflictingField2() throws Exception {
 
         createConflictingFieldDataSet();
 

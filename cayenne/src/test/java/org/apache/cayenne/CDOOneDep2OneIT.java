@@ -29,15 +29,15 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Timestamp;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class CDOOneDep2OneIT extends CayenneDOTestBase {
@@ -46,7 +46,7 @@ public class CDOOneDep2OneIT extends CayenneDOTestBase {
     private ObjectContext context1;
 
     @Test
-    public void testNewAdd1() throws Exception {
+    public void newAdd1() throws Exception {
         Artist a1 = newArtist();
         PaintingInfo pi1 = newPaintingInfo();
         Painting p1 = newPainting();
@@ -74,7 +74,7 @@ public class CDOOneDep2OneIT extends CayenneDOTestBase {
 
     /** Tests how primary key is propagated from one new object to another. */
     @Test
-    public void testNewAdd2() throws Exception {
+    public void newAdd2() throws Exception {
         Artist a1 = this.newArtist();
         Gallery g1 = context.newObject(Gallery.class);
         g1.setGalleryName(galleryName);
@@ -93,7 +93,7 @@ public class CDOOneDep2OneIT extends CayenneDOTestBase {
     }
 
     @Test
-    public void testReplace() throws Exception {
+    public void replace() throws Exception {
         String altPaintingName = "alt painting";
 
         PaintingInfo pi1 = newPaintingInfo();
@@ -146,7 +146,7 @@ public class CDOOneDep2OneIT extends CayenneDOTestBase {
     }
 
     @Test
-    public void testReplaceOtherSide() throws Exception {
+    public void replaceOtherSide() throws Exception {
         String altPaintingName = "alt painting";
 
         PaintingInfo pi1 = newPaintingInfo();

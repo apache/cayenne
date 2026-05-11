@@ -28,8 +28,8 @@ import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.sql.Types;
@@ -38,10 +38,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextEJBQLGroupByHavingIT extends RuntimeCase {
@@ -56,7 +56,8 @@ public class DataContextEJBQLGroupByHavingIT extends RuntimeCase {
     protected TableHelper tPainting;
     protected TableHelper tGallery;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -114,7 +115,7 @@ public class DataContextEJBQLGroupByHavingIT extends RuntimeCase {
     }
 
     @Test
-    public void testGroupBy() throws Exception {
+    public void groupBy() throws Exception {
         createFivePaintings();
 
         String ejbql = "SELECT p.estimatedPrice, count(p) FROM Painting p"
@@ -136,7 +137,7 @@ public class DataContextEJBQLGroupByHavingIT extends RuntimeCase {
     }
 
     @Test
-    public void testGroupByMultipleItems() throws Exception {
+    public void groupByMultipleItems() throws Exception {
         createFivePaintings();
 
         String ejbql = "SELECT p.estimatedPrice, p.paintingTitle, count(p) FROM Painting p"
@@ -165,7 +166,7 @@ public class DataContextEJBQLGroupByHavingIT extends RuntimeCase {
     }
 
     @Test
-    public void testGroupByRelatedEntity() throws Exception {
+    public void groupByRelatedEntity() throws Exception {
 
         createFourArtistsAndTwoPaintings();
 
@@ -186,7 +187,7 @@ public class DataContextEJBQLGroupByHavingIT extends RuntimeCase {
     }
 
     @Test
-    public void testGroupByIdVariable() throws Exception {
+    public void groupByIdVariable() throws Exception {
         createFivePaintings();
 
         String ejbql = "SELECT count(p), p FROM Painting p GROUP BY p";
@@ -207,7 +208,7 @@ public class DataContextEJBQLGroupByHavingIT extends RuntimeCase {
     }
 
     @Test
-    public void testGroupByHavingOnColumn() throws Exception {
+    public void groupByHavingOnColumn() throws Exception {
         createFivePaintings();
 
         String ejbql = "SELECT p.estimatedPrice, count(p) FROM Painting p"
@@ -225,7 +226,7 @@ public class DataContextEJBQLGroupByHavingIT extends RuntimeCase {
     }
 
     @Test
-    public void testGroupByHavingOnAggregate() throws Exception {
+    public void groupByHavingOnAggregate() throws Exception {
         createFivePaintings();
 
         String ejbql = "SELECT p.estimatedPrice, count(p) FROM Painting p"
@@ -243,7 +244,7 @@ public class DataContextEJBQLGroupByHavingIT extends RuntimeCase {
     }
 
     @Test
-    public void testGroupByHavingOnAggregateMultipleConditions() throws Exception {
+    public void groupByHavingOnAggregateMultipleConditions() throws Exception {
         createFivePaintings();
 
         String ejbql = "SELECT p.estimatedPrice, count(p) FROM Painting p"
@@ -261,7 +262,7 @@ public class DataContextEJBQLGroupByHavingIT extends RuntimeCase {
     }
 
     @Test
-    public void testGroupByJoinedRelatedEntities() throws Exception {
+    public void groupByJoinedRelatedEntities() throws Exception {
         createFourArtistsAndTwoPaintings();
 
         EJBQLQuery query = new EJBQLQuery(
@@ -277,16 +278,16 @@ public class DataContextEJBQLGroupByHavingIT extends RuntimeCase {
         Object[] row = data.get(0);
         String artistName = ((Artist) row[1]).getArtistName();
         assertEquals(1L, row[0]);
-        assertTrue("error artistName:" + artistName, expectedArtists.contains(artistName));
+        assertTrue(expectedArtists.contains(artistName), "error artistName:" + artistName);
 
         row = data.get(1);
         artistName = ((Artist) row[1]).getArtistName();
         assertEquals(1L, row[0]);
-        assertTrue("error artistName:" + artistName, expectedArtists.contains(artistName));
+        assertTrue(expectedArtists.contains(artistName), "error artistName:" + artistName);
     }
 
     @Test
-    public void testGroupByJoinedEntities() throws Exception {
+    public void groupByJoinedEntities() throws Exception {
         createArtistsPaintingGalleries();
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT COUNT(p), p.toArtist, p.toGallery FROM Painting p "
@@ -309,7 +310,7 @@ public class DataContextEJBQLGroupByHavingIT extends RuntimeCase {
     }
 
     @Test
-    public void testGroupByJoinedEntityInCount() throws Exception {
+    public void groupByJoinedEntityInCount() throws Exception {
         createArtistsPaintingGalleries();
 
         EJBQLQuery query = new EJBQLQuery(
@@ -331,7 +332,7 @@ public class DataContextEJBQLGroupByHavingIT extends RuntimeCase {
     }
 
     @Test
-    public void testGroupByChainedJoins() throws Exception {
+    public void groupByChainedJoins() throws Exception {
         createFivePaintings();
 
         String ejbql = "SELECT p.painting.toArtist.paintingArray FROM PaintingInfo p"

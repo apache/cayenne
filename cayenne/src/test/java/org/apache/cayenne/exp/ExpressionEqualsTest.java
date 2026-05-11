@@ -19,17 +19,17 @@
 
 package org.apache.cayenne.exp;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  */
 public class ExpressionEqualsTest {
 
     @Test
-    public void testEquals3() throws Exception {
+    public void equals3() throws Exception {
         Expression e1 = ExpressionFactory.matchExp("aa", "3");
         Expression e2 = ExpressionFactory.matchExp("aa", "3");
         Expression e3 = ExpressionFactory.matchExp("aa", 3);
@@ -38,7 +38,7 @@ public class ExpressionEqualsTest {
     }
 
     @Test
-    public void testEquals4() throws Exception {
+    public void equals4() throws Exception {
         Expression e1 = ExpressionFactory.matchExp("aa", "3").andExp(
                 ExpressionFactory.matchExp("aa", "4"));
         Expression e2 = ExpressionFactory.matchExp("aa", "3").andExp(

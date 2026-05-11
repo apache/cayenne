@@ -19,14 +19,14 @@
 
 package org.apache.cayenne.exp;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ExpressionParameterTest {
 
     @Test
-    public void testConstructor() throws Exception {
+    public void constructor() throws Exception {
         ExpressionParameter p = new ExpressionParameter("abc");
         assertEquals("abc", p.getName());
     }

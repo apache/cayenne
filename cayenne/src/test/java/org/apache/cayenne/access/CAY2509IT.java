@@ -32,10 +32,10 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @since 4.2
@@ -52,7 +52,7 @@ public class CAY2509IT extends RuntimeCase {
     private TableHelper tArtist;
     private TableHelper tPainting;
 
-    @Before
+    @BeforeEach
     public void before() {
         this.tArtist = new TableHelper(dbHelper, "ARTIST").setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH")
                 .setColumnTypes(Types.BIGINT, Types.CHAR, Types.DATE);
@@ -61,7 +61,7 @@ public class CAY2509IT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectionProblem() throws SQLException {
+    public void selectionProblem() throws SQLException {
         tArtist.insert(1, "A1", null);
         tPainting.insert(1, 1, "P1");
         ObjectContext context1 = runtime.newContext();
@@ -81,7 +81,7 @@ public class CAY2509IT extends RuntimeCase {
     }
 
     @Test
-    public void testChangesInTwoContexts() throws SQLException {
+    public void changesInTwoContexts() throws SQLException {
         tArtist.insert(1, "A1", null);
         ObjectContext context1 = runtime.newContext();
         Artist artist = ObjectSelect.query(Artist.class)
@@ -99,7 +99,7 @@ public class CAY2509IT extends RuntimeCase {
     }
 
     @Test
-    public void testChangesInChildContext() throws SQLException {
+    public void changesInChildContext() throws SQLException {
         tArtist.insert(1, "A1", null);
         ObjectContext parentContext1 = runtime.newContext();
         ObjectContext context1 = runtime.newContext(parentContext1);

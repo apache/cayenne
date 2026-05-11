@@ -27,10 +27,10 @@ import org.apache.cayenne.map.DbKeyGenerator;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class OraclePkGeneratorIT extends RuntimeCase {
@@ -43,20 +43,20 @@ public class OraclePkGeneratorIT extends RuntimeCase {
 
     private OraclePkGenerator pkGenerator;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         OracleAdapter adapter = objectFactory.newInstance(OracleAdapter.class, OracleAdapter.class.getName());
         pkGenerator = new OraclePkGenerator(adapter);
     }
 
     @Test
-    public void testSequenceNameDefault() throws Exception {
+    public void sequenceNameDefault() throws Exception {
         DbEntity entity = new DbEntity("TEST_ENTITY");
         assertEquals("pk_test_entity", pkGenerator.sequenceName(entity));
     }
 
     @Test
-    public void testSequenceNameCustom1() throws Exception {
+    public void sequenceNameCustom1() throws Exception {
         DbEntity entity = new DbEntity("TEST_ENTITY");
         DbKeyGenerator customGenerator = new DbKeyGenerator();
         customGenerator.setGeneratorType(DbKeyGenerator.ORACLE_TYPE);
@@ -66,7 +66,7 @@ public class OraclePkGeneratorIT extends RuntimeCase {
     }
 
     @Test
-    public void testSequenceNameCustom2() throws Exception {
+    public void sequenceNameCustom2() throws Exception {
         DbEntity entity = new DbEntity("TEST_ENTITY");
         DbKeyGenerator customGenerator = new DbKeyGenerator();
         customGenerator.setGeneratorType(DbKeyGenerator.NAMED_SEQUENCE_TABLE_TYPE);

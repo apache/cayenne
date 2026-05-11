@@ -23,11 +23,9 @@ import java.io.IOException;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.2
@@ -35,19 +33,19 @@ import static org.junit.Assert.*;
 public class ASTDbIdPathTest {
 
     @Test
-    public void testShallowCopy() {
+    public void shallowCopy() {
         ASTDbIdPath path = new ASTDbIdPath("test");
 
         Expression exp = path.shallowCopy();
         assertEquals(exp.getType(), Expression.DBID_PATH);
-        assertThat(exp, instanceOf(ASTDbIdPath.class));
+        assertInstanceOf(ASTDbIdPath.class, exp);
 
         ASTDbIdPath clone = (ASTDbIdPath)exp;
         assertEquals("test", clone.getPath().value());
     }
 
     @Test
-    public void testAppendAsString() throws IOException {
+    public void appendAsString() throws IOException {
         ASTDbIdPath path = new ASTDbIdPath("test");
         StringBuilder sb = new StringBuilder();
         path.appendAsString(sb);
@@ -56,21 +54,21 @@ public class ASTDbIdPathTest {
     }
 
     @Test
-    public void testSimpleParse() {
+    public void simpleParse() {
         Expression exp = ExpressionFactory.exp("dbid:test");
-        assertThat(exp, instanceOf(ASTDbIdPath.class));
+        assertInstanceOf(ASTDbIdPath.class, exp);
         ASTDbIdPath path = (ASTDbIdPath)exp;
         assertEquals("test", path.getPath().value());
     }
 
     @Test
-    public void testExpParse() {
+    public void expParse() {
         Expression exp = ExpressionFactory.exp("dbid:test = 1");
-        assertThat(exp, instanceOf(ASTEqual.class));
+        assertInstanceOf(ASTEqual.class, exp);
         ASTEqual equal = (ASTEqual)exp;
 
         Node child0 = equal.jjtGetChild(0);
-        assertThat(child0, instanceOf(ASTDbIdPath.class));
+        assertInstanceOf(ASTDbIdPath.class, child0);
         ASTDbIdPath path = (ASTDbIdPath)child0;
         assertEquals("test", path.getPath().value());
     }

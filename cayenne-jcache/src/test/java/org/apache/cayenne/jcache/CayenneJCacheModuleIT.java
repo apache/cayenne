@@ -35,15 +35,15 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.ExtraModules;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.cache.CacheManager;
 
 import java.net.URISyntaxException;
 import java.util.Objects;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 @ExtraModules(CayenneJCacheModuleIT.EhCacheModule.class)
@@ -60,7 +60,7 @@ public class CayenneJCacheModuleIT extends RuntimeCase {
 
     private TableHelper tArtist;
 
-    @Before
+    @BeforeEach
     public void setUpTableHelper() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -69,7 +69,7 @@ public class CayenneJCacheModuleIT extends RuntimeCase {
 
 
     @Test
-    public void testCachedQueries() throws Exception {
+    public void cachedQueries() throws Exception {
         // make sure that we have JCacheQueryCache
         assertEquals(JCacheQueryCache.class, ((NestedQueryCache)runtime.getDataDomain().getQueryCache()).getDelegate().getClass());
 

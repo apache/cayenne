@@ -34,20 +34,20 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.util.Util;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextSerializationIT extends RuntimeCase {
@@ -66,7 +66,8 @@ public class DataContextSerializationIT extends RuntimeCase {
 
     protected TableHelper tArtist;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         CayenneRuntime.bindThreadInjector(runtime.getInjector());
 
@@ -78,13 +79,14 @@ public class DataContextSerializationIT extends RuntimeCase {
         tArtist.insert(33001, "aaa");
     }
 
-    @After
+    
+    @AfterEach
     public void tearDown() throws Exception {
         CayenneRuntime.bindThreadInjector(null);
     }
 
     @Test
-    public void testSerializeResolver() throws Exception {
+    public void serializeResolver() throws Exception {
 
         DataContext deserializedContext = Util.cloneViaSerialization(context);
 
@@ -93,7 +95,7 @@ public class DataContextSerializationIT extends RuntimeCase {
     }
 
     @Test
-    public void testSerializeChannel() throws Exception {
+    public void serializeChannel() throws Exception {
 
         DataContext deserializedContext = Util.cloneViaSerialization(context);
 
@@ -102,7 +104,7 @@ public class DataContextSerializationIT extends RuntimeCase {
     }
 
     @Test
-    public void testSerializeNestedChannel() throws Exception {
+    public void serializeNestedChannel() throws Exception {
 
         ObjectContext child = runtime.newContext(context);
 
@@ -113,7 +115,7 @@ public class DataContextSerializationIT extends RuntimeCase {
     }
 
     @Test
-    public void testSerializeWithSharedCache() throws Exception {
+    public void serializeWithSharedCache() throws Exception {
 
         createSingleArtistDataSet();
 
@@ -141,7 +143,7 @@ public class DataContextSerializationIT extends RuntimeCase {
     }
 
     @Test
-    public void testSerializeWithLocalCache() throws Exception {
+    public void serializeWithLocalCache() throws Exception {
 
         createSingleArtistDataSet();
 
@@ -191,7 +193,7 @@ public class DataContextSerializationIT extends RuntimeCase {
     }
 
     @Test
-    public void testSerializeNew() throws Exception {
+    public void serializeNew() throws Exception {
 
         Artist artist = (Artist) context.newObject("Artist");
         artist.setArtistName("artist1");
@@ -216,7 +218,7 @@ public class DataContextSerializationIT extends RuntimeCase {
     }
 
     @Test
-    public void testSerializeCommitted() throws Exception {
+    public void serializeCommitted() throws Exception {
 
         Artist artist = (Artist) context.newObject("Artist");
         artist.setArtistName("artist1");
@@ -250,7 +252,7 @@ public class DataContextSerializationIT extends RuntimeCase {
     }
 
     @Test
-    public void testSerializeModified() throws Exception {
+    public void serializeModified() throws Exception {
 
         Artist artist = (Artist) context.newObject("Artist");
         artist.setArtistName("artist1");
@@ -280,7 +282,7 @@ public class DataContextSerializationIT extends RuntimeCase {
     }
 
     @Test
-    public void testSerializeObjectCreator() throws Exception {
+    public void serializeObjectCreator() throws Exception {
         DataContext deserializedContext = Util.cloneViaSerialization(context);
         assertNotNull(deserializedContext.objectCreator);
         assertSame(deserializedContext, deserializedContext.objectCreator.context);

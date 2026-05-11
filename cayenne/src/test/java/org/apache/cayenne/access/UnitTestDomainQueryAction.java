@@ -22,7 +22,7 @@ package org.apache.cayenne.access;
 import java.util.Collection;
 import java.util.Collections;
 
-import junit.framework.AssertionFailedError;
+import org.opentest4j.AssertionFailedError;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;

@@ -31,10 +31,10 @@ import org.apache.cayenne.testdo.inheritance_people.CustomerRepresentative;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
 import org.apache.cayenne.unit.di.runtime.PeopleProjectCase;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DataContextQualifiedEntityIT extends PeopleProjectCase {
 
@@ -43,7 +43,8 @@ public class DataContextQualifiedEntityIT extends PeopleProjectCase {
 
     protected TableHelper tPerson;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         // manually break circular deps
         dbHelper.update("PERSON").set("DEPARTMENT_ID", null, Types.INTEGER).execute();
@@ -76,7 +77,7 @@ public class DataContextQualifiedEntityIT extends PeopleProjectCase {
     }
 
     @Test
-    public void testSelect() throws Exception {
+    public void select() throws Exception {
         createPersonsDataSet();
 
         // just check that an appropriate qualifier was applied
@@ -100,7 +101,7 @@ public class DataContextQualifiedEntityIT extends PeopleProjectCase {
     }
 
     @Test
-    public void testPrefetch() throws Exception {
+    public void prefetch() throws Exception {
         createPersonsDataSet();
 
         // select Managers.. make sure prefetch query works as expected

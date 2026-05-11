@@ -28,14 +28,14 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextCallbacksIT extends RuntimeCase {
@@ -46,14 +46,14 @@ public class DataContextCallbacksIT extends RuntimeCase {
     @Inject
     private CayenneRuntime runtime;
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         resolver.getCallbackRegistry().clear();
     }
 
     @Test
-    public void testPostAddCallbacks() {
+    public void postAddCallbacks() {
         LifecycleCallbackRegistry registry = runtime
                 .getDataDomain()
                 .getEntityResolver()
@@ -90,7 +90,7 @@ public class DataContextCallbacksIT extends RuntimeCase {
     }
 
     @Test
-    public void testPrePersistCallbacks() {
+    public void prePersistCallbacks() {
         LifecycleCallbackRegistry registry = runtime
                 .getDataDomain()
                 .getEntityResolver()
@@ -129,7 +129,7 @@ public class DataContextCallbacksIT extends RuntimeCase {
     }
 
     @Test
-    public void testPreRemoveCallbacks() {
+    public void preRemoveCallbacks() {
         LifecycleCallbackRegistry registry = runtime
                 .getDataDomain()
                 .getEntityResolver()

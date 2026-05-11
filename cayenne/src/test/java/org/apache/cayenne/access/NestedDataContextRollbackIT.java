@@ -25,10 +25,10 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class NestedDataContextRollbackIT extends RuntimeCase {
@@ -40,7 +40,7 @@ public class NestedDataContextRollbackIT extends RuntimeCase {
     private DataContext context;
 
     @Test
-    public void testRollbackChanges() {
+    public void rollbackChanges() {
         ObjectContext child1 = runtime.newContext(context);
 
         assertFalse(context.hasChanges());
@@ -58,7 +58,7 @@ public class NestedDataContextRollbackIT extends RuntimeCase {
     }
 
     @Test
-    public void testRollbackChangesLocally() {
+    public void rollbackChangesLocally() {
         ObjectContext child1 = runtime.newContext(context);
 
         assertFalse(context.hasChanges());

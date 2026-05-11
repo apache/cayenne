@@ -18,36 +18,36 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ASTLessTest {
 
 	@Test
-	public void testEvaluate() {
+	public void evaluate() {
 		Expression e = new ASTLess(new ASTObjPath("estimatedPrice"), new BigDecimal(10000d));
 
 		Painting noMatch = new Painting();
 		noMatch.setEstimatedPrice(new BigDecimal(10001));
-		assertFalse("Failed: " + e, e.match(noMatch));
+		assertFalse(e.match(noMatch), "Failed: " + e);
 
 		Painting noMatch1 = new Painting();
 		noMatch1.setEstimatedPrice(new BigDecimal(10000));
-		assertFalse("Failed: " + e, e.match(noMatch1));
+		assertFalse(e.match(noMatch1), "Failed: " + e);
 
 		Painting match = new Painting();
 		match.setEstimatedPrice(new BigDecimal(9999));
-		assertTrue("Failed: " + e, e.match(match));
+		assertTrue(e.match(match), "Failed: " + e);
 	}
 
 	@Test
-	public void testEvaluate_Null() {
+	public void evaluate_Null() {
 		Expression ltNull = new ASTLess(new ASTObjPath("estimatedPrice"), null);
 		Expression ltNotNull = new ASTLess(new ASTObjPath("estimatedPrice"), new BigDecimal(10000d));
 

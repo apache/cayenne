@@ -33,13 +33,13 @@ import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.TransactionDescriptor;
 import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.tx.TransactionalOperation;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -47,7 +47,7 @@ import static org.mockito.Mockito.when;
 public class CayenneRuntimeTest {
 
     @Test
-    public void testPerformInTransaction() {
+    public void performInTransaction() {
 
         final BaseTransaction tx = mock(BaseTransaction.class);
         final TransactionFactory txFactory = mock(TransactionFactory.class);
@@ -75,7 +75,7 @@ public class CayenneRuntimeTest {
     }
 
     @Test
-    public void testConstructor_Modules() {
+    public void constructor_Modules() {
 
         final boolean[] configured = new boolean[2];
 
@@ -93,7 +93,7 @@ public class CayenneRuntimeTest {
     }
 
     @Test
-    public void testGetDataChannel_CustomModule() {
+    public void getDataChannel_CustomModule() {
         final DataChannel channel = new DataChannel() {
 
             public EntityResolver getEntityResolver() {
@@ -120,7 +120,7 @@ public class CayenneRuntimeTest {
     }
 
     @Test
-    public void testGetObjectContext_CustomModule() {
+    public void getObjectContext_CustomModule() {
         final ObjectContext context = new DataContext();
         final ObjectContextFactory factory = new ObjectContextFactory() {
 
@@ -141,7 +141,7 @@ public class CayenneRuntimeTest {
     }
 
     @Test
-    public void testBindThreadInjector() {
+    public void bindThreadInjector() {
 
         Injector injector = mock(Injector.class);
 

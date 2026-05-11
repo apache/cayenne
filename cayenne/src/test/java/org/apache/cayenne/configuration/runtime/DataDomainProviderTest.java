@@ -112,20 +112,20 @@ import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.resource.mock.MockResource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class DataDomainProviderTest {
 
     @Test
-    public void testGet() {
+    public void get() {
 
         // create dependencies
         final String testConfigName = "testConfig";
@@ -293,7 +293,7 @@ public class DataDomainProviderTest {
         when(mockPersistent.getObjectId()).thenReturn(mockObjectId);
         domain.getEntityResolver().getCallbackRegistry().performCallbacks(LifecycleEvent.POST_LOAD, mockPersistent);
 
-        assertEquals("Should call postLoadCallback() method", 1, TestListener.counter.get());
+        assertEquals(1, TestListener.counter.get(), "Should call postLoadCallback() method");
     }
 
     static class TestListener {

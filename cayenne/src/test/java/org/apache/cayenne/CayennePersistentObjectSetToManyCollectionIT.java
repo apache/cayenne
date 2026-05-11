@@ -27,13 +27,13 @@ import org.apache.cayenne.testdo.relationships_collection_to_many.CollectionToMa
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_COLLECTION_TO_MANY_PROJECT)
 public class CayennePersistentObjectSetToManyCollectionIT extends RuntimeCase {
@@ -44,7 +44,7 @@ public class CayennePersistentObjectSetToManyCollectionIT extends RuntimeCase {
 	@Inject
 	private DBHelper dbHelper;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		TableHelper tCollectionToMany = new TableHelper(dbHelper, "COLLECTION_TO_MANY");
 		tCollectionToMany.setColumns("ID");
@@ -58,7 +58,7 @@ public class CayennePersistentObjectSetToManyCollectionIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testReadToMany() {
+	public void readToMany() {
 
 		CollectionToMany o1 = Cayenne.objectForPK(context, CollectionToMany.class, 1);
 
@@ -78,14 +78,10 @@ public class CayennePersistentObjectSetToManyCollectionIT extends RuntimeCase {
 	 * Testing if collection type is Collection, everything should work fine without a runtime exception
 	 */
 	@Test
-	public void testRelationCollectionTypeCollection() {
+	public void relationCollectionTypeCollection() {
 		CollectionToMany o1 = Cayenne.objectForPK(context, CollectionToMany.class, 1);
 		assertTrue(o1.readProperty(CollectionToMany.TARGETS.getName()) instanceof Collection);
-		try {
-			o1.setToManyTarget(CollectionToMany.TARGETS.getName(), new ArrayList<CollectionToMany>(0), true);
-		} catch (RuntimeException e) {
-			fail();
-		}
+		assertDoesNotThrow(() -> o1.setToManyTarget(CollectionToMany.TARGETS.getName(), new ArrayList<CollectionToMany>(0), true));
 		assertEquals(0, o1.getTargets().size());
 	}
 }

@@ -19,21 +19,21 @@
 
 package org.apache.cayenne.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GenericResponseTest {
 
     @Test
-    public void testCreation() {
+    public void creation() {
         List list = new ArrayList();
         list.add(new HashMap());
 
@@ -59,7 +59,7 @@ public class GenericResponseTest {
     }
 
     @Test
-    public void testNext() {
+    public void next() {
         List<Integer> result = List.of(1, 2, 3);
         GenericResponse r = new GenericResponse();
         r.addResultList(result);
@@ -71,7 +71,7 @@ public class GenericResponseTest {
     }
 
     @Test
-    public void testSerialization() throws Exception {
+    public void serialization() throws Exception {
         List<Object> list = new ArrayList<>();
         list.add(new HashMap<>());
 

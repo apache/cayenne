@@ -22,10 +22,10 @@ package org.apache.cayenne.exp.parser;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @since 4.0
@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 public class ASTSubstringTest {
 
     @Test
-    public void testEvaluateSubstring() throws Exception {
+    public void evaluateSubstring() throws Exception {
         ASTObjPath path = new ASTObjPath("artistName");
         ASTScalar offset = new ASTScalar((Integer)2);
         ASTScalar length = new ASTScalar((Integer)8);

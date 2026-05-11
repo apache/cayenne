@@ -33,14 +33,14 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @UseCayenneRuntime(CayenneProjects.QUALIFIED_PROJECT)
 public class CDOQualifiedEntitiesIT extends RuntimeCase {
@@ -59,7 +59,7 @@ public class CDOQualifiedEntitiesIT extends RuntimeCase {
     private TableHelper tQualified3;
     private TableHelper tQualified4;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         int bool = accessStackAdapter.supportsBoolean() ? Types.BOOLEAN : Types.INTEGER;
 
@@ -111,7 +111,7 @@ public class CDOQualifiedEntitiesIT extends RuntimeCase {
     }
 
     @Test
-    public void testReadToMany() throws Exception {
+    public void readToMany() throws Exception {
         if (accessStackAdapter.supportsNullBoolean()) {
 
             createReadToManyDataSet();
@@ -133,7 +133,7 @@ public class CDOQualifiedEntitiesIT extends RuntimeCase {
     }
 
     @Test
-    public void testJointPrefetchToMany() throws Exception {
+    public void jointPrefetchToMany() throws Exception {
         if (accessStackAdapter.supportsNullBoolean()) {
 
             createReadToManyDataSet();
@@ -157,7 +157,7 @@ public class CDOQualifiedEntitiesIT extends RuntimeCase {
     }
 
     @Test
-    public void testDisjointPrefetchToMany() throws Exception {
+    public void disjointPrefetchToMany() throws Exception {
         if (accessStackAdapter.supportsNullBoolean()) {
 
             createReadToManyDataSet();
@@ -181,7 +181,7 @@ public class CDOQualifiedEntitiesIT extends RuntimeCase {
     }
 
     @Test
-    public void testDisjointByIdPrefetchToMany() throws Exception {
+    public void disjointByIdPrefetchToMany() throws Exception {
         if (accessStackAdapter.supportsNullBoolean()) {
 
             createReadToManyDataSet();
@@ -205,7 +205,7 @@ public class CDOQualifiedEntitiesIT extends RuntimeCase {
     }
 
     @Test
-    public void testReadToOne() throws Exception {
+    public void readToOne() throws Exception {
         if (accessStackAdapter.supportsNullBoolean()) {
 
             createReadToOneDataSet();

@@ -29,12 +29,12 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class CayennePersistentObjectInContextIT extends RuntimeCase {
@@ -50,14 +50,14 @@ public class CayennePersistentObjectInContextIT extends RuntimeCase {
 
     protected TableHelper tArtist;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
     }
 
     @Test
-    public void testDoubleRegistration() {
+    public void doubleRegistration() {
 
         Persistent object = new Artist();
         assertNull(object.getObjectId());
@@ -75,17 +75,11 @@ public class CayennePersistentObjectInContextIT extends RuntimeCase {
 
         // registering in another context should throw an exception
         ObjectContext anotherContext = runtime.newContext();
-        try {
-            anotherContext.registerNewObject(object);
-            fail("registerNewObject should've failed - object is already in another context");
-        }
-        catch (IllegalStateException e) {
-            // expected
-        }
+        assertThrows(IllegalStateException.class, () -> anotherContext.registerNewObject(object));
     }
 
     @Test
-    public void testCommitChangesInBatch() {
+    public void commitChangesInBatch() {
 
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("abc1");
@@ -103,7 +97,7 @@ public class CayennePersistentObjectInContextIT extends RuntimeCase {
     }
 
     @Test
-    public void testSetObjectId() {
+    public void setObjectId() {
 
         Artist o1 = new Artist();
         assertNull(o1.getObjectId());
@@ -113,7 +107,7 @@ public class CayennePersistentObjectInContextIT extends RuntimeCase {
     }
 
     @Test
-    public void testStateTransToNew() {
+    public void stateTransToNew() {
 
         Artist o1 = new Artist();
         assertEquals(PersistenceState.TRANSIENT, o1.getPersistenceState());
@@ -123,7 +117,7 @@ public class CayennePersistentObjectInContextIT extends RuntimeCase {
     }
 
     @Test
-    public void testStateNewToCommitted() {
+    public void stateNewToCommitted() {
 
         Artist o1 = new Artist();
         o1.setArtistName("a");
@@ -136,7 +130,7 @@ public class CayennePersistentObjectInContextIT extends RuntimeCase {
     }
 
     @Test
-    public void testStateCommittedToModified() {
+    public void stateCommittedToModified() {
 
         Artist o1 = new Artist();
         o1.setArtistName("a");
@@ -149,7 +143,7 @@ public class CayennePersistentObjectInContextIT extends RuntimeCase {
     }
 
     @Test
-    public void testStateModifiedToCommitted() {
+    public void stateModifiedToCommitted() {
 
         Artist o1 = context.newObject(Artist.class);
         o1.setArtistName("qY");
@@ -163,7 +157,7 @@ public class CayennePersistentObjectInContextIT extends RuntimeCase {
     }
 
     @Test
-    public void testStateCommittedToDeleted() {
+    public void stateCommittedToDeleted() {
 
         Artist o1 = new Artist();
         o1.setArtistName("a");
@@ -176,7 +170,7 @@ public class CayennePersistentObjectInContextIT extends RuntimeCase {
     }
 
     @Test
-    public void testStateDeletedToTransient() {
+    public void stateDeletedToTransient() {
 
         Artist o1 = context.newObject(Artist.class);
         o1.setArtistName("qY");
@@ -192,7 +186,7 @@ public class CayennePersistentObjectInContextIT extends RuntimeCase {
     }
 
     @Test
-    public void testSetContext() {
+    public void setContext() {
 
         Artist o1 = new Artist();
         assertNull(o1.getObjectContext());
@@ -202,7 +196,7 @@ public class CayennePersistentObjectInContextIT extends RuntimeCase {
     }
 
     @Test
-    public void testFetchByAttribute() throws Exception {
+    public void fetchByAttribute() throws Exception {
 
         tArtist.insert(7, "m6");
 
@@ -214,7 +208,7 @@ public class CayennePersistentObjectInContextIT extends RuntimeCase {
     }
 
     @Test
-    public void testUniquing() throws Exception {
+    public void uniquing() throws Exception {
 
         tArtist.insert(7, "m6");
 
@@ -228,7 +222,7 @@ public class CayennePersistentObjectInContextIT extends RuntimeCase {
     }
 
     @Test
-    public void testSnapshotVersion1() {
+    public void snapshotVersion1() {
 
         Artist artist = context.newObject(Artist.class);
         assertEquals(Persistent.DEFAULT_VERSION, artist.getSnapshotVersion());
@@ -246,7 +240,7 @@ public class CayennePersistentObjectInContextIT extends RuntimeCase {
     }
 
     @Test
-    public void testSnapshotVersion2() throws Exception {
+    public void snapshotVersion2() throws Exception {
 
         tArtist.insert(7, "m6");
 
@@ -261,7 +255,7 @@ public class CayennePersistentObjectInContextIT extends RuntimeCase {
     }
 
     @Test
-    public void testSnapshotVersion3() {
+    public void snapshotVersion3() {
 
         Artist artist = context.newObject(Artist.class);
         artist.setArtistName("qY");
@@ -286,7 +280,7 @@ public class CayennePersistentObjectInContextIT extends RuntimeCase {
      * http://objectstyle.org/cayenne/lists/cayenne-user/2005/01/0210.html
      */
     @Test
-    public void testObjectsCommittedManualOID() {
+    public void objectsCommittedManualOID() {
 
         Artist object = context.newObject(Artist.class);
         object.setArtistName("ABC1");

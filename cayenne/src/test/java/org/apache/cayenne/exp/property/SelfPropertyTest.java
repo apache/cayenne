@@ -29,24 +29,24 @@ import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SelfPropertyTest {
 
     private SelfProperty<Artist> property;
 
-    @Before
+    @BeforeEach
     public void createProperty() {
         property = new SelfProperty<>(CayennePath.of("path"), null, Artist.class);
     }
 
     @Test
-    public void testQuery() {
+    public void query() {
         ObjectSelect<Artist> query = property.query();
 
         assertNotNull(query);
@@ -55,7 +55,7 @@ public class SelfPropertyTest {
     }
 
     @Test
-    public void testQueryWithExp() {
+    public void queryWithExp() {
         ObjectSelect<Artist> query = property.query(Artist.ARTIST_NAME.eq("test"));
 
         assertNotNull(query);
@@ -64,7 +64,7 @@ public class SelfPropertyTest {
     }
 
     @Test
-    public void testColumnQuery() {
+    public void columnQuery() {
         ColumnSelect<String> query = property.columnQuery(Artist.ARTIST_NAME);
 
         assertNotNull(query);
@@ -75,7 +75,7 @@ public class SelfPropertyTest {
     }
 
     @Test
-    public void testColumnsQuery() {
+    public void columnsQuery() {
         ColumnSelect<Object[]> query = property.columnQuery(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
 
         assertNotNull(query);
@@ -88,7 +88,7 @@ public class SelfPropertyTest {
     }
 
     @Test
-    public void testExists() {
+    public void exists() {
         Expression exp = property.exists(Artist.ARTIST_NAME.eq("test"));
 
         assertNotNull(exp);
@@ -107,7 +107,7 @@ public class SelfPropertyTest {
     }
 
     @Test
-    public void testNotExists() {
+    public void notExists() {
         Expression exp = property.notExists(Artist.ARTIST_NAME.eq("test"));
 
         assertNotNull(exp);

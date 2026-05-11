@@ -19,18 +19,18 @@
 
 package org.apache.cayenne.dba.oracle;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Calendar;
 import java.util.Date;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class OracleUtilDateTypeTest {
 
     @Test
-    public void testNormalizeDate() throws Exception {
+    public void normalizeDate() throws Exception {
         Date date = new Date();
         Date timeNormalized = new OracleUtilDateType().normalizeDate(date);
 

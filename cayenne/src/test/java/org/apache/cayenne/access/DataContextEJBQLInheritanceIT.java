@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Types;
 import java.util.List;
@@ -31,15 +31,16 @@ import org.apache.cayenne.testdo.inheritance_people.CustomerRepresentative;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
 import org.apache.cayenne.unit.di.runtime.PeopleProjectCase;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class DataContextEJBQLInheritanceIT extends PeopleProjectCase {
 
     @Inject
     protected ObjectContext context;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         TableHelper person = new TableHelper(dbHelper, "PERSON");
         person.setColumns("PERSON_ID", "NAME", "PERSON_TYPE", "SALARY").setColumnTypes(Types.INTEGER, Types.VARCHAR,
@@ -53,7 +54,7 @@ public class DataContextEJBQLInheritanceIT extends PeopleProjectCase {
     }
 
     @Test
-    public void testSelect() throws Exception {
+    public void select() throws Exception {
 
         EJBQLQuery superclass = new EJBQLQuery("select p from AbstractPerson p ORDER BY p.name");
 

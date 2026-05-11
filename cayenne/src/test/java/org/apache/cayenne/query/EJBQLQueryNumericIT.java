@@ -27,12 +27,12 @@ import org.apache.cayenne.testdo.numeric_types.BigIntegerEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.NUMERIC_TYPES_PROJECT)
 public class EJBQLQueryNumericIT extends RuntimeCase {
@@ -45,7 +45,7 @@ public class EJBQLQueryNumericIT extends RuntimeCase {
 
     private TableHelper tBigIntegerEntity;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tBigIntegerEntity = new TableHelper(dbHelper, "BIGINTEGER_ENTITY");
         tBigIntegerEntity.setColumns("ID", "BIG_INTEGER_FIELD");
@@ -56,7 +56,7 @@ public class EJBQLQueryNumericIT extends RuntimeCase {
     }
 
     @Test
-    public void testLongParameter() throws Exception {
+    public void longParameter() throws Exception {
         createBigIntegerEntitiesDataSet();
         String ejbql = "SELECT bie FROM BigIntegerEntity bie WHERE bie.bigIntegerField > ?1";
         EJBQLQuery query = new EJBQLQuery(ejbql);
@@ -66,7 +66,7 @@ public class EJBQLQueryNumericIT extends RuntimeCase {
     }
 
     @Test
-    public void testLongLiteral() throws Exception {
+    public void longLiteral() throws Exception {
         createBigIntegerEntitiesDataSet();
         String ejbql = "SELECT bie FROM BigIntegerEntity bie WHERE bie.bigIntegerField > 744073709551615";
         EJBQLQuery query = new EJBQLQuery(ejbql);

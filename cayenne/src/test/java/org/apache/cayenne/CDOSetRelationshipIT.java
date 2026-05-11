@@ -28,17 +28,17 @@ import org.apache.cayenne.testdo.relationships_set_to_many.SetToManyTarget;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_SET_TO_MANY_PROJECT)
 public class CDOSetRelationshipIT extends RuntimeCase {
@@ -52,7 +52,7 @@ public class CDOSetRelationshipIT extends RuntimeCase {
     protected TableHelper tSetToMany;
     protected TableHelper tSetToManyTarget;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tSetToMany = new TableHelper(dbHelper, "SET_TO_MANY");
         tSetToMany.setColumns("ID");
@@ -71,7 +71,7 @@ public class CDOSetRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testReadToMany() throws Exception {
+    public void readToMany() throws Exception {
         createTestDataSet();
 
         SetToMany o1 = Cayenne.objectForPK(context, SetToMany.class, 1);
@@ -98,7 +98,7 @@ public class CDOSetRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testReadToManyPrefetching() throws Exception {
+    public void readToManyPrefetching() throws Exception {
         createTestDataSet();
 
         SetToMany o1 = SelectById.query(SetToMany.class, 1).prefetch(SetToMany.TARGETS.disjoint()).selectOne(context);
@@ -125,7 +125,7 @@ public class CDOSetRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testAddToMany() throws Exception {
+    public void addToMany() throws Exception {
         createTestDataSet();
 
         SetToMany o1 = Cayenne.objectForPK(context, SetToMany.class, 1);
@@ -150,7 +150,7 @@ public class CDOSetRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testRemoveToMany() throws Exception {
+    public void removeToMany() throws Exception {
         createTestDataSet();
 
         SetToMany o1 = Cayenne.objectForPK(context, SetToMany.class, 1);
@@ -176,7 +176,7 @@ public class CDOSetRelationshipIT extends RuntimeCase {
     }
 
     @Test
-    public void testAddToManyViaReverse() throws Exception {
+    public void addToManyViaReverse() throws Exception {
         createTestDataSet();
 
         SetToMany o1 = Cayenne.objectForPK(context, SetToMany.class, 1);

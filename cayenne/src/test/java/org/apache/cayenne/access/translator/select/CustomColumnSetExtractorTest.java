@@ -33,11 +33,9 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.2
@@ -45,7 +43,7 @@ import static org.junit.Assert.*;
 public class CustomColumnSetExtractorTest extends BaseColumnExtractorTest {
 
     @Test
-    public void testExtractWithoutPrefix() {
+    public void extractWithoutPrefix() {
         DbEntity mockDbEntity = createMockDbEntity("mock");
         TranslatableQueryWrapper wrapper = new MockQueryWrapperBuilder()
                 .withNeedsResultSetMapping(true)
@@ -86,7 +84,7 @@ public class CustomColumnSetExtractorTest extends BaseColumnExtractorTest {
 
         assertSame(property0, descriptor0.getProperty());
         assertNotNull(descriptor0.getNode());
-        assertThat(descriptor0.getNode(), instanceOf(ColumnNode.class));
+        assertInstanceOf(ColumnNode.class, descriptor0.getNode());
         assertFalse(descriptor0.isAggregate());
         assertTrue(descriptor0.isInDataRow());
         assertNotNull(descriptor0.getDbAttribute());

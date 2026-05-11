@@ -36,18 +36,18 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class PrefetchProcessorTreeBuilderIT extends RuntimeCase {
@@ -59,7 +59,7 @@ public class PrefetchProcessorTreeBuilderIT extends RuntimeCase {
     private EntityResolver resolver;
 
     @Test
-    public void testBuildTreeNoPrefetches() {
+    public void buildTreeNoPrefetches() {
 
         final ClassDescriptor descriptor = resolver.getClassDescriptor("Artist");
         List<DataRow> dataRows = new ArrayList<>();
@@ -120,7 +120,7 @@ public class PrefetchProcessorTreeBuilderIT extends RuntimeCase {
     }
 
     @Test
-    public void testBuildTreeWithPrefetches() {
+    public void buildTreeWithPrefetches() {
 
         final ClassDescriptor descriptor = resolver.getClassDescriptor("Artist");
         ObjEntity e2 = resolver.getObjEntity("Painting");

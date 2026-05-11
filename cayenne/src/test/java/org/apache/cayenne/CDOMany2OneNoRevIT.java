@@ -25,11 +25,11 @@ import org.apache.cayenne.testdo.testmap.Painting1;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class CDOMany2OneNoRevIT extends RuntimeCase {
@@ -38,7 +38,7 @@ public class CDOMany2OneNoRevIT extends RuntimeCase {
     private ObjectContext context;
 
     @Test
-    public void testNewAdd() throws Exception {
+    public void newAdd() throws Exception {
 
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("a");

@@ -38,10 +38,10 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextEJBQLConditionsIT extends RuntimeCase {
@@ -55,7 +55,8 @@ public class DataContextEJBQLConditionsIT extends RuntimeCase {
     protected TableHelper tArtist;
     protected TableHelper tPainting;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -107,7 +108,7 @@ public class DataContextEJBQLConditionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testDateParameter() throws Exception {
+    public void dateParameter() throws Exception {
         createCollectionDataSet();
 
         ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
@@ -128,7 +129,7 @@ public class DataContextEJBQLConditionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testArithmetics() throws Exception {
+    public void arithmetics() throws Exception {
         createLikeDataSet();
 
         // TODO: andrus 02/25/2008 - fails on HSQLDB / succeeds on MySQL. HSQLDB error is
@@ -154,7 +155,7 @@ public class DataContextEJBQLConditionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testLike1() throws Exception {
+    public void like1() throws Exception {
         createLikeDataSet();
 
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle LIKE 'A%C'";
@@ -173,7 +174,7 @@ public class DataContextEJBQLConditionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testNotLike() throws Exception {
+    public void notLike() throws Exception {
         createLikeDataSet();
 
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle NOT LIKE 'A%C'";
@@ -192,7 +193,7 @@ public class DataContextEJBQLConditionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testLike2() throws Exception {
+    public void like2() throws Exception {
         createLikeDataSet();
 
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle LIKE '_DDDD'";
@@ -213,7 +214,7 @@ public class DataContextEJBQLConditionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testLikeEscape() throws Exception {
+    public void likeEscape() throws Exception {
         createLikeDataSet();
 
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle LIKE 'X_DDDD' ESCAPE 'X'";
@@ -232,7 +233,7 @@ public class DataContextEJBQLConditionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testLikeEscape_LikeParameter() throws Exception {
+    public void likeEscape_LikeParameter() throws Exception {
         createLikeDataSet();
 
         // test for CAY-1426
@@ -253,7 +254,7 @@ public class DataContextEJBQLConditionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testLikeNullParameter() {
+    public void likeNullParameter() {
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("a1");
         a1.setDateOfBirth(null);
@@ -271,7 +272,7 @@ public class DataContextEJBQLConditionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testIn() throws Exception {
+    public void in() throws Exception {
         createInDataSet();
 
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle IN ('A', 'B')";
@@ -291,7 +292,7 @@ public class DataContextEJBQLConditionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testNotIn() throws Exception {
+    public void notIn() throws Exception {
         createInDataSet();
 
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle NOT IN ('A', 'B')";
@@ -310,7 +311,7 @@ public class DataContextEJBQLConditionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testInSubquery() throws Exception {
+    public void inSubquery() throws Exception {
         createInSubqueryDataSet();
 
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle IN ("
@@ -332,7 +333,7 @@ public class DataContextEJBQLConditionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testCollectionEmpty() throws Exception {
+    public void collectionEmpty() throws Exception {
         createCollectionDataSet();
 
         String ejbql = "SELECT a FROM Artist a WHERE a.paintingArray IS EMPTY";
@@ -351,7 +352,7 @@ public class DataContextEJBQLConditionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testCollectionNotEmpty() throws Exception {
+    public void collectionNotEmpty() throws Exception {
         createCollectionDataSet();
 
         String ejbql = "SELECT a FROM Artist a WHERE a.paintingArray IS NOT EMPTY";
@@ -371,7 +372,7 @@ public class DataContextEJBQLConditionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testCollectionNotEmptyExplicitDistinct() throws Exception {
+    public void collectionNotEmptyExplicitDistinct() throws Exception {
         createCollectionDataSet();
 
         String ejbql = "SELECT DISTINCT a FROM Artist a WHERE a.paintingArray IS NOT EMPTY";
@@ -391,7 +392,7 @@ public class DataContextEJBQLConditionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testCollectionMemberOfParameter() throws Exception {
+    public void collectionMemberOfParameter() throws Exception {
         createCollectionDataSet();
 
         String ejbql = "SELECT a FROM Artist a WHERE :x MEMBER OF a.paintingArray";
@@ -411,7 +412,7 @@ public class DataContextEJBQLConditionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testGreaterOrEquals() throws Exception {
+    public void greaterOrEquals() throws Exception {
         createGreaterThanDataSet();
 
         String ejbql = "SELECT p FROM Painting p WHERE p.estimatedPrice >= :estimatedPrice";
@@ -423,7 +424,7 @@ public class DataContextEJBQLConditionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testLessOrEquals() throws Exception {
+    public void lessOrEquals() throws Exception {
         createGreaterThanDataSet();
 
         String ejbql = "SELECT p FROM Painting p WHERE p.estimatedPrice <= :estimatedPrice";
@@ -435,7 +436,7 @@ public class DataContextEJBQLConditionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testCollectionNotMemberOfParameter() throws Exception {
+    public void collectionNotMemberOfParameter() throws Exception {
         createCollectionDataSet();
 
         String ejbql = "SELECT a FROM Artist a WHERE :x NOT MEMBER a.paintingArray";
@@ -456,7 +457,7 @@ public class DataContextEJBQLConditionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testCollectionMemberOfThetaJoin() throws Exception {
+    public void collectionMemberOfThetaJoin() throws Exception {
         createCollectionDataSet();
 
         String ejbql = "SELECT p FROM Painting p, Artist a "

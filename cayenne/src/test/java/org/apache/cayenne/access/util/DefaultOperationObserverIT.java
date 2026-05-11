@@ -24,16 +24,16 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DefaultOperationObserverIT extends RuntimeCase {
 
     @Test
-    public void testHasExceptions1() {
+    public void hasExceptions1() {
         DefaultOperationObserver observer = new DefaultOperationObserver();
         assertFalse(observer.hasExceptions());
         observer.nextGlobalException(new Exception());
@@ -41,7 +41,7 @@ public class DefaultOperationObserverIT extends RuntimeCase {
     }
 
     @Test
-    public void testHasExceptions2() {
+    public void hasExceptions2() {
         DefaultOperationObserver observer = new DefaultOperationObserver();
         assertFalse(observer.hasExceptions());
         observer.nextQueryException(ObjectSelect.query(Artist.class), new Exception());

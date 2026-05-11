@@ -28,8 +28,6 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import static org.junit.Assert.assertNotNull;
-
 public class ResourceUtil {
 
 	/**
@@ -49,7 +47,7 @@ public class ResourceUtil {
 	 */
 	public static URL getResource(Class<?> relativeTo, String name) {
 		URL in = relativeTo.getResource(name);
-		assertNotNull("Resource not found: " + name, in);
+		if (in == null) { throw new RuntimeException("Resource not found: " + name); }
 		return getResource(in);
 	}
 
@@ -58,7 +56,7 @@ public class ResourceUtil {
 	 */
 	public static URL getResource(String name) {
 		URL in = Thread.currentThread().getContextClassLoader().getResource(name);
-		assertNotNull("Resource not found: " + name, in);
+		if (in == null) { throw new RuntimeException("Resource not found: " + name); }
 		return getResource(in);
 	}
 

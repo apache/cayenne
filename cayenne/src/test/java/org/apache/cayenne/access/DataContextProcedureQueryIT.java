@@ -42,12 +42,12 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextProcedureQueryIT extends RuntimeCase {
@@ -67,7 +67,7 @@ public class DataContextProcedureQueryIT extends RuntimeCase {
     private JdbcEventLogger jdbcEventLogger;
 
     @Test
-    public void testUpdate() throws Exception {
+    public void update() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
@@ -104,7 +104,7 @@ public class DataContextProcedureQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testUpdateNoParam() throws Exception {
+    public void updateNoParam() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
@@ -140,7 +140,7 @@ public class DataContextProcedureQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelect1() throws Exception {
+    public void select1() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
@@ -154,7 +154,7 @@ public class DataContextProcedureQueryIT extends RuntimeCase {
         List<?> artists = runProcedureSelect(q);
 
         // check the results
-        assertNotNull("Null result from StoredProcedure.", artists);
+        assertNotNull(artists, "Null result from StoredProcedure.");
         assertEquals(1, artists.size());
         DataRow artistRow = (DataRow) artists.get(0);
         Artist a = context.objectFromDataRow(Artist.class, uppercaseConverter(artistRow));
@@ -166,7 +166,7 @@ public class DataContextProcedureQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelect2() throws Exception {
+    public void select2() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
@@ -181,7 +181,7 @@ public class DataContextProcedureQueryIT extends RuntimeCase {
         List<?> artists = runProcedureSelect(q);
 
         // check the results
-        assertNotNull("Null result from StoredProcedure.", artists);
+        assertNotNull(artists, "Null result from StoredProcedure.");
         assertEquals(1, artists.size());
         DataRow artistRow = (DataRow) artists.get(0);
         Artist a = context.objectFromDataRow(Artist.class, uppercaseConverter(artistRow));
@@ -193,7 +193,7 @@ public class DataContextProcedureQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelect3() throws Exception {
+    public void select3() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
@@ -210,7 +210,7 @@ public class DataContextProcedureQueryIT extends RuntimeCase {
         List<?> artists = runProcedureSelect(q);
 
         // check the results
-        assertNotNull("Null result from StoredProcedure.", artists);
+        assertNotNull(artists, "Null result from StoredProcedure.");
         assertEquals(1, artists.size());
         DataRow artistRow = (DataRow) artists.get(0);
         Artist a = context.objectFromDataRow(Artist.class, uppercaseConverter(artistRow));
@@ -222,7 +222,7 @@ public class DataContextProcedureQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testFetchLimit() throws Exception {
+    public void fetchLimit() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
@@ -242,7 +242,7 @@ public class DataContextProcedureQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testFetchOffset() throws Exception {
+    public void fetchOffset() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
@@ -262,7 +262,7 @@ public class DataContextProcedureQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testColumnNameCapitalization() throws Exception {
+    public void columnNameCapitalization() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
@@ -290,7 +290,7 @@ public class DataContextProcedureQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testOutParams() throws Exception {
+    public void outParams() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
@@ -303,15 +303,15 @@ public class DataContextProcedureQueryIT extends RuntimeCase {
         assertEquals(1, rows.size());
         Object row = rows.get(0);
         assertNotNull(row);
-        assertTrue("Unexpected row class: " + row.getClass().getName(), row instanceof Map<?, ?>);
+        assertTrue(row instanceof Map<?, ?>, "Unexpected row class: " + row.getClass().getName());
         Map<?, ?> outParams = (Map<?, ?>) row;
         Number price = (Number) outParams.get("out_param");
-        assertNotNull("Null result... row content: " + row, price);
+        assertNotNull(price, "Null result... row content: " + row);
         assertEquals(40, price.intValue());
     }
 
     @Test
-    public void testSelectPersistentObject() throws Exception {
+    public void selectPersistentObject() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }
@@ -329,7 +329,7 @@ public class DataContextProcedureQueryIT extends RuntimeCase {
         List<?> artists = runProcedureSelect(q);
 
         // check the results
-        assertNotNull("Null result from StoredProcedure.", artists);
+        assertNotNull(artists, "Null result from StoredProcedure.");
         assertEquals(1, artists.size());
         Artist a = (Artist) artists.get(0);
         Painting p = a.getPaintingArray().get(0);
@@ -340,7 +340,7 @@ public class DataContextProcedureQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectWithRowDescriptor() throws Exception {
+    public void selectWithRowDescriptor() throws Exception {
 
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
@@ -369,7 +369,7 @@ public class DataContextProcedureQueryIT extends RuntimeCase {
         List<?> rows = runProcedureSelect(q);
 
         // check the results
-        assertNotNull("Null result from StoredProcedure.", rows);
+        assertNotNull(rows, "Null result from StoredProcedure.");
         assertEquals(1, rows.size());
         DataRow artistRow = (DataRow) rows.get(0);
 
@@ -379,7 +379,7 @@ public class DataContextProcedureQueryIT extends RuntimeCase {
 
         Object id = artistRow.get("ARTIST_ID");
         assertNotNull(id);
-        assertTrue("Expected Long, got: " + id.getClass().getName(), id instanceof Long);
+        assertTrue(id instanceof Long, "Expected Long, got: " + id.getClass().getName());
     }
 
     protected List<DataRow> runProcedureSelect(ProcedureQuery q) throws Exception {

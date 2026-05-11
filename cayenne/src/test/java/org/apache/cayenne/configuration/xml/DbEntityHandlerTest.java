@@ -24,9 +24,9 @@ import java.sql.Types;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.1
@@ -34,7 +34,7 @@ import static org.junit.Assert.*;
 public class DbEntityHandlerTest extends BaseHandlerTest {
 
     @Test
-    public void testLoad() throws Exception {
+    public void load() throws Exception {
 
         final DataMap map = new DataMap();
         assertTrue(map.getDbEntities().isEmpty());

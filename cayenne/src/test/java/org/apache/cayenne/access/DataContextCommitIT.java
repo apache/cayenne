@@ -19,10 +19,10 @@
 
 package org.apache.cayenne.access;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -37,7 +37,7 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextCommitIT extends RuntimeCase {
@@ -46,7 +46,7 @@ public class DataContextCommitIT extends RuntimeCase {
 	private DataContext context;
 
 	@Test
-	public void testFlushToParent_Commit_New() {
+	public void flushToParent_Commit_New() {
 
 		// commit new object
 		Artist a = context.newObject(Artist.class);
@@ -72,7 +72,7 @@ public class DataContextCommitIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testFlushToParent_Commit_Mix() {
+	public void flushToParent_Commit_Mix() {
 
 		Artist a = context.newObject(Artist.class);
 		a.setArtistName("Test");
@@ -99,7 +99,7 @@ public class DataContextCommitIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testFlushToParent_NewNoAttributes() {
+	public void flushToParent_NewNoAttributes() {
 
 		// commit new object with uninitialized attributes
 

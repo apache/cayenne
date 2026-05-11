@@ -25,12 +25,10 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.GroupByNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.property.PropertyFactory;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.2
@@ -39,7 +37,7 @@ public class GroupByStageTest {
 
     private TranslatorContext context;
 
-    @Before
+    @BeforeEach
     public void prepareContext() {
         TranslatableQueryWrapper wrapper = new MockQueryWrapperBuilder().build();
         context = new MockTranslatorContext(wrapper);
@@ -78,9 +76,9 @@ public class GroupByStageTest {
 
         Node node = context.getSelectBuilder().build();
         assertEquals(1, node.getChildrenCount());
-        assertThat(node.getChild(0), instanceOf(GroupByNode.class));
+        assertInstanceOf(GroupByNode.class, node.getChild(0));
         assertEquals(1, node.getChild(0).getChildrenCount());
-        assertThat(node.getChild(0).getChild(0), instanceOf(ColumnNode.class));
+        assertInstanceOf(ColumnNode.class, node.getChild(0).getChild(0));
         ColumnNode columnNode = (ColumnNode)node.getChild(0).getChild(0);
         assertEquals("t0", columnNode.getTable());
         assertEquals("column", columnNode.getColumn());

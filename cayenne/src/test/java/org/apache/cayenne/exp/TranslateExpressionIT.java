@@ -33,10 +33,10 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class TranslateExpressionIT extends RuntimeCase {
@@ -47,7 +47,7 @@ public class TranslateExpressionIT extends RuntimeCase {
     @Inject
     private DBHelper dbHelper;
 
-    @Before
+    @BeforeEach
     public void createArtistsDataSet() throws Exception {
         TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
@@ -69,7 +69,7 @@ public class TranslateExpressionIT extends RuntimeCase {
     }
 
     @Test
-    public void testPrefetchWithTranslatedExp() {
+    public void prefetchWithTranslatedExp() {
         List<Painting> result = ObjectSelect.query(Painting.class)
                 .where(Painting.TO_ARTIST
                         .dot(Artist.PAINTING_ARRAY)
@@ -82,7 +82,7 @@ public class TranslateExpressionIT extends RuntimeCase {
     }
 
     @Test
-    public void testPrefetchWithTheSamePrefetchAndQualifier() {
+    public void prefetchWithTheSamePrefetchAndQualifier() {
         List<Painting> result = ObjectSelect.query(Painting.class)
                 .where(Painting.TO_GALLERY
                         .dot(Gallery.PAINTING_ARRAY)
@@ -97,7 +97,7 @@ public class TranslateExpressionIT extends RuntimeCase {
     }
 
     @Test
-    public void testTranslateExpression() {
+    public void translateExpression() {
         ObjEntity entity = context.getEntityResolver().getObjEntity("Painting");
         Expression expression = ExpressionFactory.pathExp("toArtist.paintingArray");
         Expression translatedExpression = entity
@@ -108,7 +108,7 @@ public class TranslateExpressionIT extends RuntimeCase {
     }
 
     @Test
-    public void testRelationshipPathEqualsToInput() {
+    public void relationshipPathEqualsToInput() {
         ObjEntity entity = context.getEntityResolver().getObjEntity("Painting");
         Expression expression = ExpressionFactory.pathExp("toArtist");
         Expression translatedExpression = entity
@@ -118,7 +118,7 @@ public class TranslateExpressionIT extends RuntimeCase {
     }
 
     @Test
-    public void testRelationshipNoneLeadingParts() {
+    public void relationshipNoneLeadingParts() {
         ObjEntity entity = context.getEntityResolver().getObjEntity("Painting");
         Expression expression = ExpressionFactory.pathExp("toGallery");
         Expression translatedExpression = entity
@@ -128,7 +128,7 @@ public class TranslateExpressionIT extends RuntimeCase {
     }
 
     @Test
-    public void testRelationshipSomeLeadingParts() {
+    public void relationshipSomeLeadingParts() {
         ObjEntity entity = context.getEntityResolver().getObjEntity("Painting");
         Expression expression = ExpressionFactory.pathExp("toGallery");
         Expression translatedExpression = entity
@@ -138,7 +138,7 @@ public class TranslateExpressionIT extends RuntimeCase {
     }
 
     @Test
-    public void testCompQualifier() {
+    public void compQualifier() {
         ObjEntity entity = context.getEntityResolver().getObjEntity("Painting");
         Expression expression = ExpressionFactory.pathExp("toArtist.artistExhibitArray.toExhibit");
         Expression translatedExpression = entity
@@ -148,7 +148,7 @@ public class TranslateExpressionIT extends RuntimeCase {
     }
 
     @Test
-    public void testCompQualifierAndPref() {
+    public void compQualifierAndPref() {
         ObjEntity entity = context.getEntityResolver().getObjEntity("Artist");
         Expression expression = ExpressionFactory.pathExp("paintingArray.toGallery");
         Expression translatedExpression = entity

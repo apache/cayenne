@@ -27,16 +27,16 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntitySorter;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
@@ -45,7 +45,7 @@ public class GraphBasedDbRowOpSorterTest {
     private EntitySorter entitySorter;
     private DbRowOpSorter sorter;
 
-    @Before
+    @BeforeEach
     public void createSorter() {
         entitySorter = mock(EntitySorter.class);
         EntityResolver entityResolver = mock(EntityResolver.class);

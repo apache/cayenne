@@ -22,10 +22,10 @@ package org.apache.cayenne.template;
 import java.io.ByteArrayInputStream;
 
 import org.apache.cayenne.template.parser.SQLTemplateParser;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.1
@@ -34,7 +34,7 @@ public class TemplateParserPoolTest {
 
     TemplateParserPool parserPool;
 
-    @Before
+    @BeforeEach
     public void createPool() {
         parserPool = new TemplateParserPool();
     }

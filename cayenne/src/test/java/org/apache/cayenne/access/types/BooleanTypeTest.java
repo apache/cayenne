@@ -23,10 +23,10 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import com.mockrunner.mock.jdbc.MockResultSet;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 
 /**
@@ -34,13 +34,13 @@ import static org.junit.Assert.assertSame;
 public class BooleanTypeTest {
 
     @Test
-    public void testClassName() {
+    public void className() {
         BooleanType type = new BooleanType();
         assertEquals(Boolean.class.getName(), type.getClassName());
     }
 
     @Test
-    public void testMaterializeObjectFromResultSet() throws Exception {
+    public void materializeObjectFromResultSet() throws Exception {
         MockResultSet rs = new MockResultSet("") {
 
             @Override

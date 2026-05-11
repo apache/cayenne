@@ -18,20 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.map.EntityResolver;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SQLSelectTest {
 
 
 	@Test
-	public void testCacheStrategy() {
+	public void cacheStrategy() {
 		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("bla");
 
 		assertNull(q.getCacheStrategy());
@@ -47,7 +45,7 @@ public class SQLSelectTest {
 	}
 
 	@Test
-	public void testLocalCache() {
+	public void localCache() {
 		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("bla");
 
 		assertNull(q.getCacheStrategy());
@@ -63,7 +61,7 @@ public class SQLSelectTest {
 	}
 
 	@Test
-	public void testSharedCache() {
+	public void sharedCache() {
 		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("bla");
 
 		assertNull(q.getCacheStrategy());
@@ -79,15 +77,15 @@ public class SQLSelectTest {
 	}
 
 	@Test
-	public void testCreateReplacementQuery() {
+	public void createReplacementQuery() {
 
 		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("bla");
 		Query replacement = q.createReplacementQuery(mock(EntityResolver.class));
-		assertThat(replacement, instanceOf(SQLTemplate.class));
+		assertInstanceOf(SQLTemplate.class, replacement);
 	}
 
 	@Test
-	public void testCreateReplacementQuery_ParamsArray_Single() {
+	public void createReplacementQuery_ParamsArray_Single() {
 
 		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("bla").paramsArray("a");
 		SQLTemplate replacement = (SQLTemplate) q.createReplacementQuery(mock(EntityResolver.class));
@@ -95,7 +93,7 @@ public class SQLSelectTest {
 	}
 
 	@Test
-	public void testCreateReplacementQuery_ParamsArray_Multiple() {
+	public void createReplacementQuery_ParamsArray_Multiple() {
 
 		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("bla").paramsArray("a", "b");
 		SQLTemplate replacement = (SQLTemplate) q.createReplacementQuery(mock(EntityResolver.class));
@@ -103,7 +101,7 @@ public class SQLSelectTest {
 	}
 
 	@Test
-	public void testGetMetadata_ParamsArray_Multiple_Cache() {
+	public void getMetadata_ParamsArray_Multiple_Cache() {
 
 		EntityResolver resolver = mock(EntityResolver.class);
 		QueryMetadata md0 = SQLSelect.dataRowQuery("bla").localCache().getMetaData(resolver);

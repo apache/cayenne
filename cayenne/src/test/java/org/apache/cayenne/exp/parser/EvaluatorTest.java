@@ -20,7 +20,7 @@ package org.apache.cayenne.exp.parser;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -29,17 +29,17 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class EvaluatorTest {
 
     @Test
-    public void testEvaluator_Null() {
+    public void evaluator_Null() {
         Evaluator e = Evaluator.evaluator(null);
         assertNotNull(e);
         assertTrue(e.eq(null, null));
@@ -47,7 +47,7 @@ public class EvaluatorTest {
     }
 
     @Test
-    public void testEvaluator_Object() {
+    public void evaluator_Object() {
         Object o = new Object();
         Evaluator e = Evaluator.evaluator(o);
         assertNotNull(e);
@@ -56,7 +56,7 @@ public class EvaluatorTest {
     }
 
     @Test
-    public void testEvaluator_Number() {
+    public void evaluator_Number() {
 
         Evaluator e = Evaluator.evaluator(1);
         assertNotNull(e);
@@ -67,7 +67,7 @@ public class EvaluatorTest {
     }
 
 	@Test
-    public void testEvaluator_NumberWideningEquals() {
+    public void evaluator_NumberWideningEquals() {
         Evaluator e = Evaluator.evaluator(1);
 
         assertTrue(e.eq((byte)1, (byte)1));
@@ -132,7 +132,7 @@ public class EvaluatorTest {
     }
     
 	@Test
-    public void testEvaluator_NumberWideningCompare() {
+    public void evaluator_NumberWideningCompare() {
         Evaluator e = Evaluator.evaluator(1);
 
         assertTrue(e.compare((byte)1, (byte)1) == 0);
@@ -197,7 +197,7 @@ public class EvaluatorTest {
     }
     
     @Test
-    public void testEvaluator_BigDecimal() {
+    public void evaluator_BigDecimal() {
         Object lhs = new BigDecimal("1.10");
         Evaluator e = Evaluator.evaluator(lhs);
         assertNotNull(e);
@@ -209,7 +209,7 @@ public class EvaluatorTest {
     }
 
     @Test
-    public void testEvaluator_Persistent() {
+    public void evaluator_Persistent() {
 
         ObjectId lhsId = ObjectId.of("X", "k", 3);
         Persistent lhs = mock(Persistent.class);
@@ -236,7 +236,7 @@ public class EvaluatorTest {
     }
 
     @Test
-    public void testEvaluator_Persistent_StringId() {
+    public void evaluator_Persistent_StringId() {
 
         ObjectId lhsId = ObjectId.of("X", "k", "A");
         Persistent lhs = mock(Persistent.class);
@@ -263,7 +263,7 @@ public class EvaluatorTest {
     }
 
     @Test
-    public void testEvaluator_Persistent_MultiKey() {
+    public void evaluator_Persistent_MultiKey() {
 
         Map<String, Object> lhsIdMap = new HashMap<>();
         lhsIdMap.put("a", 1);

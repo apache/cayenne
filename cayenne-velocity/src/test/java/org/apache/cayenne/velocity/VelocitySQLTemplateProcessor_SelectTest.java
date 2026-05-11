@@ -19,27 +19,27 @@
 
 package org.apache.cayenne.velocity;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Collections;
 
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.jdbc.SQLStatement;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class VelocitySQLTemplateProcessor_SelectTest {
 
 	private VelocitySQLTemplateProcessor processor;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		processor = new VelocitySQLTemplateProcessor();
 	}
 
 	@Test
-	public void testProcessTemplateUnchanged() throws Exception {
+	public void processTemplateUnchanged() throws Exception {
 		String sqlTemplate = "SELECT * FROM ME";
 
 		SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.<String, Object> emptyMap());
@@ -50,7 +50,7 @@ public class VelocitySQLTemplateProcessor_SelectTest {
 	}
 
 	@Test
-	public void testProcessSelectTemplate1() throws Exception {
+	public void processSelectTemplate1() throws Exception {
 		String sqlTemplate = "SELECT #result('A') FROM ME";
 
 		SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.<String, Object> emptyMap());
@@ -63,7 +63,7 @@ public class VelocitySQLTemplateProcessor_SelectTest {
 	}
 
 	@Test
-	public void testProcessSelectTemplate2() throws Exception {
+	public void processSelectTemplate2() throws Exception {
 		String sqlTemplate = "SELECT #result('A' 'String') FROM ME";
 
 		SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.<String, Object> emptyMap());
@@ -77,7 +77,7 @@ public class VelocitySQLTemplateProcessor_SelectTest {
 	}
 
 	@Test
-	public void testProcessSelectTemplate3() throws Exception {
+	public void processSelectTemplate3() throws Exception {
 		String sqlTemplate = "SELECT #result('A' 'String' 'B') FROM ME";
 
 		SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.<String, Object> emptyMap());
@@ -93,7 +93,7 @@ public class VelocitySQLTemplateProcessor_SelectTest {
 	}
 
 	@Test
-	public void testProcessSelectTemplate4() throws Exception {
+	public void processSelectTemplate4() throws Exception {
 		String sqlTemplate = "SELECT #result('A'), #result('B'), #result('C') FROM ME";
 
 		SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.<String, Object> emptyMap());

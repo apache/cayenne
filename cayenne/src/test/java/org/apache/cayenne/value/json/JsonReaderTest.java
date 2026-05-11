@@ -23,10 +23,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @since 4.2
@@ -34,19 +34,19 @@ import static org.junit.Assert.assertTrue;
 public class JsonReaderTest {
 
     @Test
-    public void testKeyword() {
+    public void keyword() {
         Object object = new JsonReader("true").process();
         assertEquals("true", object.toString());
     }
 
     @Test
-    public void testNumber() {
+    public void number() {
         Object object = new JsonReader("-123.321e12").process();
         assertEquals("-123.321e12", object.toString());
     }
 
     @Test
-    public void testObject() {
+    public void object() {
         Object object = new JsonReader("{\"abc\": 123}").process();
         assertTrue(object instanceof Map);
 
@@ -58,7 +58,7 @@ public class JsonReaderTest {
     }
 
     @Test
-    public void testArray() {
+    public void array() {
         Object object = new JsonReader("[\"abc\", 123]").process();
         assertTrue(object instanceof List);
 
@@ -71,7 +71,7 @@ public class JsonReaderTest {
     }
 
     @Test
-    public void testArrayOfObjects() {
+    public void arrayOfObjects() {
         Object object = new JsonReader("[{\"abc\": 123}, {\"abc\":321}, {\"abc\":-123}]").process();
         assertTrue(object instanceof List);
 
@@ -81,7 +81,7 @@ public class JsonReaderTest {
     }
 
     @Test
-    public void testObjectWithArray() {
+    public void objectWithArray() {
         Object object = new JsonReader("{\"abc\": [], \"def\":[1,2,3], \"ghi\":[\"test\"]}").process();
         assertTrue(object instanceof Map);
 
@@ -91,7 +91,7 @@ public class JsonReaderTest {
     }
 
     @Test
-    public void testComplexJson() {
+    public void complexJson() {
         Object object = new JsonReader(JSON).process();
         assertTrue(object instanceof List);
 

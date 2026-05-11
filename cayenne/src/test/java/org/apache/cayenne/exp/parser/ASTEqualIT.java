@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
@@ -30,7 +30,7 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ASTEqualIT extends RuntimeCase {
@@ -39,7 +39,7 @@ public class ASTEqualIT extends RuntimeCase {
 	private ObjectContext context;
 
 	@Test
-	public void testEvaluate_PersistentObject() {
+	public void evaluate_PersistentObject() {
 		Artist a1 = context.newObject(Artist.class);
 		Artist a2 = context.newObject(Artist.class);
 		Painting p1 = context.newObject(Painting.class);
@@ -65,7 +65,7 @@ public class ASTEqualIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testEvaluate_TempId() {
+	public void evaluate_TempId() {
 		Artist a1 = context.newObject(Artist.class);
 		Artist a2 = context.newObject(Artist.class);
 		Painting p1 = context.newObject(Painting.class);
@@ -83,7 +83,7 @@ public class ASTEqualIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testEvaluate_Id() throws Exception {
+	public void evaluate_Id() throws Exception {
 
 		Artist a1 = context.newObject(Artist.class);
 		Artist a2 = context.newObject(Artist.class);

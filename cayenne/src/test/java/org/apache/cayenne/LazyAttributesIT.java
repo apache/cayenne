@@ -29,13 +29,12 @@ import org.apache.cayenne.testdo.lazy.Lazyblob;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 /**
  * @since 4.2
@@ -49,7 +48,7 @@ public class LazyAttributesIT extends RuntimeCase {
     @Inject
     private DBHelper dbHelper;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         TableHelper th = new TableHelper(dbHelper, "LAZYBLOB")
                 .setColumns("ID", "NAME", "LAZY_DATA")
@@ -62,7 +61,7 @@ public class LazyAttributesIT extends RuntimeCase {
         Lazyblob lazyblob = ObjectSelect.query(Lazyblob.class).selectOne(context);
         byte[] expected = {1, 2, 3, 4, 5};
 
-        assertThat(lazyblob.readPropertyDirectly("lazyData"), instanceOf(Fault.class));
+        assertInstanceOf(Fault.class, lazyblob.readPropertyDirectly("lazyData"));
         assertArrayEquals(expected, (byte[])lazyblob.readProperty("lazyData"));
         assertArrayEquals(expected, lazyblob.getLazyData());
     }
@@ -84,7 +83,7 @@ public class LazyAttributesIT extends RuntimeCase {
 
         context.commitChanges();
 
-        assertThat(lazyblob.readPropertyDirectly("lazyData"), instanceOf(byte[].class));
+        assertInstanceOf(byte[].class, lazyblob.readPropertyDirectly("lazyData"));
         assertArrayEquals(expected, (byte[])lazyblob.readProperty("lazyData"));
         assertArrayEquals(expected, lazyblob.getLazyData());
 

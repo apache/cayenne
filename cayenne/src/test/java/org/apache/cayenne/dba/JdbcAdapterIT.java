@@ -29,12 +29,12 @@ import org.apache.cayenne.map.DbKeyGenerator;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class JdbcAdapterIT extends RuntimeCase {
@@ -46,7 +46,7 @@ public class JdbcAdapterIT extends RuntimeCase {
     private AdhocObjectFactory objectFactory;
 
     @Test
-    public void testExternalTypesForJdbcType() throws Exception {
+    public void externalTypesForJdbcType() throws Exception {
         // check a few types
         checkType(Types.BLOB);
         checkType(Types.ARRAY);
@@ -66,7 +66,7 @@ public class JdbcAdapterIT extends RuntimeCase {
     }
 
     @Test
-    public void testCreateTableQuoteSqlIdentifiers() {
+    public void createTableQuoteSqlIdentifiers() {
 
         if (dbAdapter instanceof MySQLAdapter) {
 

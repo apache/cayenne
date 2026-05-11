@@ -48,12 +48,12 @@ import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
 import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -61,7 +61,7 @@ import static org.mockito.Mockito.when;
 public class DefaultDbAdapterFactoryTest {
 
     @Test
-    public void testCreatedAdapter_Auto() throws Exception {
+    public void createdAdapter_Auto() throws Exception {
 
         final DbAdapter adapter = mock(JdbcAdapter.class);
         when(adapter.createTable(any(DbEntity.class))).thenReturn("XXXXX");
@@ -98,7 +98,7 @@ public class DefaultDbAdapterFactoryTest {
     }
 
     @Test
-    public void testCreatedAdapter_Generic() {
+    public void createdAdapter_Generic() {
 
         List<DbAdapterDetector> detectors = new ArrayList<>();
 
@@ -126,12 +126,12 @@ public class DefaultDbAdapterFactoryTest {
 
         DbAdapter createdAdapter = factory.createAdapter(new DataNodeDescriptor(), new MockDataSource());
         assertNotNull(createdAdapter);
-        assertTrue("Unexpected class: " + createdAdapter.getClass().getName(), createdAdapter instanceof AutoAdapter);
+        assertTrue(createdAdapter instanceof AutoAdapter, "Unexpected class: " + createdAdapter.getClass().getName());
         assertEquals("CREATE TABLE Test ()", createdAdapter.createTable(new DbEntity("Test")));
     }
 
     @Test
-    public void testCreatedAdapter_Custom() throws Exception {
+    public void createdAdapter_Custom() throws Exception {
 
         DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
         nodeDescriptor.setAdapterType(SybaseAdapter.class.getName());
@@ -162,11 +162,11 @@ public class DefaultDbAdapterFactoryTest {
 
         DbAdapter createdAdapter = factory.createAdapter(nodeDescriptor, new MockDataSource());
         assertNotNull(createdAdapter);
-        assertTrue("Unexpected class: " + createdAdapter.getClass().getName(), createdAdapter instanceof SybaseAdapter);
+        assertTrue(createdAdapter instanceof SybaseAdapter, "Unexpected class: " + createdAdapter.getClass().getName());
     }
 
     @Test
-    public void testCreatedAdapter_AutoExplicit() throws Exception {
+    public void createdAdapter_AutoExplicit() throws Exception {
 
         final DbAdapter adapter = mock(JdbcAdapter.class);
         when(adapter.createTable(any(DbEntity.class))).thenReturn("XXXXX");

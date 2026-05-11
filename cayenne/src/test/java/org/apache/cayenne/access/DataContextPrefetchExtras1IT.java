@@ -31,10 +31,10 @@ import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * A test case for CAY-788.
@@ -63,7 +63,7 @@ public class DataContextPrefetchExtras1IT extends RuntimeCase {
     }
 
     @Test
-    public void testPrefetchToOne() throws Exception {
+    public void prefetchToOne() throws Exception {
         createDataSet();
 
         ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)

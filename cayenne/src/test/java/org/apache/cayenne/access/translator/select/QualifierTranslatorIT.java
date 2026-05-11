@@ -34,13 +34,13 @@ import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @UseCayenneRuntime(CayenneProjects.COMPOUND_PROJECT)
 public class QualifierTranslatorIT extends RuntimeCase {
@@ -54,7 +54,7 @@ public class QualifierTranslatorIT extends RuntimeCase {
     @Inject
     protected DBHelper dbHelper;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         TableHelper tCompoundPKTest = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
         tCompoundPKTest.setColumns("KEY1", "KEY2", "NAME");
@@ -63,7 +63,7 @@ public class QualifierTranslatorIT extends RuntimeCase {
     }
 
     @Test
-    public void testCompoundPK() {
+    public void compoundPK() {
         CompoundPkTestEntity testEntity = ObjectSelect.query(CompoundPkTestEntity.class).selectFirst(context);
         assertNotNull(testEntity);
 
@@ -86,7 +86,7 @@ public class QualifierTranslatorIT extends RuntimeCase {
     }
 
     @Test
-    public void testMultipleCompoundPK() {
+    public void multipleCompoundPK() {
         List<CompoundPkTestEntity> testEntity = ObjectSelect.query(CompoundPkTestEntity.class)
                 .limit(2)
                 .select(context);
@@ -111,7 +111,7 @@ public class QualifierTranslatorIT extends RuntimeCase {
     }
 
     @Test
-    public void testCAY_2879() {
+    public void cAY_2879() {
         ObjectSelect<CompoundFkTestEntity> query = ObjectSelect.query(CompoundFkTestEntity.class)
                 .where(ExpressionFactory.exp("name = -1"));
 

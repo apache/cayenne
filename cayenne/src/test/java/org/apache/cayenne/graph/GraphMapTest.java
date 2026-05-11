@@ -19,20 +19,20 @@
 
 package org.apache.cayenne.graph;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GraphMapTest {
 
     @Test
-    public void testRegisterNode() {
+    public void registerNode() {
         GraphMap map = new GraphMap();
         Object node = new Object();
 
@@ -41,7 +41,7 @@ public class GraphMapTest {
     }
 
     @Test
-    public void testRegisteredNodes() {
+    public void registeredNodes() {
         GraphMap map = new GraphMap();
         Object n1 = new Object();
         Object n2 = new Object();
@@ -55,12 +55,7 @@ public class GraphMapTest {
         assertTrue(nodes.contains(n1));
         assertTrue(nodes.contains(n2));
 
-        try {
-            nodes.add(new Object());
-            fail("Nodes collection is expected to be immutable.");
-        }
-        catch (UnsupportedOperationException e) {
-            // expected...
-        }
+        assertThrows(UnsupportedOperationException.class, () -> nodes.add(new Object()),
+                "Nodes collection is expected to be immutable.");
     }
 }

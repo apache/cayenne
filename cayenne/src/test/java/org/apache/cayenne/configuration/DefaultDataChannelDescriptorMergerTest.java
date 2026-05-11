@@ -19,18 +19,18 @@
 package org.apache.cayenne.configuration;
 
 import org.apache.cayenne.map.DataMap;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DefaultDataChannelDescriptorMergerTest {
 
     @Test
-    public void testSingleDescriptor() {
+    public void singleDescriptor() {
         DataChannelDescriptor descriptor = new DataChannelDescriptor();
         descriptor.setName("Zx");
 
@@ -42,7 +42,7 @@ public class DefaultDataChannelDescriptorMergerTest {
     }
 
     @Test
-    public void testMerged_Name() {
+    public void merged_Name() {
         DataChannelDescriptor d1 = new DataChannelDescriptor();
         d1.setName("Zx");
 
@@ -58,7 +58,7 @@ public class DefaultDataChannelDescriptorMergerTest {
     }
 
     @Test
-    public void testMerged_Properties() {
+    public void merged_Properties() {
         DataChannelDescriptor d1 = new DataChannelDescriptor();
         d1.getProperties().put("X", "1");
         d1.getProperties().put("Y", "2");
@@ -76,7 +76,7 @@ public class DefaultDataChannelDescriptorMergerTest {
     }
 
     @Test
-    public void testMerged_DataMaps() {
+    public void merged_DataMaps() {
         DataChannelDescriptor d1 = new DataChannelDescriptor();
         d1.setName("Zx");
         DataMap m11 = new DataMap("A");
@@ -102,7 +102,7 @@ public class DefaultDataChannelDescriptorMergerTest {
     }
 
     @Test
-    public void testMerge_DataNodes() {
+    public void merge_DataNodes() {
         DataChannelDescriptor d1 = new DataChannelDescriptor();
         d1.setName("Zx");
         DataNodeDescriptor dn11 = new DataNodeDescriptor("A");
@@ -142,7 +142,7 @@ public class DefaultDataChannelDescriptorMergerTest {
     }
 
     @Test
-    public void testMerge_DataNodesMapLinks() {
+    public void merge_DataNodesMapLinks() {
         DataChannelDescriptor d1 = new DataChannelDescriptor();
         d1.setName("Zx");
         DataNodeDescriptor dn11 = new DataNodeDescriptor("A");

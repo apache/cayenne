@@ -35,10 +35,10 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextRefreshQueryIT extends RuntimeCase {
@@ -52,7 +52,8 @@ public class DataContextRefreshQueryIT extends RuntimeCase {
     protected TableHelper tArtist;
     protected TableHelper tPainting;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -87,7 +88,7 @@ public class DataContextRefreshQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testRefreshCollection() throws Exception {
+    public void refreshCollection() throws Exception {
         createRefreshCollectionDataSet();
 
         List<Artist> artists = ObjectSelect.query(Artist.class)
@@ -131,7 +132,7 @@ public class DataContextRefreshQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testRefreshCollectionToOne() throws Exception {
+    public void refreshCollectionToOne() throws Exception {
         createRefreshCollectionDataSet();
 
         List<Painting> paints = ObjectSelect.query(Painting.class)
@@ -176,7 +177,7 @@ public class DataContextRefreshQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testRefreshSingleObject() throws Exception {
+    public void refreshSingleObject() throws Exception {
         createRefreshCollectionDataSet();
 
         List<Artist> artists = ObjectSelect.query(Artist.class)
@@ -207,7 +208,7 @@ public class DataContextRefreshQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testRefreshObjectToMany() throws Exception {
+    public void refreshObjectToMany() throws Exception {
         createRefreshObjectToManyDataSet();
 
         Artist a = Cayenne.objectForPK(context, Artist.class, 33001L);
@@ -222,7 +223,7 @@ public class DataContextRefreshQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testRefreshQueryResultsLocalCache() throws Exception {
+    public void refreshQueryResultsLocalCache() throws Exception {
         createRefreshCollectionDataSet();
 
         ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
@@ -276,7 +277,7 @@ public class DataContextRefreshQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testRefreshQueryResultsSharedCache() throws Exception {
+    public void refreshQueryResultsSharedCache() throws Exception {
         createRefreshCollectionDataSet();
 
         ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
@@ -329,7 +330,7 @@ public class DataContextRefreshQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testRefreshQueryResultGroupLocal() throws Exception {
+    public void refreshQueryResultGroupLocal() throws Exception {
         createRefreshCollectionDataSet();
 
         ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
@@ -383,7 +384,7 @@ public class DataContextRefreshQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testRefreshAll() throws Exception {
+    public void refreshAll() throws Exception {
         createRefreshCollectionDataSet();
         ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
                 .orderBy("db:ARTIST_ID", SortOrder.ASCENDING);

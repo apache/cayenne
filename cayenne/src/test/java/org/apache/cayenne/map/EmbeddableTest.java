@@ -18,18 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EmbeddableTest {
 
     @Test
-    public void testClassName() {
+    public void className() {
         Embeddable e1 = new Embeddable();
         assertNull(e1.getClassName());
 
@@ -41,7 +41,7 @@ public class EmbeddableTest {
     }
 
     @Test
-    public void testAddAttribute() {
+    public void addAttribute() {
         Embeddable e1 = new Embeddable();
 
         EmbeddableAttribute a1 = new EmbeddableAttribute("a1");
@@ -60,7 +60,7 @@ public class EmbeddableTest {
     }
 
     @Test
-    public void testRemoveAttribute() {
+    public void removeAttribute() {
         Embeddable e1 = new Embeddable();
 
         EmbeddableAttribute a1 = new EmbeddableAttribute("a1");

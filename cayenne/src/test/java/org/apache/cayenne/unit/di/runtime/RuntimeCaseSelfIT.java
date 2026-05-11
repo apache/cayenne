@@ -21,12 +21,12 @@ package org.apache.cayenne.unit.di.runtime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class RuntimeCaseSelfIT extends RuntimeCase {
@@ -41,7 +41,7 @@ public class RuntimeCaseSelfIT extends RuntimeCase {
     protected RuntimeCaseProperties properties;
 
     @Test
-    public void testSetup_TearDown_Runtime() throws Exception {
+    public void setup_TearDown_Runtime() throws Exception {
 
         assertNotNull(properties);
         assertEquals(CayenneProjects.TESTMAP_PROJECT, properties.getConfigurationLocation());

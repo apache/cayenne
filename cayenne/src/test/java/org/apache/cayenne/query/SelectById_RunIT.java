@@ -37,13 +37,11 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static java.util.Collections.singletonMap;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SelectById_RunIT extends RuntimeCase {
@@ -63,7 +61,7 @@ public class SelectById_RunIT extends RuntimeCase {
 	@Inject
 	private EntityResolver resolver;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		tArtist = new TableHelper(dbHelper, "ARTIST").setColumns("ARTIST_ID", "ARTIST_NAME");
 		tPainting = new TableHelper(dbHelper, "PAINTING").setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE")
@@ -76,7 +74,7 @@ public class SelectById_RunIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testIntPk() throws Exception {
+	public void intPk() throws Exception {
 		createTwoArtists();
 
 		Artist a3 = SelectById.queryId(Artist.class, 3).selectOne(context);
@@ -89,87 +87,87 @@ public class SelectById_RunIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testNullPk() {
+	public void nullPk() {
 		List<Artist> artists = SelectById.queryId(Artist.class, null).select(context);
 		assertEquals(0, artists.size());
 	}
 
 	@Test
-	public void testDataRowNullPk() {
+	public void dataRowNullPk() {
 		List<DataRow> artists = SelectById.dataRowQueryId(Artist.class, null).select(context);
 		assertEquals(0, artists.size());
 	}
 
 	@Test
-	public void testEmptyPkMulti() {
+	public void emptyPkMulti() {
 		List<Artist> artists = SelectById.queryIds(Artist.class).select(context);
 		assertEquals(0, artists.size());
 	}
 
 	@Test
-	public void testEmptyPkCollection() {
+	public void emptyPkCollection() {
 		List<Artist> artists = SelectById.queryIdsCollection(Artist.class, Collections.emptyList()).select(context);
 		assertEquals(0, artists.size());
 	}
 
 	@Test
-	public void testEmptyMapPkMulti() {
+	public void emptyMapPkMulti() {
 		List<Artist> artists = SelectById.queryMaps(Artist.class).select(context);
 		assertEquals(0, artists.size());
 	}
 
 	@Test
-	public void testEmptyMapPkCollection() {
+	public void emptyMapPkCollection() {
 		List<Artist> artists = SelectById.queryMapsCollection(Artist.class, Collections.emptyList()).select(context);
 		assertEquals(0, artists.size());
 	}
 
 	@Test
-	public void testDataRowEmptyPkMulti() {
+	public void dataRowEmptyPkMulti() {
 		List<DataRow> artists = SelectById.dataRowQueryIds(Artist.class).select(context);
 		assertEquals(0, artists.size());
 	}
 
 	@Test
-	public void testDataRowEmptyPkCollection() {
+	public void dataRowEmptyPkCollection() {
 		List<DataRow> artists = SelectById.dataRowQueryIdsCollection(Artist.class, Collections.emptyList()).select(context);
 		assertEquals(0, artists.size());
 	}
 
 	@Test
-	public void testDataRowEmptyMapPkMulti() {
+	public void dataRowEmptyMapPkMulti() {
 		List<DataRow> artists = SelectById.dataRowQueryMaps(Artist.class).select(context);
 		assertEquals(0, artists.size());
 	}
 
 	@Test
-	public void testDataRowEmptyMapPkCollection() {
+	public void dataRowEmptyMapPkCollection() {
 		List<DataRow> artists = SelectById.dataRowQueryMapsCollection(Artist.class, Collections.emptyList()).select(context);
 		assertEquals(0, artists.size());
 	}
 
 	@Test
-	public void testIntPkMulti() throws Exception {
+	public void intPkMulti() throws Exception {
 		createTwoArtists();
 
 		List<Artist> artists = SelectById.queryIds(Artist.class, 2, 3)
 				.select(context);
 		assertEquals(2, artists.size());
-		assertThat(artists.get(0), instanceOf(Artist.class));
+		assertInstanceOf(Artist.class, artists.get(0));
 	}
 
 	@Test
-	public void testIntPkCollection() throws Exception {
+	public void intPkCollection() throws Exception {
 		createTwoArtists();
 
 		List<Artist> artists = SelectById.queryIdsCollection(Artist.class, Arrays.asList(1, 2, 3, 4, 5))
 				.select(context);
 		assertEquals(2, artists.size());
-		assertThat(artists.get(0), instanceOf(Artist.class));
+		assertInstanceOf(Artist.class, artists.get(0));
 	}
 
 	@Test
-	public void testMapPk() throws Exception {
+	public void mapPk() throws Exception {
 		createTwoArtists();
 
 		Artist a3 = SelectById.queryMap(Artist.class, singletonMap(Artist.ARTIST_ID_PK_COLUMN, 3)).selectOne(context);
@@ -182,7 +180,7 @@ public class SelectById_RunIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testMapPkMulti() throws Exception {
+	public void mapPkMulti() throws Exception {
 		createTwoArtists();
 
 		Map<String, ?> id2 = Collections.singletonMap(Artist.ARTIST_ID_PK_COLUMN, 2);
@@ -191,11 +189,11 @@ public class SelectById_RunIT extends RuntimeCase {
 		List<Artist> artists = SelectById.queryMaps(Artist.class, id2, id3)
 				.select(context);
 		assertEquals(2, artists.size());
-		assertThat(artists.get(0), instanceOf(Artist.class));
+		assertInstanceOf(Artist.class, artists.get(0));
 	}
 
 	@Test
-	public void testMapPkCollection() throws Exception {
+	public void mapPkCollection() throws Exception {
 		createTwoArtists();
 
 		Map<String, ?> id2 = Collections.singletonMap(Artist.ARTIST_ID_PK_COLUMN, 2);
@@ -204,11 +202,11 @@ public class SelectById_RunIT extends RuntimeCase {
 		List<Artist> artists = SelectById.queryMapsCollection(Artist.class, Arrays.asList(id2, id3))
 				.select(context);
 		assertEquals(2, artists.size());
-		assertThat(artists.get(0), instanceOf(Artist.class));
+		assertInstanceOf(Artist.class, artists.get(0));
 	}
 
 	@Test
-	public void testObjectIdPk() throws Exception {
+	public void objectIdPk() throws Exception {
 		createTwoArtists();
 
 		ObjectId oid3 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 3);
@@ -223,7 +221,7 @@ public class SelectById_RunIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testObjectIdPkMulti() throws Exception {
+	public void objectIdPkMulti() throws Exception {
 		createTwoArtists();
 
 		ObjectId oid2 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 2);
@@ -232,11 +230,11 @@ public class SelectById_RunIT extends RuntimeCase {
 		List<Artist> artists = SelectById.queryObjectIds(Artist.class, oid2, oid3)
 				.select(context);
 		assertEquals(2, artists.size());
-		assertThat(artists.get(0), instanceOf(Artist.class));
+		assertInstanceOf(Artist.class, artists.get(0));
 	}
 
 	@Test
-	public void testObjectIdPkCollection() throws Exception {
+	public void objectIdPkCollection() throws Exception {
 		createTwoArtists();
 
 		ObjectId oid2 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 2);
@@ -245,11 +243,11 @@ public class SelectById_RunIT extends RuntimeCase {
 		List<Artist> artists = SelectById.queryObjectIdsCollection(Artist.class, Arrays.asList(oid2, oid3))
 				.select(context);
 		assertEquals(2, artists.size());
-		assertThat(artists.get(0), instanceOf(Artist.class));
+		assertInstanceOf(Artist.class, artists.get(0));
 	}
 
 	@Test
-	public void testDataRowIntPk() throws Exception {
+	public void dataRowIntPk() throws Exception {
 		createTwoArtists();
 
 		DataRow a3 = SelectById.dataRowQueryId(Artist.class, 3).selectOne(context);
@@ -262,7 +260,7 @@ public class SelectById_RunIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testDataRowMapPk() throws Exception {
+	public void dataRowMapPk() throws Exception {
 		createTwoArtists();
 
 		Map<String, ?> id3 = Collections.singletonMap(Artist.ARTIST_ID_PK_COLUMN, 3);
@@ -277,7 +275,7 @@ public class SelectById_RunIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testDataRowObjectIdPk() throws Exception {
+	public void dataRowObjectIdPk() throws Exception {
 		createTwoArtists();
 
 		ObjectId oid3 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 3);
@@ -292,17 +290,17 @@ public class SelectById_RunIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testDataRowIntPkMulti() throws Exception {
+	public void dataRowIntPkMulti() throws Exception {
 		createTwoArtists();
 
 		List<DataRow> artists = SelectById.dataRowQueryIds(Artist.class, 2, 3)
 				.select(context);
 		assertEquals(2, artists.size());
-		assertThat(artists.get(0), instanceOf(DataRow.class));
+		assertInstanceOf(DataRow.class, artists.get(0));
 	}
 
 	@Test
-	public void testDataRowObjectIdPkMulti() throws Exception {
+	public void dataRowObjectIdPkMulti() throws Exception {
 		createTwoArtists();
 
 		ObjectId oid2 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 2);
@@ -311,11 +309,11 @@ public class SelectById_RunIT extends RuntimeCase {
 		List<DataRow> artists = SelectById.dataRowQueryObjectIds(oid2, oid3)
 				.select(context);
 		assertEquals(2, artists.size());
-		assertThat(artists.get(0), instanceOf(DataRow.class));
+		assertInstanceOf(DataRow.class, artists.get(0));
 	}
 
 	@Test
-	public void testDataRowMapPkMulti() throws Exception {
+	public void dataRowMapPkMulti() throws Exception {
 		createTwoArtists();
 
 		Map<String, ?> id2 = Collections.singletonMap(Artist.ARTIST_ID_PK_COLUMN, 2);
@@ -324,21 +322,21 @@ public class SelectById_RunIT extends RuntimeCase {
 		List<DataRow> artists = SelectById.dataRowQueryMaps(Artist.class, id2, id3)
 				.select(context);
 		assertEquals(2, artists.size());
-		assertThat(artists.get(0), instanceOf(DataRow.class));
+		assertInstanceOf(DataRow.class, artists.get(0));
 	}
 
 	@Test
-	public void testDataRowIntPkCollection() throws Exception {
+	public void dataRowIntPkCollection() throws Exception {
 		createTwoArtists();
 
 		List<DataRow> artists = SelectById.dataRowQueryIdsCollection(Artist.class, Arrays.asList(2, 3))
 				.select(context);
 		assertEquals(2, artists.size());
-		assertThat(artists.get(0), instanceOf(DataRow.class));
+		assertInstanceOf(DataRow.class, artists.get(0));
 	}
 
 	@Test
-	public void testDataRowObjectIdPkCollection() throws Exception {
+	public void dataRowObjectIdPkCollection() throws Exception {
 		createTwoArtists();
 
 		ObjectId oid2 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 2);
@@ -347,11 +345,11 @@ public class SelectById_RunIT extends RuntimeCase {
 		List<DataRow> artists = SelectById.dataRowQueryObjectIdsCollection(Arrays.asList(oid2, oid3))
 				.select(context);
 		assertEquals(2, artists.size());
-		assertThat(artists.get(0), instanceOf(DataRow.class));
+		assertInstanceOf(DataRow.class, artists.get(0));
 	}
 
 	@Test
-	public void testDataRowMapPkCollection() throws Exception {
+	public void dataRowMapPkCollection() throws Exception {
 		createTwoArtists();
 
 		Map<String, ?> id2 = Collections.singletonMap(Artist.ARTIST_ID_PK_COLUMN, 2);
@@ -360,11 +358,11 @@ public class SelectById_RunIT extends RuntimeCase {
 		List<DataRow> artists = SelectById.dataRowQueryMapsCollection(Artist.class, Arrays.asList(id2, id3))
 				.select(context);
 		assertEquals(2, artists.size());
-		assertThat(artists.get(0), instanceOf(DataRow.class));
+		assertInstanceOf(DataRow.class, artists.get(0));
 	}
 
 	@Test
-	public void testIntPk_SelectFirst() throws Exception {
+	public void intPk_SelectFirst() throws Exception {
 		createTwoArtists();
 
 		Artist a3 = SelectById.queryId(Artist.class, 3).selectFirst(context);
@@ -377,7 +375,7 @@ public class SelectById_RunIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testMetadataCacheKey() {
+	public void metadataCacheKey() {
 		SelectById<Painting> q1 = SelectById.queryId(Painting.class, 4).localCache();
 		QueryMetadata md1 = q1.getMetaData(resolver);
 		assertNotNull(md1);
@@ -417,7 +415,7 @@ public class SelectById_RunIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testLocalCache() throws Exception {
+	public void localCache() throws Exception {
 		createTwoArtists();
 
 		final Artist[] a3 = new Artist[1];
@@ -440,7 +438,7 @@ public class SelectById_RunIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPrefetch() throws Exception {
+	public void prefetch() throws Exception {
 		createTwoArtists();
 		tPainting.insert(45, 3, "One");
 		tPainting.insert(48, 3, "Two");
@@ -463,7 +461,7 @@ public class SelectById_RunIT extends RuntimeCase {
 
 	@SuppressWarnings("removal")
 	@Test
-	public void testIntPkDeprecated() throws Exception {
+	public void intPkDeprecated() throws Exception {
 		createTwoArtists();
 
 		Artist a3 = SelectById.query(Artist.class, 3).selectOne(context);
@@ -477,29 +475,29 @@ public class SelectById_RunIT extends RuntimeCase {
 
 	@SuppressWarnings("removal")
     @Test
-	public void testIntPkMultiDeprecated() throws Exception {
+	public void intPkMultiDeprecated() throws Exception {
 		createTwoArtists();
 
 		List<Artist> artists = SelectById.query(Artist.class, 2, 3)
 				.select(context);
 		assertEquals(2, artists.size());
-		assertThat(artists.get(0), instanceOf(Artist.class));
+		assertInstanceOf(Artist.class, artists.get(0));
 	}
 
 	@SuppressWarnings("removal")
     @Test
-	public void testIntPkCollectionDeprecation() throws Exception {
+	public void intPkCollectionDeprecation() throws Exception {
 		createTwoArtists();
 
 		List<Artist> artists = SelectById.query(Artist.class, Arrays.asList(1, 2, 3, 4, 5))
 				.select(context);
 		assertEquals(2, artists.size());
-		assertThat(artists.get(0), instanceOf(Artist.class));
+		assertInstanceOf(Artist.class, artists.get(0));
 	}
 
 	@SuppressWarnings("removal")
 	@Test
-	public void testMapPkDeprecation() throws Exception {
+	public void mapPkDeprecation() throws Exception {
 		createTwoArtists();
 
 		Artist a3 = SelectById.query(Artist.class, singletonMap(Artist.ARTIST_ID_PK_COLUMN, 3)).selectOne(context);
@@ -513,7 +511,7 @@ public class SelectById_RunIT extends RuntimeCase {
 
 	@SuppressWarnings("removal")
 	@Test
-	public void testMapPkMultiDeprecation() throws Exception {
+	public void mapPkMultiDeprecation() throws Exception {
 		createTwoArtists();
 
 		Map<String, ?> id2 = Collections.singletonMap(Artist.ARTIST_ID_PK_COLUMN, 2);
@@ -522,12 +520,12 @@ public class SelectById_RunIT extends RuntimeCase {
 		List<Artist> artists = SelectById.query(Artist.class, id2, id3)
 				.select(context);
 		assertEquals(2, artists.size());
-		assertThat(artists.get(0), instanceOf(Artist.class));
+		assertInstanceOf(Artist.class, artists.get(0));
 	}
 
 	@SuppressWarnings("removal")
 	@Test
-	public void testObjectIdPkDeprecation() throws Exception {
+	public void objectIdPkDeprecation() throws Exception {
 		createTwoArtists();
 
 		ObjectId oid3 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 3);
@@ -543,7 +541,7 @@ public class SelectById_RunIT extends RuntimeCase {
 
 	@SuppressWarnings("removal")
 	@Test
-	public void testObjectIdPkMultiDeprecation() throws Exception {
+	public void objectIdPkMultiDeprecation() throws Exception {
 		createTwoArtists();
 
 		ObjectId oid2 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 2);
@@ -552,12 +550,12 @@ public class SelectById_RunIT extends RuntimeCase {
 		List<Artist> artists = SelectById.query(Artist.class, oid2, oid3)
 				.select(context);
 		assertEquals(2, artists.size());
-		assertThat(artists.get(0), instanceOf(Artist.class));
+		assertInstanceOf(Artist.class, artists.get(0));
 	}
 
 	@SuppressWarnings("removal")
 	@Test
-	public void testDataRowIntPkDeprecation() throws Exception {
+	public void dataRowIntPkDeprecation() throws Exception {
 		createTwoArtists();
 
 		DataRow a3 = SelectById.dataRowQuery(Artist.class, 3).selectOne(context);
@@ -571,7 +569,7 @@ public class SelectById_RunIT extends RuntimeCase {
 
 	@SuppressWarnings("removal")
 	@Test
-	public void testDataRowMapPkDeprecation() throws Exception {
+	public void dataRowMapPkDeprecation() throws Exception {
 		createTwoArtists();
 
 		Map<String, ?> id3 = Collections.singletonMap(Artist.ARTIST_ID_PK_COLUMN, 3);
@@ -587,7 +585,7 @@ public class SelectById_RunIT extends RuntimeCase {
 
 	@SuppressWarnings("removal")
 	@Test
-	public void testDataRowObjectIdPkDeprecation() throws Exception {
+	public void dataRowObjectIdPkDeprecation() throws Exception {
 		createTwoArtists();
 
 		ObjectId oid3 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 3);
@@ -603,18 +601,18 @@ public class SelectById_RunIT extends RuntimeCase {
 
 	@SuppressWarnings("removal")
 	@Test
-	public void testDataRowIntPkMultiDeprecation() throws Exception {
+	public void dataRowIntPkMultiDeprecation() throws Exception {
 		createTwoArtists();
 
 		List<DataRow> artists = SelectById.dataRowQuery(Artist.class, 2, 3)
 				.select(context);
 		assertEquals(2, artists.size());
-		assertThat(artists.get(0), instanceOf(DataRow.class));
+		assertInstanceOf(DataRow.class, artists.get(0));
 	}
 
 	@SuppressWarnings("removal")
 	@Test
-	public void testDataRowMapPkMultiDeprecation() throws Exception {
+	public void dataRowMapPkMultiDeprecation() throws Exception {
 		createTwoArtists();
 
 		ObjectId oid2 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 2);
@@ -623,12 +621,12 @@ public class SelectById_RunIT extends RuntimeCase {
 		List<DataRow> artists = SelectById.dataRowQuery(oid2, oid3)
 				.select(context);
 		assertEquals(2, artists.size());
-		assertThat(artists.get(0), instanceOf(DataRow.class));
+		assertInstanceOf(DataRow.class, artists.get(0));
 	}
 
 	@SuppressWarnings("removal")
 	@Test
-	public void testDataRowObjectIdPkMultiDeprecation() throws Exception {
+	public void dataRowObjectIdPkMultiDeprecation() throws Exception {
 		createTwoArtists();
 
 		Map<String, ?> id2 = Collections.singletonMap(Artist.ARTIST_ID_PK_COLUMN, 2);
@@ -637,6 +635,6 @@ public class SelectById_RunIT extends RuntimeCase {
 		List<DataRow> artists = SelectById.dataRowQuery(Artist.class, id2, id3)
 				.select(context);
 		assertEquals(2, artists.size());
-		assertThat(artists.get(0), instanceOf(DataRow.class));
+		assertInstanceOf(DataRow.class, artists.get(0));
 	}
 }

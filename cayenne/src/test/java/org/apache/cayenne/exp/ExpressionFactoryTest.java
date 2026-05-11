@@ -24,8 +24,8 @@ import org.apache.cayenne.exp.parser.ASTLike;
 import org.apache.cayenne.exp.parser.ASTLikeIgnoreCase;
 import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.exp.parser.ASTTrim;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,26 +35,32 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ExpressionFactoryTest {
 
 	private TstTraversalHandler handler;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		handler = new TstTraversalHandler();
 	}
 
-	@Test(expected = ExpressionException.class)
-	public void testExpressionOfBadType() {
-		// non existing type
-		int badType = -50;
-		ExpressionFactory.expressionOfType(badType);
+	@Test
+
+	public void expressionOfBadType() {
+		assertThrows(ExpressionException.class, () -> {
+
+			// non existing type
+			int badType = -50;
+			ExpressionFactory.expressionOfType(badType);
+	
+		});
 	}
 
+
 	@Test
-	public void testBetweenExp() {
+	public void betweenExp() {
 		Object v1 = new Object();
 		Object v2 = new Object();
 		Expression exp = ExpressionFactory.betweenExp("abc", v1, v2);
@@ -65,7 +71,7 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testBetweenDbExp() {
+	public void betweenDbExp() {
 		Object v1 = new Object();
 		Object v2 = new Object();
 		Expression exp = ExpressionFactory.betweenDbExp("abc", v1, v2);
@@ -76,7 +82,7 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testNotBetweenExp() {
+	public void notBetweenExp() {
 		Object v1 = new Object();
 		Object v2 = new Object();
 		Expression exp = ExpressionFactory.notBetweenExp("abc", v1, v2);
@@ -87,7 +93,7 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testNotBetweenDbExp() {
+	public void notBetweenDbExp() {
 		Object v1 = new Object();
 		Object v2 = new Object();
 		Expression exp = ExpressionFactory.notBetweenDbExp("abc", v1, v2);
@@ -98,14 +104,14 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testGreaterExp() {
+	public void greaterExp() {
 		Object v = new Object();
 		Expression exp = ExpressionFactory.greaterExp("abc", v);
 		assertEquals(Expression.GREATER_THAN, exp.getType());
 	}
 
 	@Test
-	public void testGreaterDbExp() {
+	public void greaterDbExp() {
 		Object v = new Object();
 		Expression exp = ExpressionFactory.greaterDbExp("abc", v);
 		assertEquals(Expression.GREATER_THAN, exp.getType());
@@ -115,14 +121,14 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testGreaterOrEqualExp() {
+	public void greaterOrEqualExp() {
 		Object v = new Object();
 		Expression exp = ExpressionFactory.greaterOrEqualExp("abc", v);
 		assertEquals(Expression.GREATER_THAN_EQUAL_TO, exp.getType());
 	}
 
 	@Test
-	public void testGreaterOrEqualDbExp() {
+	public void greaterOrEqualDbExp() {
 		Object v = new Object();
 		Expression exp = ExpressionFactory.greaterOrEqualDbExp("abc", v);
 		assertEquals(Expression.GREATER_THAN_EQUAL_TO, exp.getType());
@@ -132,14 +138,14 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testLessExp() {
+	public void lessExp() {
 		Object v = new Object();
 		Expression exp = ExpressionFactory.lessExp("abc", v);
 		assertEquals(Expression.LESS_THAN, exp.getType());
 	}
 
 	@Test
-	public void testLessDbExp() {
+	public void lessDbExp() {
 		Object v = new Object();
 		Expression exp = ExpressionFactory.lessDbExp("abc", v);
 		assertEquals(Expression.LESS_THAN, exp.getType());
@@ -149,7 +155,7 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testLessOrEqualExp() {
+	public void lessOrEqualExp() {
 		Object v = new Object();
 		Expression exp = ExpressionFactory.lessOrEqualExp("abc", v);
 		assertEquals(Expression.LESS_THAN_EQUAL_TO, exp.getType());
@@ -159,7 +165,7 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testLessOrEqualDbExp() {
+	public void lessOrEqualDbExp() {
 		Object v = new Object();
 		Expression exp = ExpressionFactory.lessOrEqualDbExp("abc", v);
 		assertEquals(Expression.LESS_THAN_EQUAL_TO, exp.getType());
@@ -169,13 +175,13 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testInExp1() {
+	public void inExp1() {
 		Expression exp = ExpressionFactory.inExp("abc", "a", "b");
 		assertEquals(Expression.IN, exp.getType());
 	}
 
 	@Test
-	public void testInExp2() {
+	public void inExp2() {
 		List<Object> v = new ArrayList<>();
 		v.add("a");
 		v.add("b");
@@ -184,26 +190,26 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testInExp3() {
+	public void inExp3() {
 		List<Object> v = new ArrayList<>();
 		Expression exp = ExpressionFactory.inExp("abc", v);
 		assertEquals(Expression.FALSE, exp.getType());
 	}
 
 	@Test
-	public void testInExpEmpty() {
+	public void inExpEmpty() {
 		Expression in = ExpressionFactory.inExp("abc", List.of());
 		assertEquals(ExpressionFactory.expFalse(), in);
 	}
 
 	@Test
-	public void testNotInExp1() {
+	public void notInExp1() {
 		Expression exp = ExpressionFactory.notInExp("abc", "a", "b");
 		assertEquals(Expression.NOT_IN, exp.getType());
 	}
 
 	@Test
-	public void testNotInExp2() {
+	public void notInExp2() {
 		List<Object> v = new ArrayList<>();
 		v.add("a");
 		v.add("b");
@@ -212,20 +218,20 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testNotInExp3() {
+	public void notInExp3() {
 		List<Object> v = new ArrayList<>();
 		Expression exp = ExpressionFactory.notInExp("abc", v);
 		assertEquals(Expression.TRUE, exp.getType());
 	}
 
 	@Test
-	public void testNotInExpEmpty() {
+	public void notInExpEmpty() {
 		Expression in = ExpressionFactory.notInExp("abc", List.of());
 		assertEquals(ExpressionFactory.expTrue(), in);
 	}
 
 	@Test
-	public void testLikeExp() {
+	public void likeExp() {
 		String v = "abc";
 		Expression exp = ExpressionFactory.likeExp("abc", v);
 		assertEquals(Expression.LIKE, exp.getType());
@@ -235,7 +241,7 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testLikeDbExp() {
+	public void likeDbExp() {
 		String v = "abc";
 		Expression exp = ExpressionFactory.likeDbExp("abc", v);
 		assertEquals(Expression.LIKE, exp.getType());
@@ -245,7 +251,7 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testLikeExpEscape() {
+	public void likeExpEscape() {
 		String v = "abc";
 		Expression exp = ExpressionFactory.likeExp("=abc", v, '=');
 		assertEquals(Expression.LIKE, exp.getType());
@@ -257,7 +263,7 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testLikeIgnoreCaseExp() {
+	public void likeIgnoreCaseExp() {
 		String v = "abc";
 		Expression exp = ExpressionFactory.likeIgnoreCaseExp("abc", v);
 		assertEquals(Expression.LIKE_IGNORE_CASE, exp.getType());
@@ -268,7 +274,7 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testLikeIgnoreCaseExpEscape() {
+	public void likeIgnoreCaseExpEscape() {
 		String v = "abc";
 		Expression exp = ExpressionFactory.likeIgnoreCaseExp("=abc", v, '=');
 		assertEquals(Expression.LIKE_IGNORE_CASE, exp.getType());
@@ -279,7 +285,7 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testLikeIgnoreCaseDbExp() {
+	public void likeIgnoreCaseDbExp() {
 		String v = "abc";
 		Expression exp = ExpressionFactory.likeIgnoreCaseDbExp("abc", v);
 		assertEquals(Expression.LIKE_IGNORE_CASE, exp.getType());
@@ -289,7 +295,7 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testNotLikeIgnoreCaseExp() {
+	public void notLikeIgnoreCaseExp() {
 		String v = "abc";
 		Expression exp = ExpressionFactory.notLikeIgnoreCaseExp("abc", v);
 		assertEquals(Expression.NOT_LIKE_IGNORE_CASE, exp.getType());
@@ -297,7 +303,7 @@ public class ExpressionFactoryTest {
 
 	// testing CAY-941 bug
 	@Test
-	public void testLikeExpNull() {
+	public void likeExpNull() {
 		Expression exp = ExpressionFactory.likeExp("abc", null);
 		assertEquals(Expression.LIKE, exp.getType());
 
@@ -307,7 +313,7 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testMatchAllExp() {
+	public void matchAllExp() {
 		// create expressions and check the counts,
 		// leaf count should be (2N) : 2 leafs for each pair
 		// node count should be (2N + 1) for nodes with more than 1 pair
@@ -329,13 +335,13 @@ public class ExpressionFactoryTest {
 
 			// assert statistics
 			handler.assertConsistency();
-			assertEquals("Failed: " + exp, 2 * n, handler.getLeafs());
-			assertEquals("Failed: " + exp, n < 2 ? 2 * n : 2 * n + 1, handler.getNodeCount());
+			assertEquals(2 * n, handler.getLeafs(), "Failed: " + exp);
+			assertEquals(n < 2 ? 2 * n : 2 * n + 1, handler.getNodeCount(), "Failed: " + exp);
 		}
 	}
 
 	@Test
-	public void testJoinExp() {
+	public void joinExp() {
 		// create expressions and check the counts,
 		// leaf count should be (2N) : 2 leafs for each expression
 		// node count should be N > 1 ? 2 * N + 1 : 2 * N
@@ -356,13 +362,13 @@ public class ExpressionFactoryTest {
 
 			// assert statistics
 			handler.assertConsistency();
-			assertEquals("Failed: " + exp, 2 * n, handler.getLeafs());
-			assertEquals("Failed: " + exp, n > 1 ? 2 * n + 1 : 2 * n, handler.getNodeCount());
+			assertEquals(2 * n, handler.getLeafs(), "Failed: " + exp);
+			assertEquals(n > 1 ? 2 * n + 1 : 2 * n, handler.getNodeCount(), "Failed: " + exp);
 		}
 	}
 
 	@Test
-	public void testAnd_Collection() {
+	public void and_Collection() {
 		Expression e1 = ExpressionFactory.matchExp("a", 1);
 		Expression e2 = ExpressionFactory.matchExp("b", 2);
 		Expression e3 = ExpressionFactory.matchExp("c", "C");
@@ -374,7 +380,7 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testAnd_Collection_OneElement() {
+	public void and_Collection_OneElement() {
 		Expression e1 = ExpressionFactory.matchExp("a", 1);
 
 		Collection<Expression> c = Collections.singletonList(e1);
@@ -384,7 +390,7 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testAnd_Collection_Empty() {
+	public void and_Collection_Empty() {
 
 		Expression e = ExpressionFactory.and(Collections.emptyList());
 
@@ -393,7 +399,7 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testAnd_Vararg() {
+	public void and_Vararg() {
 		Expression e1 = ExpressionFactory.matchExp("a", 1);
 		Expression e2 = ExpressionFactory.matchExp("b", 2);
 		Expression e3 = ExpressionFactory.matchExp("c", "C");
@@ -404,14 +410,14 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testAnd_Vararg_OneElement() {
+	public void and_Vararg_OneElement() {
 		Expression e1 = ExpressionFactory.matchExp("a", 1);
 		Expression e = ExpressionFactory.and(e1);
 		assertEquals("a = 1", e.toString());
 	}
 
 	@Test
-	public void testAnd_Vararg_Empty() {
+	public void and_Vararg_Empty() {
 
 		Expression e = ExpressionFactory.and();
 
@@ -420,7 +426,7 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testOr_Collection() {
+	public void or_Collection() {
 		Expression e1 = ExpressionFactory.matchExp("a", 1);
 		Expression e2 = ExpressionFactory.matchExp("b", 2);
 		Expression e3 = ExpressionFactory.matchExp("c", "C");
@@ -432,7 +438,7 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testOr_Vararg() {
+	public void or_Vararg() {
 		Expression e1 = ExpressionFactory.matchExp("a", 1);
 		Expression e2 = ExpressionFactory.matchExp("b", 2);
 		Expression e3 = ExpressionFactory.matchExp("c", "C");
@@ -443,13 +449,13 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testExp_Long() {
+	public void exp_Long() {
 		Expression e = ExpressionFactory.exp("216201000180L");
 		assertEquals(216201000180L, e.evaluate(new Object()));
 	}
 
 	@Test
-	public void testExp_Path() {
+	public void exp_Path() {
 		Expression e1 = ExpressionFactory.exp("object.path");
 		assertEquals(Expression.OBJ_PATH, e1.getType());
 
@@ -464,13 +470,13 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testExp_Scalar() {
+	public void exp_Scalar() {
 		Expression e1 = ExpressionFactory.exp("a = 'abc'");
 		assertEquals("abc", e1.getOperand(1));
 	}
 
 	@Test
-	public void testExp_Enum() {
+	public void exp_Enum() {
 		Expression e1 = ExpressionFactory.exp("a = enum:org.apache.cayenne.exp.ExpEnum1.ONE");
 		assertEquals(ExpEnum1.ONE, e1.getOperand(1));
 
@@ -482,7 +488,7 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testExp_EnumValid1() {
+	public void exp_EnumValid1() {
 		Bean a = new Bean();
 		a.setA(ExpEnum1.TWO);
 		Expression exp = ExpressionFactory.exp("a = enum:org.apache.cayenne.exp.ExpEnum1.TWO");
@@ -490,43 +496,55 @@ public class ExpressionFactoryTest {
 		assertEquals(Boolean.TRUE, result);
 	}
 
-	@Test(expected = ExpressionException.class)
-	public void testExp_EnumInvalid1() {
-		Bean a = new Bean();
-		a.setA(ExpEnum1.TWO);
-		Expression exp = ExpressionFactory.exp("a = enum:org.apache.cayenne.exp.ExpEnum1.BOGUS");
-		exp.evaluate(a);
+	@Test
+
+	public void exp_EnumInvalid1() {
+		assertThrows(ExpressionException.class, () -> {
+
+			Bean a = new Bean();
+			a.setA(ExpEnum1.TWO);
+			Expression exp = ExpressionFactory.exp("a = enum:org.apache.cayenne.exp.ExpEnum1.BOGUS");
+			exp.evaluate(a);
+	
+		});
 	}
 
-	@Test(expected = ExpressionException.class)
-	public void testExp_EnumInvalid2() {
-		ExpressionFactory.exp("a = enum:BOGUS");
-	}
 
 	@Test
-	public void testExp_Vararg_InAsValues() {
+
+	public void exp_EnumInvalid2() {
+		assertThrows(ExpressionException.class, () -> {
+
+			ExpressionFactory.exp("a = enum:BOGUS");
+	
+		});
+	}
+
+
+	@Test
+	public void exp_Vararg_InAsValues() {
 		Expression e = ExpressionFactory.exp("k1 in ($ap, $bp)", "a", "b");
 		assertEquals("k1 in (\"a\", \"b\")", e.toString());
 	}
 
 	@Test
-	public void testPathExp() {
+	public void pathExp() {
 		assertEquals("abc.xyz", ExpressionFactory.pathExp("abc.xyz").toString());
 	}
 
 	@Test
-	public void testDbPathExp() {
+	public void dbPathExp() {
 		assertEquals("db:abc.xyz", ExpressionFactory.dbPathExp("abc.xyz").toString());
 	}
 
 	@Test
-	public void testFuncExp() {
+	public void funcExp() {
 		Expression e = ExpressionFactory.exp("trim(abc.xyz)");
 		assertEquals(ASTTrim.class, e.getClass());
 	}
 
 	@Test
-	public void testExpWithAlias() {
+	public void expWithAlias() {
 		Expression expression = ExpressionFactory.exp("paintings#p1.galleries#p2.name = 'Test'");
 		assertEquals("p1.p2.name", expression.getOperand(0).toString());
 		assertEquals("paintings", ((ASTObjPath)expression.getOperand(0)).getPathAliases().get("p1"));
@@ -534,25 +552,37 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testExpWithAliasAndOuterJoin() {
+	public void expWithAliasAndOuterJoin() {
 		Expression expression = ExpressionFactory.exp("paintings#p1+.name = 'Test'");
 		assertEquals("p1.name", expression.getOperand(0).toString());
 		assertEquals("paintings+", ((ASTObjPath)expression.getOperand(0)).getPathAliases().get("p1"));
 	}
 
-	@Test(expected = CayenneRuntimeException.class)
-	public void testExpWithTheSameAliasToDiffSegments() {
-		ExpressionFactory.exp("paintings#p1.gallery#p1.name = 'Test'");
+	@Test
+
+	public void expWithTheSameAliasToDiffSegments() {
+		assertThrows(CayenneRuntimeException.class, () -> {
+
+			ExpressionFactory.exp("paintings#p1.gallery#p1.name = 'Test'");
+	
+		});
 	}
 
+
     // CAY-2081
-    @Test(expected = ExpressionException.class)
-    public void testExceptionInParse() {
-        ExpressionFactory.exp("name like %32_65415'");
+    @Test
+
+    public void exceptionInParse() {
+        assertThrows(ExpressionException.class, () -> {
+
+            ExpressionFactory.exp("name like %32_65415'");
+    
+        });
     }
 
+
 	@Test
-	public void testMatchDbIdExp() {
+	public void matchDbIdExp() {
 		String v = "abc";
 		Expression exp = ExpressionFactory.matchDbIdExp("abc", v);
 		assertEquals(Expression.EQUAL_TO, exp.getType());
@@ -562,7 +592,7 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testNoMatchDbIdExp() {
+	public void noMatchDbIdExp() {
 		String v = "abc";
 		Expression exp = ExpressionFactory.noMatchDbIdExp("abc", v);
 		assertEquals(Expression.NOT_EQUAL_TO, exp.getType());
@@ -572,7 +602,7 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testInDbIdExp() {
+	public void inDbIdExp() {
 		String v = "abc";
 		Expression exp = ExpressionFactory.inDbIdExp("abc", v);
 		assertEquals(Expression.IN, exp.getType());
@@ -582,7 +612,7 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testNotInDbIdExp() {
+	public void notInDbIdExp() {
 		String v = "abc";
 		Expression exp = ExpressionFactory.notInDbIdExp("abc", v);
 		assertEquals(Expression.NOT_IN, exp.getType());
@@ -592,7 +622,7 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testExp_StringLiteral_SingleQuoted() {
+	public void exp_StringLiteral_SingleQuoted() {
 		assertEquals("p = \"a\"", ExpressionFactory.exp("p = 'a'").toString());
 		assertEquals("p = \"\\\\\"", ExpressionFactory.exp("p = '\\\\'").toString());
 		assertEquals("p = \"+\"", ExpressionFactory.exp("p = '+'").toString());
@@ -602,7 +632,7 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testExp_StringLiteral_DoubleQuoted() {
+	public void exp_StringLiteral_DoubleQuoted() {
 		assertEquals("p = \"a\"", ExpressionFactory.exp("p = \"a\"").toString());
 		assertEquals("p = \"\\\\\"", ExpressionFactory.exp("p = \"\\\\\"").toString());
 		assertEquals("p = \"+\"", ExpressionFactory.exp("p = \"+\"").toString());

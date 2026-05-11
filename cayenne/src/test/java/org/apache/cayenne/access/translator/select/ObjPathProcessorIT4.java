@@ -28,11 +28,11 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @since 4.2
@@ -45,7 +45,7 @@ public class ObjPathProcessorIT4 extends RuntimeCase {
 
     private ObjPathProcessor pathProcessor;
 
-    @Before
+    @BeforeEach
     public void prepareTranslationContext() {
         TranslatorContext translatorContext = new TranslatorContext(
                 new FluentSelectWrapper(ObjectSelect.query(Object.class)),
@@ -58,7 +58,7 @@ public class ObjPathProcessorIT4 extends RuntimeCase {
     }
 
     @Test
-    public void testSimpleAttributePathTranslation() {
+    public void simpleAttributePathTranslation() {
         PathTranslationResult result = pathProcessor.process(CayennePath.of("textReview"));
         assertEquals(2, result.getDbAttributes().size());
         assertEquals(2, result.getAttributePaths().size());

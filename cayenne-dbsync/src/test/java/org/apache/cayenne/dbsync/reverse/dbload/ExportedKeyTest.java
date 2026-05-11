@@ -22,9 +22,10 @@ package org.apache.cayenne.dbsync.reverse.dbload;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -34,19 +35,19 @@ import static org.mockito.Mockito.when;
 public class ExportedKeyTest {
 
     @Test
-    public void testEqualsKeyData() throws SQLException {
+    public void equalsKeyData() throws SQLException {
 
         ExportedKey.KeyData keyData1 = new ExportedKey.KeyData("Catalog", null, "Table", "Column", "Name");
         ExportedKey.KeyData keyData2 = new ExportedKey.KeyData("Catalog", null, "Table", "Column", "Name");
 
-        Assert.assertTrue(keyData1.equals(keyData2));
-        Assert.assertTrue(keyData2.equals(keyData1));
+        assertTrue(keyData1.equals(keyData2));
+        assertTrue(keyData2.equals(keyData1));
 
-        Assert.assertEquals(keyData1.hashCode(), keyData2.hashCode());
+        assertEquals(keyData1.hashCode(), keyData2.hashCode());
     }
 
     @Test
-    public void testEqualsExportedKey() throws SQLException {
+    public void equalsExportedKey() throws SQLException {
         ResultSet rs1 = mock(ResultSet.class);
         when(rs1.getString("PKTABLE_CAT")).thenReturn("PKCatalog");
         when(rs1.getString("PKTABLE_SCHEM")).thenReturn(null);
@@ -81,9 +82,9 @@ public class ExportedKeyTest {
 
         ExportedKey keyData2 = new ExportedKey(rs2);
 
-        Assert.assertTrue(keyData1.equals(keyData2));
-        Assert.assertTrue(keyData2.equals(keyData1));
+        assertTrue(keyData1.equals(keyData2));
+        assertTrue(keyData2.equals(keyData1));
 
-        Assert.assertEquals(keyData1.hashCode(), keyData2.hashCode());
+        assertEquals(keyData1.hashCode(), keyData2.hashCode());
     }
 }

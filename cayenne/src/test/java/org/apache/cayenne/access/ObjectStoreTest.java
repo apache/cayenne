@@ -24,10 +24,10 @@ import java.util.HashMap;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -39,14 +39,14 @@ public class ObjectStoreTest {
 
     private ObjectStore objectStore;
 
-    @Before
+    @BeforeEach
     public void before() {
         DataRowStore sharedCache = mock(DataRowStore.class);
         this.objectStore = new ObjectStore(sharedCache, new HashMap<Object, Persistent>());
     }
 
     @Test
-    public void testRegisterNode() {
+    public void registerNode() {
 
         ObjectId id = ObjectId.of("E1", "ID", 500);
         Persistent object = mock(Persistent.class);
@@ -56,7 +56,7 @@ public class ObjectStoreTest {
     }
 
     @Test
-    public void testUnregisterNode() {
+    public void unregisterNode() {
 
         ObjectId id = ObjectId.of("E1", "ID", 500);
         Persistent object = mock(Persistent.class);

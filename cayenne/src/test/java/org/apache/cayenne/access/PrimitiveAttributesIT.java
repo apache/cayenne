@@ -29,11 +29,11 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.PRIMITIVE_PROJECT)
 public class PrimitiveAttributesIT extends RuntimeCase {
@@ -48,7 +48,7 @@ public class PrimitiveAttributesIT extends RuntimeCase {
     private UnitDbAdapter unitDbAdapter;
 
     @Test
-    public void testCommit() {
+    public void commit() {
         PrimitivesTestEntity e = context.newObject(PrimitivesTestEntity.class);
         e.setBooleanColumn(true);
         e.setIntColumn(88);
@@ -57,7 +57,7 @@ public class PrimitiveAttributesIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelect() throws Exception {
+    public void selectTest() throws Exception {
         TableHelper tPrimitives = new TableHelper(dbHelper, "PRIMITIVES_TEST");
         tPrimitives.setColumns("ID", "BOOLEAN_COLUMN", "INT_COLUMN", "CHAR_COLUMN");
         tPrimitives.insert(1, true, -100, String.valueOf('a'))

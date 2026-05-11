@@ -34,8 +34,8 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 @ExtraModules(CDOReflexiveRelICustomSorterIT.GraphSorterModule.class)
@@ -44,7 +44,7 @@ public class CDOReflexiveRelICustomSorterIT extends RuntimeCase {
     private ObjectContext context;
 
     @Test
-    public void testAddDeleteNoCommit() {
+    public void addDeleteNoCommit() {
         ArtGroup parentGroup = context.newObject(ArtGroup.class);
         parentGroup.setName("parent");
 
@@ -56,7 +56,7 @@ public class CDOReflexiveRelICustomSorterIT extends RuntimeCase {
     }
 
     @Test
-    public void testAdd() {
+    public void add() {
         ArtGroup parentGroup = context.newObject(ArtGroup.class);
         parentGroup.setName("parent");
 
@@ -68,7 +68,7 @@ public class CDOReflexiveRelICustomSorterIT extends RuntimeCase {
     }
 
     @Test
-    public void testAddDeleteWithCommit() {
+    public void addDeleteWithCommit() {
         ArtGroup parentGroup = context.newObject(ArtGroup.class);
         parentGroup.setName("parent");
 
@@ -82,7 +82,7 @@ public class CDOReflexiveRelICustomSorterIT extends RuntimeCase {
     }
 
     @Test
-    public void testReplaceDeleteNoCommit() {
+    public void replaceDeleteNoCommit() {
         ArtGroup parentGroup1 = context.newObject(ArtGroup.class);
         parentGroup1.setName("parent1");
         ArtGroup parentGroup2 = context.newObject(ArtGroup.class);
@@ -99,7 +99,7 @@ public class CDOReflexiveRelICustomSorterIT extends RuntimeCase {
     }
 
     @Test
-    public void testReplaceDeleteWithCommit() {
+    public void replaceDeleteWithCommit() {
         ArtGroup parentGroup1 = context.newObject(ArtGroup.class);
         parentGroup1.setName("parent1");
         ArtGroup parentGroup2 = context.newObject(ArtGroup.class);
@@ -117,7 +117,7 @@ public class CDOReflexiveRelICustomSorterIT extends RuntimeCase {
     }
 
     @Test
-    public void testCommitReplaceCommit() {
+    public void commitReplaceCommit() {
         ArtGroup parentGroup1 = context.newObject(ArtGroup.class);
         parentGroup1.setName("parent1");
         ArtGroup parentGroup2 = context.newObject(ArtGroup.class);
@@ -132,7 +132,7 @@ public class CDOReflexiveRelICustomSorterIT extends RuntimeCase {
     }
 
     @Test
-    public void testComplexInsertUpdateOrdering() {
+    public void complexInsertUpdateOrdering() {
         ArtGroup parentGroup = context.newObject(ArtGroup.class);
         parentGroup.setName("parent");
         context.commitChanges();
@@ -147,8 +147,8 @@ public class CDOReflexiveRelICustomSorterIT extends RuntimeCase {
         context.commitChanges();
     }
 
-    @Test(expected = NullPointerException.class)
-    @Ignore
+    @Test
+    @Disabled
     public void circledDependencyTest() {
         ArtGroup artGroup1 = context.newObject(ArtGroup.class);
         artGroup1.setName("artGroup1");

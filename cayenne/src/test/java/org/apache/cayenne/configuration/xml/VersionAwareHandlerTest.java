@@ -20,10 +20,12 @@
 package org.apache.cayenne.configuration.xml;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @since 4.1
@@ -35,7 +37,7 @@ public class VersionAwareHandlerTest {
 
     VersionAwareHandler handler;
 
-    @Before
+    @BeforeEach
     public void createHandler() {
         handler = new VersionAwareHandler(new LoaderContext(null, null), "test"){
         };
@@ -55,13 +57,13 @@ public class VersionAwareHandlerTest {
         handler.validateVersion(createAttributesWithVersion("10"), VERSION_SET_2);
     }
 
-    @Test(expected = CayenneRuntimeException.class)
+    @Test
     public void validateIncorrectVersion1() {
-        handler.validateVersion(createAttributesWithVersion("8"), VERSION_SET_1);
+        assertThrows(CayenneRuntimeException.class, () -> handler.validateVersion(createAttributesWithVersion("8"), VERSION_SET_1));
     }
 
-    @Test(expected = CayenneRuntimeException.class)
+    @Test
     public void validateIncorrectVersion2() {
-        handler.validateVersion(createAttributesWithVersion("11"), VERSION_SET_2);
+        assertThrows(CayenneRuntimeException.class, () -> handler.validateVersion(createAttributesWithVersion("11"), VERSION_SET_2));
     }
 }

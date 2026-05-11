@@ -28,15 +28,15 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests IncrementalFaultList behavior when fetching data rows.
@@ -56,7 +56,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT extends RuntimeCase {
     private TableHelper tArtist;
     private SimpleIdIncrementalFaultList<?> list;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -99,7 +99,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT extends RuntimeCase {
     }
 
     @Test
-    public void testGet1() {
+    public void get1() {
         assertEquals(1, list.idWidth);
         assertTrue(list.elements.get(0) instanceof Long);
         assertTrue(list.elements.get(19) instanceof Long);
@@ -113,7 +113,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT extends RuntimeCase {
     }
 
     @Test
-    public void testIndexOf1() {
+    public void indexOf1() {
         List<DataRow> artists = ObjectSelect.dataRowQuery(Artist.class, Artist.ARTIST_NAME.eq("artist20")).select(context);
 
         assertEquals(1, artists.size());
@@ -129,7 +129,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT extends RuntimeCase {
     }
 
     @Test
-    public void testIndexOf2() {
+    public void indexOf2() {
 
         // resolve first page
         list.get(0);
@@ -146,7 +146,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT extends RuntimeCase {
     }
 
     @Test
-    public void testLastIndexOf1() {
+    public void lastIndexOf1() {
 
         // resolve first page
         list.get(0);
@@ -163,7 +163,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT extends RuntimeCase {
     }
 
     @Test
-    public void testLastIndexOf2() {
+    public void lastIndexOf2() {
         List<DataRow> artists = ObjectSelect.dataRowQuery(Artist.class, Artist.ARTIST_NAME.eq("artist20")).select(context);
 
         assertEquals(1, artists.size());
@@ -176,7 +176,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT extends RuntimeCase {
     }
 
     @Test
-    public void testIterator() {
+    public void iterator() {
         assertEquals(1, list.idWidth);
 
         Iterator<?> it = list.iterator();
@@ -185,8 +185,8 @@ public class SimpleIdIncrementalFaultListDataRowsIT extends RuntimeCase {
             Object obj = it.next();
             assertNotNull(obj);
             assertTrue(
-                    "Unexpected object class: " + obj.getClass().getName(),
-                    obj instanceof DataRow);
+                    obj instanceof DataRow,
+                    "Unexpected object class: " + obj.getClass().getName());
             assertEquals(3, ((DataRow) obj).size());
 
             // iterator must be resolved page by page

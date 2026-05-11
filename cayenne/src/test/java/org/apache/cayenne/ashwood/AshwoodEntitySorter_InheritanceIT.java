@@ -25,14 +25,14 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.PeopleProjectCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.PEOPLE_PROJECT)
 public class AshwoodEntitySorter_InheritanceIT extends PeopleProjectCase {
@@ -49,7 +49,7 @@ public class AshwoodEntitySorter_InheritanceIT extends PeopleProjectCase {
 	private DbEntity person;
 	private DbEntity personNotes;
 
-	@Before
+	@BeforeEach
 	public void before() {
 
 		this.resolver = context.getEntityResolver();
@@ -64,7 +64,7 @@ public class AshwoodEntitySorter_InheritanceIT extends PeopleProjectCase {
 	}
 
 	@Test
-	public void testSortDbEntities() {
+	public void sortDbEntities() {
 
 		List<DbEntity> entities = Arrays.asList(address, clientCompany, department, person, personNotes);
 		Collections.shuffle(entities);

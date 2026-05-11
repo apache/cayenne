@@ -40,7 +40,7 @@
                     <dbimport>
                         <namingStrategy>org.apache.cayenne.stubs.CustomObjectNameGenerator</namingStrategy>
                     </dbimport>
-                    <project implementation="org.apache.cayenne.stubs.CayenneProjectStub"/>
+
 
                 </configuration>
             </plugin>

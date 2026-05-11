@@ -24,9 +24,9 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 public class BaseDbRowOpTest {
 
     @Test
-    public void testEquals_SameId() {
+    public void equals_SameId() {
         ObjectId id = ObjectId.of("test");
 
         DbRowOp row1 = new InsertDbRowOp(mockObject(id), mockEntity(), id);
@@ -47,7 +47,7 @@ public class BaseDbRowOpTest {
     }
 
     @Test
-    public void testEquals_EqualId() {
+    public void equals_EqualId() {
         ObjectId id1 = ObjectId.of("test", "id", 1);
         ObjectId id2 = ObjectId.of("test", "id", 1);
 
@@ -59,7 +59,7 @@ public class BaseDbRowOpTest {
     }
 
     @Test
-    public void testNotEquals_EqualId() {
+    public void notEquals_EqualId() {
         ObjectId id1 = ObjectId.of("test", "id", 1);
         ObjectId id2 = ObjectId.of("test", "id", 1);
 
@@ -71,7 +71,7 @@ public class BaseDbRowOpTest {
     }
 
     @Test
-    public void testEqualsInsertUpdate_EqualId() {
+    public void equalsInsertUpdate_EqualId() {
         ObjectId id1 = ObjectId.of("test", "id", 1);
         ObjectId id2 = ObjectId.of("test", "id", 1);
 
@@ -83,7 +83,7 @@ public class BaseDbRowOpTest {
     }
 
     @Test
-    public void testEqualsUpdateDelete_EqualId() {
+    public void equalsUpdateDelete_EqualId() {
         ObjectId id1 = ObjectId.of("test", "id", 1);
         ObjectId id2 = ObjectId.of("test", "id", 1);
 
@@ -95,7 +95,7 @@ public class BaseDbRowOpTest {
     }
 
     @Test
-    public void testNotEquals_NotEqualId() {
+    public void notEquals_NotEqualId() {
         ObjectId id1 = ObjectId.of("test", "id", 1);
         ObjectId id2 = ObjectId.of("test", "id", 2);
 

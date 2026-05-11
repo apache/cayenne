@@ -18,15 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class EmbeddableAttributeTest {
 
     @Test
-    public void testName() {
+    public void name() {
         EmbeddableAttribute a1 = new EmbeddableAttribute();
         assertNull(a1.getName());
         a1.setName("XYZ");

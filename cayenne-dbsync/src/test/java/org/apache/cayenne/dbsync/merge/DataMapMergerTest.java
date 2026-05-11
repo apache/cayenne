@@ -29,27 +29,27 @@ import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dataMap;
 import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbAttr;
 import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbEntity;
 import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.procedure;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DataMapMergerTest {
 
     @Test
-    public void testEmptyDataMap() throws Exception {
+    public void emptyDataMap() throws Exception {
         DataMap existing = dataMap().build();
         DataMap db = dataMap().build();
         assertEquals(0, dbMerger().createMergeTokens(existing, db).size());
     }
 
     @Test
-    public void testAddTable() throws Exception {
+    public void addTable() throws Exception {
         DbEntityBuilder dbEntity =
             dbEntity("table1").attributes(
                 dbAttr("attr01").typeInt()
@@ -65,7 +65,7 @@ public class DataMapMergerTest {
     }
 
     @Test
-    public void testRemoveTable() throws Exception {
+    public void removeTable() throws Exception {
         DataMap existing = dataMap().build();
         DataMap db = dataMap().with(
             dbEntity("table1").attributes(
@@ -80,7 +80,7 @@ public class DataMapMergerTest {
     }
 
     @Test
-    public void testAddColumn() throws Exception {
+    public void addColumn() throws Exception {
         DataMap existing = dataMap().with(
             dbEntity("table1").attributes(
                 dbAttr("attr01").typeInt(),
@@ -102,7 +102,7 @@ public class DataMapMergerTest {
     }
 
     @Test
-    public void testChangeColumnTypeSimple() throws Exception {
+    public void changeColumnTypeSimple() throws Exception {
         DataMap existing = dataMap().with(
                 dbEntity("table1").attributes(
                         dbAttr("attr01").typeInt()
@@ -130,7 +130,7 @@ public class DataMapMergerTest {
     }
 
     @Test
-    public void testChangeColumnLength() throws Exception {
+    public void changeColumnLength() throws Exception {
         DataMap existing = dataMap().with(
                 dbEntity("table1").attributes(
                         dbAttr("attr01").typeVarchar(60)
@@ -161,7 +161,7 @@ public class DataMapMergerTest {
      * Test unsupported type changes
      */
     @Test
-    public void testChangeColumnType() throws Exception {
+    public void changeColumnType() throws Exception {
         DbEntity fromModel = dbEntity("table1").attributes(
                 dbAttr("attr01").typeInt(),
                 dbAttr("attr02").type("DATE"),
@@ -207,7 +207,7 @@ public class DataMapMergerTest {
     }
 
     @Test
-    public void testDropPrimaryKey() throws Exception {
+    public void dropPrimaryKey() throws Exception {
         DataMap existing = dataMap().with(
                 dbEntity("table1").attributes(
                         dbAttr("attr01").typeInt()
@@ -225,7 +225,7 @@ public class DataMapMergerTest {
     }
 
     @Test
-    public void testAddPrimaryKey() throws Exception {
+    public void addPrimaryKey() throws Exception {
         DataMap existing = dataMap().with(
                 dbEntity("table1").attributes(
                         dbAttr("attr01").typeInt().primaryKey()
@@ -243,7 +243,7 @@ public class DataMapMergerTest {
     }
 
     @Test
-    public void testAddRelationship() throws Exception {
+    public void addRelationship() throws Exception {
         DataMap existing = dataMap().with(
             dbEntity("table1").attributes(
                 dbAttr("attr01").typeInt(),
@@ -277,7 +277,7 @@ public class DataMapMergerTest {
     }
 
     @Test
-    public void testAddRelationship1() throws Exception {
+    public void addRelationship1() throws Exception {
         DataMap existing = dataMap().with(
             dbEntity("table1").attributes(
                 dbAttr("attr01").typeInt(),
@@ -319,7 +319,7 @@ public class DataMapMergerTest {
     }
 
     @Test
-    public void testTableNameUppercaseRelationship() throws Exception {
+    public void tableNameUppercaseRelationship() throws Exception {
         DataMap existing = dataMap().with(
                 dbEntity("TABLE1").attributes(
                         dbAttr("attr01").typeInt(),
@@ -348,7 +348,7 @@ public class DataMapMergerTest {
     }
 
     @Test
-    public void testAttributeNameUppercaseRelationship() throws Exception {
+    public void attributeNameUppercaseRelationship() throws Exception {
         DataMap existing = dataMap().with(
                 dbEntity("table1").attributes(
                         dbAttr("ATTR01").typeInt(),
@@ -377,7 +377,7 @@ public class DataMapMergerTest {
     }
 
     @Test
-    public void testRemoveRelationship() throws Exception {
+    public void removeRelationship() throws Exception {
         DataMap existing = dataMap().with(
             dbEntity("table1").attributes(
                 dbAttr("attr01").typeInt(),
@@ -411,7 +411,7 @@ public class DataMapMergerTest {
     }
 
     @Test
-    public void testRemoveColumn() throws Exception {
+    public void removeColumn() throws Exception {
         DataMap existing = dataMap().with(
             dbEntity("table1").attributes(
                 dbAttr("attr01").typeInt()
@@ -433,7 +433,7 @@ public class DataMapMergerTest {
     }
 
     @Test
-    public void testChangeGeneratedStatus() {
+    public void changeGeneratedStatus() {
         DataMap existing = dataMap().with(
                 dbEntity("table1").attributes(
                         dbAttr("attr01").typeVarchar(10)
@@ -449,7 +449,7 @@ public class DataMapMergerTest {
     }
 
     @Test
-    public void testNoChanges() throws Exception {
+    public void noChanges() throws Exception {
         DataMap dataMap1 = dataMap().with(
                 dbEntity("table1").attributes(
                         dbAttr("attr01").typeInt(),
@@ -469,7 +469,7 @@ public class DataMapMergerTest {
     }
 
     @Test
-    public void testProcedures() {
+    public void procedures() {
         DataMap dataMap1 = dataMap().with(
                procedure("proc1")
                        .callParameters(new ProcedureParameter("test"))

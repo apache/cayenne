@@ -19,21 +19,21 @@
 
 package org.apache.cayenne.access.types;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ExtendedTypeMapTest {
 
     @Test
-    public void testRegisterType() throws Exception {
+    public void registerType() throws Exception {
         ExtendedTypeMap map = new ExtendedTypeMap();
         ExtendedType tstType = new MockExtendedType();
 
@@ -47,7 +47,7 @@ public class ExtendedTypeMapTest {
     }
 
     @Test
-    public void testRegisterTypeSubclasses() throws Exception {
+    public void registerTypeSubclasses() throws Exception {
         ExtendedTypeMap map = new ExtendedTypeMap();
         ExtendedType tstType1 = new MockExtendedType(List.class);
         ExtendedType tstType2 = new MockExtendedType(ArrayList.class);
@@ -84,7 +84,7 @@ public class ExtendedTypeMapTest {
     }
 
     @Test
-    public void testRegisterArrayType() throws Exception {
+    public void registerArrayType() throws Exception {
         ExtendedTypeMap map = new ExtendedTypeMap();
         ByteArrayType tstType = new ByteArrayType(false, true);
 
@@ -103,7 +103,7 @@ public class ExtendedTypeMapTest {
     }
 
     @Test
-    public void testRegisteredTypeName() throws Exception {
+    public void registeredTypeName() throws Exception {
         ExtendedTypeMap map = new ExtendedTypeMap();
         ExtendedType tstType = new MockExtendedType();
 

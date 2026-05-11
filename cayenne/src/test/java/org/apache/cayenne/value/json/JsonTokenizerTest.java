@@ -19,9 +19,10 @@
 
 package org.apache.cayenne.value.json;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @since 4.2
@@ -29,7 +30,7 @@ import static org.junit.Assert.assertEquals;
 public class JsonTokenizerTest {
 
     @Test
-    public void testEmpty() {
+    public void empty() {
         JsonTokenizer tokenizer;
         JsonTokenizer.JsonToken token;
 
@@ -39,7 +40,7 @@ public class JsonTokenizerTest {
     }
 
     @Test
-    public void testNull() {
+    public void nullToken() {
         JsonTokenizer tokenizer;
         JsonTokenizer.JsonToken token;
 
@@ -57,7 +58,7 @@ public class JsonTokenizerTest {
     }
 
     @Test
-    public void testTrue() {
+    public void trueToken() {
         JsonTokenizer tokenizer;
         JsonTokenizer.JsonToken token;
 
@@ -75,7 +76,7 @@ public class JsonTokenizerTest {
     }
 
     @Test
-    public void testFalse() {
+    public void falseToken() {
         JsonTokenizer tokenizer;
         JsonTokenizer.JsonToken token;
 
@@ -92,20 +93,18 @@ public class JsonTokenizerTest {
         assertEquals(JsonTokenizer.TokenType.FALSE, token.type);
     }
 
-    @Test(expected = MalformedJsonException.class)
-    public void testNotNull() {
-        JsonTokenizer tokenizer = new JsonTokenizer("  nUlLs  ");
-        tokenizer.nextToken();
-    }
-
-    @Test(expected = MalformedJsonException.class)
-    public void testUnknown() {
-        JsonTokenizer tokenizer = new JsonTokenizer("  abc  ");
-        tokenizer.nextToken();
+    @Test
+    public void notNull() {
+        assertThrows(MalformedJsonException.class, () -> new JsonTokenizer("  nUlLs  ").nextToken());
     }
 
     @Test
-    public void testNumber() {
+    public void unknown() {
+        assertThrows(MalformedJsonException.class, () -> new JsonTokenizer("  abc  ").nextToken());
+    }
+
+    @Test
+    public void number() {
         JsonTokenizer tokenizer;
         JsonTokenizer.JsonToken token;
 
@@ -181,7 +180,7 @@ public class JsonTokenizerTest {
     }
 
     @Test
-    public void testString() {
+    public void string() {
         JsonTokenizer tokenizer;
         JsonTokenizer.JsonToken token;
 
@@ -211,14 +210,13 @@ public class JsonTokenizerTest {
         assertEquals("\\uaaaa \\uffff \\uAAAA \\uFFFF \\u0000 \\u9999", token.toString());
     }
 
-    @Test(expected = MalformedJsonException.class)
-    public void testUnclosedString() {
-        JsonTokenizer tokenizer = new JsonTokenizer("\"1234567");
-        tokenizer.nextToken();
+    @Test
+    public void unclosedString() {
+        assertThrows(MalformedJsonException.class, () -> new JsonTokenizer("\"1234567").nextToken());
     }
 
     @Test
-    public void testEmptyObject() {
+    public void emptyObject() {
         JsonTokenizer tokenizer = new JsonTokenizer("{}");
         JsonTokenizer.JsonToken token1 = tokenizer.nextToken();
         JsonTokenizer.JsonToken token2 = tokenizer.nextToken();
@@ -226,50 +224,61 @@ public class JsonTokenizerTest {
         assertEquals(JsonTokenizer.TokenType.OBJECT_END, token2.type);
     }
 
-    @Test(expected = MalformedJsonException.class)
-    public void testUnclosedObject() {
-        JsonTokenizer tokenizer = new JsonTokenizer("{");
-        tokenizer.nextToken();
-        tokenizer.nextToken();
-    }
-
-    @Test(expected = MalformedJsonException.class)
-    public void testUnclosedObject2() {
-        JsonTokenizer tokenizer = new JsonTokenizer("{\"abc\"");
-        JsonTokenizer.JsonToken token;
-        while((token = tokenizer.nextToken()).getType() != JsonTokenizer.TokenType.NONE) {
-            // do nothing
-        }
-    }
-    @Test(expected = MalformedJsonException.class)
-    public void testUnclosedObject3() {
-        JsonTokenizer tokenizer = new JsonTokenizer("{\"abc\":");
-        JsonTokenizer.JsonToken token;
-        while((token = tokenizer.nextToken()).getType() != JsonTokenizer.TokenType.NONE) {
-            // do nothing
-        }
-    }
-
-    @Test(expected = MalformedJsonException.class)
-    public void testUnclosedObject4() {
-        JsonTokenizer tokenizer = new JsonTokenizer("{\"abc\":123");
-        JsonTokenizer.JsonToken token;
-        while((token = tokenizer.nextToken()).getType() != JsonTokenizer.TokenType.NONE) {
-            // do nothing
-        }
-    }
-
-    @Test(expected = MalformedJsonException.class)
-    public void testUnclosedObject5() {
-        JsonTokenizer tokenizer = new JsonTokenizer("{\"abc\":123,");
-        JsonTokenizer.JsonToken token;
-        while((token = tokenizer.nextToken()).getType() != JsonTokenizer.TokenType.NONE) {
-            // do nothing
-        }
+    @Test
+    public void unclosedObject() {
+        assertThrows(MalformedJsonException.class, () -> {
+            JsonTokenizer tokenizer = new JsonTokenizer("{");
+            tokenizer.nextToken();
+            tokenizer.nextToken();
+        });
     }
 
     @Test
-    public void testObject() {
+    public void unclosedObject2() {
+        assertThrows(MalformedJsonException.class, () -> {
+            JsonTokenizer tokenizer = new JsonTokenizer("{\"abc\"");
+            JsonTokenizer.JsonToken token;
+            while((token = tokenizer.nextToken()).getType() != JsonTokenizer.TokenType.NONE) {
+                // do nothing
+            }
+        });
+    }
+
+    @Test
+    public void unclosedObject3() {
+        assertThrows(MalformedJsonException.class, () -> {
+            JsonTokenizer tokenizer = new JsonTokenizer("{\"abc\":");
+            JsonTokenizer.JsonToken token;
+            while((token = tokenizer.nextToken()).getType() != JsonTokenizer.TokenType.NONE) {
+                // do nothing
+            }
+        });
+    }
+
+    @Test
+    public void unclosedObject4() {
+        assertThrows(MalformedJsonException.class, () -> {
+            JsonTokenizer tokenizer = new JsonTokenizer("{\"abc\":123");
+            JsonTokenizer.JsonToken token;
+            while((token = tokenizer.nextToken()).getType() != JsonTokenizer.TokenType.NONE) {
+                // do nothing
+            }
+        });
+    }
+
+    @Test
+    public void unclosedObject5() {
+        assertThrows(MalformedJsonException.class, () -> {
+            JsonTokenizer tokenizer = new JsonTokenizer("{\"abc\":123,");
+            JsonTokenizer.JsonToken token;
+            while((token = tokenizer.nextToken()).getType() != JsonTokenizer.TokenType.NONE) {
+                // do nothing
+            }
+        });
+    }
+
+    @Test
+    public void object() {
         JsonTokenizer tokenizer = new JsonTokenizer("  {\"test\": 123,\n\t\"2\": \"abc\"  } ");
         JsonTokenizer.JsonToken token1 = tokenizer.nextToken();
         JsonTokenizer.JsonToken token2 = tokenizer.nextToken();
@@ -289,7 +298,7 @@ public class JsonTokenizerTest {
     }
 
     @Test
-    public void testTrailingSpaces() {
+    public void trailingSpaces() {
         JsonTokenizer tokenizer;
         JsonTokenizer.JsonToken token;
 
@@ -307,7 +316,7 @@ public class JsonTokenizerTest {
     }
 
     @Test
-    public void testEmptyArray() {
+    public void emptyArray() {
         JsonTokenizer tokenizer = new JsonTokenizer("[]");
         JsonTokenizer.JsonToken token1 = tokenizer.nextToken();
         JsonTokenizer.JsonToken token2 = tokenizer.nextToken();
@@ -315,35 +324,41 @@ public class JsonTokenizerTest {
         assertEquals(JsonTokenizer.TokenType.ARRAY_END, token2.type);
     }
 
-    @Test(expected = MalformedJsonException.class)
-    public void testUnclosedArray() {
-        JsonTokenizer tokenizer = new JsonTokenizer("[");
-        JsonTokenizer.JsonToken token;
-        while((token = tokenizer.nextToken()).getType() != JsonTokenizer.TokenType.NONE) {
-            // do nothing
-        }
-    }
-
-    @Test(expected = MalformedJsonException.class)
-    public void testUnclosedArray2() {
-        JsonTokenizer tokenizer = new JsonTokenizer("[1");
-        JsonTokenizer.JsonToken token;
-        while((token = tokenizer.nextToken()).getType() != JsonTokenizer.TokenType.NONE) {
-            // do nothing
-        }
-    }
-
-    @Test(expected = MalformedJsonException.class)
-    public void testUnclosedArray3() {
-        JsonTokenizer tokenizer = new JsonTokenizer("[1,");
-        JsonTokenizer.JsonToken token;
-        while((token = tokenizer.nextToken()).getType() != JsonTokenizer.TokenType.NONE) {
-            // do nothing
-        }
+    @Test
+    public void unclosedArray() {
+        assertThrows(MalformedJsonException.class, () -> {
+            JsonTokenizer tokenizer = new JsonTokenizer("[");
+            JsonTokenizer.JsonToken token;
+            while((token = tokenizer.nextToken()).getType() != JsonTokenizer.TokenType.NONE) {
+                // do nothing
+            }
+        });
     }
 
     @Test
-    public void testArray() {
+    public void unclosedArray2() {
+        assertThrows(MalformedJsonException.class, () -> {
+            JsonTokenizer tokenizer = new JsonTokenizer("[1");
+            JsonTokenizer.JsonToken token;
+            while((token = tokenizer.nextToken()).getType() != JsonTokenizer.TokenType.NONE) {
+                // do nothing
+            }
+        });
+    }
+
+    @Test
+    public void unclosedArray3() {
+        assertThrows(MalformedJsonException.class, () -> {
+            JsonTokenizer tokenizer = new JsonTokenizer("[1,");
+            JsonTokenizer.JsonToken token;
+            while((token = tokenizer.nextToken()).getType() != JsonTokenizer.TokenType.NONE) {
+                // do nothing
+            }
+        });
+    }
+
+    @Test
+    public void array() {
         JsonTokenizer tokenizer = new JsonTokenizer("[0,2]");
         JsonTokenizer.JsonToken token1 = tokenizer.nextToken();
         JsonTokenizer.JsonToken token2 = tokenizer.nextToken();
@@ -359,7 +374,7 @@ public class JsonTokenizerTest {
     }
 
     @Test
-    public void testFullJson() {
+    public void fullJson() {
         JsonTokenizer tokenizer = new JsonTokenizer(JSON);
         JsonTokenizer.JsonToken token;
         while((token = tokenizer.nextToken()).getType() != JsonTokenizer.TokenType.NONE) {

@@ -27,12 +27,10 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.ValueNode;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.2
@@ -41,7 +39,7 @@ public class HavingTranslationStageTest {
 
     private TranslatorContext context;
 
-    @Before
+    @BeforeEach
     public void prepareContext() {
         DbEntity dbEntity = new DbEntity();
         dbEntity.setName("mock");
@@ -74,13 +72,13 @@ public class HavingTranslationStageTest {
         // Column     Value
 
         assertEquals(1, select.getChildrenCount());
-        assertThat(select.getChild(0), instanceOf(HavingNode.class));
+        assertInstanceOf(HavingNode.class, select.getChild(0));
         Node op = select.getChild(0).getChild(0);
-        assertThat(op, instanceOf(OpExpressionNode.class));
+        assertInstanceOf(OpExpressionNode.class, op);
         assertEquals(">=", ((OpExpressionNode)op).getOp());
         assertEquals(2, op.getChildrenCount());
-        assertThat(op.getChild(0), instanceOf(ColumnNode.class));
-        assertThat(op.getChild(1), instanceOf(ValueNode.class));
+        assertInstanceOf(ColumnNode.class, op.getChild(0));
+        assertInstanceOf(ValueNode.class, op.getChild(1));
 
         ColumnNode columnNode = (ColumnNode)op.getChild(0);
         ValueNode valueNode = (ValueNode)op.getChild(1);

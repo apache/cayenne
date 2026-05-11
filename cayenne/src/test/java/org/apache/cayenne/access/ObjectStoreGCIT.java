@@ -27,9 +27,9 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.unit.di.runtime.WeakReferenceStrategyRuntimeCase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ObjectStoreGCIT extends WeakReferenceStrategyRuntimeCase {
@@ -38,7 +38,7 @@ public class ObjectStoreGCIT extends WeakReferenceStrategyRuntimeCase {
     private DataContext context;
 
     @Test
-    public void testReleaseUnreferenced() throws Exception {
+    public void releaseUnreferenced() throws Exception {
         context.performGenericQuery(new SQLTemplate(
                 Artist.class,
                 "insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (1, 'aa')"));
@@ -59,7 +59,7 @@ public class ObjectStoreGCIT extends WeakReferenceStrategyRuntimeCase {
     }
 
     @Test
-    public void testRetainUnreferencedNew() throws Exception {
+    public void retainUnreferencedNew() throws Exception {
         assertEquals(0, context.getObjectStore().registeredObjectsCount());
         Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
@@ -90,7 +90,7 @@ public class ObjectStoreGCIT extends WeakReferenceStrategyRuntimeCase {
     }
 
     @Test
-    public void testRetainUnreferencedModified() throws Exception {
+    public void retainUnreferencedModified() throws Exception {
         context.performGenericQuery(new SQLTemplate(
                 Artist.class,
                 "insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (1, 'aa')"));

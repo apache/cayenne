@@ -30,10 +30,10 @@ import org.apache.cayenne.annotation.PreRemove;
 import org.apache.cayenne.annotation.PreUpdate;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.LifecycleEvent;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -43,7 +43,7 @@ public class LifecycleCallbackRegistryTest {
 
     LifecycleCallbackRegistry registry;
 
-    @Before
+    @BeforeEach
     public void createRegistry() {
         EntityResolver entityResolver = mock(EntityResolver.class);
         registry = new LifecycleCallbackRegistry(entityResolver);

@@ -25,9 +25,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * As WeakValueMap and SoftValueMap share almost all code from their super class
@@ -38,7 +38,7 @@ import static org.junit.Assert.*;
 public class WeakValueMapTest {
 
     @Test
-    public void testEmptyConstructor() {
+    public void emptyConstructor() {
         Map<String, Integer> map = new WeakValueMap<>();
 
         assertTrue(map.isEmpty());
@@ -54,7 +54,7 @@ public class WeakValueMapTest {
     }
 
     @Test
-    public void testCapacityConstructor() {
+    public void capacityConstructor() {
         Map<String, Integer> map = new WeakValueMap<>(42);
 
         assertTrue(map.isEmpty());
@@ -70,7 +70,7 @@ public class WeakValueMapTest {
     }
 
     @Test
-    public void testMapConstructor() {
+    public void mapConstructor() {
         Map<String, Integer> data = new HashMap<>();
         data.put("key_1", 123);
         data.put("key_2", 42);
@@ -98,7 +98,7 @@ public class WeakValueMapTest {
     }
 
     @Test
-    public void testSimpleOperations() {
+    public void simpleOperations() {
         Map<String, Integer> data = new HashMap<>();
         data.put("key_1", 123);
         data.put("key_2", 42);
@@ -120,7 +120,7 @@ public class WeakValueMapTest {
     }
 
     @Test
-    public void testEntrySetUpdateValue() {
+    public void entrySetUpdateValue() {
         Map<String, Integer> map = new WeakValueMap<>();
         map.put("key_1", 123);
         map.put("key_2", 42);
@@ -141,7 +141,7 @@ public class WeakValueMapTest {
     }
 
     @Test
-    public void testSerializationSupport() throws Exception {
+    public void serializationSupport() throws Exception {
         WeakValueMap<String, Object> map = new WeakValueMap<>();
 
         // hold references so gc won't clean them
@@ -164,7 +164,7 @@ public class WeakValueMapTest {
     }
 
     @Test
-    public void testEqualsAndHashCode() throws Exception {
+    public void equalsAndHashCode() throws Exception {
         Map<String, Integer> map1 = new WeakValueMap<>();
         map1.put("key_1", 123);
         map1.put("key_2", 42);
@@ -181,7 +181,7 @@ public class WeakValueMapTest {
     }
 
     @Test
-    public void testEntrySetValue() {
+    public void entrySetValue() {
         Map<String, Integer> map = new WeakValueMap<>(3);
         map.put("key_1", 123);
         map.put("key_2", 42);
@@ -206,8 +206,8 @@ public class WeakValueMapTest {
         assertEquals(Integer.valueOf(24), map.get("key_2"));
     }
 
-    @Test(expected = ConcurrentModificationException.class)
-    public void testConcurrentModification() {
+    @Test
+    public void concurrentModification() {
         Map<String, Integer> map = new WeakValueMap<>(3);
         map.put("key_1", 123);
         map.put("key_2", 42);
@@ -215,41 +215,44 @@ public class WeakValueMapTest {
         map.put("key_4", 321);
         assertEquals(4, map.size());
 
-        for(Map.Entry<String, Integer> entry : map.entrySet()) {
-            if("key_2".equals(entry.getKey())) {
-                map.remove("key_2");
+        assertThrows(ConcurrentModificationException.class, () -> {
+            for(Map.Entry<String, Integer> entry : map.entrySet()) {
+                if("key_2".equals(entry.getKey())) {
+                    map.remove("key_2");
+                }
             }
-        }
+        });
     }
 
-    @Test(expected = UnsupportedOperationException.class)
-    public void testUnsupportedEntryIteratorRemoval() {
+    @Test
+    public void unsupportedEntryIteratorRemoval() {
         Map<String, Integer> map = new WeakValueMap<>(3);
         map.put("key_1", 123);
         map.put("key_2", 42);
         map.put("key_3", 543);
         assertEquals(3, map.size());
 
-        Iterator<Map.Entry<String, Integer>> iterator = map.entrySet().iterator();
-        while(iterator.hasNext()) {
-            iterator.remove();
-        }
+        assertThrows(UnsupportedOperationException.class, () -> {
+            Iterator<Map.Entry<String, Integer>> iterator = map.entrySet().iterator();
+            while(iterator.hasNext()) {
+                iterator.remove();
+            }
+        });
     }
 
-    @Test(expected = NullPointerException.class)
-    public void testPutNullValue() {
+    @Test
+    public void putNullValue() {
         Map<Object, Object> map = new WeakValueMap<>();
-        map.put("1", null);
+        assertThrows(NullPointerException.class, () -> map.put("1", null));
     }
 
-    @Test(expected = NullPointerException.class)
-    public void testPutAllNullValue() {
-
+    @Test
+    public void putAllNullValue() {
         Map<Object, Object> values = new HashMap<>();
         values.put("123", null);
 
         Map<Object, Object> map = new WeakValueMap<>();
-        map.putAll(values);
+        assertThrows(NullPointerException.class, () -> map.putAll(values));
     }
 
     static class TestSerializable implements Serializable {

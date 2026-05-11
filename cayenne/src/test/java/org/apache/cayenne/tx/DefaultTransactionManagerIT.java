@@ -23,10 +23,11 @@ import java.util.function.Supplier;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.log.JdbcEventLogger;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -34,7 +35,7 @@ import static org.mockito.Mockito.when;
 public class DefaultTransactionManagerIT {
 
     @Test
-    public void testPerformInTransaction_Local() {
+    public void performInTransaction_Local() {
 
         final BaseTransaction tx = mock(BaseTransaction.class);
 
@@ -50,7 +51,7 @@ public class DefaultTransactionManagerIT {
     }
 
     @Test
-    public void testPerformInTransaction_ExistingTx() {
+    public void performInTransaction_ExistingTx() {
 
         final BaseTransaction tx1 = mock(BaseTransaction.class);
 
@@ -73,7 +74,7 @@ public class DefaultTransactionManagerIT {
     }
 
     @Test
-    public void testNestedPropagation() {
+    public void nestedPropagation() {
         final BaseTransaction tx = mock(BaseTransaction.class);
 
         assertNull(BaseTransaction.getThreadTransaction());
@@ -97,8 +98,8 @@ public class DefaultTransactionManagerIT {
 
     }
 
-    @Test(expected = CayenneRuntimeException.class)
-    public void testMandatoryPropagationNotStarted() {
+    @Test
+    public void mandatoryPropagationNotStarted() {
         final BaseTransaction tx = mock(BaseTransaction.class);
 
         assertNull(BaseTransaction.getThreadTransaction());
@@ -106,16 +107,18 @@ public class DefaultTransactionManagerIT {
         DefaultTransactionManager txManager = createDefaultTxManager(() -> tx);
 
         try {
-            final Object expectedResult = new Object();
-            Object result = txManager.performInTransaction(() -> {
-                        assertSame(tx, BaseTransaction.getThreadTransaction());
-                        return expectedResult;
-                    },
-                    TransactionDescriptor.builder()
-                            .propagation(TransactionPropagation.MANDATORY)
-                            .build()
-            );
-            assertSame(expectedResult, result);
+            assertThrows(CayenneRuntimeException.class, () -> {
+                final Object expectedResult = new Object();
+                Object result = txManager.performInTransaction(() -> {
+                            assertSame(tx, BaseTransaction.getThreadTransaction());
+                            return expectedResult;
+                        },
+                        TransactionDescriptor.builder()
+                                .propagation(TransactionPropagation.MANDATORY)
+                                .build()
+                );
+                assertSame(expectedResult, result);
+            });
         } finally {
             BaseTransaction.bindThreadTransaction(null);
         }
@@ -123,7 +126,7 @@ public class DefaultTransactionManagerIT {
     }
 
     @Test
-    public void testMandatoryPropagation() {
+    public void mandatoryPropagation() {
         final BaseTransaction tx = mock(BaseTransaction.class);
 
         assertNull(BaseTransaction.getThreadTransaction());
@@ -149,7 +152,7 @@ public class DefaultTransactionManagerIT {
     }
 
     @Test
-    public void testRequiresNewPropagation() {
+    public void requiresNewPropagation() {
         final BaseTransaction tx1 = mock(BaseTransaction.class);
         final BaseTransaction tx2 = mock(BaseTransaction.class);
         final AtomicInteger counter = new AtomicInteger(0);

@@ -29,12 +29,12 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.project.compatibility.CompatibilityTestModule;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.XMLReader;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @since 4.1
@@ -42,7 +42,7 @@ import static org.junit.Assert.assertTrue;
 public class CompatibilityDataMapLoaderIT {
 
     @Test
-    public void testLoad() {
+    public void load() {
         Injector injector = getInjector();
 
         DataMapLoader loader = injector.getInstance(DataMapLoader.class);

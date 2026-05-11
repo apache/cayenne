@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
 
@@ -27,34 +27,34 @@ import org.apache.cayenne.testdo.enum_test.Enum1;
 import org.apache.cayenne.testdo.enum_test.EnumEntity;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.util.TstBean;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ASTObjPathTest {
 
 	@Test
-	public void testToString() {
+	public void stringRepresentation() {
 		assertEquals("x.y", new ASTObjPath("x.y").toString());
 	}
 
 	@Test
-	public void testToEJBQL() {
+	public void toEJBQL() {
 		assertEquals("r.x.y", new ASTObjPath("x.y").toEJBQL("r"));
 	}
 	
 	@Test
-	public void testToEJBQL_OuterJoin() {
+	public void toEJBQL_OuterJoin() {
 		assertEquals("r.x+.y", new ASTObjPath("x+.y").toEJBQL("r"));
 	}
 
 	@Test
-	public void testAppendAsString() throws IOException {
+	public void appendAsString() throws IOException {
 		StringBuilder buffer = new StringBuilder();
 		new ASTObjPath("x.y").appendAsString(buffer);
 		assertEquals("x.y", buffer.toString());
 	}
 
 	@Test
-	public void testEvaluate_PersistentObject() {
+	public void evaluate_PersistentObject() {
 		ASTObjPath node = new ASTObjPath("artistName");
 
 		Artist a1 = new Artist();
@@ -67,7 +67,7 @@ public class ASTObjPathTest {
 	}
 
 	@Test
-	public void testEvaluate_JavaBean() {
+	public void evaluate_JavaBean() {
 		ASTObjPath node = new ASTObjPath("property2");
 
 		TstBean b1 = new TstBean();
@@ -80,7 +80,7 @@ public class ASTObjPathTest {
 	}
 
 	@Test
-	public void testInjectPersistentObject() {
+	public void injectPersistentObject() {
 		ASTObjPath node = new ASTObjPath("artistName");
 
 		Artist artist = new Artist();

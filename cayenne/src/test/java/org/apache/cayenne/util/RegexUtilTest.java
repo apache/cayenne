@@ -19,16 +19,16 @@
 
 package org.apache.cayenne.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RegexUtilTest {
 
     @Test
-    public void testSubstBackslashes() {
+    public void substBackslashes() {
         assertTrue(RegexUtil.BACKSLASH.matcher("\\").find());
         assertTrue(RegexUtil.BACKSLASH.matcher("abc\\").find());
 
@@ -43,7 +43,7 @@ public class RegexUtilTest {
     }
 
     @Test
-    public void testGetPackagePath() {
+    public void getPackagePath() {
         assertTrue(RegexUtil.DOT.matcher(".").find());
         assertTrue(RegexUtil.DOT.matcher("abc.aa.aa").find());
 

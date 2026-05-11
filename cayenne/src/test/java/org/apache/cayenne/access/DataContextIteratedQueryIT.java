@@ -31,14 +31,14 @@ import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextIteratedQueryIT extends RuntimeCase {
@@ -52,7 +52,7 @@ public class DataContextIteratedQueryIT extends RuntimeCase {
     private TableHelper tGallery;
     private TableHelper tPainting;
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -96,7 +96,7 @@ public class DataContextIteratedQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testIterate() throws Exception {
+    public void iterate() throws Exception {
         createArtistsDataSet();
 
         final int[] count = new int[1];
@@ -109,7 +109,7 @@ public class DataContextIteratedQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testIterateDataRows() throws Exception {
+    public void iterateDataRows() throws Exception {
         createArtistsDataSet();
 
         final int[] count = new int[1];
@@ -122,7 +122,7 @@ public class DataContextIteratedQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testIterator() throws Exception {
+    public void iterator() throws Exception {
         createArtistsDataSet();
 
         try (ResultIterator<Artist> it = ObjectSelect.query(Artist.class).iterator(context)) {
@@ -137,7 +137,7 @@ public class DataContextIteratedQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testBatchIterator() throws Exception {
+    public void batchIterator() throws Exception {
         createLargeArtistsDataSet();
 
         try (ResultBatchIterator<Artist> it = ObjectSelect.query(Artist.class).batchIterator(context, 5)) {
@@ -154,7 +154,7 @@ public class DataContextIteratedQueryIT extends RuntimeCase {
 
 
     @Test
-    public void testPerformIteratedQuery_Count() throws Exception {
+    public void performIteratedQuery_Count() throws Exception {
         createArtistsDataSet();
 
         try (ResultIterator<?> it = context.performIteratedQuery(ObjectSelect.query(Artist.class))) {
@@ -169,7 +169,7 @@ public class DataContextIteratedQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testPerformIteratedQuery_resolve() throws Exception {
+    public void performIteratedQuery_resolve() throws Exception {
         createArtistsAndPaintingsDataSet();
 
         try (ResultIterator<?> it = context.performIteratedQuery(ObjectSelect.query(Artist.class))) {
@@ -180,13 +180,13 @@ public class DataContextIteratedQueryIT extends RuntimeCase {
                 Artist artist = context.objectFromDataRow(Artist.class, row);
                 List<Painting> paintings = artist.getPaintingArray();
                 assertNotNull(paintings);
-                assertEquals("Expected one painting for artist: " + artist, 1, paintings.size());
+                assertEquals(1, paintings.size(), "Expected one painting for artist: " + artist);
             }
         }
     }
 
     @Test
-    public void testContextIterator() throws Exception {
+    public void contextIterator() throws Exception {
         createArtistsAndPaintingsDataSet();
         try (ResultIterator<Artist> it = context
                 .iterator(ObjectSelect.query(Artist.class))) {
@@ -194,13 +194,13 @@ public class DataContextIteratedQueryIT extends RuntimeCase {
                 Artist artist =  it.nextRow();
                 List<Painting> paintings = artist.getPaintingArray();
                 assertNotNull(paintings);
-                assertEquals("Expected one painting for artist: " + artist, 1, paintings.size());
+                assertEquals(1, paintings.size(), "Expected one painting for artist: " + artist);
             }
         }
     }
 
     @Test
-    public void testPerformIteratedQuery_CommitWithinIterator() throws Exception {
+    public void performIteratedQuery_CommitWithinIterator() throws Exception {
         createArtistsAndPaintingsDataSet();
 
         assertEquals(7, tPainting.getRowCount());
@@ -222,11 +222,11 @@ public class DataContextIteratedQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testPerformIteratedQuery_Transaction() throws Exception {
+    public void performIteratedQuery_Transaction() throws Exception {
         createArtistsDataSet();
 
         try (ResultIterator<?> it = context.performIteratedQuery(ObjectSelect.query(Artist.class))) {
-            assertNull("Iterator transaction was not unbound from thread", BaseTransaction.getThreadTransaction());
+            assertNull(BaseTransaction.getThreadTransaction(), "Iterator transaction was not unbound from thread");
         }
 
         // TODO: how do we test that transaction unbound from the thread is closed/committed at the end?

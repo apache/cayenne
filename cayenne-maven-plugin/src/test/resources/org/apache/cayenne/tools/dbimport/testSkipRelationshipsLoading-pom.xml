@@ -41,7 +41,7 @@
                     <dbimport>
                         <skipRelationshipsLoading>true</skipRelationshipsLoading>
                     </dbimport>
-					<project implementation="org.apache.cayenne.stubs.CayenneProjectStub"/>
+
 
 				</configuration>
 			</plugin>

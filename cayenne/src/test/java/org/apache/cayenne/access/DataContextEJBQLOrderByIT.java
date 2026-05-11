@@ -28,13 +28,13 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextEJBQLOrderByIT extends RuntimeCase {
@@ -48,7 +48,8 @@ public class DataContextEJBQLOrderByIT extends RuntimeCase {
     protected TableHelper tArtist;
     protected TableHelper tPainting;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -86,7 +87,7 @@ public class DataContextEJBQLOrderByIT extends RuntimeCase {
     }
 
     @Test
-    public void testOrderByDefault() throws Exception {
+    public void orderByDefault() throws Exception {
 
         createThreePaintings();
 
@@ -112,7 +113,7 @@ public class DataContextEJBQLOrderByIT extends RuntimeCase {
     }
 
     @Test
-    public void testOrderByAsc() throws Exception {
+    public void orderByAsc() throws Exception {
 
         createThreePaintings();
 
@@ -138,7 +139,7 @@ public class DataContextEJBQLOrderByIT extends RuntimeCase {
     }
 
     @Test
-    public void testOrderByDesc() throws Exception {
+    public void orderByDesc() throws Exception {
         createThreePaintings();
 
         String ejbql1 = "SELECT p FROM Painting p ORDER BY p.paintingTitle DESC";
@@ -163,7 +164,7 @@ public class DataContextEJBQLOrderByIT extends RuntimeCase {
     }
 
     @Test
-    public void testOrderByQualified() throws Exception {
+    public void orderByQualified() throws Exception {
         createThreePaintings();
 
         String ejbql1 = "SELECT p FROM Painting p WHERE p.estimatedPrice > 1000 ORDER BY p.paintingTitle ASC";
@@ -186,7 +187,7 @@ public class DataContextEJBQLOrderByIT extends RuntimeCase {
     }
 
     @Test
-    public void testOrderByMultiple() throws Exception {
+    public void orderByMultiple() throws Exception {
         createFourPaintings();
 
         String ejbql1 = "SELECT p FROM Painting p ORDER BY p.paintingTitle DESC, p.estimatedPrice DESC";
@@ -202,7 +203,7 @@ public class DataContextEJBQLOrderByIT extends RuntimeCase {
     }
 
     @Test
-    public void testOrderByPath() throws Exception {
+    public void orderByPath() throws Exception {
         createTwoArtistsTwoPaintings();
 
         String ejbql1 = "SELECT p FROM Painting p ORDER BY p.toArtist.artistName ASC";

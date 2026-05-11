@@ -29,10 +29,10 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextOrderingIT extends RuntimeCase {
@@ -41,7 +41,7 @@ public class DataContextOrderingIT extends RuntimeCase {
     private DataContext context;
 
     @Test
-    public void testMultipleOrdering() {
+    public void multipleOrdering() {
 
         Calendar c = Calendar.getInstance();
 
@@ -72,7 +72,7 @@ public class DataContextOrderingIT extends RuntimeCase {
     }
 
     @Test
-    public void testMultipleOrderingInSelectClauseCAY_1074() throws Exception {
+    public void multipleOrderingInSelectClauseCAY_1074() throws Exception {
 
         Calendar c = Calendar.getInstance();
 
@@ -112,7 +112,7 @@ public class DataContextOrderingIT extends RuntimeCase {
     }
 
     @Test
-    public void testCustomPropertySort() throws Exception {
+    public void customPropertySort() throws Exception {
         Calendar c = Calendar.getInstance();
 
         Artist a1 = context.newObject(Artist.class);

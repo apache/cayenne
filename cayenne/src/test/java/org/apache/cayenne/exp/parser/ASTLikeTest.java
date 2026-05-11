@@ -18,26 +18,26 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ASTLikeTest {
 
 	@Test
-	public void testToEJBQL_likeEscape() throws IOException {
+	public void toEJBQL_likeEscape() throws IOException {
 		Expression like = new ASTLike(new ASTObjPath("mainName"), "|%|%?|_title|%", '|');
 		assertEquals("x.mainName like '|%|%?|_title|%' escape '|'", like.toEJBQL("x"));
 	}
 
 	@Test
-	public void testEvaluate_MultiCharMatch() {
+	public void evaluate_MultiCharMatch() {
 		Expression like = new ASTLike(new ASTObjPath("artistName"), "abc%d");
 		Expression notLike = new ASTNotLike(new ASTObjPath("artistName"), "abc%d");
 
@@ -48,17 +48,17 @@ public class ASTLikeTest {
 
 		Artist match1 = new Artist();
 		match1.setArtistName("abc123d");
-		assertTrue("Failed: " + like, like.match(match1));
-		assertFalse("Failed: " + notLike, notLike.match(match1));
+		assertTrue(like.match(match1), "Failed: " + like);
+		assertFalse(notLike.match(match1), "Failed: " + notLike);
 
 		Artist match2 = new Artist();
 		match2.setArtistName("abcd");
-		assertTrue("Failed: " + like, like.match(match2));
-		assertFalse("Failed: " + notLike, notLike.match(match2));
+		assertTrue(like.match(match2), "Failed: " + like);
+		assertFalse(notLike.match(match2), "Failed: " + notLike);
 	}
 
 	@Test
-	public void testEvaluate_SingleCharMatch() {
+	public void evaluate_SingleCharMatch() {
 		Expression like = new ASTLike(new ASTObjPath("artistName"), "abc?d");
 		Expression notLike = new ASTNotLike(new ASTObjPath("artistName"), "abc?d");
 
@@ -69,17 +69,17 @@ public class ASTLikeTest {
 
 		Artist noMatch2 = new Artist();
 		noMatch2.setArtistName("abc123d");
-		assertFalse("Failed: " + like, like.match(noMatch2));
-		assertTrue("Failed: " + notLike, notLike.match(noMatch2));
+		assertFalse(like.match(noMatch2), "Failed: " + like);
+		assertTrue(notLike.match(noMatch2), "Failed: " + notLike);
 
 		Artist match = new Artist();
 		match.setArtistName("abcXd");
-		assertTrue("Failed: " + like, like.match(match));
-		assertFalse("Failed: " + notLike, notLike.match(match));
+		assertTrue(like.match(match), "Failed: " + like);
+		assertFalse(notLike.match(match), "Failed: " + notLike);
 	}
 
 	@Test
-	public void testEvaluate_NotSoSpecialChars() {
+	public void evaluate_NotSoSpecialChars() {
 		// test special chars that are not LIKE pattern match chars
 		Expression like = new ASTLike(new ASTObjPath("artistName"), "/./");
 
@@ -89,11 +89,11 @@ public class ASTLikeTest {
 
 		Artist match = new Artist();
 		match.setArtistName("/./");
-		assertTrue("Failed: " + like, like.match(match));
+		assertTrue(like.match(match), "Failed: " + like);
 	}
 
 	@Test
-	public void testEvaluateUnicode() {
+	public void evaluateUnicode() {
 		Expression like = new ASTLike(new ASTObjPath("artistName"), "àбğþ%");
 		Expression notLike = new ASTNotLike(new ASTObjPath("artistName"), "àбğþ%");
 
@@ -104,13 +104,13 @@ public class ASTLikeTest {
 
 		Artist match1 = new Artist();
 		match1.setArtistName("àбğþ");
-		assertTrue("Failed: " + like, like.match(match1));
-		assertFalse("Failed: " + notLike, notLike.match(match1));
+		assertTrue(like.match(match1), "Failed: " + like);
+		assertFalse(notLike.match(match1), "Failed: " + notLike);
 
 		Artist match2 = new Artist();
 		match2.setArtistName("àбğþa");
-		assertTrue("Failed: " + like, like.match(match2));
-		assertFalse("Failed: " + notLike, notLike.match(match2));
+		assertTrue(like.match(match2), "Failed: " + like);
+		assertFalse(notLike.match(match2), "Failed: " + notLike);
 	}
 
 }

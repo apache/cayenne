@@ -20,18 +20,18 @@
 package org.apache.cayenne.access.types;
 
 import com.mockrunner.mock.jdbc.MockResultSet;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class EnumTypeTest {
 
     @Test
-    public void testConstructor() throws Exception {
+    public void constructor() throws Exception {
         EnumType type = new EnumType(MockEnum.class);
         assertEquals(MockEnum.class.getName(), type.getClassName());
         assertEquals(MockEnum.values().length, type.values.length);
@@ -42,29 +42,17 @@ public class EnumTypeTest {
     }
 
     @Test
-    public void testInvalidConstructor1() throws Exception {
-        try {
-            new EnumType(Object.class);
-            fail("Non-enum class went through");
-        }
-        catch (IllegalArgumentException e) {
-            // expected
-        }
+    public void invalidConstructor1() {
+        assertThrows(IllegalArgumentException.class, () -> new EnumType(Object.class));
     }
 
     @Test
-    public void testInvalidConstructor2() throws Exception {
-        try {
-            new EnumType(null);
-            fail("Null class went through");
-        }
-        catch (IllegalArgumentException e) {
-            // expected
-        }
+    public void invalidConstructor2() {
+        assertThrows(IllegalArgumentException.class, () -> new EnumType(null));
     }
 
     @Test
-    public void testMaterializeStringObject() throws Exception {
+    public void materializeStringObject() throws Exception {
         EnumType type = new EnumType(MockEnum.class);
         
         MockResultSet rs = new MockResultSet("Test");
@@ -77,7 +65,7 @@ public class EnumTypeTest {
     }
 
     @Test
-    public void testMaterializeNumericObject() throws Exception {
+    public void materializeNumericObject() throws Exception {
         EnumType type = new EnumType(MockEnum.class);
         
         MockResultSet rs = new MockResultSet("Test");
@@ -90,7 +78,7 @@ public class EnumTypeTest {
     }
 
     @Test
-    public void testMaterializeStringObjectInnerEnum() throws Exception {
+    public void materializeStringObjectInnerEnum() throws Exception {
         EnumType type = new EnumType(InnerEnumHolder.InnerEnum.class);
         
         MockResultSet rs = new MockResultSet("Test");
@@ -103,7 +91,7 @@ public class EnumTypeTest {
     }
 
     @Test
-    public void testMaterializeNumericObjectInnerEnum() throws Exception {
+    public void materializeNumericObjectInnerEnum() throws Exception {
         EnumType type = new EnumType(InnerEnumHolder.InnerEnum.class);
         
         MockResultSet rs = new MockResultSet("Test");

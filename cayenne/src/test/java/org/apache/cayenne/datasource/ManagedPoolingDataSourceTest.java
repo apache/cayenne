@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.datasource;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -30,9 +30,9 @@ import static org.mockito.Mockito.when;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ManagedPoolingDataSourceTest {
 
@@ -40,7 +40,7 @@ public class ManagedPoolingDataSourceTest {
 	private UnmanagedPoolingDataSource mockPoolingDataSource;
 	private ManagedPoolingDataSource dataSource;
 
-	@Before
+	@BeforeEach
 	public void before() throws SQLException {
 
 		this.mockConnections = new Connection[4];
@@ -55,13 +55,13 @@ public class ManagedPoolingDataSourceTest {
 		this.dataSource = new ManagedPoolingDataSource(mockPoolingDataSource);
 	}
 
-	@After
+	@AfterEach
 	public void after() {
 		dataSource.beforeScopeEnd();
 	}
 
 	@Test
-	public void testGetConnection() throws SQLException {
+	public void getConnection() throws SQLException {
 		assertSame(mockConnections[0], dataSource.getConnection());
 		assertSame(mockConnections[1], dataSource.getConnection());
 		assertSame(mockConnections[2], dataSource.getConnection());
@@ -69,7 +69,7 @@ public class ManagedPoolingDataSourceTest {
 	}
 
 	@Test
-	public void testClose() throws SQLException, InterruptedException {
+	public void close() throws SQLException, InterruptedException {
 		assertNotNull(dataSource.getConnection());
 
 		// state before shutdown

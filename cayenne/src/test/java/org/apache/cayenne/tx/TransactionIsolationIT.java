@@ -35,12 +35,12 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.1
@@ -61,14 +61,14 @@ public class TransactionIsolationIT extends RuntimeCase {
 
     TransactionManager manager;
 
-    @Before
+    @BeforeEach
     public void initTransactionManager() {
         // no binding in test container, get it from runtime
         manager = runtime.getInjector().getInstance(TransactionManager.class);
     }
 
     @Test
-    public void testIsolationLevel() throws Exception {
+    public void isolationLevel() throws Exception {
 
         if(!unitDbAdapter.supportsSerializableTransactionIsolation()) {
             return;

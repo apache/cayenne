@@ -23,11 +23,11 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SelectNode;
 import org.apache.cayenne.map.DbEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @since 4.2
@@ -35,75 +35,75 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class SelectBuilderTest extends BaseSqlBuilderTest  {
 
     @Test
-    public void testSelect() {
+    public void emptySelect() {
         SelectBuilder builder = new SelectBuilder();
         Node node = builder.build();
-        assertThat(node, instanceOf(SelectNode.class));
+        assertInstanceOf(SelectNode.class, node);
         assertSQL("SELECT", node);
     }
 
     @Test
-    public void testSelectColumns() {
+    public void selectColumns() {
         SelectBuilder builder = new SelectBuilder(column("a"), table("c").column("b"));
         Node node = builder.build();
-        assertThat(node, instanceOf(SelectNode.class));
+        assertInstanceOf(SelectNode.class, node);
         assertSQL("SELECT a, c.b", node);
         assertQuotedSQL("SELECT `a`, `c`.`b`", node);
     }
 
     @Test
-    public void testSelectFrom() {
+    public void selectFrom() {
         SelectBuilder builder = new SelectBuilder(column("a")).from(table("b"));
         Node node = builder.build();
-        assertThat(node, instanceOf(SelectNode.class));
+        assertInstanceOf(SelectNode.class, node);
         assertSQL("SELECT a FROM b", node);
         assertQuotedSQL("SELECT `a` FROM `b`", node);
     }
 
     @Test
-    public void testSelectFromDbEntity() {
+    public void selectFromDbEntity() {
         DbEntity entity = new DbEntity("b");
         entity.setSchema("d");
         entity.setCatalog("c");
         SelectBuilder builder = new SelectBuilder(column("a")).from(table(entity));
         Node node = builder.build();
-        assertThat(node, instanceOf(SelectNode.class));
+        assertInstanceOf(SelectNode.class, node);
         assertSQL("SELECT a FROM c.d.b", node);
         assertQuotedSQL("SELECT `a` FROM `c`.`d`.`b`", node);
     }
 
     @Test
-    public void testSelectFromWhere() {
+    public void selectFromWhere() {
         SelectBuilder builder = new SelectBuilder(column("a"))
                 .from(table("b"))
                 .where(column("a").eq(value(123)));
         Node node = builder.build();
-        assertThat(node, instanceOf(SelectNode.class));
+        assertInstanceOf(SelectNode.class, node);
         assertSQL("SELECT a FROM b WHERE a = 123", node);
     }
 
     @Test
-    public void testSelectFromWhereNull() {
+    public void selectFromWhereNull() {
         SelectBuilder builder = new SelectBuilder(column("a"))
                 .from(table("b"))
                 .where(column("a").eq(value(null)));
         Node node = builder.build();
-        assertThat(node, instanceOf(SelectNode.class));
+        assertInstanceOf(SelectNode.class, node);
         assertSQL("SELECT a FROM b WHERE a IS NULL", node);
     }
 
     @Test
-    public void testSelectFromWhereComplex() {
+    public void selectFromWhereComplex() {
         SelectBuilder builder = new SelectBuilder(column("a"))
                 .from(table("b"))
                 .where(column("a").eq(value(123)).and(column("c").lt(column("d"))));
         Node node = builder.build();
-        assertThat(node, instanceOf(SelectNode.class));
+        assertInstanceOf(SelectNode.class, node);
         assertSQL("SELECT a FROM b WHERE ( a = 123 ) AND ( c < d )", node);
     }
 
     @Test
-    public void testValidSelectCaseWhen() {
+    public void validSelectCaseWhen() {
         SelectBuilder builder = new SelectBuilder(column("OrderID"), column("Quantity"),
                 caseWhen(column("Quantity").gt(value(30)).and(column("Quantity").lt(value(100))))
                         .then(value("The quantity from 30 to 100"))
@@ -114,7 +114,7 @@ public class SelectBuilderTest extends BaseSqlBuilderTest  {
                 .from(table("OrderDetails"));
 
         Node node = builder.build();
-        assertThat(node, instanceOf(SelectNode.class));
+        assertInstanceOf(SelectNode.class, node);
         assertSQL("SELECT OrderID, Quantity, " +
                 "CASE " +
                     "WHEN ( ( Quantity > 30 ) AND ( Quantity < 100 ) ) THEN 'The quantity from 30 to 100' " +
@@ -124,40 +124,41 @@ public class SelectBuilderTest extends BaseSqlBuilderTest  {
                 "FROM OrderDetails", node);
     }
 
-    @Test(expected = CayenneRuntimeException.class)
-    public void testInvalidSelectCaseWhen() {
-        select(column("OrderID"), column("Quantity"),
-                caseWhen(column("Quantity").gt(value(30)))
-                        .then(value("The quantity is greater than 30"))
-                        .when(column("Quantity").eq(value(30))))
-                .from(table("OrderDetails"));
+    @Test
+    public void invalidSelectCaseWhen() {
+        assertThrows(CayenneRuntimeException.class, () ->
+            select(column("OrderID"), column("Quantity"),
+                    caseWhen(column("Quantity").gt(value(30)))
+                            .then(value("The quantity is greater than 30"))
+                            .when(column("Quantity").eq(value(30))))
+                    .from(table("OrderDetails")));
     }
 
     @Test
-    public void testQueryAlias() {
+    public void queryAlias() {
         SelectBuilder innerSelect = select(table("p").column("PAINTING_TITLE"))
                 .from(table("PAINTING").as("p"));
         Node node = select(table("t").column("*"))
                 .from(aliased(innerSelect, "t"))
                 .build();
 
-        assertThat(node, instanceOf(SelectNode.class));
+        assertInstanceOf(SelectNode.class, node);
         assertSQL("SELECT t.* FROM (SELECT p.PAINTING_TITLE FROM PAINTING p) t", node);
     }
 
     @Test
-    public void testFunctionAlias() {
+    public void functionAlias() {
         Node node = select(function("test", table("p").column("PAINTING_TITLE")).as("f"))
                 .from(table("PAINTING").as("p"))
                 .orderBy(function("test", table("p").column("PAINTING_TITLE")).as("f"))
                 .build();
 
-        assertThat(node, instanceOf(SelectNode.class));
+        assertInstanceOf(SelectNode.class, node);
         assertSQL("SELECT test( p.PAINTING_TITLE ) f FROM PAINTING p ORDER BY f", node);
     }
 
     @Test
-    public void testComplexQuery() {
+    public void complexQuery() {
         Node node = select(
                         table("a").column("ARTIST_ID").as("a_id"),
                         count(table("p").column("PAINTING_TITLE")).as("p_count"))
@@ -180,7 +181,7 @@ public class SelectBuilderTest extends BaseSqlBuilderTest  {
                 .having(not(count(table("p").column("PAINTING_TITLE")).gt(value(3))))
                 .orderBy(count(table("p").column("PAINTING_TITLE")).as("p_count").desc(), column("a_id").asc())
                 .build();
-        assertThat(node, instanceOf(SelectNode.class));
+        assertInstanceOf(SelectNode.class, node);
         assertSQL("SELECT DISTINCT" +
                     " a.ARTIST_ID a_id, COUNT( p.PAINTING_TITLE ) p_count" +
                 " FROM ARTIST a" +

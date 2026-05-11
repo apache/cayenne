@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.datasource;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -39,9 +39,9 @@ import javax.sql.DataSource;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.slf4j.Logger;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.mockito.stubbing.OngoingStubbing;
@@ -57,7 +57,7 @@ public class ManagedPoolingDataSourceIT {
 	private UnmanagedPoolingDataSource unmanagedPool;
 	private ManagedPoolingDataSource managedPool;
 
-	@Before
+	@BeforeEach
 	public void before() throws SQLException {
 
 		this.poolSize = 4;
@@ -72,7 +72,7 @@ public class ManagedPoolingDataSourceIT {
 		this.managedPool = new ManagedPoolingDataSource(unmanagedPool, 10000);
 	}
 
-	@After
+	@AfterEach
 	public void after() {
 		if (managedPool != null) {
 			managedPool.close();
@@ -89,7 +89,7 @@ public class ManagedPoolingDataSourceIT {
 	}
 
 	@Test
-	public void testGetConnection_OnBackendShutdown() throws SQLException, InterruptedException {
+	public void getConnection_OnBackendShutdown() throws SQLException, InterruptedException {
 
 		// note that this assertion can only work reliably when the pool is inactive...
 		assertEquals(poolSize, managedPool.poolSize() + managedPool.canExpandSize());

@@ -21,9 +21,9 @@ package org.apache.cayenne.configuration.xml;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.SelectQueryDescriptor;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @since 4.1
@@ -31,7 +31,7 @@ import static org.junit.Assert.assertEquals;
 public class PrefetchTypeForSelectQueryHandlerTest extends BaseHandlerTest{
 
     @Test
-    public void testLoad() throws Exception {
+    public void load() throws Exception {
         final DataMap map = new DataMap();
 
         parse("query", new HandlerFactory() {

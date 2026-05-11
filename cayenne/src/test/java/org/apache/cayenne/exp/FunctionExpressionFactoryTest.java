@@ -42,10 +42,10 @@ import org.apache.cayenne.exp.parser.ASTSum;
 import org.apache.cayenne.exp.parser.ASTTrim;
 import org.apache.cayenne.exp.parser.ASTUpper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 /**

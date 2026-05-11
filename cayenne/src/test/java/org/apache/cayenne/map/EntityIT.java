@@ -28,18 +28,18 @@ import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Iterator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class EntityIT extends RuntimeCase {
@@ -48,7 +48,7 @@ public class EntityIT extends RuntimeCase {
     private CayenneRuntime runtime;
 
     @Test
-    public void testSerializability() throws Exception {
+    public void serializability() throws Exception {
         MockEntity entity = new MockEntity("entity");
 
         MockEntity d1 = Util.cloneViaSerialization(entity);
@@ -78,7 +78,7 @@ public class EntityIT extends RuntimeCase {
     }
 
     @Test
-    public void testName() {
+    public void name() {
         MockEntity entity = new MockEntity();
         String tstName = "tst_name";
         entity.setName(tstName);
@@ -86,7 +86,7 @@ public class EntityIT extends RuntimeCase {
     }
 
     @Test
-    public void testAttribute() {
+    public void attribute() {
         MockEntity entity = new MockEntity();
         MockAttribute attribute = new MockAttribute("tst_name");
 
@@ -102,7 +102,7 @@ public class EntityIT extends RuntimeCase {
     }
 
     @Test
-    public void testRelationship() {
+    public void relationship() {
         MockEntity entity = new MockEntity();
         MockRelationship rel = new MockRelationship("tst_name");
 
@@ -118,41 +118,33 @@ public class EntityIT extends RuntimeCase {
     }
 
     @Test
-    public void testAttributeClashWithRelationship() {
+    public void attributeClashWithRelationship() {
         MockEntity entity = new MockEntity();
         MockRelationship rel = new MockRelationship("tst_name");
 
         entity.addRelationship(rel);
 
-        try {
+        assertThrows(Exception.class, () -> {
             MockAttribute attribute = new MockAttribute("tst_name");
             entity.addAttribute(attribute);
-
-            fail("Exception should have been thrown due to clashing attribute and relationship names.");
-        } catch (Exception e) {
-            // Exception expected.
-        }
+        });
     }
 
     @Test
-    public void testRelationshipClashWithAttribute() {
+    public void relationshipClashWithAttribute() {
         MockEntity entity = new MockEntity();
         MockAttribute attribute = new MockAttribute("tst_name");
 
         entity.addAttribute(attribute);
 
-        try {
+        assertThrows(Exception.class, () -> {
             MockRelationship rel = new MockRelationship("tst_name");
             entity.addRelationship(rel);
-
-            fail("Exception should have been thrown due to clashing attribute and relationship names.");
-        } catch (Exception e) {
-            // Exception expected.
-        }
+        });
     }
 
     @Test
-    public void testResolveBadObjPath1() {
+    public void resolveBadObjPath1() {
         // test invalid expression path
         Expression pathExpr = ExpressionFactory.expressionOfType(Expression.OBJ_PATH);
         pathExpr.setOperand(0, "invalid.invalid");
@@ -163,31 +155,21 @@ public class EntityIT extends RuntimeCase {
         Iterator<CayenneMapEntry> it = galleryEnt.resolvePathComponents(pathExpr);
         assertTrue(it.hasNext());
 
-        try {
-            it.next();
-            fail();
-        } catch (Exception ex) {
-            // exception expected
-        }
+        assertThrows(Exception.class, it::next);
     }
 
     @Test
-    public void testResolveBadObjPath2() {
+    public void resolveBadObjPath2() {
         // test invalid expression type
         Expression badPathExpr = ExpressionFactory.expressionOfType(Expression.IN);
         badPathExpr.setOperand(0, "a.b.c");
         ObjEntity galleryEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Gallery");
 
-        try {
-            galleryEnt.resolvePathComponents(badPathExpr);
-            fail();
-        } catch (Exception ex) {
-            // exception expected
-        }
+        assertThrows(Exception.class, () -> galleryEnt.resolvePathComponents(badPathExpr));
     }
 
     @Test
-    public void testResolveObjPath1() {
+    public void resolveObjPath1() {
         Expression pathExpr = ExpressionFactory.expressionOfType(Expression.OBJ_PATH);
         pathExpr.setOperand(0, "galleryName");
 
@@ -204,7 +186,7 @@ public class EntityIT extends RuntimeCase {
     }
 
     @Test
-    public void testRemoveAttribute() {
+    public void removeAttribute() {
         MockEntity entity = new MockEntity();
 
         entity.setName("test");

@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
@@ -35,7 +35,7 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ASTDbPathIT extends RuntimeCase {
@@ -44,7 +44,7 @@ public class ASTDbPathIT extends RuntimeCase {
 	private ObjectContext context;
 
 	@Test
-	public void testEvaluate_PersistentObject() {
+	public void evaluate_PersistentObject() {
 
 		Artist a1 = context.newObject(Artist.class);
 		a1.setArtistName("a1");
@@ -58,7 +58,7 @@ public class ASTDbPathIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testEvaluate_DbEntity() {
+	public void evaluate_DbEntity() {
 		Expression e = ExpressionFactory.exp("db:paintingArray.PAINTING_TITLE");
 
 		ObjEntity ae = context.getEntityResolver().getObjEntity(Artist.class);
@@ -72,7 +72,7 @@ public class ASTDbPathIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testEvaluate_Related_PersistentObject() {
+	public void evaluate_Related_PersistentObject() {
 
 		Artist a1 = context.newObject(Artist.class);
 		Artist a2 = context.newObject(Artist.class);

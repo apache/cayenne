@@ -29,17 +29,17 @@ import org.apache.cayenne.testdo.unsupported_distinct_types.Product;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.UNSUPPORTED_DISTINCT_TYPES_PROJECT)
 public class SelectActionWithUnsupportedDistinctTypesIT extends RuntimeCase {
@@ -55,7 +55,7 @@ public class SelectActionWithUnsupportedDistinctTypesIT extends RuntimeCase {
     private TableHelper tCustomer;
     private TableHelper tOrders;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tProduct = new TableHelper(dbHelper, "PRODUCT");
         tProduct.setColumns("ID", "LONGVARCHAR_COL");
@@ -102,7 +102,7 @@ public class SelectActionWithUnsupportedDistinctTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testCompositionSelectManyToManyQuery() throws SQLException {
+    public void compositionSelectManyToManyQuery() throws SQLException {
         createCompositionManyToManyDataSet();
 
         List<Product> result = ObjectSelect.query(Product.class)
@@ -123,7 +123,7 @@ public class SelectActionWithUnsupportedDistinctTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testOrdersSelectManyToManyQuery() throws SQLException {
+    public void ordersSelectManyToManyQuery() throws SQLException {
         createOrdersManyToManyDataSet();
         List<Integer> assertSizes = Arrays.asList(1, 2, 3);
 

@@ -37,12 +37,12 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.apache.cayenne.exp.ExpressionFactory.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class AggregateExpInMemoryEvaluationIT extends RuntimeCase {
@@ -56,7 +56,7 @@ public class AggregateExpInMemoryEvaluationIT extends RuntimeCase {
     @Inject
     private DataContext context;
 
-    @Before
+    @BeforeEach
     public void createArtistsDataSet() throws Exception {
         TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
@@ -82,7 +82,7 @@ public class AggregateExpInMemoryEvaluationIT extends RuntimeCase {
         tPaintings.insert(21, "painting21", 2, 1, 1000);
     }
 
-    @After
+    @AfterEach
     public void clearArtistsDataSet() throws Exception {
         for(String table : Arrays.asList("PAINTING", "ARTIST", "GALLERY")) {
             TableHelper tHelper = new TableHelper(dbHelper, table);
@@ -91,7 +91,7 @@ public class AggregateExpInMemoryEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testCount() {
+    public void count() {
         List<Artist> artists = ObjectSelect.query(Artist.class)
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
                 .prefetch(Artist.PAINTING_ARRAY.disjoint())
@@ -105,7 +105,7 @@ public class AggregateExpInMemoryEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testMax() {
+    public void max() {
         List<Artist> artists = ObjectSelect.query(Artist.class)
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
                 .prefetch(Artist.PAINTING_ARRAY.disjoint())
@@ -127,7 +127,7 @@ public class AggregateExpInMemoryEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testMin() {
+    public void min() {
         List<Artist> artists = ObjectSelect.query(Artist.class)
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
                 .prefetch(Artist.PAINTING_ARRAY.disjoint())
@@ -149,7 +149,7 @@ public class AggregateExpInMemoryEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testAvg() {
+    public void avg() {
         List<Artist> artists = ObjectSelect.query(Artist.class)
                 .prefetch(Artist.PAINTING_ARRAY.disjoint())
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
@@ -165,7 +165,7 @@ public class AggregateExpInMemoryEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testCaseWhenFirstCondition() {
+    public void caseWhenFirstCondition() {
         Artist artist = ObjectSelect.query(Artist.class)
                 .prefetch(Artist.PAINTING_ARRAY.disjoint())
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
@@ -184,7 +184,7 @@ public class AggregateExpInMemoryEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testCaseWhenSecondCondition() {
+    public void caseWhenSecondCondition() {
         Artist artist = ObjectSelect.query(Artist.class)
                 .prefetch(Artist.PAINTING_ARRAY.disjoint())
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
@@ -202,7 +202,7 @@ public class AggregateExpInMemoryEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testCaseWhenDefaultCondition() {
+    public void caseWhenDefaultCondition() {
         Artist artist = ObjectSelect.query(Artist.class)
                 .prefetch(Artist.PAINTING_ARRAY.disjoint())
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
@@ -221,7 +221,7 @@ public class AggregateExpInMemoryEvaluationIT extends RuntimeCase {
     }
 
     @Test
-    public void testCaseWhenNoResultNoDefault() {
+    public void caseWhenNoResultNoDefault() {
         Artist artist = ObjectSelect.query(Artist.class)
                 .prefetch(Artist.PAINTING_ARRAY.disjoint())
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())

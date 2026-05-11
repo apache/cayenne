@@ -28,14 +28,14 @@ import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FiltersConfigBuilderTest {
 
     @Test
-    public void testCompact_01() {
+    public void compact_01() {
         ReverseEngineering engineering = new ReverseEngineering();
         engineering.addIncludeTable(new IncludeTable("table1"));
         engineering.addIncludeTable(new IncludeTable("table2"));
@@ -58,7 +58,7 @@ public class FiltersConfigBuilderTest {
     }
 
     @Test
-    public void testCompact_02() {
+    public void compact_02() {
         ReverseEngineering engineering = new ReverseEngineering();
         engineering.addCatalog(new Catalog("catalogName"));
         engineering.addSchema(new Schema("schemaName01"));
@@ -85,7 +85,7 @@ public class FiltersConfigBuilderTest {
     }
 
     @Test
-    public void testCompact_03() {
+    public void compact_03() {
         ReverseEngineering engineering = new ReverseEngineering();
         engineering.addCatalog(new Catalog("APP1"));
         engineering.addCatalog(new Catalog("APP2"));
@@ -110,7 +110,7 @@ public class FiltersConfigBuilderTest {
     }
 
     @Test
-    public void testCompact_04() {
+    public void compact_04() {
         ReverseEngineering engineering = new ReverseEngineering();
         engineering.addSchema(new Schema("s"));
 
@@ -124,7 +124,7 @@ public class FiltersConfigBuilderTest {
     }
 
     @Test
-    public void testCompact_full() {
+    public void compact_full() {
         ReverseEngineering engineering = new ReverseEngineering();
         Catalog cat01 = new Catalog("cat_01");
 
@@ -167,7 +167,7 @@ public class FiltersConfigBuilderTest {
         engineering.addExcludeColumn(new ExcludeColumn("c_xxx2"));
 
         FiltersConfigBuilder builder = new FiltersConfigBuilder(engineering);
-        assertEquals("Original ReverseEngineering should be",
+        assertEquals(
                 "ReverseEngineering: \n" +
                 "  Catalog: cat_01\n" +
                 "    Schema: sch_01\n" +
@@ -203,7 +203,7 @@ public class FiltersConfigBuilderTest {
                 "    IncludeColumn: c_xxx1\n" +
                 "    ExcludeColumn: c_xxx2\n" +
                 "    IncludeProcedure: p7\n" +
-                "    ExcludeProcedure: p8\n", engineering.toString());
+                "    ExcludeProcedure: p8\n", engineering.toString(), "Original ReverseEngineering should be");
 
 
         builder.compact();

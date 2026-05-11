@@ -26,12 +26,12 @@ import org.apache.cayenne.testdo.compound.CharPkTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @UseCayenneRuntime(CayenneProjects.COMPOUND_PROJECT)
 public class DataContextCharPKIT extends RuntimeCase {
@@ -40,7 +40,7 @@ public class DataContextCharPKIT extends RuntimeCase {
     private DataContext context;
 
     @Test
-    public void testInsert() throws Exception {
+    public void insert() throws Exception {
         CharPkTestEntity object = context.newObject(CharPkTestEntity.class);
         object.setOtherCol("object-XYZ");
         object.setPkCol("PK1");
@@ -71,7 +71,7 @@ public class DataContextCharPKIT extends RuntimeCase {
     }
 
     @Test
-    public void testDelete() throws Exception {
+    public void delete() throws Exception {
         CharPkTestEntity object = context.newObject(CharPkTestEntity.class);
         object.setOtherCol("object-XYZ");
         object.setPkCol("PK1");
@@ -91,7 +91,7 @@ public class DataContextCharPKIT extends RuntimeCase {
     }
 
     @Test
-    public void testUpdate() throws Exception {
+    public void update() throws Exception {
         CharPkTestEntity object = context.newObject(CharPkTestEntity.class);
         object.setOtherCol("object-XYZ");
         object.setPkCol("PK1");

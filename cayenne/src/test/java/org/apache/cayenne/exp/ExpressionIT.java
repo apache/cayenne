@@ -35,18 +35,18 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ExpressionIT extends RuntimeCase {
@@ -61,7 +61,7 @@ public class ExpressionIT extends RuntimeCase {
     private UnitDbAdapter adapter;
 
     @Test
-	public void testMatch() {
+	public void match() {
 
 		assertTrue(context instanceof DataContext);
 
@@ -99,7 +99,7 @@ public class ExpressionIT extends RuntimeCase {
 	}
 
     @Test
-	public void testFirst() {
+	public void first() {
 		List<Painting> paintingList = new ArrayList<>();
 		Painting p1 = context.newObject(Painting.class);
 		p1.setPaintingTitle("x1");
@@ -124,7 +124,7 @@ public class ExpressionIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testLessThanNull() {
+	public void lessThanNull() {
 		Artist a1 = context.newObject(Artist.class);
 		a1.setArtistName("Picasso");
 		context.commitChanges();
@@ -140,11 +140,11 @@ public class ExpressionIT extends RuntimeCase {
             }
         }
 
-        assertTrue("Less than 'NULL' never matches anything", artists.isEmpty());
+        assertTrue(artists.isEmpty(), "Less than 'NULL' never matches anything");
 	}
 
 	@Test
-	public void testInNull() {
+	public void inNull() {
 		Artist a1 = context.newObject(Artist.class);
 		a1.setArtistName("Picasso");
 		context.commitChanges();
@@ -163,7 +163,7 @@ public class ExpressionIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testInEmpty() {
+	public void inEmpty() {
 		Artist a1 = context.newObject(Artist.class);
 		a1.setArtistName("Picasso");
 		context.commitChanges();
@@ -173,7 +173,7 @@ public class ExpressionIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testExplicitInEmpty() {
+	public void explicitInEmpty() {
 		Artist a1 = context.newObject(Artist.class);
 		a1.setArtistName("Picasso");
 		context.commitChanges();
@@ -184,7 +184,7 @@ public class ExpressionIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testExplicitNotInEmpty() {
+	public void explicitNotInEmpty() {
 		Artist a1 = context.newObject(Artist.class);
 		a1.setArtistName("Picasso");
 		context.commitChanges();
@@ -201,7 +201,7 @@ public class ExpressionIT extends RuntimeCase {
 	 * 	[SELECT RTRIM(t0.ARTIST_NAME), t0.DATE_OF_BIRTH, t0.ARTIST_ID FROM ARTIST t0 WHERE 'abc']
 	 */
 	@Test
-	public void testSelectWithScalarAsWhereCondition() {
+	public void selectWithScalarAsWhereCondition() {
 		if (adapter.supportScalarAsExpression()){
 			return;
 		}

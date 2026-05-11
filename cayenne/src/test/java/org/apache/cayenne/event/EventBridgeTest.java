@@ -21,17 +21,17 @@ package org.apache.cayenne.event;
 
 import org.apache.cayenne.access.event.SnapshotEvent;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  */
@@ -39,7 +39,7 @@ public class EventBridgeTest {
 
     private List<DefaultEventManager> managersToClean = new ArrayList<>();
 
-    @After
+    @AfterEach
     public void cleanEventManagers() {
         for(DefaultEventManager manager : managersToClean) {
             manager.shutdown();
@@ -48,7 +48,7 @@ public class EventBridgeTest {
     }
 
     @Test
-    public void testConstructor() throws Exception {
+    public void constructor() throws Exception {
         EventSubject local = EventSubject
                 .getSubject(EventBridgeTest.class, "testInstall");
         String external = "externalSubject";
@@ -61,7 +61,7 @@ public class EventBridgeTest {
     }
 
     @Test
-    public void testStartup() throws Exception {
+    public void startup() throws Exception {
         EventSubject local = EventSubject
                 .getSubject(EventBridgeTest.class, "testInstall");
         String external = "externalSubject";
@@ -86,7 +86,7 @@ public class EventBridgeTest {
     }
 
     @Test
-    public void testShutdown() throws Exception {
+    public void shutdown() throws Exception {
         EventSubject local = EventSubject
                 .getSubject(EventBridgeTest.class, "testInstall");
         String external = "externalSubject";
@@ -103,7 +103,7 @@ public class EventBridgeTest {
     }
 
     @Test
-    public void testSendExternalEvent() throws Exception {
+    public void sendExternalEvent() throws Exception {
 
         final EventSubject local = EventSubject.getSubject(
                 EventBridgeTest.class,

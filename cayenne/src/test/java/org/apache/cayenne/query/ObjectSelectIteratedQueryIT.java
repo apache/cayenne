@@ -30,16 +30,15 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
@@ -56,7 +55,7 @@ public class ObjectSelectIteratedQueryIT extends RuntimeCase {
     private TableHelper tArtist;
 
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         tPainting = new TableHelper(dbHelper, "PAINTING")
                 .setColumns("PAINTING_ID", "PAINTING_TITLE", "ESTIMATED_PRICE", "ARTIST_ID")
@@ -121,36 +120,41 @@ public class ObjectSelectIteratedQueryIT extends RuntimeCase {
         }
     }
 
-    @Test(expected = CayenneRuntimeException.class)
+    @Test
     public void queryPrefetchDisjointWithIterator() {
-        try (ResultIterator<Painting> iterator = ObjectSelect
-                .query(Painting.class)
-                .prefetch(Painting.TO_ARTIST.disjoint())
-                .iterator(context)) {
-            iterator.nextRow();
-        }
+        assertThrows(CayenneRuntimeException.class, () -> {
+            try (ResultIterator<Painting> iterator = ObjectSelect
+                    .query(Painting.class)
+                    .prefetch(Painting.TO_ARTIST.disjoint())
+                    .iterator(context)) {
+                iterator.nextRow();
+            }
+        });
     }
 
-
-    @Test(expected = CayenneRuntimeException.class)
+    @Test
     public void queryPrefetchDisjointWithBatchIterator() {
-        try (ResultBatchIterator<Painting> iterator = ObjectSelect
-                .query(Painting.class)
-                .prefetch(Painting.TO_ARTIST.disjoint())
-                .batchIterator(context, 3)) {
-            iterator.next();
-        }
+        assertThrows(CayenneRuntimeException.class, () -> {
+            try (ResultBatchIterator<Painting> iterator = ObjectSelect
+                    .query(Painting.class)
+                    .prefetch(Painting.TO_ARTIST.disjoint())
+                    .batchIterator(context, 3)) {
+                iterator.next();
+            }
+        });
     }
 
-    @Ignore
-    @Test(expected = CayenneRuntimeException.class)
+    @Disabled
+    @Test
     public void queryPaginationWithBatchIterator() {
-        try (ResultBatchIterator<Painting> iterator = ObjectSelect
-                .query(Painting.class)
-                .pageSize(2)
-                .batchIterator(context, 3)) {
-            iterator.next();
-        }
+        assertThrows(CayenneRuntimeException.class, () -> {
+            try (ResultBatchIterator<Painting> iterator = ObjectSelect
+                    .query(Painting.class)
+                    .pageSize(2)
+                    .batchIterator(context, 3)) {
+                iterator.next();
+            }
+        });
     }
 
     @Test

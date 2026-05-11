@@ -20,9 +20,9 @@ package org.apache.cayenne.access.dbsync;
 
 import org.apache.cayenne.access.DataNode;
 import org.slf4j.Logger;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
@@ -37,8 +37,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
 
 public class BaseSchemaUpdateStrategy_ConcurrencyTest {
@@ -48,19 +48,19 @@ public class BaseSchemaUpdateStrategy_ConcurrencyTest {
     private ExecutorService threadPool;
     private DataNode dataNode;
 
-    @Before
+    @BeforeEach
     public void before() {
         threadPool = Executors.newFixedThreadPool(2);
         dataNode = mock(DataNode.class);
     }
 
-    @After
+    @AfterEach
     public void after() {
         threadPool.shutdownNow();
     }
 
     @Test
-    public void testUpdateSchema_Concurrency() throws InterruptedException, ExecutionException, TimeoutException {
+    public void updateSchema_Concurrency() throws InterruptedException, ExecutionException, TimeoutException {
 
         final AtomicInteger counter = new AtomicInteger();
         final AtomicBoolean errors = new AtomicBoolean(false);

@@ -29,22 +29,22 @@ import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.MockQueryMetadata;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public class JDBCResultIteratorTest {
 
 	@Test
-	public void testNextDataRow() throws Exception {
+	public void nextDataRow() throws Exception {
 		Connection c = new MockConnection();
 		Statement s = new MockStatement(c);
 		MockResultSet rs = new MockResultSet("rs");
@@ -64,7 +64,7 @@ public class JDBCResultIteratorTest {
 	}
 
 	@Test
-	public void testClose() throws Exception {
+	public void close() throws Exception {
 		Connection c = new MockConnection();
 		MockStatement s = new MockStatement(c);
 		MockResultSet rs = new MockResultSet("rs");

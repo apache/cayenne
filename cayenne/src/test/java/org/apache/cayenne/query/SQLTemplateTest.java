@@ -18,11 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,12 +30,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.cayenne.util.Util;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SQLTemplateTest {
 
 	@Test
-	public void testSetParams() throws Exception {
+	public void setParams() throws Exception {
 		SQLTemplate query = new SQLTemplate();
 
 		assertTrue(query.getParams().isEmpty());
@@ -51,7 +51,7 @@ public class SQLTemplateTest {
 	}
 
 	@Test
-	public void testSetParamsArray() throws Exception {
+	public void setParamsArray() throws Exception {
 		SQLTemplate query = new SQLTemplate();
 
 		assertTrue(query.getPositionalParams().isEmpty());
@@ -64,7 +64,7 @@ public class SQLTemplateTest {
 	}
 
 	@Test
-	public void testSetParams_MixingStyles() throws Exception {
+	public void setParams_MixingStyles() throws Exception {
 
 		SQLTemplate query = new SQLTemplate();
 
@@ -87,14 +87,14 @@ public class SQLTemplateTest {
 	}
 
 	@Test
-	public void testGetDefaultTemplate() {
+	public void getDefaultTemplate() {
 		SQLTemplate query = new SQLTemplate();
 		query.setDefaultTemplate("AAA # BBB");
 		assertEquals("AAA # BBB", query.getDefaultTemplate());
 	}
 
 	@Test
-	public void testGetTemplate() {
+	public void getTemplate() {
 		SQLTemplate query = new SQLTemplate();
 
 		// no template for key, no default template... must be null
@@ -115,7 +115,7 @@ public class SQLTemplateTest {
 	}
 
 	@Test
-	public void testColumnNameCapitalization() {
+	public void columnNameCapitalization() {
 		SQLTemplate q1 = new SQLTemplate("E1", "SELECT");
 		assertSame(CapsStrategy.DEFAULT, q1.getColumnNamesCapitalization());
 		q1.setColumnNamesCapitalization(CapsStrategy.UPPER);
@@ -123,7 +123,7 @@ public class SQLTemplateTest {
 	}
 
 	@Test
-	public void testSerializability() throws Exception {
+	public void serializability() throws Exception {
 		SQLTemplate o = new SQLTemplate("Test", "DO SQL");
 		Object clone = Util.cloneViaSerialization(o);
 

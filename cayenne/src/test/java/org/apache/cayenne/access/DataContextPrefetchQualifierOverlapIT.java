@@ -30,9 +30,9 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextPrefetchQualifierOverlapIT extends RuntimeCase {
@@ -59,7 +59,7 @@ public class DataContextPrefetchQualifierOverlapIT extends RuntimeCase {
     }
 
     @Test
-    public void testToManyDisjointOverlappingQualifierWithInnerJoin() throws Exception {
+    public void toManyDisjointOverlappingQualifierWithInnerJoin() throws Exception {
         createTwoArtistsThreePaintingsDataSet();
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
@@ -74,7 +74,7 @@ public class DataContextPrefetchQualifierOverlapIT extends RuntimeCase {
     }
 
     @Test
-    public void testToManyJointOverlappingQualifierWithInnerJoin() throws Exception {
+    public void toManyJointOverlappingQualifierWithInnerJoin() throws Exception {
         createTwoArtistsThreePaintingsDataSet();
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
@@ -89,7 +89,7 @@ public class DataContextPrefetchQualifierOverlapIT extends RuntimeCase {
     }
 
     @Test
-    public void testToManyJointOverlappingQualifierWithOuterJoin() throws Exception {
+    public void toManyJointOverlappingQualifierWithOuterJoin() throws Exception {
         createTwoArtistsThreePaintingsDataSet();
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)

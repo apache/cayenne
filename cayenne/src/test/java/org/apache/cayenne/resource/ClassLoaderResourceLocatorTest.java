@@ -19,18 +19,18 @@
 package org.apache.cayenne.resource;
 
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ClassLoaderResourceLocatorTest {
 
     @Test
-    public void testFindResources() {
+    public void findResources() {
         ClassLoaderResourceLocator locator = new ClassLoaderResourceLocator(new DefaultClassLoaderManager());
 
         Collection<Resource> resources = locator

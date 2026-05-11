@@ -25,11 +25,11 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataNodeIT extends RuntimeCase {
@@ -38,7 +38,7 @@ public class DataNodeIT extends RuntimeCase {
     private AdhocObjectFactory objectFactory;
 
     @Test
-    public void testName() throws Exception {
+    public void name() throws Exception {
         String tstName = "tst_name";
         DataNode node = new DataNode();
         assertNull(node.getName());
@@ -47,7 +47,7 @@ public class DataNodeIT extends RuntimeCase {
     }
 
     @Test
-    public void testDataSourceFactory() throws Exception {
+    public void dataSourceFactory() throws Exception {
         String tstName = "tst_name";
         DataNode node = new DataNode();
         assertNull(node.getDataSourceFactory());
@@ -56,7 +56,7 @@ public class DataNodeIT extends RuntimeCase {
     }
 
     @Test
-    public void testNodeEntityResolver() {
+    public void nodeEntityResolver() {
         DataNode node = new DataNode();
         assertNull(node.getEntityResolver());
 
@@ -66,7 +66,7 @@ public class DataNodeIT extends RuntimeCase {
     }
 
     @Test
-    public void testAdapter() throws Exception {
+    public void adapter() throws Exception {
         DataNode node = new DataNode();
 
         assertNull(node.getAdapter());

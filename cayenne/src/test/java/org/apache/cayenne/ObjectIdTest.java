@@ -20,19 +20,19 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.util.Util;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ObjectIdTest {
 
     @Test
-    public void testConstructor() {
+    public void constructor() {
         ObjectId temp1 = ObjectId.of("e");
         assertEquals("e", temp1.getEntityName());
         assertTrue(temp1.isTemporary());
@@ -46,7 +46,7 @@ public class ObjectIdTest {
     }
 
     @Test
-    public void testSerializabilityTemp() throws Exception {
+    public void serializabilityTemp() throws Exception {
         ObjectId temp1 = ObjectId.of("e");
         ObjectId temp2 = Util.cloneViaSerialization(temp1);
 
@@ -56,7 +56,7 @@ public class ObjectIdTest {
     }
 
     @Test
-    public void testSerializabilityPerm() throws Exception {
+    public void serializabilityPerm() throws Exception {
         ObjectId perm1 = ObjectId.of("e", "a", "b");
 
         // make sure hashcode is resolved
@@ -74,14 +74,14 @@ public class ObjectIdTest {
     }
 
     @Test
-    public void testEqualsTmoKey() {
+    public void equalsTmoKey() {
         ObjectId oid1 = ObjectId.of("TE");
         assertEquals(oid1, oid1);
         assertEquals(oid1.hashCode(), oid1.hashCode());
     }
 
     @Test
-    public void testEqualsSingleValueKeyStr() {
+    public void equalsSingleValueKeyStr() {
         ObjectId oid1 = ObjectId.of("T", "a", "b");
         ObjectId oid2 = ObjectId.of("T", "a", "b");
         assertEquals(oid1, oid2);
@@ -89,7 +89,7 @@ public class ObjectIdTest {
     }
 
     @Test
-    public void testNotEqualsSingleValueKeyStr() {
+    public void notEqualsSingleValueKeyStr() {
         ObjectId oid1 = ObjectId.of("T", "a", "a");
         ObjectId oid2 = ObjectId.of("T", "a", "b");
         assertNotEquals(oid1, oid2);
@@ -97,7 +97,7 @@ public class ObjectIdTest {
     }
 
     @Test
-    public void testEqualsSingleValueKeyNumeric() {
+    public void equalsSingleValueKeyNumeric() {
         ObjectId oid1 = ObjectId.of("T", "a", 42);
         ObjectId oid2 = ObjectId.of("T", "a", BigDecimal.valueOf(42));
         assertEquals(oid1, oid2);
@@ -105,7 +105,7 @@ public class ObjectIdTest {
     }
 
     @Test
-    public void testNotEqualsSingleValueKeyNumeric() {
+    public void notEqualsSingleValueKeyNumeric() {
         ObjectId oid1 = ObjectId.of("T", "a", 41);
         ObjectId oid2 = ObjectId.of("T", "a", BigDecimal.valueOf(42));
         assertNotEquals(oid1, oid2);
@@ -113,7 +113,7 @@ public class ObjectIdTest {
     }
 
     @Test
-    public void testEqualsCompoundKeyNoValues() {
+    public void equalsCompoundKeyNoValues() {
         Map<String, Object> hm = new HashMap<>();
         ObjectId oid1 = ObjectId.of("T", hm);
         ObjectId oid2 = ObjectId.of("T", hm);
@@ -122,7 +122,7 @@ public class ObjectIdTest {
     }
 
     @Test
-    public void testEqualsSingleKeyFromMap() {
+    public void equalsSingleKeyFromMap() {
         String pknm = "xyzabc";
 
         Map<String, Object> hm1 = new HashMap<>();
@@ -141,7 +141,7 @@ public class ObjectIdTest {
      * This is a test case reproducing conditions for the bug "8458963".
      */
     @Test
-    public void testNotEqualsCompoundKey() {
+    public void notEqualsCompoundKey() {
 
         Map<String, Object> hm1 = new HashMap<>();
         hm1.put("key1", 1);
@@ -160,7 +160,7 @@ public class ObjectIdTest {
      * Multiple key objectId
      */
     @Test
-    public void testEqualsCompoundKey1() {
+    public void equalsCompoundKey1() {
 
         Map<String, Object> hm1 = new HashMap<>();
         hm1.put("key1", 1);
@@ -181,7 +181,7 @@ public class ObjectIdTest {
      * different order...
      */
     @Test
-    public void testEqualsCompoundKey2() {
+    public void equalsCompoundKey2() {
 
         // create maps with guaranteed iteration order
         Map<String, Object> hm1 = new LinkedHashMap<>();
@@ -203,7 +203,7 @@ public class ObjectIdTest {
      * Test different numeric types.
      */
     @Test
-    public void testEqualsCompoundKey3() {
+    public void equalsCompoundKey3() {
 
         // create maps with guaranteed iteration order
         Map<String, Object> hm1 = new LinkedHashMap<>();
@@ -222,7 +222,7 @@ public class ObjectIdTest {
     }
 
     @Test
-    public void testEqualsBinaryKey() {
+    public void equalsBinaryKey() {
 
         Map<String, Object> hm1 = new HashMap<>();
         hm1.put("key1", new byte[] { 3, 4, 10, -1 });
@@ -237,13 +237,13 @@ public class ObjectIdTest {
     }
 
     @Test
-    public void testEqualsNull() {
+    public void equalsNull() {
         ObjectId o = ObjectId.of("T", "ARTIST_ID", 42);
         assertNotNull(o);
     }
 
     @Test
-    public void testIdAsMapKey() {
+    public void idAsMapKey() {
         Map<ObjectId, Object> map = new HashMap<>();
         Object o1 = new Object();
 
@@ -263,7 +263,7 @@ public class ObjectIdTest {
     }
 
     @Test
-    public void testNotEqualTmpKey() {
+    public void notEqualTmpKey() {
 
         ObjectId oid1 = ObjectId.of("T1");
         ObjectId oid2 = ObjectId.of("T2");
@@ -271,7 +271,7 @@ public class ObjectIdTest {
     }
 
     @Test
-    public void testNotEqualSingleValueKey() {
+    public void notEqualSingleValueKey() {
 
         Map<String, Object> hm1 = new HashMap<>();
         hm1.put("pk1", "123");
@@ -288,7 +288,7 @@ public class ObjectIdTest {
      * Test different numeric types.
      */
     @Test
-    public void testEquals8() {
+    public void equals8() {
 
         // create maps with guaranteed iteration order
 
@@ -308,7 +308,7 @@ public class ObjectIdTest {
     }
 
     @Test
-    public void testToString() {
+    public void toStringMethod() {
         Map<String, Object> m1 = new HashMap<>();
         m1.put("a", "1");
         m1.put("b", "2");

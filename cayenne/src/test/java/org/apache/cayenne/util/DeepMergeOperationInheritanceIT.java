@@ -28,11 +28,9 @@ import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.PeopleProjectCase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DeepMergeOperationInheritanceIT extends PeopleProjectCase {
 
@@ -46,7 +44,7 @@ public class DeepMergeOperationInheritanceIT extends PeopleProjectCase {
     protected DataChannelInterceptor queryInterceptor;
 
     @Test
-    public void testDeepMergeExistingSubclass() {
+    public void deepMergeExistingSubclass() {
 
         final Department d1 = context.newObject(Department.class);
         d1.setName("D1");
@@ -78,7 +76,7 @@ public class DeepMergeOperationInheritanceIT extends PeopleProjectCase {
     }
 
     @Test
-    public void testDeepMergeNonExistentSubclass() {
+    public void deepMergeNonExistentSubclass() {
 
         final Department d1 = context.newObject(Department.class);
         d1.setName("D1");
@@ -113,9 +111,9 @@ public class DeepMergeOperationInheritanceIT extends PeopleProjectCase {
 
             for (Employee ex : d2.getEmployees()) {
                 if ("E2".equals(ex.getName())) {
-                    assertThat(ex, is(instanceOf(Manager.class)));
+                    assertInstanceOf(Manager.class, ex);
                 } else {
-                    assertThat(ex, is(not(instanceOf(Manager.class))));
+                    assertFalse(ex instanceof Manager);
                 }
             }
         });

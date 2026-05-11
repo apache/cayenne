@@ -43,20 +43,20 @@ import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.resource.URLResource;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.XMLReader;
 
 import java.net.URL;
 import java.util.ArrayList;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ManyToManyCandidateEntityTest {
 
     private DataMap map;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         Module testModule = binder -> {
             binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
@@ -83,21 +83,21 @@ public class ManyToManyCandidateEntityTest {
     }
 
     @Test
-    public void testMatchingForManyToManyEntity() {
+    public void matchingForManyToManyEntity() {
         ObjEntity manyToManyEntity = map.getObjEntity("Table1Table2");
 
         assertNotNull(ManyToManyCandidateEntity.build(manyToManyEntity));
     }
 
     @Test
-    public void testMatchingForNotManyToManyEntity() {
+    public void matchingForNotManyToManyEntity() {
         ObjEntity entity = map.getObjEntity("Table1");
 
         assertNull(ManyToManyCandidateEntity.build(entity));
     }
 
     @Test
-    public void testOptimisationForManyToManyEntity() {
+    public void optimisationForManyToManyEntity() {
         ObjEntity manyToManyEntity = map.getObjEntity("Table1Table2");
 
         ManyToManyCandidateEntity.build(manyToManyEntity)

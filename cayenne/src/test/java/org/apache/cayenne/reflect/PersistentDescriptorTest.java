@@ -21,17 +21,17 @@ package org.apache.cayenne.reflect;
 
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.unit.util.TstBean;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 
 public class PersistentDescriptorTest {
 
     @Test
-    public void testConstructor() {
+    public void constructor() {
         PersistentDescriptor d1 = new PersistentDescriptor();
         assertNull(d1.getSuperclassDescriptor());
 
@@ -42,7 +42,7 @@ public class PersistentDescriptorTest {
     }
 
     @Test
-    public void testCopyObjectProperties() {
+    public void copyObjectProperties() {
         PersistentDescriptor d1 = new PersistentDescriptor();
 
         ObjAttribute attribute = mock(ObjAttribute.class);

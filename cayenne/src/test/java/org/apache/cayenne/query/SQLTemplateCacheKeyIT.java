@@ -24,12 +24,12 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SQLTemplateCacheKeyIT extends RuntimeCase {
@@ -38,7 +38,7 @@ public class SQLTemplateCacheKeyIT extends RuntimeCase {
     private EntityResolver resolver;
 
     @Test
-    public void testNoCache() {
+    public void noCache() {
 
         SQLTemplate query = new SQLTemplate(Artist.class, "SELECT ME");
 
@@ -52,7 +52,7 @@ public class SQLTemplateCacheKeyIT extends RuntimeCase {
     }
 
     @Test
-    public void testLocalCache() {
+    public void localCache() {
 
         SQLTemplate query = new SQLTemplate(Artist.class, "SELECT ME");
 
@@ -64,7 +64,7 @@ public class SQLTemplateCacheKeyIT extends RuntimeCase {
     }
 
     @Test
-    public void testSharedCache() {
+    public void sharedCache() {
 
         SQLTemplate query = new SQLTemplate(Artist.class, "SELECT ME");
 
@@ -76,7 +76,7 @@ public class SQLTemplateCacheKeyIT extends RuntimeCase {
     }
 
     @Test
-    public void testNamedQuery() {
+    public void namedQuery() {
 
         SQLTemplate query = new SQLTemplate(Artist.class, "SELECT ME");
 
@@ -88,7 +88,7 @@ public class SQLTemplateCacheKeyIT extends RuntimeCase {
     }
 
     @Test
-    public void testCacheFetchLimitAndOffset() {
+    public void cacheFetchLimitAndOffset() {
         SQLTemplate q1 = new SQLTemplate(Artist.class, "SELECT ME");
         q1.setFetchOffset(5);
         q1.setFetchLimit(10);

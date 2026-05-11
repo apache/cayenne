@@ -29,13 +29,13 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  *
@@ -58,7 +58,7 @@ public class TransactionPropagationRollbackIT extends RuntimeCase {
 
     TransactionManager manager;
 
-    @Before
+    @BeforeEach
     public void initTransactionManager() {
         // no binding in test container, get it from runtime
         manager = runtime.getInjector().getInstance(TransactionManager.class);
@@ -68,7 +68,7 @@ public class TransactionPropagationRollbackIT extends RuntimeCase {
      * @see TransactionPropagation#REQUIRES_NEW
      */
     @Test
-    public void testPropagationRequiresNew() {
+    public void propagationRequiresNew() {
         TransactionDescriptor descriptor = TransactionDescriptor.builder()
                 .propagation(TransactionPropagation.REQUIRES_NEW)
                 .isolation(Connection.TRANSACTION_SERIALIZABLE)
@@ -87,7 +87,7 @@ public class TransactionPropagationRollbackIT extends RuntimeCase {
      * @see TransactionPropagation#NESTED
      */
     @Test
-    public void testPropagationNested() {
+    public void propagationNested() {
 
         TransactionDescriptor descriptor = TransactionDescriptor.builder()
                 .isolation(Connection.TRANSACTION_SERIALIZABLE)
@@ -107,7 +107,7 @@ public class TransactionPropagationRollbackIT extends RuntimeCase {
      * @see TransactionPropagation#MANDATORY
      */
     @Test
-    public void testPropagationMandatory() {
+    public void propagationMandatory() {
 
         TransactionDescriptor descriptor = TransactionDescriptor.builder()
                 .isolation(Connection.TRANSACTION_SERIALIZABLE)
@@ -129,18 +129,14 @@ public class TransactionPropagationRollbackIT extends RuntimeCase {
 
         manager.performInTransaction(() -> {
             // try to perform illegal operation in nested transaction
-            try {
-                manager.performInTransaction(() -> {
-                    artist.setArtistName("test3");
-                    context.commitChanges(); // this should pass
+            assertThrows(Exception.class, () -> manager.performInTransaction(() -> {
+                artist.setArtistName("test3");
+                context.commitChanges(); // this should pass
 
-                    artist.setArtistName(null);
-                    context.commitChanges(); // this should throw
-                    return null;
-                }, descriptor);
-                fail("Exception should be thrown");
-            } catch (Exception ignore) {
-            }
+                artist.setArtistName(null);
+                context.commitChanges(); // this should throw
+                return null;
+            }, descriptor));
 
             // perform some valid commit
             artist.setArtistName("test2");

@@ -18,16 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.reflect;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class BasePropertyTest {
 
     @Test
-    public void testGetName() {
+    public void getName() {
         ClassDescriptor owner = mock(ClassDescriptor.class);
         Accessor accessor = mock(Accessor.class);
         when(accessor.getName()).thenReturn("xyz");

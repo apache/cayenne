@@ -23,9 +23,9 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.1
@@ -33,7 +33,7 @@ import static org.junit.Assert.*;
 public class ObjRelationshipHandlerTest extends BaseHandlerTest {
 
     @Test
-    public void testLoad() throws Exception {
+    public void load() throws Exception {
 
         final DataMap map = new DataMap();
         ObjEntity entity = new ObjEntity("ArtGroup");

@@ -18,15 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.reverse.filters;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PatternFilterTest {
 
     @Test
-    public void testInclude() throws Exception {
+    public void include() throws Exception {
         PatternFilter filter = new PatternFilter()
                 .include("aaa")
                 .include("bbb");
@@ -45,7 +45,7 @@ public class PatternFilterTest {
     }
 
     @Test
-    public void testExclude() throws Exception {
+    public void exclude() throws Exception {
         PatternFilter filter = new PatternFilter()
                 .exclude("aaa")
                 .exclude("bbb");
@@ -58,7 +58,7 @@ public class PatternFilterTest {
     }
 
     @Test
-    public void testIncludeExclude() throws Exception {
+    public void includeExclude() throws Exception {
         PatternFilter filter = new PatternFilter()
                 .include("aa.*")
                 .exclude("aaa");
@@ -71,14 +71,14 @@ public class PatternFilterTest {
     }
 
     @Test
-    public void testIncludeAllFilter() {
+    public void includeAllFilter() {
         assertTrue(PatternFilter.INCLUDE_EVERYTHING.isIncluded("qwe"));
         assertTrue(PatternFilter.INCLUDE_EVERYTHING.isIncluded(""));
         assertTrue(PatternFilter.INCLUDE_EVERYTHING.isIncluded(null));
     }
 
     @Test
-    public void testIncludeNoneFilter() {
+    public void includeNoneFilter() {
         assertFalse(PatternFilter.INCLUDE_NOTHING.isIncluded("qwe"));
         assertFalse(PatternFilter.INCLUDE_NOTHING.isIncluded(""));
         assertFalse(PatternFilter.INCLUDE_NOTHING.isIncluded(null));

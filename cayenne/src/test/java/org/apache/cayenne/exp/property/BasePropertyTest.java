@@ -28,10 +28,10 @@ import org.apache.cayenne.exp.parser.ASTLike;
 import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.reflect.TstJavaBean;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.2
@@ -40,86 +40,86 @@ public class BasePropertyTest {
 
     private BaseProperty<Integer> property;
 
-    @Before
+    @BeforeEach
     public void createProperty() {
         property = new BaseProperty<>(CayennePath.of("path"), null, Integer.class);
     }
 
 
     @Test
-    public void testPathExpConstructor() {
+    public void pathExpConstructor() {
         assertEquals(new ASTObjPath("path"), property.getExpression());
     }
 
     @Test
-    public void testCustomExpConstructor() {
+    public void customExpConstructor() {
         property = new BaseProperty<>(CayennePath.of("path"), new ASTLike(), Integer.class);
         assertEquals(new ASTLike(), property.getExpression());
     }
 
     @Test
-    public void testEq() {
+    public void eq() {
         Expression exp = property.eq(1);
         assertEquals(ExpressionFactory.exp("path = 1"), exp);
     }
 
     @Test
-    public void testNe() {
+    public void ne() {
         Expression exp = property.ne(1);
         assertEquals(ExpressionFactory.exp("path != 1"), exp);
     }
 
     @Test
-    public void testIn() {
+    public void in() {
         Expression exp = property.in(1, 2, 3);
         assertEquals(ExpressionFactory.exp("path in (1, 2, 3)"), exp);
     }
 
     @Test
-    public void testInCollection() {
+    public void inCollection() {
         Expression exp = property.in(Arrays.asList(1,2,3));
         assertEquals(ExpressionFactory.exp("path in (1, 2, 3)"), exp);
     }
 
     @Test
-    public void testNin() {
+    public void nin() {
         Expression exp = property.nin(1, 2, 3);
         assertEquals(ExpressionFactory.exp("path not in (1, 2, 3)"), exp);
     }
 
     @Test
-    public void testNinCollection() {
+    public void ninCollection() {
         Expression exp = property.nin(Arrays.asList(1,2,3));
         assertEquals(ExpressionFactory.exp("path not in (1, 2, 3)"), exp);
     }
 
     @Test
-    public void testIsNull() {
+    public void isNull() {
         BaseProperty<Integer> property = new BaseProperty<>(CayennePath.of("path"), null, Integer.class);
         Expression exp = property.isNull();
         assertEquals(ExpressionFactory.exp("path = null"), exp);
     }
 
     @Test
-    public void testNotIsNull() {
+    public void notIsNull() {
         Expression exp = property.isNotNull();
         assertEquals(ExpressionFactory.exp("path != null"), exp);
     }
 
     @Test
-    public void testIsTrue() {
+    public void isTrue() {
         Expression exp = property.isTrue();
         assertEquals(ExpressionFactory.exp("path = true"), exp);
     }
 
     @Test
-    public void testIsFalse() {
+    public void isFalse() {
         Expression exp = property.isFalse();
         assertEquals(ExpressionFactory.exp("path = false"), exp);
     }
 
     @Test
-    public void testAlias() {
+    public void alias() {
         assertEquals("path", property.getName());
         assertNull(property.getAlias());
 
@@ -131,7 +131,7 @@ public class BasePropertyTest {
     }
 
     @Test
-    public void testGetFrom() {
+    public void getFrom() {
         TstJavaBean bean = new TstJavaBean();
         bean.setIntField(7);
         BaseProperty<Integer> INT_FIELD = new BaseProperty<>(CayennePath.of("intField"), null, Integer.class);
@@ -139,7 +139,7 @@ public class BasePropertyTest {
     }
 
     @Test
-    public void testGetFromNestedProperty() {
+    public void getFromNestedProperty() {
         TstJavaBean bean = new TstJavaBean();
         TstJavaBean nestedBean = new TstJavaBean();
         nestedBean.setIntField(7);
@@ -149,7 +149,7 @@ public class BasePropertyTest {
     }
 
     @Test
-    public void testGetFromNestedNull() {
+    public void getFromNestedNull() {
         TstJavaBean bean = new TstJavaBean();
         bean.setObjectField(null);
         BaseProperty<Integer> OBJECT_FIELD_INT_FIELD = new BaseProperty<>(CayennePath.of("objectField.intField"), null, Integer.class);
@@ -157,7 +157,7 @@ public class BasePropertyTest {
     }
 
     @Test
-    public void testGetFromAll() {
+    public void getFromAll() {
         TstJavaBean bean = new TstJavaBean();
         bean.setIntField(7);
 
@@ -171,7 +171,7 @@ public class BasePropertyTest {
     }
 
     @Test
-    public void testSetIn() {
+    public void setIn() {
         TstJavaBean bean = new TstJavaBean();
         BaseProperty<Integer> INT_FIELD = new BaseProperty<>(CayennePath.of("intField"), null, Integer.class);
         INT_FIELD.setIn(bean, 7);
@@ -179,7 +179,7 @@ public class BasePropertyTest {
     }
 
     @Test
-    public void testSetInNestedProperty() {
+    public void setInNestedProperty() {
         TstJavaBean bean = new TstJavaBean();
         bean.setObjectField(new TstJavaBean());
 
@@ -190,7 +190,7 @@ public class BasePropertyTest {
     }
 
     @Test
-    public void testSetInNestedNull() {
+    public void setInNestedNull() {
         TstJavaBean bean = new TstJavaBean();
         bean.setObjectField(null);
         BaseProperty<Integer> OBJECT_FIELD_INT_FIELD = new BaseProperty<>(CayennePath.of("objectField.intField"), null, Integer.class);
@@ -198,7 +198,7 @@ public class BasePropertyTest {
     }
 
     @Test
-    public void testSetInAll() {
+    public void setInAll() {
         TstJavaBean bean = new TstJavaBean();
         TstJavaBean bean2 = new TstJavaBean();
         List<TstJavaBean> beans = Arrays.asList(bean, bean2);
@@ -210,7 +210,7 @@ public class BasePropertyTest {
     }
 
     @Test
-    public void testEqualsWithName() {
+    public void equalsWithName() {
         BaseProperty<Integer> INT_FIELD = new BaseProperty<>(CayennePath.of("intField"), null, Integer.class);
         BaseProperty<Integer> INT_FIELD2 = new BaseProperty<>(CayennePath.of("intField"), null, Integer.class);
 
@@ -219,7 +219,7 @@ public class BasePropertyTest {
     }
 
     @Test
-    public void testHashCodeWithName() {
+    public void hashCodeWithName() {
         BaseProperty<Integer> INT_FIELD = new BaseProperty<>(CayennePath.of("intField"), null, Integer.class);
         BaseProperty<Integer> INT_FIELD2 = new BaseProperty<>(CayennePath.of("intField"), null, Integer.class);
         BaseProperty<Long> LONG_FIELD = new BaseProperty<>(CayennePath.of("longField"), null, Long.class);
@@ -229,7 +229,7 @@ public class BasePropertyTest {
     }
 
     @Test
-    public void testEqualsWithNameAndType() {
+    public void equalsWithNameAndType() {
         BaseProperty<Integer> INT_FIELD = new BaseProperty<>(CayennePath.of("intField"), null, Integer.class);
         BaseProperty<Integer> INT_FIELD2 = new BaseProperty<>(CayennePath.of("intField"), null, Integer.class);
 
@@ -238,7 +238,7 @@ public class BasePropertyTest {
     }
 
     @Test
-    public void testHashCodeWithNameAndType() {
+    public void hashCodeWithNameAndType() {
         BaseProperty<Integer> INT_FIELD = new BaseProperty<>(CayennePath.of("intField"), null, Integer.class);
         BaseProperty<Integer> INT_FIELD2 = new BaseProperty<>(CayennePath.of("intField"), null, Integer.class);
         BaseProperty<Long> LONG_FIELD = new BaseProperty<>(CayennePath.of("longField"), null, Long.class);
@@ -248,7 +248,7 @@ public class BasePropertyTest {
     }
 
     @Test
-    public void testEqualsWithExpAndType() {
+    public void equalsWithExpAndType() {
         BaseProperty<Integer> INT_FIELD = new BaseProperty<>(CayennePath.EMPTY_PATH, ExpressionFactory.exp("1"), Integer.class);
         BaseProperty<Integer> INT_FIELD2 = new BaseProperty<>(CayennePath.EMPTY_PATH, ExpressionFactory.exp("1"), Integer.class);
 
@@ -257,7 +257,7 @@ public class BasePropertyTest {
     }
 
     @Test
-    public void testHashCodeWithExpAndType() {
+    public void hashCodeWithExpAndType() {
         BaseProperty<Integer> INT_FIELD = new BaseProperty<>(CayennePath.EMPTY_PATH, ExpressionFactory.exp("1"), Integer.class);
         BaseProperty<Integer> INT_FIELD2 = new BaseProperty<>(CayennePath.EMPTY_PATH, ExpressionFactory.exp("1"), Integer.class);
         BaseProperty<Integer> INT_FIELD3 = new BaseProperty<>(CayennePath.EMPTY_PATH, ExpressionFactory.exp("2"), Integer.class);
@@ -267,7 +267,7 @@ public class BasePropertyTest {
     }
 
     @Test
-    public void testFunctionProperty() {
+    public void functionProperty() {
         BaseProperty<Integer> property = new BaseProperty<>(CayennePath.of("intField"), null, Integer.class);
         BaseProperty<Integer> arg = new BaseProperty<>(CayennePath.of("intField2"), null, Integer.class);
 
@@ -276,7 +276,7 @@ public class BasePropertyTest {
     }
 
     @Test
-    public void testFunctionScalar() {
+    public void functionScalar() {
         BaseProperty<Integer> property = new BaseProperty<>(CayennePath.of("intField"), null, Integer.class);
 
         BaseProperty<Integer> operator = property.function("%", Integer.class, 10);
@@ -284,7 +284,7 @@ public class BasePropertyTest {
     }
 
     @Test
-    public void testOperatorProperty() {
+    public void operatorProperty() {
         BaseProperty<Integer> property = new BaseProperty<>(CayennePath.of("intField"), null, Integer.class);
         BaseProperty<Integer> arg = new BaseProperty<>(CayennePath.of("intField2"), null, Integer.class);
 
@@ -293,7 +293,7 @@ public class BasePropertyTest {
     }
 
     @Test
-    public void testOperatorScalar() {
+    public void operatorScalar() {
         BaseProperty<Integer> property = new BaseProperty<>(CayennePath.of("intField"), null, Integer.class);
 
         BaseProperty<Integer> operator = property.operator("%", Integer.class, 10);

@@ -36,10 +36,9 @@ import org.apache.cayenne.dbsync.merge.token.model.CreateTableToModel;
 import org.apache.cayenne.dbsync.merge.token.model.DropColumnToModel;
 import org.apache.cayenne.dbsync.merge.token.model.DropRelationshipToModel;
 import org.apache.cayenne.dbsync.merge.token.model.DropTableToModel;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TokenSortTest {
 
@@ -52,7 +51,7 @@ public class TokenSortTest {
     }
 
     @Test
-    public void testSortStability() throws Exception {
+    public void sortStability() throws Exception {
         List<MergerToken> tokens = Arrays.<MergerToken>asList(
                 new AddRelationshipToModel(null, null),
                 new AddColumnToModel(null, null),
@@ -96,7 +95,7 @@ public class TokenSortTest {
     }
 
     @Test
-    public void testToModelTokensCompare() throws Exception {
+    public void toModelTokensCompare() throws Exception {
         List<MergerToken> tokens = Arrays.<MergerToken>asList(
                 new DropColumnToModel(null, null),
                 new DropRelationshipToModel(null, null),
@@ -122,7 +121,7 @@ public class TokenSortTest {
     }
 
     @Test
-    public void testToDbTokensCompare() throws Exception {
+    public void toDbTokensCompare() throws Exception {
         List<MergerToken> tokens = Arrays.<MergerToken>asList(
                 new DropColumnToDb(null, null),
                 new DropRelationshipToDb(null, null),

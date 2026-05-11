@@ -33,13 +33,13 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
@@ -59,7 +59,7 @@ public class QueryWithInheritancePrefetchIT extends RuntimeCase {
     @Inject
     private DataChannelInterceptor queryInterceptor;
 
-    @Before
+    @BeforeEach
     public void createTestData() throws Exception {
         TableHelper tRoot = new TableHelper(dbHelper, "iwe_root");
         tRoot.setColumns("id", "type", "name", "enum");

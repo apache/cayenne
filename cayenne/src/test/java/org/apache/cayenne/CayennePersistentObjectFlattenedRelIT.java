@@ -31,17 +31,16 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class CayennePersistentObjectFlattenedRelIT extends RuntimeCase {
@@ -64,13 +63,14 @@ public class CayennePersistentObjectFlattenedRelIT extends RuntimeCase {
 
     private TableHelper tArtistGroup;
     
+	@BeforeEach
 	@Override
 	public void cleanUpDB() throws Exception {
 		dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
 		super.cleanUpDB();
 	}
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -98,7 +98,7 @@ public class CayennePersistentObjectFlattenedRelIT extends RuntimeCase {
     }
 
     @Test
-    public void testReadFlattenedRelationship() throws Exception {
+    public void readFlattenedRelationship() throws Exception {
         create1Artist1ArtGroupDataSet();
 
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
@@ -108,7 +108,7 @@ public class CayennePersistentObjectFlattenedRelIT extends RuntimeCase {
     }
 
     @Test
-    public void testReadFlattenedRelationship2() throws Exception {
+    public void readFlattenedRelationship2() throws Exception {
 
         create1Artist1ArtGroup1ArtistGroupDataSet();
 
@@ -121,7 +121,7 @@ public class CayennePersistentObjectFlattenedRelIT extends RuntimeCase {
     }
 
     @Test
-    public void testAddToFlattenedRelationship() throws Exception {
+    public void addToFlattenedRelationship() throws Exception {
 
         create1Artist1ArtGroupDataSet();
 
@@ -156,7 +156,7 @@ public class CayennePersistentObjectFlattenedRelIT extends RuntimeCase {
 
     // Test case to show up a bug in committing more than once
     @Test
-    public void testDoubleCommitAddToFlattenedRelationship() throws Exception {
+    public void doubleCommitAddToFlattenedRelationship() throws Exception {
         create1Artist1ArtGroupDataSet();
 
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
@@ -174,20 +174,12 @@ public class CayennePersistentObjectFlattenedRelIT extends RuntimeCase {
         // Ensure that the commit doesn't fail
         a1.getObjectContext().commitChanges();
 
-        try {
-            // The bug caused the second commit to fail (the link record
-            // was inserted again)
-            a1.getObjectContext().commitChanges();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            fail("Should not have thrown an exception");
-        }
-
+        // The bug caused the second commit to fail (the link record was inserted again)
+        a1.getObjectContext().commitChanges();
     }
 
     @Test
-    public void testRemoveFromFlattenedRelationship() throws Exception {
+    public void removeFromFlattenedRelationship() throws Exception {
         create1Artist1ArtGroup1ArtistGroupDataSet();
 
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
@@ -210,7 +202,7 @@ public class CayennePersistentObjectFlattenedRelIT extends RuntimeCase {
     // link record is deleted at the same time (same transaction) as one of the record to
     // which it links.
     @Test
-    public void testRemoveFlattenedRelationshipAndRootRecord() throws Exception {
+    public void removeFlattenedRelationshipAndRootRecord() throws Exception {
         create1Artist1ArtGroup1ArtistGroupDataSet();
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
 
@@ -219,17 +211,11 @@ public class CayennePersistentObjectFlattenedRelIT extends RuntimeCase {
 
         context.deleteObjects(a1); // Cause the deletion of the artist
 
-        try {
-            context.commitChanges();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            fail("Should not have thrown the exception :" + e.getMessage());
-        }
+        context.commitChanges();
     }
 
     @Test
-    public void testAddRemoveFlattenedRelationship1() throws Exception {
+    public void addRemoveFlattenedRelationship1() throws Exception {
         create1Artist1ArtGroupDataSet();
 
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
@@ -245,7 +231,7 @@ public class CayennePersistentObjectFlattenedRelIT extends RuntimeCase {
     }
 
     @Test
-    public void testAddRemoveFlattenedRelationship2() throws Exception {
+    public void addRemoveFlattenedRelationship2() throws Exception {
         create1Artist2ArtGroupDataSet();
 
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);

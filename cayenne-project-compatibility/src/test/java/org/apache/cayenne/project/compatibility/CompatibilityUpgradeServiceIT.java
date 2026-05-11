@@ -26,10 +26,10 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.project.upgrade.UpgradeService;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.1
@@ -37,7 +37,7 @@ import static org.junit.Assert.*;
 public class CompatibilityUpgradeServiceIT {
 
     @Test
-    public void testUpgradeFullProjectDom() {
+    public void upgradeFullProjectDom() {
         Injector injector = getInjector();
 
         CompatibilityUpgradeService upgradeService = (CompatibilityUpgradeService)injector
@@ -64,7 +64,7 @@ public class CompatibilityUpgradeServiceIT {
     }
 
     @Test
-    public void testUpgradeStandAloneDataMapDom() {
+    public void upgradeStandAloneDataMapDom() {
         Injector injector = getInjector();
 
         CompatibilityUpgradeService upgradeService = (CompatibilityUpgradeService)injector

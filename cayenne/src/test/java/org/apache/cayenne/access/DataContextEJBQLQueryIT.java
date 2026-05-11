@@ -33,8 +33,8 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.sql.Types;
@@ -43,9 +43,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextEJBQLQueryIT extends RuntimeCase {
@@ -62,7 +62,8 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
     private TableHelper tArtist;
     private TableHelper tPainting;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -92,7 +93,7 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
      * CAY-899: Checks that aggregate results do not cause callbacks execution.
      */
     @Test
-    public void testSelectAggregatePostLoadCallback() throws Exception {
+    public void selectAggregatePostLoadCallback() throws Exception {
 
         createFourArtistsTwoPaintings();
 
@@ -124,7 +125,7 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectAggregate() throws Exception {
+    public void selectAggregate() throws Exception {
         createFourArtistsTwoPaintings();
 
         String ejbql = "select count(p), count(distinct p.estimatedPrice), max(p.estimatedPrice), sum(p.estimatedPrice) from Painting p";
@@ -141,7 +142,7 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectAggregateNull() throws Exception {
+    public void selectAggregateNull() throws Exception {
 
         if (!accessStackAdapter.supportNullRowForAggregateFunctions()) {
             return;
@@ -161,7 +162,7 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectEntityPathsScalarResult() throws Exception {
+    public void selectEntityPathsScalarResult() throws Exception {
         createFourArtistsTwoPaintings();
 
         String ejbql = "select p.paintingTitle"
@@ -176,7 +177,7 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectEntityPathsArrayResult() throws Exception {
+    public void selectEntityPathsArrayResult() throws Exception {
         createFourArtistsTwoPaintings();
 
         String ejbql = "select p.estimatedPrice, p.toArtist.artistName "
@@ -200,7 +201,7 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectDbPath() throws Exception {
+    public void selectDbPath() throws Exception {
         createFourArtistsTwoPaintings();
 
         String ejbql = "select db:p.ESTIMATED_PRICE "
@@ -215,7 +216,7 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectDbPath_Relationship() throws Exception {
+    public void selectDbPath_Relationship() throws Exception {
         createFourArtistsTwoPaintings();
 
         String ejbql = "select db:p.toArtist "
@@ -233,7 +234,7 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSimpleSelect() throws Exception {
+    public void simpleSelect() throws Exception {
         createFourArtistsTwoPaintings();
 
         String ejbql = "select a FROM Artist a";
@@ -246,7 +247,7 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testFetchLimit() throws Exception {
+    public void fetchLimit() throws Exception {
         createFourArtistsTwoPaintings();
 
         String ejbql = "select a FROM Artist a";
@@ -258,7 +259,7 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectFromWhereEqual() throws Exception {
+    public void selectFromWhereEqual() throws Exception {
         createFourArtistsTwoPaintings();
 
         String ejbql = "select a from Artist a where a.artistName = 'AA2'";
@@ -270,7 +271,7 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectFromWhereEqualReverseOrder() throws Exception {
+    public void selectFromWhereEqualReverseOrder() throws Exception {
         if (!accessStackAdapter.supportsReverseComparison()) {
             return;
         }
@@ -286,7 +287,7 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectFromWhereNot() throws Exception {
+    public void selectFromWhereNot() throws Exception {
         createFourArtistsTwoPaintings();
 
         String ejbql = "select a from Artist a where not a.artistName = 'AA2'";
@@ -302,7 +303,7 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectFromWhereNotEquals() throws Exception {
+    public void selectFromWhereNotEquals() throws Exception {
         createFourArtistsTwoPaintings();
 
         String ejbql = "select a from Artist a where a.artistName <> 'AA2'";
@@ -318,7 +319,7 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectFromWhereOrEqual() throws Exception {
+    public void selectFromWhereOrEqual() throws Exception {
         createFourArtistsTwoPaintings();
 
         String ejbql = "select a from Artist a where a.artistName = 'AA2' or a.artistName = 'BB1'";
@@ -338,7 +339,7 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectFromWhereAndEqual() throws Exception {
+    public void selectFromWhereAndEqual() throws Exception {
         createFourArtistsTwoPaintings();
 
         String ejbql = "select P from Painting P where P.paintingTitle = 'P1' "
@@ -354,7 +355,7 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectFromWhereBetween() throws Exception {
+    public void selectFromWhereBetween() throws Exception {
         createFourArtistsTwoPaintings();
 
         String ejbql = "select P from Painting P WHERE p.estimatedPrice BETWEEN 2000 AND 3500";
@@ -369,7 +370,7 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectFromWhereNotBetween() throws Exception {
+    public void selectFromWhereNotBetween() throws Exception {
         createFourArtistsTwoPaintings();
 
         String ejbql = "select P from Painting P WHERE p.estimatedPrice NOT BETWEEN 2000 AND 3500";
@@ -384,7 +385,7 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectFromWhereGreater() throws Exception {
+    public void selectFromWhereGreater() throws Exception {
         createFourArtistsTwoPaintings();
 
         String ejbql = "select P from Painting P WHERE p.estimatedPrice > 3000";
@@ -399,7 +400,7 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectFromWhereGreaterOrEqual() throws Exception {
+    public void selectFromWhereGreaterOrEqual() throws Exception {
         createFourArtistsTwoPaintings();
 
         String ejbql = "select P from Painting P WHERE p.estimatedPrice >= 3000";
@@ -410,7 +411,7 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectFromWhereLess() throws Exception {
+    public void selectFromWhereLess() throws Exception {
         createFourArtistsTwoPaintings();
 
         String ejbql = "select P from Painting P WHERE p.estimatedPrice < 5000";
@@ -425,7 +426,7 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectFromWhereLessOrEqual() throws Exception {
+    public void selectFromWhereLessOrEqual() throws Exception {
         createFourArtistsTwoPaintings();
 
         String ejbql = "select P from Painting P WHERE p.estimatedPrice <= 5000";
@@ -436,7 +437,7 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectFromWhereDecimalNumber() throws Exception {
+    public void selectFromWhereDecimalNumber() throws Exception {
         createFourArtistsTwoPaintings();
 
         String ejbql = "select P from Painting P WHERE p.estimatedPrice <= 5000.00";
@@ -447,7 +448,7 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectFromWhereDecimalNumberPositional() throws Exception {
+    public void selectFromWhereDecimalNumberPositional() throws Exception {
         createFourArtistsTwoPaintings();
 
         String ejbql = "select P from Painting P WHERE p.estimatedPrice <= ?1";
@@ -459,7 +460,7 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectFromWhereDecimalNumberNamed() throws Exception {
+    public void selectFromWhereDecimalNumberNamed() throws Exception {
         createFourArtistsTwoPaintings();
 
         String ejbql = "select P from Painting P WHERE p.estimatedPrice <= :param";
@@ -471,7 +472,7 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectFromWhereMatchOnObject() throws Exception {
+    public void selectFromWhereMatchOnObject() throws Exception {
         createFourArtistsTwoPaintings();
 
         Artist a = Cayenne.objectForPK(context, Artist.class, 33002);
@@ -488,7 +489,7 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectFromWhereMatchRelationshipAndScalar() throws Exception {
+    public void selectFromWhereMatchRelationshipAndScalar() throws Exception {
         createFourArtistsTwoPaintings();
 
         String ejbql = "select P from Painting P WHERE p.toArtist = 33002";

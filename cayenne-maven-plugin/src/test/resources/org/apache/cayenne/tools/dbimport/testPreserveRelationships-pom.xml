@@ -41,7 +41,7 @@
                         <!-- it doesn't matter true or false, but initial question was about this flag -->
                         <skipRelationshipsLoading>true</skipRelationshipsLoading>
                     </dbimport>
-					<project implementation="org.apache.cayenne.stubs.CayenneProjectStub"/>
+
 
 				</configuration>
 			</plugin>

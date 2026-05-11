@@ -31,9 +31,9 @@ import org.apache.cayenne.testdo.testmap.annotations.Tag2;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.INHERITANCE_SINGLE_TABLE1_PROJECT)
 public class LifecycleCallbackRegistry_InheritanceIT extends RuntimeCase {
@@ -42,7 +42,7 @@ public class LifecycleCallbackRegistry_InheritanceIT extends RuntimeCase {
     private ObjectContext context;
 
     @Test
-    public void testAddListener_PostAdd_EntityInheritance() {
+    public void addListener_PostAdd_EntityInheritance() {
         LifecycleCallbackRegistry registry = new LifecycleCallbackRegistry(context
                 .getEntityResolver());
 

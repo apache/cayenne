@@ -28,11 +28,11 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.2
@@ -45,7 +45,7 @@ public class ObjPathProcessorIT extends RuntimeCase {
 
     private ObjPathProcessor pathProcessor;
 
-    @Before
+    @BeforeEach
     public void prepareTranslationContext() {
         TranslatorContext translatorContext = new TranslatorContext(
                 new FluentSelectWrapper(ObjectSelect.query(Object.class)),
@@ -58,7 +58,7 @@ public class ObjPathProcessorIT extends RuntimeCase {
     }
 
     @Test
-    public void testSimpleAttributePathTranslation() {
+    public void simpleAttributePathTranslation() {
         PathTranslationResult result = pathProcessor.process(CayennePath.of("name"));
         assertEquals(1, result.getDbAttributes().size());
         assertEquals(1, result.getAttributePaths().size());
@@ -68,7 +68,7 @@ public class ObjPathProcessorIT extends RuntimeCase {
     }
 
     @Test
-    public void testInheritedRelationshipPathTranslation() {
+    public void inheritedRelationshipPathTranslation() {
         PathTranslationResult result = pathProcessor.process(CayennePath.of("ivRoot"));
         assertEquals(2, result.getDbAttributes().size());
         assertEquals(2, result.getAttributePaths().size());
@@ -81,7 +81,7 @@ public class ObjPathProcessorIT extends RuntimeCase {
     }
 
     @Test
-    public void testFlattenedAttributePathTranslation() {
+    public void flattenedAttributePathTranslation() {
         PathTranslationResult result = pathProcessor.process(CayennePath.of("ivRoot.discriminator"));
         assertEquals(1, result.getDbAttributes().size());
         assertEquals(1, result.getAttributePaths().size());

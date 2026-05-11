@@ -30,13 +30,13 @@ import org.apache.cayenne.testdo.inheritance_people.Manager;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.runtime.PeopleProjectCase;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.sql.Types;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DataContextObjectIdQuery_PolymorphicIT extends PeopleProjectCase {
 
@@ -51,14 +51,14 @@ public class DataContextObjectIdQuery_PolymorphicIT extends PeopleProjectCase {
 
 	private TableHelper tPerson;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		tPerson = new TableHelper(dbHelper, "PERSON").setColumns("PERSON_ID", "NAME", "PERSON_TYPE")
 				.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR);
 	}
 
 	@Test
-	public void testPolymorphicSharedCache() throws SQLException {
+	public void polymorphicSharedCache() throws SQLException {
 
 		tPerson.insert(1, "P1", "EM");
 
@@ -80,7 +80,7 @@ public class DataContextObjectIdQuery_PolymorphicIT extends PeopleProjectCase {
 	}
 
 	@Test
-	public void testPolymorphicSharedCache_AfterCayenneInsert() throws SQLException {
+	public void polymorphicSharedCache_AfterCayenneInsert() throws SQLException {
 
 
 		// see CAY-2101... we are trying to get a snapshot from a new object in the shared cache, and then read this
@@ -110,7 +110,7 @@ public class DataContextObjectIdQuery_PolymorphicIT extends PeopleProjectCase {
 	}
 
 	@Test
-	public void testPolymorphicLocalCache() throws SQLException {
+	public void polymorphicLocalCache() throws SQLException {
 
 		tPerson.insert(1, "P1", "EM");
 

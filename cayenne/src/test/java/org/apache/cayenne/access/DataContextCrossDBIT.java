@@ -27,7 +27,7 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @UseCayenneRuntime(CayenneProjects.MULTINODE_PROJECT)
 public class DataContextCrossDBIT extends RuntimeCase {
@@ -39,7 +39,7 @@ public class DataContextCrossDBIT extends RuntimeCase {
     private UnitDbAdapter dbAdapter;
 
     @Test
-    public void testMultiDBUpdate() {
+    public void multiDBUpdate() {
 
         if(!dbAdapter.supportsPKGeneratorConcurrency()) {
             return;

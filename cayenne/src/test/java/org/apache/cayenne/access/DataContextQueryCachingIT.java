@@ -33,17 +33,17 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextQueryCachingIT extends RuntimeCase {
@@ -64,7 +64,8 @@ public class DataContextQueryCachingIT extends RuntimeCase {
         return this.domain.getDataNodes().iterator().next();
     }
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -82,7 +83,8 @@ public class DataContextQueryCachingIT extends RuntimeCase {
         context.setQueryCache(new MapQueryCache(50));
     }
 
-    @After
+    
+    @AfterEach
     public void tearDown() throws Exception {
         domain.setQueryCache(oldCache);
     }
@@ -101,7 +103,7 @@ public class DataContextQueryCachingIT extends RuntimeCase {
     }
 
     @Test
-    public void testLocalCacheDataRowsRefresh() throws Exception {
+    public void localCacheDataRowsRefresh() throws Exception {
         ObjectSelect<DataRow> select = ObjectSelect.dataRowQuery(Artist.class).localCache();
 
         MockDataNode engine = MockDataNode.interceptNode(domain, getNode());
@@ -138,7 +140,7 @@ public class DataContextQueryCachingIT extends RuntimeCase {
     }
 
     @Test
-    public void testSharedCacheDataRowsRefresh() throws Exception {
+    public void sharedCacheDataRowsRefresh() throws Exception {
 
         ObjectSelect<DataRow> select = ObjectSelect.dataRowQuery(Artist.class).sharedCache();
 
@@ -178,7 +180,7 @@ public class DataContextQueryCachingIT extends RuntimeCase {
     }
 
     @Test
-    public void testLocalCachePersistentObjectsRefresh() throws Exception {
+    public void localCachePersistentObjectsRefresh() throws Exception {
 
         ObjectSelect<Artist> select = ObjectSelect.query(Artist.class).localCache();
 
@@ -217,7 +219,7 @@ public class DataContextQueryCachingIT extends RuntimeCase {
     }
 
     @Test
-    public void testLocalCacheRefreshObjectsRefresh() throws Exception {
+    public void localCacheRefreshObjectsRefresh() throws Exception {
         createInsertDataSet();
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)

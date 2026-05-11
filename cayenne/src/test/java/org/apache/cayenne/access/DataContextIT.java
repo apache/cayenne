@@ -48,8 +48,8 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -59,7 +59,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -86,7 +86,8 @@ public class DataContextIT extends RuntimeCase {
 	protected TableHelper tGallery;
 	protected TableHelper tPainting;
 
-	@Before
+	
+	@BeforeEach
 	public void setUp() throws Exception {
 		tArtist = new TableHelper(dbHelper, "ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -149,7 +150,7 @@ public class DataContextIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testCurrentSnapshot1() throws Exception {
+	public void currentSnapshot1() throws Exception {
 		createSingleArtistDataSet();
 
 		Artist artist = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("artist1")).selectFirst(context);
@@ -161,7 +162,7 @@ public class DataContextIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testCurrentSnapshot2() throws Exception {
+	public void currentSnapshot2() throws Exception {
 		createSingleArtistDataSet();
 
 		// test null values
@@ -181,7 +182,7 @@ public class DataContextIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testCurrentSnapshot3() throws Exception {
+	public void currentSnapshot3() throws Exception {
 		createSingleArtistDataSet();
 
 		// test null values
@@ -202,7 +203,7 @@ public class DataContextIT extends RuntimeCase {
 	 * Testing snapshot with to-one fault. This was a bug CAY-96.
 	 */
 	@Test
-	public void testCurrentSnapshotWithToOneFault() throws Exception {
+	public void currentSnapshotWithToOneFault() throws Exception {
 
 		createGalleriesAndExhibitsDataSet();
 
@@ -231,7 +232,7 @@ public class DataContextIT extends RuntimeCase {
 	 * Cayenne should trim it.
 	 */
 	@Test
-	public void testCharFetch() throws Exception {
+	public void charFetch() throws Exception {
 		createSingleArtistDataSet();
 
 		Artist artist = ObjectSelect.query(Artist.class).selectFirst(context);
@@ -244,7 +245,7 @@ public class DataContextIT extends RuntimeCase {
 	 * to the client. Cayenne should trim it.
 	 */
 	@Test
-	public void testCharInQualifier() throws Exception {
+	public void charInQualifier() throws Exception {
 		createArtistsDataSet();
 
 		List<Artist> artists = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("artist1")).select(context);
@@ -256,7 +257,7 @@ public class DataContextIT extends RuntimeCase {
 	 * entities used in qualifier.
 	 */
 	@Test
-	public void testMultiObjRelFetch() throws Exception {
+	public void multiObjRelFetch() throws Exception {
 		createArtistsAndPaintingsDataSet();
 
 		List<Painting> results = ObjectSelect.query(Painting.class)
@@ -272,7 +273,7 @@ public class DataContextIT extends RuntimeCase {
 	 * entities used in qualifier.
 	 */
 	@Test
-	public void testMultiDbRelFetch() throws Exception {
+	public void multiDbRelFetch() throws Exception {
 		createArtistsAndPaintingsDataSet();
 
 		List<Painting> results = ObjectSelect.query(Painting.class)
@@ -284,7 +285,7 @@ public class DataContextIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testSelectDate() throws Exception {
+	public void selectDate() throws Exception {
 		createGalleriesAndExhibitsDataSet();
 
 		List<Exhibit> objects = ObjectSelect.query(Exhibit.class).select(context);
@@ -295,7 +296,7 @@ public class DataContextIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testCaseInsensitiveOrdering() throws Exception {
+	public void caseInsensitiveOrdering() throws Exception {
 		if (!accessStackAdapter.supportsCaseInsensitiveOrder()) {
 			return;
 		}
@@ -324,29 +325,29 @@ public class DataContextIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testSelect_DataRows() throws Exception {
+	public void select_DataRows() throws Exception {
 		createArtistsAndPaintingsDataSet();
 
 		List<DataRow> objects = ObjectSelect.dataRowQuery(Artist.class, null).select(context);
 
 		assertNotNull(objects);
 		assertEquals(7, objects.size());
-		assertTrue("DataRow expected, got " + objects.get(0).getClass(), objects.get(0) instanceof DataRow);
+		assertTrue(objects.get(0) instanceof DataRow, "DataRow expected, got " + objects.get(0).getClass());
 	}
 
 	@Test
-	public void testPerformSelectQuery1() throws Exception {
+	public void performSelectQuery1() throws Exception {
 		createArtistsAndPaintingsDataSet();
 
 		List<Artist> objects = ObjectSelect.query(Artist.class).select(context);
 
 		assertNotNull(objects);
 		assertEquals(7, objects.size());
-		assertTrue("Artist expected, got " + objects.get(0).getClass(), objects.get(0) instanceof Artist);
+		assertTrue(objects.get(0) instanceof Artist, "Artist expected, got " + objects.get(0).getClass());
 	}
 
 	@Test
-	public void testPerformSelectQuery2() throws Exception {
+	public void performSelectQuery2() throws Exception {
 		createArtistsAndPaintingsDataSet();
 
 		// do a query with complex qualifier
@@ -358,11 +359,11 @@ public class DataContextIT extends RuntimeCase {
 
 		assertNotNull(objects);
 		assertEquals(3, objects.size());
-		assertTrue("Artist expected, got " + objects.get(0).getClass(), objects.get(0) instanceof Artist);
+		assertTrue(objects.get(0) instanceof Artist, "Artist expected, got " + objects.get(0).getClass());
 	}
 
 	@Test
-	public void testPerformQuery_Routing() {
+	public void performQuery_Routing() {
 		Query query = mock(Query.class);
 		QueryMetadata md = mock(QueryMetadata.class);
 		when(query.getMetaData(any(EntityResolver.class))).thenReturn(md);
@@ -371,7 +372,7 @@ public class DataContextIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPerformNonSelectingQuery() throws Exception {
+	public void performNonSelectingQuery() throws Exception {
 
 		createSingleArtistDataSet();
 
@@ -388,7 +389,7 @@ public class DataContextIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPerformNonSelectingQueryCounts1() throws Exception {
+	public void performNonSelectingQueryCounts1() throws Exception {
 		createArtistsDataSet();
 
 		SQLTemplate query = new SQLTemplate(Painting.class,
@@ -411,7 +412,7 @@ public class DataContextIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPerformNonSelectingQueryCounts2() throws Exception {
+	public void performNonSelectingQueryCounts2() throws Exception {
 
 		createArtistsDataSet();
 
@@ -446,7 +447,7 @@ public class DataContextIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPerformPaginatedQuery() throws Exception {
+	public void performPaginatedQuery() throws Exception {
 		createArtistsDataSet();
 
 		List<Artist> objects = ObjectSelect.query(Artist.class).pageSize(5).select(context);
@@ -459,7 +460,7 @@ public class DataContextIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPerformPaginatedQuery1() throws Exception {
+	public void performPaginatedQuery1() throws Exception {
 		createArtistsDataSet();
 
 		EJBQLQuery query = new EJBQLQuery("select a FROM Artist a");
@@ -474,7 +475,7 @@ public class DataContextIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPerformPaginatedQueryBigPage() throws Exception {
+	public void performPaginatedQueryBigPage() throws Exception {
 		createArtistsDataSet();
 
 		final List<?> objects = ObjectSelect.query(Artist.class).pageSize(5).select(context);
@@ -485,7 +486,7 @@ public class DataContextIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPerformDataRowQuery() throws Exception {
+	public void performDataRowQuery() throws Exception {
 
 		createArtistsDataSet();
 
@@ -493,60 +494,42 @@ public class DataContextIT extends RuntimeCase {
 
 		assertNotNull(objects);
 		assertEquals(7, objects.size());
-		assertTrue("Map expected, got " + objects.get(0).getClass(), objects.get(0) instanceof Map<?, ?>);
+		assertTrue(objects.get(0) instanceof Map<?, ?>, "Map expected, got " + objects.get(0).getClass());
 	}
 
 	@Test
-	public void testCommitChangesRO1() throws Exception {
+	public void commitChangesRO1() throws Exception {
 
 		ROArtist a1 = (ROArtist) context.newObject("ROArtist");
 		a1.writePropertyDirectly("artistName", "abc");
 		a1.setPersistenceState(PersistenceState.MODIFIED);
 
-		try {
-			context.commitChanges();
-			fail("Inserting a 'read-only' object must fail.");
-		} catch (Exception ex) {
-			// exception is expected,
-			// must blow on saving new "read-only" object.
-		}
+		assertThrows(Exception.class, context::commitChanges);
 	}
 
 	@Test
-	public void testCommitChangesRO2() throws Exception {
+	public void commitChangesRO2() throws Exception {
 		createArtistsDataSet();
 
 		ROArtist a1 = ObjectSelect.query(ROArtist.class, Artist.ARTIST_NAME.eq("artist1")).selectOne(context);
 		a1.writeProperty(ROArtist.ARTIST_NAME.getName(), "abc");
 
-		try {
-			context.commitChanges();
-			fail("Updating a 'read-only' object must fail.");
-		} catch (Exception ex) {
-			// exception is expected,
-			// must blow on saving new "read-only" object.
-		}
+		assertThrows(Exception.class, context::commitChanges);
 	}
 
 	@Test
-	public void testCommitChangesRO3() throws Exception {
+	public void commitChangesRO3() throws Exception {
 
 		createArtistsDataSet();
 
 		ROArtist a1 = ObjectSelect.query(ROArtist.class, Artist.ARTIST_NAME.eq("artist1")).selectOne(context);
 		context.deleteObjects(a1);
 
-		try {
-			context.commitChanges();
-			fail("Deleting a 'read-only' object must fail.");
-		} catch (Exception ex) {
-			// exception is expected,
-			// must blow on saving new "read-only" object.
-		}
+		assertThrows(Exception.class, context::commitChanges);
 	}
 
 	@Test
-	public void testCommitChangesRO4() throws Exception {
+	public void commitChangesRO4() throws Exception {
 		createArtistsDataSet();
 
 		ROArtist a1 = ObjectSelect.query(ROArtist.class, Artist.ARTIST_NAME.eq("artist1")).selectOne(context);
@@ -556,12 +539,7 @@ public class DataContextIT extends RuntimeCase {
 		a1.addToManyTarget("paintingArray", painting, true);
 
 		assertEquals(PersistenceState.MODIFIED, a1.getPersistenceState());
-		try {
-			context.commitChanges();
-		} catch (Exception ex) {
-			fail("Updating 'read-only' object's to-many must succeed, instead an exception was thrown: " + ex);
-		}
-
+		context.commitChanges();
 		assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
 	}
 
@@ -570,7 +548,7 @@ public class DataContextIT extends RuntimeCase {
 	 * the property is simply set to the same value (an unreal modification)
 	 */
 	@Test
-	public void testHasChangesPhantom() {
+	public void hasChangesPhantom() {
 
 		String artistName = "ArtistName";
 		Artist artist = (Artist) context.newObject("Artist");
@@ -594,7 +572,7 @@ public class DataContextIT extends RuntimeCase {
 	 * the property is simply set to the same value (an unreal modification)
 	 */
 	@Test
-	public void testHasChangesRealModify() {
+	public void hasChangesRealModify() {
 		Artist artist = (Artist) context.newObject("Artist");
 		artist.setArtistName("ArtistName");
 		context.commitChanges();
@@ -604,7 +582,7 @@ public class DataContextIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testInvalidateObjects_Vararg() throws Exception {
+	public void invalidateObjects_Vararg() throws Exception {
 
 		DataRow row = new DataRow(10);
 		row.put("ARTIST_ID", 1);
@@ -627,7 +605,7 @@ public class DataContextIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testInvalidateObjects() throws Exception {
+	public void invalidateObjects() throws Exception {
 
 		DataRow row = new DataRow(10);
 		row.put("ARTIST_ID", 1);
@@ -650,7 +628,7 @@ public class DataContextIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testBeforeHollowDeleteShouldChangeStateToCommited() throws Exception {
+	public void beforeHollowDeleteShouldChangeStateToCommited() throws Exception {
 		createSingleArtistDataSet();
 
 		Artist hollow = Cayenne.objectForPK(context, Artist.class, 33001);
@@ -666,7 +644,7 @@ public class DataContextIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testCommitUnchangedInsert() throws Exception {
+	public void commitUnchangedInsert() throws Exception {
 
 		// see CAY-1444 - reproducible on DB's that support auto incremented PK
 

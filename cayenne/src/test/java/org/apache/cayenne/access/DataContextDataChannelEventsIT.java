@@ -33,10 +33,10 @@ import org.apache.cayenne.unit.di.runtime.ExtraModules;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.util.EventUtil;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests that DataContext sends DataChannel events.
@@ -55,7 +55,7 @@ public class DataContextDataChannelEventsIT extends RuntimeCase {
     private CayenneRuntime runtime;
 
     @Test
-    public void testCommitEvent() throws Exception {
+    public void commitEvent() throws Exception {
         Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
         context.commitChanges();
@@ -79,7 +79,7 @@ public class DataContextDataChannelEventsIT extends RuntimeCase {
     }
 
     @Test
-    public void testRollbackEvent() throws Exception {
+    public void rollbackEvent() throws Exception {
         Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
         context.commitChanges();
@@ -102,7 +102,7 @@ public class DataContextDataChannelEventsIT extends RuntimeCase {
     }
 
     @Test
-    public void testChangeEventOnChildChange() throws Exception {
+    public void changeEventOnChildChange() throws Exception {
         Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
         context.commitChanges();
@@ -129,7 +129,7 @@ public class DataContextDataChannelEventsIT extends RuntimeCase {
     }
 
     @Test
-    public void testChangeEventOnPeerChange() throws Exception {
+    public void changeEventOnPeerChange() throws Exception {
         Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
         context.commitChanges();
@@ -154,7 +154,7 @@ public class DataContextDataChannelEventsIT extends RuntimeCase {
     }
 
     @Test
-    public void testChangeEventOnPeerChangeSecondNestingLevel() throws Exception {
+    public void changeEventOnPeerChangeSecondNestingLevel() throws Exception {
         ObjectContext childPeer1 = runtime.newContext(context);
 
         Artist a = childPeer1.newObject(Artist.class);

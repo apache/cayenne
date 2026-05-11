@@ -22,7 +22,6 @@ package org.apache.cayenne.dbsync.merge.token;
 import java.sql.Types;
 import java.util.List;
 
-import junit.framework.AssertionFailedError;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.translator.ParameterBinding;
@@ -37,11 +36,11 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ValueForNullIT extends MergeCase {
 
@@ -115,7 +114,7 @@ public class ValueForNullIT extends MergeCase {
                     case Types.VARCHAR:
                         return new ParameterBinding(DEFAULT_VALUE_STRING, type, -1);
                     default:
-                        throw new AssertionFailedError("should not get here");
+                        throw new AssertionError("should not get here");
                 }
             }
 

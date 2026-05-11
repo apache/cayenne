@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.ashwood;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,8 +31,8 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class AshwoodEntitySorterIT extends RuntimeCase {
@@ -50,7 +50,7 @@ public class AshwoodEntitySorterIT extends RuntimeCase {
 	private DbEntity painting;
 	private DbEntity paintingInfo;
 
-	@Before
+	@BeforeEach
 	public void before() {
 
 		this.resolver = context.getEntityResolver();
@@ -66,7 +66,7 @@ public class AshwoodEntitySorterIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testSortDbEntities() {
+	public void sortDbEntities() {
 
 		List<DbEntity> entities = Arrays.asList(artist, artistExhibit, exhibit, gallery, painting, paintingInfo);
 		Collections.shuffle(entities);

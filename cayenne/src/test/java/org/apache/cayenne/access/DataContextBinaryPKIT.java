@@ -28,10 +28,10 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @UseCayenneRuntime(CayenneProjects.BINARY_PK_PROJECT)
 public class DataContextBinaryPKIT extends RuntimeCase {
@@ -46,7 +46,7 @@ public class DataContextBinaryPKIT extends RuntimeCase {
     private UnitDbAdapter accessStackAdapter;
 
     @Test
-    public void testInsertBinaryPK() throws Exception {
+    public void insertBinaryPK() throws Exception {
         if (accessStackAdapter.supportsBinaryPK()) {
 
             BinaryPKTest1 master = (BinaryPKTest1) context.newObject("BinaryPKTest1");
@@ -62,7 +62,7 @@ public class DataContextBinaryPKIT extends RuntimeCase {
     }
 
     @Test
-    public void testFetchRelationshipBinaryPK() throws Exception {
+    public void fetchRelationshipBinaryPK() throws Exception {
         if (accessStackAdapter.supportsBinaryPK()) {
 
             BinaryPKTest1 master = (BinaryPKTest1) context.newObject("BinaryPKTest1");

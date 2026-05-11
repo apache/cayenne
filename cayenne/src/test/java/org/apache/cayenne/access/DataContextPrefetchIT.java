@@ -52,10 +52,10 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextPrefetchIT extends RuntimeCase {
@@ -78,7 +78,8 @@ public class DataContextPrefetchIT extends RuntimeCase {
 	protected TableHelper tArtistGroup;
 	protected TableHelper tArtGroup;
 
-	@Before
+	
+	@BeforeEach
 	public void setUp() throws Exception {
 		tArtist = new TableHelper(dbHelper, "ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -151,7 +152,7 @@ public class DataContextPrefetchIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPrefetchToMany_ViaPath() throws Exception {
+	public void prefetchToMany_ViaPath() throws Exception {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
@@ -171,13 +172,13 @@ public class DataContextPrefetchIT extends RuntimeCase {
 				assertEquals(1, toMany.size());
 
 				Painting p = (Painting) toMany.get(0);
-				assertEquals("Invalid prefetched painting:" + p, "p_" + a.getArtistName(), p.getPaintingTitle());
+				assertEquals("p_" + a.getArtistName(), p.getPaintingTitle(), "Invalid prefetched painting:" + p);
 			}
 		});
 	}
 
 	@Test
-	public void testPrefetchToMany_WithQualfier() throws Exception {
+	public void prefetchToMany_WithQualfier() throws Exception {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
 		Map<String, Object> params = new HashMap<>();
@@ -215,7 +216,7 @@ public class DataContextPrefetchIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPrefetchToManyNoQualifier() throws Exception {
+	public void prefetchToManyNoQualifier() throws Exception {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
@@ -235,13 +236,13 @@ public class DataContextPrefetchIT extends RuntimeCase {
 				assertEquals(1, toMany.size());
 
 				Painting p = (Painting) toMany.get(0);
-				assertEquals("Invalid prefetched painting:" + p, "p_" + a.getArtistName(), p.getPaintingTitle());
+				assertEquals("p_" + a.getArtistName(), p.getPaintingTitle(), "Invalid prefetched painting:" + p);
 			}
 		});
 	}
 
 	@Test
-	public void testPrefetchByPathToManyNoQualifier() throws Exception {
+	public void prefetchByPathToManyNoQualifier() throws Exception {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
 		List<Artist> artists = ObjectSelect.query(Artist.class)
@@ -260,7 +261,7 @@ public class DataContextPrefetchIT extends RuntimeCase {
 				assertEquals(1, toMany.size());
 
 				Painting p = (Painting) toMany.get(0);
-				assertEquals("Invalid prefetched painting:" + p, "p_" + a.getArtistName(), p.getPaintingTitle());
+				assertEquals("p_" + a.getArtistName(), p.getPaintingTitle(), "Invalid prefetched painting:" + p);
 			}
 		});
 	}
@@ -270,7 +271,7 @@ public class DataContextPrefetchIT extends RuntimeCase {
 	 * a compound PK only partially involved in relationship.
 	 */
 	@Test
-	public void testPrefetchToMany_OnJoinTableDisjoinedPrefetch() throws Exception {
+	public void prefetchToMany_OnJoinTableDisjoinedPrefetch() throws Exception {
 
 		createTwoArtistsWithExhibitsDataSet();
 
@@ -308,7 +309,7 @@ public class DataContextPrefetchIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPrefetchToMany_OnJoinTableJoinedPrefetch() throws Exception {
+	public void prefetchToMany_OnJoinTableJoinedPrefetch() throws Exception {
 		createTwoArtistsWithExhibitsDataSet();
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
@@ -350,7 +351,7 @@ public class DataContextPrefetchIT extends RuntimeCase {
 	 * relationship
 	 */
 	@Test
-	public void testPrefetch_ToManyNoReverse() throws Exception {
+	public void prefetch_ToManyNoReverse() throws Exception {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
 		ObjEntity paintingEntity = context.getEntityResolver().getObjEntity(Painting.class);
@@ -376,7 +377,7 @@ public class DataContextPrefetchIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPrefetch_ToManyNoReverseWithQualifier() throws Exception {
+	public void prefetch_ToManyNoReverseWithQualifier() throws Exception {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
 		ObjEntity paintingEntity = context.getEntityResolver().getObjEntity(Painting.class);
@@ -404,7 +405,7 @@ public class DataContextPrefetchIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPrefetch_ToOne() throws Exception {
+	public void prefetch_ToOne() throws Exception {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
 		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
@@ -418,8 +419,8 @@ public class DataContextPrefetchIT extends RuntimeCase {
 
 			Object toOnePrefetch = p1.readNestedProperty("toArtist");
 			assertNotNull(toOnePrefetch);
-			assertTrue("Expected Artist, got: " + toOnePrefetch.getClass().getName(),
-					toOnePrefetch instanceof Artist);
+			assertTrue(toOnePrefetch instanceof Artist,
+					"Expected Artist, got: " + toOnePrefetch.getClass().getName());
 
 			Artist a1 = (Artist) toOnePrefetch;
 			assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
@@ -427,7 +428,7 @@ public class DataContextPrefetchIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPrefetch_ToOne_DbPath() throws Exception {
+	public void prefetch_ToOne_DbPath() throws Exception {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
 		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
@@ -440,7 +441,7 @@ public class DataContextPrefetchIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPrefetch_ToOne_ObjPath() throws Exception {
+	public void prefetch_ToOne_ObjPath() throws Exception {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
 		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
@@ -452,7 +453,7 @@ public class DataContextPrefetchIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPrefetch_ReflexiveRelationship() {
+	public void prefetch_ReflexiveRelationship() {
 		ArtGroup parent = (ArtGroup) context.newObject("ArtGroup");
 		parent.setName("parent");
 		ArtGroup child = (ArtGroup) context.newObject("ArtGroup");
@@ -479,7 +480,7 @@ public class DataContextPrefetchIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPrefetch_ToOneWithQualifierOverlappingPrefetchPath() throws Exception {
+	public void prefetch_ToOneWithQualifierOverlappingPrefetchPath() throws Exception {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
 		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
@@ -499,7 +500,7 @@ public class DataContextPrefetchIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPrefetch_ToOneWith_OuterJoinFlattenedQualifier() throws Exception {
+	public void prefetch_ToOneWith_OuterJoinFlattenedQualifier() throws Exception {
 
 		tArtGroup.insert(1, "AG");
 		tArtist.insert(11, "artist2");
@@ -532,7 +533,7 @@ public class DataContextPrefetchIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPrefetch9() throws Exception {
+	public void prefetch9() throws Exception {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
 		Artist artist1 = ObjectSelect
@@ -564,7 +565,7 @@ public class DataContextPrefetchIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPrefetch_OneToOneWithQualifier() throws Exception {
+	public void prefetch_OneToOneWithQualifier() throws Exception {
 		createArtistWithTwoPaintingsAndTwoInfosDataSet();
 
 		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
@@ -596,7 +597,7 @@ public class DataContextPrefetchIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPrefetchToMany_DateInQualifier() throws Exception {
+	public void prefetchToMany_DateInQualifier() throws Exception {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
@@ -609,7 +610,7 @@ public class DataContextPrefetchIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPrefetchingToOneNull() throws Exception {
+	public void prefetchingToOneNull() throws Exception {
 
 		tPainting.insert(6, "p_Xty", null, 1000, null);
 
@@ -627,7 +628,7 @@ public class DataContextPrefetchIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPrefetchToOneSharedCache() throws Exception {
+	public void prefetchToOneSharedCache() throws Exception {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
 		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
@@ -648,8 +649,8 @@ public class DataContextPrefetchIT extends RuntimeCase {
 
 			Object toOnePrefetch = p1.readNestedProperty("toArtist");
 			assertNotNull(toOnePrefetch);
-			assertTrue("Expected Artist, got: " + toOnePrefetch.getClass().getName(),
-					toOnePrefetch instanceof Artist);
+			assertTrue(toOnePrefetch instanceof Artist,
+					"Expected Artist, got: " + toOnePrefetch.getClass().getName());
 
 			Artist a1 = (Artist) toOnePrefetch;
 			assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
@@ -660,7 +661,7 @@ public class DataContextPrefetchIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPrefetchToOneLocalCache() throws Exception {
+	public void prefetchToOneLocalCache() throws Exception {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
 		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
@@ -681,8 +682,8 @@ public class DataContextPrefetchIT extends RuntimeCase {
 
 			Object toOnePrefetch = p1.readNestedProperty("toArtist");
 			assertNotNull(toOnePrefetch);
-			assertTrue("Expected Artist, got: " + toOnePrefetch.getClass().getName(),
-					toOnePrefetch instanceof Artist);
+			assertTrue(toOnePrefetch instanceof Artist,
+					"Expected Artist, got: " + toOnePrefetch.getClass().getName());
 
 			Artist a1 = (Artist) toOnePrefetch;
 			assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
@@ -693,7 +694,7 @@ public class DataContextPrefetchIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPrefetchToOneWithBackRelationship() throws Exception {
+	public void prefetchToOneWithBackRelationship() throws Exception {
 		createArtistWithTwoPaintingsAndTwoInfosDataSet();
 
 		ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
@@ -713,7 +714,7 @@ public class DataContextPrefetchIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPrefetchPaintingOverToOneAndToMany() throws Exception {
+	public void prefetchPaintingOverToOneAndToMany() throws Exception {
 		createArtistWithTwoPaintingsAndTwoInfosDataSet();
 
 		ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
@@ -734,7 +735,7 @@ public class DataContextPrefetchIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPrefetchToOneWithBackRelationship_Joint() throws Exception {
+	public void prefetchToOneWithBackRelationship_Joint() throws Exception {
 		createArtistWithTwoPaintingsAndTwoInfosDataSet();
 
 		ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
@@ -754,7 +755,7 @@ public class DataContextPrefetchIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPrefetchJointAndDisjointByIdTogether() throws Exception {
+	public void prefetchJointAndDisjointByIdTogether() throws Exception {
 		createArtistWithTwoPaintingsAndTwoInfosDataSet();
 
 		ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
@@ -779,7 +780,7 @@ public class DataContextPrefetchIT extends RuntimeCase {
 	 * This test and next one is the result of CAY-2349 fix
 	 */
 	@Test
-	public void testPrefetchWithLocalCache() throws Exception {
+	public void prefetchWithLocalCache() throws Exception {
 		createArtistWithPaintingAndGallery();
 
 		List<Painting> paintings = ObjectSelect.query(Painting.class)
@@ -803,7 +804,7 @@ public class DataContextPrefetchIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPrefetchWithSharedCache() throws Exception {
+	public void prefetchWithSharedCache() throws Exception {
 		createArtistWithPaintingAndGallery();
 
 		ObjectSelect<Painting> s1 = ObjectSelect.query(Painting.class)

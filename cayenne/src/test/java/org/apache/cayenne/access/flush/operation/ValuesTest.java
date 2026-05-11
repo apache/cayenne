@@ -26,9 +26,9 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
 public class ValuesTest {
 
     @Test
-    public void testEmptyValues() {
+    public void emptyValues() {
         ObjectId id = ObjectId.of("test", "id", 123);
         Persistent persistent = mockObject(id);
         DbRowOp row = mockRow(persistent);
@@ -52,7 +52,7 @@ public class ValuesTest {
     }
 
     @Test
-    public void testValuesWithId() {
+    public void valuesWithId() {
         ObjectId id = ObjectId.of("test", "id", 123);
         Persistent persistent = mockObject(id);
         DbRowOp row = mockRow(persistent);
@@ -66,7 +66,7 @@ public class ValuesTest {
     }
 
     @Test
-    public void testValuesWithUpdatedAttributes() {
+    public void valuesWithUpdatedAttributes() {
         ObjectId id = ObjectId.of("test", "id", 123);
         Persistent persistent = mockObject(id);
         DbRowOp row = mockRow(persistent);

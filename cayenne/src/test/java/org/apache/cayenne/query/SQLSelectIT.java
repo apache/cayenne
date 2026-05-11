@@ -38,13 +38,11 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SQLSelectIT extends RuntimeCase {
@@ -61,7 +59,7 @@ public class SQLSelectIT extends RuntimeCase {
 
 	private TableHelper tPaintingInfo;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		tPainting = new TableHelper(dbHelper, "PAINTING")
 				.setColumns("PAINTING_ID", "PAINTING_TITLE", "ESTIMATED_PRICE")
@@ -87,7 +85,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_DataRows_DataMapNameRoot() throws Exception {
+	public void dataRows_DataMapNameRoot() throws Exception {
 		createPaintingsDataSet();
 
 		SQLSelect<DataRow> q1 = SQLSelect.dataRowQuery("testmap", "SELECT * FROM PAINTING");
@@ -99,7 +97,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_DataRows_DefaultRoot() throws Exception {
+	public void dataRows_DefaultRoot() throws Exception {
 		createPaintingsDataSet();
 
 		SQLSelect<DataRow> q1 = SQLSelect.dataRowQuery("SELECT * FROM PAINTING");
@@ -111,7 +109,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_DataRows_ClassRoot() throws Exception {
+	public void dataRows_ClassRoot() throws Exception {
 		createPaintingsDataSet();
 
 		SQLSelect<Painting> q1 = SQLSelect.query(Painting.class, "SELECT * FROM PAINTING").columnNameCaps(
@@ -123,7 +121,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_DataRowWithTypes() throws Exception {
+	public void dataRowWithTypes() throws Exception {
 		createArtistDataSet();
 
 		List<DataRow> result = SQLSelect.dataRowQuery("SELECT * FROM ARTIST_CT", Integer.class, String.class, LocalDateTime.class)
@@ -131,11 +129,11 @@ public class SQLSelectIT extends RuntimeCase {
 				.select(context);
 		assertEquals(2, result.size());
 		assertTrue(result.get(0) instanceof DataRow);
-		assertThat(result.get(0).get("DATE_OF_BIRTH"), instanceOf(LocalDateTime.class));
+		assertInstanceOf(LocalDateTime.class, result.get(0).get("DATE_OF_BIRTH"));
 	}
 
 	@Test
-	public void test_DataRowWithTypesMapped() throws Exception {
+	public void dataRowWithTypesMapped() throws Exception {
 		createArtistDataSet();
 
 		List<Object> result = SQLSelect.dataRowQuery("SELECT * FROM ARTIST_CT", Integer.class, String.class, LocalDateTime.class)
@@ -147,7 +145,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_DataRowWithDirectives() throws Exception {
+	public void dataRowWithDirectives() throws Exception {
 		createArtistDataSet();
 
 		List<DataRow> result = SQLSelect.dataRowQuery("SELECT #result('ARTIST_ID' 'java.lang.Double'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST_CT")
@@ -157,16 +155,17 @@ public class SQLSelectIT extends RuntimeCase {
 		assertTrue(result.get(0).get("ARTIST_ID") instanceof Double);
 	}
 
-	@Test(expected = CayenneRuntimeException.class)
-	public void test_DataRowWithTypesException() throws Exception {
+	@Test
+	public void dataRowWithTypesException() throws Exception {
 		createArtistDataSet();
 
-		SQLSelect.dataRowQuery("SELECT * FROM ARTIST_CT", Integer.class, String.class)
-				.select(context);
+		assertThrows(CayenneRuntimeException.class, () ->
+				SQLSelect.dataRowQuery("SELECT * FROM ARTIST_CT", Integer.class, String.class)
+						.select(context));
 	}
 
 	@Test
-	public void testObjectArrayWithDefaultTypesReturnAndDirectives() throws Exception {
+	public void objectArrayWithDefaultTypesReturnAndDirectives() throws Exception {
 		createArtistDataSet();
 
 		List<Object[]> result = SQLSelect.columnQuery("SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST_CT")
@@ -180,7 +179,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testObjectArrayWithDefaultTypesReturnAndDirectivesMappedToPojo() throws Exception {
+	public void objectArrayWithDefaultTypesReturnAndDirectivesMappedToPojo() throws Exception {
 		createArtistDataSet();
 
 		List<ArtistDataWrapper> result = SQLSelect
@@ -193,16 +192,17 @@ public class SQLSelectIT extends RuntimeCase {
 		assertNotNull(result.get(0).name);
 	}
 
-	@Test(expected = CayenneRuntimeException.class)
-	public void testObjectArrayReturnAndDirectives() throws Exception {
+	@Test
+	public void objectArrayReturnAndDirectives() throws Exception {
 		createArtistDataSet();
 
-		SQLSelect.columnQuery("SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST_CT",
-				Integer.class, String.class).select(context);
+		assertThrows(CayenneRuntimeException.class, () ->
+				SQLSelect.columnQuery("SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST_CT",
+						Integer.class, String.class).select(context));
 	}
 
 	@Test
-	public void testObjectArrayWithOneObjectDefaultTypesReturnAndDirectives() throws Exception {
+	public void objectArrayWithOneObjectDefaultTypesReturnAndDirectives() throws Exception {
 		createArtistDataSet();
 
 		List<Object[]> result = SQLSelect.columnQuery("SELECT #result('ARTIST_ID' 'java.lang.Long') FROM ARTIST_CT")
@@ -215,7 +215,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_ObjectArrayQueryWithDefaultTypes() throws Exception {
+	public void objectArrayQueryWithDefaultTypes() throws Exception {
 		createPaintingsDataSet();
 
 		List<Object[]> result = SQLSelect.columnQuery("SELECT PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE FROM PAINTING")
@@ -226,7 +226,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_ObjectQueryWithDefaultType() throws Exception {
+	public void objectQueryWithDefaultType() throws Exception {
 		createPaintingsDataSet();
 
 		List<Object[]> result = SQLSelect.columnQuery("SELECT PAINTING_ID FROM PAINTING")
@@ -236,16 +236,18 @@ public class SQLSelectIT extends RuntimeCase {
 		assertTrue(result.get(0)[0] instanceof Integer);
 	}
 
-	@Test(expected = CayenneRuntimeException.class)
-	public void test_ObjectArrayQueryException() throws Exception {
+	@Test
+	public void objectArrayQueryException() throws Exception {
 		createPaintingsDataSet();
 
-		SQLSelect<Object[]> query = SQLSelect.columnQuery("SELECT PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE FROM PAINTING", Integer.class, String.class);
-		context.performQuery(query);
+		assertThrows(CayenneRuntimeException.class, () -> {
+			SQLSelect<Object[]> query = SQLSelect.columnQuery("SELECT PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE FROM PAINTING", Integer.class, String.class);
+			context.performQuery(query);
+		});
 	}
 
 	@Test
-	public void test_SingleObjectQuery() throws Exception {
+	public void singleObjectQuery() throws Exception {
 		createPaintingsDataSet();
 
 		List<Integer> result = SQLSelect.scalarQuery("SELECT PAINTING_ID FROM PAINTING", Integer.class)
@@ -255,7 +257,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testObjectArrayWithCustomType() throws SQLException {
+	public void objectArrayWithCustomType() throws SQLException {
 		createArtistDataSet();
 
 		List<Object[]> results = SQLSelect.columnQuery("SELECT * FROM ARTIST_CT",
@@ -268,7 +270,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testObjectArrayWithCustomTypeMappedToPojo() throws SQLException {
+	public void objectArrayWithCustomTypeMappedToPojo() throws SQLException {
 		createArtistDataSet();
 
 		List<ArtistDataWrapper> result = SQLSelect.columnQuery("SELECT * FROM ARTIST_CT",
@@ -283,7 +285,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_DataRows_ClassRoot_Parameters() throws Exception {
+	public void dataRows_ClassRoot_Parameters() throws Exception {
 		createPaintingsDataSet();
 
 		SQLSelect<Painting> q1 = SQLSelect.query(Painting.class,
@@ -296,7 +298,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_DataRows_ClassRoot_Bind() throws Exception {
+	public void dataRows_ClassRoot_Bind() throws Exception {
 		createPaintingsDataSet();
 
 		SQLSelect<Painting> q1 = SQLSelect.query(Painting.class,
@@ -309,7 +311,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_DataRows_ColumnNameCaps() {
+	public void dataRows_ColumnNameCaps() {
 		SQLSelect<DataRow> q1 = SQLSelect.dataRowQuery("SELECT * FROM PAINTING WHERE PAINTING_TITLE = 'painting2'");
 		q1.upperColumnNames();
 
@@ -322,7 +324,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_DataRows_FetchLimit() throws Exception {
+	public void dataRows_FetchLimit() throws Exception {
 		createPaintingsDataSet();
 
 		SQLSelect<DataRow> q1 = SQLSelect.dataRowQuery("SELECT * FROM PAINTING");
@@ -332,7 +334,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_DataRows_FetchOffset() throws Exception {
+	public void dataRows_FetchOffset() throws Exception {
 		createPaintingsDataSet();
 
 		SQLSelect<DataRow> q1 = SQLSelect.dataRowQuery("SELECT * FROM PAINTING");
@@ -342,7 +344,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_Append() throws Exception {
+	public void append() throws Exception {
 		createPaintingsDataSet();
 
 		SQLSelect<Painting> q1 = SQLSelect.query(Painting.class, "SELECT * FROM PAINTING")
@@ -354,7 +356,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_Select() throws Exception {
+	public void select() throws Exception {
 		createPaintingsDataSet();
 
 		List<Painting> result = SQLSelect
@@ -367,7 +369,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_SelectOne() throws Exception {
+	public void selectOne() throws Exception {
 		createPaintingsDataSet();
 
 		Painting a = SQLSelect.query(Painting.class, "SELECT * FROM PAINTING WHERE PAINTING_TITLE = #bind($a)")
@@ -377,7 +379,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_SelectFirst() throws Exception {
+	public void selectFirst() throws Exception {
 		createPaintingsDataSet();
 
 		Painting p = SQLSelect.query(Painting.class, "SELECT * FROM PAINTING ORDER BY PAINTING_TITLE").columnNameCaps(CapsStrategy.UPPER).selectFirst(
@@ -388,7 +390,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_SelectFirstByContext() throws Exception {
+	public void selectFirstByContext() throws Exception {
 		createPaintingsDataSet();
 
 		SQLSelect<Painting> q = SQLSelect.query(Painting.class, "SELECT * FROM PAINTING ORDER BY PAINTING_TITLE").columnNameCaps(CapsStrategy.UPPER);
@@ -399,7 +401,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_Iterate() throws Exception {
+	public void iterate() throws Exception {
 		createPaintingsDataSet();
 
 		final int[] count = new int[1];
@@ -413,7 +415,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_Iterator() throws Exception {
+	public void iterator() throws Exception {
 		createPaintingsDataSet();
 
 		try (ResultIterator<Painting> it = SQLSelect.query(Painting.class, "SELECT * FROM PAINTING")
@@ -429,7 +431,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_BatchIterator() throws Exception {
+	public void batchIterator() throws Exception {
 		createPaintingsDataSet();
 
 		try (ResultBatchIterator<Painting> it = SQLSelect.query(Painting.class, "SELECT * FROM PAINTING")
@@ -446,7 +448,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_SelectLong() throws Exception {
+	public void selectLong() throws Exception {
 		createPaintingsDataSet();
 
 		long id = SQLSelect
@@ -458,7 +460,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_SelectLongArray() throws Exception {
+	public void selectLongArray() throws Exception {
 		createPaintingsDataSet();
 
 		List<Integer> ids = SQLSelect.scalarQuery("SELECT PAINTING_ID FROM PAINTING ORDER BY PAINTING_ID",
@@ -469,7 +471,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_SelectCount() throws Exception {
+	public void selectCount() throws Exception {
 		createPaintingsDataSet();
 
 		int c = SQLSelect.scalarQuery("SELECT COUNT(*) FROM PAINTING", Integer.class).selectOne(context);
@@ -478,7 +480,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_ParamsArray_Single() throws Exception {
+	public void paramsArray_Single() throws Exception {
 		createPaintingsDataSet();
 
 		Integer id = SQLSelect
@@ -490,7 +492,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void test_ParamsArray_Multiple() throws Exception {
+	public void paramsArray_Multiple() throws Exception {
 		createPaintingsDataSet();
 
 		List<Integer> ids = SQLSelect
@@ -504,9 +506,9 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	@Ignore("This is supported by Velocity only")
+	@Disabled("This is supported by Velocity only")
 	// TODO: move this test to new cayenne-velocity module
-	public void test_ParamsArray_Multiple_OptionalChunks() throws Exception {
+	public void paramsArray_Multiple_OptionalChunks() throws Exception {
 		tPainting.insert(1, "painting1", 1.0);
 		tPainting.insert(2, "painting2", null);
 
@@ -523,9 +525,9 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	@Ignore("This is supported by Velocity only")
+	@Disabled("This is supported by Velocity only")
 	// TODO: move this test to new cayenne-velocity module
-	public void test_Params_Multiple_OptionalChunks() throws Exception {
+	public void params_Multiple_OptionalChunks() throws Exception {
 		tPainting.insert(1, "painting1", 1.0);
 		tPainting.insert(2, "painting2", null);
 
@@ -546,7 +548,7 @@ public class SQLSelectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testByteArray() throws Exception {
+	public void byteArray() throws Exception {
 		byte[] data = {1, 2, 3};
 		tPainting.insert(1, "test", 0);
 		tPaintingInfo.insert(1, data);

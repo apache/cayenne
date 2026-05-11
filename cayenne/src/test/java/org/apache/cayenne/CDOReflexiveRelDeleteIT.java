@@ -24,8 +24,8 @@ import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class CDOReflexiveRelDeleteIT extends RuntimeCase {
@@ -38,7 +38,7 @@ public class CDOReflexiveRelDeleteIT extends RuntimeCase {
     private ArtGroup childGroup2;
     private ArtGroup childGroup3;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
         parentGroup = context.newObject(ArtGroup.class);
@@ -64,7 +64,7 @@ public class CDOReflexiveRelDeleteIT extends RuntimeCase {
     // encompass the various orders that might be a problem. Add more if additional
     // problems come to light
     @Test
-    public void testReflexiveRelationshipDelete1() {
+    public void reflexiveRelationshipDelete1() {
         context.deleteObjects(parentGroup);
         context.deleteObjects(childGroup1);
         context.deleteObjects(childGroup2);
@@ -73,7 +73,7 @@ public class CDOReflexiveRelDeleteIT extends RuntimeCase {
     }
 
     @Test
-    public void testReflexiveRelationshipDelete2() {
+    public void reflexiveRelationshipDelete2() {
         context.deleteObjects(childGroup1);
         context.deleteObjects(parentGroup);
         context.deleteObjects(childGroup2);
@@ -82,7 +82,7 @@ public class CDOReflexiveRelDeleteIT extends RuntimeCase {
     }
 
     @Test
-    public void testReflexiveRelationshipDelete3() {
+    public void reflexiveRelationshipDelete3() {
         context.deleteObjects(childGroup1);
         context.deleteObjects(childGroup3);
         context.deleteObjects(parentGroup);
@@ -91,7 +91,7 @@ public class CDOReflexiveRelDeleteIT extends RuntimeCase {
     }
 
     @Test
-    public void testReflexiveRelationshipDelete4() {
+    public void reflexiveRelationshipDelete4() {
         context.deleteObjects(childGroup3);
         context.deleteObjects(parentGroup);
         context.deleteObjects(childGroup1);

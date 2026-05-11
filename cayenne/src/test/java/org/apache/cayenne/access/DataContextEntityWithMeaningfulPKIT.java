@@ -38,13 +38,13 @@ import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkTest2;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UseCayenneRuntime(CayenneProjects.MEANINGFUL_PK_PROJECT)
 public class DataContextEntityWithMeaningfulPKIT extends RuntimeCase {
@@ -57,7 +57,7 @@ public class DataContextEntityWithMeaningfulPKIT extends RuntimeCase {
     private CayenneRuntime runtime;
 
     @Test
-    public void testInsertWithMeaningfulPK() {
+    public void insertWithMeaningfulPK() {
         MeaningfulPKTest1 obj = context.newObject(MeaningfulPKTest1.class);
         obj.setPkAttribute(1000);
         obj.setDescr("aaa-aaa");
@@ -71,7 +71,7 @@ public class DataContextEntityWithMeaningfulPKIT extends RuntimeCase {
     }
 
     @Test
-    public void testGeneratedKey() {
+    public void generatedKey() {
         MeaningfulPKTest1 obj = context.newObject(MeaningfulPKTest1.class);
         obj.setDescr("aaa-aaa");
         context.commitChanges();
@@ -88,7 +88,7 @@ public class DataContextEntityWithMeaningfulPKIT extends RuntimeCase {
     }
 
     @Test
-    public void testChangeKey() {
+    public void changeKey() {
         MeaningfulPKTest1 obj = context.newObject(MeaningfulPKTest1.class);
         obj.setPkAttribute(1000);
         obj.setDescr("aaa-aaa");
@@ -103,7 +103,7 @@ public class DataContextEntityWithMeaningfulPKIT extends RuntimeCase {
     }
 
     @Test
-    public void testToManyRelationshipWithMeaningfulPK1() {
+    public void toManyRelationshipWithMeaningfulPK1() {
         MeaningfulPKTest1 obj = context.newObject(MeaningfulPKTest1.class);
         obj.setPkAttribute(1000);
         obj.setDescr("aaa-aaa");
@@ -118,7 +118,7 @@ public class DataContextEntityWithMeaningfulPKIT extends RuntimeCase {
     }
 
     @Test
-    public void testToManyRelationshipWithMeaningfulPK2() {
+    public void toManyRelationshipWithMeaningfulPK2() {
         MeaningfulPKTest1 obj = context.newObject(MeaningfulPKTest1.class);
         obj.setPkAttribute(1000);
         obj.setDescr("aaa-aaa");
@@ -131,7 +131,7 @@ public class DataContextEntityWithMeaningfulPKIT extends RuntimeCase {
     }
 
     @Test
-    public void testGeneratedIntegerPK(){
+    public void generatedIntegerPK(){
         MeaningfulPkTest2 obj1 = context.newObject(MeaningfulPkTest2.class);
         obj1.setIntegerAttribute(10);
         MeaningfulPkTest2 obj2 = context.newObject(MeaningfulPkTest2.class);
@@ -147,7 +147,7 @@ public class DataContextEntityWithMeaningfulPKIT extends RuntimeCase {
     }
 
     @Test
-    public void testMeaningfulIntegerPK(){
+    public void meaningfulIntegerPK(){
         MeaningfulPkTest2 obj1 = context.newObject(MeaningfulPkTest2.class);
         obj1.setIntegerAttribute(10);
         obj1.setPkAttribute(1);
@@ -164,7 +164,7 @@ public class DataContextEntityWithMeaningfulPKIT extends RuntimeCase {
     }
 
     @Test
-    public void testGeneratedIntPK(){
+    public void generatedIntPK(){
         MeaningfulPKTest1 obj1 = context.newObject(MeaningfulPKTest1.class);
         obj1.setIntAttribute(10);
         MeaningfulPKTest1 obj2 = context.newObject(MeaningfulPKTest1.class);
@@ -180,7 +180,7 @@ public class DataContextEntityWithMeaningfulPKIT extends RuntimeCase {
     }
 
     @Test
-    public void testMeaningfulIntPK(){
+    public void meaningfulIntPK(){
         MeaningfulPKTest1 obj1 = context.newObject(MeaningfulPKTest1.class);
         obj1.setIntAttribute(10);
         obj1.setPkAttribute(1);
@@ -196,9 +196,9 @@ public class DataContextEntityWithMeaningfulPKIT extends RuntimeCase {
         assertEquals(2, obj2.getPkAttribute());
     }
 
+    @Disabled("Insert will fail")
     @Test
-    @Ignore("Insert will fail")
-    public void testInsertDelete() {
+    public void insertDelete() {
         MeaningfulPk pkObj = context.newObject(MeaningfulPk.class);
         pkObj.setPk("123");
         context.commitChanges();
@@ -210,7 +210,7 @@ public class DataContextEntityWithMeaningfulPKIT extends RuntimeCase {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void test_MeaningfulPkInsertDeleteCascade() {
         // setup
         MeaningfulPKTest1 obj = context.newObject(MeaningfulPKTest1.class);
@@ -238,7 +238,7 @@ public class DataContextEntityWithMeaningfulPKIT extends RuntimeCase {
     }
 
     @Test
-    public void testMeaningfulFKToOneInvalidate() {
+    public void meaningfulFKToOneInvalidate() {
         MeaningfulPk pk = context.newObject(MeaningfulPk.class);
         MeaningfulPkDep2 dep = context.newObject(MeaningfulPkDep2.class);
         dep.setMeaningfulPk(pk);
@@ -254,8 +254,8 @@ public class DataContextEntityWithMeaningfulPKIT extends RuntimeCase {
         assertNull(depChild.getMeaningfulPk().getPk());
     }
 
-    @Test(expected = CayenneRuntimeException.class)
-    public void test_MeaningfulPkWithFkUpdate() {
+    @Test
+    public void meaningfulPkWithFkUpdate() {
         // setup
         MeaningfulPKTest1 obj = context.newObject(MeaningfulPKTest1.class);
         obj.setPkAttribute(1001);
@@ -268,13 +268,15 @@ public class DataContextEntityWithMeaningfulPKIT extends RuntimeCase {
         context.commitChanges();
 
         // this would fail as the DefaultDbRowOpSorter unable to deal with the meaningful PK update
-        dep.setToMeaningfulPK(null);
-        obj.setPkAttribute(1002);
-        context.commitChanges();
+        assertThrows(CayenneRuntimeException.class, () -> {
+            dep.setToMeaningfulPK(null);
+            obj.setPkAttribute(1002);
+            context.commitChanges();
+        });
     }
 
     @Test
-    public void testPaginatedQuery() {
+    public void paginatedQuery() {
         MeaningfulPk pkObj = context.newObject(MeaningfulPk.class);
         pkObj.setPk("123");
         context.commitChanges();
@@ -302,7 +304,7 @@ public class DataContextEntityWithMeaningfulPKIT extends RuntimeCase {
     }
 
     @Test
-    public void testPaginatedQueryBigInteger() {
+    public void paginatedQueryBigInteger() {
         MeaningfulPkBigint pkObj = context.newObject(MeaningfulPkBigint.class);
         pkObj.setPk(BigInteger.valueOf(123));
         context.commitChanges();
@@ -330,7 +332,7 @@ public class DataContextEntityWithMeaningfulPKIT extends RuntimeCase {
     }
 
     @Test
-    public void testGeneratedBigIntegerPK() {
+    public void generatedBigIntegerPK() {
         MeaningfulPkBigintGenerated pkObj1 = context.newObject(MeaningfulPkBigintGenerated.class);
         MeaningfulPkBigintGenerated pkObj2 = context.newObject(MeaningfulPkBigintGenerated.class);
         MeaningfulPkBigintGenerated pkObj3 = context.newObject(MeaningfulPkBigintGenerated.class);

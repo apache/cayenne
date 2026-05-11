@@ -31,11 +31,11 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.util.Util;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @since 4.1
@@ -55,7 +55,7 @@ public class DataContextConcurrencyIT extends RuntimeCase {
      * It can be false-negative (e.g. Travis build not always fails)
      */
     @Test
-    public void testCMEInContextSerialization() throws Exception {
+    public void cmeInContextSerialization() throws Exception {
 
         // add some content to context, so it will be serializing slowly
         for(int i=0; i<1000; i++) {

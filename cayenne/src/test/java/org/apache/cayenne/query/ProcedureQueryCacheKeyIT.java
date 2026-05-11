@@ -25,11 +25,11 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ProcedureQueryCacheKeyIT extends RuntimeCase {
@@ -38,7 +38,7 @@ public class ProcedureQueryCacheKeyIT extends RuntimeCase {
     private CayenneRuntime runtime;
 
     @Test
-    public void testNoCache() {
+    public void noCache() {
 
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
 
@@ -54,7 +54,7 @@ public class ProcedureQueryCacheKeyIT extends RuntimeCase {
     }
 
     @Test
-    public void testLocalCache() {
+    public void localCache() {
 
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
 
@@ -68,7 +68,7 @@ public class ProcedureQueryCacheKeyIT extends RuntimeCase {
     }
 
     @Test
-    public void testSharedCache() {
+    public void sharedCache() {
 
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
 
@@ -82,7 +82,7 @@ public class ProcedureQueryCacheKeyIT extends RuntimeCase {
     }
 
     @Test
-    public void testNamedQuery() {
+    public void namedQuery() {
 
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
 
@@ -96,7 +96,7 @@ public class ProcedureQueryCacheKeyIT extends RuntimeCase {
     }
 
     @Test
-    public void testCacheFetchOffsetAndLimit() {
+    public void cacheFetchOffsetAndLimit() {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         
         ProcedureQuery q1 = new ProcedureQuery("ABC", Artist.class);

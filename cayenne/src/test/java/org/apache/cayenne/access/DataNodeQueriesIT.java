@@ -30,8 +30,8 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Date;
 import java.util.Collections;
@@ -39,8 +39,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataNodeQueriesIT extends RuntimeCase {
@@ -56,7 +56,8 @@ public class DataNodeQueriesIT extends RuntimeCase {
 
     protected TableHelper tArtist;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -70,7 +71,7 @@ public class DataNodeQueriesIT extends RuntimeCase {
     }
 
     @Test
-    public void testCreatePkSupportForMapEntities() throws Exception {
+    public void createPkSupportForMapEntities() throws Exception {
 
         DbEntity artistEnt = node.getEntityResolver().getDbEntity("ARTIST");
         assertNotNull(node.getAdapter().getPkGenerator().generatePk(
@@ -84,7 +85,7 @@ public class DataNodeQueriesIT extends RuntimeCase {
     }
 
     @Test
-    public void testPerfomQueriesSQLTemplate() throws Exception {
+    public void perfomQueriesSQLTemplate() throws Exception {
         String template = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) "
                 + "VALUES (#bind($id), #bind($name), #bind($dob 'DATE'))";
         SQLTemplate query = new SQLTemplate(Object.class, template);
@@ -108,7 +109,7 @@ public class DataNodeQueriesIT extends RuntimeCase {
     }
 
     @Test
-    public void testPerfomQueriesSelectingSQLTemplate1() throws Exception {
+    public void perfomQueriesSelectingSQLTemplate1() throws Exception {
         createFourArtists();
 
         String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
@@ -125,7 +126,7 @@ public class DataNodeQueriesIT extends RuntimeCase {
     }
 
     @Test
-    public void testPerfomQueriesSelectingSQLTemplate2() throws Exception {
+    public void perfomQueriesSelectingSQLTemplate2() throws Exception {
         createFourArtists();
 
         String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
@@ -146,7 +147,7 @@ public class DataNodeQueriesIT extends RuntimeCase {
     }
 
     @Test
-    public void testPerfomQueriesSelectingSQLTemplateAlias() throws Exception {
+    public void perfomQueriesSelectingSQLTemplateAlias() throws Exception {
         createFourArtists();
 
         String template = "SELECT #result('ARTIST_ID' 'int' 'A') FROM ARTIST ORDER BY ARTIST_ID";
@@ -163,7 +164,7 @@ public class DataNodeQueriesIT extends RuntimeCase {
     }
 
     @Test
-    public void testRunMultiLineSQLTemplateUNIX() throws Exception {
+    public void runMultiLineSQLTemplateUNIX() throws Exception {
         String templateString = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME)"
                 + "\n"
                 + "VALUES (1, 'A')";
@@ -174,7 +175,7 @@ public class DataNodeQueriesIT extends RuntimeCase {
     }
 
     @Test
-    public void testRunMultiLineSQLTemplateWindows() throws Exception {
+    public void runMultiLineSQLTemplateWindows() throws Exception {
         String templateString = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME)"
                 + "\r\n"
                 + "VALUES (1, 'A')";
@@ -185,7 +186,7 @@ public class DataNodeQueriesIT extends RuntimeCase {
     }
 
     @Test
-    public void testRunMultiLineSQLTemplateMac() throws Exception {
+    public void runMultiLineSQLTemplateMac() throws Exception {
         String templateString = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME)"
                 + "\r"
                 + "VALUES (1, 'A')";

@@ -34,12 +34,12 @@ import org.apache.cayenne.testdo.inheritance_vertical.IvOther;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @since 4.1
@@ -58,7 +58,7 @@ public class VerticalInheritanceMultipleAttributesIT extends RuntimeCase {
 
     TableHelper ivOtherTable, ivBaseTable, ivImplTable;
 
-    @Before
+    @BeforeEach
     public void setupTableHelpers() throws Exception {
         ivOtherTable = new TableHelper(dbHelper, "IV_OTHER");
         ivOtherTable.setColumns("ID", "NAME")
@@ -81,7 +81,7 @@ public class VerticalInheritanceMultipleAttributesIT extends RuntimeCase {
      * @link https://issues.apache.org/jira/browse/CAY-2282
      */
     @Test
-    public void testUpdateTwoObjects() throws SQLException {
+    public void updateTwoObjects() throws SQLException {
         // Insert records we want to update
         ivOtherTable.insert(1, "other1");
         ivOtherTable.insert(2, "other2");
@@ -122,7 +122,7 @@ public class VerticalInheritanceMultipleAttributesIT extends RuntimeCase {
     }
 
     @Test
-    public void testCreateObjectsWithData() throws SQLException {
+    public void createObjectsWithData() throws SQLException {
         ivOtherTable.insert(1, "other1");
         ivOtherTable.insert(2, "other2");
 
@@ -159,7 +159,7 @@ public class VerticalInheritanceMultipleAttributesIT extends RuntimeCase {
     }
 
     @Test
-    public void testCreateEmptyObjects() throws SQLException {
+    public void createEmptyObjects() throws SQLException {
         IvImpl impl1 = context.newObject(IvImpl.class);
         impl1.setName("name");
 
@@ -181,7 +181,7 @@ public class VerticalInheritanceMultipleAttributesIT extends RuntimeCase {
     }
 
     @Test
-    public void testCreateEmptyObjectsWithUpdate() throws SQLException {
+    public void createEmptyObjectsWithUpdate() throws SQLException {
         ivOtherTable.insert(1, "other1");
         ivOtherTable.insert(2, "other2");
 
@@ -232,7 +232,7 @@ public class VerticalInheritanceMultipleAttributesIT extends RuntimeCase {
     }
 
     @Test
-    public void testPartialCreateObjectsWithUpdate() throws SQLException {
+    public void partialCreateObjectsWithUpdate() throws SQLException {
         ivOtherTable.insert(1, "other1");
         ivOtherTable.insert(2, "other2");
 
@@ -285,7 +285,7 @@ public class VerticalInheritanceMultipleAttributesIT extends RuntimeCase {
     }
 
     @Test
-    public void testDeleteObjects() throws SQLException {
+    public void deleteObjects() throws SQLException {
         // Insert records we want to update
         ivOtherTable.insert(1, "other1");
         ivOtherTable.insert(2, "other2");

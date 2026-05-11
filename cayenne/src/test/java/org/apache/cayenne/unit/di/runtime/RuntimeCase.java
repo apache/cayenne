@@ -23,7 +23,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.unit.di.DICase;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
 public class RuntimeCase extends DICase {
 
@@ -38,7 +38,7 @@ public class RuntimeCase extends DICase {
 		injector.getInstance(SchemaBuilder.class).rebuildSchema();
 	}
 
-	@Before
+	@BeforeEach
 	public void cleanUpDB() throws Exception {
 		try {
 			dbCleaner.clean();

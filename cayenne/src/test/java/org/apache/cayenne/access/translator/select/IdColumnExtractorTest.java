@@ -26,18 +26,16 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.map.ObjEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class IdColumnExtractorTest extends BaseColumnExtractorTest {
 
     @Test
-    public void testExtractNoPrefix() {
+    public void extractNoPrefix() {
         DbEntity mockDbEntity = createMockDbEntity("mock");
         TranslatableQueryWrapper wrapper = new MockQueryWrapperBuilder()
                 .withMetaData(new MockQueryMetadataBuilder()
@@ -62,7 +60,7 @@ public class IdColumnExtractorTest extends BaseColumnExtractorTest {
 
         assertNull(descriptor0.getProperty());
         assertNotNull(descriptor0.getNode());
-        assertThat(descriptor0.getNode(), instanceOf(ColumnNode.class));
+        assertInstanceOf(ColumnNode.class, descriptor0.getNode());
         assertFalse(descriptor0.isAggregate());
         assertTrue(descriptor0.isInDataRow());
         assertEquals("id", descriptor0.getDataRowKey());
@@ -71,7 +69,7 @@ public class IdColumnExtractorTest extends BaseColumnExtractorTest {
     }
 
     @Test
-    public void testExtractWithPrefix() {
+    public void extractWithPrefix() {
         DbEntity mockDbEntity = createMockDbEntity("mock1");
         DbEntity mock2DbEntity = createMockDbEntity("mock2");
 
@@ -106,7 +104,7 @@ public class IdColumnExtractorTest extends BaseColumnExtractorTest {
 
         assertNull(descriptor0.getProperty());
         assertNotNull(descriptor0.getNode());
-        assertThat(descriptor0.getNode(), instanceOf(ColumnNode.class));
+        assertInstanceOf(ColumnNode.class, descriptor0.getNode());
         assertFalse(descriptor0.isAggregate());
         assertTrue(descriptor0.isInDataRow());
         assertEquals("prefix.id", descriptor0.getDataRowKey());

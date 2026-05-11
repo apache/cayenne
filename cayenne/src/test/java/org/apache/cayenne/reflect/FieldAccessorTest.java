@@ -20,21 +20,21 @@
 package org.apache.cayenne.reflect;
 
 import org.apache.cayenne.unit.util.TstBean;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class FieldAccessorTest {
 
     @Test
-    public void testConstructor() {
+    public void constructor() {
         FieldAccessor accessor = new FieldAccessor(TstBean.class, "string", String.class);
         assertEquals("string", accessor.getName());
     }
 
     @Test
-    public void testGet() {
+    public void get() {
         FieldAccessor accessor = new FieldAccessor(TstBean.class, "string", String.class);
 
         TstBean object = new TstBean();
@@ -43,7 +43,7 @@ public class FieldAccessorTest {
     }
 
     @Test
-    public void testSetValue() {
+    public void setValue() {
         TstFields object = new TstFields();
 
         // string
@@ -72,7 +72,7 @@ public class FieldAccessorTest {
     }
 
     @Test
-    public void testSetValuePrimitive() {
+    public void setValuePrimitive() {
         TstFields object = new TstFields();
 
         // primitive int .. write non-null

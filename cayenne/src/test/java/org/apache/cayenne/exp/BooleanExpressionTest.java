@@ -19,15 +19,15 @@
 package org.apache.cayenne.exp;
 
 import org.apache.cayenne.testdo.numeric_types.BooleanTestEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BooleanExpressionTest {
 
     @Test
-    public void testCAY1185() {
+    public void cAY1185() {
         Expression expTrue = ExpressionFactory.exp("booleanColumn = true");
         Expression expFalse = ExpressionFactory.exp("booleanColumn = false");
 

@@ -34,12 +34,12 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * @since 4.0
@@ -57,7 +57,7 @@ public class ObjectSelect_PrimitiveColumnsIT extends RuntimeCase {
 
     private TableHelper tPrimitives;
 
-    @Before
+    @BeforeEach
     public void createTestRecords() throws Exception {
         tPrimitives = new TableHelper(dbHelper, "PRIMITIVES_TEST");
         tPrimitives.setColumns("ID", "BOOLEAN_COLUMN", "INT_COLUMN");
@@ -67,7 +67,7 @@ public class ObjectSelect_PrimitiveColumnsIT extends RuntimeCase {
     }
 
     @Test
-    public void test_SelectIntegerColumn() {
+    public void selectIntegerColumn() {
         int intColumn2 = ObjectSelect.query(PrimitivesTestEntity.class)
                 .column(PrimitivesTestEntity.INT_COLUMN)
                 .orderBy(PrimitivesTestEntity.INT_COLUMN.asc())
@@ -76,7 +76,7 @@ public class ObjectSelect_PrimitiveColumnsIT extends RuntimeCase {
     }
 
     @Test
-    public void test_SelectIntegerList() {
+    public void selectIntegerList() {
         List<Integer> intColumns = ObjectSelect.query(PrimitivesTestEntity.class)
                 .column(PrimitivesTestEntity.INT_COLUMN)
                 .orderBy(PrimitivesTestEntity.INT_COLUMN.asc())
@@ -86,7 +86,7 @@ public class ObjectSelect_PrimitiveColumnsIT extends RuntimeCase {
     }
 
     @Test
-    public void test_SelectIntegerExpColumn() {
+    public void selectIntegerExpColumn() {
         NumericProperty<Integer> property = PropertyFactory.createNumeric("intColumn",
                 ExpressionFactory.exp("(obj:intColumn + obj:intColumn)"), Integer.class);
 
@@ -98,7 +98,7 @@ public class ObjectSelect_PrimitiveColumnsIT extends RuntimeCase {
     }
 
     @Test
-    public void test_SelectBooleanColumn() {
+    public void selectBooleanColumn() {
         boolean boolColumn = ObjectSelect.query(PrimitivesTestEntity.class)
                 .column(PrimitivesTestEntity.BOOLEAN_COLUMN)
                 .orderBy(PrimitivesTestEntity.INT_COLUMN.asc())
@@ -107,7 +107,7 @@ public class ObjectSelect_PrimitiveColumnsIT extends RuntimeCase {
     }
 
     @Test
-    public void test_SelectBooleanList() {
+    public void selectBooleanList() {
         List<Boolean> intColumns = ObjectSelect.query(PrimitivesTestEntity.class)
                 .column(PrimitivesTestEntity.BOOLEAN_COLUMN)
                 .orderBy(PrimitivesTestEntity.INT_COLUMN.asc())
@@ -117,7 +117,7 @@ public class ObjectSelect_PrimitiveColumnsIT extends RuntimeCase {
     }
 
     @Test
-    public void test_SelectBooleanExpColumn() {
+    public void selectBooleanExpColumn() {
         if(!unitDbAdapter.supportsSelectBooleanExpression()) {
             return;
         }
@@ -133,7 +133,7 @@ public class ObjectSelect_PrimitiveColumnsIT extends RuntimeCase {
     }
 
     @Test
-    public void test_SelectColumnsList() {
+    public void selectColumnsList() {
         List<Object[]> columns = ObjectSelect.query(PrimitivesTestEntity.class)
                 .columns(PrimitivesTestEntity.INT_COLUMN, PrimitivesTestEntity.BOOLEAN_COLUMN)
                 .orderBy(PrimitivesTestEntity.INT_COLUMN.asc())
@@ -145,7 +145,7 @@ public class ObjectSelect_PrimitiveColumnsIT extends RuntimeCase {
     }
 
     @Test
-    public void test_SelectColumnsExpList() {
+    public void selectColumnsExpList() {
         if(!unitDbAdapter.supportsSelectBooleanExpression()) {
             return;
         }
@@ -167,7 +167,7 @@ public class ObjectSelect_PrimitiveColumnsIT extends RuntimeCase {
     }
 
     @Test
-    public void testSum() {
+    public void sum() {
         int sum = ObjectSelect.query(PrimitivesTestEntity.class)
                 .sum(PrimitivesTestEntity.INT_COLUMN)
                 .selectOne(context);
@@ -175,7 +175,7 @@ public class ObjectSelect_PrimitiveColumnsIT extends RuntimeCase {
     }
 
     @Test
-    public void testAvg() {
+    public void avg() {
         int avg = ObjectSelect.query(PrimitivesTestEntity.class)
                 .avg(PrimitivesTestEntity.INT_COLUMN)
                 .selectOne(context);
@@ -183,7 +183,7 @@ public class ObjectSelect_PrimitiveColumnsIT extends RuntimeCase {
     }
 
     @Test
-    public void testOrderByCount() throws Exception {
+    public void orderByCount() throws Exception {
         tPrimitives.insert(21, true, 210);
 
         List<Object[]> res = ObjectSelect

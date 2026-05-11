@@ -23,11 +23,11 @@ import java.time.LocalDate;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.path.CayennePath;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.apache.cayenne.exp.ExpressionFactory.exp;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.2
@@ -36,7 +36,7 @@ public class DatePropertyTest {
 
     private DateProperty<LocalDate> property;
 
-    @Before
+    @BeforeEach
     public void createProperty() {
         property = new DateProperty<>(CayennePath.of("path"), null, LocalDate.class);
     }

@@ -43,13 +43,13 @@ import org.apache.cayenne.testdo.generated.GeneratedReflexive;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.GENERATED_PROJECT)
 public class IdentityColumnsIT extends RuntimeCase {
@@ -68,7 +68,8 @@ public class IdentityColumnsIT extends RuntimeCase {
 
     protected TableHelper joinTable;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         joinTable = new TableHelper(dbHelper, "GENERATED_JOIN");
     }
@@ -78,7 +79,7 @@ public class IdentityColumnsIT extends RuntimeCase {
      * of the ID column.
      */
     @Test
-    public void testCAY823() throws Exception {
+    public void cAY823() throws Exception {
 
         GeneratedColumnTestEntity idObject = context.newObject(GeneratedColumnTestEntity.class);
 
@@ -100,7 +101,7 @@ public class IdentityColumnsIT extends RuntimeCase {
     }
 
     @Test
-    public void testNewObject() throws Exception {
+    public void newObject() throws Exception {
 
         GeneratedColumnTestEntity idObject = context.newObject(GeneratedColumnTestEntity.class);
 
@@ -122,7 +123,7 @@ public class IdentityColumnsIT extends RuntimeCase {
     }
 
     @Test
-    public void testGeneratedJoinInFlattenedRelationship() throws Exception {
+    public void generatedJoinInFlattenedRelationship() throws Exception {
 
         // before saving objects, let's manually access PKGenerator to get a
         // base PK value
@@ -145,7 +146,7 @@ public class IdentityColumnsIT extends RuntimeCase {
         // has a 200
         // base value
         if (adapter.supportsGeneratedKeys()) {
-            assertFalse("Looks like auto-increment wasn't used for the join table. ID: " + id, id == pk.intValue() + 1);
+            assertFalse(id == pk.intValue() + 1, "Looks like auto-increment wasn't used for the join table. ID: " + id);
         } else {
             assertEquals(id, pk.intValue() + 1);
         }
@@ -155,7 +156,7 @@ public class IdentityColumnsIT extends RuntimeCase {
      * Tests CAY-422 bug.
      */
     @Test
-    public void testUnrelatedUpdate() throws Exception {
+    public void unrelatedUpdate() throws Exception {
 
         GeneratedColumnTestEntity m = context.newObject(GeneratedColumnTestEntity.class);
 
@@ -182,7 +183,7 @@ public class IdentityColumnsIT extends RuntimeCase {
      * conflict. See CAY-341 for the original bug.
      */
     @Test
-    public void testMultipleNewObjectsSeparateTables() throws Exception {
+    public void multipleNewObjectsSeparateTables() throws Exception {
 
         GeneratedColumnTestEntity idObject1 = context.newObject(GeneratedColumnTestEntity.class);
         idObject1.setName("o1");
@@ -194,7 +195,7 @@ public class IdentityColumnsIT extends RuntimeCase {
     }
 
     @Test
-    public void testMultipleNewObjects() throws Exception {
+    public void multipleNewObjects() throws Exception {
 
         String[] names = new String[] { "n1_" + System.currentTimeMillis(), "n2_" + System.currentTimeMillis(),
                 "n3_" + System.currentTimeMillis() };
@@ -225,7 +226,7 @@ public class IdentityColumnsIT extends RuntimeCase {
     }
 
     @Test
-    public void testCompoundPKWithGeneratedColumn() throws Exception {
+    public void compoundPKWithGeneratedColumn() throws Exception {
         if (adapter.supportsGeneratedKeys()) {
             // only works for generated keys, as the entity tested has one
             // Cayenne
@@ -273,7 +274,7 @@ public class IdentityColumnsIT extends RuntimeCase {
     }
 
     @Test
-    public void testUpdateDependentWithNewMaster() throws Exception {
+    public void updateDependentWithNewMaster() throws Exception {
 
         GeneratedColumnTestEntity master1 = context.newObject(GeneratedColumnTestEntity.class);
         master1.setName("aaa");
@@ -306,7 +307,7 @@ public class IdentityColumnsIT extends RuntimeCase {
     }
 
     @Test
-    public void testGeneratedDefaultValue() throws Exception {
+    public void generatedDefaultValue() throws Exception {
 
         // fail("TODO: test insert with DEFAULT generated column...need custom
         // SQL to
@@ -314,7 +315,7 @@ public class IdentityColumnsIT extends RuntimeCase {
     }
 
     @Test
-    public void testPropagateToDependent() throws Exception {
+    public void propagateToDependent() throws Exception {
 
         GeneratedColumnTestEntity idObject = context.newObject(GeneratedColumnTestEntity.class);
         idObject.setName("aaa");
@@ -342,7 +343,7 @@ public class IdentityColumnsIT extends RuntimeCase {
     }
 
     @Test
-    public void testReflexiveDep() {
+    public void reflexiveDep() {
 
         GeneratedReflexive reflexive3 = context.newObject(GeneratedReflexive.class);
         reflexive3.setName("3");

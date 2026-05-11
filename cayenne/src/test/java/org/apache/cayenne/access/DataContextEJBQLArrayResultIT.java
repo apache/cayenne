@@ -27,15 +27,15 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.sql.Types;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextEJBQLArrayResultIT extends RuntimeCase {
@@ -46,7 +46,8 @@ public class DataContextEJBQLArrayResultIT extends RuntimeCase {
     @Inject
     protected DBHelper dbHelper;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -71,7 +72,7 @@ public class DataContextEJBQLArrayResultIT extends RuntimeCase {
     }
 
     @Test
-    public void testSQLResultSetMappingScalar() throws Exception {
+    public void sQLResultSetMappingScalar() throws Exception {
 
         String ejbql = "SELECT count(p) FROM Painting p JOIN p.toArtist a";
 
@@ -85,7 +86,7 @@ public class DataContextEJBQLArrayResultIT extends RuntimeCase {
     }
 
     @Test
-    public void testSQLResultSetMappingScalars() throws Exception {
+    public void sQLResultSetMappingScalars() throws Exception {
 
         String ejbql = "SELECT count(p), sum(p.estimatedPrice) FROM Painting p JOIN p.toArtist a";
 
@@ -95,7 +96,7 @@ public class DataContextEJBQLArrayResultIT extends RuntimeCase {
         assertEquals(1, objects.size());
 
         Object o1 = objects.get(0);
-        assertTrue("Expected Object[]: " + o1, o1 instanceof Object[]);
+        assertTrue(o1 instanceof Object[], "Expected Object[]: " + o1);
         Object[] array1 = (Object[]) o1;
         assertEquals(2, array1.length);
 
@@ -104,7 +105,7 @@ public class DataContextEJBQLArrayResultIT extends RuntimeCase {
     }
 
     @Test
-    public void testSQLResultSetMappingMixed() throws Exception {
+    public void sQLResultSetMappingMixed() throws Exception {
 
         String ejbql = "SELECT count(p), a, sum(p.estimatedPrice) "
                 + "FROM Artist a LEFT JOIN a.paintingArray p "
@@ -116,12 +117,12 @@ public class DataContextEJBQLArrayResultIT extends RuntimeCase {
         assertEquals(4, objects.size());
 
         Object o1 = objects.get(0);
-        assertTrue("Expected Object[]: " + o1, o1 instanceof Object[]);
+        assertTrue(o1 instanceof Object[], "Expected Object[]: " + o1);
         Object[] array1 = (Object[]) o1;
         assertEquals(3, array1.length);
 
         assertEquals(1L, array1[0]);
-        assertTrue("Expected Artist, got: " + array1[1], array1[1] instanceof Artist);
+        assertTrue(array1[1] instanceof Artist, "Expected Artist, got: " + array1[1]);
         assertEquals(0, new BigDecimal(3000).compareTo((BigDecimal) array1[2]));
     }
 

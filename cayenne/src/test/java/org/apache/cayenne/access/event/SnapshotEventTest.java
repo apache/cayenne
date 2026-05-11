@@ -21,19 +21,19 @@ package org.apache.cayenne.access.event;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class SnapshotEventTest {
 
     @Test
-    public void testRootEvent() {
+    public void rootEvent() {
         Object source = new Object();
         Collection<ObjectId> deleted = new ArrayList<>();
         Collection<ObjectId> invalidated = new ArrayList<>();

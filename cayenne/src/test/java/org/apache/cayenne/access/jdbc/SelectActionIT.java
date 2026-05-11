@@ -29,13 +29,13 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@Ignore("Temporary ignore this test to debug GitHub Actions failure")
+@Disabled("Temporary ignore this test to debug GitHub Actions failure")
 @UseCayenneRuntime(CayenneProjects.LOB_PROJECT)
 public class SelectActionIT extends RuntimeCase {
 
@@ -46,7 +46,7 @@ public class SelectActionIT extends RuntimeCase {
     private UnitDbAdapter accessStackAdapter;
 
     @Test
-    public void testFetchLimit_DistinctResultIterator() {
+    public void fetchLimit_DistinctResultIterator() {
         if (accessStackAdapter.supportsLobs()) {
 
             insertClobDb();
@@ -62,7 +62,7 @@ public class SelectActionIT extends RuntimeCase {
     }
 
     @Test
-    public void testColumnSelect_DistinctResultIterator() {
+    public void columnSelect_DistinctResultIterator() {
         if (accessStackAdapter.supportsLobs()) {
 
             insertClobDb();

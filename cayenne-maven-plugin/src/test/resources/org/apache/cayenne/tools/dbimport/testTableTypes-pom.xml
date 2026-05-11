@@ -41,7 +41,7 @@
                     <dbimport>
                         <tableType>TABLE</tableType>
                     </dbimport>
-					<project implementation="org.apache.cayenne.stubs.CayenneProjectStub"/>
+
 
 				</configuration>
 			</plugin>

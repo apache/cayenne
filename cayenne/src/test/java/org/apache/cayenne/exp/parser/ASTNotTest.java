@@ -18,18 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ASTNotTest {
 
 	@Test
-	public void testEvaluate() {
+	public void evaluate() {
 
 		Expression toNegate = ExpressionFactory.exp("artistName = 'abc'");
 		ASTNot e = new ASTNot((Node) toNegate);
@@ -40,7 +40,7 @@ public class ASTNotTest {
 
 		Artist match = new Artist();
 		match.setArtistName("123");
-		assertTrue("Failed: " + e, e.match(match));
+		assertTrue(e.match(match), "Failed: " + e);
 	}
 
 }

@@ -21,14 +21,14 @@ package org.apache.cayenne.exp.parser;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ASTNegateTest {
 
     @Test
-    public void testParse() {
+    public void parse() {
         // we don't have negative numbers, it's a combination of ASTNegate and Scalar
         Expression exp = ExpressionFactory.exp("-1");
         Object operand = exp.getOperand(0);
@@ -39,7 +39,7 @@ public class ASTNegateTest {
     }
 
     @Test
-    public void testEvaluate_null() {
+    public void evaluate_null() {
         ASTNegate negate = new ASTNegate();
         negate.setOperand(0, new ASTScalar(null));
 

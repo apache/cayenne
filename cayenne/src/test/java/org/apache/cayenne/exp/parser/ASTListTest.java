@@ -20,22 +20,22 @@ package org.apache.cayenne.exp.parser;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class ASTListTest {
 
     @Test
-	public void testConstructorWithCollection() {
+	public void constructorWithCollection() {
 		ObjectId objectId = ObjectId.of("Artist", "ARTIST_ID", 1);
 		Persistent artist = mock(Persistent.class);
 		when(artist.getObjectId()).thenReturn(objectId);
@@ -50,7 +50,7 @@ public class ASTListTest {
 	}
 
 	@Test
-	public void testEquals() throws Exception {
+	public void equals() throws Exception {
 		ObjectId objectId = ObjectId.of("Artist", "ARTIST_ID", 1);
 		Persistent artist = mock(Persistent.class);
 		when(artist.getObjectId()).thenReturn(objectId);
@@ -67,7 +67,7 @@ public class ASTListTest {
 	}
 
 	@Test
-	public void testHashCode() throws Exception {
+	public void hashCodeValue() throws Exception {
 		ObjectId objectId = ObjectId.of("Artist", "ARTIST_ID", 1);
 		Persistent artist = mock(Persistent.class);
 		when(artist.getObjectId()).thenReturn(objectId);

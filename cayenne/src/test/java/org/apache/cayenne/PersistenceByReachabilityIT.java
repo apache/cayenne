@@ -25,10 +25,10 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class PersistenceByReachabilityIT extends RuntimeCase {
@@ -40,7 +40,7 @@ public class PersistenceByReachabilityIT extends RuntimeCase {
     private ObjectContext context1;
 
     @Test
-    public void testToOneTargetTransient() throws Exception {
+    public void toOneTargetTransient() throws Exception {
         Painting persistentDO = context.newObject(Painting.class);
 
         Artist transientDO = new Artist();
@@ -50,7 +50,7 @@ public class PersistenceByReachabilityIT extends RuntimeCase {
     }
 
     @Test
-    public void testToOneTargetPersistent() throws Exception {
+    public void toOneTargetPersistent() throws Exception {
         Painting transientDO = context.newObject(Painting.class);
 
         Artist persistentDO = new Artist();
@@ -60,40 +60,28 @@ public class PersistenceByReachabilityIT extends RuntimeCase {
     }
 
     @Test
-    public void testToOneTargetDifferentContext() throws Exception {
+    public void toOneTargetDifferentContext() throws Exception {
 
         Painting doC1 = context.newObject(Painting.class);
         Artist doC2 = context1.newObject(Artist.class);
 
-        // this is the case where exception must be thrown as DataContexts are
-        // different
-        try {
-            doC1.setToOneTarget(Painting.TO_ARTIST.getName(), doC2, false);
-            fail("failed to detect relationship between objects in different DataContexts");
-        }
-        catch (CayenneRuntimeException ex) {
-            // expected
-        }
+        // this is the case where exception must be thrown as DataContexts are different
+        assertThrows(CayenneRuntimeException.class,
+                () -> doC1.setToOneTarget(Painting.TO_ARTIST.getName(), doC2, false));
     }
 
     @Test
-    public void testToManyTargetDifferentContext() throws Exception {
+    public void toManyTargetDifferentContext() throws Exception {
         Painting doC1 = context.newObject(Painting.class);
         Artist doC2 = context1.newObject(Artist.class);
 
-        // this is the case where exception must be thrown as DataContexts are
-        // different
-        try {
-            doC2.addToManyTarget(Artist.PAINTING_ARRAY.getName(), doC1, false);
-            fail("failed to detect relationship between objects in different DataContexts");
-        }
-        catch (CayenneRuntimeException ex) {
-
-        }
+        // this is the case where exception must be thrown as DataContexts are different
+        assertThrows(CayenneRuntimeException.class,
+                () -> doC2.addToManyTarget(Artist.PAINTING_ARRAY.getName(), doC1, false));
     }
 
     @Test
-    public void testToManyTargetTransient() throws Exception {
+    public void toManyTargetTransient() throws Exception {
         Painting transientDO = context.newObject(Painting.class);
 
         Artist persistentDO = new Artist();
@@ -103,7 +91,7 @@ public class PersistenceByReachabilityIT extends RuntimeCase {
     }
 
     @Test
-    public void testToManyTargetPersistent() throws Exception {
+    public void toManyTargetPersistent() throws Exception {
         Painting persistentDO = context.newObject(Painting.class);
 
         Artist transientDO = new Artist();

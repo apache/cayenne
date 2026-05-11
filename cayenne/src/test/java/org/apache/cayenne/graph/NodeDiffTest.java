@@ -19,22 +19,22 @@
 
 package org.apache.cayenne.graph;
 
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class NodeDiffTest {
 
 	@Test
-	public void testGetNodeId() {
+	public void getNodeId() {
 		Object id = new Object();
 		NodeDiff diff = new ConcreteNodeDiff(id);
 		assertSame(id, diff.getNodeId());
 	}
 
 	@Test
-	public void testCompareTo() {
+	public void compareTo() {
 		NodeDiff d1 = new ConcreteNodeDiff("x", 1);
 		NodeDiff d2 = new ConcreteNodeDiff("y", 2);
 		NodeDiff d3 = new ConcreteNodeDiff("z", 3);

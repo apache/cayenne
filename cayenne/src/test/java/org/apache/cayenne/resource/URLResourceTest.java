@@ -18,25 +18,25 @@
  ****************************************************************/
 package org.apache.cayenne.resource;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.net.URL;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class URLResourceTest {
 
     @Test
-    public void testURL() throws Exception {
+    public void url() throws Exception {
         URL url = new URL("http://cayenne.apache.org");
         URLResource resource = new URLResource(url);
         assertSame(url, resource.getURL());
     }
 
     @Test
-    public void testGetRelativeResource() throws Exception {
+    public void getRelativeResource() throws Exception {
         URL url = new URL("http://cayenne.apache.org");
         URLResource resource = new URLResource(url);
         Resource relativeResource = resource.getRelativeResource("/docs");

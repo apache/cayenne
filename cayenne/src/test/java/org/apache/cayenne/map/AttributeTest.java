@@ -19,15 +19,15 @@
 
 package org.apache.cayenne.map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class AttributeTest {
 
     @Test
-    public void testName() throws Exception {
+    public void name() throws Exception {
         MockAttribute a = new MockAttribute();
 
         String tstName = "tst_name";
@@ -36,7 +36,7 @@ public class AttributeTest {
     }
 
     @Test
-    public void testEntity() throws Exception {
+    public void entity() throws Exception {
         MockAttribute a = new MockAttribute();
 
         MockEntity tstEntity = new MockEntity();

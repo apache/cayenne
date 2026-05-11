@@ -20,16 +20,16 @@
 package org.apache.cayenne.exp;
 
 import org.apache.cayenne.exp.path.CayennePath;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CayennePathTest {
 
     private CayennePath[] paths;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         paths = new CayennePath[]{
                 CayennePath.of("a"),
@@ -40,7 +40,7 @@ public class CayennePathTest {
     }
 
     @Test
-    public void testParse() {
+    public void parse() {
         CayennePath path = CayennePath.of("a.bc+.defg");
         assertEquals(3, path.length());
         assertEquals("a.bc+", path.parent().toString());

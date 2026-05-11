@@ -19,14 +19,14 @@
 
 package org.apache.cayenne.dbsync.merge.token.db;
 
-import static org.junit.Assert.assertNotNull;
-
 import java.sql.Types;
 
 import org.apache.cayenne.dbsync.merge.MergeCase;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class SetNotNullToDbIT extends MergeCase {
 

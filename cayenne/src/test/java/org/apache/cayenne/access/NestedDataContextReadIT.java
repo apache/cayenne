@@ -36,14 +36,14 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class NestedDataContextReadIT extends RuntimeCase {
@@ -63,7 +63,7 @@ public class NestedDataContextReadIT extends RuntimeCase {
     private TableHelper tArtist;
     private TableHelper tPainting;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -107,7 +107,7 @@ public class NestedDataContextReadIT extends RuntimeCase {
     }
 
     @Test
-    public void testCreateChildDataContext() {
+    public void createChildDataContext() {
         context.setValidatingObjectsOnCommit(true);
 
         ObjectContext child1 = runtime.newContext(context);
@@ -133,7 +133,7 @@ public class NestedDataContextReadIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelect() throws Exception {
+    public void select() throws Exception {
         createArtistsDataSet();
 
         ObjectContext child = runtime.newContext(context);
@@ -160,7 +160,7 @@ public class NestedDataContextReadIT extends RuntimeCase {
         assertEquals(PersistenceState.NEW, _new.getPersistenceState());
 
         List<Artist> objects = ObjectSelect.query(Artist.class).select(child);
-        assertEquals("All but NEW object must have been included", 4, objects.size());
+        assertEquals(4, objects.size(), "All but NEW object must have been included");
 
         for (Artist next : objects) {
             assertEquals(PersistenceState.COMMITTED, next.getPersistenceState());
@@ -174,7 +174,7 @@ public class NestedDataContextReadIT extends RuntimeCase {
     }
 
     @Test
-    public void testPageableSelect() throws Exception {
+    public void pageableSelect() throws Exception {
         createArtistsDataSet();
         ObjectContext child = runtime.newContext(context);
 
@@ -189,7 +189,7 @@ public class NestedDataContextReadIT extends RuntimeCase {
     }
 
     @Test
-    public void testReadToOneRelationship() throws Exception {
+    public void readToOneRelationship() throws Exception {
         createRelationshipDataSet();
 
         final ObjectContext child = runtime.newContext(context);
@@ -276,7 +276,7 @@ public class NestedDataContextReadIT extends RuntimeCase {
     }
 
     @Test
-    public void testPrefetchingToOne() throws Exception {
+    public void prefetchingToOne() throws Exception {
         createPrefetchingDataSet();
 
         final ObjectContext child = runtime.newContext(context);
@@ -309,7 +309,7 @@ public class NestedDataContextReadIT extends RuntimeCase {
     }
 
     @Test
-    public void testPrefetchingToMany() throws Exception {
+    public void prefetchingToMany() throws Exception {
         createPrefetchingDataSet();
 
         final ObjectContext child = runtime.newContext(context);
@@ -344,7 +344,7 @@ public class NestedDataContextReadIT extends RuntimeCase {
     }
 
     @Test
-    public void testObjectFromDataRow() {
+    public void objectFromDataRow() {
 
         DataContext childContext = (DataContext) runtime.newContext(context);
 

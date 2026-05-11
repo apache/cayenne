@@ -38,15 +38,15 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextPrefetchMultistepIT extends RuntimeCase {
@@ -65,7 +65,8 @@ public class DataContextPrefetchMultistepIT extends RuntimeCase {
     protected TableHelper tGallery;
     protected TableHelper tArtistExhibit;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -112,7 +113,7 @@ public class DataContextPrefetchMultistepIT extends RuntimeCase {
     }
 
     @Test
-    public void testToManyToManyFirstStepUnresolved() throws Exception {
+    public void toManyToManyFirstStepUnresolved() throws Exception {
         createTwoArtistsWithExhibitsDataSet();
 
         // since objects for the phantom prefetches are not retained explicitly, they may
@@ -159,7 +160,7 @@ public class DataContextPrefetchMultistepIT extends RuntimeCase {
     }
 
     @Test
-    public void testToManyToManyFirstStepResolved() throws Exception {
+    public void toManyToManyFirstStepResolved() throws Exception {
         createTwoArtistsWithExhibitsDataSet();
 
         List<Gallery> galleries = ObjectSelect.query(Gallery.class)
@@ -191,7 +192,7 @@ public class DataContextPrefetchMultistepIT extends RuntimeCase {
     }
 
     @Test
-    public void testMixedPrefetch1() throws Exception {
+    public void mixedPrefetch1() throws Exception {
         createTwoArtistsWithExhibitsDataSet();
 
         List<Gallery> galleries = ObjectSelect.query(Gallery.class)
@@ -223,7 +224,7 @@ public class DataContextPrefetchMultistepIT extends RuntimeCase {
     }
 
     @Test
-    public void testMixedPrefetch2() throws Exception {
+    public void mixedPrefetch2() throws Exception {
         createTwoArtistsWithExhibitsDataSet();
 
         ObjectSelect<Gallery> gallerySelect = ObjectSelect.query(Gallery.class)
@@ -255,7 +256,7 @@ public class DataContextPrefetchMultistepIT extends RuntimeCase {
     }
 
     @Test
-    public void testToManyToOne_EmptyToMany() throws Exception {
+    public void toManyToOne_EmptyToMany() throws Exception {
         createGalleriesAndArtists();
 
         List<Gallery> galleries = ObjectSelect.query(Gallery.class)
@@ -275,7 +276,7 @@ public class DataContextPrefetchMultistepIT extends RuntimeCase {
     }
 
     @Test
-    public void testToManyToOne_EmptyToMany_NoRootQualifier() throws Exception {
+    public void toManyToOne_EmptyToMany_NoRootQualifier() throws Exception {
         createGalleriesAndArtists();
 
         List<Gallery> galleries = ObjectSelect.query(Gallery.class)
@@ -311,7 +312,7 @@ public class DataContextPrefetchMultistepIT extends RuntimeCase {
     }
 
     @Test
-    public void testPrefetchAcross2RelationshipsKeepingBoth_JointAndJoint() {
+    public void prefetchAcross2RelationshipsKeepingBoth_JointAndJoint() {
         Gallery gallery = createArtistWithPaintingInGallery();
 
         assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
@@ -326,7 +327,7 @@ public class DataContextPrefetchMultistepIT extends RuntimeCase {
     }
 
     @Test
-    public void testPrefetchAcross2RelationshipsKeepingBoth_JointAndDisjoint() {
+    public void prefetchAcross2RelationshipsKeepingBoth_JointAndDisjoint() {
         Gallery gallery = createArtistWithPaintingInGallery();
 
         assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
@@ -344,7 +345,7 @@ public class DataContextPrefetchMultistepIT extends RuntimeCase {
     }
 
     @Test
-    public void testPrefetchAcross2RelationshipsKeepingBoth_JointAndDisjointById() {
+    public void prefetchAcross2RelationshipsKeepingBoth_JointAndDisjointById() {
         Gallery gallery = createArtistWithPaintingInGallery();
 
         assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
@@ -359,7 +360,7 @@ public class DataContextPrefetchMultistepIT extends RuntimeCase {
     }
 
     @Test
-    public void testPrefetchAcross2RelationshipsKeepingBoth_DisjointAndJoint() {
+    public void prefetchAcross2RelationshipsKeepingBoth_DisjointAndJoint() {
         Gallery gallery = createArtistWithPaintingInGallery();
 
         assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
@@ -374,7 +375,7 @@ public class DataContextPrefetchMultistepIT extends RuntimeCase {
     }
 
     @Test
-    public void testPrefetchAcross2RelationshipsKeepingBoth_DisjointAndDisjoint() {
+    public void prefetchAcross2RelationshipsKeepingBoth_DisjointAndDisjoint() {
         Gallery gallery = createArtistWithPaintingInGallery();
 
         assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
@@ -389,7 +390,7 @@ public class DataContextPrefetchMultistepIT extends RuntimeCase {
     }
 
     @Test
-    public void testPrefetchAcross2RelationshipsKeepingBoth_DisjointAndDisjointById() {
+    public void prefetchAcross2RelationshipsKeepingBoth_DisjointAndDisjointById() {
         Gallery gallery = createArtistWithPaintingInGallery();
 
         assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
@@ -404,7 +405,7 @@ public class DataContextPrefetchMultistepIT extends RuntimeCase {
     }
 
     @Test
-    public void testPrefetchAcross2RelationshipsKeepingBoth_DisjointByIdAndJoint() {
+    public void prefetchAcross2RelationshipsKeepingBoth_DisjointByIdAndJoint() {
         Gallery gallery = createArtistWithPaintingInGallery();
 
         assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
@@ -419,7 +420,7 @@ public class DataContextPrefetchMultistepIT extends RuntimeCase {
     }
 
     @Test
-    public void testPrefetchAcross2RelationshipsKeepingBoth_DisjointByIdAndDisjoint() {
+    public void prefetchAcross2RelationshipsKeepingBoth_DisjointByIdAndDisjoint() {
         Gallery gallery = createArtistWithPaintingInGallery();
 
         assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
@@ -434,7 +435,7 @@ public class DataContextPrefetchMultistepIT extends RuntimeCase {
     }
 
     @Test
-    public void testPrefetchAcross2RelationshipsKeepingBoth_DisjointByIdAndDisjointById() {
+    public void prefetchAcross2RelationshipsKeepingBoth_DisjointByIdAndDisjointById() {
         Gallery gallery = createArtistWithPaintingInGallery();
 
         assertNotNull(gallery.getPaintingArray().get(0).getToArtist());

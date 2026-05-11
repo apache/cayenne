@@ -29,11 +29,11 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.LOB_PROJECT)
 public class SelectQueryClobIT extends RuntimeCase {
@@ -61,7 +61,7 @@ public class SelectQueryClobIT extends RuntimeCase {
      * Test how "like ignore case" works when using uppercase parameter.
      */
     @Test
-    public void testSelectLikeIgnoreCaseClob() throws Exception {
+    public void selectLikeIgnoreCaseClob() throws Exception {
         if (accessStackAdapter.supportsLobs()) {
             createClobDataSet();
             List<?> objects = ObjectSelect.query(ClobTestEntity.class)
@@ -72,7 +72,7 @@ public class SelectQueryClobIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectFetchLimit_Offset_DistinctClob() throws Exception {
+    public void selectFetchLimit_Offset_DistinctClob() throws Exception {
         if (accessStackAdapter.supportsLobs()) {
             createClobDataSet();
 
@@ -89,7 +89,7 @@ public class SelectQueryClobIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectEqualsClob() throws Exception {
+    public void selectEqualsClob() throws Exception {
         if (accessStackAdapter.supportsLobComparisons()) {
             createClobDataSet();
             List<?> objects = ObjectSelect.query(ClobTestEntity.class)
@@ -100,7 +100,7 @@ public class SelectQueryClobIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectNotEqualsClob() throws Exception {
+    public void selectNotEqualsClob() throws Exception {
         if (accessStackAdapter.supportsLobComparisons()) {
             createClobDataSet();
             List<?> objects = ObjectSelect.query(ClobTestEntity.class)
@@ -111,7 +111,7 @@ public class SelectQueryClobIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectNotEqualsEmptyClob() throws Exception {
+    public void selectNotEqualsEmptyClob() throws Exception {
         if (accessStackAdapter.supportsLobComparisons()) {
             createClobDataSet();
             List<?> objects = ObjectSelect.query(ClobTestEntity.class)

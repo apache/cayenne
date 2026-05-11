@@ -19,11 +19,6 @@
 
 package org.apache.cayenne.dbsync.merge.token.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.sql.Types;
 import java.util.List;
 
@@ -33,12 +28,17 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DropTableToModelIT extends MergeCase {
 
 	@Test
-	public void testDropTable() throws Exception {
+	public void dropTable() throws Exception {
 		dropTableIfPresent("NEW_TABLE");
 		assertTokensAndExecute(0, 0);
 

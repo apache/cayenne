@@ -26,9 +26,9 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ObjectSelect_CacheKeyIT extends RuntimeCase {
@@ -37,7 +37,7 @@ public class ObjectSelect_CacheKeyIT extends RuntimeCase {
     private EntityResolver resolver;
 
     @Test
-    public void testNoCache() {
+    public void noCache() {
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
 
@@ -51,7 +51,7 @@ public class ObjectSelect_CacheKeyIT extends RuntimeCase {
     }
 
     @Test
-    public void testLocalCache() {
+    public void localCache() {
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
                 .localCache();
@@ -62,7 +62,7 @@ public class ObjectSelect_CacheKeyIT extends RuntimeCase {
     }
 
     @Test
-    public void testUseLocalCache() {
+    public void useLocalCache() {
 
         ObjectSelect<Artist> q1 = ObjectSelect.query(Artist.class)
                 .localCache();
@@ -82,7 +82,7 @@ public class ObjectSelect_CacheKeyIT extends RuntimeCase {
     }
 
     @Test
-    public void testSharedCache() {
+    public void sharedCache() {
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
                 .sharedCache();
@@ -93,7 +93,7 @@ public class ObjectSelect_CacheKeyIT extends RuntimeCase {
     }
 
     @Test
-    public void testUseSharedCache() {
+    public void useSharedCache() {
 
         ObjectSelect<Artist> q1 = ObjectSelect.query(Artist.class)
                 .sharedCache();
@@ -113,7 +113,7 @@ public class ObjectSelect_CacheKeyIT extends RuntimeCase {
     }
 
     @Test
-    public void testNamedQuery() {
+    public void namedQuery() {
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
                 .sharedCache();
@@ -124,7 +124,7 @@ public class ObjectSelect_CacheKeyIT extends RuntimeCase {
     }
 
     @Test
-    public void testUniqueKeyEntity() {
+    public void uniqueKeyEntity() {
 
         ObjectSelect<Artist> q1 = ObjectSelect.query(Artist.class)
                 .localCache();
@@ -142,7 +142,7 @@ public class ObjectSelect_CacheKeyIT extends RuntimeCase {
     }
 
     @Test
-    public void testUniqueKeyQualifier() {
+    public void uniqueKeyQualifier() {
 
         ObjectSelect<Artist> q1 = ObjectSelect.query(Artist.class)
                 .localCache()
@@ -163,7 +163,7 @@ public class ObjectSelect_CacheKeyIT extends RuntimeCase {
     }
 
     @Test
-    public void testUniqueKeyFetchLimit() {
+    public void uniqueKeyFetchLimit() {
 
         ObjectSelect<Artist> q1 = ObjectSelect.query(Artist.class)
                 .localCache()
@@ -188,7 +188,7 @@ public class ObjectSelect_CacheKeyIT extends RuntimeCase {
     }
 
     @Test
-    public void testUniqueKeyHaving() {
+    public void uniqueKeyHaving() {
 
         ObjectSelect<Artist> q1 = ObjectSelect.query(Artist.class)
                 .localCache()

@@ -20,22 +20,22 @@
 
 package org.apache.cayenne.map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class DbKeyGeneratorTest {
 
     @Test
-    public void testName() throws Exception {
+    public void name() throws Exception {
         DbKeyGenerator generator = new DbKeyGenerator();
         generator.setGeneratorName("abc");
         assertEquals("abc", generator.getGeneratorName());
     }
 
     @Test
-    public void testSize() {
+    public void size() {
         DbKeyGenerator generator = new DbKeyGenerator();
         generator.setKeyCacheSize(3);
         assertEquals(Integer.valueOf(3), generator.getKeyCacheSize());

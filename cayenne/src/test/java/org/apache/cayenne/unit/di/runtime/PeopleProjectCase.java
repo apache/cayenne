@@ -22,6 +22,7 @@ import java.sql.Types;
 
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
+import org.junit.jupiter.api.BeforeEach;
 
 @UseCayenneRuntime(CayenneProjects.PEOPLE_PROJECT)
 public class PeopleProjectCase extends RuntimeCase {
@@ -29,6 +30,7 @@ public class PeopleProjectCase extends RuntimeCase {
 	@Inject
 	protected DBHelper dbHelper;
 
+	@BeforeEach
 	@Override
 	public void cleanUpDB() throws Exception {
 		// manually break circular deps

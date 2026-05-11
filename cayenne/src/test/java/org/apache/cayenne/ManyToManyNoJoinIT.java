@@ -24,7 +24,7 @@ import org.apache.cayenne.testdo.relationships_activity.ActivityResult;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Date;
 
@@ -35,7 +35,7 @@ public class ManyToManyNoJoinIT extends RuntimeCase {
     private ObjectContext context;
 
     @Test
-    public void testValidateForSave1() throws Exception {
+    public void validateForSave1() throws Exception {
         ActivityResult result = context.newObject(ActivityResult.class);
         result.setAppointDate(new Date(System.currentTimeMillis()));
         result.setAppointNo(1);

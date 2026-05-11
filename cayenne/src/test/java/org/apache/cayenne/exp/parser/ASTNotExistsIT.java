@@ -34,12 +34,13 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ASTNotExistsIT extends RuntimeCase {
@@ -53,7 +54,7 @@ public class ASTNotExistsIT extends RuntimeCase {
     @Inject
     private DataChannelInterceptor queryInterceptor;
 
-    @Before
+    @BeforeEach
     public void createArtistsDataSet() throws Exception {
         TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
@@ -74,16 +75,22 @@ public class ASTNotExistsIT extends RuntimeCase {
         }
     }
 
-    @Test(expected = ExpressionException.class)
-    public void testEvaluateInMemoryNotExistsSubquery() {
-        ObjectSelect<Painting> subQuery = ObjectSelect.query(Painting.class)
-                .where(Painting.TO_ARTIST.eq(Artist.ARTIST_ID_PK_PROPERTY.enclosing()));
+    @Test
 
-        doEvaluateWithQuery(ExpressionFactory.notExists(subQuery));
+    public void evaluateInMemoryNotExistsSubquery() {
+        assertThrows(ExpressionException.class, () -> {
+
+            ObjectSelect<Painting> subQuery = ObjectSelect.query(Painting.class)
+                    .where(Painting.TO_ARTIST.eq(Artist.ARTIST_ID_PK_PROPERTY.enclosing()));
+
+            doEvaluateWithQuery(ExpressionFactory.notExists(subQuery));
+    
+        });
     }
 
+
     @Test
-    public void testEvaluateInMemoryNotExistsExpression() {
+    public void evaluateInMemoryNotExistsExpression() {
         doEvaluateNoQuery(Artist.PAINTING_ARRAY.notExists());
 
         doEvaluateNoQuery(Artist.ARTIST_ID_PK_PROPERTY.eq(6L).andExp(Artist.PAINTING_ARRAY.notExists()));
@@ -132,7 +139,7 @@ public class ASTNotExistsIT extends RuntimeCase {
 
         queryInterceptor.runWithQueriesBlocked(() -> {
             List<Artist> artistsFiltered = exp.filterObjects(artists);
-            assertEquals(exp.toString(), artistSelected, artistsFiltered);
+            assertEquals(artistSelected, artistsFiltered, exp.toString());
         });
     }
 
@@ -147,6 +154,6 @@ public class ASTNotExistsIT extends RuntimeCase {
                 .select(context);
 
         List<Artist> artistsFiltered = exp.filterObjects(artists);
-        assertEquals(exp.toString(), artistSelected, artistsFiltered);
+        assertEquals(artistSelected, artistsFiltered, exp.toString());
     }
 }

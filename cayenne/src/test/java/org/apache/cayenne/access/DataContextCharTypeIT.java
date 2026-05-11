@@ -28,9 +28,9 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.RETURN_TYPES_PROJECT)
 public class DataContextCharTypeIT extends RuntimeCase {
@@ -42,7 +42,7 @@ public class DataContextCharTypeIT extends RuntimeCase {
     private UnitDbAdapter unitDbAdapter;
 
     @Test
-    public void testCharTrimming() {
+    public void charTrimming() {
         if (unitDbAdapter.supportsLobs()) {
             ReturnTypesMap1 map1 = context.newObject(ReturnTypesMap1.class);
             map1.setCharColumn("  text   ");
@@ -57,14 +57,14 @@ public class DataContextCharTypeIT extends RuntimeCase {
                     .where(ReturnTypesMap1.CHAR_COLUMN.eq("  text"))
                     .select(context);
 
-            assertTrue("CHAR type trimming is not valid.", result.get(0).getCharColumn().startsWith("  text"));
-            assertTrue("CHAR type trimming is not valid.", result.get(1).getCharColumn().startsWith("  text"));
+            assertTrue(result.get(0).getCharColumn().startsWith("  text"), "CHAR type trimming is not valid.");
+            assertTrue(result.get(1).getCharColumn().startsWith("  text"), "CHAR type trimming is not valid.");
 
             result =  ObjectSelect.query(ReturnTypesMap1.class)
                     .where(ReturnTypesMap1.CHAR_COLUMN.eq("text"))
                     .select(context);
 
-            assertTrue("CHAR type trimming is not valid.", result.get(0).getCharColumn().startsWith("text"));
+            assertTrue(result.get(0).getCharColumn().startsWith("text"), "CHAR type trimming is not valid.");
         }
     }
 }

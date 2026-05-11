@@ -31,12 +31,12 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  */
@@ -55,7 +55,7 @@ public class CAY_115IT extends RuntimeCase {
     protected TableHelper tClobMaster;
     protected TableHelper tClobDetail;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tClobMaster = new TableHelper(dbHelper, "CLOB_MASTER");
         tClobMaster.setColumns("CLOB_MASTER_ID", "CLOB_COLUMN", "NAME");
@@ -81,7 +81,7 @@ public class CAY_115IT extends RuntimeCase {
     }
 
     @Test
-    public void testDistinctClobFetch() throws Exception {
+    public void distinctClobFetch() throws Exception {
         if (!accessStackAdapter.supportsLobInsertsAsStrings()) {
             return;
         }
@@ -103,7 +103,7 @@ public class CAY_115IT extends RuntimeCase {
     }
 
     @Test
-    public void testDistinctClobFetchWithToManyJoin() throws Exception {
+    public void distinctClobFetchWithToManyJoin() throws Exception {
         if (!accessStackAdapter.supportsLobInsertsAsStrings()) {
             return;
         }

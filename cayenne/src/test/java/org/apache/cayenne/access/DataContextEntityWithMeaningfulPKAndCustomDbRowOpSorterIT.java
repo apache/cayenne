@@ -27,7 +27,7 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.ExtraModules;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @UseCayenneRuntime(CayenneProjects.MEANINGFUL_PK_PROJECT)
 @ExtraModules(GraphSorterModule.class)
@@ -37,7 +37,7 @@ public class DataContextEntityWithMeaningfulPKAndCustomDbRowOpSorterIT extends R
     private DataContext context;
 
     @Test
-    public void testInsertDelete() {
+    public void insertDelete() {
         MeaningfulPk pkObj = context.newObject(MeaningfulPk.class);
         pkObj.setPk("123");
         context.commitChanges();

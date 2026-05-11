@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -33,15 +33,16 @@ import org.apache.cayenne.testdo.inheritance_people.Address;
 import org.apache.cayenne.testdo.inheritance_people.Department;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
 import org.apache.cayenne.unit.di.runtime.PeopleProjectCase;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class DataContextEJBQLConditionsPeopleIT extends PeopleProjectCase {
 
     @Inject
     private ObjectContext context;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() {
         // TODO: use TableHelper to create test data
 
@@ -91,7 +92,7 @@ public class DataContextEJBQLConditionsPeopleIT extends PeopleProjectCase {
     }
 
     @Test
-    public void testCollectionMemberOfId() throws Exception {
+    public void collectionMemberOfId() throws Exception {
 
         String ejbql = "SELECT DISTINCT m FROM Manager m JOIN m.managedDepartments d"
                 + " WHERE m MEMBER d.employees";
@@ -112,7 +113,7 @@ public class DataContextEJBQLConditionsPeopleIT extends PeopleProjectCase {
     }
 
     @Test
-    public void testCollectionNotMemberOfId() throws Exception {
+    public void collectionNotMemberOfId() throws Exception {
 
         String ejbql = "SELECT DISTINCT m FROM Manager m JOIN m.managedDepartments d"
                 + " WHERE m NOT MEMBER d.employees";
@@ -132,7 +133,7 @@ public class DataContextEJBQLConditionsPeopleIT extends PeopleProjectCase {
     }
 
     @Test
-    public void testCollectionNotMemberOfToOne() throws Exception {
+    public void collectionNotMemberOfToOne() throws Exception {
 
         // need a better test ... this query returns zero rows by definition
         String ejbql = "SELECT a"

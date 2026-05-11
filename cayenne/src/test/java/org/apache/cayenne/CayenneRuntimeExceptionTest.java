@@ -19,34 +19,34 @@
 
 package org.apache.cayenne;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CayenneRuntimeExceptionTest {
 
     @Test
-    public void testConstructor1() {
+    public void constructor1() {
         CayenneRuntimeException ex = new CayenneRuntimeException();
         assertNull(ex.getCause());
         assertTrue(ex.getMessage().startsWith(CayenneRuntimeException.getExceptionLabel()));
     }
 
     @Test
-    public void testConstructor2() {
+    public void constructor2() {
         CayenneRuntimeException ex = new CayenneRuntimeException("abc");
         assertNull(ex.getCause());
         assertEquals(CayenneRuntimeException.getExceptionLabel() + "abc", ex.getMessage());
     }
 
     @Test
-    public void testConstructor3() {
+    public void constructor3() {
         Throwable cause = new Throwable();
         CayenneRuntimeException ex = new CayenneRuntimeException(cause);
         assertSame(cause, ex.getCause());
@@ -56,7 +56,7 @@ public class CayenneRuntimeExceptionTest {
     }
 
     @Test
-    public void testConstructor4() {
+    public void constructor4() {
         Throwable cause = new Throwable();
         CayenneRuntimeException ex = new CayenneRuntimeException("abc", cause);
         assertSame(cause, ex.getCause());
@@ -64,7 +64,7 @@ public class CayenneRuntimeExceptionTest {
     }
 
     @Test
-    public void testConstructorNullMessage() {
+    public void constructorNullMessage() {
         Throwable cause = new Throwable();
 
         CayenneRuntimeException ex = new CayenneRuntimeException(null, cause);
@@ -79,7 +79,7 @@ public class CayenneRuntimeExceptionTest {
     }
 
     @Test
-    public void testThrow1() {
+    public void throw1() {
         try {
             throw new CayenneRuntimeException();
         }
@@ -90,7 +90,7 @@ public class CayenneRuntimeExceptionTest {
     }
 
     @Test
-    public void testThrow2() {
+    public void throw2() {
         try {
             try {
                 throw new Throwable("Test Cause");
@@ -106,13 +106,13 @@ public class CayenneRuntimeExceptionTest {
     }
 
     @Test
-    public void testMessageFormatting1() {
+    public void messageFormatting1() {
         CayenneRuntimeException ex = new CayenneRuntimeException("x%sx%sx", "a", "b");
         assertEquals("xaxbx", ex.getUnlabeledMessage());
     }
 
     @Test
-    public void testMessageFormatting2() {
+    public void messageFormatting2() {
         Throwable cause = new Throwable();
         CayenneRuntimeException ex = new CayenneRuntimeException("x%sx%sx", cause, "a", "b");
         assertEquals("xaxbx", ex.getUnlabeledMessage());

@@ -19,10 +19,10 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -51,8 +51,8 @@ import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("deprecation")
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
@@ -81,7 +81,7 @@ public class SQLTemplateActionIT extends RuntimeCase {
 
 	protected TableHelper tArtist;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		tArtist = new TableHelper(dbHelper, "ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
@@ -98,7 +98,7 @@ public class SQLTemplateActionIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testProperties() {
+	public void properties() {
 		SQLTemplate template = new SQLTemplate(Object.class, "AAAAA");
 
 		SQLTemplateAction action = new SQLTemplateAction(template, node);
@@ -107,7 +107,7 @@ public class SQLTemplateActionIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testExecuteSelect() throws Exception {
+	public void executeSelect() throws Exception {
 		createFourArtists();
 
 		String templateString = "SELECT * FROM ARTIST WHERE ARTIST_ID = #bind($id)";
@@ -166,7 +166,7 @@ public class SQLTemplateActionIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testSelectUtilDate() throws Exception {
+	public void selectUtilDate() throws Exception {
 		createFourArtists();
 
 		String templateString = "SELECT #result('DATE_OF_BIRTH' 'java.util.Date' 'DOB') "
@@ -196,7 +196,7 @@ public class SQLTemplateActionIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testSelectSQLDate() throws Exception {
+	public void selectSQLDate() throws Exception {
 		createFourArtists();
 
 		String templateString = "SELECT #result('DATE_OF_BIRTH' 'java.sql.Date' 'DOB') "
@@ -226,7 +226,7 @@ public class SQLTemplateActionIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testSelectSQLTimestamp() throws Exception {
+	public void selectSQLTimestamp() throws Exception {
 		createFourArtists();
 
 		String templateString = "SELECT #result('DATE_OF_BIRTH' 'java.sql.Timestamp' 'DOB') "
@@ -257,7 +257,7 @@ public class SQLTemplateActionIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testExecuteUpdate() throws Exception {
+	public void executeUpdate() throws Exception {
 		String templateString = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) "
 				+ "VALUES (#bind($id), #bind($name), #bind($dob 'DATE'))";
 		SQLTemplate template = new SQLTemplate(Object.class, templateString);
@@ -285,7 +285,7 @@ public class SQLTemplateActionIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testExecuteUpdateNoParameters() throws Exception {
+	public void executeUpdateNoParameters() throws Exception {
 		createFourArtists();
 
 		SQLTemplate template = new SQLTemplate(Object.class, "delete from ARTIST where ARTIST_NAME like 'a%'");
@@ -304,7 +304,7 @@ public class SQLTemplateActionIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testExecuteUpdateBatch() throws Exception {
+	public void executeUpdateBatch() throws Exception {
 		String templateString = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) "
 				+ "VALUES (#bind($id), #bind($name), #bind($dob 'DATE'))";
 		SQLTemplate template = new SQLTemplate(Object.class, templateString);
@@ -360,7 +360,7 @@ public class SQLTemplateActionIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testExtractTemplateString() {
+	public void extractTemplateString() {
 		SQLTemplate template = new SQLTemplate(Artist.class, "A\nBC");
 		SQLTemplateAction action = new SQLTemplateAction(template, node);
 

@@ -19,9 +19,9 @@
 
 package org.apache.cayenne.exp.parser;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.0
@@ -29,7 +29,7 @@ import static org.junit.Assert.*;
 public class ASTScalarTest {
 
     @Test
-    public void testEquals() throws Exception {
+    public void equals() throws Exception {
         ASTScalar strScalar1 = new ASTScalar("test");
         ASTScalar strScalar2 = new ASTScalar("test");
         assertEquals(strScalar1, strScalar2);
@@ -42,7 +42,7 @@ public class ASTScalarTest {
     }
 
     @Test
-    public void testHashCode() throws Exception {
+    public void hashCodeValue() throws Exception {
         ASTScalar strScalar1 = new ASTScalar("test");
         ASTScalar strScalar2 = new ASTScalar("test");
         assertEquals(strScalar1.hashCode(), strScalar2.hashCode());

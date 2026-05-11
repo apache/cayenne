@@ -29,18 +29,18 @@ import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest1;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_FLATTENED_PROJECT)
 public class DataContextEJBQLFlattenedRelationshipsIT extends RuntimeCase {
@@ -56,7 +56,8 @@ public class DataContextEJBQLFlattenedRelationshipsIT extends RuntimeCase {
     protected TableHelper ft3Helper;
     protected TableHelper ft4Helper;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         ft1Helper = new TableHelper(dbHelper, "FLATTENED_TEST_1", "FT1_ID", "NAME");
 
@@ -82,7 +83,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT extends RuntimeCase {
     }
 
     @Test
-    public void testCollectionMemberOfThetaJoin() throws Exception {
+    public void collectionMemberOfThetaJoin() throws Exception {
         createFt123();
 
         String ejbql = "SELECT f FROM FlattenedTest3 f, FlattenedTest1 ft "
@@ -107,7 +108,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT extends RuntimeCase {
     }
 
     @Test
-    public void testCollectionMemberOfThetaJoinLongRelationshipSequence()
+    public void collectionMemberOfThetaJoinLongRelationshipSequence()
             throws Exception {
 
         createFt1234();
@@ -139,7 +140,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT extends RuntimeCase {
     }
 
     @Test
-    public void testCollectionInnerJoin() throws Exception {
+    public void collectionInnerJoin() throws Exception {
 
         createFt123();
         String ejbql = "SELECT ft FROM FlattenedTest1 ft INNER JOIN ft.ft3Array f WHERE ft = :ft";
@@ -165,7 +166,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT extends RuntimeCase {
     }
 
     @Test
-    public void testCollectionAsInnerJoin() throws Exception {
+    public void collectionAsInnerJoin() throws Exception {
 
         createFt123();
 
@@ -193,7 +194,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT extends RuntimeCase {
     }
 
     @Test
-    public void testCollectionThetaJoin() throws Exception {
+    public void collectionThetaJoin() throws Exception {
         createFt123();
 
         String ejbql = "SELECT DISTINCT ft FROM FlattenedTest1 ft , FlattenedTest3 f3 WHERE f3.toFT1 = ft";
@@ -217,7 +218,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT extends RuntimeCase {
     }
 
     @Test
-    public void testCollectionIdentificationVariable() throws Exception {
+    public void collectionIdentificationVariable() throws Exception {
         createFt123();
 
         String ejbql = "SELECT ft.ft3Array FROM FlattenedTest1 ft WHERE ft = :ft";
@@ -244,7 +245,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT extends RuntimeCase {
     }
 
     @Test
-    public void testAssociationFieldSelect() throws Exception {
+    public void associationFieldSelect() throws Exception {
         createFt123();
 
         String ejbql = "SELECT ft3.toFT1 FROM FlattenedTest3 ft3 WHERE ft3.toFT1 = :ft";
@@ -268,7 +269,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT extends RuntimeCase {
     }
 
     @Test
-    public void testCollectionSubquery() throws Exception {
+    public void collectionSubquery() throws Exception {
 
         createFt123();
 
@@ -291,7 +292,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT extends RuntimeCase {
     }
 
     @Test
-    public void testCollectionSubquery1() throws Exception {
+    public void collectionSubquery1() throws Exception {
         createFt123();
 
         String ejbql = "SELECT ft FROM FlattenedTest1 ft "
@@ -317,7 +318,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT extends RuntimeCase {
     }
 
     @Test
-    public void testGroupByFlattenedRelationship() throws Exception {
+    public void groupByFlattenedRelationship() throws Exception {
 
         createFt123();
 

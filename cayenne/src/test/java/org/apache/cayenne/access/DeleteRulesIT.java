@@ -35,16 +35,17 @@ import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest3;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_DELETE_RULES_PROJECT)
 public class DeleteRulesIT extends RuntimeCase {
@@ -53,25 +54,20 @@ public class DeleteRulesIT extends RuntimeCase {
     private DataContext context;
 
     @Test
-    public void testDenyToOne() {
+    public void denyToOne() {
 
         DeleteRuleTest1 test1 = context.newObject(DeleteRuleTest1.class);
         DeleteRuleTest2 test2 = context.newObject(DeleteRuleTest2.class);
         test1.setTest2(test2);
         context.commitChanges();
 
-        try {
-            context.deleteObjects(test1);
-            fail("Should have thrown an exception");
-        } catch (Exception e) {
-            // GOOD!
-        }
+        assertThrows(Exception.class, () -> context.deleteObjects(test1));
         context.commitChanges();
 
     }
 
     @Test
-    public void testNoActionToOne() {
+    public void noActionToOne() {
         DeleteRuleTest2 test2 = context.newObject(DeleteRuleTest2.class);
         DeleteRuleTest3 test3 = context.newObject(DeleteRuleTest3.class);
         test3.setToDeleteRuleTest2(test2);
@@ -83,7 +79,7 @@ public class DeleteRulesIT extends RuntimeCase {
     }
 
     @Test
-    public void testNoActionToMany() {
+    public void noActionToMany() {
         DeleteRuleTest2 test2 = context.newObject(DeleteRuleTest2.class);
         DeleteRuleTest3 test3 = context.newObject(DeleteRuleTest3.class);
         test3.setToDeleteRuleTest2(test2);
@@ -96,7 +92,7 @@ public class DeleteRulesIT extends RuntimeCase {
     }
 
     @Test
-    public void testNoActionFlattened() {
+    public void noActionFlattened() {
         // temporarily set delete rule to NOACTION...
         int oldRule = changeDeleteRule(DeleteRule.NO_ACTION);
 
@@ -123,7 +119,7 @@ public class DeleteRulesIT extends RuntimeCase {
     }
 
     @Test
-    public void testNoActionFlattenedNoReverse() {
+    public void noActionFlattenedNoReverse() {
         // temporarily set delete rule to NOACTION...
         int oldRule = changeDeleteRule(DeleteRule.NO_ACTION);
         ObjRelationship reverse = unsetReverse();
@@ -150,7 +146,7 @@ public class DeleteRulesIT extends RuntimeCase {
     }
 
     @Test
-    public void testCascadeFlattened() {
+    public void cascadeFlattened() {
         // temporarily set delete rule to CASCADE...
         int oldRule = changeDeleteRule(DeleteRule.CASCADE);
 
@@ -175,7 +171,7 @@ public class DeleteRulesIT extends RuntimeCase {
     }
 
     @Test
-    public void testCascadeFlattenedNoReverse() {
+    public void cascadeFlattenedNoReverse() {
         // temporarily set delete rule to CASCADE...
         int oldRule = changeDeleteRule(DeleteRule.CASCADE);
         ObjRelationship reverse = unsetReverse();
@@ -201,7 +197,7 @@ public class DeleteRulesIT extends RuntimeCase {
     }
 
     @Test
-    public void testNullifyFlattened() {
+    public void nullifyFlattened() {
         // temporarily set delete rule to NULLIFY...
         int oldRule = changeDeleteRule(DeleteRule.NULLIFY);
 
@@ -226,7 +222,7 @@ public class DeleteRulesIT extends RuntimeCase {
     }
 
     @Test
-    public void testNullifyFlattenedNoReverse() {
+    public void nullifyFlattenedNoReverse() {
         // temporarily set delete rule to NULLIFY...
         int oldRule = changeDeleteRule(DeleteRule.NULLIFY);
         ObjRelationship reverse = unsetReverse();
@@ -252,7 +248,7 @@ public class DeleteRulesIT extends RuntimeCase {
     }
 
     @Test
-    public void testDenyFlattened() {
+    public void denyFlattened() {
         // temporarily set delete rule to DENY...
         int oldRule = changeDeleteRule(DeleteRule.DENY);
 
@@ -262,20 +258,15 @@ public class DeleteRulesIT extends RuntimeCase {
             a.addToFlatB(b);
             context.commitChanges();
 
-            try {
-                context.deleteObjects(a);
-                fail("Must have thrown a deny exception..");
-            } catch (DeleteDenyException ex) {
-                // expected... but check further
-                assertJoinNotDeleted(a, b);
-            }
+            assertThrows(DeleteDenyException.class, () -> context.deleteObjects(a));
+            assertJoinNotDeleted(a, b);
         } finally {
             changeDeleteRule(oldRule);
         }
     }
 
     @Test
-    public void testDenyFlattenedNoReverse() {
+    public void denyFlattenedNoReverse() {
         // temporarily set delete rule to DENY...
         int oldRule = changeDeleteRule(DeleteRule.DENY);
         ObjRelationship reverse = unsetReverse();
@@ -286,13 +277,8 @@ public class DeleteRulesIT extends RuntimeCase {
             a.addToFlatB(b);
             context.commitChanges();
 
-            try {
-                context.deleteObjects(a);
-                fail("Must have thrown a deny exception..");
-            } catch (DeleteDenyException ex) {
-                // expected... but check further
-                assertJoinNotDeleted(a, b);
-            }
+            assertThrows(DeleteDenyException.class, () -> context.deleteObjects(a));
+            assertJoinNotDeleted(a, b);
         } finally {
             changeDeleteRule(oldRule);
             restoreReverse(reverse);

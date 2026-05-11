@@ -19,11 +19,11 @@
 
 package org.apache.cayenne.map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Test case for recursive lookup of DataMap resources via a parent
@@ -34,13 +34,13 @@ public class DataMapNamespaceTest {
 
     protected DataMap map;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         map = new DataMap();
     }
 
     @Test
-    public void testNamespace() {
+    public void namespace() {
         assertNull(map.getNamespace());
 
         MappingNamespace namespace = new MockMappingNamespace();
@@ -52,7 +52,7 @@ public class DataMapNamespaceTest {
     }
 
     @Test
-    public void testGetDbEntity()  {
+    public void getDbEntity()  {
         MockMappingNamespace namespace = new MockMappingNamespace();
         map.setNamespace(namespace);
 
@@ -70,7 +70,7 @@ public class DataMapNamespaceTest {
     }
 
     @Test
-    public void testGetObjEntity() throws Exception {
+    public void getObjEntity() throws Exception {
         MockMappingNamespace namespace = new MockMappingNamespace();
         map.setNamespace(namespace);
 
@@ -88,7 +88,7 @@ public class DataMapNamespaceTest {
     }
 
     @Test
-    public void testGetProcedure() throws Exception {
+    public void getProcedure() throws Exception {
         MockMappingNamespace namespace = new MockMappingNamespace();
         map.setNamespace(namespace);
 
@@ -106,7 +106,7 @@ public class DataMapNamespaceTest {
     }
 
     @Test
-    public void testGetQuery() throws Exception {
+    public void getQuery() throws Exception {
         MockMappingNamespace namespace = new MockMappingNamespace();
         map.setNamespace(namespace);
 

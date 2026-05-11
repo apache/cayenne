@@ -19,17 +19,17 @@
 
 package org.apache.cayenne;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ObjectIdRegressionTest {
 
     @Test
-    public void testIdPool() throws Exception {
+    public void idPool() throws Exception {
         // testing uniqueness of a sequence of ObjectIds generated quickly one after the other...
 
         int size = 100000;
@@ -45,11 +45,11 @@ public class ObjectIdRegressionTest {
 
         long t1 = System.currentTimeMillis();
 
-        assertTrue("This machine is too fast to run such test!", t1 - t0 > 1);
+        assertTrue(t1 - t0 > 1, "This machine is too fast to run such test!");
 
         Set<ObjectId> idSet = new HashSet<>();
         for (int i = 0; i < size; i++) {
-            assertTrue("Failed to generate unique id #" + i, idSet.add(pool[i]));
+            assertTrue(idSet.add(pool[i]), "Failed to generate unique id #" + i);
         }
     }
 }

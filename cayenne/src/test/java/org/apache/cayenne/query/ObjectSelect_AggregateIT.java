@@ -39,13 +39,13 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import static org.apache.cayenne.exp.FunctionExpressionFactory.*;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @since 4.0
@@ -65,7 +65,7 @@ public class ObjectSelect_AggregateIT extends RuntimeCase {
     // Format: d/m/YY
     DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
 
-    @Before
+    @BeforeEach
     public void createArtistsDataSet() throws Exception {
         TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
@@ -91,7 +91,7 @@ public class ObjectSelect_AggregateIT extends RuntimeCase {
         tPaintings.insert(21, "painting21", 2, 1, 1000);
     }
 
-    @After
+    @AfterEach
     public void clearArtistsDataSet() throws Exception {
         for(String table : Arrays.asList("PAINTING", "ARTIST", "GALLERY")) {
             TableHelper tHelper = new TableHelper(dbHelper, table);
@@ -100,7 +100,7 @@ public class ObjectSelect_AggregateIT extends RuntimeCase {
     }
 
     @Test
-    public void testCount() {
+    public void count() {
         long count = ObjectSelect.query(Artist.class)
                 .column(PropertyFactory.COUNT)
                 .selectOne(context);
@@ -108,7 +108,7 @@ public class ObjectSelect_AggregateIT extends RuntimeCase {
     }
 
     @Test
-    public void testCountDistinct() throws Exception {
+    public void countDistinct() throws Exception {
     	List<Artist> artists = ObjectSelect.query(Artist.class).select(context);
     	for (Artist artist : artists) {
 			artist.setArtistName("Duplicate");
@@ -124,8 +124,8 @@ public class ObjectSelect_AggregateIT extends RuntimeCase {
     }
 
     @Test
-    @Ignore("Not all databases support AVG(DATE) aggregation")
-    public void testAvg() throws Exception {
+    @Disabled("Not all databases support AVG(DATE) aggregation")
+    public void avg() throws Exception {
         BaseProperty<Date> avgProp = PropertyFactory.createBase(avgExp(Artist.DATE_OF_BIRTH.getExpression()), Date.class);
 
         Date avg = ObjectSelect.query(Artist.class)
@@ -136,7 +136,7 @@ public class ObjectSelect_AggregateIT extends RuntimeCase {
     }
 
     @Test
-    public void testMin() throws Exception {
+    public void min() throws Exception {
         Date avg = ObjectSelect.query(Artist.class)
                 .column(Artist.DATE_OF_BIRTH.min())
                 .selectOne(context);
@@ -145,7 +145,7 @@ public class ObjectSelect_AggregateIT extends RuntimeCase {
     }
 
     @Test
-    public void testMax() throws Exception {
+    public void max() throws Exception {
         Date avg = ObjectSelect.query(Artist.class)
                 .column(Artist.DATE_OF_BIRTH.max())
                 .selectOne(context);
@@ -154,7 +154,7 @@ public class ObjectSelect_AggregateIT extends RuntimeCase {
     }
 
     @Test
-    public void testCountGroupBy() throws Exception {
+    public void countGroupBy() throws Exception {
         List<Object[]> count = ObjectSelect.query(Artist.class)
                 .columns(Artist.ARTIST_NAME.count(), Artist.DATE_OF_BIRTH)
                 .orderBy(Artist.DATE_OF_BIRTH.asc())
@@ -166,7 +166,7 @@ public class ObjectSelect_AggregateIT extends RuntimeCase {
     }
 
     @Test
-    public void testGroupByOp() throws Exception {
+    public void groupByOp() throws Exception {
         if(!dbAdapter.supportsExpressionInHaving()) {
             return;
         }
@@ -182,7 +182,7 @@ public class ObjectSelect_AggregateIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectRelationshipCount() throws Exception {
+    public void selectRelationshipCount() throws Exception {
         long count = ObjectSelect.query(Artist.class)
                 .column(Artist.PAINTING_ARRAY.count())
                 .where(Artist.ARTIST_NAME.eq("artist1"))
@@ -191,7 +191,7 @@ public class ObjectSelect_AggregateIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectRelationshipCountWithAnotherField() throws Exception {
+    public void selectRelationshipCountWithAnotherField() throws Exception {
         Object[] result = ObjectSelect.query(Artist.class)
                 .columns(Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.count())
                 .where(Artist.ARTIST_NAME.eq("artist1"))
@@ -201,7 +201,7 @@ public class ObjectSelect_AggregateIT extends RuntimeCase {
     }
 
     @Test
-    public void testOrderByCount() {
+    public void orderByCount() {
         List<Artist> artists = ObjectSelect.query(Artist.class)
                 .orderBy(Artist.PAINTING_ARRAY.outer().count().desc())
                 .prefetch(Artist.PAINTING_ARRAY.disjoint())
@@ -220,7 +220,7 @@ public class ObjectSelect_AggregateIT extends RuntimeCase {
     }
 
     @Test
-    public void testOrderByAvg() {
+    public void orderByAvg() {
         List<Artist> artists = ObjectSelect.query(Artist.class)
                 .orderBy(Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE).avg().asc())
                 .prefetch(Artist.PAINTING_ARRAY.disjoint())

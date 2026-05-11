@@ -33,10 +33,10 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataDomainQueryActionIT extends RuntimeCase {
@@ -47,13 +47,14 @@ public class DataDomainQueryActionIT extends RuntimeCase {
     @Inject
     private CayenneRuntime runtime;
 
-    @After
+    
+    @AfterEach
     public void tearDown() {
         runtime.getDataDomain().resetProperties();
     }
 
     @Test
-    public void testCachedQuery() {
+    public void cachedQuery() {
 
         DataDomain domain = runtime.getDataDomain();
 
@@ -74,9 +75,7 @@ public class DataDomainQueryActionIT extends RuntimeCase {
             @Override
             public List<?> get(QueryMetadata metadata, QueryCacheEntryFactory factory) {
                 Object results = factory.createObject();
-                assertTrue(
-                        "Query cache is not serializable.",
-                        results instanceof Serializable);
+                assertTrue(results instanceof Serializable, "Query cache is not serializable.");
 
                 return null;
             }
@@ -84,9 +83,7 @@ public class DataDomainQueryActionIT extends RuntimeCase {
             @SuppressWarnings("all")
             @Override
             public void put(QueryMetadata metadata, List results) {
-                assertTrue(
-                        "Query cache is not serializable.",
-                        results instanceof Serializable);
+                assertTrue(results instanceof Serializable, "Query cache is not serializable.");
             }
         };
 

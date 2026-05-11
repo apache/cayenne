@@ -27,13 +27,13 @@ import org.apache.cayenne.testdo.relationships_set_to_many.SetToMany;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_SET_TO_MANY_PROJECT)
 public class CayennePersistentObjectSetToManySetIT extends RuntimeCase {
@@ -47,7 +47,7 @@ public class CayennePersistentObjectSetToManySetIT extends RuntimeCase {
 	protected TableHelper tSetToMany;
 	protected TableHelper tSetToManyTarget;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		tSetToMany = new TableHelper(dbHelper, "SET_TO_MANY");
 		tSetToMany.setColumns("ID");
@@ -71,16 +71,10 @@ public class CayennePersistentObjectSetToManySetIT extends RuntimeCase {
 	 * Testing if collection type is set, everything should work fine without a runtime exception
 	 */
 	@Test
-	public void testRelationCollectionTypeMap() throws Exception {
-
-
+	public void relationCollectionTypeMap() throws Exception {
 		SetToMany o1 = Cayenne.objectForPK(context, SetToMany.class, 1);
 		assertTrue(o1.readProperty(SetToMany.TARGETS.getName()) instanceof Set);
-		try {
-			o1.setToManyTarget(SetToMany.TARGETS.getName(), new ArrayList<MapToMany>(0), true);
-		} catch (RuntimeException e) {
-			fail();
-		}
-		assertEquals(o1.getTargets().size(), 0);
+		assertDoesNotThrow(() -> o1.setToManyTarget(SetToMany.TARGETS.getName(), new ArrayList<MapToMany>(0), true));
+		assertEquals(0, o1.getTargets().size());
 	}
 }

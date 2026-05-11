@@ -36,13 +36,13 @@ import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.resource.mock.MockResourceLocator;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -50,7 +50,7 @@ public class DefaultDataSourceFactoryLoaderTest {
 
     private Injector injector;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         Module testModule = binder -> {
             binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
@@ -65,7 +65,7 @@ public class DefaultDataSourceFactoryLoaderTest {
     }
 
     @Test
-    public void testGetDataSourceFactory_Implicit() {
+    public void getDataSourceFactory_Implicit() {
 
         DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
         nodeDescriptor.setName("node1");
@@ -80,7 +80,7 @@ public class DefaultDataSourceFactoryLoaderTest {
     }
 
     @Test
-    public void testGetDataSourceFactory_Explicit() throws Exception {
+    public void getDataSourceFactory_Explicit() throws Exception {
 
         DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
         nodeDescriptor.setName("node1");
@@ -92,12 +92,12 @@ public class DefaultDataSourceFactoryLoaderTest {
         DataSourceFactory factory = factoryLoader.getDataSourceFactory(nodeDescriptor);
         assertNotNull(factory);
         assertTrue(factory instanceof MockDataSourceFactory1);
-        assertSame("Injection on the factory hasn't been performed", injector,
-                ((MockDataSourceFactory1) factory).getInjector());
+        assertSame(injector, ((MockDataSourceFactory1) factory).getInjector(),
+                "Injection on the factory hasn't been performed");
     }
 
     @Test
-    public void testGetDataSourceFactory_UnusedProperties() throws Exception {
+    public void getDataSourceFactory_UnusedProperties() throws Exception {
         final RuntimeProperties properties = mock(RuntimeProperties.class);
         when(properties.get(Constants.JDBC_DRIVER_PROPERTY)).thenReturn("x");
         when(properties.get(Constants.JDBC_URL_PROPERTY)).thenReturn(null);
@@ -143,7 +143,7 @@ public class DefaultDataSourceFactoryLoaderTest {
     }
 
     @Test
-    public void testGetDataSourceFactory_Property() throws Exception {
+    public void getDataSourceFactory_Property() throws Exception {
 
         final RuntimeProperties properties = mock(RuntimeProperties.class);
         when(properties.get(Constants.JDBC_DRIVER_PROPERTY)).thenReturn("x");

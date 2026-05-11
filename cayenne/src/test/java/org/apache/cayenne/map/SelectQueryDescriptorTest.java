@@ -22,23 +22,23 @@ package org.apache.cayenne.map;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.QueryMetadata;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  */
 public class SelectQueryDescriptorTest {
 
     @Test
-    public void testGetQueryType() {
+    public void getQueryType() {
         SelectQueryDescriptor builder = QueryDescriptor.selectQueryDescriptor();
         builder.setRoot("FakeRoot");
         assertTrue(builder.buildQuery() instanceof ObjectSelect);
     }
 
     @Test
-    public void testGetQueryRoot() {
+    public void getQueryRoot() {
         DataMap map = new DataMap();
         ObjEntity entity = new ObjEntity("A");
         map.addObjEntity(entity);
@@ -51,7 +51,7 @@ public class SelectQueryDescriptorTest {
     }
 
     @Test
-    public void testGetQueryQualifier() {
+    public void getQueryQualifier() {
         SelectQueryDescriptor builder = QueryDescriptor.selectQueryDescriptor();
         builder.setRoot("FakeRoot");
         builder.setQualifier(ExpressionFactory.exp("abc = 5"));
@@ -62,7 +62,7 @@ public class SelectQueryDescriptorTest {
     }
 
     @Test
-    public void testGetQueryProperties() {
+    public void getQueryProperties() {
         SelectQueryDescriptor builder = QueryDescriptor.selectQueryDescriptor();
         builder.setRoot("FakeRoot");
         builder.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, "5");

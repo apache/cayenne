@@ -20,12 +20,12 @@ package org.apache.cayenne.configuration.runtime;
 
 import org.apache.cayenne.runtime.CayenneRuntimeModuleProvider;
 import org.apache.cayenne.unit.util.ModuleProviderChecker;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class CoreModuleProviderTest {
 
     @Test
-    public void testProviderPresent() {
+    public void providerPresent() {
         ModuleProviderChecker.testProviderPresent(CoreModuleProvider.class, CayenneRuntimeModuleProvider.class);
     }
 }

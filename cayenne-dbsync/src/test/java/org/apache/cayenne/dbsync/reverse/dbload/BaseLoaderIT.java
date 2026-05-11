@@ -31,10 +31,10 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class BaseLoaderIT extends RuntimeCase {
@@ -57,14 +57,14 @@ public class BaseLoaderIT extends RuntimeCase {
 
     DbLoadDataStore store;
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         store = new DbLoadDataStore();
-        assertTrue("Store is not empty", store.getDbEntities().isEmpty());
+        assertTrue(store.getDbEntities().isEmpty(), "Store is not empty");
         this.connection = dataSourceFactory.getSharedDataSource().getConnection();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         connection.close();
     }

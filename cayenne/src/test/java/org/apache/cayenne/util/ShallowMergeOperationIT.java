@@ -36,12 +36,12 @@ import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ShallowMergeOperationIT extends RuntimeCase {
@@ -60,7 +60,7 @@ public class ShallowMergeOperationIT extends RuntimeCase {
 
     private TableHelper tArtist;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -75,7 +75,7 @@ public class ShallowMergeOperationIT extends RuntimeCase {
     }
 
     @Test
-    public void testMerge_Relationship() throws Exception {
+    public void merge_Relationship() throws Exception {
 
         ObjectContext childContext = runtime.newContext(context);
         final ShallowMergeOperation op = new ShallowMergeOperation(childContext);
@@ -99,7 +99,7 @@ public class ShallowMergeOperationIT extends RuntimeCase {
     }
 
     @Test
-    public void testMerge_NoOverride() throws Exception {
+    public void merge_NoOverride() throws Exception {
         createArtistsDataSet();
 
         ObjectContext childContext = runtime.newContext(context);
@@ -140,7 +140,7 @@ public class ShallowMergeOperationIT extends RuntimeCase {
     }
 
     @Test
-    public void testMerge_PersistenceStates() throws Exception {
+    public void merge_PersistenceStates() throws Exception {
         createArtistsDataSet();
 
         final ObjectContext childContext = runtime.newContext(context);

@@ -29,12 +29,11 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.validation.ValidationException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -63,7 +62,7 @@ public class CayenneRuntimeIT extends RuntimeCase {
     }
 
     @Test
-    public void testPerformInTransaction_Local_Callback() {
+    public void performInTransaction_Local_Callback() {
 
         TransactionListener callback = mock(DefaultListenerImpl.class);
         when(callback.decorateConnection(any(Transaction.class), any(Connection.class))).thenCallRealMethod();
@@ -84,7 +83,7 @@ public class CayenneRuntimeIT extends RuntimeCase {
     }
 
     @Test
-    public void testPerformInTransaction_Local_Callback_Rollback() {
+    public void performInTransaction_Local_Callback_Rollback() {
 
         TransactionListener callback = mock(TransactionListener.class);
         when(callback.decorateConnection(any(Transaction.class), any(Connection.class))).thenCallRealMethod();
@@ -95,8 +94,6 @@ public class CayenneRuntimeIT extends RuntimeCase {
                 localArtist.getObjectContext().commitChanges();
                 return localArtist;
             }, callback);
-
-            fail("Exception expected");
         } catch (ValidationException v) {
             verify(callback).willRollback(any(Transaction.class));
             verify(callback, times(0)).willAddConnection(any(Transaction.class), any(String.class), any(Connection.class));
@@ -105,7 +102,7 @@ public class CayenneRuntimeIT extends RuntimeCase {
     }
 
     @Test
-    public void testRollbackTransaction() {
+    public void rollbackTransaction() {
         assertEquals(0, ObjectSelect.query(Artist.class).selectCount(context));
 
         try {

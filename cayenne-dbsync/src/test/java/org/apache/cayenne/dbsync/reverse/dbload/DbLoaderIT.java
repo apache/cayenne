@@ -39,17 +39,17 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import java.sql.Connection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * All tests have been moved to corresponding loaders tests.
@@ -75,7 +75,7 @@ public class DbLoaderIT extends RuntimeCase {
 
 
     @Test
-    public void testLoadingOrder() throws Exception {
+    public void loadingOrder() throws Exception {
         ReverseEngineering engineering = new ReverseEngineering();
         IncludeTable artistTableWithExclusion = new IncludeTable("ARTIST");
         artistTableWithExclusion.addExcludeColumn(new ExcludeColumn("DATE_OF_BIRTH"));
@@ -110,7 +110,7 @@ public class DbLoaderIT extends RuntimeCase {
      * Test that parts of loader are in place
      */
     @Test
-    public void testSimpleLoad() throws Exception {
+    public void simpleLoad() throws Exception {
         DbLoader loader = createDbLoader(true, true);
         DataMap loaded = loader.load();
         assertNotNull(loaded);
@@ -154,7 +154,7 @@ public class DbLoaderIT extends RuntimeCase {
         return da;
     }
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         this.connection = dataSourceFactory.getSharedDataSource().getConnection();
     }
@@ -167,7 +167,7 @@ public class DbLoaderIT extends RuntimeCase {
         return new DbLoader(adapter, connection, configuration, null, new DefaultObjectNameGenerator(NoStemStemmer.getInstance()));
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         connection.close();
     }

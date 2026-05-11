@@ -28,11 +28,11 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DeepMergeOperationIT extends RuntimeCase {
@@ -47,7 +47,7 @@ public class DeepMergeOperationIT extends RuntimeCase {
     private DataContext context1;
 
     @Test
-    public void testDeepMergeNonExistent() {
+    public void deepMergeNonExistent() {
 
         final Artist a = context.newObject(Artist.class);
         a.setArtistName("AAA");
@@ -64,7 +64,7 @@ public class DeepMergeOperationIT extends RuntimeCase {
     }
 
     @Test
-    public void testDeepMergeModified() {
+    public void deepMergeModified() {
 
         final Artist a = context.newObject(Artist.class);
         a.setArtistName("AAA");

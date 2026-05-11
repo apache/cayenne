@@ -22,16 +22,16 @@ package org.apache.cayenne.query;
 
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class AbstractQueryTest {
 
     @Test
-    public void testSetRootEntityName() {
+    public void setRootEntityName() {
         AbstractQuery query = new MockAbstractQuery();
         assertNull(query.getRoot());
         query.setRoot("SomeEntity");
@@ -39,7 +39,7 @@ public class AbstractQueryTest {
     }
 
     @Test
-    public void testSetRootObjEntity() {
+    public void setRootObjEntity() {
         AbstractQuery query = new MockAbstractQuery();
 
         assertNull(query.getRoot());
@@ -49,7 +49,7 @@ public class AbstractQueryTest {
     }
 
     @Test
-    public void testSetRootClass() {
+    public void setRootClass() {
         AbstractQuery query = new MockAbstractQuery();
         assertNull(query.getRoot());
         query.setRoot(Artist.class);
@@ -57,14 +57,9 @@ public class AbstractQueryTest {
     }
 
     @Test
-    public void testSetInvalidRoot() {
+    public void setInvalidRoot() {
         AbstractQuery query = new MockAbstractQuery();
         assertNull(query.getRoot());
-        try {
-            query.setRoot(1);
-            fail("Should not be able to set the root to an Integer");
-        }
-        catch (IllegalArgumentException e) {
-        }
+        assertThrows(IllegalArgumentException.class, () -> query.setRoot(1));
     }
 }

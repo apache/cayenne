@@ -39,10 +39,10 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntitySorter;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -54,7 +54,7 @@ public class DefaultDbRowOpSorterTest {
     private EntitySorter entitySorter;
     private DbRowOpSorter sorter;
 
-    @Before
+    @BeforeEach
     public void createSorter() {
         entitySorter = mock(EntitySorter.class);
         EntityResolver entityResolver = mock(EntityResolver.class);

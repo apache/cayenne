@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
@@ -28,8 +28,8 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class EJBQLParser_CompileIT extends RuntimeCase {
@@ -40,14 +40,14 @@ public class EJBQLParser_CompileIT extends RuntimeCase {
 	private EJBQLParser parser;
 	private EntityResolver resolver;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		resolver = runtime.getDataDomain().getEntityResolver();
 		parser = EJBQLParserFactory.getParser();
 	}
 
 	@Test
-	public void testGetSource() {
+	public void getSource() {
 		String source = "select a from Artist a";
 
 		EJBQLCompiledExpression select = parser.compile(source, resolver);
@@ -55,14 +55,14 @@ public class EJBQLParser_CompileIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testGetExpression() {
+	public void getExpression() {
 		String source = "select a from Artist a";
 		EJBQLCompiledExpression select = parser.compile(source, resolver);
 		assertNotNull(select.getExpression());
 	}
 
 	@Test
-	public void testGetEntityDescriptor() {
+	public void getEntityDescriptor() {
 
 		EJBQLCompiledExpression select = parser.compile("select a from Artist a", resolver);
 
@@ -79,16 +79,16 @@ public class EJBQLParser_CompileIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testGetRootDescriptor() {
+	public void getRootDescriptor() {
 
 		EJBQLCompiledExpression select = parser.compile("select a from Artist a", resolver);
 
-		assertSame("Root is not detected: " + select.getExpression(), resolver.getClassDescriptor("Artist"),
-				select.getRootDescriptor());
+		assertSame(resolver.getClassDescriptor("Artist"), select.getRootDescriptor(),
+				"Root is not detected: " + select.getExpression());
 	}
 
 	@Test
-	public void testGetEntityDescriptorCaseSensitivity() {
+	public void getEntityDescriptorCaseSensitivity() {
 
 		EJBQLCompiledExpression select1 = parser.compile("select a from Artist a", resolver);
 
@@ -110,7 +110,7 @@ public class EJBQLParser_CompileIT extends RuntimeCase {
 	 * CAY-2175
 	 */
 	@Test
-	public void testGetEntityDescriptorCaseSensitivityInJoin() {
+	public void getEntityDescriptorCaseSensitivityInJoin() {
 		EJBQLCompiledExpression select1 = parser.compile(
 				"SELECT artistAlias FROM Artist artistAlias " +
 						"WHERE artistAlias.artistName = 'Abcd'",

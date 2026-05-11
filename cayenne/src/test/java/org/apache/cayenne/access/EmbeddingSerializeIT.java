@@ -33,12 +33,12 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.util.Util;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static junit.framework.TestCase.assertNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @UseCayenneRuntime(CayenneProjects.EMBEDDABLE_PROJECT)
 public class EmbeddingSerializeIT extends RuntimeCase {
@@ -51,7 +51,8 @@ public class EmbeddingSerializeIT extends RuntimeCase {
 
     protected TableHelper tEmbedEntity1;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tEmbedEntity1 = new TableHelper(dbHelper, "EMBED_ENTITY1");
         tEmbedEntity1.setColumns("ID", "NAME", "EMBEDDED10", "EMBEDDED20", "EMBEDDED30", "EMBEDDED40");
@@ -63,7 +64,7 @@ public class EmbeddingSerializeIT extends RuntimeCase {
     }
 
     @Test
-    public void testSerializationEntityWithEmbeddableCommited() throws Exception {
+    public void serializationEntityWithEmbeddableCommited() throws Exception {
         createSelectDataSet();
 
         ObjectSelect<EmbedEntity1> query = ObjectSelect.query(EmbedEntity1.class);
@@ -87,7 +88,7 @@ public class EmbeddingSerializeIT extends RuntimeCase {
     }
 
     @Test
-    public void testSerializationEntityWithEmbeddableModified() throws Exception {
+    public void serializationEntityWithEmbeddableModified() throws Exception {
         createSelectDataSet();
 
         ObjectSelect<EmbedEntity1> query = ObjectSelect.query(EmbedEntity1.class);
@@ -112,7 +113,7 @@ public class EmbeddingSerializeIT extends RuntimeCase {
     }
 
     @Test
-    public void testSerializationEmbeddable() throws Exception {
+    public void serializationEmbeddable() throws Exception {
         createSelectDataSet();
 
         ObjectSelect<EmbedEntity1> query = ObjectSelect.query(EmbedEntity1.class);

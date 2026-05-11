@@ -18,17 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ASTOrTest {
 
 	@Test
-	public void testEvaluateOR() {
+	public void evaluateOR() {
 		Expression e1 = new ASTEqual(new ASTObjPath("artistName"), "abc");
 		Expression e2 = new ASTEqual(new ASTObjPath("artistName"), "xyz");
 
@@ -36,15 +36,15 @@ public class ASTOrTest {
 
 		Artist match1 = new Artist();
 		match1.setArtistName("abc");
-		assertTrue("Failed: " + e, e.match(match1));
+		assertTrue(e.match(match1), "Failed: " + e);
 
 		Artist match2 = new Artist();
 		match2.setArtistName("xyz");
-		assertTrue("Failed: " + e, e.match(match2));
+		assertTrue(e.match(match2), "Failed: " + e);
 
 		Artist noMatch = new Artist();
 		noMatch.setArtistName("123");
-		assertFalse("Failed: " + e, e.match(noMatch));
+		assertFalse(e.match(noMatch), "Failed: " + e);
 	}
 
 }

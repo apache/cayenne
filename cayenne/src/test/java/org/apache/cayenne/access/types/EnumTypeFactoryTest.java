@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.access.types;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class EnumTypeFactoryTest {
 
     @Test
-    public void testSupportsEnums() {
+    public void supportsEnums() {
         EnumTypeFactory map = new EnumTypeFactory();
         assertNotNull(map.getType(MockEnum.class));
     }

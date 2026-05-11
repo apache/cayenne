@@ -23,14 +23,14 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TableFilterTest {
 
     @Test
-    public void testIncludeEverything() {
+    public void includeEverything() {
         TableFilter filter = TableFilter.everything();
 
         assertNotNull(filter.isIncludeTable("table"));
@@ -40,7 +40,7 @@ public class TableFilterTest {
     }
 
     @Test
-    public void testInclude() {
+    public void include() {
         List<IncludeTableFilter> includes = new ArrayList<>();
         includes.add(new IncludeTableFilter("aaa"));
         includes.add(new IncludeTableFilter("bb"));
@@ -57,7 +57,7 @@ public class TableFilterTest {
     }
 
     @Test
-    public void testExclude() {
+    public void exclude() {
         List<Pattern> excludes = new ArrayList<>();
         excludes.add(Pattern.compile("aaa"));
         excludes.add(Pattern.compile("bb"));
@@ -77,7 +77,7 @@ public class TableFilterTest {
     }
 
     @Test
-    public void testIncludeExclude() {
+    public void includeExclude() {
         List<Pattern> excludes = new ArrayList<>();
         excludes.add(Pattern.compile("aaa"));
         excludes.add(Pattern.compile("bb"));
@@ -97,7 +97,7 @@ public class TableFilterTest {
     }
 
     @Test
-    public void testGetTableFilter() {
+    public void getTableFilter() {
         List<IncludeTableFilter> includes = new ArrayList<>();
         includes.add(new IncludeTableFilter("aaa"));
         includes.add(new IncludeTableFilter("bb"));
@@ -116,7 +116,7 @@ public class TableFilterTest {
     }
 
     @Test
-    public void testExcludePriority(){
+    public void excludePriority(){
         List<IncludeTableFilter> includes = new ArrayList<>();
         includes.add(new IncludeTableFilter("a"));
 
@@ -129,7 +129,7 @@ public class TableFilterTest {
     }
 
     @Test
-    public void testPatternsOrder(){
+    public void patternsOrder(){
         List<IncludeTableFilter> includes = new ArrayList<>();
         includes.add(new IncludeTableFilter("b"));
         includes.add(new IncludeTableFilter("a"));
@@ -144,7 +144,7 @@ public class TableFilterTest {
         assertEquals("b",tableFilter.getExcludes().get(0).pattern());
     }
     @Test
-    public void testNullArguments(){
+    public void nullArguments(){
         TableFilter tableFilter = new TableFilter(null, null);
         assertNotNull(tableFilter);
         assertThrows(NullPointerException.class, () -> tableFilter.isIncludeTable(null)  );

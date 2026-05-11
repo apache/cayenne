@@ -31,13 +31,13 @@ import org.apache.cayenne.testdo.cay_2666.CAY2666;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
  * @since 4.2
@@ -54,7 +54,7 @@ public class Cay2666IT extends RuntimeCase {
     private TableHelper tTest;
 
     @Test
-    public void testExp_Path() {
+    public void exp_Path() {
         Expression exp1 = ExpressionFactory.exp("object$.path");
         assertEquals(Expression.OBJ_PATH, exp1.getType());
 
@@ -63,38 +63,38 @@ public class Cay2666IT extends RuntimeCase {
     }
 
     @Test
-    public void testPathExp() {
+    public void pathExp() {
         assertEquals("abc$.xyz$", ExpressionFactory.pathExp("abc$.xyz$").toString());
     }
 
     @Test
-    public void testDbPathExp() {
+    public void dbPathExp() {
         assertEquals("db:abc.xyz$", ExpressionFactory.dbPathExp("abc.xyz$").toString());
     }
 
     @Test
-    public void testExpWithAlias() {
+    public void expWithAlias() {
         Expression expression = ExpressionFactory.exp("paintings#p1.galleries$#p2.name = 'Test'");
         assertEquals("p1.p2.name", expression.getOperand(0).toString());
         assertEquals("galleries$", ((ASTObjPath)expression.getOperand(0)).getPathAliases().get("p2"));
     }
 
     @Test
-    public void testExpWithAliasAndOuterJoin() {
+    public void expWithAliasAndOuterJoin() {
         Expression expression = ExpressionFactory.exp("paintings$#p1+.name = 'Test'");
         assertEquals("p1.name", expression.getOperand(0).toString());
         assertEquals("paintings$+", ((ASTObjPath)expression.getOperand(0)).getPathAliases().get("p1"));
     }
 
     @Test
-    public void testDbPathWithDollarSign() throws IOException {
+    public void dbPathWithDollarSign() throws IOException {
         StringBuilder buffer = new StringBuilder();
         new ASTDbPath("x$").appendAsString(buffer);
         assertEquals("db:x$", buffer.toString());
     }
 
     @Test
-    public void testExpDbPathWithDollarSign() throws IOException {
+    public void expDbPathWithDollarSign() throws IOException {
         Expression exp = ExpressionFactory.exp("db:x$ = 'A'");
         Expression expression = new ASTEqual(new ASTDbPath("x$"), "A");
         assertEquals(exp, expression);
@@ -109,7 +109,7 @@ public class Cay2666IT extends RuntimeCase {
     }
 
     @Test
-    public void testObjPathWithDollarSign() throws IOException {
+    public void objPathWithDollarSign() throws IOException {
         StringBuilder buffer = new StringBuilder();
 
         new ASTObjPath("obj:x$").appendAsString(buffer);
@@ -119,7 +119,7 @@ public class Cay2666IT extends RuntimeCase {
     }
 
     @Test
-    public void testExpObjPathWithDollarSign() throws IOException {
+    public void expObjPathWithDollarSign() throws IOException {
         Expression exp = ExpressionFactory.exp("obj:x$ = 'A'");
         Expression expression = new ASTEqual(new ASTObjPath("x$"), "A");
         assertEquals(exp, expression);
@@ -135,7 +135,7 @@ public class Cay2666IT extends RuntimeCase {
     }
 
     @Test
-    public void testExpressionWithDollarSign() throws Exception {
+    public void expressionWithDollarSign() throws Exception {
         tTest = new TableHelper(dbHelper, "Cay2666");
         tTest.setColumns("ID", "NAME$");
         tTest.insert(1, "st.One");

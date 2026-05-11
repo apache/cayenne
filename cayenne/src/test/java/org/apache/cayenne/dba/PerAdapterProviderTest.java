@@ -30,13 +30,13 @@ import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
 public class PerAdapterProviderTest {
@@ -45,7 +45,7 @@ public class PerAdapterProviderTest {
     private DerbyAdapter derbyAdapter;
     private AutoAdapter autoDerbyAdapter;
 
-    @Before
+    @BeforeEach
     public void before() {
 
         ResourceLocator locator = new ClassLoaderResourceLocator(new DefaultClassLoaderManager());
@@ -73,7 +73,7 @@ public class PerAdapterProviderTest {
     }
 
     @Test
-    public void testGet() {
+    public void get() {
 
         Map<String, String> map = Collections.singletonMap(DerbyAdapter.class.getName(), "x");
         PerAdapterProvider<String> provider = new PerAdapterProvider<>(map, "default");

@@ -21,14 +21,14 @@ package org.apache.cayenne.query;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.util.Util;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ObjectIdQueryTest {
 
     @Test
-    public void testConstructorObjectId() {
+    public void constructorObjectId() {
 
         ObjectId oid = ObjectId.of("MockPersistentObject", "a", "b");
         ObjectIdQuery query = new ObjectIdQuery(oid);
@@ -37,7 +37,7 @@ public class ObjectIdQueryTest {
     }
 
     @Test
-    public void testSerializability() throws Exception {
+    public void serializability() throws Exception {
         ObjectId oid = ObjectId.of("test", "a", "b");
         ObjectIdQuery query = new ObjectIdQuery(oid);
 
@@ -52,7 +52,7 @@ public class ObjectIdQueryTest {
      * results obtained in a QueryChain back to the query.
      */
     @Test
-    public void testEquals() throws Exception {
+    public void equals() throws Exception {
         ObjectIdQuery q1 = new ObjectIdQuery(ObjectId.of("abc", "a", 1));
         ObjectIdQuery q2 = new ObjectIdQuery(ObjectId.of("abc", "a", 1));
         ObjectIdQuery q3 = new ObjectIdQuery(ObjectId.of("abc", "a", 3));
@@ -69,7 +69,7 @@ public class ObjectIdQueryTest {
     }
 
     @Test
-    public void testMetadata() {
+    public void metadata() {
         ObjectIdQuery q1 = new ObjectIdQuery(ObjectId.of("abc", "a", 1), true, ObjectIdQuery.CACHE_REFRESH);
 
         assertTrue(q1.isFetchAllowed());

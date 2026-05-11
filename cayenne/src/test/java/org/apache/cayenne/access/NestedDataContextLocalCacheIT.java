@@ -29,10 +29,10 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class NestedDataContextLocalCacheIT extends RuntimeCase {
@@ -44,7 +44,7 @@ public class NestedDataContextLocalCacheIT extends RuntimeCase {
     private DataContext context;
 
     @Test
-    public void testLocalCacheStaysLocal() {
+    public void localCacheStaysLocal() {
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
                 .cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);

@@ -27,13 +27,13 @@ import org.apache.cayenne.testdo.relationships_to_one_fk.ToOneFK2;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests the behavior of one-to-one relationship where to-one is pointing to an FK.
@@ -48,7 +48,7 @@ public class CDOOneToOneFKIT extends RuntimeCase {
     private DataContext context1;
 
     @Test
-    public void testReadRelationship() {
+    public void readRelationship() {
         ToOneFK2 src = context.newObject(ToOneFK2.class);
         ToOneFK1 target = context.newObject(ToOneFK1.class);
         src.setToOneToFK(target);
@@ -71,7 +71,7 @@ public class CDOOneToOneFKIT extends RuntimeCase {
     }
 
     @Test
-    public void test2Null() throws Exception {
+    public void null2() throws Exception {
         ToOneFK2 src = context.newObject(ToOneFK2.class);
         context.commitChanges();
 
@@ -87,7 +87,7 @@ public class CDOOneToOneFKIT extends RuntimeCase {
     }
 
     @Test
-    public void testReplaceNull1() throws Exception {
+    public void replaceNull1() throws Exception {
         ToOneFK2 src = context.newObject(ToOneFK2.class);
         context.commitChanges();
 
@@ -116,7 +116,7 @@ public class CDOOneToOneFKIT extends RuntimeCase {
     }
 
     @Test
-    public void testReplaceNull2() throws Exception {
+    public void replaceNull2() throws Exception {
         ToOneFK2 src = context.newObject(ToOneFK2.class);
         context.commitChanges();
 
@@ -144,7 +144,7 @@ public class CDOOneToOneFKIT extends RuntimeCase {
     }
 
     @Test
-    public void testNewAdd() throws Exception {
+    public void newAdd() throws Exception {
         ToOneFK2 src = context.newObject(ToOneFK2.class);
         ToOneFK1 target = context.newObject(ToOneFK1.class);
 
@@ -170,7 +170,7 @@ public class CDOOneToOneFKIT extends RuntimeCase {
     }
 
     @Test
-    public void testTakeObjectSnapshotDependentFault() throws Exception {
+    public void takeObjectSnapshotDependentFault() throws Exception {
         ToOneFK2 src = context.newObject(ToOneFK2.class);
         ToOneFK1 target = context.newObject(ToOneFK1.class);
         src.setToOneToFK(target);
@@ -190,7 +190,7 @@ public class CDOOneToOneFKIT extends RuntimeCase {
     }
 
     @Test
-    public void testDelete() throws Exception {
+    public void delete() throws Exception {
         ToOneFK2 src = context.newObject(ToOneFK2.class);
         ToOneFK1 target = context.newObject(ToOneFK1.class);
         src.setToOneToFK(target);

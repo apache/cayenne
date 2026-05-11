@@ -18,36 +18,36 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class EJBQLParser_ParseTest {
 
 	private EJBQLParser parser;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		parser = EJBQLParserFactory.getParser();
 	}
 
 	@Test
-	public void testDbPath() {
+	public void dbPath() {
 		EJBQLExpression select = parser.parse("select p from Painting p WHERE db:p.toArtist.ARTIST_NAME = 'a'");
 		assertNotNull(select);
 	}
 
 	@Test
-	public void testEnumPath() {
+	public void enumPath() {
 		EJBQLExpression select = parser
 				.parse("select p from Painting p WHERE p.toArtist.ARTIST_NAME = enum:org.apache.cayenne.ejbql.EJBQLEnum1.X");
 		assertNotNull(select);
 	}
 
 	@Test
-	public void testImplicitOuterJoin() {
+	public void implicitOuterJoin() {
 		EJBQLExpression select = parser
 				.parse("SELECT a FROM Artist a WHERE a.paintingArray+.toGallery.galleryName = 'gallery2'");
 		assertNotNull(select);
@@ -58,16 +58,8 @@ public class EJBQLParser_ParseTest {
 	 * parameters.
 	 */
 	@Test
-	public void testInWithMultipleStringPositionalParameter_withoutBrackets() {
-
-		try {
-			parser.parse("select p from Painting p WHERE p.toArtist IN ?1, ?2");
-			fail("a test in clause with multiple unbracketed parameters parsed; should not be possible");
-		} catch (EJBQLException ejbqlE) {
-			// expected; should not have parsed
-		} catch (Throwable th) {
-			fail("expected an instance of " + EJBQLException.class.getSimpleName() + " to be thrown, but; "
-					+ th.getClass().getSimpleName() + " was thrown");
-		}
+	public void inWithMultipleStringPositionalParameter_withoutBrackets() {
+		assertThrows(EJBQLException.class, () ->
+				parser.parse("select p from Painting p WHERE p.toArtist IN ?1, ?2"));
 	}
 }

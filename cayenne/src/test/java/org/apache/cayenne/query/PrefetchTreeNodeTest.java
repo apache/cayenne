@@ -21,19 +21,19 @@ package org.apache.cayenne.query;
 
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.util.Util;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PrefetchTreeNodeTest {
 
     @Test
-    public void testAddPath() {
+    public void addPath() {
         PrefetchTreeNode tree = new PrefetchTreeNode();
         tree.addPath("abc");
         tree.addPath("abc.def.mnk");
@@ -63,7 +63,7 @@ public class PrefetchTreeNodeTest {
     }
 
     @Test
-    public void testGetPath() {
+    public void getPath() {
         PrefetchTreeNode tree = new PrefetchTreeNode();
         tree.addPath("abc");
         tree.addPath("abc.def.mnk");
@@ -85,7 +85,7 @@ public class PrefetchTreeNodeTest {
     }
 
     @Test
-    public void testTreeSerialization() throws Exception {
+    public void treeSerialization() throws Exception {
         PrefetchTreeNode n1 = new PrefetchTreeNode();
         PrefetchTreeNode n2 = n1.addPath("abc");
 
@@ -100,7 +100,7 @@ public class PrefetchTreeNodeTest {
     }
 
     @Test
-    public void testSubtreeSerialization() throws Exception {
+    public void subtreeSerialization() throws Exception {
         PrefetchTreeNode n1 = new PrefetchTreeNode();
         PrefetchTreeNode n2 = n1.addPath("abc");
         PrefetchTreeNode n3 = n2.addPath("xyz");
@@ -118,7 +118,7 @@ public class PrefetchTreeNodeTest {
     }
 
     @Test
-    public void testCloneJointSubtree() throws Exception {
+    public void cloneJointSubtree() throws Exception {
         PrefetchTreeNode root = new PrefetchTreeNode(null, "root");
         root.setPhantom(false);
         PrefetchTreeNode joint1 = root.addPath("joint1");

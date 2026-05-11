@@ -28,10 +28,10 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @UseCayenneRuntime(CayenneProjects.LOB_PROJECT)
 public class DataContextClobIT extends RuntimeCase {
@@ -57,7 +57,7 @@ public class DataContextClobIT extends RuntimeCase {
     }
 
     @Test
-    public void testEmptyClob() throws Exception {
+    public void emptyClob() throws Exception {
         if (skipEmptyLOBTests()) {
             return;
         }
@@ -65,7 +65,7 @@ public class DataContextClobIT extends RuntimeCase {
     }
 
     @Test
-    public void test5ByteClob() throws Exception {
+    public void fiveByteClob() throws Exception {
         if (skipTests()) {
             return;
         }
@@ -73,7 +73,7 @@ public class DataContextClobIT extends RuntimeCase {
     }
 
     @Test
-    public void test5KByteClob() throws Exception {
+    public void fiveKByteClob() throws Exception {
         if (skipTests()) {
             return;
         }
@@ -81,7 +81,7 @@ public class DataContextClobIT extends RuntimeCase {
     }
 
     @Test
-    public void test1MBClob() throws Exception {
+    public void oneMBClob() throws Exception {
         if (skipTests()) {
             return;
         }
@@ -89,7 +89,7 @@ public class DataContextClobIT extends RuntimeCase {
     }
 
     @Test
-    public void testNullClob() throws Exception {
+    public void nullClob() throws Exception {
         if (skipTests()) {
             return;
         }
@@ -103,8 +103,7 @@ public class DataContextClobIT extends RuntimeCase {
         assertEquals(1, objects2.size());
 
         ClobTestEntity clobObj2 = objects2.get(0);
-        assertNull("Expected null, got: '" + clobObj2.getClobCol() + "'", clobObj2
-                .getClobCol());
+        assertNull(clobObj2.getClobCol(), "Expected null, got: '" + clobObj2.getClobCol() + "'");
 
         // update and save Clob
         clobObj2.setClobCol("updated rather small clob...");

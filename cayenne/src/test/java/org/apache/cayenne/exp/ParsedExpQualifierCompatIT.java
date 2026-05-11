@@ -34,10 +34,10 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ParsedExpQualifierCompatIT extends RuntimeCase {
@@ -51,7 +51,7 @@ public class ParsedExpQualifierCompatIT extends RuntimeCase {
     protected TableHelper tArtist;
     protected TableHelper tPainting;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -90,7 +90,7 @@ public class ParsedExpQualifierCompatIT extends RuntimeCase {
     }
 
     @Test
-    public void testOr() throws Exception {
+    public void or() throws Exception {
 
         createTwentyFiveArtists();
 
@@ -102,7 +102,7 @@ public class ParsedExpQualifierCompatIT extends RuntimeCase {
     }
 
     @Test
-    public void testAnd() throws Exception {
+    public void and() throws Exception {
         createTwentyFiveArtists();
 
         Expression parsed = ExpressionFactory.exp("artistName='artist1' and artistName='artist1'");
@@ -113,7 +113,7 @@ public class ParsedExpQualifierCompatIT extends RuntimeCase {
     }
 
     @Test
-    public void testNot() throws Exception {
+    public void not() throws Exception {
 
         createTwentyFiveArtists();
 
@@ -125,7 +125,7 @@ public class ParsedExpQualifierCompatIT extends RuntimeCase {
     }
 
     @Test
-    public void testEqual() throws Exception {
+    public void equal() throws Exception {
 
         createTwentyFiveArtists();
 
@@ -140,7 +140,7 @@ public class ParsedExpQualifierCompatIT extends RuntimeCase {
     }
 
     @Test
-    public void testNotEqual() throws Exception {
+    public void notEqual() throws Exception {
 
         createTwentyFiveArtists();
 
@@ -152,91 +152,91 @@ public class ParsedExpQualifierCompatIT extends RuntimeCase {
     }
 
     @Test
-    public void testLessThan() throws Exception {
+    public void lessThan() throws Exception {
         createTwentyFiveArtistsAndPaintings();
         Expression parsed1 = ExpressionFactory.exp("estimatedPrice < 2000.0");
         assertEquals(1, execute(Painting.class, parsed1).size());
     }
 
     @Test
-    public void testLessThanEqualTo() throws Exception {
+    public void lessThanEqualTo() throws Exception {
         createTwentyFiveArtistsAndPaintings();
         Expression parsed1 = ExpressionFactory.exp("estimatedPrice <= 2000.0");
         assertEquals(2, execute(Painting.class, parsed1).size());
     }
 
     @Test
-    public void testGreaterThan() throws Exception {
+    public void greaterThan() throws Exception {
         createTwentyFiveArtistsAndPaintings();
         Expression parsed1 = ExpressionFactory.exp("estimatedPrice > 2000");
         assertEquals(25 - 2, execute(Painting.class, parsed1).size());
     }
 
     @Test
-    public void testGreaterThanEqualTo() throws Exception {
+    public void greaterThanEqualTo() throws Exception {
         createTwentyFiveArtistsAndPaintings();
         Expression parsed1 = ExpressionFactory.exp("estimatedPrice >= 2000");
         assertEquals(25 - 1, execute(Painting.class, parsed1).size());
     }
 
     @Test
-    public void testLike() throws Exception {
+    public void like() throws Exception {
         createTwentyFiveArtists();
         Expression parsed1 = ExpressionFactory.exp("artistName like 'artist%2'");
         assertEquals(3, execute(Artist.class, parsed1).size());
     }
 
     @Test
-    public void testLikeIgnoreCase() throws Exception {
+    public void likeIgnoreCase() throws Exception {
         createTwentyFiveArtists();
         Expression parsed1 = ExpressionFactory.exp("artistName likeIgnoreCase 'artist%2'");
         assertEquals(3, execute(Artist.class, parsed1).size());
     }
 
     @Test
-    public void testNotLike() throws Exception {
+    public void notLike() throws Exception {
         createTwentyFiveArtists();
         Expression parsed1 = ExpressionFactory.exp("artistName not like 'artist%2'");
         assertEquals(25 - 3, execute(Artist.class, parsed1).size());
     }
 
     @Test
-    public void testNotLikeIgnoreCase() throws Exception {
+    public void notLikeIgnoreCase() throws Exception {
         createTwentyFiveArtists();
         Expression parsed1 = ExpressionFactory.exp("artistName not likeIgnoreCase 'artist%2'");
         assertEquals(25 - 3, execute(Artist.class, parsed1).size());
     }
 
     @Test
-    public void testIn() throws Exception {
+    public void in() throws Exception {
         createTwentyFiveArtists();
         Expression parsed1 = ExpressionFactory.exp("artistName in ('artist1', 'artist3', 'artist19')");
         assertEquals(3, execute(Artist.class, parsed1).size());
     }
 
     @Test
-    public void testNotIn() throws Exception {
+    public void notIn() throws Exception {
         createTwentyFiveArtists();
         Expression parsed1 = ExpressionFactory.exp("artistName not in ('artist1', 'artist3', 'artist19')");
         assertEquals(25 - 3, execute(Artist.class, parsed1).size());
     }
 
     @Test
-    public void testBetween() throws Exception {
+    public void between() throws Exception {
         createTwentyFiveArtistsAndPaintings();
         Expression parsed1 = ExpressionFactory.exp("estimatedPrice between 2000.0 and 4000.0");
         assertEquals(3, execute(Painting.class, parsed1).size());
     }
 
     @Test
-    public void testNotBetween() throws Exception {
+    public void notBetween() throws Exception {
         createTwentyFiveArtistsAndPaintings();
         Expression parsed1 = ExpressionFactory.exp("estimatedPrice not between 2000.0 and 4000.0");
         assertEquals(25 - 3, execute(Painting.class, parsed1).size());
     }
 
     @Test
-    public void testParameter() throws Exception {
+    public void parameter() throws Exception {
         createTwentyFiveArtists();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("artistName", "artist5");
@@ -246,21 +246,21 @@ public class ParsedExpQualifierCompatIT extends RuntimeCase {
     }
 
     @Test
-    public void testDbExpression() throws Exception {
+    public void dbExpression() throws Exception {
         createTwentyFiveArtists();
         Expression parsed1 = ExpressionFactory.exp("db:ARTIST_NAME='artist3'");
         assertEquals(1, execute(Artist.class, parsed1).size());
     }
 
     @Test
-    public void testFloatExpression() throws Exception {
+    public void floatExpression() throws Exception {
         createTwentyFiveArtistsAndPaintings();
         Expression parsed1 = ExpressionFactory.exp("estimatedPrice < 2001.01");
         assertEquals(2, execute(Painting.class, parsed1).size());
     }
 
     @Test
-    public void testNullExpression() throws Exception {
+    public void nullExpression() throws Exception {
         createTwentyFiveArtists();
 
         Expression parsed1 = ExpressionFactory.exp("artistName!=null");
@@ -271,7 +271,7 @@ public class ParsedExpQualifierCompatIT extends RuntimeCase {
     }
 
     @Test
-    public void testTrueExpression() throws Exception {
+    public void trueExpression() throws Exception {
 
         createTwentyFiveArtistsAndPaintings();
 
@@ -286,7 +286,7 @@ public class ParsedExpQualifierCompatIT extends RuntimeCase {
     }
 
     @Test
-    public void testFalseExpression() throws Exception {
+    public void falseExpression() throws Exception {
         createTwentyFiveArtistsAndPaintings();
 
         Expression parsed1 = ExpressionFactory.exp("false");

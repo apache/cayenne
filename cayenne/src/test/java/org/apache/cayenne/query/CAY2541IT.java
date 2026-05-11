@@ -33,10 +33,10 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class CAY2541IT extends RuntimeCase {
@@ -47,7 +47,7 @@ public class CAY2541IT extends RuntimeCase {
     @Inject
     private DBHelper dbHelper;
 
-    @Before
+    @BeforeEach
     public void createArtistsDataSet() throws Exception {
         TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
@@ -69,7 +69,7 @@ public class CAY2541IT extends RuntimeCase {
     }
 
     @Test
-    public void testCay2541() {
+    public void cay2541() {
         ObjectId id = ObjectId.of("ARTIST", "ARTIST_ID", 1);
         ASTDbPath astDbPath = new ASTDbPath("ARTIST_ID");
         ASTScalar astScalar = new ASTScalar(id);

@@ -25,15 +25,15 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class CAY_743Test {
 
     @Test
-    public void testLoad2MapsWithCrossMapInheritance() throws Exception {
+    public void load2MapsWithCrossMapInheritance() throws Exception {
 
         Injector injector = DIBootstrap.createInjector(new CoreModule(){
             @Override

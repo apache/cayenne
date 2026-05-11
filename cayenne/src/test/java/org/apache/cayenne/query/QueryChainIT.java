@@ -25,11 +25,11 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class QueryChainIT extends RuntimeCase {
@@ -38,7 +38,7 @@ public class QueryChainIT extends RuntimeCase {
     private CayenneRuntime runtime;
 
     @Test
-    public void testSelectQuery() {
+    public void selectQuery() {
 
         QueryChain chain = new QueryChain();
         chain.addQuery(ObjectSelect.query(Artist.class));
@@ -52,7 +52,7 @@ public class QueryChainIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectQueryDataRows() {
+    public void selectQueryDataRows() {
 
         QueryChain chain = new QueryChain();
         ObjectSelect<DataRow> q1 = ObjectSelect.dataRowQuery(Artist.class);

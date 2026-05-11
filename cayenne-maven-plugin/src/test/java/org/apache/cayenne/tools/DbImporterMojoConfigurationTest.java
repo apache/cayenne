@@ -32,19 +32,25 @@ import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
 import org.apache.cayenne.dbsync.reverse.filters.IncludeTableFilter;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
-import org.apache.maven.plugin.testing.AbstractMojoTestCase;
-import org.junit.Test;
+import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoTest;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
 import static org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineeringUtils.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 
-public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {
+@MojoTest
+public class DbImporterMojoConfigurationTest {
 
     @Test
-    public void testLoadCatalog() throws Exception {
+    public void loadCatalog(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/config/pom-catalog.xml")
+            DbImporterMojo mojo) throws Exception {
         Map<String, Catalog> catalogs = new HashMap<>();
-        for (Catalog c : getCdbImport("pom-catalog.xml").getReverseEngineering().getCatalogs()) {
+        for (Catalog c : mojo.getReverseEngineering().getCatalogs()) {
             catalogs.put(c.getName(), c);
         }
 
@@ -55,9 +61,11 @@ public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {
     }
 
     @Test
-    public void testLoadSchema() throws Exception {
+    public void loadSchema(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/config/pom-schema.xml")
+            DbImporterMojo mojo) throws Exception {
         Map<String, Schema> schemas = new HashMap<>();
-        for (Schema s : getCdbImport("pom-schema.xml").getReverseEngineering().getSchemas()) {
+        for (Schema s : mojo.getReverseEngineering().getSchemas()) {
             schemas.put(s.getName(), s);
         }
 
@@ -68,11 +76,11 @@ public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {
     }
 
     @Test
-    public void testLoadSchema2() throws Exception {
-        DbImporterMojo dbImporterMojo = getCdbImport("pom-schema-2.xml");
-        DbImportConfiguration dbImportConfiguration = dbImporterMojo.createConfig(mock(Logger.class));
-        dbImportConfiguration.setFiltersConfig(new FiltersConfigBuilder(
-                dbImporterMojo.getReverseEngineering()).build());
+    public void loadSchema2(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/config/pom-schema-2.xml")
+            DbImporterMojo mojo) throws Exception {
+        DbImportConfiguration dbImportConfiguration = mojo.createConfig(mock(Logger.class));
+        dbImportConfiguration.setFiltersConfig(new FiltersConfigBuilder(mojo.getReverseEngineering()).build());
 
         FiltersConfig filters = dbImportConfiguration.getDbLoaderConfig().getFiltersConfig();
 
@@ -87,39 +95,45 @@ public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {
     }
 
     @Test
-    public void testLoadCatalogAndSchema() throws Exception {
-        assertCatalogAndSchema(getCdbImport("pom-catalog-and-schema.xml").getReverseEngineering());
+    public void loadCatalogAndSchema(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/config/pom-catalog-and-schema.xml")
+            DbImporterMojo mojo) throws Exception {
+        assertCatalogAndSchema(mojo.getReverseEngineering());
     }
 
     @Test
-    public void testDefaultPackage() throws Exception {
-        DbImportConfiguration config = getCdbImport("pom-default-package.xml").createConfig(mock(Logger.class));
+    public void defaultPackage(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/config/pom-default-package.xml")
+            DbImporterMojo mojo) throws Exception {
+        DbImportConfiguration config = mojo.createConfig(mock(Logger.class));
         assertEquals("com.example.test", config.getDefaultPackage());
     }
 
     @Test
-    public void testLoadFlat() throws Exception {
-        assertFlat(getCdbImport("pom-flat.xml").getReverseEngineering());
+    public void loadFlat(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/config/pom-flat.xml")
+            DbImporterMojo mojo) throws Exception {
+        assertFlat(mojo.getReverseEngineering());
     }
 
     @Test
-    public void testSkipRelationshipsLoading() throws Exception {
-        assertSkipRelationshipsLoading(getCdbImport("pom-skip-relationships-loading.xml").getReverseEngineering());
+    public void skipRelationshipsLoading(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/config/pom-skip-relationships-loading.xml")
+            DbImporterMojo mojo) throws Exception {
+        assertSkipRelationshipsLoading(mojo.getReverseEngineering());
     }
 
     @Test
-    public void testSkipPrimaryKeyLoading() throws Exception {
-        assertSkipPrimaryKeyLoading(getCdbImport("pom-skip-primary-key-loading.xml").getReverseEngineering());
+    public void skipPrimaryKeyLoading(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/config/pom-skip-primary-key-loading.xml")
+            DbImporterMojo mojo) throws Exception {
+        assertSkipPrimaryKeyLoading(mojo.getReverseEngineering());
     }
 
     @Test
-    public void testTableTypes() throws Exception {
-        assertTableTypes(getCdbImport("pom-table-types.xml").getReverseEngineering());
+    public void tableTypes(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/config/pom-table-types.xml")
+            DbImporterMojo mojo) throws Exception {
+        assertTableTypes(mojo.getReverseEngineering());
     }
-
-    private DbImporterMojo getCdbImport(String pomFileName) throws Exception {
-        return (DbImporterMojo) lookupMojo("cdbimport",
-                getTestFile("src/test/resources/org/apache/cayenne/tools/config/" + pomFileName));
-    }
-
 }

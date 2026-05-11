@@ -29,9 +29,9 @@ import org.apache.cayenne.testdo.inheritance_vertical.IvOther;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 5.0
@@ -47,25 +47,25 @@ public class VerticalInheritanceJoinOrderIT extends RuntimeCase {
      * LEFT OUTER joins from vertical inheritance child tables in the generated SQL.
      */
     @Test
-    public void testQualifierJoinsBeforeDependentTableLeftJoins() {
+    public void qualifierJoinsBeforeDependentTableLeftJoins() {
         ObjectSelect<IvBase> q = ObjectSelect.query(IvBase.class)
                 .where(IvBase.OTHERS.dot(IvOther.NAME).eq("test"))
                 .and(IvBase.OTHERS.dot(IvOther.BASE).dot(IvBase.NAME).eq("test2"));
 
         String sql = translateToSql(q);
 
-        assertTrue("Expected INNER JOIN to IV_OTHER, got: " + sql, sql.contains("JOIN IV_OTHER"));
-        assertTrue("Expected LEFT JOIN to IV_IMPL, got: " + sql, sql.contains("LEFT JOIN IV_IMPL"));
+        assertTrue(sql.contains("JOIN IV_OTHER"), "Expected INNER JOIN to IV_OTHER, got: " + sql);
+        assertTrue(sql.contains("LEFT JOIN IV_IMPL"), "Expected LEFT JOIN to IV_IMPL, got: " + sql);
 
         int iLeftJoin = sql.indexOf("LEFT JOIN IV_IMPL");
         int iInnerJoinOther = sql.indexOf("JOIN IV_OTHER");
-        assertTrue("INNER JOIN to IV_OTHER should precede LEFT JOIN, got: " + sql,
-                iInnerJoinOther < iLeftJoin);
+        assertTrue(iInnerJoinOther < iLeftJoin,
+                "INNER JOIN to IV_OTHER should precede LEFT JOIN, got: " + sql);
 
         int iInnerJoinBase = sql.indexOf("JOIN IV_BASE", iInnerJoinOther);
         if (iInnerJoinBase > 0) {
-            assertTrue("INNER JOIN to IV_BASE should precede LEFT JOIN, got: " + sql,
-                    iInnerJoinBase < iLeftJoin);
+            assertTrue(iInnerJoinBase < iLeftJoin,
+                    "INNER JOIN to IV_BASE should precede LEFT JOIN, got: " + sql);
         }
     }
 

@@ -32,10 +32,11 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SimpleIdIncrementalFaultListIT extends RuntimeCase {
@@ -48,7 +49,7 @@ public class SimpleIdIncrementalFaultListIT extends RuntimeCase {
 
     private TableHelper tArtist;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -99,7 +100,7 @@ public class SimpleIdIncrementalFaultListIT extends RuntimeCase {
     }
 
     @Test
-    public void testRemoveDeleted() throws Exception {
+    public void removeDeleted() throws Exception {
         createArtistsDataSet();
 
         ObjectSelect<Artist> query = Artist.SELF.query().pageSize(10);
@@ -120,25 +121,25 @@ public class SimpleIdIncrementalFaultListIT extends RuntimeCase {
     }
 
     @Test
-    public void testSize() throws Exception {
+    public void size() throws Exception {
         SimpleIdIncrementalFaultList<?> list = prepareList(6);
         assertEquals(25, list.size());
     }
 
     @Test
-    public void testSmallList() throws Exception {
+    public void smallList() throws Exception {
         SimpleIdIncrementalFaultList<?> list = prepareList(49);
         assertEquals(25, list.size());
     }
 
     @Test
-    public void testOnePageList() throws Exception {
+    public void onePageList() throws Exception {
         SimpleIdIncrementalFaultList<?> list = prepareList(25);
         assertEquals(25, list.size());
     }
 
     @Test
-    public void testIterator() throws Exception {
+    public void iterator() throws Exception {
         SimpleIdIncrementalFaultList<?> list = prepareList(6);
         Iterator<?> it = list.iterator();
         int counter = 0;
@@ -162,7 +163,7 @@ public class SimpleIdIncrementalFaultListIT extends RuntimeCase {
     }
 
     @Test
-    public void testNewObject() throws Exception {
+    public void newObject() throws Exception {
 
         createArtistsDataSet();
 
@@ -186,7 +187,7 @@ public class SimpleIdIncrementalFaultListIT extends RuntimeCase {
     }
 
     @Test
-    public void testListIterator() throws Exception {
+    public void listIterator() throws Exception {
         SimpleIdIncrementalFaultList<?> list = prepareList(6);
         ListIterator<?> it = list.listIterator();
         int counter = 0;
@@ -210,7 +211,7 @@ public class SimpleIdIncrementalFaultListIT extends RuntimeCase {
     }
 
     @Test
-    public void testSort() throws Exception {
+    public void sort() throws Exception {
         SimpleIdIncrementalFaultList<?> list = prepareList(6);
 
         Artist.ARTIST_NAME.desc().orderList(list);
@@ -227,7 +228,7 @@ public class SimpleIdIncrementalFaultListIT extends RuntimeCase {
     }
 
     @Test
-    public void testUnfetchedObjects() throws Exception {
+    public void unfetchedObjects() throws Exception {
         SimpleIdIncrementalFaultList<?> list = prepareList(6);
         assertEquals(25, list.getUnfetchedObjects());
         list.get(7);
@@ -237,23 +238,17 @@ public class SimpleIdIncrementalFaultListIT extends RuntimeCase {
     }
 
     @Test
-    public void testPageIndex() throws Exception {
+    public void pageIndex() throws Exception {
         SimpleIdIncrementalFaultList<?> list = prepareList(6);
         assertEquals(0, list.pageIndex(0));
         assertEquals(0, list.pageIndex(1));
         assertEquals(1, list.pageIndex(6));
 
-        try {
-            assertEquals(13, list.pageIndex(82));
-            fail("Element index beyound array size must throw an IndexOutOfBoundsException.");
-        }
-        catch (IndexOutOfBoundsException ex) {
-            // exception expercted
-        }
+        assertThrows(IndexOutOfBoundsException.class, () -> list.pageIndex(82));
     }
 
     @Test
-    public void testPagesRead1() throws Exception {
+    public void pagesRead1() throws Exception {
         SimpleIdIncrementalFaultList<?> list = prepareList(6);
         assertTrue(list.elements.get(0) instanceof Long);
         assertTrue(list.elements.get(8) instanceof Long);
@@ -266,7 +261,7 @@ public class SimpleIdIncrementalFaultListIT extends RuntimeCase {
     }
 
     @Test
-    public void testGet1() throws Exception {
+    public void get1() throws Exception {
         SimpleIdIncrementalFaultList<?> list = prepareList(6);
         assertTrue(list.elements.get(0) instanceof Long);
         assertTrue(list.elements.get(8) instanceof Long);
@@ -279,7 +274,7 @@ public class SimpleIdIncrementalFaultListIT extends RuntimeCase {
     }
 
     @Test
-    public void testIndexOf() throws Exception {
+    public void indexOf() throws Exception {
         SimpleIdIncrementalFaultList<?> list = prepareList(6);
         List<?> artists = ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.eq("artist20"))
@@ -293,7 +288,7 @@ public class SimpleIdIncrementalFaultListIT extends RuntimeCase {
     }
 
     @Test
-    public void testLastIndexOf() throws Exception {
+    public void lastIndexOf() throws Exception {
         SimpleIdIncrementalFaultList<?> list = prepareList(6);
         List<?> artists = ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.eq("artist20"))

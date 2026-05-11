@@ -29,10 +29,10 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ObjectSelect_FetchLimitOrderingIT extends RuntimeCase {
@@ -45,7 +45,7 @@ public class ObjectSelect_FetchLimitOrderingIT extends RuntimeCase {
 
     protected TableHelper tArtist;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -61,7 +61,7 @@ public class ObjectSelect_FetchLimitOrderingIT extends RuntimeCase {
     }
 
     @Test
-    public void testOrdering() throws Exception {
+    public void ordering() throws Exception {
 
         creatArtistsDataSet();
 

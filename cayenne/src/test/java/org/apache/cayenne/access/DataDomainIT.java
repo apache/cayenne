@@ -38,19 +38,19 @@ import org.apache.cayenne.testdo.testmap.annotations.Tag1;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataDomainIT extends RuntimeCase {
@@ -62,7 +62,7 @@ public class DataDomainIT extends RuntimeCase {
     private JdbcEventLogger logger;
 
     @Test
-    public void testName() throws Exception {
+    public void name() throws Exception {
         DataDomain domain = new DataDomain("some name");
         assertEquals("some name", domain.getName());
         domain.setName("tst_name");
@@ -70,7 +70,7 @@ public class DataDomainIT extends RuntimeCase {
     }
 
     @Test
-    public void testLookupDataNode() {
+    public void lookupDataNode() {
 
         DataDomain domain = new DataDomain("test");
 
@@ -87,17 +87,11 @@ public class DataDomainIT extends RuntimeCase {
         assertSame(n1, domain.lookupDataNode(m1));
         assertSame(n2, domain.lookupDataNode(m2));
 
-        try {
-
-            domain.lookupDataNode(new DataMap("m3"));
-            fail("must have thrown on missing Map to Node maping");
-        } catch (CayenneRuntimeException e) {
-            // expected
-        }
+        assertThrows(CayenneRuntimeException.class, () -> domain.lookupDataNode(new DataMap("m3")));
     }
 
     @Test
-    public void testLookupDataNode_Default() {
+    public void lookupDataNode_Default() {
 
         DataDomain domain = new DataDomain("test");
 
@@ -119,7 +113,7 @@ public class DataDomainIT extends RuntimeCase {
     }
 
     @Test
-    public void testNodes() throws Exception {
+    public void nodes() throws Exception {
         DataDomain domain = new DataDomain("dom1");
         assertEquals(0, domain.getDataNodes().size());
         DataNode node = new DataNode("1");
@@ -133,7 +127,7 @@ public class DataDomainIT extends RuntimeCase {
     }
 
     @Test
-    public void testNodeMaps() throws Exception {
+    public void nodeMaps() throws Exception {
         DataDomain domain = new DataDomain("dom1");
         assertNull(domain.getDataMap("map"));
 
@@ -146,7 +140,7 @@ public class DataDomainIT extends RuntimeCase {
     }
 
     @Test
-    public void testMaps() throws Exception {
+    public void maps() throws Exception {
         DataDomain d1 = new DataDomain("dom1");
 
         DataMap m1 = new DataMap("m1");
@@ -158,7 +152,7 @@ public class DataDomainIT extends RuntimeCase {
     }
 
     @Test
-    public void testEntityResolverRefresh() throws Exception {
+    public void entityResolverRefresh() throws Exception {
         DataDomain domain = new DataDomain("dom1");
         org.apache.cayenne.map.EntityResolver resolver = domain.getEntityResolver();
         assertNotNull(resolver);
@@ -173,7 +167,7 @@ public class DataDomainIT extends RuntimeCase {
     }
 
     @Test
-    public void testEntityResolver() {
+    public void entityResolver() {
         assertNotNull(runtime.getDataDomain().getEntityResolver());
 
         DataDomain domain = new DataDomain("dom1");
@@ -182,7 +176,7 @@ public class DataDomainIT extends RuntimeCase {
 
     @SuppressWarnings("deprecation")
     @Test
-    public void testInitDataDomainWithSharedCache() throws Exception {
+    public void initDataDomainWithSharedCache() throws Exception {
         Map<String, String> properties = new HashMap<>();
         properties.put(DataDomain.SHARED_CACHE_ENABLED_PROPERTY, Boolean.TRUE.toString());
 
@@ -192,7 +186,7 @@ public class DataDomainIT extends RuntimeCase {
 
     @SuppressWarnings("deprecation")
     @Test
-    public void testInitDataDomainWithDedicatedCache() throws Exception {
+    public void initDataDomainWithDedicatedCache() throws Exception {
         Map<String, String> properties = new HashMap<>();
         properties.put(DataDomain.SHARED_CACHE_ENABLED_PROPERTY, Boolean.FALSE.toString());
 
@@ -202,7 +196,7 @@ public class DataDomainIT extends RuntimeCase {
 
     @SuppressWarnings("deprecation")
     @Test
-    public void testInitDataDomainValidation() throws Exception {
+    public void initDataDomainValidation() throws Exception {
         Map<String, String> properties = new HashMap<>();
         properties.put(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY, Boolean.TRUE.toString());
 
@@ -212,7 +206,7 @@ public class DataDomainIT extends RuntimeCase {
 
     @SuppressWarnings("deprecation")
     @Test
-    public void testInitDataDomainNoValidation() throws Exception {
+    public void initDataDomainNoValidation() throws Exception {
         Map<String, String> properties = new HashMap<>();
         properties.put(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY, Boolean.FALSE.toString());
 
@@ -221,7 +215,7 @@ public class DataDomainIT extends RuntimeCase {
     }
 
     @Test
-    public void testShutdownCache() {
+    public void shutdownCache() {
         DataDomain domain = new DataDomain("X");
 
         final boolean[] cacheShutdown = new boolean[1];
@@ -247,7 +241,7 @@ public class DataDomainIT extends RuntimeCase {
     }
 
     @Test
-    public void testAddListener() {
+    public void addListener() {
 
         DataDomain domain = runtime.getDataDomain();
         PostAddListener listener = new PostAddListener();

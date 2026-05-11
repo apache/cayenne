@@ -29,11 +29,11 @@ import org.apache.cayenne.testdo.cay_2032.Team;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * @since 4.0
@@ -47,7 +47,7 @@ public class Cay2032IT extends RuntimeCase {
     @Inject
     private DBHelper dbHelper;
 
-    @Before
+    @BeforeEach
     public void createTestData() throws Exception {
         // USERS table has field `name` BLOB to trigger suppressDistinct in translator
         TableHelper tUser = new TableHelper(dbHelper, "USERS");
@@ -83,7 +83,7 @@ public class Cay2032IT extends RuntimeCase {
     }
 
     @Test
-    public void testPrefetchDisjoint() throws Exception {
+    public void prefetchDisjoint() throws Exception {
         List<Team> result = ObjectSelect.query(Team.class)
                 .prefetch(Team.TEAM_USERS.disjoint())
                 .orderBy(Team.TEAM_ID_PK_PROPERTY.asc())
@@ -93,7 +93,7 @@ public class Cay2032IT extends RuntimeCase {
     }
 
     @Test
-    public void testPrefetchDisjointById() throws Exception {
+    public void prefetchDisjointById() throws Exception {
         List<Team> result = ObjectSelect.query(Team.class)
                 .prefetch(Team.TEAM_USERS.disjointById())
                 .orderBy(Team.TEAM_ID_PK_PROPERTY.asc())
@@ -103,7 +103,7 @@ public class Cay2032IT extends RuntimeCase {
     }
 
     @Test
-    public void testPrefetchJoint() throws Exception {
+    public void prefetchJoint() throws Exception {
         List<Team> result = ObjectSelect.query(Team.class)
                 .prefetch(Team.TEAM_USERS.joint())
                 .orderBy(Team.TEAM_ID_PK_PROPERTY.asc())

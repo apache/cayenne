@@ -25,17 +25,17 @@ import java.sql.Types;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AttributeLoaderIT extends BaseLoaderIT {
 
     @Test
-    public void testAttributeLoad() throws Exception {
+    public void attributeLoad() throws Exception {
         createDbEntities();
 
         AttributeLoader loader = new AttributeLoader(adapter, EMPTY_CONFIG, new DefaultDbLoaderDelegate());
@@ -78,7 +78,7 @@ public class AttributeLoaderIT extends BaseLoaderIT {
     }
 
     @Test
-    public void testAttributeLoadTypes() throws Exception {
+    public void attributeLoadTypes() throws Exception {
         DatabaseMetaData metaData = connection.getMetaData();
         DbLoaderDelegate delegate = new DefaultDbLoaderDelegate();
 
@@ -99,33 +99,33 @@ public class AttributeLoaderIT extends BaseLoaderIT {
         DbAttribute smallintAttr = getDbAttribute(smallintTest, "SMALLINT_COL");
 
         // check decimal
-        assertTrue(msgForTypeMismatch(Types.DECIMAL, decimalAttr), Types.DECIMAL == decimalAttr.getType()
-                || Types.NUMERIC == decimalAttr.getType());
+        assertTrue(Types.DECIMAL == decimalAttr.getType()
+                || Types.NUMERIC == decimalAttr.getType(), msgForTypeMismatch(Types.DECIMAL, decimalAttr));
         assertEquals(2, decimalAttr.getScale());
 
         // check varchar
-        assertEquals(msgForTypeMismatch(Types.VARCHAR, varcharAttr), Types.VARCHAR, varcharAttr.getType());
+        assertEquals(Types.VARCHAR, varcharAttr.getType(), msgForTypeMismatch(Types.VARCHAR, varcharAttr));
         assertEquals(255, varcharAttr.getMaxLength());
 
         // check integer
         // All integer types are mapped to NUMERIC in Oracle DB.
         if (accessStackAdapter.onlyGenericNumberType()) {
-            assertEquals(msgForTypeMismatch(Types.NUMERIC, integerAttr), Types.NUMERIC, integerAttr.getType());
+            assertEquals(Types.NUMERIC, integerAttr.getType(), msgForTypeMismatch(Types.NUMERIC, integerAttr));
         } else {
-            assertEquals(msgForTypeMismatch(Types.INTEGER, integerAttr), Types.INTEGER, integerAttr.getType());
+            assertEquals(Types.INTEGER, integerAttr.getType(), msgForTypeMismatch(Types.INTEGER, integerAttr));
         }
 
         // check float
-        assertTrue(msgForTypeMismatch(Types.FLOAT, floatAttr), Types.FLOAT == floatAttr.getType()
-                || Types.DOUBLE == floatAttr.getType() || Types.REAL == floatAttr.getType());
+        assertTrue(Types.FLOAT == floatAttr.getType()
+                || Types.DOUBLE == floatAttr.getType() || Types.REAL == floatAttr.getType(), msgForTypeMismatch(Types.FLOAT, floatAttr));
 
         // check smallint
         // All integer types are mapped to NUMERIC in Oracle DB.
         if (accessStackAdapter.onlyGenericNumberType()) {
-            assertEquals(msgForTypeMismatch(Types.NUMERIC, smallintAttr), Types.NUMERIC, smallintAttr.getType());
+            assertEquals(Types.NUMERIC, smallintAttr.getType(), msgForTypeMismatch(Types.NUMERIC, smallintAttr));
         } else {
-            assertTrue(msgForTypeMismatch(Types.SMALLINT, smallintAttr),
-                       Types.SMALLINT == smallintAttr.getType() || Types.INTEGER == smallintAttr.getType());
+            assertTrue(Types.SMALLINT == smallintAttr.getType() || Types.INTEGER == smallintAttr.getType(),
+                       msgForTypeMismatch(Types.SMALLINT, smallintAttr));
         }
     }
 
@@ -140,19 +140,19 @@ public class AttributeLoaderIT extends BaseLoaderIT {
         assertNotNull(blobEnt);
         DbAttribute blobAttr = getDbAttribute(blobEnt, "BLOB_COL");
         assertNotNull(blobAttr);
-        assertTrue(msgForTypeMismatch(Types.BLOB, blobAttr),
-                Types.BLOB == blobAttr.getType()
+        assertTrue(Types.BLOB == blobAttr.getType()
                         || Types.VARBINARY == blobAttr.getType()
-                        || Types.LONGVARBINARY == blobAttr.getType());
+                        || Types.LONGVARBINARY == blobAttr.getType(),
+                msgForTypeMismatch(Types.BLOB, blobAttr));
 
         DbEntity clobEnt = getDbEntity("CLOB_TEST");
         assertNotNull(clobEnt);
         DbAttribute clobAttr = getDbAttribute(clobEnt, "CLOB_COL");
         assertNotNull(clobAttr);
-        assertTrue(msgForTypeMismatch(Types.CLOB, clobAttr),
-                Types.CLOB == clobAttr.getType()
+        assertTrue(Types.CLOB == clobAttr.getType()
                         || Types.VARCHAR == clobAttr.getType()
-                        || Types.LONGVARCHAR == clobAttr.getType());
+                        || Types.LONGVARCHAR == clobAttr.getType(),
+                msgForTypeMismatch(Types.CLOB, clobAttr));
     }
 
 

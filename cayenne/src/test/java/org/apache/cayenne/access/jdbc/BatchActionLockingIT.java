@@ -39,7 +39,7 @@ import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,8 +48,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 @UseCayenneRuntime(CayenneProjects.LOCKING_PROJECT)
@@ -65,7 +65,7 @@ public class BatchActionLockingIT extends RuntimeCase {
 	private AdhocObjectFactory objectFactory;
 
 	@Test
-	public void testRunAsIndividualQueriesSuccess() throws Exception {
+	public void runAsIndividualQueriesSuccess() throws Exception {
 		EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
 
 		// test with adapter that supports keys...
@@ -107,7 +107,7 @@ public class BatchActionLockingIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testRunAsIndividualQueriesOptimisticLockingFailure() throws Exception {
+	public void runAsIndividualQueriesOptimisticLockingFailure() throws Exception {
 		EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
 
 		// test with adapter that supports keys...
@@ -142,11 +142,8 @@ public class BatchActionLockingIT extends RuntimeCase {
 		node.setEntityResolver(resolver);
 		node.setRowReaderFactory(mock(RowReaderFactory.class));
 		BatchAction action = new BatchAction(batchQuery, node, false);
-		try {
-			action.runAsIndividualQueries(mockConnection, batchQueryBuilder, new MockOperationObserver(), generatesKeys);
-			fail("No OptimisticLockingFailureException thrown.");
-		} catch (OptimisticLockException ignore) {
-		}
+		assertThrows(OptimisticLockException.class, () ->
+			action.runAsIndividualQueries(mockConnection, batchQueryBuilder, new MockOperationObserver(), generatesKeys));
 		assertEquals(0, mockConnection.getNumberCommits());
 		assertEquals(0, mockConnection.getNumberRollbacks());
 	}

@@ -27,11 +27,11 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.unit.util.ValidationDelegate;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  */
@@ -42,7 +42,7 @@ public class DataContextValidationIT extends RuntimeCase {
     private DataContext context;
 
     @Test
-    public void testValidatingObjectsOnCommitProperty() throws Exception {
+    public void validatingObjectsOnCommitProperty() throws Exception {
         context.setValidatingObjectsOnCommit(true);
         assertTrue(context.isValidatingObjectsOnCommit());
 
@@ -51,7 +51,7 @@ public class DataContextValidationIT extends RuntimeCase {
     }
 
     @Test
-    public void testValidatingObjectsOnCommit() throws Exception {
+    public void validatingObjectsOnCommit() throws Exception {
         // test that validation is called properly
 
         context.setValidatingObjectsOnCommit(true);
@@ -68,7 +68,7 @@ public class DataContextValidationIT extends RuntimeCase {
     }
 
     @Test
-    public void testValidationModifyingContext() throws Exception {
+    public void validationModifyingContext() throws Exception {
 
         ValidationDelegate delegate = (object, validationResult) -> {
 

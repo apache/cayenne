@@ -20,19 +20,19 @@ package org.apache.cayenne.map;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 
 public class EntityInheritanceTreeTest {
 
     @Test
-    public void testEntityMatchingRow_NoInheritance() {
+    public void entityMatchingRow_NoInheritance() {
         DataMap dataMap = new DataMap("map");
 
         DbEntity dbEntity = new DbEntity("e1");
@@ -60,7 +60,7 @@ public class EntityInheritanceTreeTest {
     }
 
     @Test
-    public void testEntityMatchingRow_SingleTableInheritance() {
+    public void entityMatchingRow_SingleTableInheritance() {
         DataMap dataMap = new DataMap("map");
 
         DbEntity dbEntity = new DbEntity("e1");
@@ -96,7 +96,7 @@ public class EntityInheritanceTreeTest {
     }
 
     @Test
-    public void testEntityMatchingRow_CAY_2693() {
+    public void entityMatchingRow_CAY_2693() {
         DataMap dataMap = new DataMap("map");
 
         DbEntity dbEntity = new DbEntity("a");

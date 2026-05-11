@@ -23,10 +23,10 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.2
@@ -36,7 +36,7 @@ public class SetPropertyTest {
     private SetProperty<Artist> property;
     private SetProperty<Artist> property1;
 
-    @Before
+    @BeforeEach
     public void createProperty() {
         property = new SetProperty<>(CayennePath.of("path"), null, Artist.class);
         property1 = new SetProperty<>(CayennePath.of("path.artist"), null, Artist.class);

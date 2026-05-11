@@ -38,11 +38,11 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.util.ListResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataDomainFiltersIT extends RuntimeCase {
@@ -54,7 +54,7 @@ public class DataDomainFiltersIT extends RuntimeCase {
     private CayenneRuntime runtime;
 
     @Test
-    public void testDefaultFilters() {
+    public void defaultFilters() {
         // There is a default TransactionFilter
         DataDomain domain = runtime.getDataDomain();
         assertEquals(0, domain.queryFilters.size());
@@ -62,7 +62,7 @@ public class DataDomainFiltersIT extends RuntimeCase {
     }
 
     @Test
-    public void testOnQuery_FilterOrdering() {
+    public void onQuery_FilterOrdering() {
 
         DataDomain domain = runtime.getDataDomain();
         List<String> results = new ArrayList<>();
@@ -95,7 +95,7 @@ public class DataDomainFiltersIT extends RuntimeCase {
     }
 
     @Test
-    public void testOnSync_FilterOrdering() {
+    public void onSync_FilterOrdering() {
 
         DataDomain domain = runtime.getDataDomain();
         List<String> results = new ArrayList<>();
@@ -131,7 +131,7 @@ public class DataDomainFiltersIT extends RuntimeCase {
     }
 
     @Test
-    public void testOnQuery_Blocking() {
+    public void onQuery_Blocking() {
 
         DataDomain domain = runtime.getDataDomain();
 
@@ -151,7 +151,7 @@ public class DataDomainFiltersIT extends RuntimeCase {
     }
 
     @Test
-    public void testSyncAndQueryFilter() {
+    public void syncAndQueryFilter() {
         ComplexFilter complexFilter = new ComplexFilter();
         DataDomain domain = runtime.getDataDomain();
 

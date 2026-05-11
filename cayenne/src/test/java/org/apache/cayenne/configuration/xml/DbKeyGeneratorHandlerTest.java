@@ -21,9 +21,9 @@ package org.apache.cayenne.configuration.xml;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.1
@@ -31,7 +31,7 @@ import static org.junit.Assert.*;
 public class DbKeyGeneratorHandlerTest extends BaseHandlerTest {
 
     @Test
-    public void testParsing()throws Exception {
+    public void parsing() throws Exception {
         final DbEntity dbEntity = new DbEntity("TEST");
 
         parse("db-key-generator", new HandlerFactory() {

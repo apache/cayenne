@@ -19,7 +19,7 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.reflect.PersistentDescriptor;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DefaultEntityResultSegmentTest {
     private final List<String> expectedColumnPath = List.of("key1", "key2");
@@ -39,7 +39,7 @@ public class DefaultEntityResultSegmentTest {
             new DefaultEntityResultSegment(new PersistentDescriptor(), fields, fields.size());
 
     @Test
-    public void testGetColumnPath() {
+    public void getColumnPath() {
         List<String> actualColumnPath = fields.values()
                 .stream()
                 .map(resultSegment::getColumnPath)

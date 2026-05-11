@@ -18,20 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class EJBQLParserFactoryTest {
 
     @Test
-    public void testGetParser() {
+    public void getParser() {
         EJBQLParser parser = EJBQLParserFactory.getParser();
         assertNotNull(parser);
     }
 
     @Test
-    public void testDefaultParser() {
+    public void defaultParser() {
         EJBQLParser parser = EJBQLParserFactory.getParser();
         EJBQLExpression parsedSelect = parser.parse("select a from b");
         assertNotNull(parsedSelect);

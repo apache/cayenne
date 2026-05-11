@@ -33,18 +33,18 @@ import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class CayennePersistentObjectRelationshipsIT extends RuntimeCase {
@@ -62,7 +62,7 @@ public class CayennePersistentObjectRelationshipsIT extends RuntimeCase {
     private TableHelper tPaintingInfo;
     private TableHelper tPainting;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -89,7 +89,7 @@ public class CayennePersistentObjectRelationshipsIT extends RuntimeCase {
     }
 
     @Test
-    public void testReadNestedProperty1() throws Exception {
+    public void readNestedProperty1() throws Exception {
         createArtistWithPaintingDataSet();
 
         Painting p1 = Cayenne.objectForPK(context, Painting.class, 6);
@@ -97,7 +97,7 @@ public class CayennePersistentObjectRelationshipsIT extends RuntimeCase {
     }
 
     @Test
-    public void testReadNestedProperty2() throws Exception {
+    public void readNestedProperty2() throws Exception {
         createArtistWithPaintingDataSet();
 
         Painting p1 = Cayenne.objectForPK(context, Painting.class, 6);
@@ -105,7 +105,7 @@ public class CayennePersistentObjectRelationshipsIT extends RuntimeCase {
     }
 
     @Test
-    public void testReciprocalRel1() throws Exception {
+    public void reciprocalRel1() throws Exception {
         createArtistWithPaintingDataSet();
 
         Painting p1 = Cayenne.objectForPK(context, Painting.class, 6);
@@ -121,7 +121,7 @@ public class CayennePersistentObjectRelationshipsIT extends RuntimeCase {
     }
 
     @Test
-    public void testReadToOneRel1() throws Exception {
+    public void readToOneRel1() throws Exception {
         createArtistWithPaintingDataSet();
 
         Painting p1 = Cayenne.objectForPK(context, Painting.class, 6);
@@ -134,7 +134,7 @@ public class CayennePersistentObjectRelationshipsIT extends RuntimeCase {
     }
 
     @Test
-    public void testReadToOneRel2() throws Exception {
+    public void readToOneRel2() throws Exception {
         // test chained calls to read relationships
         createArtistWithPaintingAndInfoDataSet();
 
@@ -151,7 +151,7 @@ public class CayennePersistentObjectRelationshipsIT extends RuntimeCase {
     }
 
     @Test
-    public void testReadToOneRel3() throws Exception {
+    public void readToOneRel3() throws Exception {
         createArtistWithPaintingDataSet();
 
         Painting p1 = Cayenne.objectForPK(context, Painting.class, 6);
@@ -160,7 +160,7 @@ public class CayennePersistentObjectRelationshipsIT extends RuntimeCase {
     }
 
     @Test
-    public void testReadToManyRel1() throws Exception {
+    public void readToManyRel1() throws Exception {
         createArtistWithPaintingDataSet();
 
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 8);
@@ -173,7 +173,7 @@ public class CayennePersistentObjectRelationshipsIT extends RuntimeCase {
     }
 
     @Test
-    public void testReadToManyRel2() throws Exception {
+    public void readToManyRel2() throws Exception {
         // test empty relationship
         tArtist.insert(11, "aX");
 
@@ -185,7 +185,7 @@ public class CayennePersistentObjectRelationshipsIT extends RuntimeCase {
     }
 
     @Test
-    public void testReflexiveRelationshipInsertOrder1() {
+    public void reflexiveRelationshipInsertOrder1() {
 
         ArtGroup parentGroup = context.newObject(ArtGroup.class);
         parentGroup.setName("parent");
@@ -200,7 +200,7 @@ public class CayennePersistentObjectRelationshipsIT extends RuntimeCase {
     }
 
     @Test
-    public void testReflexiveRelationshipInsertOrder2() {
+    public void reflexiveRelationshipInsertOrder2() {
 
         ArtGroup childGroup1 = context.newObject(ArtGroup.class);
         childGroup1.setName("child1");
@@ -217,7 +217,7 @@ public class CayennePersistentObjectRelationshipsIT extends RuntimeCase {
     }
 
     @Test
-    public void testReflexiveRelationshipInsertOrder3() {
+    public void reflexiveRelationshipInsertOrder3() {
         // multiple children, one created before parent, one after
 
         ArtGroup childGroup1 = context.newObject(ArtGroup.class);
@@ -242,7 +242,7 @@ public class CayennePersistentObjectRelationshipsIT extends RuntimeCase {
     }
 
     @Test
-    public void testReflexiveRelationshipInsertOrder4() {
+    public void reflexiveRelationshipInsertOrder4() {
         // multiple children, one created before parent, one after
 
         ArtGroup childGroup1 = context.newObject(ArtGroup.class);
@@ -267,7 +267,7 @@ public class CayennePersistentObjectRelationshipsIT extends RuntimeCase {
     }
 
     @Test
-    public void testCrossContextRelationshipException() {
+    public void crossContextRelationshipException() {
 
         // Create this object in one context...
         Artist artist = context.newObject(Artist.class);
@@ -276,30 +276,16 @@ public class CayennePersistentObjectRelationshipsIT extends RuntimeCase {
         Painting painting = runtime.newContext().newObject(Painting.class);
 
         // Check setting a toOne relationship
-        try {
-            painting.setToArtist(artist);
-            fail("Should have failed to set a cross-context relationship");
-        }
-        catch (CayenneRuntimeException e) {
-            // Fine.. it should throw an exception
-        }
-
+        assertThrows(CayenneRuntimeException.class, () -> painting.setToArtist(artist));
         assertNull(painting.getToArtist()); // Make sure it wasn't set
 
         // Now try the reverse (toMany) relationship
-        try {
-            artist.addToPaintingArray(painting);
-            fail("Should have failed to add a cross-context relationship");
-        }
-        catch (CayenneRuntimeException e) {
-            // Fine.. it should throw an exception
-        }
-
+        assertThrows(CayenneRuntimeException.class, () -> artist.addToPaintingArray(painting));
         assertEquals(0, artist.getPaintingArray().size());
     }
 
     @Test
-    public void testComplexInsertUpdateOrdering() {
+    public void complexInsertUpdateOrdering() {
         Artist artist = context.newObject(Artist.class);
         artist.setArtistName("a name");
 
@@ -317,7 +303,7 @@ public class CayennePersistentObjectRelationshipsIT extends RuntimeCase {
     }
 
     @Test
-    public void testNewToMany() throws Exception {
+    public void newToMany() throws Exception {
         Artist artist = context.newObject(Artist.class);
         artist.setArtistName("test");
         assertTrue(artist.readPropertyDirectly("paintingArray") instanceof ToManyList);
@@ -331,7 +317,7 @@ public class CayennePersistentObjectRelationshipsIT extends RuntimeCase {
     }
 
     @Test
-    public void testTransientInsertAndDeleteOfToManyRelationship() throws Exception {
+    public void transientInsertAndDeleteOfToManyRelationship() throws Exception {
         createArtistWithPaintingDataSet();
 
         Artist artist = ObjectSelect.query(Artist.class).selectOne(context);
@@ -348,7 +334,7 @@ public class CayennePersistentObjectRelationshipsIT extends RuntimeCase {
     }
     
     @Test
-    public void testTransientSetAndNullOfToOneRelationship() throws Exception {
+    public void transientSetAndNullOfToOneRelationship() throws Exception {
         createArtistWithPaintingDataSet();
 
         Artist artist = ObjectSelect.query(Artist.class).selectOne(context);

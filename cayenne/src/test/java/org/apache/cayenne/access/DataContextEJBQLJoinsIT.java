@@ -28,8 +28,8 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.HashSet;
@@ -37,8 +37,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextEJBQLJoinsIT extends RuntimeCase {
@@ -53,7 +53,8 @@ public class DataContextEJBQLJoinsIT extends RuntimeCase {
 	protected TableHelper tPainting;
 	protected TableHelper tGallery;
 
-	@Before
+	
+	@BeforeEach
 	public void setUp() throws Exception {
 		tArtist = new TableHelper(dbHelper, "ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -101,7 +102,7 @@ public class DataContextEJBQLJoinsIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testThetaJoins() throws Exception {
+	public void thetaJoins() throws Exception {
 		createFourArtistsFourPaintings();
 
 		String ejbql = "SELECT DISTINCT a FROM Artist a, Painting b " + "WHERE a.artistName = b.paintingTitle";
@@ -122,7 +123,7 @@ public class DataContextEJBQLJoinsIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testInnerJoins() throws Exception {
+	public void innerJoins() throws Exception {
 		createTwoArtistsOnePainting();
 
 		String ejbql = "SELECT a FROM Artist a INNER JOIN a.paintingArray p " + "WHERE a.artistName = 'AA1'";
@@ -133,7 +134,7 @@ public class DataContextEJBQLJoinsIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testOuterJoins() throws Exception {
+	public void outerJoins() throws Exception {
 		createTwoArtistsOnePainting();
 
 		String ejbql = "SELECT a FROM Artist a LEFT JOIN a.paintingArray p " + "WHERE a.artistName = 'AA1'";
@@ -152,7 +153,7 @@ public class DataContextEJBQLJoinsIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testChainedJoins() throws Exception {
+	public void chainedJoins() throws Exception {
 		createTwoArtistsTwoPaintingsTwoGalleries();
 
 		String ejbql = "SELECT a FROM Artist a JOIN a.paintingArray p JOIN p.toGallery g "
@@ -166,7 +167,7 @@ public class DataContextEJBQLJoinsIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testImplicitJoins() throws Exception {
+	public void implicitJoins() throws Exception {
 		createTwoArtistsTwoPaintingsTwoGalleries();
 
 		String ejbql = "SELECT a FROM Artist a WHERE a.paintingArray.toGallery.galleryName = 'gallery2'";
@@ -179,7 +180,7 @@ public class DataContextEJBQLJoinsIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testImplicitJoins_OUTER_LastComponent() throws Exception {
+	public void implicitJoins_OUTER_LastComponent() throws Exception {
 
 		tArtist.insert(33001, "AA1");
 		tArtist.insert(33002, "AA2");
@@ -196,7 +197,7 @@ public class DataContextEJBQLJoinsIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testImplicitJoins_OUTER_InTheMiddle() throws Exception {
+	public void implicitJoins_OUTER_InTheMiddle() throws Exception {
 
 		tGallery.insert(33001, "gallery1");
 		tGallery.insert(33002, "gallery2");
@@ -215,7 +216,7 @@ public class DataContextEJBQLJoinsIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPartialImplicitJoins1() throws Exception {
+	public void partialImplicitJoins1() throws Exception {
 		createTwoArtistsTwoPaintingsTwoGalleries();
 
 		String ejbql = "SELECT a " + "FROM Artist a JOIN a.paintingArray b "
@@ -227,7 +228,7 @@ public class DataContextEJBQLJoinsIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testPartialImplicitJoins2() throws Exception {
+	public void partialImplicitJoins2() throws Exception {
 		createTwoArtistsTwoPaintingsTwoGalleries();
 
 		String ejbql = "SELECT a " + "FROM Artist a JOIN a.paintingArray b "
@@ -239,7 +240,7 @@ public class DataContextEJBQLJoinsIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testMultipleJoinsToTheSameTable() throws Exception {
+	public void multipleJoinsToTheSameTable() throws Exception {
 		createTwoArtistsThreePaintings();
 
 		String ejbql = "SELECT a " + "FROM Artist a JOIN a.paintingArray b JOIN a.paintingArray c "

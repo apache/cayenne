@@ -28,11 +28,11 @@ import org.apache.cayenne.testdo.relationships.FkOfDifferentType;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_PROJECT)
 public class CAY_191IT extends RuntimeCase {
@@ -46,7 +46,7 @@ public class CAY_191IT extends RuntimeCase {
     protected TableHelper tRelationshipHelper;
     protected TableHelper tFkOfDifferentType;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tRelationshipHelper = new TableHelper(dbHelper, "RELATIONSHIP_HELPER");
         tRelationshipHelper.setColumns("NAME", "RELATIONSHIP_HELPER_ID");
@@ -61,7 +61,7 @@ public class CAY_191IT extends RuntimeCase {
     }
 
     @Test
-    public void testResolveToOneOverFKOfDifferentNumType() throws Exception {
+    public void resolveToOneOverFKOfDifferentNumType() throws Exception {
         // this is mostly for legacy schemas, as on many dbs you won;t be able to even
         // create the FK constraint...
 

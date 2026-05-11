@@ -37,7 +37,7 @@
                         <driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
                         <url>jdbc:derby:memory:DbImporterMojoTest;create=true</url>
                     </dataSource>
-                    <project implementation="org.apache.cayenne.stubs.CayenneProjectStub"/>
+
 
                 </configuration>
             </plugin>

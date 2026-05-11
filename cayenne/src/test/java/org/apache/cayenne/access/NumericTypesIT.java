@@ -45,11 +45,11 @@ import org.apache.cayenne.unit.di.CommitStats;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -74,7 +74,7 @@ public class NumericTypesIT extends RuntimeCase {
     protected TableHelper tSmallintTest;
     protected TableHelper tTinyintTest;
 
-    @Before
+    @BeforeEach
     public void before() {
         commitStats.before();
 
@@ -85,7 +85,7 @@ public class NumericTypesIT extends RuntimeCase {
         tTinyintTest.setColumns("ID", "TINYINT_COL");
     }
 
-    @After
+    @AfterEach
     public void after() {
         commitStats.after();
     }
@@ -101,7 +101,7 @@ public class NumericTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testLong() throws Exception {
+    public void longType() throws Exception {
 
         LongEntity test = context.newObject(LongEntity.class);
 
@@ -119,7 +119,7 @@ public class NumericTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testBigInteger() throws Exception {
+    public void bigInteger() throws Exception {
 
         BigIntegerEntity test = context.newObject(BigIntegerEntity.class);
 
@@ -137,7 +137,7 @@ public class NumericTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testBigDecimal_Decimal() {
+    public void bigDecimalDecimal() {
 
         // this matches the column scale exactly
         BigDecimal v1 = new BigDecimal("7890.123456");
@@ -160,7 +160,7 @@ public class NumericTypesIT extends RuntimeCase {
 
         o2.setBigDecimalDecimal(v2);
         o2.getObjectContext().commitChanges();
-        assertEquals("Commit was not expected. The difference is purely in value padding", 2, commitStats.getCommitCount());
+        assertEquals(2, commitStats.getCommitCount(), "Commit was not expected. The difference is purely in value padding");
         BigDecimalEntity o3 = ObjectSelect.query(BigDecimalEntity.class).selectFirst(runtime.newContext());
         assertEquals(0, v2_padded.compareTo(o3.getBigDecimalDecimal()));
 
@@ -172,7 +172,7 @@ public class NumericTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testBigDecimal_Numeric() {
+    public void bigDecimalNumeric() {
 
         BigDecimal v1 = new BigDecimal("1234567890.44");
         BigDecimal v2 = new BigDecimal("1234567890.4");
@@ -192,7 +192,7 @@ public class NumericTypesIT extends RuntimeCase {
         assertEquals(0, v2_padded.compareTo(o2.getBigDecimalNumeric()));
 
         o2.setBigDecimalNumeric(v2);
-        assertEquals("Commit was not expected. The difference is purely in value padding", 2, commitStats.getCommitCount());
+        assertEquals(2, commitStats.getCommitCount(), "Commit was not expected. The difference is purely in value padding");
         BigDecimalEntity o3 = ObjectSelect.query(BigDecimalEntity.class).selectFirst(runtime.newContext());
         assertEquals(0, v2_padded.compareTo(o3.getBigDecimalNumeric()));
 
@@ -204,7 +204,7 @@ public class NumericTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testShortInQualifier() throws Exception {
+    public void shortInQualifier() throws Exception {
         createShortDataSet();
 
         // test
@@ -218,7 +218,7 @@ public class NumericTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testShortInInsert() throws Exception {
+    public void shortInInsert() throws Exception {
         SmallintTestEntity object = (SmallintTestEntity) (context)
                 .newObject("SmallintTestEntity");
         object.setSmallintCol(Short.valueOf("1"));
@@ -226,7 +226,7 @@ public class NumericTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testTinyintInQualifier() throws Exception {
+    public void tinyintInQualifier() throws Exception {
         createTinyintDataSet();
 
         // test
@@ -240,7 +240,7 @@ public class NumericTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testTinyintInInsert() throws Exception {
+    public void tinyintInInsert() throws Exception {
         TinyintTestEntity object = (TinyintTestEntity) (context)
                 .newObject("TinyintTestEntity");
         object.setTinyintCol((byte) 1);
@@ -248,7 +248,7 @@ public class NumericTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testBooleanBit() throws Exception {
+    public void booleanBit() throws Exception {
 
         BitTestEntity trueObject = (BitTestEntity) context.newObject("BitTestEntity");
         trueObject.setBitColumn(Boolean.TRUE);
@@ -285,7 +285,7 @@ public class NumericTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testBooleanBoolean() throws Exception {
+    public void booleanBoolean() throws Exception {
 
         // populate (testing insert as well)
         BooleanTestEntity trueObject = (BooleanTestEntity) context
@@ -326,7 +326,7 @@ public class NumericTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testDecimalPK() throws Exception {
+    public void decimalPK() throws Exception {
 
         // populate (testing insert as well)
         DecimalPKTestEntity object = context.newObject(DecimalPKTestEntity.class);
@@ -346,7 +346,7 @@ public class NumericTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testDecimalPK1() throws Exception {
+    public void decimalPK1() throws Exception {
 
         // populate (testing insert as well)
         DecimalPKTest1 object = context.newObject(DecimalPKTest1.class);
@@ -360,7 +360,7 @@ public class NumericTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testBigIntegerColumnSelect() {
+    public void bigIntegerColumnSelect() {
         BigIntegerEntity test = context.newObject(BigIntegerEntity.class);
         BigInteger i = new BigInteger("1234567890");
         test.setBigIntegerField(i);

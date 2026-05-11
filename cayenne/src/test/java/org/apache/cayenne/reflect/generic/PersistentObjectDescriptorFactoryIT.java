@@ -33,10 +33,10 @@ import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
@@ -46,7 +46,7 @@ public class PersistentObjectDescriptorFactoryIT extends RuntimeCase {
     private EntityResolver resolver;
 
     @Test
-    public void testVisitDeclaredProperties_IterationOrder() {
+    public void visitDeclaredProperties_IterationOrder() {
 
         PersistentObjectDescriptorFactory factory = new PersistentObjectDescriptorFactory(
                 resolver.getClassDescriptorMap(),
@@ -85,7 +85,7 @@ public class PersistentObjectDescriptorFactoryIT extends RuntimeCase {
     }
 
     @Test
-    public void testVisitProperties_IterationOrder() {
+    public void visitProperties_IterationOrder() {
 
         PersistentObjectDescriptorFactory factory = new PersistentObjectDescriptorFactory(
                 resolver.getClassDescriptorMap(),
@@ -132,9 +132,8 @@ public class PersistentObjectDescriptorFactoryIT extends RuntimeCase {
 
         if (o1 instanceof ArcProperty) {
             if (o2 instanceof ArcProperty) {
-                assertTrue("Names are not ordered: " + o1.getName()
-                        + " before " + o2.getName(),
-                        o1.getName().compareTo(o2.getName()) < 0);
+                assertTrue(o1.getName().compareTo(o2.getName()) < 0,
+                        "Names are not ordered: " + o1.getName() + " before " + o2.getName());
             } else {
                 fail("Arc preceded regular property");
             }
@@ -142,9 +141,8 @@ public class PersistentObjectDescriptorFactoryIT extends RuntimeCase {
             if (o2 instanceof ArcProperty) {
                 // this is correct
             } else {
-                assertTrue("Names are not ordered: " + o1.getName()
-                        + " before " + o2.getName(),
-                        o1.getName().compareTo(o2.getName()) < 0);
+                assertTrue(o1.getName().compareTo(o2.getName()) < 0,
+                        "Names are not ordered: " + o1.getName() + " before " + o2.getName());
             }
         }
     }

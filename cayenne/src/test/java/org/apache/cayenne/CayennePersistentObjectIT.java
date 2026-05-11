@@ -19,7 +19,7 @@
 
 package org.apache.cayenne;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.unit.util.TstBean;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class CayennePersistentObjectIT extends RuntimeCase {
@@ -43,7 +43,7 @@ public class CayennePersistentObjectIT extends RuntimeCase {
 	private ObjectContext context;
 
 	@Test
-	public void testSetObjectId() throws Exception {
+	public void setObjectId() throws Exception {
 		GenericPersistentObject object = new GenericPersistentObject();
         ObjectId oid = ObjectId.of("T");
 
@@ -54,7 +54,7 @@ public class CayennePersistentObjectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testSetPersistenceState() throws Exception {
+	public void setPersistenceState() throws Exception {
 		GenericPersistentObject obj = new GenericPersistentObject();
 		assertEquals(PersistenceState.TRANSIENT, obj.getPersistenceState());
 
@@ -63,7 +63,7 @@ public class CayennePersistentObjectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testReadNestedProperty1() throws Exception {
+	public void readNestedProperty1() throws Exception {
 		Artist a = new Artist();
 		assertNull(a.readNestedProperty("artistName"));
 		a.setArtistName("aaa");
@@ -71,7 +71,7 @@ public class CayennePersistentObjectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testReadNestedPropertyNotPersistentString() throws Exception {
+	public void readNestedPropertyNotPersistentString() throws Exception {
 		Artist a = new Artist();
 		assertNull(a.readNestedProperty("someOtherProperty"));
 		a.setSomeOtherProperty("aaa");
@@ -79,7 +79,7 @@ public class CayennePersistentObjectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testReadNestedPropertyNonPersistentNotString() throws Exception {
+	public void readNestedPropertyNonPersistentNotString() throws Exception {
 		Artist a = new Artist();
 		Object object = new Object();
 		assertNull(a.readNestedProperty("someOtherObjectProperty"));
@@ -88,7 +88,7 @@ public class CayennePersistentObjectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testReadNestedPropertyNonPersistentObjectPath() {
+	public void readNestedPropertyNonPersistentObjectPath() {
 		GenericPersistentObject o1 = new GenericPersistentObject();
 		TstBean o2 = new TstBean();
 		o2.setInteger(55);
@@ -102,7 +102,7 @@ public class CayennePersistentObjectIT extends RuntimeCase {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testReadNestedPropertyToManyInMiddle() throws Exception {
+	public void readNestedPropertyToManyInMiddle() throws Exception {
 
 		Artist a = context.newObject(Artist.class);
 		ArtistExhibit ex = context.newObject(ArtistExhibit.class);
@@ -125,7 +125,7 @@ public class CayennePersistentObjectIT extends RuntimeCase {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testReadNestedPropertyToManyInMiddle1() throws Exception {
+	public void readNestedPropertyToManyInMiddle1() throws Exception {
 
 		Artist a = context.newObject(Artist.class);
 		ArtistExhibit ex = context.newObject(ArtistExhibit.class);
@@ -147,7 +147,7 @@ public class CayennePersistentObjectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testFilterObjects() {
+	public void filterObjects() {
 
 		List<Painting> paintingList = new ArrayList<Painting>();
 		Painting p1 = context.newObject(Painting.class);
@@ -163,7 +163,7 @@ public class CayennePersistentObjectIT extends RuntimeCase {
 	}
 	
 	@Test
-	public void testFilterObjectsResultIsMutable() {
+	public void filterObjectsResultIsMutable() {
 
 		List<Artist> artistList = new ArrayList<Artist>();
 		Artist a = context.newObject(Artist.class);

@@ -20,17 +20,17 @@ package org.apache.cayenne.cache;
 
 import org.apache.cayenne.query.MockQueryMetadata;
 import org.apache.cayenne.util.Util;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class MapQueryCacheTest {
 
     @Test
-    public void testSerializability() throws Exception {
+    public void serializability() throws Exception {
 
         MapQueryCache cache = new MapQueryCache(5);
         cache.put(new MockQueryMetadata() {

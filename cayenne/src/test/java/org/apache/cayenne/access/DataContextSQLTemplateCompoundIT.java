@@ -30,15 +30,15 @@ import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.COMPOUND_PROJECT)
 public class DataContextSQLTemplateCompoundIT extends RuntimeCase {
@@ -52,7 +52,8 @@ public class DataContextSQLTemplateCompoundIT extends RuntimeCase {
     protected TableHelper tCompoundPkTest;
     protected TableHelper tCompoundFkTest;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tCompoundPkTest = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
         tCompoundPkTest.setColumns("KEY1", "KEY2");
@@ -70,7 +71,7 @@ public class DataContextSQLTemplateCompoundIT extends RuntimeCase {
     }
 
     @Test
-    public void testBindObjectEqualCompound() throws Exception {
+    public void bindObjectEqualCompound() throws Exception {
         createTwoCompoundPKsAndCompoundFKsDataSet();
 
         Map<String, String> pk = new HashMap<>();
@@ -96,7 +97,7 @@ public class DataContextSQLTemplateCompoundIT extends RuntimeCase {
     }
 
     @Test
-    public void testBindObjectNotEqualCompound() throws Exception {
+    public void bindObjectNotEqualCompound() throws Exception {
         createTwoCompoundPKsAndCompoundFKsDataSet();
 
         Map<String, String> pk = new HashMap<>();

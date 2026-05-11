@@ -39,10 +39,10 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.validation.ValidationResult;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test case for objects with flattened relationships.
@@ -66,7 +66,7 @@ public class FlattenedRelationshipsIT extends RuntimeCase {
     private TableHelper tFlattenedCircular;
     private TableHelper tFlattenedCircularJoin;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tFlattenedTest1 = new TableHelper(dbHelper, "FLATTENED_TEST_1");
         tFlattenedTest1.setColumns("FT1_ID", "NAME");
@@ -317,7 +317,7 @@ public class FlattenedRelationshipsIT extends RuntimeCase {
         ValidationResult validationResult = new ValidationResult();
         ft5.validateForSave(validationResult);
 
-        assertTrue(validationResult.toString(), validationResult.getFailures().isEmpty());
+        assertTrue(validationResult.getFailures().isEmpty(), validationResult.toString());
 
         context.commitChanges();
 

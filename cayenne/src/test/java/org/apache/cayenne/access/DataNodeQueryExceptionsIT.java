@@ -29,13 +29,13 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataNodeQueryExceptionsIT extends RuntimeCase {
@@ -47,7 +47,7 @@ public class DataNodeQueryExceptionsIT extends RuntimeCase {
     protected RuntimeCaseDataSourceFactory dataSourceFactory;
 
     @Test
-    public void testQueryException() {
+    public void queryException() {
         SQLSelect<Object> throwingSS = new SQLSelect<Object>(Object.class, "SELECT 1") {
             @Override
             public SQLAction createSQLAction(SQLActionVisitor visitor) {
@@ -65,7 +65,7 @@ public class DataNodeQueryExceptionsIT extends RuntimeCase {
     }
 
     @Test
-    public void testQueryError() {
+    public void queryError() {
         SQLSelect<Object> throwingSS = new SQLSelect<Object>(Object.class, "SELECT 1") {
             @Override
             public SQLAction createSQLAction(SQLActionVisitor visitor) {

@@ -20,24 +20,24 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.dba.TypesMapping;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.Collection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  */
 public class DbAttributeTest {
 
     @Test
-    public void testConstructor1() throws Exception {
+    public void constructor1() throws Exception {
         DbAttribute a = new DbAttribute("abc");
         assertEquals("abc", a.getName());
         assertEquals(TypesMapping.NOT_DEFINED, a.getType());
@@ -45,7 +45,7 @@ public class DbAttributeTest {
     }
 
     @Test
-    public void testConstructor2() throws Exception {
+    public void constructor2() throws Exception {
         int type = Types.INTEGER;
         DbEntity dbe = new DbEntity("e");
         DbAttribute a = new DbAttribute("abc", type, dbe);
@@ -55,7 +55,7 @@ public class DbAttributeTest {
     }
 
     @Test
-    public void testPrimaryKeyEmpty() {
+    public void primaryKeyEmpty() {
         DbEntity dbe = new DbEntity("e");
         assertNotNull(dbe.getPrimaryKeys());
 
@@ -66,7 +66,7 @@ public class DbAttributeTest {
     }
 
     @Test
-    public void testPrimaryKeyAdded() {
+    public void primaryKeyAdded() {
         DbEntity dbe = new DbEntity("e");
         DbAttribute a = new DbAttribute("abc", Types.INTEGER, dbe);
         a.setPrimaryKey(true);
@@ -77,7 +77,7 @@ public class DbAttributeTest {
     }
 
     @Test
-    public void testPrimaryKeyAttributeChanged() {
+    public void primaryKeyAttributeChanged() {
         DbEntity dbe = new DbEntity("e");
         DbAttribute a = new DbAttribute("abc", Types.INTEGER, dbe);
         dbe.addAttribute(a);
@@ -92,7 +92,7 @@ public class DbAttributeTest {
     }
 
     @Test
-    public void testPrimaryKeyRemoved() {
+    public void primaryKeyRemoved() {
         DbEntity dbe = new DbEntity("e");
         DbAttribute a = new DbAttribute("abc", Types.INTEGER, dbe);
         a.setPrimaryKey(true);
@@ -107,7 +107,7 @@ public class DbAttributeTest {
         assertEquals(0, pk.size());    }
 
     @Test
-    public void testAttributesCleared() {
+    public void attributesCleared() {
         DbEntity dbe = new DbEntity("e");
         DbAttribute a = new DbAttribute("abc", Types.INTEGER, dbe);
         a.setPrimaryKey(true);
@@ -123,7 +123,7 @@ public class DbAttributeTest {
     }
 
     @Test
-    public void testAutoIncrement() throws Exception {
+    public void autoIncrement() throws Exception {
         DbAttribute attribute = new DbAttribute();
         assertFalse(attribute.isGenerated());
 

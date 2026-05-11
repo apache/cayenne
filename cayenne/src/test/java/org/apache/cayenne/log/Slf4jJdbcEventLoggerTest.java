@@ -19,14 +19,14 @@
 package org.apache.cayenne.log;
 
 import org.apache.cayenne.util.IDUtil;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Slf4jJdbcEventLoggerTest {
 
     @Test
-    public void testAppendFormattedByte() throws Exception {
+    public void appendFormattedByte() throws Exception {
         assertFormatting((byte) 0, "00");
         assertFormatting((byte) 1, "01");
         assertFormatting((byte) 10, "0A");

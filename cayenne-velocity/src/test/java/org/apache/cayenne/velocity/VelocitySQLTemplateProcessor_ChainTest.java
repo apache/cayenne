@@ -19,27 +19,27 @@
 
 package org.apache.cayenne.velocity;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.cayenne.access.jdbc.SQLStatement;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class VelocitySQLTemplateProcessor_ChainTest {
 
 	private VelocitySQLTemplateProcessor processor;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		processor = new VelocitySQLTemplateProcessor();
 	}
 
 	@Test
-	public void testProcessTemplateNoChunks() throws Exception {
+	public void processTemplateNoChunks() throws Exception {
 		// whatever is inside the chain, it should render as empty if there
 		// is no chunks...
 
@@ -60,7 +60,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 	}
 
 	@Test
-	public void testProcessTemplateFullChain() throws Exception {
+	public void processTemplateFullChain() throws Exception {
 		String template = "#chain(' OR ')" + "#chunk($a)$a#end" + "#chunk($b)$b#end" + "#chunk($c)$c#end" + "#end";
 
 		Map<String, Object> map = new HashMap<>();
@@ -73,7 +73,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 	}
 
 	@Test
-	public void testProcessTemplateFullChainAndPrefix() throws Exception {
+	public void processTemplateFullChainAndPrefix() throws Exception {
 		String template = "#chain(' OR ' 'WHERE ')" + "#chunk($a)$a#end" + "#chunk($b)$b#end" + "#chunk($c)$c#end"
 				+ "#end";
 
@@ -87,7 +87,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 	}
 
 	@Test
-	public void testProcessTemplatePartialChainMiddle() throws Exception {
+	public void processTemplatePartialChainMiddle() throws Exception {
 		String template = "#chain(' OR ' 'WHERE ')" + "#chunk($a)$a#end" + "#chunk($b)$b#end" + "#chunk($c)$c#end"
 				+ "#end";
 
@@ -100,7 +100,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 	}
 
 	@Test
-	public void testProcessTemplatePartialChainStart() throws Exception {
+	public void processTemplatePartialChainStart() throws Exception {
 		String template = "#chain(' OR ' 'WHERE ')" + "#chunk($a)$a#end" + "#chunk($b)$b#end" + "#chunk($c)$c#end"
 				+ "#end";
 
@@ -113,7 +113,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 	}
 
 	@Test
-	public void testProcessTemplatePartialChainEnd() throws Exception {
+	public void processTemplatePartialChainEnd() throws Exception {
 		String template = "#chain(' OR ' 'WHERE ')" + "#chunk($a)$a#end" + "#chunk($b)$b#end" + "#chunk($c)$c#end"
 				+ "#end";
 
@@ -126,7 +126,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 	}
 
 	@Test
-	public void testProcessTemplateChainWithGarbage() throws Exception {
+	public void processTemplateChainWithGarbage() throws Exception {
 		String template = "#chain(' OR ' 'WHERE ')" + "#chunk($a)$a#end" + " some other stuff" + "#chunk($c)$c#end"
 				+ "#end";
 
@@ -139,7 +139,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 	}
 
 	@Test
-	public void testProcessTemplateChainUnconditionalChunks() throws Exception {
+	public void processTemplateChainUnconditionalChunks() throws Exception {
 		String template = "#chain(' OR ' 'WHERE ')" + "#chunk()C1#end" + "#chunk()C2#end" + "#chunk()C3#end" + "#end";
 
 		SQLStatement compiled = processor.processTemplate(template, Collections.<String, Object> emptyMap());
@@ -147,7 +147,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 	}
 
 	@Test
-	public void testProcessTemplateEmptyChain() throws Exception {
+	public void processTemplateEmptyChain() throws Exception {
 		String template = "#chain(' OR ' 'WHERE ')" + "#chunk($a)$a#end" + "#chunk($b)$b#end" + "#chunk($c)$c#end"
 				+ "#end";
 
@@ -156,7 +156,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 	}
 
 	@Test
-	public void testProcessTemplateWithFalseOrZero1() throws Exception {
+	public void processTemplateWithFalseOrZero1() throws Exception {
 		String template = "#chain(' OR ' 'WHERE ')" + "#chunk($a)[A]#end" + "#chunk($b)[B]#end" + "#chunk($c)$c#end"
 				+ "#end";
 
@@ -169,7 +169,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 	}
 
 	@Test
-	public void testProcessTemplateWithFalseOrZero2() throws Exception {
+	public void processTemplateWithFalseOrZero2() throws Exception {
 		String template = "#chain(' OR ' 'WHERE ')" + "#chunk($a)$a#end" + "#chunk($b)$b#end" + "#chunk($c)$c#end"
 				+ "#end";
 

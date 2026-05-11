@@ -26,14 +26,14 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class UserTransactionIT extends RuntimeCase {
@@ -45,7 +45,7 @@ public class UserTransactionIT extends RuntimeCase {
     private JdbcEventLogger logger;
 
     @Test
-    public void testCommit() throws Exception {
+    public void commit() throws Exception {
 
         Artist a = context.newObject(Artist.class);
         a.setArtistName("AAA");

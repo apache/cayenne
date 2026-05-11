@@ -30,13 +30,13 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.sql.Types;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_PROJECT)
 public class CircularDependencyIT extends RuntimeCase {
@@ -50,7 +50,7 @@ public class CircularDependencyIT extends RuntimeCase {
     @Inject
     private DBHelper dbHelper;
 
-    @After
+    @AfterEach
     public void cleanUp() throws SQLException {
         // manually cleanup circular references
         TableHelper e1 = new TableHelper(dbHelper, "CYCLE_E1", "id", "e2_id", "text");
@@ -68,8 +68,8 @@ public class CircularDependencyIT extends RuntimeCase {
         reflexive.deleteAll();
     }
 
-    @Test()
-    public void testCycle() {
+    @Test
+    public void cycle() {
         E1 e1 = context.newObject(E1.class);
         E2 e2 = context.newObject(E2.class);
 
@@ -79,25 +79,20 @@ public class CircularDependencyIT extends RuntimeCase {
         e1.setE2(e2);
         e2.setE1(e1);
 
-        try {
-            context.commitChanges();
-            fail("Exception should be thrown here");
-        } catch (CayenneRuntimeException ex) {
-            // TODO: Oracle adapter still does not fully support key generation.
-            if (unitDbAdapter instanceof OracleUnitDbAdapter) {
-                assertTrue(ex.getCause().getMessage().contains("parent key not found"));
-            } else {
-                assertTrue(String.format("Unexpected exception message: %s%nCause: %s - %s",
-                                ex.getMessage(), ex.getCause(),
-                                ex.getCause() != null ? ex.getCause().getMessage() : null),
-                        ex.getMessage().contains("PK is not generated"));
-            }
+        CayenneRuntimeException ex = assertThrows(CayenneRuntimeException.class, () -> context.commitChanges());
+        // TODO: Oracle adapter still does not fully support key generation.
+        if (unitDbAdapter instanceof OracleUnitDbAdapter) {
+            assertTrue(ex.getCause().getMessage().contains("parent key not found"));
+        } else {
+            assertTrue(ex.getMessage().contains("PK is not generated"),
+                    String.format("Unexpected exception message: %s%nCause: %s - %s",
+                            ex.getMessage(), ex.getCause(),
+                            ex.getCause() != null ? ex.getCause().getMessage() : null));
         }
-
     }
 
     @Test
-    public void testUpdate() {
+    public void update() {
         E1 e1 = context.newObject(E1.class);
         E2 e2 = context.newObject(E2.class);
 
@@ -113,7 +108,7 @@ public class CircularDependencyIT extends RuntimeCase {
     }
 
     @Test
-    public void testUpdateSelfRelationship() {
+    public void updateSelfRelationship() {
         ReflexiveAndToOne e1 = context.newObject(ReflexiveAndToOne.class);
         ReflexiveAndToOne e2 = context.newObject(ReflexiveAndToOne.class);
 

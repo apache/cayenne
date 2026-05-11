@@ -28,8 +28,8 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +38,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -66,7 +66,7 @@ public class TransactionCustomConnectionIT extends RuntimeCase {
     TransactionManager manager;
     private static boolean firstReadonlyCondition;
 
-    @Before
+    @BeforeEach
     public void initTransactionManager() {
         // no binding in test container, get it from runtime
         manager = runtime.getInjector().getInstance(TransactionManager.class);
@@ -80,7 +80,7 @@ public class TransactionCustomConnectionIT extends RuntimeCase {
      * right behavior of methods
      */
     @Test
-    public void testConnectionDecorationWithListeners() {
+    public void connectionDecorationWithListeners() {
         Transaction t = new CayenneTransaction(jdbcEventLogger);
         //add listeners which will check if connection object will be changed after every decorate call
         List<TransactionListener> listeners = addAndGetListenersWithCustomReadonlyTo(t);
@@ -187,7 +187,7 @@ public class TransactionCustomConnectionIT extends RuntimeCase {
     }
 
     @Test
-    public void testDefaultConnectionInDescriptor() {
+    public void defaultConnectionInDescriptor() {
         Transaction t = new CayenneTransaction(jdbcEventLogger);
         BaseTransaction.bindThreadTransaction(t);
         try {

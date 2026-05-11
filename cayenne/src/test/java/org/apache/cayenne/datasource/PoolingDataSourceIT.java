@@ -21,7 +21,7 @@ package org.apache.cayenne.datasource;
 
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -34,18 +34,18 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class PoolingDataSourceIT extends BasePoolingDataSourceIT {
 
-	@Test(expected = UnsupportedOperationException.class)
-	public void testGetConnectionWithUserName() throws Exception {
-		dataSource.getConnection("user", "password");
+	@Test
+	public void getConnectionWithUserName() {
+		assertThrows(UnsupportedOperationException.class, () -> dataSource.getConnection("user", "password"));
 	}
 
 	@Test
-	public void testGetConnection_AutoCommit() throws Exception {
+	public void getConnection_AutoCommit() throws Exception {
 
 		assertTrue(dataSource.getMaxConnections() > 0);
 
@@ -54,7 +54,7 @@ public class PoolingDataSourceIT extends BasePoolingDataSourceIT {
 
 			for (int i = 0; i < dataSource.getMaxConnections(); i++) {
 				Connection c = dataSource.getConnection();
-				assertTrue("Failed to reset connection state", c.getAutoCommit());
+				assertTrue(c.getAutoCommit(), "Failed to reset connection state");
 				connections.add(c);
 			}
 
@@ -69,7 +69,7 @@ public class PoolingDataSourceIT extends BasePoolingDataSourceIT {
 				// presumably this pass through the pool should return existing
 				// connections
 				assertTrue(connections.contains(c));
-				assertTrue("Failed to reset connection state for reused connection", c.getAutoCommit());
+				assertTrue(c.getAutoCommit(), "Failed to reset connection state for reused connection");
 			}
 
 		} finally {
@@ -84,7 +84,7 @@ public class PoolingDataSourceIT extends BasePoolingDataSourceIT {
 	}
 
 	@Test
-	public void testGetConnection_FailOnFull() throws Exception {
+	public void getConnection_FailOnFull() throws Exception {
 
 		assertTrue(dataSource.getMaxConnections() > 0);
 
@@ -96,16 +96,9 @@ public class PoolingDataSourceIT extends BasePoolingDataSourceIT {
 			}
 
 			long t0 = System.currentTimeMillis();
-			try {
-
-				dataSource.getConnection();
-				fail("Opening more connections than the pool allows succeeded");
-			} catch (SQLException e) {
-				// expected, but check if we waited sufficiently
-
-				long t1 = System.currentTimeMillis();
-				assertTrue(t1 - t0 >= QUEUE_WAIT_TIME);
-			}
+			assertThrows(SQLException.class, dataSource::getConnection);
+			long t1 = System.currentTimeMillis();
+			assertTrue(t1 - t0 >= QUEUE_WAIT_TIME);
 
 		} finally {
 			for (Connection c : connections) {
@@ -119,7 +112,7 @@ public class PoolingDataSourceIT extends BasePoolingDataSourceIT {
 	}
 
 	@Test
-	public void testGetConnection() throws Exception {
+	public void getConnection() throws Exception {
 
 		assertEquals(2, dataSource.poolSize());
 		assertEquals(2, dataSource.availableSize());
@@ -150,7 +143,7 @@ public class PoolingDataSourceIT extends BasePoolingDataSourceIT {
 	}
 
 	@Test
-	public void testGetConnection_BeforeScopeEnd() throws Exception {
+	public void getConnection_BeforeScopeEnd() throws Exception {
 
 		assertEquals(2, dataSource.poolSize());
 		assertEquals(2, dataSource.availableSize());
@@ -162,7 +155,7 @@ public class PoolingDataSourceIT extends BasePoolingDataSourceIT {
 	}
 
 	@Test
-	public void testGetConnection_Concurrent() {
+	public void getConnection_Concurrent() throws InterruptedException {
 
 		PoolTask[] tasks = new PoolTask[2];
 		for (int i = 0; i < tasks.length; i++) {
@@ -179,16 +172,10 @@ public class PoolingDataSourceIT extends BasePoolingDataSourceIT {
 
 		// check for completion or deadlock
 		executor.shutdown();
-		try {
-			// normally this completes in less than 2 seconds. If it takes 30
-			// then it failed.
-			boolean didFinish = executor.awaitTermination(30, TimeUnit.SECONDS);
-			if (!didFinish) {
-				fail("Connection pool either deadlocked or contended over the lock too long.");
-			}
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
+		// normally this completes in less than 2 seconds. If it takes 30
+		// then it failed.
+		boolean didFinish = executor.awaitTermination(30, TimeUnit.SECONDS);
+		assertTrue(didFinish, "Connection pool either deadlocked or contended over the lock too long.");
 
 		for (PoolTask task : tasks) {
 			assertEquals(100, task.i.get());

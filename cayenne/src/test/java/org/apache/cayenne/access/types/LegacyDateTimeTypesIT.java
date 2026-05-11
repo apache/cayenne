@@ -29,13 +29,13 @@ import org.apache.cayenne.testdo.legacy_datetime.DateTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Time;
 import java.util.Calendar;
 import java.util.Date;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests Date handling in Cayenne.
@@ -47,7 +47,7 @@ public class LegacyDateTimeTypesIT extends RuntimeCase {
     private DataContext context;
 
     @Test
-    public void testCalendar() {
+    public void calendar() {
 
         CalendarEntity test = context.newObject(CalendarEntity.class);
 
@@ -68,7 +68,7 @@ public class LegacyDateTimeTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testDate() {
+    public void date() {
         DateTestEntity test = context.newObject(DateTestEntity.class);
 
         Calendar cal = Calendar.getInstance();
@@ -86,7 +86,7 @@ public class LegacyDateTimeTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testTime() {
+    public void time() {
         DateTestEntity test = context.newObject(DateTestEntity.class);
 
         Calendar cal = Calendar.getInstance();
@@ -107,11 +107,11 @@ public class LegacyDateTimeTypesIT extends RuntimeCase {
         // so this test is approximate...
 
         long delta = nowTime.getTime() - testRead.getTimeColumn().getTime();
-        assertTrue("" + delta, Math.abs(delta) <= 1000 * 60 * 60);
+        assertTrue(Math.abs(delta) <= 1000 * 60 * 60, "" + delta);
     }
 
     @Test
-    public void testTimestamp() {
+    public void timestamp() {
         DateTestEntity test = context.newObject(DateTestEntity.class);
 
         Calendar cal = Calendar.getInstance();
@@ -132,7 +132,7 @@ public class LegacyDateTimeTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testSQLTemplateTimestamp() {
+    public void sQLTemplateTimestamp() {
         DateTestEntity test = context.newObject(DateTestEntity.class);
 
         Calendar cal = Calendar.getInstance();
@@ -153,7 +153,7 @@ public class LegacyDateTimeTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testSQLTemplateDate() {
+    public void sQLTemplateDate() {
         DateTestEntity test = (DateTestEntity) context.newObject("DateTestEntity");
 
         Calendar cal = Calendar.getInstance();
@@ -174,7 +174,7 @@ public class LegacyDateTimeTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testSQLTemplateTime() {
+    public void sQLTemplateTime() {
         DateTestEntity test = (DateTestEntity) context.newObject("DateTestEntity");
 
         Calendar cal = Calendar.getInstance();
@@ -190,7 +190,7 @@ public class LegacyDateTimeTypesIT extends RuntimeCase {
 
         DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectDateTest")).get(0);
         Date columnValue = (Date) testRead.get("TIME_COLUMN");
-        assertNotNull(testRead.toString(), columnValue);
+        assertNotNull(columnValue, testRead.toString());
         assertNotNull(columnValue);
         assertEquals(now.toString(), new Time(columnValue.getTime()).toString());
     }

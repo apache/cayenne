@@ -18,27 +18,27 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ASTInTest {
 
 	@Test
-	public void testToEJBQL_in() throws IOException {
+	public void toEJBQL_in() throws IOException {
 		ASTIn e = new ASTIn(new ASTObjPath("consignment.parts"), new ASTList(new Object[] { 91, 23 }));
 		assertEquals("x.consignment.parts in (91, 23)", e.toEJBQL("x"));
 	}
 
 	@Test
-	public void testEvaluate() {
+	public void evaluate() {
 		Expression in = new ASTIn(new ASTObjPath("estimatedPrice"), new ASTList(new Object[] { new BigDecimal("10"),
 				new BigDecimal("20") }));
 
@@ -52,8 +52,8 @@ public class ASTInTest {
 
 		Painting noMatch2 = new Painting();
 		noMatch2.setEstimatedPrice(new BigDecimal("11"));
-		assertFalse("Failed: " + in, in.match(noMatch2));
-		assertTrue("Failed: " + notIn, notIn.match(noMatch2));
+		assertFalse(in.match(noMatch2), "Failed: " + in);
+		assertTrue(notIn.match(noMatch2), "Failed: " + notIn);
 
 		Painting match1 = new Painting();
 		match1.setEstimatedPrice(new BigDecimal("20"));
@@ -62,12 +62,12 @@ public class ASTInTest {
 
 		Painting match2 = new Painting();
 		match2.setEstimatedPrice(new BigDecimal("10"));
-		assertTrue("Failed: " + in, in.match(match2));
-		assertFalse("Failed: " + notIn, notIn.match(match2));
+		assertTrue(in.match(match2), "Failed: " + in);
+		assertFalse(notIn.match(match2), "Failed: " + notIn);
 	}
 
 	@Test
-	public void testEvaluate_Null() {
+	public void evaluate_Null() {
 		Expression in = new ASTIn(new ASTObjPath("estimatedPrice"), new ASTList(new Object[] { new BigDecimal("10"),
 				new BigDecimal("20") }));
 		Expression notIn = new ASTNotIn(new ASTObjPath("estimatedPrice"), new ASTList(new Object[] {

@@ -28,11 +28,11 @@ import java.util.Map;
 import org.apache.cayenne.template.Context;
 import org.apache.cayenne.template.DefaultTemplateContextFactory;
 import org.apache.cayenne.template.TemplateContextFactory;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.1
@@ -41,13 +41,13 @@ public class SQLTemplateParserTest {
 
     private TemplateContextFactory contextFactory;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         contextFactory = new DefaultTemplateContextFactory();
     }
 
     @Test
-    public void testUnchangedParse() throws Exception {
+    public void unchangedParse() throws Exception {
         Context context = contextFactory.createContext(Collections.emptyMap());
         String template = "SELECT * FROM a";
 
@@ -56,7 +56,7 @@ public class SQLTemplateParserTest {
     }
 
     @Test
-    public void testParameterParse() throws Exception {
+    public void parameterParse() throws Exception {
         Context context = contextFactory.createContext(Collections.singletonMap("a", true));
         String template = "SELECT $a FROM a";
 
@@ -65,7 +65,7 @@ public class SQLTemplateParserTest {
     }
 
     @Test
-    public void testIfElseParse() throws Exception {
+    public void ifElseParse() throws Exception {
         Context context = contextFactory.createContext(Collections.singletonMap("a", true));
         String template = "SELECT #if($a) * #else 1 #end FROM a";
 
@@ -80,7 +80,7 @@ public class SQLTemplateParserTest {
     }
 
     @Test
-    public void testBindParse() throws Exception {
+    public void bindParse() throws Exception {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("a", "var");
         parameters.put("b", "bbb");
@@ -96,7 +96,7 @@ public class SQLTemplateParserTest {
 
 
     @Test
-    public void testComplexParse() throws Exception {
+    public void complexParse() throws Exception {
         class Helper {
             public String cayenneExp(Object obj, String exp) {
                 return "aaaa";
@@ -129,7 +129,7 @@ public class SQLTemplateParserTest {
     }
 
     @Test
-    public void testComplexParse2() throws Exception {
+    public void complexParse2() throws Exception {
         String tpl = "SELECT " +
                 "#result('t0.BIGDECIMAL_FIELD' 'java.math.BigDecimal' 'ec0_0' 'ec0_0' 2), " +
                 "#result('t0.ID' 'java.lang.Integer' 'ec0_1' 'ec0_1' 4) " +
@@ -147,7 +147,7 @@ public class SQLTemplateParserTest {
     }
 
     @Test
-    public void testComplexParse3() throws Exception {
+    public void complexParse3() throws Exception {
         String tpl = "SELECT " +
                 "#result('COUNT(*)' 'java.lang.Long' 'sc0'), " +
                 "#result('t0.ARTIST_NAME' 'java.lang.String' 'ec1_0' 'ec1_0' 1), " +
@@ -168,7 +168,7 @@ public class SQLTemplateParserTest {
     }
 
     @Test
-    public void testHelperObject() throws Exception {
+    public void helperObject() throws Exception {
         String tpl = "($helper.cayenneExp($a, 'field'))";
         Context context = contextFactory.createContext(Collections.singletonMap("a", new TestBean(5)));
 
@@ -177,7 +177,7 @@ public class SQLTemplateParserTest {
     }
 
     @Test
-    public void testMethodCallArray() throws Exception {
+    public void methodCallArray() throws Exception {
         String tpl = "$a.arrayMethod(['1' '2' '3'])";
         Context context = contextFactory.createContext(Collections.singletonMap("a", new TestBean(5)));
 
@@ -186,7 +186,7 @@ public class SQLTemplateParserTest {
     }
 
     @Test
-    public void testMethodCallArray2() throws Exception {
+    public void methodCallArray2() throws Exception {
         String tpl = "$a.arrayMethod(['1', '2', '3'])";
         Context context = contextFactory.createContext(Collections.singletonMap("a", new TestBean(5)));
 
@@ -195,7 +195,7 @@ public class SQLTemplateParserTest {
     }
 
     @Test
-    public void testMethodCallInt() throws Exception {
+    public void methodCallInt() throws Exception {
         String tpl = "$a.intMethod(42)";
         Context context = contextFactory.createContext(Collections.singletonMap("a", new TestBean(5)));
 
@@ -204,7 +204,7 @@ public class SQLTemplateParserTest {
     }
 
     @Test
-    public void testMethodCallString() throws Exception {
+    public void methodCallString() throws Exception {
         String tpl = "$a.stringMethod(\"abc\")";
         Context context = contextFactory.createContext(Collections.singletonMap("a", new TestBean(5)));
 
@@ -213,7 +213,7 @@ public class SQLTemplateParserTest {
     }
 
     @Test
-    public void testMethodCallFloat() throws Exception {
+    public void methodCallFloat() throws Exception {
         String tpl = "$a.floatMethod(3.14)";
         Context context = contextFactory.createContext(Collections.singletonMap("a", new TestBean(5)));
 
@@ -222,8 +222,8 @@ public class SQLTemplateParserTest {
     }
 
     @Test
-    @Ignore("Method overload not properly supported, this test can return m2_true")
-    public void testMethodCallSelectByArgType1() throws Exception {
+    @Disabled("Method overload not properly supported, this test can return m2_true")
+    public void methodCallSelectByArgType1() throws Exception {
         String tpl = "$a.method(123)";
         Context context = contextFactory.createContext(Collections.singletonMap("a", new TestBean(5)));
 
@@ -232,7 +232,7 @@ public class SQLTemplateParserTest {
     }
 
     @Test
-    public void testMethodCallSelectByArgType2() throws Exception {
+    public void methodCallSelectByArgType2() throws Exception {
         String tpl = "$a.method(true)";
         Context context = contextFactory.createContext(Collections.singletonMap("a", new TestBean(5)));
 
@@ -241,7 +241,7 @@ public class SQLTemplateParserTest {
     }
 
     @Test
-    public void testPropertyAccess() throws Exception {
+    public void propertyAccess() throws Exception {
         String tpl = "$a.field()";
         Context context = contextFactory.createContext(Collections.singletonMap("a", new TestBean(5)));
 
@@ -250,14 +250,14 @@ public class SQLTemplateParserTest {
     }
 
     @Test
-    public void testNestedBrackets() throws Exception {
+    public void nestedBrackets() throws Exception {
         String tpl = "(#bind('A' 'b'))";
         String sql = parseString(tpl, contextFactory.createContext(Collections.emptyMap()));
         assertEquals("(?)", sql);
     }
 
     @Test
-    public void testQuotes() throws Exception {
+    public void quotes() throws Exception {
         String template = "\"$a\"";
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("a", "val");
@@ -272,7 +272,7 @@ public class SQLTemplateParserTest {
     }
 
     @Test
-    public void testComma() throws Exception {
+    public void comma() throws Exception {
         String template = "$a,$a";
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("a", "val");

@@ -22,9 +22,9 @@ package org.apache.cayenne.exp.parser;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.2
@@ -32,7 +32,7 @@ import static org.junit.Assert.*;
 public class ASTCustomFunctionTest {
 
     @Test
-    public void testParse() {
+    public void parse() {
         Expression exp = ExpressionFactory.exp("fn('MY_FUNCTION', 1, 'abc')");
         assertTrue(exp instanceof ASTCustomFunction);
 
@@ -40,15 +40,21 @@ public class ASTCustomFunctionTest {
     }
 
     @Test
-    public void testCustomFunctionAsFunctionArg() {
+    public void customFunctionAsFunctionArg() {
         Expression exp = ExpressionFactory.exp("length(fn('MY_FUNCTION', 1, 'abc'))");
         assertTrue(exp instanceof ASTFunctionCall);
 
         assertEquals("length(fn(\"MY_FUNCTION\", 1, \"abc\"))", exp.toString());
     }
 
-    @Test(expected = ExpressionException.class)
-    public void testEvaluate() {
-        new ASTCustomFunction("test").evaluate(new Object());
+    @Test
+
+    public void evaluate() {
+        assertThrows(ExpressionException.class, () -> {
+
+            new ASTCustomFunction("test").evaluate(new Object());
+    
+        });
     }
+
 }

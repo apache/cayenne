@@ -23,7 +23,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.FunctionExpressionFactory;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.util.TstBean;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -32,12 +32,12 @@ import java.util.HashSet;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class OrderingTest {
 
     @Test
-    public void testPathSpec1() {
+    public void pathSpec1() {
         String pathSpec = "a.b.c";
         Ordering ord = new Ordering();
         assertNull(ord.getSortSpec());
@@ -47,14 +47,14 @@ public class OrderingTest {
     }
 
     @Test
-    public void testPathSpec3() {
+    public void pathSpec3() {
         String pathSpec = "a.b.c";
         Ordering ord = new Ordering(pathSpec, SortOrder.DESCENDING);
         assertEquals(pathSpec, ord.getSortSpec().getOperand(0).toString());
     }
 
     @Test
-    public void testAscending1() {
+    public void ascending1() {
         Ordering ord = new Ordering();
         ord.setAscending();
         assertTrue(ord.isAscending());
@@ -62,7 +62,7 @@ public class OrderingTest {
     }
 
     @Test
-    public void testAscending2() {
+    public void ascending2() {
         Ordering ord = new Ordering();
         ord.setSortOrder(SortOrder.ASCENDING);
         assertTrue(ord.isAscending());
@@ -70,7 +70,7 @@ public class OrderingTest {
     }
 
     @Test
-    public void testAscending3() {
+    public void ascending3() {
         Ordering ord = new Ordering();
         ord.setSortOrder(SortOrder.ASCENDING_INSENSITIVE);
         assertTrue(ord.isAscending());
@@ -78,7 +78,7 @@ public class OrderingTest {
     }
 
     @Test
-    public void testDescending1() {
+    public void descending1() {
         Ordering ord = new Ordering();
         ord.setDescending();
         assertFalse(ord.isAscending());
@@ -86,7 +86,7 @@ public class OrderingTest {
     }
 
     @Test
-    public void testDescending2() {
+    public void descending2() {
         Ordering ord = new Ordering();
         ord.setSortOrder(SortOrder.DESCENDING);
         assertFalse(ord.isAscending());
@@ -94,7 +94,7 @@ public class OrderingTest {
     }
 
     @Test
-    public void testDescending3() {
+    public void descending3() {
         Ordering ord = new Ordering();
         ord.setSortOrder(SortOrder.DESCENDING_INSENSITIVE);
         assertFalse(ord.isAscending());
@@ -102,31 +102,31 @@ public class OrderingTest {
     }
 
     @Test
-    public void testCaseInsensitive3() {
+    public void caseInsensitive3() {
         Ordering ord = new Ordering("M", SortOrder.ASCENDING_INSENSITIVE);
         assertTrue(ord.isCaseInsensitive());
     }
 
     @Test
-    public void testCaseInsensitive4() {
+    public void caseInsensitive4() {
         Ordering ord = new Ordering("N", SortOrder.ASCENDING);
         assertFalse(ord.isCaseInsensitive());
     }
 
     @Test
-    public void testCaseInsensitive5() {
+    public void caseInsensitive5() {
         Ordering ord = new Ordering("M", SortOrder.DESCENDING_INSENSITIVE);
         assertTrue(ord.isCaseInsensitive());
     }
 
     @Test
-    public void testCaseInsensitive6() {
+    public void caseInsensitive6() {
         Ordering ord = new Ordering("N", SortOrder.DESCENDING);
         assertFalse(ord.isCaseInsensitive());
     }
 
     @Test
-    public void testOrderingWithExpression() {
+    public void orderingWithExpression() {
         Expression exp = FunctionExpressionFactory.absExp("x");
         Ordering ord = new Ordering();
         ord.setSortSpec(exp);
@@ -139,7 +139,7 @@ public class OrderingTest {
     }
 
     @Test
-    public void testCompare3() {
+    public void compare3() {
         Painting p1 = new Painting();
         p1.setEstimatedPrice(new BigDecimal(1000.00));
 
@@ -156,7 +156,7 @@ public class OrderingTest {
     }
 
     @Test
-    public void testCompare4() {
+    public void compare4() {
         // compare on non-persistent property
         TstBean t1 = new TstBean(1000);
         TstBean t2 = new TstBean(2000);
@@ -169,7 +169,7 @@ public class OrderingTest {
     }
 
     @Test
-    public void testOrderList() {
+    public void orderList() {
         List<TstBean> list = new ArrayList<>(3);
 
         list.add(new TstBean(5));
@@ -183,7 +183,7 @@ public class OrderingTest {
     }
 
     @Test
-    public void testOrderList_Related() {
+    public void orderList_Related() {
         List<B1> unordered = asList(
                 new B1().setName("three").setB2(new B2().setName("Z")),
                 new B1().setName("one").setB2(new B2().setName("A")),
@@ -200,7 +200,7 @@ public class OrderingTest {
      * CAY-1551
      */
     @Test
-    public void testOrderList_OuterRelated() {
+    public void orderList_OuterRelated() {
         List<B1> unordered = asList(
                 new B1().setName("three").setB2(new B2().setName("Z")),
                 new B1().setName("one").setB2(new B2().setName("A")),
@@ -214,7 +214,7 @@ public class OrderingTest {
     }
 
     @Test
-    public void testOrderList_Static() {
+    public void orderList_Static() {
         List<TstBean> list = new ArrayList<>(6);
 
         list.add(new TstBean("c", 1));
@@ -241,7 +241,7 @@ public class OrderingTest {
     }
 
     @Test
-    public void testOrderedList() {
+    public void orderedList() {
         Collection<TstBean> set = new HashSet<>(6);
 
         TstBean shouldBe0 = new TstBean("a", 0);
@@ -269,7 +269,7 @@ public class OrderingTest {
     }
 
     @Test
-    public void testOrderedList_Static() {
+    public void orderedList_Static() {
         Collection<TstBean> set = new HashSet<>(6);
 
         TstBean shouldBe0 = new TstBean("a", 5);
@@ -301,7 +301,7 @@ public class OrderingTest {
     }
 
     @Test
-    public void testOrderListWithFunction() {
+    public void orderListWithFunction() {
         Collection<TstBean> set = new HashSet<>(6);
 
         TstBean shouldBe0 = new TstBean("", 0);
@@ -329,7 +329,7 @@ public class OrderingTest {
     }
 
     @Test
-    public void testOrderListWithFunction_Static() {
+    public void orderListWithFunction_Static() {
         Collection<TstBean> set = new HashSet<>(6);
 
         TstBean shouldBe0 = new TstBean("cx", -2);

@@ -27,14 +27,14 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.LOB_PROJECT)
 public class OracleAdapterIT extends RuntimeCase {
@@ -46,7 +46,7 @@ public class OracleAdapterIT extends RuntimeCase {
     private AdhocObjectFactory objectFactory;
 
     @Test
-    public void testUpdatesLOBColumns() throws Exception {
+    public void updatesLOBColumns() throws Exception {
         DataMap map = runtime.getDataDomain().getDataMap("lob");
         assertTrue(OracleAdapter.updatesLOBColumns(new InsertBatchQuery(map
                 .getDbEntity("BLOB_TEST"), 1)));
@@ -57,7 +57,7 @@ public class OracleAdapterIT extends RuntimeCase {
     }
 
     @Test
-    public void testTimestampMapping() throws Exception {
+    public void timestampMapping() throws Exception {
         
         OracleAdapter adapter = objectFactory.newInstance(
                 OracleAdapter.class, 

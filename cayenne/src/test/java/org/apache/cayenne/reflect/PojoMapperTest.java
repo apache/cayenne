@@ -20,9 +20,9 @@
 package org.apache.cayenne.reflect;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.2
@@ -30,7 +30,7 @@ import static org.junit.Assert.*;
 public class PojoMapperTest {
 
     @Test
-    public void testObjectCreation() {
+    public void objectCreation() {
         PojoMapper<C1> descriptor = new PojoMapper<>(C1.class);
 
         Object o = new Object();
@@ -41,27 +41,27 @@ public class PojoMapperTest {
         assertEquals(42, object.c);
     }
 
-    @Test(expected = CayenneRuntimeException.class)
-    public void testNonPublicClass() {
-        new PojoMapper<>(C2.class);
+    @Test
+    public void nonPublicClass() {
+        assertThrows(CayenneRuntimeException.class, () -> new PojoMapper<>(C2.class));
     }
 
-    @Test(expected = CayenneRuntimeException.class)
-    public void testNonPublicConstructor() {
-        new PojoMapper<>(C3.class);
+    @Test
+    public void nonPublicConstructor() {
+        assertThrows(CayenneRuntimeException.class, () -> new PojoMapper<>(C3.class));
     }
 
-    @Test(expected = CayenneRuntimeException.class)
-    public void testNonDefaultConstructor() {
-        new PojoMapper<>(C4.class);
+    @Test
+    public void nonDefaultConstructor() {
+        assertThrows(CayenneRuntimeException.class, () -> new PojoMapper<>(C4.class));
     }
 
-    @Test(expected = CayenneRuntimeException.class)
-    public void testWrongArgumentCount() {
+    @Test
+    public void wrongArgumentCount() {
         PojoMapper<C1> descriptor = new PojoMapper<>(C1.class);
 
         Object[] data = {"123", new Object(), 42, 32};
-        descriptor.apply(data);
+        assertThrows(CayenneRuntimeException.class, () -> descriptor.apply(data));
     }
 
     public static class C1 {

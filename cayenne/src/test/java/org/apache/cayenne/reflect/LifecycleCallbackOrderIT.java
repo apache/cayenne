@@ -31,9 +31,9 @@ import org.apache.cayenne.testdo.lifecycle_callbacks_order.Lifecycle;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.LIFECYCLE_CALLBACKS_ORDER_PROJECT)
 public class LifecycleCallbackOrderIT extends RuntimeCase {
@@ -42,7 +42,7 @@ public class LifecycleCallbackOrderIT extends RuntimeCase {
     private ObjectContext context;
 
     @Test
-    public void testLifecycleCallbackOrder() {
+    public void lifecycleCallbackOrder() {
         LifecycleCallbackRegistry registry = new LifecycleCallbackRegistry(context.getEntityResolver());
         context.getEntityResolver().setCallbackRegistry(registry);
 

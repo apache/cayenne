@@ -21,8 +21,9 @@ package org.apache.cayenne.exp;
 import static org.apache.cayenne.exp.ExpressionFactory.betweenExp;
 import static org.apache.cayenne.exp.ExpressionFactory.caseWhen;
 import static org.apache.cayenne.exp.ExpressionFactory.pathExp;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,36 +36,36 @@ import org.apache.cayenne.exp.parser.ASTFalse;
 import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ExpressionTest {
 
 	@Test
-	public void testToEJBQL_numericType_integer() {
+	public void toEJBQL_numericType_integer() {
 		Expression e = ExpressionFactory.matchExp("consignment.parts", 123);
 		assertEquals("x.consignment.parts = 123", e.toEJBQL("x"));
 	}
 
 	@Test
-	public void testToEJBQL_numericType_long() {
+	public void toEJBQL_numericType_long() {
 		Expression e = ExpressionFactory.matchExp("consignment.parts", 1418342400L);
 		assertEquals("x.consignment.parts = 1418342400L", e.toEJBQL("x"));
 	}
 
 	@Test
-	public void testToEJBQL_numericType_float() {
+	public void toEJBQL_numericType_float() {
 		Expression e = ExpressionFactory.greaterOrEqualExp("consignment.parts", Float.valueOf("3.145"));
 		assertEquals("x.consignment.parts >= 3.145f", e.toEJBQL("x"));
 	}
 
 	@Test
-	public void testToEJBQL_numericType_double()  {
+	public void toEJBQL_numericType_double()  {
 		Expression e = ExpressionFactory.greaterOrEqualExp("consignment.parts", 3.14);
 		assertEquals("x.consignment.parts >= 3.14", e.toEJBQL("x"));
 	}
 
 	@Test
-	public void testAppendAsEJBQL_Timestamp_ParameterCapture() throws IOException {
+	public void appendAsEJBQL_Timestamp_ParameterCapture() throws IOException {
 		Date now = new Date();
 
 		Expression e = ExpressionFactory.greaterOrEqualExp("dateOfBirth", now);
@@ -83,7 +84,7 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testAppendAsEJBQL_in_EncodeListOfParameters_ParameterCapture() throws IOException {
+	public void appendAsEJBQL_in_EncodeListOfParameters_ParameterCapture() throws IOException {
 
 		Expression e = ExpressionFactory.inExp("artistName", "a", "b", "c");
 
@@ -103,7 +104,7 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testAppendAsEJBQL_in_EncodeListOfParameters() throws IOException {
+	public void appendAsEJBQL_in_EncodeListOfParameters() throws IOException {
 
 		Expression e = ExpressionFactory.inExp("artistName", "a", "b", "c");
 
@@ -117,7 +118,7 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testAppendAsEJBQL_PersistentParamater() throws IOException {
+	public void appendAsEJBQL_PersistentParamater() throws IOException {
 
 		Artist a = new Artist();
         ObjectId aId = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 1);
@@ -135,7 +136,7 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testAppendAsEJBQLNotEquals() throws IOException {
+	public void appendAsEJBQLNotEquals() throws IOException {
 
 		Expression e = ExpressionFactory.exp("artistName != 'bla'");
 
@@ -147,14 +148,14 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testIsNotNullEx() {
+	public void isNotNullEx() {
 		Expression e = Artist.ARTIST_NAME.isNotNull();
 		String ejbql = e.toEJBQL("x");
 		assertEquals("x.artistName is not null", ejbql);
 	}
 
 	@Test
-	public void testAndExp() {
+	public void andExp() {
 		Expression e1 = ExpressionFactory.matchExp("name", "Picasso");
 		Expression e2 = ExpressionFactory.matchExp("age", 30);
 
@@ -164,7 +165,7 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testOrExp() {
+	public void orExp() {
 		Expression e1 = ExpressionFactory.matchExp("name", "Picasso");
 		Expression e2 = ExpressionFactory.matchExp("age", 30);
 
@@ -174,7 +175,7 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testAndExpVarArgs() {
+	public void andExpVarArgs() {
 		Expression e1 = ExpressionFactory.matchExp("name", "Picasso");
 		Expression e2 = ExpressionFactory.matchExp("age", 30);
 		Expression e3 = ExpressionFactory.matchExp("height", 5.5);
@@ -186,7 +187,7 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testOrExpVarArgs() {
+	public void orExpVarArgs() {
 		Expression e1 = ExpressionFactory.matchExp("name", "Picasso");
 		Expression e2 = ExpressionFactory.matchExp("age", 30);
 		Expression e3 = ExpressionFactory.matchExp("height", 5.5);
@@ -198,7 +199,7 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testBitwiseNegate() {
+	public void bitwiseNegate() {
 		Expression exp = ExpressionFactory.exp("~7");
 
 		assertEquals(Expression.BITWISE_NOT, exp.getType());
@@ -208,7 +209,7 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testBitwiseAnd() {
+	public void bitwiseAnd() {
 		Expression exp = ExpressionFactory.exp("1 & 0");
 
 		assertEquals(Expression.BITWISE_AND, exp.getType());
@@ -217,7 +218,7 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testBitwiseOr() {
+	public void bitwiseOr() {
 		Expression exp = ExpressionFactory.exp("1 | 0");
 
 		assertEquals(Expression.BITWISE_OR, exp.getType());
@@ -226,7 +227,7 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testBitwiseXor() {
+	public void bitwiseXor() {
 		Expression exp = ExpressionFactory.exp("1 ^ 0");
 
 		assertEquals(Expression.BITWISE_XOR, exp.getType());
@@ -235,7 +236,7 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testBitwiseLeftShift() {
+	public void bitwiseLeftShift() {
 		Expression exp = ExpressionFactory.exp("7 << 2");
 
 		assertEquals(Expression.BITWISE_LEFT_SHIFT, exp.getType());
@@ -244,7 +245,7 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testBitwiseRightShift() {
+	public void bitwiseRightShift() {
 		Expression exp = ExpressionFactory.exp("7 >> 2");
 
 		assertEquals(Expression.BITWISE_RIGHT_SHIFT, exp.getType());
@@ -257,7 +258,7 @@ public class ExpressionTest {
 	 * (a | b) | c = a | (b | c)
 	 */
 	@Test
-	public void testBitwiseAssociativity() {
+	public void bitwiseAssociativity() {
 		Expression e1 = ExpressionFactory.exp("(3010 | 2012) | 4095");
 		Expression e2 = ExpressionFactory.exp("3010 | (2012 | 4095)");
 
@@ -268,7 +269,7 @@ public class ExpressionTest {
 	 * a | b = b | a
 	 */
 	@Test
-	public void testBitwiseCommutativity() {
+	public void bitwiseCommutativity() {
 		Expression e1 = ExpressionFactory.exp("3010 | 4095");
 		Expression e2 = ExpressionFactory.exp("4095 | 3010");
 
@@ -279,7 +280,7 @@ public class ExpressionTest {
 	 * a | (a & b) = a
 	 */
 	@Test
-	public void testBitwiseAbsorption() {
+	public void bitwiseAbsorption() {
 		Expression e1 = ExpressionFactory.exp("2012 | (2012 & 3010)");
 		Expression e2 = ExpressionFactory.exp("2012L"); // scalar becomes Long
 														// object
@@ -291,7 +292,7 @@ public class ExpressionTest {
 	 * a | (b & c) = (a | b) & (a | c)
 	 */
 	@Test
-	public void testBitwiseDistributivity() {
+	public void bitwiseDistributivity() {
 		Expression e1 = ExpressionFactory.exp("4095 | (7777 & 8888)");
 		Expression e2 = ExpressionFactory.exp("(4095 | 7777) & (4095 | 8888)");
 
@@ -305,7 +306,7 @@ public class ExpressionTest {
 	 * '1101' + '0011' = (1)'0000' what is zero; but the same time '1101' is 13.
 	 */
 	@Test
-	public void testBitwiseComplements() {
+	public void bitwiseComplements() {
 		Expression e1 = ExpressionFactory.exp("5555 | ~5555");
 		Expression e2 = ExpressionFactory.exp("9999 & ~9999");
 
@@ -332,7 +333,7 @@ public class ExpressionTest {
 	 * operation, i.e. '|' bitwise operation).
 	 */
 	@Test
-	public void testBitwiseHuntingtonEquation() {
+	public void bitwiseHuntingtonEquation() {
 		Expression theHuntingEquation = ExpressionFactory.exp("~(~3748 | 4095) | ~(~3748 | ~4095)");
 
 		assertEquals(3748L, theHuntingEquation.evaluate(new Object()));
@@ -345,7 +346,7 @@ public class ExpressionTest {
 	 * program EQP.
 	 */
 	@Test
-	public void testBitwiseRobbinsEquation() {
+	public void bitwiseRobbinsEquation() {
 		Expression theRobbinsEquation = ExpressionFactory.exp("~(~(5111 | 4095) | ~(5111 | ~4095))");
 
 		assertEquals(5111L, theRobbinsEquation.evaluate(new Object()));
@@ -355,7 +356,7 @@ public class ExpressionTest {
 	 * Bitwise and math operations are ruled by precedence.
 	 */
 	@Test
-	public void testBitwisePrecedence() {
+	public void bitwisePrecedence() {
 		Expression e1 = ExpressionFactory.exp("1 << 1 & 2"); // 1 << 1 = 2 and
 																// after that 2
 																// & 2
@@ -389,7 +390,7 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testAppendAsEJBQL_NotEquals_ParameterCapture() throws IOException {
+	public void appendAsEJBQL_NotEquals_ParameterCapture() throws IOException {
 		Expression e = ExpressionFactory.exp("artistName != 'bla'");
 
 		StringBuilder buffer = new StringBuilder();
@@ -403,7 +404,7 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testAppendAsEJBQL_Enum() throws IOException {
+	public void appendAsEJBQL_Enum() throws IOException {
 
 		Expression e = ExpressionFactory.exp("a = enum:org.apache.cayenne.exp.ExpEnum1.THREE");
 
@@ -416,7 +417,7 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testAppendAsString_StringLiteral() throws IOException {
+	public void appendAsString_StringLiteral() throws IOException {
 		Expression e1 = ExpressionFactory.exp("a = 'abc'");
 
 		StringBuilder buffer = new StringBuilder();
@@ -427,7 +428,7 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testAppendAsString_Enum() throws IOException {
+	public void appendAsString_Enum() throws IOException {
 		Expression e1 = ExpressionFactory.exp("a = enum:org.apache.cayenne.exp.ExpEnum1.TWO");
 
 		StringBuilder buffer = new StringBuilder();
@@ -437,7 +438,7 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testCustomPruneTransform() {
+	public void customPruneTransform() {
 		Expression exp = ExpressionFactory.exp("(false and true) and true");
 		Expression transformed = exp.transform(node -> {
 			if(node instanceof ASTFalse) {
@@ -449,7 +450,7 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testObjPathFunctionName() throws IOException {
+	public void objPathFunctionName() throws IOException {
 		Expression exp = ExpressionFactory.exp("obj:year.month.day.avg");
 		assertTrue(exp instanceof ASTObjPath);
 
@@ -459,7 +460,7 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testDbPathFunctionName() throws IOException {
+	public void dbPathFunctionName() throws IOException {
 		Expression exp = ExpressionFactory.exp("db:year.month.day.avg");
 		assertTrue(exp instanceof ASTDbPath);
 
@@ -468,24 +469,24 @@ public class ExpressionTest {
 		assertEquals("db:year.month.day.avg", buffer.toString());
 	}
 
-	@Test(expected = ExpressionException.class)
+	@Test
 	public void invalidQueryCaseWhenExpressionFactoryTest() {
-		caseWhen(
+		assertThrows(ExpressionException.class, () -> caseWhen(
 				List.of((betweenExp("estimatedPrice", 0, 9)),
 						(betweenExp("estimatedPrice", 10, 20))),
-				List.of((pathExp("paintingDescription"))));
-	}
-
-	@Test (expected = UnsupportedOperationException.class)
-	public void testAppendAsEJBQLCaseWhen() throws IOException {
-		Expression caseWhen = ExpressionFactory.caseWhen(
-				List.of(ExpressionFactory.betweenExp("x",1,2)),
-				List.of(ExpressionFactory.pathExp("x")));
-		caseWhen.appendAsEJBQL(null, null, "x");
+				List.of((pathExp("paintingDescription")))));
 	}
 
 	@Test
-	public void testNumericsToString() {
+	public void appendAsEJBQLCaseWhen() throws IOException {
+		Expression caseWhen = ExpressionFactory.caseWhen(
+				List.of(ExpressionFactory.betweenExp("x",1,2)),
+				List.of(ExpressionFactory.pathExp("x")));
+		assertThrows(UnsupportedOperationException.class, () -> caseWhen.appendAsEJBQL(null, null, "x"));
+	}
+
+	@Test
+	public void numericsToString() {
 		Expression exp1 = ExpressionFactory.exp("a = 123");
 		assertEquals("a = 123", exp1.toString());
 

@@ -27,9 +27,9 @@ import org.apache.cayenne.reflect.SingletonFaultFactory;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 @UseCayenneRuntime(CayenneProjects.INHERITANCE_VERTICAL_PROJECT)
@@ -39,7 +39,7 @@ public class PersistentObjectDescriptorFactory_VerticalInheritanceIT extends Run
     private EntityResolver resolver;
 
     @Test
-    public void testVisitProperties_IterationOrder() {
+    public void visitProperties_IterationOrder() {
 
         PersistentObjectDescriptorFactory factory = new PersistentObjectDescriptorFactory(
                 resolver.getClassDescriptorMap(),

@@ -29,13 +29,13 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextOuterJoinsIT extends RuntimeCase {
@@ -51,13 +51,15 @@ public class DataContextOuterJoinsIT extends RuntimeCase {
 	protected TableHelper artgroupHelper;
 	protected TableHelper artistGroupHelper;
 
+	@BeforeEach
 	@Override
 	public void cleanUpDB() throws Exception {
 		dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
 		super.cleanUpDB();
 	}
 
-	@Before
+
+	@BeforeEach
 	public void setUp() throws Exception {
 		artistHelper = new TableHelper(dbHelper, "ARTIST", "ARTIST_ID", "ARTIST_NAME");
 		paintingHelper = new TableHelper(dbHelper, "PAINTING", "PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE")
@@ -68,7 +70,7 @@ public class DataContextOuterJoinsIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testSelectWithOuterJoinFlattened() throws Exception {
+	public void selectWithOuterJoinFlattened() throws Exception {
 
 		artistHelper.insert(33001, "AA1");
 		artistHelper.insert(33002, "AA2");
@@ -90,7 +92,7 @@ public class DataContextOuterJoinsIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testSelectWithOuterJoin() throws Exception {
+	public void selectWithOuterJoin() throws Exception {
 
 		artistHelper.insert(33001, "AA1");
 		artistHelper.insert(33002, "AA2");
@@ -119,7 +121,7 @@ public class DataContextOuterJoinsIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testSelectWithOuterJoinFromString() throws Exception {
+	public void selectWithOuterJoinFromString() throws Exception {
 
 		artistHelper.insert(33001, "AA1");
 		artistHelper.insert(33002, "AA2");
@@ -148,7 +150,7 @@ public class DataContextOuterJoinsIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testSelectWithOuterOrdering() throws Exception {
+	public void selectWithOuterOrdering() throws Exception {
 
 		artistHelper.insert(33001, "AA1");
 		artistHelper.insert(33002, "AA2");

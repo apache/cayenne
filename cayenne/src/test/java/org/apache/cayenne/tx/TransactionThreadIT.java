@@ -27,9 +27,9 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class TransactionThreadIT extends RuntimeCase {
@@ -41,7 +41,7 @@ public class TransactionThreadIT extends RuntimeCase {
     private JdbcEventLogger logger;
 
     @Test
-    public void testThreadConnectionReuseOnSelect() throws Exception {
+    public void threadConnectionReuseOnSelect() throws Exception {
 
         Transaction t = new CayenneTransaction(logger);
         BaseTransaction.bindThreadTransaction(t);

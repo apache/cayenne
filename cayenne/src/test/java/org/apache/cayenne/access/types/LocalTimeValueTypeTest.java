@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.types;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Time;
 import java.time.Instant;
@@ -32,15 +32,15 @@ import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class LocalTimeValueTypeTest {
 
     private static final LocalTimeValueType valueType = new LocalTimeValueType();
 
     @Test
-    public void testToJavaObject() {
+    public void toJavaObject() {
         // UTC 17:50:23.123
         long utcMillis = 64223123;
         long systemMillis = Instant.ofEpochMilli(utcMillis)
@@ -54,7 +54,7 @@ public class LocalTimeValueTypeTest {
     }
 
     @Test
-    public void testFromJavaObject() {
+    public void fromJavaObject() {
         // UTC 17:50:23.123
         long utcMillis = 64223123;
         long systemMillis = Instant.ofEpochMilli(utcMillis)
@@ -68,7 +68,7 @@ public class LocalTimeValueTypeTest {
     }
 
     @Test
-    public void testToJavaObjectFromJavaObject() {
+    public void toJavaObjectFromJavaObject() {
         // UTC 17:50:23.123
         long utcMillis = 64223123;
 
@@ -80,7 +80,7 @@ public class LocalTimeValueTypeTest {
     }
 
     @Test
-    public void testToJavaObject_isBackwardCompatible() {
+    public void toJavaObject_isBackwardCompatible() {
         // UTC 17:50:23.123
         long utcMillis = 64223123;
 
@@ -92,7 +92,7 @@ public class LocalTimeValueTypeTest {
     }
 
     @Test
-    public void testFromJavaObject_isBackwardCompatible() {
+    public void fromJavaObject_isBackwardCompatible() {
         // UTC 17:50:23.123
         long utcMillis = 64223123;
         long systemMillis = Instant.ofEpochMilli(utcMillis)
@@ -108,7 +108,7 @@ public class LocalTimeValueTypeTest {
     }
 
     @Test
-    public void testToJavaObjectFromJavaObject_changeTimeZone() {
+    public void toJavaObjectFromJavaObject_changeTimeZone() {
         TimeZone originalTimeZone = TimeZone.getDefault();
 
         try {

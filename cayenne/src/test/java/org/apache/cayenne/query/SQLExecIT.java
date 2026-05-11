@@ -30,10 +30,10 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SQLExecIT extends RuntimeCase {
@@ -48,20 +48,20 @@ public class SQLExecIT extends RuntimeCase {
     private UnitDbAdapter unitDbAdapter;
 
     @Test
-    public void test_DataMapNameRoot() throws Exception {
+    public void dataMapNameRoot() throws Exception {
         int inserted = SQLExec.query("testmap", "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'a')").update(
                 context);
         assertEquals(1, inserted);
     }
 
     @Test
-    public void test_DefaultRoot() throws Exception {
+    public void defaultRoot() throws Exception {
         int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'a')").update(context);
         assertEquals(1, inserted);
     }
 
     @Test
-    public void testReturnGeneratedKeys() {
+    public void returnGeneratedKeys() {
         if(unitDbAdapter.supportsGeneratedKeys()) {
             QueryResult response = SQLExec.query("testmap", "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Surikov')")
                     .returnGeneratedKeys(true)
@@ -76,7 +76,7 @@ public class SQLExecIT extends RuntimeCase {
     }
 
     @Test
-    public void test_ParamsArray_Single() throws Exception {
+    public void paramsArray_Single() throws Exception {
 
         int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, #bind($name))")
                 .paramsArray("a3").update(context);
@@ -86,7 +86,7 @@ public class SQLExecIT extends RuntimeCase {
     }
 
     @Test
-    public void test_ExecuteSelect() throws Exception {
+    public void executeSelect() throws Exception {
         int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'a')").update(context);
         assertEquals(1, inserted);
 
@@ -108,7 +108,7 @@ public class SQLExecIT extends RuntimeCase {
     }
 
     @Test
-    public void test_ParamsArray_Multiple() throws Exception {
+    public void paramsArray_Multiple() throws Exception {
 
         int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (#bind($id), #bind($name))")
                 .paramsArray(55, "a3").update(context);
@@ -119,7 +119,7 @@ public class SQLExecIT extends RuntimeCase {
     }
 
     @Test
-    public void test_Execute_MultipleArrayBind() throws Exception {
+    public void execute_MultipleArrayBind() throws Exception {
         SQLExec inserter = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (#bind($id), #bind($name))");
         for(int i = 0; i < 2; i++) {
             QueryResult<?> result = inserter.paramsArray(i, "artist " + i).execute(context);
@@ -129,7 +129,7 @@ public class SQLExecIT extends RuntimeCase {
     }
 
     @Test
-    public void test_Execute_MultipleMapBind() throws Exception {
+    public void execute_MultipleMapBind() throws Exception {
         SQLExec inserter = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (#bind($id), #bind($name))");
         for(int i = 0; i < 2; i++) {
             Map<String, Object> params = new HashMap<>();

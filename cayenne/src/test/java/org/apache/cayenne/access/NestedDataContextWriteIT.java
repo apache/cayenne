@@ -42,11 +42,11 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class NestedDataContextWriteIT extends RuntimeCase {
@@ -66,7 +66,7 @@ public class NestedDataContextWriteIT extends RuntimeCase {
     private TableHelper tArtist;
     private TableHelper tPainting;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -126,7 +126,7 @@ public class NestedDataContextWriteIT extends RuntimeCase {
     }
 
     @Test
-    public void testDeleteNew() throws Exception {
+    public void deleteNew() throws Exception {
         createSingleArtistDataSet();
 
         DataContext context = createDataContext();
@@ -149,7 +149,7 @@ public class NestedDataContextWriteIT extends RuntimeCase {
      * A test case for CAY-698 bug.
      */
     @Test
-    public void testNullifyToOne() throws Exception {
+    public void nullifyToOne() throws Exception {
         createNullifyToOneDataSet();
 
         final DataContext context = createDataContext();
@@ -176,7 +176,7 @@ public class NestedDataContextWriteIT extends RuntimeCase {
     }
 
     @Test
-    public void testCommitChangesToParent() throws Exception {
+    public void commitChangesToParent() throws Exception {
         createArtistsDataSet();
 
         final DataContext context = createDataContext();
@@ -248,7 +248,7 @@ public class NestedDataContextWriteIT extends RuntimeCase {
     }
 
     @Test
-    public void testCommitChangesToParentDeleted() throws Exception {
+    public void commitChangesToParentDeleted() throws Exception {
         createArtistsDataSet();
 
         DataContext context = createDataContext();
@@ -285,7 +285,7 @@ public class NestedDataContextWriteIT extends RuntimeCase {
     }
 
     @Test
-    public void testCommitChanges() throws Exception {
+    public void commitChanges() throws Exception {
         createArtistsDataSet();
 
         DataContext context = createDataContext();
@@ -343,7 +343,7 @@ public class NestedDataContextWriteIT extends RuntimeCase {
         assertNull(context.getObjectStore().getChangesByObjectId().get(
                 parentModified.getObjectId()));
 
-        assertNull("Deleted object should not be registered.", parentDeleted);
+        assertNull(parentDeleted, "Deleted object should not be registered.");
 
         assertNotNull(parentCommitted);
         assertEquals(PersistenceState.COMMITTED, parentCommitted.getPersistenceState());
@@ -352,7 +352,7 @@ public class NestedDataContextWriteIT extends RuntimeCase {
     }
 
     @Test
-    public void testCommitChangesToParent_MergeProperties() throws Exception {
+    public void commitChangesToParentMergeProperties() throws Exception {
         createMixedDataSet();
 
         final DataContext context = createDataContext();
@@ -430,7 +430,7 @@ public class NestedDataContextWriteIT extends RuntimeCase {
     }
 
     @Test
-    public void testCommitChangesToParentPropagatedKey() {
+    public void commitChangesToParentPropagatedKey() {
         final DataContext context = createDataContext();
         final ObjectContext childContext = runtime.newContext(context);
 
@@ -468,7 +468,7 @@ public class NestedDataContextWriteIT extends RuntimeCase {
     }
 
     @Test
-    public void testCommitChangesToParentFlattened() {
+    public void commitChangesToParentFlattened() {
 
         final DataContext context = createDataContext();
         final ObjectContext childContext = runtime.newContext(context);
@@ -513,7 +513,7 @@ public class NestedDataContextWriteIT extends RuntimeCase {
     }
 
     @Test
-    public void testCommitChangesToParentFlattenedMultipleFlush() {
+    public void commitChangesToParentFlattenedMultipleFlush() {
         final DataContext context = createDataContext();
         final ObjectContext childContext = runtime.newContext(context);
 
@@ -605,7 +605,7 @@ public class NestedDataContextWriteIT extends RuntimeCase {
     }
 
     @Test
-    public void testAddRemove() {
+    public void addRemove() {
 
         DataContext context = createDataContext();
         ObjectContext child = runtime.newContext(context);
@@ -632,7 +632,7 @@ public class NestedDataContextWriteIT extends RuntimeCase {
     }
 
     @Test
-    public void testCAY1194() {
+    public void cay1194() {
         DataContext context = createDataContext();
 
         Artist artist = context.newObject(Artist.class);
@@ -659,8 +659,8 @@ public class NestedDataContextWriteIT extends RuntimeCase {
     }
     
     @Test
-    @Ignore("Waiting for a fix")
-    public void testTwoStageCommit() {
+    @Disabled("Waiting for a fix")
+    public void twoStageCommit() {
         DataContext parent = createDataContext();
         ObjectContext child = runtime.newContext(parent);
 

@@ -28,13 +28,13 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ObjectStoreDiffRetainingIT extends RuntimeCase {
@@ -48,7 +48,7 @@ public class ObjectStoreDiffRetainingIT extends RuntimeCase {
     protected TableHelper tArtist;
     protected TableHelper tPainting;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH")
@@ -74,7 +74,7 @@ public class ObjectStoreDiffRetainingIT extends RuntimeCase {
     }
 
     @Test
-    public void testSnapshotRetainedOnPropertyModification() throws Exception {
+    public void snapshotRetainedOnPropertyModification() throws Exception {
         createMixedDataSet();
 
         Artist a = Cayenne.objectForPK(context, Artist.class, 2000);
@@ -87,7 +87,7 @@ public class ObjectStoreDiffRetainingIT extends RuntimeCase {
     }
 
     @Test
-    public void testSnapshotRetainedOnRelAndPropertyModification() throws Exception {
+    public void snapshotRetainedOnRelAndPropertyModification() throws Exception {
         createMixedDataSet();
 
         Artist a = Cayenne.objectForPK(context, Artist.class, 2000);
@@ -102,8 +102,8 @@ public class ObjectStoreDiffRetainingIT extends RuntimeCase {
 
         a.addToPaintingArray(context.newObject(Painting.class));
         a.setArtistName("some other name");
-        assertNotNull("Snapshot wasn't retained - CAY-213", objectStore
+        assertNotNull(objectStore
                 .getChangesByObjectId()
-                .get(a.getObjectId()));
+                .get(a.getObjectId()), "Snapshot wasn't retained - CAY-213");
     }
 }

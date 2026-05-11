@@ -23,10 +23,10 @@ import java.util.Date;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @since 4.0
@@ -34,7 +34,7 @@ import static org.junit.Assert.assertTrue;
 public class ASTCurrentTimeTest {
 
     @Test
-    public void testParse() {
+    public void parse() {
         Expression exp2 = ExpressionFactory.exp("currentTime()");
         assertTrue(exp2 instanceof ASTCurrentTime);
 
@@ -42,7 +42,7 @@ public class ASTCurrentTimeTest {
     }
 
     @Test
-    public void testEvaluate() {
+    public void evaluate() {
         Expression exp = new ASTCurrentTime();
         Object result = exp.evaluate(new Object());
         assertTrue(result instanceof Date);

@@ -24,14 +24,14 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.net.URL;
 import java.sql.Types;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class Oracle8AdapterIT extends RuntimeCase {
@@ -40,7 +40,7 @@ public class Oracle8AdapterIT extends RuntimeCase {
     private AdhocObjectFactory objectFactory;
 
     @Test
-    public void testTimestampMapping() throws Exception {
+    public void timestampMapping() throws Exception {
         
         Oracle8Adapter adapter = objectFactory.newInstance(
                 Oracle8Adapter.class, 
@@ -53,7 +53,7 @@ public class Oracle8AdapterIT extends RuntimeCase {
     }
 
     @Test
-    public void testFindAdapterResource() throws Exception {
+    public void findAdapterResource() throws Exception {
         
         Oracle8Adapter adapter = objectFactory.newInstance(
                 Oracle8Adapter.class, 
@@ -61,7 +61,7 @@ public class Oracle8AdapterIT extends RuntimeCase {
 
         URL typesURL = adapter.findResource("/types.xml");
         assertNotNull(typesURL);
-        assertTrue("Unexpected url:" + typesURL, typesURL.toExternalForm().endsWith(
-                "types-oracle8.xml"));
+        assertTrue(typesURL.toExternalForm().endsWith("types-oracle8.xml"),
+                "Unexpected url:" + typesURL);
     }
 }

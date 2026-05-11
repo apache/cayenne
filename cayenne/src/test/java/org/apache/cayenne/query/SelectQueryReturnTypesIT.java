@@ -37,11 +37,11 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.RETURN_TYPES_PROJECT)
 public class SelectQueryReturnTypesIT extends RuntimeCase {
@@ -67,7 +67,7 @@ public class SelectQueryReturnTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectBitwiseNot() throws Exception {
+    public void selectBitwiseNot() throws Exception {
 
         if (!accessStackAdapter.supportsBitwiseOps()) {
             return;
@@ -87,7 +87,7 @@ public class SelectQueryReturnTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectBitwiseOr() throws Exception {
+    public void selectBitwiseOr() throws Exception {
 
         if (!accessStackAdapter.supportsBitwiseOps()) {
             return;
@@ -108,7 +108,7 @@ public class SelectQueryReturnTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectBitwiseAnd() throws Exception {
+    public void selectBitwiseAnd() throws Exception {
 
         if (!accessStackAdapter.supportsBitwiseOps()) {
             return;
@@ -129,7 +129,7 @@ public class SelectQueryReturnTypesIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectBitwiseXor() throws Exception {
+    public void selectBitwiseXor() throws Exception {
 
         if (!accessStackAdapter.supportsBitwiseOps()) {
             return;

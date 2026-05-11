@@ -19,14 +19,14 @@
 
 package org.apache.cayenne.map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.unit.di.runtime.PeopleProjectCase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class EntityResolverInheritanceIT extends PeopleProjectCase {
 
@@ -34,7 +34,7 @@ public class EntityResolverInheritanceIT extends PeopleProjectCase {
     private EntityResolver resolver;
 
     @Test
-    public void testGetAbstractPersonTree() throws Exception {
+    public void getAbstractPersonTree() throws Exception {
         EntityInheritanceTree tree = resolver.getInheritanceTree("AbstractPerson");
         assertNotNull(tree);
         assertEquals(2, tree.getChildrenCount());
@@ -42,7 +42,7 @@ public class EntityResolverInheritanceIT extends PeopleProjectCase {
     }
 
     @Test
-    public void testGetEmployeeTree() throws Exception {
+    public void getEmployeeTree() throws Exception {
         EntityInheritanceTree tree = resolver.getInheritanceTree("Employee");
         assertNotNull(tree);
         assertEquals(1, tree.getChildrenCount());
@@ -50,14 +50,14 @@ public class EntityResolverInheritanceIT extends PeopleProjectCase {
     }
 
     @Test
-    public void testGetManagerTree() throws Exception {
+    public void getManagerTree() throws Exception {
         EntityInheritanceTree tree = resolver.getInheritanceTree("Manager");
         assertNotNull(tree);
         assertEquals(0, tree.getChildrenCount());
     }
 
     @Test
-    public void testLookupTreeRefresh() throws Exception {
+    public void lookupTreeRefresh() throws Exception {
         ObjEntity super1 = new ObjEntity("super1");
         ObjEntity sub1 = new ObjEntity("sub1");
         ObjEntity sub2 = new ObjEntity("sub2");

@@ -22,13 +22,14 @@ package org.apache.cayenne.tools;
  * @since 4.0
  */
 
-import org.apache.commons.io.FileUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Comparator;
 
 public class DerbyManager {
 
@@ -46,7 +47,9 @@ public class DerbyManager {
         File derbyDir = new File(location);
         if (derbyDir.isDirectory()) {
             try {
-                FileUtils.deleteDirectory(derbyDir);
+                try (var walk = Files.walk(derbyDir.toPath())) {
+                    walk.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

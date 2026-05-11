@@ -18,17 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.exp;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.apache.cayenne.exp.parser.ASTLike;
 import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.exp.parser.PatternMatchNode;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class LikeExpressionHelperTest {
 
 	@Test
-	public void testEscape_NoEscapeChars() {
+	public void escape_NoEscapeChars() {
 
 		PatternMatchNode node = new ASTLike(new ASTObjPath("x"), "abc");
 		LikeExpressionHelper.escape(node);
@@ -37,7 +37,7 @@ public class LikeExpressionHelperTest {
 	}
 	
 	@Test
-	public void testEscape_OneChar() {
+	public void escape_OneChar() {
 
 		PatternMatchNode node = new ASTLike(new ASTObjPath("x"), "ab_c");
 		LikeExpressionHelper.escape(node);
@@ -46,7 +46,7 @@ public class LikeExpressionHelperTest {
 	}
 	
 	@Test
-	public void testEscape_TwoChars() {
+	public void escape_TwoChars() {
 
 		PatternMatchNode node = new ASTLike(new ASTObjPath("x"), "ab_c_");
 		LikeExpressionHelper.escape(node);
@@ -55,7 +55,7 @@ public class LikeExpressionHelperTest {
 	}
 	
 	@Test
-	public void testEscape_TwoChars_Mix() {
+	public void escape_TwoChars_Mix() {
 
 		PatternMatchNode node = new ASTLike(new ASTObjPath("x"), "ab%c_");
 		LikeExpressionHelper.escape(node);
@@ -64,7 +64,7 @@ public class LikeExpressionHelperTest {
 	}
 	
 	@Test
-	public void testEscape_AltEscapeChar1() {
+	public void escape_AltEscapeChar1() {
 
 		PatternMatchNode node = new ASTLike(new ASTObjPath("x"), "a!%c");
 		LikeExpressionHelper.escape(node);
@@ -73,7 +73,7 @@ public class LikeExpressionHelperTest {
 	}
 	
 	@Test
-	public void testEscape_AltEscapeChar2() {
+	public void escape_AltEscapeChar2() {
 
 		PatternMatchNode node = new ASTLike(new ASTObjPath("x"), "a!%c#_");
 		LikeExpressionHelper.escape(node);

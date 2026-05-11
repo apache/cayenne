@@ -20,17 +20,17 @@ package org.apache.cayenne.map;
 
 import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ObjEntityTest {
 
     @Test
-    public void testEncodeAsXML() {
+    public void encodeAsXML() {
         ObjEntity entity = new ObjEntity("X");
         entity.setClassName("org.example.Xc");
 
@@ -56,7 +56,7 @@ public class ObjEntityTest {
     }
 
     @Test
-    public void testAttributeOrder() {
+    public void attributeOrder() {
         ObjEntity entity = new ObjEntity("X");
         entity.setClassName("org.example.Xc");
 

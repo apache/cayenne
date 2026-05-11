@@ -29,10 +29,10 @@ import org.apache.cayenne.testdo.inheritance.SubEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.INHERITANCE_PROJECT)
 public class EntityInheritanceIT extends RuntimeCase {
@@ -43,9 +43,9 @@ public class EntityInheritanceIT extends RuntimeCase {
     /**
      * Test for CAY-1008: Reverse relationships may not be correctly set if inheritance is used.
      */
+    @Disabled("This test fails")
     @Test
-    @Ignore("This test fails")
-    public void testCAY1008() {
+    public void cAY1008() {
         RelatedEntity related = context.newObject(RelatedEntity.class);
 
         BaseEntity base = context.newObject(BaseEntity.class);
@@ -66,9 +66,9 @@ public class EntityInheritanceIT extends RuntimeCase {
     /**
      * Test for CAY-1009: Bogus runtime relationships can mess up commit.
      */
+    @Disabled("Test fails")
     @Test
-    @Ignore("Test fails")
-    public void testCAY1009() {
+    public void cAY1009() {
         // We should have only one relationship. DirectToSubEntity -> SubEntity.
         assertEquals(1, context
                 .getEntityResolver()
@@ -89,7 +89,7 @@ public class EntityInheritanceIT extends RuntimeCase {
     }
 
     @Test
-    public void testCAY2091() {
+    public void cAY2091() {
         RelatedEntity related = context.newObject(RelatedEntity.class);
         SubEntity subEntity = context.newObject(SubEntity.class);
         subEntity.setToRelatedEntity(related);

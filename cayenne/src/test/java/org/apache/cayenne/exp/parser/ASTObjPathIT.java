@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
@@ -28,7 +28,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ASTObjPathIT extends RuntimeCase {
@@ -37,7 +37,7 @@ public class ASTObjPathIT extends RuntimeCase {
 	private ObjectContext context;
 
 	@Test
-	public void testEvaluate_ObjEntity() {
+	public void evaluate_ObjEntity() {
 		ASTObjPath node = new ASTObjPath("paintingArray.paintingTitle");
 
 		ObjEntity ae = context.getEntityResolver().getObjEntity(Artist.class);
@@ -47,7 +47,7 @@ public class ASTObjPathIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testEvaluate_ObjEntity_Outer() {
+	public void evaluate_ObjEntity_Outer() {
 		ASTObjPath node = new ASTObjPath("paintingArray+.paintingTitle");
 
 		ObjEntity ae = context.getEntityResolver().getObjEntity(Artist.class);

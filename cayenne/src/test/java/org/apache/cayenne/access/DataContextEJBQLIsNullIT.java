@@ -29,13 +29,13 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextEJBQLIsNullIT extends RuntimeCase {
@@ -52,7 +52,8 @@ public class DataContextEJBQLIsNullIT extends RuntimeCase {
     protected TableHelper tArtist;
     protected TableHelper tPainting;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -81,7 +82,7 @@ public class DataContextEJBQLIsNullIT extends RuntimeCase {
     }
 
     @Test
-    public void testCompareToNull() throws Exception {
+    public void compareToNull() throws Exception {
 
         // the query below can blow up on FrontBase. See CAY-819 for details.
         if (!accessStackAdapter.supportsEqualNullSyntax()) {
@@ -103,7 +104,7 @@ public class DataContextEJBQLIsNullIT extends RuntimeCase {
     }
 
     @Test
-    public void testCompareToNull2() throws Exception {
+    public void compareToNull2() throws Exception {
 
         if (!accessStackAdapter.supportsEqualNullSyntax()) {
             return;
@@ -119,7 +120,7 @@ public class DataContextEJBQLIsNullIT extends RuntimeCase {
     }
 
     @Test
-    public void testCompareToNull3() throws Exception {
+    public void compareToNull3() throws Exception {
         if (!accessStackAdapter.supportsEqualNullSyntax()) {
             return;
         }
@@ -134,7 +135,7 @@ public class DataContextEJBQLIsNullIT extends RuntimeCase {
     }
 
     @Test
-    public void testIsNull() throws Exception {
+    public void isNull() throws Exception {
 
         createTwoPaintings();
 
@@ -147,7 +148,7 @@ public class DataContextEJBQLIsNullIT extends RuntimeCase {
     }
 
     @Test
-    public void testIsNotNull() throws Exception {
+    public void isNotNull() throws Exception {
 
         createTwoPaintings();
 
@@ -160,7 +161,7 @@ public class DataContextEJBQLIsNullIT extends RuntimeCase {
     }
 
     @Test
-    public void testToOneIsNull() throws Exception {
+    public void toOneIsNull() throws Exception {
 
         createTwoPaintingsAndOneArtist();
 
@@ -173,7 +174,7 @@ public class DataContextEJBQLIsNullIT extends RuntimeCase {
     }
 
     @Test
-    public void testToOneIsNotNull() throws Exception {
+    public void toOneIsNotNull() throws Exception {
 
         createTwoPaintingsAndOneArtist();
 

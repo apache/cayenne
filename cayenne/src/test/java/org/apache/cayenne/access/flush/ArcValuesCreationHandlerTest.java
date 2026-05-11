@@ -36,10 +36,10 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -54,7 +54,7 @@ public class ArcValuesCreationHandlerTest {
     private Values values;
 
     @SuppressWarnings("unchecked")
-    @Before
+    @BeforeEach
     public void setup() {
         factory = mock(DbRowOpFactory.class);
         handler = new ArcValuesCreationHandler(factory, DbRowOpType.INSERT);

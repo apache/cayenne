@@ -24,19 +24,19 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.SUS_PROJECT)
 public class SchemaUpdateStrategyIT extends SchemaUpdateStrategyBase {
 
     @Test
-	public void testCreateIfNoSchemaStrategy() throws Exception {
+	public void createIfNoSchemaStrategy() throws Exception {
 
 		setStrategy(CreateIfNoSchemaStrategy.class);
 
@@ -55,7 +55,7 @@ public class SchemaUpdateStrategyIT extends SchemaUpdateStrategyBase {
 	}
 
     @Test
-	public void testNoStandardSchema() throws Exception {
+	public void noStandardSchema() throws Exception {
 		String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
 		SQLTemplate query = new SQLTemplate(Object.class, template);
 		MockOperationObserver observer = new MockOperationObserver();

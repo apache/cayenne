@@ -32,14 +32,14 @@ import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextLocalObjectIT extends RuntimeCase {
@@ -61,14 +61,15 @@ public class DataContextLocalObjectIT extends RuntimeCase {
 
     private TableHelper tArtist;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
     }
 
     @Test
-    public void testLocalObject_InCache() throws Exception {
+    public void localObject_InCache() throws Exception {
         tArtist.insert(456, "Bla");
 
         final Artist a1 = Cayenne.objectForPK(context1, Artist.class, 456);
@@ -85,7 +86,7 @@ public class DataContextLocalObjectIT extends RuntimeCase {
     }
 
     @Test
-    public void testLocalObject_SameContext() throws Exception {
+    public void localObject_SameContext() throws Exception {
         tArtist.insert(456, "Bla");
 
         final Artist a1 = Cayenne.objectForPK(context1, Artist.class, 456);
@@ -100,7 +101,7 @@ public class DataContextLocalObjectIT extends RuntimeCase {
     }
 
     @Test
-    public void testLocalObject_NotInCache() throws Exception {
+    public void localObject_NotInCache() throws Exception {
         tArtist.insert(456, "Bla");
 
         final Artist a1 = Cayenne.objectForPK(context1, Artist.class, 456);
@@ -117,7 +118,7 @@ public class DataContextLocalObjectIT extends RuntimeCase {
     }
 
     @Test
-    public void testLocalObject_FFE_InvalidID() throws Exception {
+    public void localObject_FFE_InvalidID() throws Exception {
         tArtist.insert(777, "AA");
 
         final Artist a1 = Cayenne.objectForPK(context1, Artist.class, 777);
@@ -130,20 +131,12 @@ public class DataContextLocalObjectIT extends RuntimeCase {
 
         assertEquals(PersistenceState.HOLLOW, a3.getPersistenceState());
 
-        try {
-            a3.getArtistName();
-
-            fail("FaultFailureException wasn't thrown on attempt to "
-                    + "resolve HOLLOW object with no backing DB row");
-        }
-        catch (FaultFailureException e) {
-            // expected
-        }
+        assertThrows(FaultFailureException.class, a3::getArtistName);
 
     }
 
     @Test
-    public void testLocalObject_TempId() throws Exception {
+    public void localObject_TempId() throws Exception {
 
         final Artist a1 = context1.newObject(Artist.class);
 
@@ -155,22 +148,14 @@ public class DataContextLocalObjectIT extends RuntimeCase {
                 assertNotNull(a);
                 assertEquals(a1.getObjectId(), a.getObjectId());
 
-                // FFE mist be thrown on attempt to read non-existing temp ID
-                try {
-
-                    a.getArtistName();
-                    fail("FaultFailureException wasn't thrown on attempt to "
-                            + "resolve HOLLOW object with temp id");
-                }
-                catch (FaultFailureException e) {
-                    // expected
-                }
+                // FFE must be thrown on attempt to read non-existing temp ID
+                assertThrows(FaultFailureException.class, a::getArtistName);
             }
         });
     }
 
     @Test
-    public void testLocalObject_TempId_NestedContext() throws Exception {
+    public void localObject_TempId_NestedContext() throws Exception {
 
         final Artist a1 = context1.newObject(Artist.class);
 

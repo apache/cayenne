@@ -18,7 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.datasource;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -29,15 +30,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class PoolAwareConnectionTest {
 
 	private UnmanagedPoolingDataSource parentMock;
 	private Connection connectionMock;
 
-	@Before
+	@BeforeEach
 	public void before() throws SQLException {
 		connectionMock = mock(Connection.class);
 
@@ -46,7 +47,7 @@ public class PoolAwareConnectionTest {
 	}
 
 	@Test
-	public void testRecover() throws SQLException {
+	public void recover() throws SQLException {
 		PoolAwareConnection paConnection = new PoolAwareConnection(parentMock, connectionMock, null);
 		SQLException e = mock(SQLException.class);
 
@@ -58,7 +59,7 @@ public class PoolAwareConnectionTest {
 	}
 
 	@Test
-	public void testPrepareStatement() throws SQLException {
+	public void prepareStatement() throws SQLException {
 		PreparedStatement firstTry = mock(PreparedStatement.class);
 		PreparedStatement secondTry = mock(PreparedStatement.class);
 
@@ -70,7 +71,7 @@ public class PoolAwareConnectionTest {
 	}
 
 	@Test
-	public void testPrepareStatement_Recover() throws SQLException {
+	public void prepareStatement_Recover() throws SQLException {
 
 		PreparedStatement secondTry = mock(PreparedStatement.class);
 		when(connectionMock.prepareStatement(anyString())).thenThrow(new SQLException("E1")).thenReturn(secondTry);
@@ -81,17 +82,13 @@ public class PoolAwareConnectionTest {
 	}
 
 	@Test
-	public void testPrepareStatement_Recover_Impossible() throws SQLException {
+	public void prepareStatement_Recover_Impossible() throws SQLException {
 
 		SQLException original = new SQLException("E1");
 		when(connectionMock.prepareStatement(anyString())).thenThrow(original);
 		PoolAwareConnection paConnection = new PoolAwareConnection(parentMock, connectionMock, null);
 
-		try {
-			paConnection.prepareStatement("SELECT 1");
-		} catch (SQLException e) {
-			assertSame(original, e);
-		}
-
+		SQLException thrown = assertThrows(SQLException.class, () -> paConnection.prepareStatement("SELECT 1"));
+		assertSame(original, thrown);
 	}
 }

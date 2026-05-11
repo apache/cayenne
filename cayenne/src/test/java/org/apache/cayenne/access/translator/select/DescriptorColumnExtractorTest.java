@@ -31,11 +31,9 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -44,7 +42,7 @@ import static org.mockito.Mockito.mock;
 public class DescriptorColumnExtractorTest extends BaseColumnExtractorTest {
 
     @Test
-    public void testExtractNoPrefix() {
+    public void extractNoPrefix() {
         DbEntity mockDbEntity = createMockDbEntity("mock");
         TranslatableQueryWrapper wrapper = new MockQueryWrapperBuilder()
                 .withMetaData(new MockQueryMetadataBuilder()
@@ -85,7 +83,7 @@ public class DescriptorColumnExtractorTest extends BaseColumnExtractorTest {
 
         assertNull(descriptor0.getProperty());
         assertNotNull(descriptor0.getNode());
-        assertThat(descriptor0.getNode(), instanceOf(ColumnNode.class));
+        assertInstanceOf(ColumnNode.class, descriptor0.getNode());
         assertFalse(descriptor0.isAggregate());
         assertTrue(descriptor0.isInDataRow());
         assertNotNull(descriptor0.getDbAttribute());
@@ -95,7 +93,7 @@ public class DescriptorColumnExtractorTest extends BaseColumnExtractorTest {
 
         assertNull(descriptor1.getProperty());
         assertNotNull(descriptor1.getNode());
-        assertThat(descriptor1.getNode(), instanceOf(ColumnNode.class));
+        assertInstanceOf(ColumnNode.class, descriptor1.getNode());
         assertFalse(descriptor1.isAggregate());
         assertTrue(descriptor1.isInDataRow());
         assertEquals("id", descriptor1.getDataRowKey());

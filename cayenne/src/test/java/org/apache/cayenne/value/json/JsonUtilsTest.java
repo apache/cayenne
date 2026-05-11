@@ -19,99 +19,91 @@
 
 package org.apache.cayenne.value.json;
 
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @since 4.2
  */
-@RunWith(Enclosed.class)
 public class JsonUtilsTest {
 
-    @RunWith(Parameterized.class)
-    public static class CompareTest {
+    @Nested
+    public class CompareTest {
 
-        @Parameterized.Parameters(name = " {0} eq {1} ")
-        public static Object[][] data() {
-            return new Object[][]{
-                    {"[]", "[]", true},
-                    {"{}", "{}", true},
-                    {"[]", "{}", false},
+        public static Stream<Object[]> data() {
+            return Stream.of(
+                    new Object[]{"[]", "[]", true},
+                    new Object[]{"{}", "{}", true},
+                    new Object[]{"[]", "{}", false},
 
-                    {"123", "123", true},
-                    {"123", "124", false},
+                    new Object[]{"123", "123", true},
+                    new Object[]{"123", "124", false},
 
-                    {"null", "null", true},
-                    {"true", "true", true},
-                    {"true", "false", false},
+                    new Object[]{"null", "null", true},
+                    new Object[]{"true", "true", true},
+                    new Object[]{"true", "false", false},
 
-                    {"\"123\"", "\"123\"", true},
-                    {"123", "\"123\"", false},
+                    new Object[]{"\"123\"", "\"123\"", true},
+                    new Object[]{"123", "\"123\"", false},
 
-                    {"[1,2,3]", "[1, 2, 3]", true},
-                    {"[1,2,3]", "[1,2,3,4]", false},
-                    {"[1,2,3]", "[1,2]", false},
-                    {"[1,2,3]", "[1,2,4]", false},
+                    new Object[]{"[1,2,3]", "[1, 2, 3]", true},
+                    new Object[]{"[1,2,3]", "[1,2,3,4]", false},
+                    new Object[]{"[1,2,3]", "[1,2]", false},
+                    new Object[]{"[1,2,3]", "[1,2,4]", false},
 
-                    {"{\"abc\":123,\"def\":321}", " {\"def\" :  321 , \n\t\"abc\" :\t123 }", true},
-                    {"{\"abc\":123}", " {\"abc\" :  124 }", false}
-            };
+                    new Object[]{"{\"abc\":123,\"def\":321}", " {\"def\" :  321 , \n\t\"abc\" :\t123 }", true},
+                    new Object[]{"{\"abc\":123}", " {\"abc\" :  124 }", false}
+            );
         }
 
-        @Parameterized.Parameter
-        public String jsonStringA;
-        @Parameterized.Parameter(1)
-        public String jsonStringB;
-        @Parameterized.Parameter(2)
-        public boolean areEquals;
-
-        @Test
-        public void compare() {
+        @ParameterizedTest(name = " {0} eq {1} ")
+        @MethodSource("data")
+        public void compare(String jsonStringA, String jsonStringB, boolean areEquals) {
             assertEquals(areEquals, JsonUtils.compare(jsonStringA, jsonStringB));
         }
     }
 
-    @RunWith(Parameterized.class)
-    public static class NormalizeTest {
+    @Nested
+    public class NormalizeTest {
 
-        @Parameterized.Parameters(name = " {0} ")
-        public static Object[][] data() {
-            return new Object[][]{
-                    {"[]", "[]", null},
-                    {"{}", "{}", null},
-                    {"true", "true", null},
-                    {"null", "null", null},
-                    {"false", "false", null},
-                    {"123", "123", null},
-                    {"-10.24e3", "-10.24e3", null},
-                    {"\"abc\\\"def\"", "\"abc\\\"def\"", null},
+        public static Stream<Object[]> data() {
+            return Stream.of(
+                    new Object[]{"[]", "[]", null},
+                    new Object[]{"{}", "{}", null},
+                    new Object[]{"true", "true", null},
+                    new Object[]{"null", "null", null},
+                    new Object[]{"false", "false", null},
+                    new Object[]{"123", "123", null},
+                    new Object[]{"-10.24e3", "-10.24e3", null},
+                    new Object[]{"\"abc\\\"def\"", "\"abc\\\"def\"", null},
 
-                    {
+                    new Object[]{
                             "[1, 2.0, -0.3e3, false, null, true]",
                             "[1 ,  2.0  ,-0.3e3, false,\nnull,\ttrue]",
                             null
                     },
-                    {
+                    new Object[]{
                             "{\"abc\": 321, \"def\": true, \"ghi\": \"jkl\"}",
                             "{\"abc\":321,\n\"def\":true,\n\t\"ghi\":\"jkl\"}",
                             null
                     },
-                    {
+                    new Object[]{
                             "{\"tags\": [\"ad\", \"irure\", \"anim\"], \"age\": 20}",
                             "{\"tags\": [\"ad\",\n\"irure\", \"anim\"],\n\"age\": 20}",
                             null
                     },
-                    {
+                    new Object[]{
                             "{\"objects\": [{\"id\": 1}, {\"id\": 2}]}",
                             "{\"objects\":\n[\n{\n\"id\": 1\n},\n{\n\"id\": 2\n}\n]}",
                             null
                     },
-                    {
+                    new Object[]{
                             "["
                             + "{"
                             + "\"_id\": \"63f218c8ae709e45c7b32c5f\", "
@@ -211,19 +203,13 @@ public class JsonUtilsTest {
                             null
                     },
 
-                    {"", "", MalformedJsonException.class},
-            };
+                    new Object[]{"", "", MalformedJsonException.class}
+            );
         }
 
-        @Parameterized.Parameter
-        public String expected;
-        @Parameterized.Parameter(1)
-        public String jsonString;
-        @Parameterized.Parameter(2)
-        public Class<? extends Throwable> throwable;
-
-        @Test
-        public void normalize() {
+        @ParameterizedTest(name = "[{index}] {0}")
+        @MethodSource("data")
+        public void normalize(String expected, String jsonString, Class<? extends Throwable> throwable) {
             if (throwable == null) {
                 assertEquals(expected, JsonUtils.normalize(jsonString));
             } else {

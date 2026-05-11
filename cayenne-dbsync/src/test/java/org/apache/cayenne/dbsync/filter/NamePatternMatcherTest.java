@@ -19,9 +19,9 @@
 
 package org.apache.cayenne.dbsync.filter;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NamePatternMatcherTest {
 
@@ -29,7 +29,7 @@ public class NamePatternMatcherTest {
      * Test tokenizing
      */
     @Test
-    public void testTokenizer() {
+    public void tokenizer() {
 
         String[] nullFilters = NamePatternMatcher.tokenizePattern(null);
         assertEquals(0, nullFilters.length);
@@ -44,7 +44,7 @@ public class NamePatternMatcherTest {
      * Test tokenizing
      */
     @Test
-    public void testTokenizerEntities() {
+    public void tokenizerEntities() {
 
         String includePattern = "Organization,SecGroup,SecIndividual";
 

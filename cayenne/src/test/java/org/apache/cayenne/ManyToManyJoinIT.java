@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.relationships_many_to_many_join.Author;
@@ -28,7 +28,7 @@ import org.apache.cayenne.testdo.relationships_many_to_many_join.Song;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_MANY_TO_MANY_JOIN_PROJECT)
 public class ManyToManyJoinIT extends RuntimeCase {

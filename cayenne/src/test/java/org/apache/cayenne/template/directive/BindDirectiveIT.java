@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.template.directive;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -48,7 +48,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests BindDirective for passed null parameters and for not passed parameters
@@ -77,7 +77,7 @@ public class BindDirectiveIT extends RuntimeCase {
 	private DBHelper dbHelper;
 
 	@Test
-	public void testBind_Timestamp() throws Exception {
+	public void bind_Timestamp() throws Exception {
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("id", 1);
 		parameters.put("name", "ArtistWithDOB");
@@ -95,7 +95,7 @@ public class BindDirectiveIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testBind_SQLDate() throws Exception {
+	public void bind_SQLDate() throws Exception {
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("id", 1);
 		parameters.put("name", "ArtistWithDOB");
@@ -113,7 +113,7 @@ public class BindDirectiveIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testBind_UtilDate() throws Exception {
+	public void bind_UtilDate() throws Exception {
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("id", 1);
 		parameters.put("name", "ArtistWithDOB");
@@ -131,7 +131,7 @@ public class BindDirectiveIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testBind_Collection() throws Exception {
+	public void bind_Collection() throws Exception {
 
 		TableHelper tArtist = new TableHelper(dbHelper, "ARTIST").setColumns("ARTIST_ID", "ARTIST_NAME");
 
@@ -158,7 +158,7 @@ public class BindDirectiveIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testBind_NullParam() throws Exception {
+	public void bind_NullParam() throws Exception {
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("id", 1L);
 		parameters.put("name", "ArtistWithoutDOB");
@@ -174,7 +174,7 @@ public class BindDirectiveIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testBind_NullParam_JDBCTypes() throws Exception {
+	public void bind_NullParam_JDBCTypes() throws Exception {
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("id", 1L);
 		parameters.put("name", "ArtistWithoutDOB");
@@ -190,7 +190,7 @@ public class BindDirectiveIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testBind_SkippedParam() throws Exception {
+	public void bind_SkippedParam() throws Exception {
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("id", 1L);
 		parameters.put("name", "ArtistWithoutDOB");
@@ -205,7 +205,7 @@ public class BindDirectiveIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testBind_SkippedParam_JDBCTypes() throws Exception {
+	public void bind_SkippedParam_JDBCTypes() throws Exception {
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("id", 1L);
 		parameters.put("name", "ArtistWithoutDOB");

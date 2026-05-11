@@ -19,25 +19,24 @@
 package org.apache.cayenne.access.dbsync;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.SUS_PROJECT)
 public class ThrowOnPartialOrCreateSchemaStrategyIT extends SchemaUpdateStrategyBase {
 
     @Test
-	public void testMixedStrategyTableExist() throws Exception {
+	public void mixedStrategyTableExist() throws Exception {
 
 		createOneTable("SUS1");
 		createOneTable("SUS2");
@@ -46,40 +45,35 @@ public class ThrowOnPartialOrCreateSchemaStrategyIT extends SchemaUpdateStrategy
 		SQLTemplate query = new SQLTemplate(Object.class, template);
 
 		setStrategy(ThrowOnPartialOrCreateSchemaStrategy.class);
-		node.performQueries(Collections.singletonList(query), mock(OperationObserver.class));
+		node.performQueries(Collections.singletonList(query), new MockOperationObserver());
 	}
 
     @Test
-	public void testMixedStrategyTableNoExist() throws Exception {
+	public void mixedStrategyTableNoExist() throws Exception {
 
 		String template = "SELECT #result('id' 'int') FROM SUS1";
 		SQLTemplate query = new SQLTemplate(Object.class, template);
 
 		setStrategy(ThrowOnPartialOrCreateSchemaStrategy.class);
 
-		node.performQueries(Collections.singletonList(query), mock(OperationObserver.class));
+		node.performQueries(Collections.singletonList(query), new MockOperationObserver());
 		Map<String, Boolean> nameTables = tablesMap();
 		assertTrue(nameTables.get("SUS1"));
 		assertEquals(2, existingTables().size());
 
-		node.performQueries(Collections.singletonList(query), mock(OperationObserver.class));
+		node.performQueries(Collections.singletonList(query), new MockOperationObserver());
 		assertEquals(2, existingTables().size());
 	}
 
     @Test
-	public void testMixedStrategyWithOneTable() throws Exception {
+	public void mixedStrategyWithOneTable() throws Exception {
 		createOneTable("SUS1");
 		setStrategy(ThrowOnPartialOrCreateSchemaStrategy.class);
 
 		String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
 		SQLTemplate query = new SQLTemplate(Object.class, template);
 
-		try {
-			node.performQueries(Collections.singletonList(query), mock(OperationObserver.class));
-			assertEquals(1, existingTables().size());
-			fail("Must have thrown on partial schema");
-		} catch (CayenneRuntimeException e) {
-			// expected
-		}
+		assertThrows(CayenneRuntimeException.class, () ->
+			node.performQueries(Collections.singletonList(query), new MockOperationObserver()));
 	}
 }

@@ -19,76 +19,76 @@
 
 package org.apache.cayenne.exp;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ExpressionTraversalTest {
 
 	private TstTraversalHandler handler;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		handler = new TstTraversalHandler();
 	}
 
 	@Test
-	public void testUnary_Negative1() {
+	public void unary_Negative1() {
 		doExpressionTest("-5", 1, 1);
 	}
 
 	@Test
-	public void testUnary_Negative2() {
+	public void unary_Negative2() {
 		doExpressionTest("-estimatedPrice", 2, 1);
 	}
 
 	@Test
-	public void testUnary_Negative3() {
+	public void unary_Negative3() {
 		doExpressionTest("-toGallery.paintingArray.estimatedPrice", 2, 1);
 	}
 
 	@Test
-	public void testBinary_In1() {
+	public void binary_In1() {
 		doExpressionTest("toGallery.galleryName in ('g1', 'g2', 'g3')", 3, 2);
 	}
 
 	@Test
-	public void testBinary_In2() {
+	public void binary_In2() {
 		Expression exp = ExpressionFactory.inExp("toGallery.galleryName", Arrays.asList("g1", "g2", "g3"));
 		doExpressionTest(exp, 3, 2);
 	}
 
 	@Test
-	public void testBinary_In3() {
+	public void binary_In3() {
 		Expression exp = ExpressionFactory.inExp("toGallery.galleryName", "g1", "g2", "g3");
 		doExpressionTest(exp, 3, 2);
 	}
 
 	@Test
-	public void testBinary_Like() {
+	public void binary_Like() {
 		doExpressionTest("toGallery.galleryName like 'a%'", 2, 2);
 	}
 
 	@Test
-	public void testBinary_LikeIgnoreCase() {
+	public void binary_LikeIgnoreCase() {
 		doExpressionTest("toGallery.galleryName likeIgnoreCase 'a%'", 2, 2);
 	}
 
 	@Test
-	public void testBinary_IsNull() {
+	public void binary_IsNull() {
 		doExpressionTest("toGallery.galleryName = null", 2, 2);
 	}
 
 	@Test
-	public void testBinary_IsNotNull() {
+	public void binary_IsNotNull() {
 		doExpressionTest("toGallery.galleryName != null", 2, 2);
 	}
 
 	@Test
-	public void testTernary_Between() {
+	public void ternary_Between() {
 		doExpressionTest("estimatedPrice between 3000 and 15000", 2, 3);
 	}
 

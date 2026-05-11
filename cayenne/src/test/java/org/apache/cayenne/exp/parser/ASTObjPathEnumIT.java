@@ -25,10 +25,11 @@ import org.apache.cayenne.testdo.enum_test.EnumEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @UseCayenneRuntime(CayenneProjects.ENUM_PROJECT)
 public class ASTObjPathEnumIT extends RuntimeCase {
@@ -37,7 +38,7 @@ public class ASTObjPathEnumIT extends RuntimeCase {
     private ObjectContext context;
 
     @Test
-    public void testInjectEnumByName() {
+    public void injectEnumByName() {
         ASTObjPath node = new ASTObjPath("enumAttribute");
 
         EnumEntity enumEntity = context.newObject(EnumEntity.class);
@@ -47,13 +48,19 @@ public class ASTObjPathEnumIT extends RuntimeCase {
         assertEquals(Enum1.one, enumEntity.getEnumAttribute());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testInjectUnknownEnumByName() {
-        ASTObjPath node = new ASTObjPath("enumAttribute");
+    @Test
 
-        EnumEntity enumEntity = context.newObject(EnumEntity.class);
-        assertNull(enumEntity.getEnumAttribute());
+    public void injectUnknownEnumByName() {
+        assertThrows(IllegalArgumentException.class, () -> {
 
-        node.injectValue(enumEntity, "four");
+            ASTObjPath node = new ASTObjPath("enumAttribute");
+
+            EnumEntity enumEntity = context.newObject(EnumEntity.class);
+            assertNull(enumEntity.getEnumAttribute());
+
+            node.injectValue(enumEntity, "four");
+    
+        });
     }
+
 }

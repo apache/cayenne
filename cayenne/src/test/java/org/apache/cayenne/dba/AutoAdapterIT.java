@@ -29,12 +29,12 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class AutoAdapterIT extends RuntimeCase {
@@ -43,14 +43,14 @@ public class AutoAdapterIT extends RuntimeCase {
     private DataNode dataNode;
 
     @Test
-    public void testGetAdapter_Proxy() {
+    public void getAdapter_Proxy() {
         AutoAdapter adapter = new AutoAdapter(() -> dataNode.getAdapter(), NoopJdbcEventLogger.getInstance());
         DbAdapter detected = adapter.getAdapter();
         assertSame(dataNode.getAdapter(), detected);
     }
 
     @Test
-    public void testCreateSQLTemplateAction() {
+    public void createSQLTemplateAction() {
         AutoAdapter autoAdapter = new AutoAdapter(() -> dataNode.getAdapter(), NoopJdbcEventLogger.getInstance());
 
         SQLTemplateAction action = (SQLTemplateAction) autoAdapter.getAction(new SQLTemplate(Artist.class,
@@ -64,7 +64,7 @@ public class AutoAdapterIT extends RuntimeCase {
     }
 
     @Test
-    public void testCorrectProxyMethods() {
+    public void correctProxyMethods() {
         DbAdapter adapter = dataNode.getAdapter();
         AutoAdapter autoAdapter = new AutoAdapter(() -> adapter, NoopJdbcEventLogger.getInstance());
 

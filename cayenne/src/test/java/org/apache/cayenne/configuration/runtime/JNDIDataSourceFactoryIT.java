@@ -26,13 +26,13 @@ import org.apache.cayenne.unit.JNDISetup;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.naming.InitialContext;
 import javax.naming.NameNotFoundException;
 
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Deprecated
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
@@ -42,7 +42,7 @@ public class JNDIDataSourceFactoryIT extends RuntimeCase {
     private Injector injector;
 
     @Test
-    public void testGetDataSource_NameBound() throws Exception {
+    public void getDataSource_NameBound() throws Exception {
 
         DataNodeDescriptor descriptor = new DataNodeDescriptor();
         descriptor.setParameters("jdbc/TestDS");
@@ -66,7 +66,7 @@ public class JNDIDataSourceFactoryIT extends RuntimeCase {
     }
 
     @Test
-    public void testGetDataSource_NameBoundWithPrefix() throws Exception {
+    public void getDataSource_NameBoundWithPrefix() throws Exception {
 
         DataNodeDescriptor descriptor = new DataNodeDescriptor();
         descriptor.setParameters("jdbc/TestDS");
@@ -90,7 +90,7 @@ public class JNDIDataSourceFactoryIT extends RuntimeCase {
     }
 
     @Test
-    public void testGetDataSource_NameNotBound() throws Exception {
+    public void getDataSource_NameNotBound() throws Exception {
 
         DataNodeDescriptor descriptor = new DataNodeDescriptor();
         descriptor.setParameters("jdbc/TestDS");
@@ -100,12 +100,6 @@ public class JNDIDataSourceFactoryIT extends RuntimeCase {
         JNDIDataSourceFactory factory = new JNDIDataSourceFactory();
         injector.injectMembers(factory);
 
-        try {
-            factory.getDataSource(descriptor);
-            fail("Didn't throw on unbound name");
-        }
-        catch (NameNotFoundException e) {
-            // expected
-        }
+        assertThrows(NameNotFoundException.class, () -> factory.getDataSource(descriptor));
     }
 }

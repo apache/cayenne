@@ -27,17 +27,17 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * We pass null as EventManager parameter, as having it not null will start
@@ -49,7 +49,7 @@ public class DataRowStoreIT extends RuntimeCase {
 
     private DataRowStore cache;
 
-    @After
+    
     public void cleanDataStore() {
         if(cache != null) {
             cache.shutdown();
@@ -58,7 +58,7 @@ public class DataRowStoreIT extends RuntimeCase {
     }
 
     @Test
-    public void testDefaultConstructor() {
+    public void defaultConstructor() {
         cache = new DataRowStore(
                 "cacheXYZ",
                 new DefaultRuntimeProperties(Collections.<String, String>emptyMap()),
@@ -72,7 +72,7 @@ public class DataRowStoreIT extends RuntimeCase {
      * Tests LRU cache behavior.
      */
     @Test
-    public void testMaxSize() throws Exception {
+    public void maxSize() throws Exception {
         Map<String, String> props = new HashMap<>();
         props.put(Constants.SNAPSHOT_CACHE_SIZE_PROPERTY, String.valueOf(2));
 

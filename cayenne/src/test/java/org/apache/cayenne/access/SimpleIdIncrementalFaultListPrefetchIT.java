@@ -36,13 +36,13 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SimpleIdIncrementalFaultListPrefetchIT extends RuntimeCase {
@@ -59,7 +59,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT extends RuntimeCase {
     protected TableHelper tArtist;
     protected TableHelper tPaining;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -95,7 +95,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT extends RuntimeCase {
     }
 
     @Test
-    public void testListType() throws Exception {
+    public void listType() throws Exception {
         createArtistsDataSet();
 
         List<?> result = ObjectSelect.query(Artist.class)
@@ -110,7 +110,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT extends RuntimeCase {
      * path.
      */
     @Test
-    public void testPrefetch1() throws Exception {
+    public void prefetch1() throws Exception {
         createArtistsAndPaintingsDataSet();
 
         ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
@@ -142,7 +142,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT extends RuntimeCase {
      * Test that a to-many relationship is initialized.
      */
     @Test
-    public void testPrefetch3() throws Exception {
+    public void prefetch3() throws Exception {
         createArtistsAndPaintingsDataSet();
 
         ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
@@ -171,7 +171,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT extends RuntimeCase {
      * Test that a to-one relationship is initialized.
      */
     @Test
-    public void testPrefetch4() throws Exception {
+    public void prefetch4() throws Exception {
         createArtistsAndPaintingsDataSet();
 
         ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
@@ -187,8 +187,8 @@ public class SimpleIdIncrementalFaultListPrefetchIT extends RuntimeCase {
             Object toOnePrefetch = p1.readNestedProperty("toArtist");
             assertNotNull(toOnePrefetch);
             assertTrue(
-                    "Expected Persistent, got: " + toOnePrefetch.getClass().getName(),
-                    toOnePrefetch instanceof Persistent);
+                    toOnePrefetch instanceof Persistent,
+                    "Expected Persistent, got: " + toOnePrefetch.getClass().getName());
 
             Persistent a1 = (Persistent) toOnePrefetch;
             assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());

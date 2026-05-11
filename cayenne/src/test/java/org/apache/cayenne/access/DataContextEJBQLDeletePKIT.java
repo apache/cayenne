@@ -28,13 +28,13 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @UseCayenneRuntime(CayenneProjects.MEANINGFUL_PK_PROJECT)
 public class DataContextEJBQLDeletePKIT extends RuntimeCase {
@@ -47,7 +47,8 @@ public class DataContextEJBQLDeletePKIT extends RuntimeCase {
 
     protected TableHelper tMeaningfulPKTest1Table;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tMeaningfulPKTest1Table = new TableHelper(dbHelper, "MEANINGFUL_PK_TEST1");
         tMeaningfulPKTest1Table.setColumns("PK_ATTRIBUTE", "DESCR", "INT_ATTRIBUTE");
@@ -60,7 +61,7 @@ public class DataContextEJBQLDeletePKIT extends RuntimeCase {
     }
 
     @Test
-    public void testDeleteIdVar() throws Exception {
+    public void deleteIdVar() throws Exception {
 
         createMeaningfulPKDataSet();
 

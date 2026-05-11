@@ -18,29 +18,29 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class ASTDbPathTest {
 
     @Test
-    public void testToString() {
+    public void stringRepresentation() {
         assertEquals("db:x.y", new ASTDbPath("x.y").toString());
     }
 
     @Test
-    public void testAppendAsString() throws IOException {
+    public void appendAsString() throws IOException {
         StringBuilder buffer = new StringBuilder();
         new ASTDbPath("x.y").appendAsString(buffer);
         assertEquals("db:x.y", buffer.toString());
     }
 
     @Test
-    public void testEquals() throws Exception {
+    public void equals() throws Exception {
         ASTPath path1 = new ASTDbPath("x.y.z");
         ASTPath path2 = new ASTDbPath("x.y.z");
         ASTPath path3 = new ASTDbPath("x.x.z");

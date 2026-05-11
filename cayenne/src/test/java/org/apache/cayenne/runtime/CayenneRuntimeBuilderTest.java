@@ -22,23 +22,21 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 public class CayenneRuntimeBuilderTest {
 
 	private CayenneRuntime runtime;
 
-	@After
+	@AfterEach
 	public void stopRuntime() {
 
 		// even though we don't supply real configs here, we sometimes access
@@ -50,7 +48,7 @@ public class CayenneRuntimeBuilderTest {
 	}
 
 	@Test
-	public void test_NoLocation() {
+	public void noLocation() {
 
 		// this is meaningless (no DataSource), but should work...
 		runtime = new CayenneRuntimeBuilder(null).build();
@@ -62,11 +60,11 @@ public class CayenneRuntimeBuilderTest {
 
 		Collection<Module> modules = runtime.getModules();
 		assertEquals(2, modules.size());
-		assertThat(modules.iterator().next(), instanceOf(CoreModule.class));
+		assertInstanceOf(CoreModule.class, modules.iterator().next());
 	}
 
 	@Test
-	public void test_SingleLocation() {
+	public void singleLocation() {
 
 		runtime = new CayenneRuntimeBuilder(null).addConfig("xxxx").build();
 
@@ -77,12 +75,12 @@ public class CayenneRuntimeBuilderTest {
 
 		Collection<Module> modules = runtime.getModules();
 		assertEquals(2, modules.size());
-		assertThat(modules.iterator().next(), instanceOf(CoreModule.class));
+		assertInstanceOf(CoreModule.class, modules.iterator().next());
 
 	}
 
 	@Test
-	public void test_MultipleLocations() {
+	public void multipleLocations() {
 
 		runtime = new CayenneRuntimeBuilder(null).addConfigs("xxxx", "yyyy").build();
 
@@ -93,11 +91,11 @@ public class CayenneRuntimeBuilderTest {
 
 		Collection<Module> modules = runtime.getModules();
 		assertEquals(3, modules.size());
-		assertThat(modules.iterator().next(), instanceOf(CoreModule.class));
+		assertInstanceOf(CoreModule.class, modules.iterator().next());
 	}
 
 	@Test
-	public void test_ExtraModules() {
+	public void extraModules() {
 
 		Module m = mock(Module.class);
 
@@ -106,18 +104,18 @@ public class CayenneRuntimeBuilderTest {
 		Collection<Module> modules = runtime.getModules();
 		assertEquals(3, modules.size());
 		Module[] array = modules.toArray(new Module[3]);
-		assertThat(array[0], instanceOf(CoreModule.class));
+		assertInstanceOf(CoreModule.class, array[0]);
 		assertSame(m, array[1]);
 	}
 
 	@Test
-	public void test_UnnamedDomain_NoLocation() {
+	public void unnamedDomain_NoLocation() {
 		runtime = new CayenneRuntimeBuilder(null).build();
 		assertEquals("cayenne", runtime.getDataDomain().getName());
 	}
 
 	@Test
-	public void test_NamedDomain_NoLocation() {
+	public void namedDomain_NoLocation() {
 		runtime = new CayenneRuntimeBuilder("myd").build();
 		assertEquals("myd", runtime.getDataDomain().getName());
 	}

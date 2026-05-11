@@ -19,15 +19,15 @@
 
 package org.apache.cayenne.map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class RelationshipTest {
 
     @Test
-    public void testName() throws Exception {
+    public void name() throws Exception {
         MockRelationship rel = new MockRelationship();
 
         String tstName = "tst_name";
@@ -36,7 +36,7 @@ public class RelationshipTest {
     }
 
     @Test
-    public void testSourceEntity() {
+    public void sourceEntity() {
         MockRelationship rel = new MockRelationship();
         MockEntity tstEntity = new MockEntity();
         rel.setSourceEntity(tstEntity);
@@ -44,7 +44,7 @@ public class RelationshipTest {
     }
 
     @Test
-    public void testTargetEntity() {
+    public void targetEntity() {
         MockRelationship rel = new MockRelationship();
         MockEntity tstEntity = new MockEntity();
         tstEntity.setName("abc");
@@ -53,7 +53,7 @@ public class RelationshipTest {
     }
 
     @Test
-    public void testTargetEntityName() {
+    public void targetEntityName() {
         MockRelationship rel = new MockRelationship();
         rel.setTargetEntityName("abc");
         assertSame("abc", rel.getTargetEntityName());

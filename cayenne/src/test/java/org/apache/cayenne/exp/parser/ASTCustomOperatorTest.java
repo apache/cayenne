@@ -22,9 +22,9 @@ package org.apache.cayenne.exp.parser;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.2
@@ -32,7 +32,7 @@ import static org.junit.Assert.*;
 public class ASTCustomOperatorTest {
 
     @Test
-    public void testParse() {
+    public void parse() {
         Expression exp = ExpressionFactory.exp("op('~~>', test, 'abc')");
 
         assertTrue(exp instanceof ASTCustomOperator);
@@ -40,9 +40,15 @@ public class ASTCustomOperatorTest {
         assertEquals("op(\"~~>\", test, \"abc\")", exp.toString());
     }
 
-    @Test(expected = ExpressionException.class)
-    public void testEvaluate() {
-        new ASTCustomOperator("op").evaluate(new Object());
+    @Test
+
+    public void evaluate() {
+        assertThrows(ExpressionException.class, () -> {
+
+            new ASTCustomOperator("op").evaluate(new Object());
+    
+        });
     }
+
 
 }

@@ -24,18 +24,14 @@ import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.test.jdbc.SQLReader;
 import org.apache.cayenne.test.resource.ResourceUtil;
-import org.apache.maven.execution.DefaultMavenExecutionRequest;
-import org.apache.maven.execution.MavenExecutionRequest;
+import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoTest;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.testing.AbstractMojoTestCase;
-import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.ProjectBuilder;
-import org.apache.maven.project.ProjectBuildingRequest;
 import org.codehaus.plexus.util.FileUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.xmlunit.matchers.CompareMatcher;
 
@@ -53,194 +49,238 @@ import java.util.Objects;
 
 import static org.apache.cayenne.util.Util.isBlank;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 
-public class DbImporterMojoTest extends AbstractMojoTestCase {
+@MojoTest
+public class DbImporterMojoTest {
 
     private static DerbyManager derbyAssembly;
 
-    @BeforeClass
-    public static void beforeClass() throws IOException, SQLException {
+    @BeforeAll
+    public static void beforeAll() throws IOException, SQLException {
         derbyAssembly = new DerbyManager("target/derby");
     }
 
-    @AfterClass
-    public static void afterClass() throws IOException, SQLException {
+    @AfterAll
+    public static void afterAll() throws IOException, SQLException {
         derbyAssembly.shutdown();
         derbyAssembly = null;
     }
 
     @Test
-    public void testToParameters_MeaningfulPkTables() throws Exception {
+    public void toParameters_MeaningfulPkTables(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimporter-pom1.xml") DbImporterMojo mojo1,
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimporter-pom2.xml") DbImporterMojo mojo2,
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimporter-pom3.xml") DbImporterMojo mojo3) throws Exception {
 
-        DbImportConfiguration parameters1 = getCdbImport("dbimporter-pom1.xml").createConfig(mock(Logger.class));
+        DbImportConfiguration parameters1 = mojo1.createConfig(mock(Logger.class));
         assertNull(parameters1.getMeaningfulPkTables());
-        assertPathEquals("target/test/org/apache/cayenne/tools/dbimporter-map1.map.xml", parameters1.getTargetDataMap()
-                .getPath());
+        assertPathEquals("target/test/org/apache/cayenne/tools/dbimporter-map1.map.xml", parameters1.getTargetDataMap().getPath());
 
-        assertEquals("x,b*", getCdbImport("dbimporter-pom2.xml").createConfig(mock(Logger.class)).getMeaningfulPkTables());
-        assertEquals("*", getCdbImport("dbimporter-pom3.xml").createConfig(mock(Logger.class)).getMeaningfulPkTables());
+        assertEquals("x,b*", mojo2.createConfig(mock(Logger.class)).getMeaningfulPkTables());
+        assertEquals("*", mojo3.createConfig(mock(Logger.class)).getMeaningfulPkTables());
     }
 
-    public void testToParameters_Map() throws Exception {
+    @Test
+    public void toParameters_Map(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimporter-pom1.xml") DbImporterMojo mojo1,
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimporter-pom2.xml") DbImporterMojo mojo2) throws Exception {
 
-        DbImportConfiguration parameters1 = getCdbImport("dbimporter-pom1.xml").createConfig(mock(Logger.class));
+        DbImportConfiguration parameters1 = mojo1.createConfig(mock(Logger.class));
         assertNotNull(parameters1.getTargetDataMap());
-        assertPathEquals("target/test/org/apache/cayenne/tools/dbimporter-map1.map.xml", parameters1.getTargetDataMap()
-                .getPath());
+        assertPathEquals("target/test/org/apache/cayenne/tools/dbimporter-map1.map.xml", parameters1.getTargetDataMap().getPath());
 
-        assertNull(getCdbImport("dbimporter-pom2.xml").createConfig(mock(Logger.class)).getTargetDataMap());
-    }
-
-    private DbImporterMojo getCdbImport(String pomFileName) throws Exception {
-        return (DbImporterMojo) lookupMojo("cdbimport",
-                getTestFile("src/test/resources/org/apache/cayenne/tools/" + pomFileName));
-    }
-
-    private void assertPathEquals(String expectedPath, String actualPath) {
-        assertEquals(new File(expectedPath), new File(actualPath));
+        assertNull(mojo2.createConfig(mock(Logger.class)).getTargetDataMap());
     }
 
     @Test
-    public void testImportNewDataMap() throws Exception {
-        test("testImportNewDataMap");
+    public void importNewDataMap(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testImportNewDataMap-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testImportNewDataMap");
     }
 
     @Test
-    public void testImportNewRelationship() throws Exception {
-        test("testImportNewRelationship");
+    public void importNewRelationship(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testImportNewRelationship-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testImportNewRelationship");
     }
 
     @Test
-    public void testImportWithoutChanges() throws Exception {
-        test("testImportWithoutChanges");
+    public void importWithoutChanges(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testImportWithoutChanges-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testImportWithoutChanges");
     }
 
     @Test
-    public void testImportAddTableAndColumn() throws Exception {
-        test("testImportAddTableAndColumn");
+    public void importAddTableAndColumn(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testImportAddTableAndColumn-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testImportAddTableAndColumn");
     }
 
     @Test
-    public void testFilteringWithSchema() throws Exception {
-        test("testFilteringWithSchema");
+    public void filteringWithSchema(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testFilteringWithSchema-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testFilteringWithSchema");
     }
 
     @Test
-    public void testSchemasAndTableExclude() throws Exception {
-        test("testSchemasAndTableExclude");
+    public void schemasAndTableExclude(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testSchemasAndTableExclude-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testSchemasAndTableExclude");
     }
 
     @Test
-    public void testViewsExclude() throws Exception {
-        test("testViewsExclude");
+    public void viewsExclude(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testViewsExclude-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testViewsExclude");
     }
 
     @Test
-    public void testTableTypes() throws Exception {
-        test("testTableTypes");
+    public void tableTypes(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testTableTypes-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testTableTypes");
     }
 
     @Test
-    public void testDefaultPackage() throws Exception {
-        test("testDefaultPackage");
+    public void defaultPackage(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testDefaultPackage-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testDefaultPackage");
     }
 
     @Test
-    public void testSkipRelationshipsLoading() throws Exception {
-        test("testSkipRelationshipsLoading");
+    public void skipRelationshipsLoading(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testSkipRelationshipsLoading-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testSkipRelationshipsLoading");
     }
 
     @Test
-    public void testSkipPrimaryKeyLoading() throws Exception {
-        test("testSkipPrimaryKeyLoading");
+    public void skipPrimaryKeyLoading(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testSkipPrimaryKeyLoading-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testSkipPrimaryKeyLoading");
     }
 
     @Test
-    public void testOneToOne() throws Exception {
-        test("testOneToOne");
+    public void oneToOne(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testOneToOne-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testOneToOne");
     }
 
     @Test
-    public void testExcludeRelationship() throws Exception {
-        test("testExcludeRelationship");
+    public void excludeRelationship(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testExcludeRelationship-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testExcludeRelationship");
     }
 
     @Test
-    public void testExcludeRelationshipFirst() throws Exception {
-        test("testExcludeRelationshipFirst");
+    public void excludeRelationshipFirst(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testExcludeRelationshipFirst-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testExcludeRelationshipFirst");
     }
 
     @Test
-    public void testNamingStrategy() throws Exception {
-        test("testNamingStrategy");
+    public void namingStrategy(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testNamingStrategy-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testNamingStrategy");
     }
 
     /**
      * Q: what happens if an attribute or relationship is unmapped in the object layer, but then the underlying table
      * changes.
      * A: it should not recreate unmapped attributes/relationships. Only add an attribute for the new column.
-     *
-     * @throws Exception
      */
     @Test
-    public void testPreserveCustomObjMappings() throws Exception {
-        test("testPreserveCustomObjMappings");
+    public void preserveCustomObjMappings(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testPreserveCustomObjMappings-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testPreserveCustomObjMappings");
     }
 
     /**
-     * Q: what happens if a relationship existed over a column that was later deleted? and ‘skipRelLoading’ is true
+     * Q: what happens if a relationship existed over a column that was later deleted? and 'skipRelLoading' is true
      * A: it should remove relationship and column
-     *
-     * @throws Exception
      */
     @Test
-    public void testPreserveRelationships() throws Exception {
-        test("testPreserveRelationships");
+    public void preserveRelationships(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testPreserveRelationships-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testPreserveRelationships");
     }
 
     /**
      * By default many-to-many are flattened during reverse engineering.
-     * But if a user un-flattens a given N:M manually, we’d like this choice to be preserved on the next run
+     * But if a user un-flattens a given N:M manually, we'd like this choice to be preserved on the next run
      */
     @Test
-    public void testUnFlattensManyToMany() throws Exception {
+    public void unFlattensManyToMany(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testUnFlattensManyToMany-pom.xml")
+            DbImporterMojo mojo) throws Exception {
         // TODO: this should be "xYs" : <db-relationship name="xIes"
-        test("testUnFlattensManyToMany");
+        test(mojo, "testUnFlattensManyToMany");
     }
 
     /**
      * Make sure any merges preserve custom object layer settings, like "usePrimitives", PK mapping as attribute, etc.
      */
     @Test
-    public void testCustomObjectLayerSettings() throws Exception {
-        test("testCustomObjectLayerSettings");
+    public void customObjectLayerSettings(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testCustomObjectLayerSettings-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testCustomObjectLayerSettings");
     }
 
     @Test
-    public void testDbAttributeChange() throws Exception {
-        test("testDbAttributeChange");
-    }
-
-	@Test
-	public void testForceDataMapSchema() throws Exception {
-		test("testForceDataMapSchema");
-	}
-
-    @Test
-    public void testComplexChangeOrder() throws Exception {
-        test("testComplexChangeOrder");
+    public void dbAttributeChange(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testDbAttributeChange-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testDbAttributeChange");
     }
 
     @Test
-    public void testConfigFromDataMap() throws Exception {
-        test("testConfigFromDataMap");
+    public void forceDataMapSchema(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testForceDataMapSchema-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testForceDataMapSchema");
     }
 
     @Test
-    public void testTableTypesFromDataMapConfig() throws Exception {
-        test("testTableTypesMap");
+    public void complexChangeOrder(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testComplexChangeOrder-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testComplexChangeOrder");
+    }
+
+    @Test
+    public void configFromDataMap(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testConfigFromDataMap-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testConfigFromDataMap");
+    }
+
+    @Test
+    public void tableTypesFromDataMapConfig(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testTableTypesMap-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testTableTypesMap");
     }
 
     /**
@@ -261,58 +301,75 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
      * <p>
      * If one table has many-to-many relationship with it self ObjEntity should have two
      * collection attributes in both directions
-     *
-     * @throws Exception
      */
     @Test
-    @Ignore("Investigate why on different environment entity relationships order are different.")
-    public void te_stFlattensManyToManyWithRecursiveLink() throws Exception {
-        test("testFlattensManyToManyWithRecursiveLink");
+    @Disabled("Investigate why on different environment entity relationships order are different.")
+    public void flattensManyToManyWithRecursiveLink(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testFlattensManyToManyWithRecursiveLink-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testFlattensManyToManyWithRecursiveLink");
     }
 
     @Test
-    public void testFkAttributeRename() throws Exception {
-        test("testFkAttributeRename");
+    public void fkAttributeRename(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testFkAttributeRename-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testFkAttributeRename");
     }
 
     @Test
-    public void testJava7Types() throws Exception {
-        test("testJava7Types");
+    public void java7Types(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testJava7Types-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testJava7Types");
     }
 
     @Test
-    public void testJava8Types() throws Exception {
-        test("testJava8Types");
+    public void java8Types(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testJava8Types-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testJava8Types");
     }
 
     @Test
-    public void testInheritance() throws Exception {
-        test("testInheritance");
+    public void inheritance(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testInheritance-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testInheritance");
     }
 
     @Test
-    public void testAddedFlattenedRelationship() throws Exception {
-        test("testAddedFlattenedRelationship");
+    public void addedFlattenedRelationship(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testAddedFlattenedRelationship-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testAddedFlattenedRelationship");
     }
 
     @Test
-    public void testImportProcedure() throws Exception {
-        test("testImportProcedure");
+    public void importProcedure(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testImportProcedure-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testImportProcedure");
     }
 
     @Test
-    public void testDropProcedure() throws Exception {
-        test("testDropProcedure");
+    public void dropProcedure(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testDropProcedure-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testDropProcedure");
     }
 
     @Test
-    public void testSameProcedures() throws Exception {
-        test("testSameProcedure");
+    public void sameProcedures(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testSameProcedure-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        test(mojo, "testSameProcedure");
     }
 
     @Test
-    public void testFilteringConfig() throws Exception {
-        DbImporterMojo cdbImport = getCdbImport("config/pom-01.xml");
+    public void filteringConfig(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/config/pom-01.xml")
+            DbImporterMojo cdbImport) throws Exception {
 
         assertEquals(2, cdbImport.getReverseEngineering().getCatalogs().size());
         Iterator<Catalog> iterator = cdbImport.getReverseEngineering().getCatalogs().iterator();
@@ -365,26 +422,23 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
     }
 
     @Test
-    public void testSupportsCatalogsOnReverseEngineering() throws Exception {
-        DbImporterMojo cdbImport = getCdbImport("dbimport/testSupportsCatalogsOnReverseEngineering-pom.xml");
+    public void supportsCatalogsOnReverseEngineering(
+            @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testSupportsCatalogsOnReverseEngineering-pom.xml")
+            DbImporterMojo cdbImport) throws Exception {
         cdbImport.getReverseEngineering().addCatalog(new Catalog("DbImporterMojoTest2"));
 
-        Exception exceptedException = null;
-        String exceptedMessage = "Your database does not support catalogs on reverse engineering. " +
+        String expectedMessage = "Your database does not support catalogs on reverse engineering. " +
                 "It allows to connect to only one at the moment. Please don't note catalogs in <dbimport> configuration.";
 
-        try {
-            cdbImport.execute();
-        } catch (MojoExecutionException ex) {
-            exceptedException = ex;
-        }
-
-        assertNotNull(exceptedException);
-        assertEquals(exceptedMessage, exceptedException.getCause().getMessage());
+        MojoExecutionException ex = assertThrows(MojoExecutionException.class, cdbImport::execute);
+        assertEquals(expectedMessage, ex.getCause().getMessage());
     }
 
-    private void test(String name) throws Exception {
-        DbImporterMojo cdbImport = getCdbImport("dbimport/" + name + "-pom.xml");
+    private void assertPathEquals(String expectedPath, String actualPath) {
+        assertEquals(new File(expectedPath).getAbsoluteFile(), new File(actualPath).getAbsoluteFile());
+    }
+
+    private void test(DbImporterMojo cdbImport, String name) throws Exception {
         File mapFile = cdbImport.getMap();
         File mapFileCopy = new File(mapFile.getParentFile(), "copy-" + mapFile.getName());
         if (mapFile.exists()) {
@@ -467,41 +521,27 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
         stmt.execute(sql);
     }
 
-    private void verifyResult(File map, File mapFileCopy) {
-        try {
-            FileReader control = new FileReader(map.getAbsolutePath() + "-result");
-            FileReader test = new FileReader(mapFileCopy);
+    private void verifyResult(File map, File mapFileCopy) throws Exception {
+        FileReader control = new FileReader(map.getAbsolutePath() + "-result");
+        FileReader test = new FileReader(mapFileCopy);
 
-            assertThat(test, CompareMatcher.isSimilarTo(control).ignoreWhitespace());
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail();
-        }
+        assertThat(test, CompareMatcher.isSimilarTo(control).ignoreWhitespace());
     }
 
     private void prepareDatabase(String sqlFile, DbImportDataSourceConfig dataSource) throws Exception {
 
-        URL sqlUrl = Objects.requireNonNull(ResourceUtil.getResource(getClass(), "dbimport/" + sqlFile + ".sql"));
+        URL sqlUrl = Objects.requireNonNull(ResourceUtil.getResource(DbImporterMojoTest.class, "dbimport/" + sqlFile + ".sql"));
 
         // TODO: refactor to common DB management code... E.g. bootique-jdbc-test?
 
         Class.forName(dataSource.getDriver()).getDeclaredConstructor().newInstance();
 
         try (Connection connection = DriverManager.getConnection(dataSource.getUrl())) {
-            try (Statement stmt = connection.createStatement();) {
+            try (Statement stmt = connection.createStatement()) {
                 for (String sql : SQLReader.statements(sqlUrl, ";")) {
                     stmt.execute(sql);
                 }
             }
         }
-    }
-
-
-    private MavenProject getMavenProject(String pomPath) throws Exception {
-        File pom = new File(pomPath);
-        MavenExecutionRequest request = new DefaultMavenExecutionRequest();
-        request.setPom(pom);
-        ProjectBuildingRequest configuration = request.getProjectBuildingRequest();
-        return lookup( ProjectBuilder.class ).build( pom, configuration ).getProject();
     }
 }

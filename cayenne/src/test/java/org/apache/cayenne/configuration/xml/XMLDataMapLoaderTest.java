@@ -33,13 +33,13 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.SQLTemplateDescriptor;
 import org.apache.cayenne.resource.URLResource;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.XMLReader;
 
 import java.net.URL;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class XMLDataMapLoaderTest {
 
@@ -47,7 +47,7 @@ public class XMLDataMapLoaderTest {
 
     private DataMapLoader loader;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         Module testModule = binder -> {
             binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
@@ -63,15 +63,16 @@ public class XMLDataMapLoaderTest {
         loader = injector.getInstance(DataMapLoader.class);
     }
 
-    @Test(expected = CayenneRuntimeException.class)
+    @Test
     public void loadMissingConfig() throws Exception {
-        loader.load(new URLResource(new URL("file:/no_such_file_for_map_xml")));
+        assertThrows(CayenneRuntimeException.class, () ->
+                loader.load(new URLResource(new URL("file:/no_such_file_for_map_xml"))));
     }
 
-    @Test(expected = CayenneRuntimeException.class)
+    @Test
     public void loadWrongVersionConfig() throws Exception {
         URL url = getClass().getResource("testConfigMap5.map.xml");
-        loader.load(new URLResource(url));
+        assertThrows(CayenneRuntimeException.class, () -> loader.load(new URLResource(url)));
     }
 
     @Test

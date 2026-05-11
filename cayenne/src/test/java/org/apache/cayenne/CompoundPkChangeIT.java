@@ -25,9 +25,9 @@ import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.COMPOUND_PROJECT)
 public class CompoundPkChangeIT extends RuntimeCase {
@@ -43,7 +43,7 @@ public class CompoundPkChangeIT extends RuntimeCase {
     private DataContext context;
 
     @Test
-    public void testCompoundPkChangeSingleElement() throws Exception {
+    public void compoundPkChangeSingleElement() throws Exception {
 
         CompoundPkTestEntity object = context.newObject(CompoundPkTestEntity.class);
         CompoundPkTestEntity refreshedObject = null;
@@ -99,7 +99,7 @@ public class CompoundPkChangeIT extends RuntimeCase {
     }
 
     @Test
-    public void testCompoundPkChangeAllElements() throws Exception {
+    public void compoundPkChangeAllElements() throws Exception {
 
         CompoundPkTestEntity object = context.newObject(CompoundPkTestEntity.class);
         CompoundPkTestEntity refreshedObject = null;

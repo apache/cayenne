@@ -30,13 +30,13 @@ import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Timestamp;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextJoinAliasesIT extends RuntimeCase {
@@ -52,7 +52,8 @@ public class DataContextJoinAliasesIT extends RuntimeCase {
     protected TableHelper tGallery;
     protected TableHelper tArtistExhibit;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -93,7 +94,7 @@ public class DataContextJoinAliasesIT extends RuntimeCase {
     }
 
     @Test
-    public void testMatchAll() throws Exception {
+    public void matchAll() throws Exception {
         // select all galleries that have exhibits by both Picasso and Dali...
 
         createMatchAllDataSet();

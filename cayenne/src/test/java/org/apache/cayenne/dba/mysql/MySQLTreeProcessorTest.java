@@ -22,8 +22,8 @@ package org.apache.cayenne.dba.mysql;
 import org.apache.cayenne.access.sqlbuilder.BaseSqlBuilderTest;
 import org.apache.cayenne.access.sqlbuilder.sqltree.LikeNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
 
@@ -31,7 +31,7 @@ public class MySQLTreeProcessorTest extends BaseSqlBuilderTest {
 
     private Node sqlNode;
 
-    @Before
+    @BeforeEach
     public void generateSql() {
         sqlNode = select(column("*"))
                 .from(table("test"))
@@ -46,14 +46,14 @@ public class MySQLTreeProcessorTest extends BaseSqlBuilderTest {
     }
 
     @Test
-    public void testLikeCI() {
+    public void likeCI() {
         MySQLTreeProcessor instance = MySQLTreeProcessor.getInstance(true);
         Node processed = instance.process(sqlNode);
         assertSQL("SELECT * FROM test WHERE column LIKE BINARY 'abc'", processed);
     }
 
     @Test
-    public void testLikeCS() {
+    public void likeCS() {
         MySQLTreeProcessor instance = MySQLTreeProcessor.getInstance(false);
         Node processed = instance.process(sqlNode);
         assertSQL("SELECT * FROM test WHERE column LIKE 'abc'", processed);

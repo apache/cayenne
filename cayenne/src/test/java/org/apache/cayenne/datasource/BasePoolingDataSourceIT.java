@@ -27,8 +27,8 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class BasePoolingDataSourceIT extends RuntimeCase {
@@ -43,7 +43,7 @@ public class BasePoolingDataSourceIT extends RuntimeCase {
 
 	protected UnmanagedPoolingDataSource dataSource;
 
-	@Before
+	@BeforeEach
 	public void before() throws SQLException {
 
 		Driver driver = objectFactory.newInstance(Driver.class, dataSourceInfo.getJdbcDriver());
@@ -54,7 +54,7 @@ public class BasePoolingDataSourceIT extends RuntimeCase {
 		this.dataSource = new UnmanagedPoolingDataSource(nonPooling, poolParameters);
 	}
 
-	@After
+	@AfterEach
 	public void after() throws SQLException {
 		if (dataSource != null) {
 			dataSource.close();

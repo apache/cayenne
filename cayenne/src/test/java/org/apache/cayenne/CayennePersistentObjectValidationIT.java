@@ -30,14 +30,14 @@ import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class CayennePersistentObjectValidationIT extends RuntimeCase {
@@ -46,7 +46,7 @@ public class CayennePersistentObjectValidationIT extends RuntimeCase {
     private ObjectContext context;
 
     @Test
-    public void testValidateForSaveMandatoryToOneMissing() throws Exception {
+    public void validateForSaveMandatoryToOneMissing() throws Exception {
 
         Exhibit exhibit = context.newObject(Exhibit.class);
         exhibit.setOpeningDate(new Date());
@@ -55,7 +55,7 @@ public class CayennePersistentObjectValidationIT extends RuntimeCase {
         ValidationResult result = new ValidationResult();
         exhibit.validateForSave(result);
 
-        assertTrue("Validation of 'toGallery' should've failed.", result.hasFailures());
+        assertTrue(result.hasFailures(), "Validation of 'toGallery' should've failed.");
         assertTrue(result.hasFailures(exhibit));
 
         List<ValidationFailure> failures = result.getFailures();
@@ -69,18 +69,18 @@ public class CayennePersistentObjectValidationIT extends RuntimeCase {
         exhibit.setToGallery(gallery);
         result = new ValidationResult();
         exhibit.validateForSave(result);
-        assertFalse("No failures expected: " + result, result.hasFailures());
+        assertFalse(result.hasFailures(), "No failures expected: " + result);
     }
 
     @Test
-    public void testValidateForSaveMandatoryAttributeMissing() throws Exception {
+    public void validateForSaveMandatoryAttributeMissing() throws Exception {
 
         Artist artist = context.newObject(Artist.class);
 
         ValidationResult result = new ValidationResult();
         artist.validateForSave(result);
 
-        assertTrue("Validation of 'artistName' should've failed.", result.hasFailures());
+        assertTrue(result.hasFailures(), "Validation of 'artistName' should've failed.");
         assertTrue(result.hasFailures(artist));
 
         List<ValidationFailure> failures = result.getFailures();
@@ -97,7 +97,7 @@ public class CayennePersistentObjectValidationIT extends RuntimeCase {
     }
 
     @Test
-    public void testValidateForSaveAttributeTooLong() throws Exception {
+    public void validateForSaveAttributeTooLong() throws Exception {
 
         Artist artist = context.newObject(Artist.class);
 

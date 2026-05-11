@@ -20,45 +20,36 @@
 
 package org.apache.cayenne.util;
 
-import org.apache.cayenne.access.types.ByteArrayTypeTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  */
 public class IDUtilTest {
 
     @Test
-    public void testPseudoUniqueByteSequence1() throws Exception {
-        try {
-            IDUtil.pseudoUniqueByteSequence(10);
-            fail("must throw an exception on short sequences");
-        } catch (IllegalArgumentException ex) {
-            // expected
-        }
+    public void pseudoUniqueByteSequence1() throws Exception {
+        assertThrows(IllegalArgumentException.class, () -> IDUtil.pseudoUniqueByteSequence(10));
     }
 
     @Test
-    public void testPseudoUniqueByteSequence2() throws Exception {
+    public void pseudoUniqueByteSequence2() throws Exception {
         byte[] byte16 = IDUtil.pseudoUniqueByteSequence(16);
         assertNotNull(byte16);
         assertEquals(16, byte16.length);
 
-        try {
-            ByteArrayTypeTest.assertByteArraysEqual(
-                byte16,
-                IDUtil.pseudoUniqueByteSequence(16));
-            fail("Same byte array..");
-        } catch (Throwable th) {
-
-        }
+        // verify that two calls return different sequences
+        byte[] byte16b = IDUtil.pseudoUniqueByteSequence(16);
+        assertNotNull(byte16b);
+        assertEquals(16, byte16b.length);
+        assertNotSameContent(byte16, byte16b);
     }
 
     @Test
-    public void testPseudoUniqueByteSequence3() throws Exception {
+    public void pseudoUniqueByteSequence3() throws Exception {
         byte[] byte17 = IDUtil.pseudoUniqueByteSequence(17);
         assertNotNull(byte17);
         assertEquals(17, byte17.length);
@@ -68,4 +59,15 @@ public class IDUtilTest {
         assertEquals(123, byte123.length);
     }
 
+    private static void assertNotSameContent(byte[] b1, byte[] b2) {
+        if (b1.length != b2.length) {
+            return; // different lengths, definitely different
+        }
+        for (int i = 0; i < b1.length; i++) {
+            if (b1[i] != b2[i]) {
+                return; // found a difference
+            }
+        }
+        throw new AssertionError("Byte arrays are identical — expected unique sequences");
+    }
 }

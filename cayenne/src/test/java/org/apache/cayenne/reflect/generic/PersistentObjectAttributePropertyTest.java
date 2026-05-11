@@ -21,15 +21,15 @@ package org.apache.cayenne.reflect.generic;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.util.Util;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class PersistentObjectAttributePropertyTest {
 
     @Test
-	public void testSerialization() throws Exception {
+	public void serialization() throws Exception {
 		ObjEntity e1 = new ObjEntity("objEntityName");
 		ObjAttribute a1 = new ObjAttribute("aName", "aType", e1);
 		

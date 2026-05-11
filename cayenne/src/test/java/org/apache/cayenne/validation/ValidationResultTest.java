@@ -19,12 +19,12 @@
 
 package org.apache.cayenne.validation;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  */
@@ -35,14 +35,14 @@ public class ValidationResultTest {
     private Object obj1;
     private Object obj2;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         obj1 = new Object();
         obj2 = new Object();
     }
 
     @Test
-    public void testHasFailures() {
+    public void hasFailures() {
         res = new ValidationResult();
         res.addFailure(new BeanValidationFailure(obj1, "obj1 1", "mes obj1 1"));
         assertTrue(res.hasFailures());
@@ -51,7 +51,7 @@ public class ValidationResultTest {
     }
 
     @Test
-    public void testGetFailures() {
+    public void getFailures() {
         res = new ValidationResult();
         res.addFailure(new BeanValidationFailure(obj1, "obj1 1", "mes obj1 1"));
         res.addFailure(new BeanValidationFailure(obj1, "obj1 1", "mes obj1 1"));
@@ -63,7 +63,7 @@ public class ValidationResultTest {
     }
 
     @Test
-    public void testEmpty() {
+    public void empty() {
         res = new ValidationResult();
         assertFalse(res.hasFailures());
 

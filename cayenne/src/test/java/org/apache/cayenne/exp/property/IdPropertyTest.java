@@ -24,11 +24,11 @@ import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.apache.cayenne.exp.ExpressionFactory.*;
 import static org.apache.cayenne.exp.property.PropertyFactory.createNumericId;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.2
@@ -54,11 +54,17 @@ public class IdPropertyTest {
                 createNumericId("ARTIST_ID", "Artist", Integer.class).eq(id));
     }
 
-    @Test(expected = CayenneRuntimeException.class)
+    @Test
+
     public void eqObjectIdWrongAttribute() {
-        ObjectId id = ObjectId.of("Artist", "ARTIST_ID", 2);
-        createNumericId("ARTIST_PK", "Artist", Integer.class).eq(id);
+        assertThrows(CayenneRuntimeException.class, () -> {
+
+            ObjectId id = ObjectId.of("Artist", "ARTIST_ID", 2);
+            createNumericId("ARTIST_PK", "Artist", Integer.class).eq(id);
+    
+        });
     }
+
 
     @Test
     public void eqObjectIdCompound() {
@@ -70,12 +76,18 @@ public class IdPropertyTest {
                 createNumericId("ARTIST_ID", "Artist", Integer.class).eq(id));
     }
 
-    @Test(expected = CayenneRuntimeException.class)
+    @Test
+
     public void eqObjectIdWrongCompound() {
-        Map<String, Object> key = new HashMap<>();
-        key.put("ARTIST_ID", 2);
-        key.put("SERIAL", 1);
-        ObjectId id = ObjectId.of("Artist", key);
-        createNumericId("Artist", "ARTIST_ID", Integer.class).eq(id);
+        assertThrows(CayenneRuntimeException.class, () -> {
+
+            Map<String, Object> key = new HashMap<>();
+            key.put("ARTIST_ID", 2);
+            key.put("SERIAL", 1);
+            ObjectId id = ObjectId.of("Artist", key);
+            createNumericId("Artist", "ARTIST_ID", Integer.class).eq(id);
+    
+        });
     }
+
 }

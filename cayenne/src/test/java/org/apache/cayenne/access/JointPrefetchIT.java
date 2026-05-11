@@ -41,8 +41,8 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Date;
 import java.util.Collections;
@@ -51,7 +51,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests joint prefetch handling by Cayenne access stack.
@@ -75,7 +75,8 @@ public class JointPrefetchIT extends RuntimeCase {
     protected TableHelper tGallery;
     protected TableHelper tPainting;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -104,7 +105,7 @@ public class JointPrefetchIT extends RuntimeCase {
     }
 
     @Test
-    public void testJointPrefetch_ToOne_FetchLimit() throws Exception {
+    public void jointPrefetch_ToOne_FetchLimit() throws Exception {
         createJointPrefetchDataSet();
 
         final List<Painting> objects = ObjectSelect.query(Painting.class)
@@ -125,7 +126,7 @@ public class JointPrefetchIT extends RuntimeCase {
     }
 
     @Test
-    public void testJointPrefetch_ToMany_FetchLimit() throws Exception {
+    public void jointPrefetch_ToMany_FetchLimit() throws Exception {
         createJointPrefetchDataSet();
 
         final List<Artist> objects = ObjectSelect.query(Artist.class)
@@ -150,7 +151,7 @@ public class JointPrefetchIT extends RuntimeCase {
     }
 
     @Test
-    public void testJointPrefetchDataRows() throws Exception {
+    public void jointPrefetchDataRows() throws Exception {
         createJointPrefetchDataSet();
 
         // query with to-many joint prefetches
@@ -166,22 +167,22 @@ public class JointPrefetchIT extends RuntimeCase {
             int rowWidth = context.getEntityResolver().getDbEntity("ARTIST").getAttributes().size()
                     + context.getEntityResolver().getDbEntity("PAINTING").getAttributes().size();
             for (DataRow row : rows) {
-                assertEquals("" + row, rowWidth, row.size());
+                assertEquals(rowWidth, row.size(), "" + row);
 
                 // assert columns presence
-                assertTrue(row + "", row.containsKey("PAINTING_ID"));
-                assertTrue(row + "", row.containsKey("ARTIST_ID"));
-                assertTrue(row + "", row.containsKey("GALLERY_ID"));
-                assertTrue(row + "", row.containsKey("PAINTING_TITLE"));
-                assertTrue(row + "", row.containsKey("ESTIMATED_PRICE"));
-                assertTrue(row + "", row.containsKey("toArtist.ARTIST_NAME"));
-                assertTrue(row + "", row.containsKey("toArtist.DATE_OF_BIRTH"));
+                assertTrue(row.containsKey("PAINTING_ID"), row + "");
+                assertTrue(row.containsKey("ARTIST_ID"), row + "");
+                assertTrue(row.containsKey("GALLERY_ID"), row + "");
+                assertTrue(row.containsKey("PAINTING_TITLE"), row + "");
+                assertTrue(row.containsKey("ESTIMATED_PRICE"), row + "");
+                assertTrue(row.containsKey("toArtist.ARTIST_NAME"), row + "");
+                assertTrue(row.containsKey("toArtist.DATE_OF_BIRTH"), row + "");
             }
         });
     }
 
     @Test
-    public void testJointPrefetchSQLTemplate() throws Exception {
+    public void jointPrefetchSQLTemplate() throws Exception {
         createJointPrefetchDataSet();
 
         // correctly naming columns is the key..
@@ -225,7 +226,7 @@ public class JointPrefetchIT extends RuntimeCase {
     }
 
     @Test
-    public void testJointPrefetchToOne() throws Exception {
+    public void jointPrefetchToOne() throws Exception {
         createJointPrefetchDataSet();
 
         // query with to-many joint prefetches
@@ -248,7 +249,7 @@ public class JointPrefetchIT extends RuntimeCase {
      * Tests that joined entities can have non-standard type mappings.
      */
     @Test
-    public void testJointPrefetchDataTypes() {
+    public void jointPrefetchDataTypes() {
         // prepare... can't load from XML, as it doesn't yet support dates..
         SQLTemplate artistSQL = new SQLTemplate(
                 Artist.class,
@@ -281,7 +282,7 @@ public class JointPrefetchIT extends RuntimeCase {
                     Artist a = p.getToArtist();
                     assertNotNull(a);
                     assertNotNull(a.getDateOfBirth());
-                    assertTrue(a.getDateOfBirth().getClass().getName(), Date.class.isAssignableFrom(a.getDateOfBirth().getClass()));
+                    assertTrue(Date.class.isAssignableFrom(a.getDateOfBirth().getClass()), a.getDateOfBirth().getClass().getName());
                 }
             });
         } finally {
@@ -290,7 +291,7 @@ public class JointPrefetchIT extends RuntimeCase {
     }
 
     @Test
-    public void testJointPrefetchToMany() throws Exception {
+    public void jointPrefetchToMany() throws Exception {
         createJointPrefetchDataSet();
 
         // query with to-many joint prefetches
@@ -317,7 +318,7 @@ public class JointPrefetchIT extends RuntimeCase {
     }
 
     @Test
-    public void testJointPrefetchToManyNonConflictingQualifier() throws Exception {
+    public void jointPrefetchToManyNonConflictingQualifier() throws Exception {
         createJointPrefetchDataSet();
 
         // query with to-many joint prefetches and qualifier that doesn't match prefetch....
@@ -349,7 +350,7 @@ public class JointPrefetchIT extends RuntimeCase {
     }
 
     @Test
-    public void testJointPrefetchMultiStep() throws Exception {
+    public void jointPrefetchMultiStep() throws Exception {
         createJointPrefetchDataSet();
 
         final DataContext context = this.context;
@@ -392,7 +393,7 @@ public class JointPrefetchIT extends RuntimeCase {
     }
 
     @Test
-    public void testJointPrefetchSQLSelectToMany() throws Exception {
+    public void jointPrefetchSQLSelectToMany() throws Exception {
         createJointPrefetchDataSet();
 
         List<Artist> objects = SQLSelect.query(Artist.class, "SELECT "
@@ -423,7 +424,7 @@ public class JointPrefetchIT extends RuntimeCase {
     }
 
     @Test
-    public void testJointPrefetchSQLSelectNestedJoint() throws Exception {
+    public void jointPrefetchSQLSelectNestedJoint() throws Exception {
         createJointPrefetchDataSet();
         SQLSelect.query(Artist.class, "SELECT "
                 + "#result('GALLERY_ID' 'int' '' 'paintingArray.toGallery.GALLERY_ID'),"
@@ -442,7 +443,7 @@ public class JointPrefetchIT extends RuntimeCase {
     }
 
     @Test
-    public void testJointPrefetchPreservesPendingToOneArcDiff() throws Exception {
+    public void jointPrefetchPreservesPendingToOneArcDiff() throws Exception {
         createJointPrefetchDataSet();
 
         Artist artist = ObjectSelect.query(Artist.class)
@@ -478,7 +479,7 @@ public class JointPrefetchIT extends RuntimeCase {
     }
 
     @Test
-    public void testJointPrefetchPreservesPendingToManyArcDiff() throws Exception {
+    public void jointPrefetchPreservesPendingToManyArcDiff() throws Exception {
         createJointPrefetchDataSet();
 
         Artist artist = ObjectSelect.query(Artist.class)

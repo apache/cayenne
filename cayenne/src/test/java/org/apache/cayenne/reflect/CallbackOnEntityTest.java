@@ -19,16 +19,16 @@
 package org.apache.cayenne.reflect;
 
 import org.apache.cayenne.map.MockCallingBackEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CallbackOnEntityTest {
 
     @Test
-    public void testPublicCallbackMethod() {
+    public void publicCallbackMethod() {
         CallbackOnEntity callback = new CallbackOnEntity(
                 MockCallingBackEntity.class,
                 "publicCallback");
@@ -42,7 +42,7 @@ public class CallbackOnEntityTest {
     }
 
     @Test
-    public void testProtectedCallbackMethod() {
+    public void protectedCallbackMethod() {
         CallbackOnEntity callback = new CallbackOnEntity(
                 MockCallingBackEntity.class,
                 "protectedCallback");
@@ -56,7 +56,7 @@ public class CallbackOnEntityTest {
     }
 
     @Test
-    public void testPrivateCallbackMethod() {
+    public void privateCallbackMethod() {
         CallbackOnEntity callback = new CallbackOnEntity(
                 MockCallingBackEntity.class,
                 "privateCallback");
@@ -70,7 +70,7 @@ public class CallbackOnEntityTest {
     }
 
     @Test
-    public void testDefaultCallbackMethod() {
+    public void defaultCallbackMethod() {
         CallbackOnEntity callback = new CallbackOnEntity(
                 MockCallingBackEntity.class,
                 "defaultCallback");
@@ -84,13 +84,8 @@ public class CallbackOnEntityTest {
     }
 
     @Test
-    public void testStaticCallbackMethod() {
-        try {
-            new CallbackOnEntity(MockCallingBackEntity.class, "staticCallback");
-            fail("Static methods can't be used as callbacks");
-        }
-        catch (IllegalArgumentException e) {
-            // expected
-        }
+    public void staticCallbackMethod() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new CallbackOnEntity(MockCallingBackEntity.class, "staticCallback"));
     }
 }

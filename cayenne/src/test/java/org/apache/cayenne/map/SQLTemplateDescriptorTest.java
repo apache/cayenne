@@ -20,25 +20,25 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.query.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  */
 public class SQLTemplateDescriptorTest {
 
     @Test
-    public void testGetQueryType() throws Exception {
+    public void getQueryType() throws Exception {
         SQLTemplateDescriptor builder = QueryDescriptor.sqlTemplateDescriptor();
         assertTrue(builder.buildQuery() instanceof SQLTemplate);
     }
 
     @Test
-    public void testGetQueryRoot() throws Exception {
+    public void getQueryRoot() throws Exception {
         DataMap map = new DataMap();
         ObjEntity entity = new ObjEntity("A");
         map.addObjEntity(entity);
@@ -52,7 +52,7 @@ public class SQLTemplateDescriptorTest {
     }
 
     @Test
-    public void testGetQueryProperties() throws Exception {
+    public void getQueryProperties() throws Exception {
         SQLTemplateDescriptor builder = QueryDescriptor.sqlTemplateDescriptor();
         builder.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, "5");
         builder.setProperty(QueryMetadata.STATEMENT_FETCH_SIZE_PROPERTY, "6");
@@ -67,7 +67,7 @@ public class SQLTemplateDescriptorTest {
     }
 
     @Test
-    public void testGetQuerySql() throws Exception {
+    public void getQuerySql() throws Exception {
         SQLTemplateDescriptor builder = QueryDescriptor.sqlTemplateDescriptor();
         builder.setSql("abc");
 
@@ -76,7 +76,7 @@ public class SQLTemplateDescriptorTest {
     }
 
     @Test
-    public void testGetQueryAdapterSql() throws Exception {
+    public void getQueryAdapterSql() throws Exception {
         SQLTemplateDescriptor builder = QueryDescriptor.sqlTemplateDescriptor();
         builder.getAdapterSql().put("adapter", "abc");
 

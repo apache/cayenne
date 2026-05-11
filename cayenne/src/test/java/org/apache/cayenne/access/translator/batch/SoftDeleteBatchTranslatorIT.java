@@ -43,10 +43,10 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @UseCayenneRuntime(CayenneProjects.SOFT_DELETE_PROJECT)
 public class SoftDeleteBatchTranslatorIT extends RuntimeCase {
@@ -76,7 +76,7 @@ public class SoftDeleteBatchTranslatorIT extends RuntimeCase {
     }
 
     @Test
-    public void testCreateSqlString() {
+    public void createSqlString() {
         DbEntity entity = context.getEntityResolver().getObjEntity(SoftDelete.class).getDbEntity();
 
         List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("ID"));
@@ -89,7 +89,7 @@ public class SoftDeleteBatchTranslatorIT extends RuntimeCase {
     }
 
     @Test
-    public void testCreateSqlStringWithNulls() {
+    public void createSqlStringWithNulls() {
         DbEntity entity = context.getEntityResolver().getObjEntity(SoftDelete.class).getDbEntity();
 
         List<DbAttribute> idAttributes = Arrays.asList(entity.getAttribute("ID"), entity.getAttribute("NAME"));
@@ -104,7 +104,7 @@ public class SoftDeleteBatchTranslatorIT extends RuntimeCase {
     }
 
     @Test
-    public void testCreateSqlStringWithIdentifiersQuote() {
+    public void createSqlStringWithIdentifiersQuote() {
         DbEntity entity = context.getEntityResolver().getObjEntity(SoftDelete.class).getDbEntity();
         try {
 
@@ -130,7 +130,7 @@ public class SoftDeleteBatchTranslatorIT extends RuntimeCase {
     }
 
     @Test
-    public void testUpdate() throws Exception {
+    public void update() throws Exception {
 
         final DbEntity entity = context.getEntityResolver().getObjEntity(SoftDelete.class).getDbEntity();
 

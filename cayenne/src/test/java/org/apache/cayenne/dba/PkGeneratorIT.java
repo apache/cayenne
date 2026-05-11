@@ -26,15 +26,15 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class PkGeneratorIT extends RuntimeCase {
@@ -48,7 +48,7 @@ public class PkGeneratorIT extends RuntimeCase {
     private PkGenerator pkGenerator;
     private DbEntity paintingEntity;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         pkGenerator = node.getAdapter().getPkGenerator();
         paintingEntity = node.getEntityResolver().getDbEntity("PAINTING");
@@ -60,7 +60,7 @@ public class PkGeneratorIT extends RuntimeCase {
     }
 
     @Test
-    public void testGeneratePkForDbEntity() throws Exception {
+    public void generatePkForDbEntity() throws Exception {
         List<Object> pkList = new ArrayList<Object>();
 
         int testSize = (pkGenerator instanceof JdbcPkGenerator)

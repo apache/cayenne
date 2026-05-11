@@ -31,12 +31,12 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.ExtraModules;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 @ExtraModules(RuntimeCaseSyncModule.class)
@@ -49,7 +49,7 @@ public class NestedDataContextPeerEventsIT extends RuntimeCase {
 	private CayenneRuntime runtime;
 
     @Test
-	public void testPeerObjectUpdatedTempOID() throws Exception {
+	public void peerObjectUpdatedTempOID() throws Exception {
 
 		ObjectContext peer1 = runtime.newContext(context);
 		final Artist a1 = peer1.newObject(Artist.class);
@@ -78,7 +78,7 @@ public class NestedDataContextPeerEventsIT extends RuntimeCase {
 	}
 
     @Test
-	public void testPeerObjectUpdatedSimpleProperty() throws Exception {
+	public void peerObjectUpdatedSimpleProperty() throws Exception {
 		Artist a = context.newObject(Artist.class);
 		a.setArtistName("X");
 		context.commitChanges();
@@ -99,16 +99,14 @@ public class NestedDataContextPeerEventsIT extends RuntimeCase {
 			@Override
 			protected void assertResult() throws Exception {
 				assertEquals("Y", a2.getArtistName());
-				assertFalse(
-						"Peer data context became dirty on event processing",
-						peer2.hasChanges());
+				assertFalse(peer2.hasChanges(), "Peer data context became dirty on event processing");
 			}
 		}.runTest(2000);
 
 	}
 
     @Test
-	public void testPeerObjectUpdatedToOneRelationship() throws Exception {
+	public void peerObjectUpdatedToOneRelationship() throws Exception {
 
 		Artist a = context.newObject(Artist.class);
 		Artist altA = context.newObject(Artist.class);
@@ -140,16 +138,14 @@ public class NestedDataContextPeerEventsIT extends RuntimeCase {
 			protected void assertResult() throws Exception {
 				assertEquals(altA2, p2.getToArtist());
 
-				assertFalse(
-						"Peer data context became dirty on event processing",
-						peer2.hasChanges());
+				assertFalse(peer2.hasChanges(), "Peer data context became dirty on event processing");
 			}
 		}.runTest(2000);
 
 	}
 
     @Test
-	public void testPeerObjectUpdatedToManyRelationship() throws Exception {
+	public void peerObjectUpdatedToManyRelationship() throws Exception {
 
 		Artist a = context.newObject(Artist.class);
 		a.setArtistName("X");
@@ -185,9 +181,7 @@ public class NestedDataContextPeerEventsIT extends RuntimeCase {
 				assertEquals(2, a2.getPaintingArray().size());
 				assertTrue(a2.getPaintingArray().contains(py2));
 
-				assertFalse(
-						"Peer data context became dirty on event processing",
-						peer2.hasChanges());
+				assertFalse(peer2.hasChanges(), "Peer data context became dirty on event processing");
 			}
 		}.runTest(2000);
 

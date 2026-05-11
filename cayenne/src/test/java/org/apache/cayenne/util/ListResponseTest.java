@@ -19,20 +19,20 @@
 
 package org.apache.cayenne.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ListResponseTest {
 
     @Test
-    public void testCreation() {
+    public void creation() {
 
         Object object = new Object();
         ListResponse r = new ListResponse(object);
@@ -55,7 +55,7 @@ public class ListResponseTest {
     }
 
     @Test
-    public void testNext() {
+    public void next() {
         List<Integer> result = List.of(1, 2, 3);
         ListResponse r = new ListResponse(result);
 
@@ -66,7 +66,7 @@ public class ListResponseTest {
     }
 
     @Test
-    public void testSerialization() throws Exception {
+    public void serialization() throws Exception {
 
         ListResponse r = new ListResponse(67);
 

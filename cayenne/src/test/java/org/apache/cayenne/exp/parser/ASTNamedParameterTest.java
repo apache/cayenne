@@ -18,16 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ASTNamedParameterTest {
 
 	@Test
-	public void testAppendAsEJBQL() throws IOException {
+	public void appendAsEJBQL() throws IOException {
 
 		ASTNamedParameter e = new ASTNamedParameter("name");
 

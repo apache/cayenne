@@ -26,13 +26,13 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class CDOOne2OneDepIT extends CayenneDOTestBase {
@@ -41,7 +41,7 @@ public class CDOOne2OneDepIT extends CayenneDOTestBase {
     private ObjectContext context1;
 
     @Test
-    public void testRollbackDependent() {
+    public void rollbackDependent() {
         Artist a1 = newArtist();
         Painting p1 = newPainting();
 
@@ -60,7 +60,7 @@ public class CDOOne2OneDepIT extends CayenneDOTestBase {
     }
 
     @Test
-    public void test2Null() throws Exception {
+    public void null2() throws Exception {
         Artist a1 = newArtist();
         Painting p1 = newPainting();
 
@@ -77,7 +77,7 @@ public class CDOOne2OneDepIT extends CayenneDOTestBase {
     }
 
     @Test
-    public void testReplaceNull() throws Exception {
+    public void replaceNull() throws Exception {
         Artist a1 = newArtist();
         Painting p1 = newPainting();
 
@@ -96,7 +96,7 @@ public class CDOOne2OneDepIT extends CayenneDOTestBase {
     }
 
     @Test
-    public void testNewAdd() throws Exception {
+    public void newAdd() throws Exception {
         Artist a1 = newArtist();
         PaintingInfo pi1 = newPaintingInfo();
         Painting p1 = newPainting();
@@ -123,7 +123,7 @@ public class CDOOne2OneDepIT extends CayenneDOTestBase {
     }
 
     @Test
-    public void testTakeObjectSnapshotDependentFault() throws Exception {
+    public void takeObjectSnapshotDependentFault() throws Exception {
         // prepare data
         Artist a1 = newArtist();
         PaintingInfo pi1 = newPaintingInfo();

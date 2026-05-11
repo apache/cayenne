@@ -27,15 +27,15 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.util.PersistentObjectList;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ToManyListIT extends RuntimeCase {
@@ -56,10 +56,9 @@ public class ToManyListIT extends RuntimeCase {
     }
 
     @Test
-    public void testNewAddRemove() throws Exception {
+    public void newAddRemove() throws Exception {
         ToManyList list = createForNewArtist();
-        assertFalse("Expected resolved list when created with a new object", list
-                .isFault());
+        assertFalse(list.isFault(), "Expected resolved list when created with a new object");
         assertEquals(0, list.size());
 
         Painting p1 = context.newObject(Painting.class);
@@ -75,38 +74,38 @@ public class ToManyListIT extends RuntimeCase {
     }
 
     @Test
-    public void testSavedUnresolvedAddRemove() throws Exception {
+    public void savedUnresolvedAddRemove() throws Exception {
         ToManyList list = createForExistingArtist();
 
         // immediately tag Artist as MODIFIED, since we are messing up with relationship
         // bypassing normal PersistentObject methods
         list.getRelationshipOwner().setPersistenceState(PersistenceState.MODIFIED);
 
-        assertTrue("List must be unresolved for an existing object", list.isFault());
+        assertTrue(list.isFault(), "List must be unresolved for an existing object");
 
         Painting p1 = context.newObject(Painting.class);
         list.add(p1);
-        assertTrue("List must be unresolved when adding an object...", list.isFault());
+        assertTrue(list.isFault(), "List must be unresolved when adding an object...");
         assertTrue(addedToUnresolved(list).contains(p1));
 
         Painting p2 = context.newObject(Painting.class);
         list.add(p2);
-        assertTrue("List must be unresolved when adding an object...", list.isFault());
+        assertTrue(list.isFault(), "List must be unresolved when adding an object...");
         assertTrue(addedToUnresolved(list).contains(p2));
 
         list.remove(p1);
-        assertTrue("List must be unresolved when removing an object...", list.isFault());
+        assertTrue(list.isFault(), "List must be unresolved when removing an object...");
         assertFalse(addedToUnresolved(list).contains(p1));
 
         // now resolve
         int size = list.size();
-        assertFalse("List must be resolved after checking a size...", list.isFault());
+        assertFalse(list.isFault(), "List must be resolved after checking a size...");
         assertEquals(1, size);
         assertTrue(getValue(list).contains(p2));
     }
 
     @Test
-    public void testSavedUnresolvedMerge() throws Exception {
+    public void savedUnresolvedMerge() throws Exception {
         ToManyList list = createForExistingArtist();
 
         Painting p1 = context.newObject(Painting.class);
@@ -122,26 +121,26 @@ public class ToManyListIT extends RuntimeCase {
         // bypassing normal PersistentObject methods
         list.getRelationshipOwner().setPersistenceState(PersistenceState.MODIFIED);
 
-        assertTrue("List must be unresolved...", list.isFault());
+        assertTrue(list.isFault(), "List must be unresolved...");
         list.add(p1);
-        assertTrue("List must be unresolved when adding an object...", list.isFault());
+        assertTrue(list.isFault(), "List must be unresolved when adding an object...");
         assertTrue(addedToUnresolved(list).contains(p1));
 
         Painting p2 = context.newObject(Painting.class);
         list.add(p2);
-        assertTrue("List must be unresolved when adding an object...", list.isFault());
+        assertTrue(list.isFault(), "List must be unresolved when adding an object...");
         assertTrue(addedToUnresolved(list).contains(p2));
 
         // now resolve the list and see how merge worked
         int size = list.size();
-        assertFalse("List must be resolved after checking a size...", list.isFault());
+        assertFalse(list.isFault(), "List must be resolved after checking a size...");
         assertEquals(2, size);
         assertTrue(getValue(list).contains(p2));
         assertTrue(getValue(list).contains(p1));
     }
 
     @Test
-    public void testThrowOutDeleted() throws Exception {
+    public void throwOutDeleted() throws Exception {
         ToManyList list = createForExistingArtist();
 
         Painting p1 = context.newObject(Painting.class);
@@ -160,10 +159,10 @@ public class ToManyListIT extends RuntimeCase {
         // bypassing normal PersistentObject methods
         list.getRelationshipOwner().setPersistenceState(PersistenceState.MODIFIED);
 
-        assertTrue("List must be unresolved...", list.isFault());
+        assertTrue(list.isFault(), "List must be unresolved...");
         list.add(p1);
         list.add(p2);
-        assertTrue("List must be unresolved when adding an object...", list.isFault());
+        assertTrue(list.isFault(), "List must be unresolved when adding an object...");
         assertTrue(addedToUnresolved(list).contains(p2));
         assertTrue(addedToUnresolved(list).contains(p1));
 
@@ -172,24 +171,23 @@ public class ToManyListIT extends RuntimeCase {
         context.deleteObjects(p2);
         context.commitChanges();
 
-        assertTrue("List must be unresolved...", list.isFault());
+        assertTrue(list.isFault(), "List must be unresolved...");
         assertTrue(
-                "List must be unresolved when an object was deleted externally...",
-                list.isFault());
+                list.isFault(),
+                "List must be unresolved when an object was deleted externally...");
         assertTrue(addedToUnresolved(list).contains(p2));
         assertTrue(addedToUnresolved(list).contains(p1));
 
         // now resolve the list and see how merge worked
         int size = list.size();
-        assertFalse("List must be resolved after checking a size...", list.isFault());
-        assertEquals("Deleted object must have been purged...", 1, size);
+        assertFalse(list.isFault(), "List must be resolved after checking a size...");
+        assertEquals(1, size, "Deleted object must have been purged...");
         assertTrue(getValue(list).contains(p1));
-        assertFalse("Deleted object must have been purged...", getValue(list)
-                .contains(p2));
+        assertFalse(getValue(list).contains(p2), "Deleted object must have been purged...");
     }
 
     @Test
-    public void testRealRelationship() throws Exception {
+    public void realRelationship() throws Exception {
         Artist artist = context.newObject(Artist.class);
         artist.setArtistName("aaa");
 
@@ -200,28 +198,28 @@ public class ToManyListIT extends RuntimeCase {
         context.invalidateObjects(artist);
 
         ToManyList list = (ToManyList) artist.getPaintingArray();
-        assertTrue("List must be unresolved...", list.isFault());
+        assertTrue(list.isFault(), "List must be unresolved...");
 
         Painting p2 = context.newObject(Painting.class);
         p2.setPaintingTitle("p2");
 
         artist.addToPaintingArray(p1);
         artist.addToPaintingArray(p2);
-        assertTrue("List must be unresolved...", list.isFault());
+        assertTrue(list.isFault(), "List must be unresolved...");
 
         context.commitChanges();
 
-        assertTrue("List must be unresolved...", list.isFault());
+        assertTrue(list.isFault(), "List must be unresolved...");
 
         int size = list.size();
-        assertFalse("List must be resolved...", list.isFault());
+        assertFalse(list.isFault(), "List must be resolved...");
         assertTrue(list.contains(p1));
         assertTrue(list.contains(p2));
         assertEquals(2, size);
     }
 
     @Test
-    public void testRealRelationshipRollback() throws Exception {
+    public void realRelationshipRollback() throws Exception {
         Artist artist = context.newObject(Artist.class);
         artist.setArtistName("aaa");
 
@@ -232,22 +230,22 @@ public class ToManyListIT extends RuntimeCase {
         context.invalidateObjects(artist);
 
         ToManyList list = (ToManyList) artist.getPaintingArray();
-        assertTrue("List must be unresolved...", list.isFault());
+        assertTrue(list.isFault(), "List must be unresolved...");
 
         Painting p2 = context.newObject(Painting.class);
 
         artist.addToPaintingArray(p2);
-        assertTrue("List must be unresolved...", list.isFault());
+        assertTrue(list.isFault(), "List must be unresolved...");
         assertTrue(addedToUnresolved(list).contains(p2));
 
         context.rollbackChanges();
 
-        assertTrue("List must be unresolved...", list.isFault());
+        assertTrue(list.isFault(), "List must be unresolved...");
 
         // call to "contains" must trigger list resolution
         assertTrue(list.contains(p1));
         assertFalse(list.contains(p2));
-        assertFalse("List must be resolved...", list.isFault());
+        assertFalse(list.isFault(), "List must be resolved...");
     }
 
     private List<?> getValue(ToManyList list) {

@@ -34,13 +34,13 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataRowUtilsIT extends RuntimeCase {
@@ -54,7 +54,8 @@ public class DataRowUtilsIT extends RuntimeCase {
     protected TableHelper tArtist;
     protected TableHelper tPainting;
 
-    @Before
+    
+    @BeforeEach
     public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -77,7 +78,7 @@ public class DataRowUtilsIT extends RuntimeCase {
     }
 
     @Test
-    public void testMerge() throws Exception {
+    public void merge() throws Exception {
         createOneArtist();
 
         String n1 = "changed";
@@ -103,7 +104,7 @@ public class DataRowUtilsIT extends RuntimeCase {
     }
 
     @Test
-    public void testIsToOneTargetModified() throws Exception {
+    public void isToOneTargetModified() throws Exception {
         createOneArtist();
 
         ClassDescriptor d = context.getEntityResolver().getClassDescriptor("Painting");
@@ -133,7 +134,7 @@ public class DataRowUtilsIT extends RuntimeCase {
     }
 
     @Test
-    public void testIsToOneTargetModifiedWithNewTarget() throws Exception {
+    public void isToOneTargetModifiedWithNewTarget() throws Exception {
         createOneArtistAndOnePainting();
 
         // add NEW gallery to painting

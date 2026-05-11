@@ -24,16 +24,16 @@ import java.util.Collection;
 
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.map.DbRelationship;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RelationshipsLoaderIT extends BaseLoaderIT {
 
     @Test
-    public void testRelationshipLoad() throws Exception {
+    public void relationshipLoad() throws Exception {
         boolean supportsFK = accessStackAdapter.supportsFKConstraints();
         if(!supportsFK) {
             return;
@@ -74,9 +74,9 @@ public class RelationshipsLoaderIT extends BaseLoaderIT {
             }
         }
 
-        assertNotNull("No relationship to PAINTING_INFO", oneToOne);
-        assertFalse("Relationship to PAINTING_INFO must be to-one", oneToOne.isToMany());
-        assertTrue("Relationship to PAINTING_INFO must be to-one", oneToOne.isToDependentPK());
+        assertNotNull(oneToOne, "No relationship to PAINTING_INFO");
+        assertFalse(oneToOne.isToMany(), "Relationship to PAINTING_INFO must be to-one");
+        assertTrue(oneToOne.isToDependentPK(), "Relationship to PAINTING_INFO must be to-one");
     }
 
 //    private void assertUniqueConstraintsInRelationships(DataMap map) {

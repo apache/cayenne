@@ -31,11 +31,11 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -47,7 +47,7 @@ public class ExistsExpressionTranslatorIT extends RuntimeCase {
 
     private TranslatorContext translatorContext;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         translatorContext = mock(TranslatorContext.class);
         DbEntity dbArtist = context.getEntityResolver().getDbEntity("ARTIST");
@@ -63,7 +63,7 @@ public class ExistsExpressionTranslatorIT extends RuntimeCase {
     }
 
     @Test
-    public void testSimplePath() {
+    public void simplePath() {
         Expression exp = ExpressionFactory.exp("paintingArray").exists();
         Expression translated = new ExistsExpressionTranslator(translatorContext, (SimpleNode)exp).translate();
 
@@ -71,7 +71,7 @@ public class ExistsExpressionTranslatorIT extends RuntimeCase {
     }
 
     @Test
-    public void testSimplePathNoRelationship() {
+    public void simplePathNoRelationship() {
         Expression exp = ExpressionFactory.exp("artistName").exists();
         Expression translated = new ExistsExpressionTranslator(translatorContext, (SimpleNode)exp).translate();
 
@@ -79,7 +79,7 @@ public class ExistsExpressionTranslatorIT extends RuntimeCase {
     }
 
     @Test
-    public void testSimpleLongPath() {
+    public void simpleLongPath() {
         Expression exp = ExpressionFactory.exp("paintingArray.toGallery").exists();
         Expression translated = new ExistsExpressionTranslator(translatorContext, (SimpleNode)exp).translate();
 
@@ -87,7 +87,7 @@ public class ExistsExpressionTranslatorIT extends RuntimeCase {
     }
 
     @Test
-    public void testSimpleCondition() {
+    public void simpleCondition() {
         Expression exp = ExpressionFactory.exp("paintingArray.paintingTitle = 'test'").exists();
         Expression translated = new ExistsExpressionTranslator(translatorContext, (SimpleNode)exp).translate();
 
@@ -95,7 +95,7 @@ public class ExistsExpressionTranslatorIT extends RuntimeCase {
     }
 
     @Test
-    public void testSimpleConditionsSameRoot() {
+    public void simpleConditionsSameRoot() {
         Expression exp = ExpressionFactory.exp("paintingArray.paintingTitle = 'test' " +
                 "or paintingArray.paintingTitle = 'test2'").exists();
         Expression translated = new ExistsExpressionTranslator(translatorContext, (SimpleNode)exp).translate();
@@ -104,7 +104,7 @@ public class ExistsExpressionTranslatorIT extends RuntimeCase {
     }
 
     @Test
-    public void testSimpleConditionsDifferentRoots() {
+    public void simpleConditionsDifferentRoots() {
         Expression exp = ExpressionFactory.exp("paintingArray.paintingTitle = 'test' " +
                 "or groupArray.name = 'test'").exists();
         Expression translated = new ExistsExpressionTranslator(translatorContext, (SimpleNode)exp).translate();
@@ -113,7 +113,7 @@ public class ExistsExpressionTranslatorIT extends RuntimeCase {
     }
 
     @Test
-    public void testComplexCondition() {
+    public void complexCondition() {
         Expression exp = ExpressionFactory.exp("length(paintingArray.paintingTitle) in (1, 2, 3)").exists();
         Expression translated = new ExistsExpressionTranslator(translatorContext, (SimpleNode)exp).translate();
 
@@ -121,7 +121,7 @@ public class ExistsExpressionTranslatorIT extends RuntimeCase {
     }
 
     @Test
-    public void testComplexConditionsSameRoot() {
+    public void complexConditionsSameRoot() {
         Expression exp = ExpressionFactory.exp("(length(paintingArray.paintingTitle) in (1, 2, 3)) " +
                 "or (paintingArray.estimatedPrice > 10000)").exists();
         Expression translated = new ExistsExpressionTranslator(translatorContext, (SimpleNode)exp).translate();
@@ -130,7 +130,7 @@ public class ExistsExpressionTranslatorIT extends RuntimeCase {
     }
 
     @Test
-    public void testComplexConditionsDifferentRoots() {
+    public void complexConditionsDifferentRoots() {
         Expression exp = ExpressionFactory.exp("(length(paintingArray.paintingTitle) in (1, 2, 3)) " +
                 "or (length(groupArray.name) < 10)").exists();
         Expression translated = new ExistsExpressionTranslator(translatorContext, (SimpleNode)exp).translate();
@@ -139,7 +139,7 @@ public class ExistsExpressionTranslatorIT extends RuntimeCase {
     }
 
     @Test
-    public void testNoRelationships() {
+    public void noRelationships() {
         Expression exp = ExpressionFactory.exp("artistName like 'test%'").exists();
         Expression translated = new ExistsExpressionTranslator(translatorContext, (SimpleNode)exp).translate();
 
@@ -148,7 +148,7 @@ public class ExistsExpressionTranslatorIT extends RuntimeCase {
     }
 
     @Test
-    public void testDbPath() {
+    public void dbPath() {
         Expression exp = ExpressionFactory.exp("db:PAINTING_ARRAY").exists();
 
         translatorContext = mock(TranslatorContext.class);

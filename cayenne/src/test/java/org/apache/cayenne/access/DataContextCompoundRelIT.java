@@ -29,11 +29,11 @@ import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Testing relationships with compound keys.
@@ -48,7 +48,7 @@ public class DataContextCompoundRelIT extends RuntimeCase {
     private DataContext context1;
 
     @Test
-    public void testInsert() {
+    public void insert() {
         CompoundPkTestEntity master = context.newObject(CompoundPkTestEntity.class);
         CompoundFkTestEntity detail = context.newObject(CompoundFkTestEntity.class);
 
@@ -72,7 +72,7 @@ public class DataContextCompoundRelIT extends RuntimeCase {
     }
 
     @Test
-    public void testFetchQualifyingToOne() {
+    public void fetchQualifyingToOne() {
         CompoundPkTestEntity master  = context.newObject(CompoundPkTestEntity.class);
         CompoundPkTestEntity master1 = context.newObject(CompoundPkTestEntity.class);
         CompoundFkTestEntity detail  = context.newObject(CompoundFkTestEntity.class);
@@ -104,7 +104,7 @@ public class DataContextCompoundRelIT extends RuntimeCase {
     }
 
     @Test
-    public void testToOne() {
+    public void toOne() {
         {
             CompoundOrder order = context.newObject(CompoundOrder.class);
             order.setInfo("order");
@@ -132,7 +132,7 @@ public class DataContextCompoundRelIT extends RuntimeCase {
     }
 
     @Test
-    public void testFetchQualifyingToMany() {
+    public void fetchQualifyingToMany() {
         CompoundPkTestEntity master  = context.newObject(CompoundPkTestEntity.class);
         CompoundPkTestEntity master1 = context.newObject(CompoundPkTestEntity.class);
         CompoundFkTestEntity detail  = context.newObject(CompoundFkTestEntity.class);

@@ -53,16 +53,16 @@ import org.apache.cayenne.tx.DefaultTransactionFactory;
 import org.apache.cayenne.tx.DefaultTransactionManager;
 import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.tx.TransactionManager;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DataContextFactoryTest {
 
     @Test
-    public void testCreateDataContextWithDedicatedCache() throws Exception {
+    public void createDataContextWithDedicatedCache() throws Exception {
 
         final EventManager eventManager = new MockEventManager();
         final DataDomain domain = new DataDomain("d1");
@@ -105,7 +105,7 @@ public class DataContextFactoryTest {
     }
 
     @Test
-    public void testCreateDataContextValidation() throws Exception {
+    public void createDataContextValidation() throws Exception {
         final EventManager eventManager = new MockEventManager();
         final DataDomain domain = new DataDomain("d1");
 

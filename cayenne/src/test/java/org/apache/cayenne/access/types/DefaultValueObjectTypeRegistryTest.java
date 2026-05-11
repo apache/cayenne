@@ -22,10 +22,10 @@ package org.apache.cayenne.access.types;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -37,7 +37,7 @@ public class DefaultValueObjectTypeRegistryTest {
     DefaultValueObjectTypeRegistry registry;
     ValueObjectType valueObjectType1, valueObjectType2;
 
-    @Before
+    @BeforeEach
     public void setUpRegistry() {
         valueObjectType1 = mock(ValueObjectType.class);
         when(valueObjectType1.getValueType()).thenReturn(Integer.class);
@@ -55,7 +55,7 @@ public class DefaultValueObjectTypeRegistryTest {
     }
 
     @Test
-    public void testInitialState() {
+    public void initialState() {
         assertEquals(2, registry.typeCache.size());
         assertTrue(registry.typeCache.containsKey(Integer.class.getName()));
         assertTrue(registry.typeCache.containsKey(Number.class.getName()));
