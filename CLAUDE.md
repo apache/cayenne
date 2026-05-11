@@ -67,10 +67,6 @@ All new tests must use JUnit 5. Test classes and methods must be `public`. Metho
 All POM plugins from submodules must be delcared in the parent module `<pluginManagement>`. All plugin versions should be 
 declared as properties in the root pom.xml
 
-### Legacy Tests
-
-JUnit 4 tests are still present but are considered legacy (run via `junit-vintage-engine`). They are being migrated to JUnit 5. Mockito is used for mocking and is also considered legacy and should be avoided in the new tests.
-
 
 ## CI Matrix
 
