@@ -2,7 +2,7 @@
 A self-contained MCP (Model Context Protocol) server that exposes CayenneModeler
 operations to AI coding agents over stdio. Here is a sample session:
 
-<img width="1257" height="362" alt="image" src="https://github.com/user-attachments/assets/e875ba9d-f20c-4d95-8c86-3432435556b2" />
+<img width="892" height="392" alt="image" src="https://github.com/user-attachments/assets/9b02e36d-47f6-4966-8b8c-b888fda97f1f" />
 
 ## Requirements
 Java 21 or later must be available on the system PATH.
