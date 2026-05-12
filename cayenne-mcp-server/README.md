@@ -1,29 +1,26 @@
 # Cayenne MCP Server
-
 A self-contained MCP (Model Context Protocol) server that exposes CayenneModeler
-operations to AI coding agents over stdio.
+operations to AI coding agents over stdio. Here is a sample session:
+
+<img width="1257" height="362" alt="image" src="https://github.com/user-attachments/assets/e875ba9d-f20c-4d95-8c86-3432435556b2" />
 
 ## Requirements
-
 Java 21 or later must be available on the system PATH.
 
 ## Finding the JAR
 
-The JAR location depends on how CayenneModeler was installed.
+The MCP server is distributed with platform-specific CayenneModeler download. The JAR location depends on how CayenneModeler was installed.
 Downloads are available at https://cayenne.apache.org/download/.
 
 ### macOS (DMG)
-
 ```
 <install-dir>/CayenneModeler.app/Contents/Resources/mcp/cayenne-mcp-server-<VERSION>.jar
 
 # But typically, in:
 /Applications/CayenneModeler.app/Contents/Resources/mcp/cayenne-mcp-server-<VERSION>.jar
-
 ```
 
 ### Windows (ZIP)
-
 ```
 <install-dir>\bin\cayenne-mcp-server-<VERSION>.jar
 ```
