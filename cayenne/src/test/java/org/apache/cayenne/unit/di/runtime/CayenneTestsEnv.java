@@ -20,8 +20,12 @@ package org.apache.cayenne.unit.di.runtime;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.runtime.CoreModule;
+import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -59,24 +63,26 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     private final String project;
     private final Class<?>[] extraModules;
     private final boolean autoClean;
+    private final boolean weakReferenceStrategy;
 
     private ObjectContext context;
     private DataContext dataContext;
     private DBHelper dbHelper;
     private CayenneRuntime runtime;
 
-    private CayenneTestsEnv(String project, Class<?>[] extraModules, boolean autoClean) {
+    private CayenneTestsEnv(String project, Class<?>[] extraModules, boolean autoClean, boolean weakReferenceStrategy) {
         this.project = project;
         this.extraModules = extraModules;
         this.autoClean = autoClean;
+        this.weakReferenceStrategy = weakReferenceStrategy;
     }
 
     public static CayenneTestsEnv forProject(String project) {
-        return new CayenneTestsEnv(project, new Class<?>[0], true);
+        return new CayenneTestsEnv(project, new Class<?>[0], true, false);
     }
 
     public CayenneTestsEnv withExtraModules(Class<?>... modules) {
-        return new CayenneTestsEnv(project, modules, autoClean);
+        return new CayenneTestsEnv(project, modules, autoClean, weakReferenceStrategy);
     }
 
     /**
@@ -87,13 +93,30 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
      * from its own {@code @BeforeEach}.
      */
     public CayenneTestsEnv withoutAutoClean() {
-        return new CayenneTestsEnv(project, extraModules, false);
+        return new CayenneTestsEnv(project, extraModules, false, weakReferenceStrategy);
+    }
+
+    /**
+     * Configures the runtime with the weak-reference object-tracking strategy
+     * instead of the default soft-reference strategy used by other tests. Use
+     * for GC-sensitive tests that need objects to be collectable as soon as
+     * they become unreferenced.
+     */
+    public CayenneTestsEnv withWeakReferenceStrategy() {
+        return new CayenneTestsEnv(project, extraModules, autoClean, true);
     }
 
     @Override
     public void beforeEach(ExtensionContext ctx) throws Exception {
         INJECTOR.getInstance(RuntimeCaseProperties.class).setConfigurationLocation(project);
-        INJECTOR.getInstance(RuntimeCaseExtraModules.class).setExtraModules(extraModules);
+
+        Class<?>[] effectiveExtras = extraModules;
+        if (weakReferenceStrategy) {
+            effectiveExtras = new Class<?>[extraModules.length + 1];
+            System.arraycopy(extraModules, 0, effectiveExtras, 0, extraModules.length);
+            effectiveExtras[extraModules.length] = WeakReferenceStrategyModule.class;
+        }
+        INJECTOR.getInstance(RuntimeCaseExtraModules.class).setExtraModules(effectiveExtras);
 
         runtime = INJECTOR.getInstance(CayenneRuntime.class);
         context = INJECTOR.getInstance(ObjectContext.class);
@@ -148,5 +171,12 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
      */
     public <T> T getInstance(Class<T> type) {
         return INJECTOR.getInstance(type);
+    }
+
+    public static class WeakReferenceStrategyModule implements Module {
+        @Override
+        public void configure(Binder binder) {
+            CoreModule.extend(binder).setProperty(Constants.OBJECT_RETAIN_STRATEGY_PROPERTY, "weak");
+        }
     }
 }
