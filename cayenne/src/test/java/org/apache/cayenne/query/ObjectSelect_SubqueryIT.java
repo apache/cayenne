@@ -24,7 +24,6 @@ import java.util.Date;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
@@ -46,13 +45,11 @@ public class ObjectSelect_SubqueryIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     DataContext context;
-    private DBHelper dbHelper;
 
     @BeforeEach
     public void createArtistsDataSet() throws Exception {
         context = env.dataContext();
-        dbHelper = env.dbHelper();
-        TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
+        TableHelper tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 
         long dateBase = System.currentTimeMillis() - 2 * 24 * 3600 * 1000;
@@ -60,11 +57,11 @@ public class ObjectSelect_SubqueryIT {
             tArtist.insert(i, "artist" + i, new java.sql.Date(dateBase + 24 * 3600 * 1000 * i));
         }
 
-        TableHelper tGallery = new TableHelper(dbHelper, "GALLERY");
+        TableHelper tGallery = env.table("GALLERY");
         tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
         tGallery.insert(1, "tate modern");
 
-        TableHelper tPaintings = new TableHelper(dbHelper, "PAINTING");
+        TableHelper tPaintings = env.table("PAINTING");
         tPaintings.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "GALLERY_ID");
         for (int i = 1; i <= 20; i++) {
             tPaintings.insert(i, "painting" + i, i % 5 + 1, 1);

@@ -23,7 +23,6 @@ import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.log.JdbcEventLogger;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -47,20 +46,18 @@ public class MappedQueryIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private DataContext context;
-    private DBHelper dbHelper;
     private UnitDbAdapter accessStackAdapter;
     private JdbcEventLogger jdbcEventLogger;
 
     @BeforeEach
     public void setUp() {
         context = env.dataContext();
-        dbHelper = env.dbHelper();
         accessStackAdapter = env.getInstance(UnitDbAdapter.class);
         jdbcEventLogger = env.getInstance(JdbcEventLogger.class);
     }
 
     protected void createArtistsDataSet() throws Exception {
-        TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
+        TableHelper tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 
         long dateBase = System.currentTimeMillis();

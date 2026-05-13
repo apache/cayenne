@@ -28,7 +28,6 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -48,7 +47,6 @@ public class SelectById_RunIT {
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
 	private DataChannelInterceptor interceptor;
-	private DBHelper dbHelper;
 	private ObjectContext context;
 
 	private TableHelper tArtist;
@@ -59,11 +57,10 @@ public class SelectById_RunIT {
 	@BeforeEach
 	public void setUp() throws Exception {
 		interceptor = env.getInstance(DataChannelInterceptor.class);
-		dbHelper = env.dbHelper();
 		context = env.context();
 		resolver = env.getInstance(EntityResolver.class);
-		tArtist = new TableHelper(dbHelper, "ARTIST").setColumns("ARTIST_ID", "ARTIST_NAME");
-		tPainting = new TableHelper(dbHelper, "PAINTING").setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE")
+		tArtist = env.table("ARTIST").setColumns("ARTIST_ID", "ARTIST_NAME");
+		tPainting = env.table("PAINTING").setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE")
 				.setColumnTypes(Types.INTEGER, Types.BIGINT, Types.VARCHAR);
 	}
 

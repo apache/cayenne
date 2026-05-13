@@ -29,7 +29,6 @@ import org.apache.cayenne.exp.parser.ASTEqual;
 import org.apache.cayenne.exp.parser.ASTGreater;
 import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.exp.parser.ASTScalar;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.return_types.ReturnTypesMap1;
 import org.apache.cayenne.unit.UnitDbAdapter;
@@ -49,18 +48,16 @@ public class SelectQueryReturnTypesIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RETURN_TYPES_PROJECT);
 
     private ObjectContext context;
-    private DBHelper dbHelper;
     private UnitDbAdapter accessStackAdapter;
 
     @BeforeEach
     public void setUp() {
         context = env.context();
-        dbHelper = env.dbHelper();
         accessStackAdapter = env.getInstance(UnitDbAdapter.class);
     }
 
     protected void createNumericsDataSet() throws Exception {
-        TableHelper tNumerics = new TableHelper(dbHelper, "TYPES_MAPPING_TEST1");
+        TableHelper tNumerics = env.table("TYPES_MAPPING_TEST1");
         tNumerics.setColumns("AAAID", "INTEGER_COLUMN");
 
         tNumerics.insert(1, 0);

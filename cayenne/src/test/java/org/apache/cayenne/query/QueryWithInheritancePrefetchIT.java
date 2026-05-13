@@ -22,7 +22,6 @@ package org.apache.cayenne.query;
 import java.util.List;
 
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_with_enum.Dependent;
 import org.apache.cayenne.testdo.inheritance_with_enum.Root;
@@ -52,22 +51,20 @@ public class QueryWithInheritancePrefetchIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.INHERITANCE_WITH_ENUM_PROJECT);
 
     private CayenneRuntime runtime;
-    private DBHelper dbHelper;
     private DataChannelInterceptor queryInterceptor;
 
     @BeforeEach
     public void createTestData() throws Exception {
         runtime = env.runtime();
-        dbHelper = env.dbHelper();
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
-        TableHelper tRoot = new TableHelper(dbHelper, "iwe_root");
+        TableHelper tRoot = env.table("iwe_root");
         tRoot.setColumns("id", "type", "name", "enum");
 
         tRoot.insert(1, 0, "root1", null);
         tRoot.insert(2, 1, "enum1", Type.type1.ordinal());
         tRoot.insert(3, 1, "enum2", Type.type2.ordinal());
 
-        TableHelper tDependent = new TableHelper(dbHelper, "iwe_dependent");
+        TableHelper tDependent = env.table("iwe_dependent");
         tDependent.setColumns("id", "root_id", "name");
 
         tDependent.insert(1, 1, "test1");

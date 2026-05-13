@@ -25,7 +25,6 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.SQLResult;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
@@ -53,7 +52,6 @@ public class SQLTemplateIT {
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
 	private DataContext context;
-	private DBHelper dbHelper;
 	protected DataChannelInterceptor queryInterceptor;
 	protected UnitDbAdapter unitDbAdapter;
 
@@ -64,16 +62,15 @@ public class SQLTemplateIT {
 	@BeforeEach
 	public void setUp() throws Exception {
 		context = env.dataContext();
-		dbHelper = env.dbHelper();
 		queryInterceptor = env.getInstance(DataChannelInterceptor.class);
 		unitDbAdapter = env.getInstance(UnitDbAdapter.class);
-		tArtist = new TableHelper(dbHelper, "ARTIST");
+		tArtist = env.table("ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 
-		tPainting = new TableHelper(dbHelper, "PAINTING");
+		tPainting = env.table("PAINTING");
 		tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE", "ESTIMATED_PRICE");
 
-		tArtistCt = new TableHelper(dbHelper, "ARTIST_CT");
+		tArtistCt = env.table("ARTIST_CT");
 		tArtistCt.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 	}
 

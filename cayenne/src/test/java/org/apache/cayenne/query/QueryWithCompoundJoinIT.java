@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.compound.CompoundFkTestEntity;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
@@ -48,7 +47,6 @@ public class QueryWithCompoundJoinIT {
 
     private DataContext context;
     private CayenneRuntime runtime;
-    private DBHelper dbHelper;
 
     private TableHelper tCompoundPk;
     private TableHelper tCompoundFk;
@@ -57,11 +55,10 @@ public class QueryWithCompoundJoinIT {
     public void setUp() throws Exception {
         context = env.dataContext();
         runtime = env.runtime();
-        dbHelper = env.dbHelper();
-        tCompoundPk = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
+        tCompoundPk = env.table("COMPOUND_PK_TEST");
         tCompoundPk.setColumns("KEY1", "KEY2", "NAME");
 
-        tCompoundFk = new TableHelper(dbHelper, "COMPOUND_FK_TEST");
+        tCompoundFk = env.table("COMPOUND_FK_TEST");
         tCompoundFk.setColumns("F_KEY1", "F_KEY2", "NAME", "PKEY");
 
         createDataSet();

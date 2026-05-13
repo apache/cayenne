@@ -24,7 +24,6 @@ import java.util.List;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.embeddable.EmbedEntity1;
 import org.apache.cayenne.testdo.embeddable.Embeddable1;
@@ -45,7 +44,6 @@ public class EmbeddingSerializeIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.EMBEDDABLE_PROJECT);
 
     protected ObjectContext context;
-    protected DBHelper dbHelper;
 
     protected TableHelper tEmbedEntity1;
 
@@ -53,8 +51,7 @@ public class EmbeddingSerializeIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        dbHelper = env.dbHelper();
-        tEmbedEntity1 = new TableHelper(dbHelper, "EMBED_ENTITY1");
+        tEmbedEntity1 = env.table("EMBED_ENTITY1");
         tEmbedEntity1.setColumns("ID", "NAME", "EMBEDDED10", "EMBEDDED20", "EMBEDDED30", "EMBEDDED40");
     }
 

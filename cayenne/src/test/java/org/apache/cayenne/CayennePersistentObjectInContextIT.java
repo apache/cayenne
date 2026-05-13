@@ -22,7 +22,6 @@ package org.apache.cayenne;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -42,7 +41,6 @@ public class CayennePersistentObjectInContextIT {
 
     protected CayenneRuntime runtime;
     protected DataContext context;
-    protected DBHelper dbHelper;
 
     protected TableHelper tArtist;
 
@@ -50,8 +48,7 @@ public class CayennePersistentObjectInContextIT {
     public void setUp() throws Exception {
         runtime = env.runtime();
         context = env.dataContext();
-        dbHelper = env.dbHelper();
-        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
     }
 

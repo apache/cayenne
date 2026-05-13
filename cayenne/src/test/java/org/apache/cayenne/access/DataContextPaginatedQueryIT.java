@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.QueryCacheStrategy;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -41,7 +40,6 @@ public class DataContextPaginatedQueryIT  {
 
         protected DataContext context;
 
-        protected DBHelper dbHelper;
 
     protected TableHelper tArtist;
 
@@ -49,8 +47,7 @@ public class DataContextPaginatedQueryIT  {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.dataContext();
-        dbHelper = env.dbHelper();
-        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
     }
 

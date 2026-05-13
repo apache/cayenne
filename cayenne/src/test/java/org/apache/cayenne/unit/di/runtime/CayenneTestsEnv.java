@@ -25,6 +25,7 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -128,6 +129,14 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
     public DBHelper dbHelper() {
         return dbHelper;
+    }
+
+    public TableHelper table(String tableName) {
+        return new TableHelper(dbHelper, tableName);
+    }
+
+    public TableHelper table(String tableName, String... columns) {
+        return new TableHelper(dbHelper, tableName, columns);
     }
 
     public CayenneRuntime runtime() {

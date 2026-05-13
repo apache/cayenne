@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -53,7 +52,6 @@ public class DataContextRefreshingIT  {
 
         protected DataContext context;
 
-        protected DBHelper dbHelper;
 
         protected DataChannelInterceptor queryInterceptor;
 
@@ -64,12 +62,11 @@ public class DataContextRefreshingIT  {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.dataContext();
-        dbHelper = env.dbHelper();
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
-        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
-        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting = env.table("PAINTING");
         tPainting.setColumns(
                 "PAINTING_ID",
                 "PAINTING_TITLE",

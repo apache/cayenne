@@ -30,7 +30,6 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -55,7 +54,6 @@ public class ObjectSelect_AggregateIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private DataContext context;
-    private DBHelper dbHelper;
     private UnitDbAdapter dbAdapter;
 
     // Format: d/m/YY
@@ -64,9 +62,8 @@ public class ObjectSelect_AggregateIT {
     @BeforeEach
     public void createArtistsDataSet() throws Exception {
         context = env.dataContext();
-        dbHelper = env.dbHelper();
         dbAdapter = env.getInstance(UnitDbAdapter.class);
-        TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
+        TableHelper tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
         tArtist.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.DATE);
 
@@ -78,11 +75,11 @@ public class ObjectSelect_AggregateIT {
             tArtist.insert(i, "artist" + i, dates[i % 5]);
         }
 
-        TableHelper tGallery = new TableHelper(dbHelper, "GALLERY");
+        TableHelper tGallery = env.table("GALLERY");
         tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
         tGallery.insert(1, "tate modern");
 
-        TableHelper tPaintings = new TableHelper(dbHelper, "PAINTING");
+        TableHelper tPaintings = env.table("PAINTING");
         tPaintings.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "GALLERY_ID", "ESTIMATED_PRICE");
         for (int i = 1; i <= 20; i++) {
             tPaintings.insert(i, "painting" + i, i % 5 + 1, 1, i * 10);
@@ -93,7 +90,7 @@ public class ObjectSelect_AggregateIT {
     @AfterEach
     public void clearArtistsDataSet() throws Exception {
         for(String table : Arrays.asList("PAINTING", "ARTIST", "GALLERY")) {
-            TableHelper tHelper = new TableHelper(dbHelper, table);
+            TableHelper tHelper = env.table(table);
             tHelper.deleteAll();
         }
     }

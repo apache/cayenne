@@ -28,7 +28,6 @@ import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.PrefetchTreeNode;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.compound.CharFkTestEntity;
 import org.apache.cayenne.testdo.compound.CharPkTestEntity;
@@ -52,7 +51,6 @@ public class DataContextPrefetchExtrasIT  {
 
         protected ObjectContext context;
 
-        protected DBHelper dbHelper;
 
     protected TableHelper tCharPkTest;
     protected TableHelper tCharFkTest;
@@ -63,17 +61,16 @@ public class DataContextPrefetchExtrasIT  {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        dbHelper = env.dbHelper();
-        tCharPkTest = new TableHelper(dbHelper, "CHAR_PK_TEST");
+        tCharPkTest = env.table("CHAR_PK_TEST");
         tCharPkTest.setColumns("PK_COL", "OTHER_COL");
 
-        tCharFkTest = new TableHelper(dbHelper, "CHAR_FK_TEST");
+        tCharFkTest = env.table("CHAR_FK_TEST");
         tCharFkTest.setColumns("PK", "FK_COL", "NAME");
 
-        tCompoundPkTest = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
+        tCompoundPkTest = env.table("COMPOUND_PK_TEST");
         tCompoundPkTest.setColumns("KEY1", "KEY2", "NAME");
 
-        tCompoundFkTest = new TableHelper(dbHelper, "COMPOUND_FK_TEST");
+        tCompoundFkTest = env.table("COMPOUND_FK_TEST");
         tCompoundFkTest.setColumns("PKEY", "F_KEY1", "F_KEY2", "NAME");
     }
 

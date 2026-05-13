@@ -19,7 +19,6 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.map_to_many.MapToMany;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -39,7 +38,6 @@ public class CayennePersistentObjectSetToManyMapIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.MAP_TO_MANY_PROJECT);
 
     protected ObjectContext context;
-    protected DBHelper dbHelper;
 
     protected TableHelper tMapToMany;
     protected TableHelper tMapToManyTarget;
@@ -49,17 +47,16 @@ public class CayennePersistentObjectSetToManyMapIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        dbHelper = env.dbHelper();
-        tMapToMany = new TableHelper(dbHelper, "MAP_TO_MANY");
+        tMapToMany = env.table("MAP_TO_MANY");
         tMapToMany.setColumns("ID");
 
-        tMapToManyTarget = new TableHelper(dbHelper, "MAP_TO_MANY_TARGET");
+        tMapToManyTarget = env.table("MAP_TO_MANY_TARGET");
         tMapToManyTarget.setColumns("ID", "MAP_TO_MANY_ID", "NAME");
 
-        tIdMapToMany = new TableHelper(dbHelper, "ID_MAP_TO_MANY");
+        tIdMapToMany = env.table("ID_MAP_TO_MANY");
         tIdMapToMany.setColumns("ID");
 
-        tIdMapToManyTarget = new TableHelper(dbHelper, "ID_MAP_TO_MANY_TARGET");
+        tIdMapToManyTarget = env.table("ID_MAP_TO_MANY_TARGET");
         tIdMapToManyTarget.setColumns("ID", "MAP_TO_MANY_ID");
 
         createTestDataSet();

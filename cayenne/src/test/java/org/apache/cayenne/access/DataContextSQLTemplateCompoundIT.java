@@ -22,7 +22,6 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.compound.CompoundFkTestEntity;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
@@ -45,7 +44,6 @@ public class DataContextSQLTemplateCompoundIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.COMPOUND_PROJECT);
 
     protected DataContext context;
-    protected DBHelper dbHelper;
 
     protected TableHelper tCompoundPkTest;
     protected TableHelper tCompoundFkTest;
@@ -54,11 +52,10 @@ public class DataContextSQLTemplateCompoundIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.dataContext();
-        dbHelper = env.dbHelper();
-        tCompoundPkTest = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
+        tCompoundPkTest = env.table("COMPOUND_PK_TEST");
         tCompoundPkTest.setColumns("KEY1", "KEY2");
 
-        tCompoundFkTest = new TableHelper(dbHelper, "COMPOUND_FK_TEST");
+        tCompoundFkTest = env.table("COMPOUND_FK_TEST");
         tCompoundFkTest.setColumns("PKEY", "F_KEY1", "F_KEY2");
     }
 

@@ -23,7 +23,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.embeddable.EmbedChild;
 import org.apache.cayenne.testdo.embeddable.EmbedEntity1;
@@ -48,7 +47,6 @@ public class EmbeddingIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.EMBEDDABLE_PROJECT);
 
     protected ObjectContext context;
-    protected DBHelper dbHelper;
     
     protected TableHelper tEmbedEntity1;
     protected TableHelper tEmbedEntity2;
@@ -59,17 +57,16 @@ public class EmbeddingIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        dbHelper = env.dbHelper();
-        tEmbedEntity1 = new TableHelper(dbHelper, "EMBED_ENTITY1");
+        tEmbedEntity1 = env.table("EMBED_ENTITY1");
         tEmbedEntity1.setColumns("ID", "NAME", "EMBEDDED10", "EMBEDDED20", "EMBEDDED30", "EMBEDDED40");
 
-        tEmbedEntity2 = new TableHelper(dbHelper, "EMBED_ENTITY2");
+        tEmbedEntity2 = env.table("EMBED_ENTITY2");
         tEmbedEntity2.setColumns("ID", "NAME", "ENTITY1_ID", "EMBEDDED10", "EMBEDDED20");
 
-        tEmbedRoot = new TableHelper(dbHelper, "EMBED_ROOT");
+        tEmbedRoot = env.table("EMBED_ROOT");
         tEmbedRoot.setColumns("ID", "NAME", "EMBEDDED10", "EMBEDDED20", "TYPE");
 
-        tEmbedChild = new TableHelper(dbHelper, "EMBED_CHILD");
+        tEmbedChild = env.table("EMBED_CHILD");
         tEmbedChild.setColumns("ID", "CHILD_ATTR");
     }
     

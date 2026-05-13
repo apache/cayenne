@@ -28,7 +28,6 @@ import java.util.List;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships.ReflexiveAndToOne;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -42,7 +41,6 @@ public class AshwoodEntitySorter_RelationshipsIT {
 	@RegisterExtension
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RELATIONSHIPS_PROJECT);
 
-	protected DBHelper dbHelper;
 	protected ObjectContext context;
 
 	private TableHelper tRelationshipHelper;
@@ -52,15 +50,14 @@ public class AshwoodEntitySorter_RelationshipsIT {
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		dbHelper = env.dbHelper();
 		context = env.context();
 		this.sorter = new AshwoodEntitySorter();
 		sorter.setEntityResolver(context.getEntityResolver());
 
-		tRelationshipHelper = new TableHelper(dbHelper, "RELATIONSHIP_HELPER");
+		tRelationshipHelper = env.table("RELATIONSHIP_HELPER");
 		tRelationshipHelper.setColumns("RELATIONSHIP_HELPER_ID", "NAME");
 
-		tReflexiveAndToOne = new TableHelper(dbHelper, "REFLEXIVE_AND_TO_ONE");
+		tReflexiveAndToOne = env.table("REFLEXIVE_AND_TO_ONE");
 		tReflexiveAndToOne.setColumns("REFLEXIVE_AND_TO_ONE_ID", "PARENT_ID", "RELATIONSHIP_HELPER_ID", "NAME")
 				.setColumnTypes(Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.VARCHAR);
 	}

@@ -23,7 +23,6 @@ import java.util.List;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
@@ -46,14 +45,13 @@ public class DataContextPrefetchExtras1IT  {
 
         protected ObjectContext context;
 
-        protected DBHelper dbHelper;
 
     protected void createDataSet() throws Exception {
 
-        TableHelper tPainting = new TableHelper(dbHelper, "PAINTING");
+        TableHelper tPainting = env.table("PAINTING");
         tPainting.setColumns("PAINTING_ID", "PAINTING_TITLE");
 
-        TableHelper tPaintingInfo = new TableHelper(dbHelper, "PAINTING_INFO");
+        TableHelper tPaintingInfo = env.table("PAINTING_INFO");
         tPaintingInfo.setColumns("PAINTING_ID", "TEXT_REVIEW");
 
         for (int i = 1; i <= 10; i++) {
@@ -65,7 +63,6 @@ public class DataContextPrefetchExtras1IT  {
     @BeforeEach
     public void setUp() {
         context = env.context();
-        dbHelper = env.dbHelper();
     }
 
     @Test

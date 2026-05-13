@@ -27,7 +27,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -51,7 +50,6 @@ public class FlattenedPrefetchIT {
 
     protected DataChannelInterceptor queryInterceptor;
     protected ObjectContext context;
-    protected DBHelper dbHelper;
 
     protected TableHelper tArtist;
     protected TableHelper tPainting;
@@ -63,22 +61,21 @@ public class FlattenedPrefetchIT {
     public void setUp() throws Exception {
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
         context = env.context();
-        dbHelper = env.dbHelper();
 
-        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
-        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting = env.table("PAINTING");
         tPainting.setColumns(
                 "PAINTING_ID",
                 "PAINTING_TITLE",
                 "ARTIST_ID",
                 "ESTIMATED_PRICE");
 
-        tArtgroup = new TableHelper(dbHelper, "ARTGROUP");
+        tArtgroup = env.table("ARTGROUP");
         tArtgroup.setColumns("GROUP_ID", "NAME");
 
-        tArtistGroup = new TableHelper(dbHelper, "ARTIST_GROUP");
+        tArtistGroup = env.table("ARTIST_GROUP");
         tArtistGroup.setColumns("ARTIST_ID", "GROUP_ID");
     }
 

@@ -23,7 +23,6 @@ import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLSelect;
 import org.apache.cayenne.query.SortOrder;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -51,7 +50,6 @@ public class DataContextDisjointByIdPrefetchIT {
 
     protected DataContext context;
 
-    protected DBHelper dbHelper;
 
     protected DataChannelInterceptor queryInterceptor;
 
@@ -62,16 +60,15 @@ public class DataContextDisjointByIdPrefetchIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.dataContext();
-        dbHelper = env.dbHelper();
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
-        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
-        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting = env.table("PAINTING");
         tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE").setColumnTypes(Types.INTEGER, Types.BIGINT,
                 Types.VARCHAR);
 
-        tPaintingInfo = new TableHelper(dbHelper, "PAINTING_INFO");
+        tPaintingInfo = env.table("PAINTING_INFO");
         tPaintingInfo.setColumns("PAINTING_ID", "TEXT_REVIEW");
     }
 

@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -41,13 +40,12 @@ public class DataContextPrefetchQualifierOverlapIT  {
 
         private DataContext context;
 
-        private DBHelper dbHelper;
 
     private void createTwoArtistsThreePaintingsDataSet() throws Exception {
-        TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
+        TableHelper tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
-        TableHelper tPainting = new TableHelper(dbHelper, "PAINTING");
+        TableHelper tPainting = env.table("PAINTING");
         tPainting.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID");
 
         tArtist.insert(1, "A1");
@@ -61,7 +59,6 @@ public class DataContextPrefetchQualifierOverlapIT  {
     @BeforeEach
     public void setUp() {
         context = env.dataContext();
-        dbHelper = env.dbHelper();
     }
 
     @Test

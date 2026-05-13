@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.things.Bag;
 import org.apache.cayenne.testdo.things.Ball;
@@ -46,7 +45,6 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT {
 
     protected DataContext context;
 
-    protected DBHelper dbHelper;
 
     protected DataChannelInterceptor queryInterceptor;
 
@@ -60,24 +58,23 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.dataContext();
-        dbHelper = env.dbHelper();
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
-        tBag = new TableHelper(dbHelper, "BAG");
+        tBag = env.table("BAG");
         tBag.setColumns("ID", "NAME");
 
-        tBall = new TableHelper(dbHelper, "BALL");
+        tBall = env.table("BALL");
         tBall.setColumns("ID", "BOX_ID", "THING_VOLUME", "THING_WEIGHT");
 
-        tBox = new TableHelper(dbHelper, "BOX");
+        tBox = env.table("BOX");
         tBox.setColumns("ID", "BAG_ID", "NAME");
 
-        tBoxInfo = new TableHelper(dbHelper, "BOX_INFO");
+        tBoxInfo = env.table("BOX_INFO");
         tBoxInfo.setColumns("ID" ,"BOX_ID", "COLOR");
 
-        tBoxThing = new TableHelper(dbHelper, "BOX_THING");
+        tBoxThing = env.table("BOX_THING");
         tBoxThing.setColumns("BOX_ID", "THING_VOLUME", "THING_WEIGHT");
 
-        tThing = new TableHelper(dbHelper, "THING");
+        tThing = env.table("THING");
         tThing.setColumns("ID", "VOLUME", "WEIGHT");
     }
 

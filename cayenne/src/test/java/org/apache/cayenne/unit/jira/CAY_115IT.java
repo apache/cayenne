@@ -23,7 +23,6 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships_clob.ClobMaster;
 import org.apache.cayenne.unit.UnitDbAdapter;
@@ -46,7 +45,6 @@ public class CAY_115IT {
 
     protected DataContext context;
     protected UnitDbAdapter accessStackAdapter;
-    protected DBHelper dbHelper;
 
     protected TableHelper tClobMaster;
     protected TableHelper tClobDetail;
@@ -55,11 +53,10 @@ public class CAY_115IT {
     public void setUp() throws Exception {
         context = env.dataContext();
         accessStackAdapter = env.getInstance(UnitDbAdapter.class);
-        dbHelper = env.dbHelper();
-        tClobMaster = new TableHelper(dbHelper, "CLOB_MASTER");
+        tClobMaster = env.table("CLOB_MASTER");
         tClobMaster.setColumns("CLOB_MASTER_ID", "CLOB_COLUMN", "NAME");
         
-        tClobDetail = new TableHelper(dbHelper, "CLOB_DETAIL");
+        tClobDetail = env.table("CLOB_DETAIL");
         tClobDetail.setColumns("CLOB_DETAIL_ID", "CLOB_MASTER_ID", "NAME");
     }
     

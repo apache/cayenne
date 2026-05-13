@@ -23,7 +23,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -44,7 +43,6 @@ public class DataContextEJBQLDeleteIT {
 
     protected ObjectContext context;
 
-    protected DBHelper dbHelper;
 
     protected CayenneRuntime runtime;
 
@@ -54,9 +52,8 @@ public class DataContextEJBQLDeleteIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        dbHelper = env.dbHelper();
         runtime = env.runtime();
-        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting = env.table("PAINTING");
         tPainting.setColumns(
                 "PAINTING_ID",
                 "ARTIST_ID",

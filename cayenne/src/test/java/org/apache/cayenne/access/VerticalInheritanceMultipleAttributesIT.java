@@ -26,7 +26,6 @@ import java.util.List;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_vertical.IvImpl;
 import org.apache.cayenne.testdo.inheritance_vertical.IvOther;
@@ -49,7 +48,6 @@ public class VerticalInheritanceMultipleAttributesIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.INHERITANCE_VERTICAL_PROJECT);
 
     protected ObjectContext context;
-    protected DBHelper dbHelper;
     protected CayenneRuntime runtime;
 
     TableHelper ivOtherTable, ivBaseTable, ivImplTable;
@@ -57,17 +55,16 @@ public class VerticalInheritanceMultipleAttributesIT {
     @BeforeEach
     public void setupTableHelpers() throws Exception {
         context = env.context();
-        dbHelper = env.dbHelper();
         runtime = env.runtime();
-        ivOtherTable = new TableHelper(dbHelper, "IV_OTHER");
+        ivOtherTable = env.table("IV_OTHER");
         ivOtherTable.setColumns("ID", "NAME")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR);
 
-        ivBaseTable = new TableHelper(dbHelper, "IV_BASE");
+        ivBaseTable = env.table("IV_BASE");
         ivBaseTable.setColumns("ID", "NAME", "TYPE")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR);
 
-        ivImplTable = new TableHelper(dbHelper, "IV_IMPL");
+        ivImplTable = env.table("IV_IMPL");
         ivImplTable.setColumns("ID", "ATTR1", "ATTR2", "OTHER1_ID", "OTHER2_ID")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.INTEGER);
 

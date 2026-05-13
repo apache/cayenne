@@ -20,7 +20,6 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.query.RelationshipQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -42,7 +41,6 @@ public class DataContextRelationshipQueryIT  {
 
         private DataContext context;
 
-        private DBHelper dbHelper;
 
     private TableHelper tArtist;
     private TableHelper tPainting;
@@ -51,10 +49,9 @@ public class DataContextRelationshipQueryIT  {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.dataContext();
-        dbHelper = env.dbHelper();
-        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
-        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting = env.table("PAINTING");
         tPainting.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID");
     }
 

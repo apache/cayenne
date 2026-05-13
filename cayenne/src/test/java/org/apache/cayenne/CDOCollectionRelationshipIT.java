@@ -21,7 +21,6 @@ package org.apache.cayenne;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.RefreshQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships_collection_to_many.CollectionToMany;
 import org.apache.cayenne.testdo.relationships_collection_to_many.CollectionToManyTarget;
@@ -46,18 +45,14 @@ public class CDOCollectionRelationshipIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RELATIONSHIPS_COLLECTION_TO_MANY_PROJECT);
 
     private ObjectContext context;
-    private DBHelper dbHelper;
 
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        dbHelper = env.dbHelper();
-        TableHelper tCollectionToMany = new TableHelper(dbHelper, "COLLECTION_TO_MANY");
+        TableHelper tCollectionToMany = env.table("COLLECTION_TO_MANY");
         tCollectionToMany.setColumns("ID");
 
-        TableHelper tCollectionToManyTarget = new TableHelper(
-                dbHelper,
-                "COLLECTION_TO_MANY_TARGET");
+        TableHelper tCollectionToManyTarget = env.table("COLLECTION_TO_MANY_TARGET");
         tCollectionToManyTarget.setColumns("ID", "COLLECTION_TO_MANY_ID");
 
         // single data set for all tests

@@ -27,7 +27,6 @@ import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.numeric_types.BigDecimalEntity;
 import org.apache.cayenne.testdo.numeric_types.BigIntegerEntity;
@@ -47,7 +46,6 @@ public class DataContextEJBQLNumericalFunctionalIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.NUMERIC_TYPES_PROJECT);
 
-    protected DBHelper dbHelper;
 
     private ObjectContext context;
 
@@ -57,8 +55,7 @@ public class DataContextEJBQLNumericalFunctionalIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        dbHelper = env.dbHelper();
-        tBigIntegerEntity = new TableHelper(dbHelper, "BIGINTEGER_ENTITY");
+        tBigIntegerEntity = env.table("BIGINTEGER_ENTITY");
         tBigIntegerEntity.setColumns("ID", "BIG_INTEGER_FIELD");
     }
 

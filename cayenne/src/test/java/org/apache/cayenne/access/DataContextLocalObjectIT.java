@@ -23,7 +23,6 @@ import org.apache.cayenne.FaultFailureException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
@@ -49,7 +48,6 @@ public class DataContextLocalObjectIT  {
 
         private DataContext context2;
 
-        private DBHelper dbHelper;
 
         private DataChannelInterceptor interceptor;
 
@@ -62,10 +60,9 @@ public class DataContextLocalObjectIT  {
     public void setUp() throws Exception {
         context1 = env.dataContext();
         context2 = (DataContext) env.runtime().newContext();
-        dbHelper = env.dbHelper();
         interceptor = env.getInstance(DataChannelInterceptor.class);
         runtime = env.runtime();
-        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
     }
 

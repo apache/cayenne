@@ -29,7 +29,6 @@ import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -55,7 +54,6 @@ public class DataContextSQLTemplateIT {
 
 	private CayenneRuntime runtime;
 	protected DataContext context;
-	protected DBHelper dbHelper;
 	protected SQLTemplateCustomizer sqlTemplateCustomizer;
 
 	protected TableHelper tPainting;
@@ -66,12 +64,11 @@ public class DataContextSQLTemplateIT {
 	public void setUp() throws Exception {
 		runtime = env.runtime();
 		context = env.dataContext();
-		dbHelper = env.dbHelper();
 		sqlTemplateCustomizer = env.getInstance(SQLTemplateCustomizer.class);
-		tArtist = new TableHelper(dbHelper, "ARTIST");
+		tArtist = env.table("ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
-		tPainting = new TableHelper(dbHelper, "PAINTING");
+		tPainting = env.table("PAINTING");
 		tPainting.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "ESTIMATED_PRICE").setColumnTypes(
 				Types.INTEGER, Types.VARCHAR, Types.BIGINT, Types.DECIMAL);
 	}

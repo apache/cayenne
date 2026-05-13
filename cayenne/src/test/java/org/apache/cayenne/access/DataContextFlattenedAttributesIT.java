@@ -30,7 +30,6 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.reflect.PersistentDescriptor;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.CompoundPainting;
@@ -60,7 +59,6 @@ public class DataContextFlattenedAttributesIT {
 
     private CayenneRuntime runtime;
     private DataContext context;
-    private DBHelper dbHelper;
 
     private TableHelper tArtist;
     private TableHelper tPainting;
@@ -71,11 +69,10 @@ public class DataContextFlattenedAttributesIT {
     public void createTestDataSetStructure() {
         context = env.dataContext();
         runtime = env.runtime();
-        dbHelper = env.dbHelper();
-        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 
-        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting = env.table("PAINTING");
         tPainting.setColumns(
                 "PAINTING_ID",
                 "PAINTING_TITLE",
@@ -88,10 +85,10 @@ public class DataContextFlattenedAttributesIT {
                 Types.DECIMAL,
                 Types.INTEGER);
 
-        tPaintingInfo = new TableHelper(dbHelper, "PAINTING_INFO");
+        tPaintingInfo = env.table("PAINTING_INFO");
         tPaintingInfo.setColumns("PAINTING_ID", "TEXT_REVIEW");
 
-        tGallery = new TableHelper(dbHelper, "GALLERY");
+        tGallery = env.table("GALLERY");
         tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
     }
 

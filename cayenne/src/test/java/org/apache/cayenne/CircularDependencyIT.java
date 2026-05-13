@@ -19,7 +19,6 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships.E1;
 import org.apache.cayenne.testdo.relationships.E2;
@@ -45,16 +44,15 @@ public class CircularDependencyIT {
 
     private UnitDbAdapter unitDbAdapter;
     private ObjectContext context;
-    private DBHelper dbHelper;
 
     @AfterEach
     public void cleanUp() throws SQLException {
         // manually cleanup circular references
-        TableHelper e1 = new TableHelper(dbHelper, "CYCLE_E1", "id", "e2_id", "text");
+        TableHelper e1 = env.table("CYCLE_E1", "id", "e2_id", "text");
         e1.setColumnTypes(Types.INTEGER, Types.INTEGER, Types.VARCHAR);
-        TableHelper e2 = new TableHelper(dbHelper, "CYCLE_E2", "id", "e1_id", "text");
+        TableHelper e2 = env.table("CYCLE_E2", "id", "e1_id", "text");
         e2.setColumnTypes(Types.INTEGER, Types.INTEGER, Types.VARCHAR);
-        TableHelper reflexive = new TableHelper(dbHelper, "REFLEXIVE_AND_TO_ONE", "REFLEXIVE_AND_TO_ONE_ID", "NAME", "PARENT_ID");
+        TableHelper reflexive = env.table("REFLEXIVE_AND_TO_ONE", "REFLEXIVE_AND_TO_ONE_ID", "NAME", "PARENT_ID");
 
         e1.update().set("e2_id", null, Types.INTEGER).execute();
         e2.update().set("e1_id", null, Types.INTEGER).execute();
@@ -70,7 +68,6 @@ public class CircularDependencyIT {
     public void setUp() {
         unitDbAdapter = env.getInstance(UnitDbAdapter.class);
         context = env.context();
-        dbHelper = env.dbHelper();
     }
 
     @Test

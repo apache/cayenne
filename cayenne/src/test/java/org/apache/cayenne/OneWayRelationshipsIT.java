@@ -23,7 +23,6 @@ import java.sql.Types;
 import java.util.List;
 
 import org.apache.cayenne.query.SQLSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.oneway.OnewayTable1;
 import org.apache.cayenne.testdo.oneway.OnewayTable2;
@@ -46,7 +45,6 @@ public class OneWayRelationshipsIT {
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.ONEWAY_PROJECT);
 
 	private ObjectContext context;
-	private DBHelper dbHelper;
 
 	private TableHelper t1Helper;
 	private TableHelper t2Helper;
@@ -56,15 +54,14 @@ public class OneWayRelationshipsIT {
 	@BeforeEach
 	public void setUp() throws Exception {
 		context = env.context();
-		dbHelper = env.dbHelper();
-		t1Helper = new TableHelper(dbHelper, "oneway_table1");
+		t1Helper = env.table("oneway_table1");
 		t1Helper.setColumns("ID");
-		t2Helper = new TableHelper(dbHelper, "oneway_table2");
+		t2Helper = env.table("oneway_table2");
 		t2Helper.setColumns("ID", "TABLE1_ID");
 
-		t3Helper = new TableHelper(dbHelper, "oneway_table3");
+		t3Helper = env.table("oneway_table3");
 		t3Helper.setColumns("ID");
-		t4Helper = new TableHelper(dbHelper, "oneway_table4");
+		t4Helper = env.table("oneway_table4");
 		t4Helper.setColumns("ID", "TABLE3_ID").setColumnTypes(Types.INTEGER, Types.INTEGER);
 	}
 

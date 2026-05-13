@@ -22,7 +22,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
@@ -53,7 +52,6 @@ public class DataContextEJBQLFetchJoinIT {
 
     protected ObjectContext context;
 
-    protected DBHelper dbHelper;
 
     protected DataChannelInterceptor queryBlocker;
 
@@ -67,12 +65,11 @@ public class DataContextEJBQLFetchJoinIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        dbHelper = env.dbHelper();
         queryBlocker = env.getInstance(DataChannelInterceptor.class);
-        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
-        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting = env.table("PAINTING");
         tPainting.setColumns(
                 "PAINTING_ID",
                 "ARTIST_ID",
@@ -83,13 +80,13 @@ public class DataContextEJBQLFetchJoinIT {
                 Types.VARCHAR,
                 Types.DECIMAL);
 
-        tGallery = new TableHelper(dbHelper, "GALLERY");
+        tGallery = env.table("GALLERY");
         tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
 
-        tExhibit = new TableHelper(dbHelper, "EXHIBIT");
+        tExhibit = env.table("EXHIBIT");
         tExhibit.setColumns("EXHIBIT_ID", "GALLERY_ID", "CLOSING_DATE", "OPENING_DATE");
 
-        tArtistExhibit = new TableHelper(dbHelper, "ARTIST_EXHIBIT");
+        tArtistExhibit = env.table("ARTIST_EXHIBIT");
         tArtistExhibit.setColumns("ARTIST_ID", "EXHIBIT_ID");
     }
 

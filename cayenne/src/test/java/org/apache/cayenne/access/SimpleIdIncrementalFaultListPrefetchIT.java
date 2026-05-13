@@ -27,7 +27,6 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.PrefetchTreeNode;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -49,7 +48,6 @@ public class SimpleIdIncrementalFaultListPrefetchIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     protected ObjectContext context;
-    protected DBHelper dbHelper;
     protected DataChannelInterceptor queryInterceptor;
 
     protected TableHelper tArtist;
@@ -58,12 +56,11 @@ public class SimpleIdIncrementalFaultListPrefetchIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        dbHelper = env.dbHelper();
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
-        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
-        tPaining = new TableHelper(dbHelper, "PAINTING");
+        tPaining = env.table("PAINTING");
         tPaining.setColumns(
                 "PAINTING_ID",
                 "PAINTING_TITLE",

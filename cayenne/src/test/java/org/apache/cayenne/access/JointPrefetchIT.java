@@ -31,7 +31,6 @@ import org.apache.cayenne.query.SQLSelect;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
@@ -63,7 +62,6 @@ public class JointPrefetchIT {
     protected DataContext context;
     protected CayenneRuntime runtime;
     protected DataChannelInterceptor queryInterceptor;
-    protected DBHelper dbHelper;
 
     protected TableHelper tArtist;
     protected TableHelper tGallery;
@@ -75,14 +73,13 @@ public class JointPrefetchIT {
         context = env.dataContext();
         runtime = env.runtime();
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
-        dbHelper = env.dbHelper();
-        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
-        tGallery = new TableHelper(dbHelper, "GALLERY");
+        tGallery = env.table("GALLERY");
         tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
 
-        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting = env.table("PAINTING");
         tPainting.setColumns(
                 "PAINTING_ID",
                 "PAINTING_TITLE",

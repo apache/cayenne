@@ -30,7 +30,6 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -57,7 +56,6 @@ public class EJBQLQueryIT {
     private DataContext context;
     private CayenneRuntime runtime;
     protected DataChannelInterceptor queryInterceptor;
-    private DBHelper dbHelper;
 
     private TableHelper tArtist;
     private TableHelper tPainting;
@@ -67,11 +65,10 @@ public class EJBQLQueryIT {
         context = env.dataContext();
         runtime = env.runtime();
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
-        dbHelper = env.dbHelper();
-        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
-        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting = env.table("PAINTING");
         tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE");
     }
 

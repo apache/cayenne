@@ -34,7 +34,6 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Exhibit;
@@ -68,7 +67,6 @@ public class DataContextIT {
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
 	protected DataContext context;
-	protected DBHelper dbHelper;
 	protected UnitDbAdapter accessStackAdapter;
 	protected DataChannelInterceptor queryInterceptor;
 	protected RuntimeCaseDataSourceFactory dataSourceFactory;
@@ -81,20 +79,19 @@ public class DataContextIT {
 	@BeforeEach
 	public void setUp() throws Exception {
 		context = env.dataContext();
-		dbHelper = env.dbHelper();
 		accessStackAdapter = env.getInstance(UnitDbAdapter.class);
 		queryInterceptor = env.getInstance(DataChannelInterceptor.class);
 		dataSourceFactory = env.getInstance(RuntimeCaseDataSourceFactory.class);
-		tArtist = new TableHelper(dbHelper, "ARTIST");
+		tArtist = env.table("ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
-		tExhibit = new TableHelper(dbHelper, "EXHIBIT");
+		tExhibit = env.table("EXHIBIT");
 		tExhibit.setColumns("EXHIBIT_ID", "GALLERY_ID", "OPENING_DATE", "CLOSING_DATE");
 
-		tGallery = new TableHelper(dbHelper, "GALLERY");
+		tGallery = env.table("GALLERY");
 		tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
 
-		tPainting = new TableHelper(dbHelper, "PAINTING");
+		tPainting = env.table("PAINTING");
 		tPainting.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "ESTIMATED_PRICE");
 	}
 

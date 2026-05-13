@@ -23,7 +23,6 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
@@ -51,7 +50,6 @@ public class CDOOne2ManyIT {
 
     private CayenneRuntime runtime;
     private ObjectContext context;
-    private DBHelper dbHelper;
 
     protected TableHelper tArtist;
     protected TableHelper tPainting;
@@ -60,11 +58,10 @@ public class CDOOne2ManyIT {
     public void setUp() throws Exception {
         runtime = env.runtime();
         context = env.context();
-        dbHelper = env.dbHelper();
-        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
-        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting = env.table("PAINTING");
         tPainting.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "GALLERY_ID");
     }
 

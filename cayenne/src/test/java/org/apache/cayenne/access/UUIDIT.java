@@ -25,7 +25,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.uuid.UuidPkEntity;
 import org.apache.cayenne.testdo.uuid.UuidTestEntity;
@@ -44,15 +43,13 @@ public class UUIDIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.UUID_PROJECT);
 
     private ObjectContext context;
-    private DBHelper dbHelper;
 
     private TableHelper uuidPkEntity;
 
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        dbHelper = env.dbHelper();
-        uuidPkEntity = new TableHelper(dbHelper, "UUID_PK_ENTITY", "ID");
+        uuidPkEntity = env.table("UUID_PK_ENTITY", "ID");
     }
 
     @Test

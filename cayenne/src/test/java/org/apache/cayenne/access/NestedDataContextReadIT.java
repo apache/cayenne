@@ -27,7 +27,6 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -52,7 +51,6 @@ public class NestedDataContextReadIT {
     private CayenneRuntime runtime;
     private DataContext context;
     private DataChannelInterceptor queryInterceptor;
-    private DBHelper dbHelper;
 
     private TableHelper tArtist;
     private TableHelper tPainting;
@@ -62,11 +60,10 @@ public class NestedDataContextReadIT {
         runtime = env.runtime();
         context = env.dataContext();
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
-        dbHelper = env.dbHelper();
-        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
-        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting = env.table("PAINTING");
         tPainting.setColumns(
                 "PAINTING_ID",
                 "PAINTING_TITLE",

@@ -22,7 +22,6 @@ package org.apache.cayenne.reflect;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ValueHolder;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mixed_persistence_strategy.MixedPersistenceStrategy;
 import org.apache.cayenne.testdo.mixed_persistence_strategy.MixedPersistenceStrategy2;
@@ -44,7 +43,6 @@ public class MixedPersistenceStrategyIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.MIXED_PERSISTENCE_STRATEGY_PROJECT);
 
     protected ObjectContext context;
-    protected DBHelper dbHelper;
 
     protected TableHelper tMixedPersistenceStrategy;
     protected TableHelper tMixedPersistenceStrategy2;
@@ -52,15 +50,10 @@ public class MixedPersistenceStrategyIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        dbHelper = env.dbHelper();
-        tMixedPersistenceStrategy = new TableHelper(
-                dbHelper,
-                "MIXED_PERSISTENCE_STRATEGY");
+        tMixedPersistenceStrategy = env.table("MIXED_PERSISTENCE_STRATEGY");
         tMixedPersistenceStrategy.setColumns("ID", "DESCRIPTION", "NAME");
 
-        tMixedPersistenceStrategy2 = new TableHelper(
-                dbHelper,
-                "MIXED_PERSISTENCE_STRATEGY2");
+        tMixedPersistenceStrategy2 = env.table("MIXED_PERSISTENCE_STRATEGY2");
         tMixedPersistenceStrategy2.setColumns("ID", "MASTER_ID", "NAME");
     }
 

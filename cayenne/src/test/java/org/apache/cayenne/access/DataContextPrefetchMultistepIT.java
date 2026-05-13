@@ -27,7 +27,6 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
@@ -56,7 +55,6 @@ public class DataContextPrefetchMultistepIT  {
 
         protected CayenneRuntime runtime;
 
-        protected DBHelper dbHelper;
 
     protected TableHelper tArtist;
     protected TableHelper tExhibit;
@@ -68,17 +66,16 @@ public class DataContextPrefetchMultistepIT  {
     public void setUp() throws Exception {
         context = env.dataContext();
         runtime = env.runtime();
-        dbHelper = env.dbHelper();
-        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
-        tExhibit = new TableHelper(dbHelper, "EXHIBIT");
+        tExhibit = env.table("EXHIBIT");
         tExhibit.setColumns("EXHIBIT_ID", "GALLERY_ID", "OPENING_DATE", "CLOSING_DATE");
 
-        tArtistExhibit = new TableHelper(dbHelper, "ARTIST_EXHIBIT");
+        tArtistExhibit = env.table("ARTIST_EXHIBIT");
         tArtistExhibit.setColumns("ARTIST_ID", "EXHIBIT_ID");
 
-        tGallery = new TableHelper(dbHelper, "GALLERY");
+        tGallery = env.table("GALLERY");
         tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
     }
 

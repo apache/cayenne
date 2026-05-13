@@ -26,7 +26,6 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -50,7 +49,6 @@ public class ShallowMergeOperationIT {
     private CayenneRuntime runtime;
     private DataContext context;
     private DataChannelInterceptor queryInterceptor;
-    private DBHelper dbHelper;
 
     private TableHelper tArtist;
 
@@ -59,8 +57,7 @@ public class ShallowMergeOperationIT {
         runtime = env.runtime();
         context = env.dataContext();
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
-        dbHelper = env.dbHelper();
-        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
     }

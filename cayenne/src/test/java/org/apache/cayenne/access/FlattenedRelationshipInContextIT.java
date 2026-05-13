@@ -26,7 +26,6 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest3;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -45,7 +44,6 @@ public class FlattenedRelationshipInContextIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RELATIONSHIPS_FLATTENED_PROJECT);
 
     protected DataContext context;
-    protected DBHelper dbHelper;
 
     private TableHelper tFlattenedTest1;
     private TableHelper tFlattenedTest2;
@@ -55,14 +53,13 @@ public class FlattenedRelationshipInContextIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.dataContext();
-        dbHelper = env.dbHelper();
-        tFlattenedTest1 = new TableHelper(dbHelper, "FLATTENED_TEST_1");
+        tFlattenedTest1 = env.table("FLATTENED_TEST_1");
         tFlattenedTest1.setColumns("FT1_ID", "NAME");
 
-        tFlattenedTest2 = new TableHelper(dbHelper, "FLATTENED_TEST_2");
+        tFlattenedTest2 = env.table("FLATTENED_TEST_2");
         tFlattenedTest2.setColumns("FT2_ID", "FT1_ID", "NAME");
 
-        tFlattenedTest3 = new TableHelper(dbHelper, "FLATTENED_TEST_3");
+        tFlattenedTest3 = env.table("FLATTENED_TEST_3");
         tFlattenedTest3.setColumns("FT3_ID", "FT2_ID", "NAME");
     }
 

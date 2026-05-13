@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -46,7 +45,6 @@ public class DataContextEJBQLJoinsIT {
 
 	private ObjectContext context;
 
-	protected DBHelper dbHelper;
 
 	protected TableHelper tArtist;
 	protected TableHelper tPainting;
@@ -56,15 +54,14 @@ public class DataContextEJBQLJoinsIT {
 	@BeforeEach
 	public void setUp() throws Exception {
 		context = env.context();
-		dbHelper = env.dbHelper();
-		tArtist = new TableHelper(dbHelper, "ARTIST");
+		tArtist = env.table("ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
-		tPainting = new TableHelper(dbHelper, "PAINTING");
+		tPainting = env.table("PAINTING");
 		tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "GALLERY_ID", "PAINTING_TITLE", "ESTIMATED_PRICE")
 				.setColumnTypes(Types.INTEGER, Types.BIGINT, Types.INTEGER, Types.VARCHAR, Types.DECIMAL);
 
-		tGallery = new TableHelper(dbHelper, "GALLERY");
+		tGallery = env.table("GALLERY");
 		tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
 	}
 

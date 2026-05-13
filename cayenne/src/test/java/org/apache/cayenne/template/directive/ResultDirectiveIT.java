@@ -27,7 +27,6 @@ import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -48,13 +47,11 @@ public class ResultDirectiveIT {
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
 	private CayenneRuntime runtime;
-	protected DBHelper dbHelper;
 
 	@BeforeEach
 	public void before() throws SQLException {
 		runtime = env.runtime();
-		dbHelper = env.dbHelper();
-		new TableHelper(dbHelper, "ARTIST").setColumns("ARTIST_ID", "ARTIST_NAME").insert(1L, "ArtistToTestResult");
+		env.table("ARTIST").setColumns("ARTIST_ID", "ARTIST_NAME").insert(1L, "ArtistToTestResult");
 	}
 
 	@Test

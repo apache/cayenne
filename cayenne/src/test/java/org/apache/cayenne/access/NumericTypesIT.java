@@ -29,7 +29,6 @@ import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.numeric_types.BigDecimalEntity;
 import org.apache.cayenne.testdo.numeric_types.BigIntegerEntity;
@@ -61,7 +60,6 @@ public class NumericTypesIT {
     protected DataContext context;
     protected DataContext context1;
     protected CayenneRuntime runtime;
-    protected DBHelper dbHelper;
 
     private final CommitStats commitStats = new CommitStats(() -> runtime.getDataDomain());
 
@@ -73,13 +71,12 @@ public class NumericTypesIT {
         context = env.dataContext();
         context1 = (DataContext) env.runtime().newContext();
         runtime = env.runtime();
-        dbHelper = env.dbHelper();
         commitStats.before();
 
-        tSmallintTest = new TableHelper(dbHelper, "SMALLINT_TEST");
+        tSmallintTest = env.table("SMALLINT_TEST");
         tSmallintTest.setColumns("ID", "SMALLINT_COL");
 
-        tTinyintTest = new TableHelper(dbHelper, "TINYINT_TEST");
+        tTinyintTest = env.table("TINYINT_TEST");
         tTinyintTest.setColumns("ID", "TINYINT_COL");
     }
 

@@ -23,7 +23,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.no_pk.NoPkTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -46,14 +45,12 @@ public class DataContextNoPkIT  {
 
         protected ObjectContext context;
 
-        protected DBHelper dbHelper;
 
     
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        dbHelper = env.dbHelper();
-        TableHelper noPkTestTable = new TableHelper(dbHelper, "NO_PK_TEST", "ATTRIBUTE1");
+        TableHelper noPkTestTable = env.table("NO_PK_TEST", "ATTRIBUTE1");
         noPkTestTable.deleteAll();
 
         noPkTestTable.insert(1);

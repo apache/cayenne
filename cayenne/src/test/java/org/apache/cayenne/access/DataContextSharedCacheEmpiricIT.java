@@ -31,7 +31,6 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -55,7 +54,6 @@ public class DataContextSharedCacheEmpiricIT {
 
     private static final String NEW_NAME = "versionX";
     private CayenneRuntime runtime;
-    private DBHelper dbHelper;
 
     private DataContext c1;
     private DataContext c2;
@@ -66,7 +64,6 @@ public class DataContextSharedCacheEmpiricIT {
     @BeforeEach
     public void setUp() throws Exception {
         runtime = env.runtime();
-        dbHelper = env.dbHelper();
 
         eventManager = new DefaultEventManager();
         DataRowStore cache = new DataRowStore(
@@ -80,7 +77,7 @@ public class DataContextSharedCacheEmpiricIT {
                 new ObjectStore(cache, new HashMap<>()));
 
         // prepare a single artist record
-        TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
+        TableHelper tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
         tArtist.insert(1, "version1");
     }

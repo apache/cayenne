@@ -24,7 +24,6 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
@@ -56,7 +55,6 @@ public class DataContextObjectTrackingIT  {
 
         protected DataContext context;
 
-        protected DBHelper dbHelper;
 
         protected CayenneRuntime runtime;
 
@@ -68,12 +66,11 @@ public class DataContextObjectTrackingIT  {
     public void setUp() throws Exception {
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
         context = env.dataContext();
-        dbHelper = env.dbHelper();
         runtime = env.runtime();
-        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
-        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting = env.table("PAINTING");
         tPainting.setColumns(
                 "PAINTING_ID",
                 "ARTIST_ID",

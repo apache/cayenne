@@ -22,7 +22,6 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
@@ -41,7 +40,6 @@ public class DataContextEJBQLDeletePKIT {
 
     protected ObjectContext context;
 
-    protected DBHelper dbHelper;
 
     protected TableHelper tMeaningfulPKTest1Table;
 
@@ -49,8 +47,7 @@ public class DataContextEJBQLDeletePKIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        dbHelper = env.dbHelper();
-        tMeaningfulPKTest1Table = new TableHelper(dbHelper, "MEANINGFUL_PK_TEST1");
+        tMeaningfulPKTest1Table = env.table("MEANINGFUL_PK_TEST1");
         tMeaningfulPKTest1Table.setColumns("PK_ATTRIBUTE", "DESCR", "INT_ATTRIBUTE");
     }
 

@@ -19,7 +19,6 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.map_to_many.MapToMany;
 import org.apache.cayenne.testdo.relationships_set_to_many.SetToMany;
@@ -40,7 +39,6 @@ public class CayennePersistentObjectSetToManySetIT {
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RELATIONSHIPS_SET_TO_MANY_PROJECT);
 
 	protected ObjectContext context;
-	protected DBHelper dbHelper;
 
 	protected TableHelper tSetToMany;
 	protected TableHelper tSetToManyTarget;
@@ -48,11 +46,10 @@ public class CayennePersistentObjectSetToManySetIT {
 	@BeforeEach
 	public void setUp() throws Exception {
 		context = env.context();
-		dbHelper = env.dbHelper();
-		tSetToMany = new TableHelper(dbHelper, "SET_TO_MANY");
+		tSetToMany = env.table("SET_TO_MANY");
 		tSetToMany.setColumns("ID");
 
-		tSetToManyTarget = new TableHelper(dbHelper, "SET_TO_MANY_TARGET");
+		tSetToManyTarget = env.table("SET_TO_MANY_TARGET");
 		tSetToManyTarget.setColumns("ID", "SET_TO_MANY_ID");
 
 		createTestDataSet();

@@ -27,7 +27,6 @@ import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -50,7 +49,6 @@ public class CayenneJCacheModuleIT {
             .forProject(CayenneProjects.TESTMAP_PROJECT)
             .withExtraModules(EhCacheModule.class);
 
-    private DBHelper dbHelper;
     ObjectContext context;
     CayenneRuntime runtime;
 
@@ -58,10 +56,9 @@ public class CayenneJCacheModuleIT {
 
     @BeforeEach
     public void setUpTableHelper() throws Exception {
-        dbHelper = env.dbHelper();
         context = env.context();
         runtime = env.runtime();
-        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
         tArtist.deleteAll();
     }

@@ -26,7 +26,6 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.primitive.PrimitivesTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
@@ -49,7 +48,6 @@ public class ObjectSelect_PrimitiveColumnsIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.PRIMITIVE_PROJECT);
 
     private DataContext context;
-    private DBHelper dbHelper;
     private UnitDbAdapter unitDbAdapter;
 
     private TableHelper tPrimitives;
@@ -57,9 +55,8 @@ public class ObjectSelect_PrimitiveColumnsIT {
     @BeforeEach
     public void createTestRecords() throws Exception {
         context = env.dataContext();
-        dbHelper = env.dbHelper();
         unitDbAdapter = env.getInstance(UnitDbAdapter.class);
-        tPrimitives = new TableHelper(dbHelper, "PRIMITIVES_TEST");
+        tPrimitives = env.table("PRIMITIVES_TEST");
         tPrimitives.setColumns("ID", "BOOLEAN_COLUMN", "INT_COLUMN");
         for (int i = 1; i <= 20; i++) {
             tPrimitives.insert(i, (i % 2 == 0), i * 10);

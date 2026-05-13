@@ -57,12 +57,12 @@ public class Cay2641IT {
         context = env.context();
         adapter = env.getInstance(DbAdapter.class);
 
-        TableHelper th = new TableHelper(env.dbHelper(), "ArtistLazy")
+        TableHelper th = env.table("ArtistLazy")
                 .setColumns("ID", "NAME", "SURNAME")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.VARCHAR);
         th.insert(1, "artist1", "artist2");
 
-        th = new TableHelper(env.dbHelper(), "PaintingLazy")
+        th = env.table("PaintingLazy")
                 .setColumns("ID", "NAME", "ARTIST_ID")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
         th.insert(1, "painting1", 1);

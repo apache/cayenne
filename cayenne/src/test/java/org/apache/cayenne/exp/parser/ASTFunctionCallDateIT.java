@@ -26,7 +26,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.legacy_datetime.DateTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -48,13 +47,11 @@ public class ASTFunctionCallDateIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.LEGACY_DATE_TIME_PROJECT);
 
     private ObjectContext context;
-    private DBHelper dbHelper;
     private UnitDbAdapter unitDbAdapter;
 
     @BeforeEach
     public void createDataSet() throws Exception {
         context = env.context();
-        dbHelper = env.dbHelper();
         unitDbAdapter = env.getInstance(UnitDbAdapter.class);
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.MILLISECOND, 0);

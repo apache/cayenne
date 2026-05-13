@@ -128,7 +128,7 @@ public class Cay2666IT {
 
     @Test
     public void expressionWithDollarSign() throws Exception {
-        TableHelper tTest = new TableHelper(env.dbHelper(), "Cay2666");
+        TableHelper tTest = env.table("Cay2666");
         tTest.setColumns("ID", "NAME$");
         tTest.insert(1, "st.One");
 

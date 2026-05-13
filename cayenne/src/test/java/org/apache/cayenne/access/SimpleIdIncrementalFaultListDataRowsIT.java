@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -47,7 +46,6 @@ public class SimpleIdIncrementalFaultListDataRowsIT {
 
     private DataContext context;
     private DataContext context1;
-    private DBHelper dbHelper;
 
     private TableHelper tArtist;
     private SimpleIdIncrementalFaultList<?> list;
@@ -56,8 +54,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT {
     public void setUp() throws Exception {
         context = env.dataContext();
         context1 = (DataContext) env.runtime().newContext();
-        dbHelper = env.dbHelper();
-        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
         createArtistsDataSet();
 

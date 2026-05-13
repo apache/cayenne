@@ -22,7 +22,6 @@ package org.apache.cayenne;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.compound.CharPkTestEntity;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
@@ -47,7 +46,6 @@ public class CayenneCompoundIT {
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.COMPOUND_PROJECT);
 
 	private ObjectContext context;
-	protected DBHelper dbHelper;
 
 	private TableHelper tCompoundPKTest;
 	private TableHelper tCharPKTest;
@@ -56,14 +54,13 @@ public class CayenneCompoundIT {
 	@BeforeEach
 	public void setUp() throws Exception {
 		context = env.context();
-		dbHelper = env.dbHelper();
-		tCompoundPKTest = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
+		tCompoundPKTest = env.table("COMPOUND_PK_TEST");
 		tCompoundPKTest.setColumns("KEY1", "KEY2", "NAME");
 
-		tCharPKTest = new TableHelper(dbHelper, "CHAR_PK_TEST");
+		tCharPKTest = env.table("CHAR_PK_TEST");
 		tCharPKTest.setColumns("PK_COL", "OTHER_COL");
 
-		tCompoundIntPKTest = new TableHelper(dbHelper, "COMPOUND_INT_PK");
+		tCompoundIntPKTest = env.table("COMPOUND_INT_PK");
 		tCompoundIntPKTest.setColumns("id1", "id2", "name");
 	}
 

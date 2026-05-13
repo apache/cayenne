@@ -22,7 +22,6 @@ package org.apache.cayenne;
 import java.sql.Types;
 
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.lazy.Lazyblob;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -44,13 +43,11 @@ public class LazyAttributesIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.LAZY_ATTRIBUTES_PROJECT);
 
     private ObjectContext context;
-    private DBHelper dbHelper;
 
     @BeforeEach
     public void setup() throws Exception {
         context = env.context();
-        dbHelper = env.dbHelper();
-        TableHelper th = new TableHelper(dbHelper, "LAZYBLOB")
+        TableHelper th = env.table("LAZYBLOB")
                 .setColumns("ID", "NAME", "LAZY_DATA")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.VARBINARY);
         th.insert(1, "test", new byte[]{1, 2, 3, 4, 5});

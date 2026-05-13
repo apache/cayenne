@@ -22,7 +22,6 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -56,7 +55,6 @@ public class DataContextPerformQueryAPIIT  {
 
         private DataContext context2;
 
-        private DBHelper dbHelper;
 
         private UnitDbAdapter accessStackAdapter;
 
@@ -72,14 +70,13 @@ public class DataContextPerformQueryAPIIT  {
     public void setUp() throws Exception {
         context = env.dataContext();
         context2 = (DataContext) env.runtime().newContext();
-        dbHelper = env.dbHelper();
         accessStackAdapter = env.getInstance(UnitDbAdapter.class);
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
         jdbcEventLogger = env.getInstance(JdbcEventLogger.class);
-        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
-        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting = env.table("PAINTING");
         tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE", "ESTIMATED_PRICE").setColumnTypes(
                 Types.INTEGER, Types.BIGINT, Types.VARCHAR, Types.DECIMAL);
     }

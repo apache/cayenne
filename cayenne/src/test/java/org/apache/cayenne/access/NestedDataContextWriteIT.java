@@ -31,7 +31,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -55,7 +54,6 @@ public class NestedDataContextWriteIT {
     private CayenneRuntime runtime;
     private DataContext context;
     private DataChannelInterceptor queryInterceptor;
-    private DBHelper dbHelper;
 
     private TableHelper tArtist;
     private TableHelper tPainting;
@@ -65,11 +63,10 @@ public class NestedDataContextWriteIT {
         runtime = env.runtime();
         context = env.dataContext();
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
-        dbHelper = env.dbHelper();
-        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
-        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting = env.table("PAINTING");
         tPainting.setColumns(
                 "PAINTING_ID",
                 "PAINTING_TITLE",
@@ -80,7 +77,7 @@ public class NestedDataContextWriteIT {
                 Types.BIGINT,
                 Types.DECIMAL);
 
-        TableHelper tPaintingInfo = new TableHelper(dbHelper, "PAINTING_INFO");
+        TableHelper tPaintingInfo = env.table("PAINTING_INFO");
         tPaintingInfo.setColumns("PAINTING_ID", "TEXT_REVIEW", "IMAGE_BLOB");
     }
 

@@ -25,7 +25,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.enum_test.Enum1;
 import org.apache.cayenne.testdo.enum_test.EnumEntity;
@@ -47,10 +46,9 @@ public class EnumIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.ENUM_PROJECT);
 
     private ObjectContext context;
-    private DBHelper dbHelper;
 
     private void createDataSet() throws Exception {
-        TableHelper tEnumEntity = new TableHelper(dbHelper, "ENUM_ENTITY");
+        TableHelper tEnumEntity = env.table("ENUM_ENTITY");
         tEnumEntity.setColumns("ID", "ENUM_ATTRIBUTE");
 
         tEnumEntity.insert(1, "two");
@@ -60,7 +58,6 @@ public class EnumIT {
     @BeforeEach
     public void setUp() {
         context = env.context();
-        dbHelper = env.dbHelper();
     }
 
     @Test

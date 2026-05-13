@@ -39,7 +39,6 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryCacheStrategy;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -63,7 +62,6 @@ public class DataContextPrefetchIT  {
 
 		protected DataContext context;
 
-		protected DBHelper dbHelper;
 
 		protected DataChannelInterceptor queryInterceptor;
 
@@ -80,31 +78,30 @@ public class DataContextPrefetchIT  {
 	@BeforeEach
 	public void setUp() throws Exception {
         context = env.dataContext();
-        dbHelper = env.dbHelper();
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
-		tArtist = new TableHelper(dbHelper, "ARTIST");
+		tArtist = env.table("ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
-		tPainting = new TableHelper(dbHelper, "PAINTING");
+		tPainting = env.table("PAINTING");
 		tPainting.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "ESTIMATED_PRICE", "GALLERY_ID").setColumnTypes(
 				Types.INTEGER, Types.VARCHAR, Types.BIGINT, Types.DECIMAL, Types.INTEGER);
 
-		tPaintingInfo = new TableHelper(dbHelper, "PAINTING_INFO");
+		tPaintingInfo = env.table("PAINTING_INFO");
 		tPaintingInfo.setColumns("PAINTING_ID", "TEXT_REVIEW");
 
-		tExhibit = new TableHelper(dbHelper, "EXHIBIT");
+		tExhibit = env.table("EXHIBIT");
 		tExhibit.setColumns("EXHIBIT_ID", "GALLERY_ID", "OPENING_DATE", "CLOSING_DATE");
 
-		tArtistExhibit = new TableHelper(dbHelper, "ARTIST_EXHIBIT");
+		tArtistExhibit = env.table("ARTIST_EXHIBIT");
 		tArtistExhibit.setColumns("ARTIST_ID", "EXHIBIT_ID");
 
-		tGallery = new TableHelper(dbHelper, "GALLERY");
+		tGallery = env.table("GALLERY");
 		tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
 
-		tArtistGroup = new TableHelper(dbHelper, "ARTIST_GROUP");
+		tArtistGroup = env.table("ARTIST_GROUP");
 		tArtistGroup.setColumns("ARTIST_ID", "GROUP_ID");
 
-		tArtGroup = new TableHelper(dbHelper, "ARTGROUP");
+		tArtGroup = env.table("ARTGROUP");
 		tArtGroup.setColumns("GROUP_ID", "NAME");
 	}
 

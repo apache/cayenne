@@ -26,7 +26,6 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.compound.CompoundFkTestEntity;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
@@ -48,14 +47,12 @@ public class QualifierTranslatorIT {
 
     private CayenneRuntime runtime;
     private ObjectContext context;
-    protected DBHelper dbHelper;
 
     @BeforeEach
     public void setUp() throws Exception {
         runtime = env.runtime();
         context = env.context();
-        dbHelper = env.dbHelper();
-        TableHelper tCompoundPKTest = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
+        TableHelper tCompoundPKTest = env.table("COMPOUND_PK_TEST");
         tCompoundPKTest.setColumns("KEY1", "KEY2", "NAME");
         tCompoundPKTest.insert("PK1", "PK2", "BBB");
         tCompoundPKTest.insert("PK3", "PK4", "CCC");

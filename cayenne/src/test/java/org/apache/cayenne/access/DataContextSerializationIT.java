@@ -26,7 +26,6 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.log.JdbcEventLogger;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -55,7 +54,6 @@ public class DataContextSerializationIT {
 
     protected DataContext context;
     protected CayenneRuntime runtime;
-    protected DBHelper dbHelper;
     protected JdbcEventLogger logger;
 
     protected TableHelper tArtist;
@@ -65,11 +63,10 @@ public class DataContextSerializationIT {
     public void setUp() throws Exception {
         context = env.dataContext();
         runtime = env.runtime();
-        dbHelper = env.dbHelper();
         logger = env.getInstance(JdbcEventLogger.class);
         CayenneRuntime.bindThreadInjector(runtime.getInjector());
 
-        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
     }
 

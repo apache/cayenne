@@ -27,7 +27,6 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SortOrder;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -46,7 +45,6 @@ public class DataContextRefreshQueryIT  {
 
         protected DataContext context;
 
-        protected DBHelper dbHelper;
 
     protected TableHelper tArtist;
     protected TableHelper tPainting;
@@ -55,11 +53,10 @@ public class DataContextRefreshQueryIT  {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.dataContext();
-        dbHelper = env.dbHelper();
-        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
-        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting = env.table("PAINTING");
         tPainting.setColumns(
                 "PAINTING_ID",
                 "PAINTING_TITLE",

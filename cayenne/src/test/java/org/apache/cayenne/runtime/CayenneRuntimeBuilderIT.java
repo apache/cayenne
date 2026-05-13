@@ -32,7 +32,6 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.SQLSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
@@ -47,7 +46,6 @@ public class CayenneRuntimeBuilderIT {
 	@RegisterExtension
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-	private DBHelper dbHelper;
 	private CayenneRuntime runtime;
 	private DataSourceDescriptor dsi;
 
@@ -67,10 +65,9 @@ public class CayenneRuntimeBuilderIT {
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		dbHelper = env.dbHelper();
 		runtime = env.runtime();
 		dsi = env.getInstance(DataSourceDescriptor.class);
-		TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
+		TableHelper tArtist = env.table("ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 		tArtist.insert(33001, "AA1");
 		tArtist.insert(33002, "AA2");

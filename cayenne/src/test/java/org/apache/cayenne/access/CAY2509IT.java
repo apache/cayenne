@@ -47,9 +47,9 @@ public class CAY2509IT {
 
     @BeforeEach
     public void before() {
-        this.tArtist = new TableHelper(env.dbHelper(), "ARTIST").setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH")
+        this.tArtist = env.table("ARTIST").setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH")
                 .setColumnTypes(Types.BIGINT, Types.CHAR, Types.DATE);
-        this.tPainting = new TableHelper(env.dbHelper(), "PAINTING").setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE")
+        this.tPainting = env.table("PAINTING").setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE")
                 .setColumnTypes(Types.INTEGER, Types.BIGINT, Types.VARCHAR);
     }
 

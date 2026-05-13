@@ -20,7 +20,6 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -42,21 +41,19 @@ public class DataContextEJBQLArrayResultIT {
 
     protected ObjectContext context;
 
-    protected DBHelper dbHelper;
 
     
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        dbHelper = env.dbHelper();
-        TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
+        TableHelper tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
         tArtist.insert(33001, "AA1");
         tArtist.insert(33002, "AA2");
         tArtist.insert(33003, "BB1");
         tArtist.insert(33004, "BB2");
 
-        TableHelper tPainting = new TableHelper(dbHelper, "PAINTING");
+        TableHelper tPainting = env.table("PAINTING");
         tPainting.setColumns(
                 "PAINTING_ID",
                 "ARTIST_ID",

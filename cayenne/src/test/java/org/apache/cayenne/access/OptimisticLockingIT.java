@@ -26,7 +26,6 @@ import java.util.Map;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SortOrder;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.locking.RelLockingTestEntity;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
@@ -47,7 +46,6 @@ public class OptimisticLockingIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.LOCKING_PROJECT);
 
     protected DataContext context;
-    protected DBHelper dbHelper;
 
     protected TableHelper tSimpleLockingTest;
     protected TableHelper tRelLockingTest;
@@ -56,18 +54,17 @@ public class OptimisticLockingIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.dataContext();
-        dbHelper = env.dbHelper();
-        tSimpleLockingTest = new TableHelper(dbHelper, "SIMPLE_LOCKING_TEST");
+        tSimpleLockingTest = env.table("SIMPLE_LOCKING_TEST");
         tSimpleLockingTest.setColumns("LOCKING_TEST_ID", "NAME", "DESCRIPTION", "INT_COLUMN_NOTNULL")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.INTEGER);
 
-        tRelLockingTest = new TableHelper(dbHelper, "REL_LOCKING_TEST");
+        tRelLockingTest = env.table("REL_LOCKING_TEST");
         tRelLockingTest.setColumns(
                 "REL_LOCKING_TEST_ID",
                 "SIMPLE_LOCKING_TEST_ID",
                 "NAME");
 
-        tLockingHelper = new TableHelper(dbHelper, "LOCKING_HELPER");
+        tLockingHelper = env.table("LOCKING_HELPER");
         tLockingHelper.setColumns("LOCKING_HELPER_ID", "REL_LOCKING_TEST_ID", "NAME");
     }
 

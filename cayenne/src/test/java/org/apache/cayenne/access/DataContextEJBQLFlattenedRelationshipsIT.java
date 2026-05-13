@@ -22,7 +22,6 @@ import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest1;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -47,7 +46,6 @@ public class DataContextEJBQLFlattenedRelationshipsIT {
 
     protected ObjectContext context;
 
-    protected DBHelper dbHelper;
 
     protected TableHelper ft1Helper;
     protected TableHelper ft2Helper;
@@ -58,16 +56,15 @@ public class DataContextEJBQLFlattenedRelationshipsIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        dbHelper = env.dbHelper();
-        ft1Helper = new TableHelper(dbHelper, "FLATTENED_TEST_1", "FT1_ID", "NAME");
+        ft1Helper = env.table("FLATTENED_TEST_1", "FT1_ID", "NAME");
 
-        ft2Helper = new TableHelper(dbHelper, "FLATTENED_TEST_2");
+        ft2Helper = env.table("FLATTENED_TEST_2");
         ft2Helper.setColumns("FT2_ID", "FT1_ID", "NAME");
 
-        ft3Helper = new TableHelper(dbHelper, "FLATTENED_TEST_3");
+        ft3Helper = env.table("FLATTENED_TEST_3");
         ft3Helper.setColumns("FT3_ID", "FT2_ID", "NAME");
 
-        ft4Helper = new TableHelper(dbHelper, "FLATTENED_TEST_4");
+        ft4Helper = env.table("FLATTENED_TEST_4");
         ft4Helper.setColumns("FT4_ID", "FT3_ID", "NAME");
     }
 

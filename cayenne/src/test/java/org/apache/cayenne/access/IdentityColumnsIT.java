@@ -29,7 +29,6 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.generated.GeneratedColumnCompKey;
 import org.apache.cayenne.testdo.generated.GeneratedColumnCompMaster;
@@ -56,7 +55,6 @@ public class IdentityColumnsIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.GENERATED_PROJECT);
 
     protected ObjectContext context;
-    protected DBHelper dbHelper;
     protected DbAdapter adapter;
     protected DataNode node;
 
@@ -66,10 +64,9 @@ public class IdentityColumnsIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        dbHelper = env.dbHelper();
         adapter = env.getInstance(DbAdapter.class);
         node = env.getInstance(DataNode.class);
-        joinTable = new TableHelper(dbHelper, "GENERATED_JOIN");
+        joinTable = env.table("GENERATED_JOIN");
     }
 
     /**

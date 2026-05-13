@@ -23,7 +23,6 @@ import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -46,7 +45,6 @@ public class DataContextEJBQLUpdateCompoundIT {
 
     private ObjectContext context;
 
-    private DBHelper dbHelper;
 
     private TableHelper tCompoundPk;
     private TableHelper tCompoundFk;
@@ -55,11 +53,10 @@ public class DataContextEJBQLUpdateCompoundIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        dbHelper = env.dbHelper();
-        tCompoundPk = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
+        tCompoundPk = env.table("COMPOUND_PK_TEST");
         tCompoundPk.setColumns("KEY1", "KEY2");
 
-        tCompoundFk = new TableHelper(dbHelper, "COMPOUND_FK_TEST");
+        tCompoundFk = env.table("COMPOUND_FK_TEST");
         tCompoundFk.setColumns("PKEY", "F_KEY1", "F_KEY2");
     }
 

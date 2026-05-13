@@ -38,7 +38,6 @@ import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
@@ -67,7 +66,6 @@ public class ColumnSelectIT {
 
     private DataContext context;
     private CayenneRuntime runtime;
-    private DBHelper dbHelper;
     private UnitDbAdapter unitDbAdapter;
 
     // Format: d/m/YY
@@ -79,9 +77,8 @@ public class ColumnSelectIT {
     public void createArtistsDataSet() throws Exception {
         context = env.dataContext();
         runtime = env.runtime();
-        dbHelper = env.dbHelper();
         unitDbAdapter = env.getInstance(UnitDbAdapter.class);
-        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
         tArtist.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.DATE);
 
@@ -93,11 +90,11 @@ public class ColumnSelectIT {
             tArtist.insert(i, "artist" + i, dates[i % 5]);
         }
 
-        TableHelper tGallery = new TableHelper(dbHelper, "GALLERY");
+        TableHelper tGallery = env.table("GALLERY");
         tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
         tGallery.insert(1, "tate modern");
 
-        tPaintings = new TableHelper(dbHelper, "PAINTING");
+        tPaintings = env.table("PAINTING");
         tPaintings.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "GALLERY_ID", "ESTIMATED_PRICE");
         for (int i = 1; i <= 20; i++) {
             tPaintings.insert(i, "painting" + i, i % 5 + 1, 1, 22 - i);
@@ -1053,7 +1050,7 @@ public class ColumnSelectIT {
 
     @Test
     public void byteArraySelect() throws SQLException {
-        new TableHelper(dbHelper, "PAINTING_INFO")
+        env.table("PAINTING_INFO")
                 .setColumns("IMAGE_BLOB", "PAINTING_ID")
                 .setColumnTypes(Types.LONGVARBINARY, Types.INTEGER)
                 .insert(new byte[]{(byte)1, (byte)2, (byte)3, (byte)4, (byte)5}, 1)

@@ -22,7 +22,6 @@ package org.apache.cayenne;
 import org.apache.cayenne.access.ToManyList;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -52,7 +51,6 @@ public class CayennePersistentObjectRelationshipsIT {
 
     private ObjectContext context;
     private CayenneRuntime runtime;
-    private DBHelper dbHelper;
 
     private TableHelper tArtist;
     private TableHelper tPaintingInfo;
@@ -62,17 +60,16 @@ public class CayennePersistentObjectRelationshipsIT {
     public void setUp() throws Exception {
         context = env.context();
         runtime = env.runtime();
-        dbHelper = env.dbHelper();
-        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
-        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting = env.table("PAINTING");
         tPainting.setColumns(
                 "PAINTING_ID",
                 "PAINTING_TITLE",
                 "ARTIST_ID");
 
-        tPaintingInfo = new TableHelper(dbHelper, "PAINTING_INFO");
+        tPaintingInfo = env.table("PAINTING_INFO");
         tPaintingInfo.setColumns("PAINTING_ID", "TEXT_REVIEW");
     }
 

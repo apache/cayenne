@@ -21,7 +21,6 @@ package org.apache.cayenne.query;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.lob.ClobTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
@@ -41,18 +40,16 @@ public class SelectQueryClobIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.LOB_PROJECT);
 
     private ObjectContext context;
-    private DBHelper dbHelper;
     private UnitDbAdapter accessStackAdapter;
 
     @BeforeEach
     public void setUp() {
         context = env.context();
-        dbHelper = env.dbHelper();
         accessStackAdapter = env.getInstance(UnitDbAdapter.class);
     }
 
     private void createClobDataSet() throws Exception {
-        TableHelper tClobTest = new TableHelper(dbHelper, "CLOB_TEST");
+        TableHelper tClobTest = env.table("CLOB_TEST");
         tClobTest.setColumns("CLOB_TEST_ID", "CLOB_COL");
 
         tClobTest.deleteAll();

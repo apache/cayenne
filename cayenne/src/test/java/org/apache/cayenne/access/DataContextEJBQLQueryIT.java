@@ -24,7 +24,6 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -53,7 +52,6 @@ public class DataContextEJBQLQueryIT {
 
     private ObjectContext context;
 
-    private DBHelper dbHelper;
 
     private UnitDbAdapter accessStackAdapter;
 
@@ -64,12 +62,11 @@ public class DataContextEJBQLQueryIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        dbHelper = env.dbHelper();
         accessStackAdapter = env.getInstance(UnitDbAdapter.class);
-        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
-        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting = env.table("PAINTING");
         tPainting.setColumns(
                 "PAINTING_ID",
                 "ARTIST_ID",

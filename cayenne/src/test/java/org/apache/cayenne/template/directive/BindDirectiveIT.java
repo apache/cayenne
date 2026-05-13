@@ -41,7 +41,6 @@ import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -67,7 +66,6 @@ public class BindDirectiveIT {
 	private ObjectContext context;
 	private JdbcEventLogger logger;
 	private DataNode node;
-	private DBHelper dbHelper;
 
 	@BeforeEach
 	public void setUp() {
@@ -75,7 +73,6 @@ public class BindDirectiveIT {
 		context = env.context();
 		logger = env.getInstance(JdbcEventLogger.class);
 		node = env.getInstance(DataNode.class);
-		dbHelper = env.dbHelper();
 	}
 
 	@Test
@@ -135,7 +132,7 @@ public class BindDirectiveIT {
 	@Test
 	public void bind_Collection() throws Exception {
 
-		TableHelper tArtist = new TableHelper(dbHelper, "ARTIST").setColumns("ARTIST_ID", "ARTIST_NAME");
+		TableHelper tArtist = env.table("ARTIST").setColumns("ARTIST_ID", "ARTIST_NAME");
 
 		// insert 3 artists
 		for (int i = 1; i < 4; i++) {

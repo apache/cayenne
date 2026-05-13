@@ -29,7 +29,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.PrefetchTreeNode;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
@@ -60,7 +59,6 @@ public class DefaultSelectTranslatorIT {
 
 	private DataContext context;
 	private UnitDbAdapter unitAdapter;
-	private DBHelper dbHelper;
 	private JdbcEventLogger logger;
 	private DataNode dataNode;
 
@@ -69,7 +67,6 @@ public class DefaultSelectTranslatorIT {
 	public void setUp() {
 		context = env.dataContext();
 		unitAdapter = env.getInstance(UnitDbAdapter.class);
-		dbHelper = env.dbHelper();
 		logger = env.getInstance(JdbcEventLogger.class);
 		dataNode = env.getInstance(DataNode.class);
 	}

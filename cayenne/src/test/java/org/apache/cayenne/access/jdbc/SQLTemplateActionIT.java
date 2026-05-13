@@ -41,7 +41,6 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SortOrder;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.UnitDbAdapter;
@@ -64,7 +63,6 @@ public class SQLTemplateActionIT {
 	protected JdbcAdapter adapter;
 	protected UnitDbAdapter unitDbAdapter;
 	protected ObjectContext objectContext;
-	protected DBHelper dbHelper;
 	protected SQLTemplateCustomizer sqlTemplateCustomizer;
 
 	protected TableHelper tArtist;
@@ -76,9 +74,8 @@ public class SQLTemplateActionIT {
 		adapter = env.getInstance(JdbcAdapter.class);
 		unitDbAdapter = env.getInstance(UnitDbAdapter.class);
 		objectContext = env.context();
-		dbHelper = env.dbHelper();
 		sqlTemplateCustomizer = env.getInstance(SQLTemplateCustomizer.class);
-		tArtist = new TableHelper(dbHelper, "ARTIST");
+		tArtist = env.table("ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 	}
 

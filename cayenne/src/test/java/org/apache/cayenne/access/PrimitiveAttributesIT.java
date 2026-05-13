@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 import java.util.List;
 
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.primitive.PrimitivesTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
@@ -41,13 +40,11 @@ public class PrimitiveAttributesIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.PRIMITIVE_PROJECT);
 
     private DataContext context;
-    private DBHelper dbHelper;
     private UnitDbAdapter unitDbAdapter;
 
     @BeforeEach
     public void setUp() {
         context = env.dataContext();
-        dbHelper = env.dbHelper();
         unitDbAdapter = env.getInstance(UnitDbAdapter.class);
     }
 
@@ -63,7 +60,7 @@ public class PrimitiveAttributesIT {
 
     @Test
     public void selectTest() throws Exception {
-        TableHelper tPrimitives = new TableHelper(dbHelper, "PRIMITIVES_TEST");
+        TableHelper tPrimitives = env.table("PRIMITIVES_TEST");
         tPrimitives.setColumns("ID", "BOOLEAN_COLUMN", "INT_COLUMN", "CHAR_COLUMN");
         tPrimitives.insert(1, true, -100, String.valueOf('a'))
                 .insert(2, false, 0, String.valueOf('~'))

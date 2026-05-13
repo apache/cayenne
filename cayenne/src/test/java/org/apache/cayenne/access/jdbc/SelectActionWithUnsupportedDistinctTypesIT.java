@@ -21,7 +21,6 @@ package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.unsupported_distinct_types.Customer;
 import org.apache.cayenne.testdo.unsupported_distinct_types.Product;
@@ -46,7 +45,6 @@ public class SelectActionWithUnsupportedDistinctTypesIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.UNSUPPORTED_DISTINCT_TYPES_PROJECT);
 
     protected DataContext context;
-    protected DBHelper dbHelper;
 
     private TableHelper tProduct;
     private TableHelper tComposition;
@@ -56,17 +54,16 @@ public class SelectActionWithUnsupportedDistinctTypesIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.dataContext();
-        dbHelper = env.dbHelper();
-        tProduct = new TableHelper(dbHelper, "PRODUCT");
+        tProduct = env.table("PRODUCT");
         tProduct.setColumns("ID", "LONGVARCHAR_COL");
 
-        tCustomer = new TableHelper(dbHelper, "CUSTOMER");
+        tCustomer = env.table("CUSTOMER");
         tCustomer.setColumns("ID", "LONGVARCHAR_COL");
 
-        tComposition = new TableHelper(dbHelper, "COMPOSITION");
+        tComposition = env.table("COMPOSITION");
         tComposition.setColumns("BASE_ID", "CONTAINED_ID");
 
-        tOrders = new TableHelper(dbHelper, "ORDERS");
+        tOrders = env.table("ORDERS");
         tOrders.setColumns("CUSTOMER_ID", "PRODUCT_ID");
     }
 

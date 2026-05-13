@@ -20,7 +20,6 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.numeric_types.BigIntegerEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -38,16 +37,14 @@ public class EJBQLQueryNumericIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.NUMERIC_TYPES_PROJECT);
 
-    protected DBHelper dbHelper;
     private ObjectContext context;
 
     private TableHelper tBigIntegerEntity;
 
     @BeforeEach
     public void setUp() throws Exception {
-        dbHelper = env.dbHelper();
         context = env.context();
-        tBigIntegerEntity = new TableHelper(dbHelper, "BIGINTEGER_ENTITY");
+        tBigIntegerEntity = env.table("BIGINTEGER_ENTITY");
         tBigIntegerEntity.setColumns("ID", "BIG_INTEGER_FIELD");
     }
 

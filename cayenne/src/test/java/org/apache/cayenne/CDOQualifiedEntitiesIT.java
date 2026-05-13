@@ -22,7 +22,6 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.qualified.Qualified1;
 import org.apache.cayenne.testdo.qualified.Qualified2;
@@ -48,7 +47,6 @@ public class CDOQualifiedEntitiesIT {
 
     private ObjectContext context;
     private UnitDbAdapter accessStackAdapter;
-    private DBHelper dbHelper;
 
     private TableHelper tQualified1;
     private TableHelper tQualified2;
@@ -59,22 +57,21 @@ public class CDOQualifiedEntitiesIT {
     public void setUp() throws Exception {
         context = env.context();
         accessStackAdapter = env.getInstance(UnitDbAdapter.class);
-        dbHelper = env.dbHelper();
         int bool = accessStackAdapter.supportsBoolean() ? Types.BOOLEAN : Types.INTEGER;
 
-        tQualified1 = new TableHelper(dbHelper, "TEST_QUALIFIED1")
+        tQualified1 = env.table("TEST_QUALIFIED1")
                 .setColumns("ID", "NAME", "DELETED")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, bool);
 
-        tQualified2 = new TableHelper(dbHelper, "TEST_QUALIFIED2")
+        tQualified2 = env.table("TEST_QUALIFIED2")
                 .setColumns("ID", "NAME", "DELETED", "QUALIFIED1_ID")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, bool, Types.INTEGER);
 
-        tQualified3 = new TableHelper(dbHelper, "TEST_QUALIFIED3")
+        tQualified3 = env.table("TEST_QUALIFIED3")
                 .setColumns("ID", "NAME", "DELETED")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, bool);
 
-        tQualified4 = new TableHelper(dbHelper, "TEST_QUALIFIED4")
+        tQualified4 = env.table("TEST_QUALIFIED4")
                 .setColumns("ID", "NAME", "DELETED", "QUALIFIED3_ID")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, bool, Types.INTEGER);
     }

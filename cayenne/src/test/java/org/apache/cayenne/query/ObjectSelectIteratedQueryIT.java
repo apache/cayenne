@@ -23,7 +23,6 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -46,7 +45,6 @@ public class ObjectSelectIteratedQueryIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private DataContext context;
-    private DBHelper dbHelper;
 
     private TableHelper tPainting;
     private TableHelper tArtist;
@@ -55,12 +53,11 @@ public class ObjectSelectIteratedQueryIT {
     @BeforeEach
     public void before() throws Exception {
         context = env.dataContext();
-        dbHelper = env.dbHelper();
-        tPainting = new TableHelper(dbHelper, "PAINTING")
+        tPainting = env.table("PAINTING")
                 .setColumns("PAINTING_ID", "PAINTING_TITLE", "ESTIMATED_PRICE", "ARTIST_ID")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.DECIMAL, Types.INTEGER);
 
-        tArtist = new TableHelper(dbHelper, "ARTIST")
+        tArtist = env.table("ARTIST")
                 .setColumns("ARTIST_ID", "ARTIST_NAME");
 
         createArtistDataSet();

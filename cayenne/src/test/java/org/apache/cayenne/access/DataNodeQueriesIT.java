@@ -23,7 +23,6 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
@@ -47,7 +46,6 @@ public class DataNodeQueriesIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     protected DataNode node;
-    protected DBHelper dbHelper;
     protected SQLTemplateCustomizer sqlTemplateCustomizer;
 
     protected TableHelper tArtist;
@@ -56,9 +54,8 @@ public class DataNodeQueriesIT {
     @BeforeEach
     public void setUp() throws Exception {
         node = env.getInstance(DataNode.class);
-        dbHelper = env.dbHelper();
         sqlTemplateCustomizer = env.getInstance(SQLTemplateCustomizer.class);
-        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist = env.table("ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
     }
 

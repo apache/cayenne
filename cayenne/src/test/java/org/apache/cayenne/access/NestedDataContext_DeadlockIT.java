@@ -24,7 +24,6 @@ import java.util.Random;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -43,7 +42,6 @@ public class NestedDataContext_DeadlockIT {
 
 	private DataContext parent;
 	private CayenneRuntime runtime;
-	protected DBHelper dbHelper;
 
 	protected TableHelper tArtist;
 
@@ -51,8 +49,7 @@ public class NestedDataContext_DeadlockIT {
 	public void setUp() throws Exception {
 		parent = env.dataContext();
 		runtime = env.runtime();
-		dbHelper = env.dbHelper();
-		tArtist = new TableHelper(dbHelper, "ARTIST");
+		tArtist = env.table("ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 	}
 

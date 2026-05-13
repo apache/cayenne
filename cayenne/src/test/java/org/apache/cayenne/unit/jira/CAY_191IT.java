@@ -21,7 +21,6 @@ package org.apache.cayenne.unit.jira;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships.FkOfDifferentType;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -39,7 +38,6 @@ public class CAY_191IT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RELATIONSHIPS_PROJECT);
 
     protected DataContext context;
-    protected DBHelper dbHelper;
 
     protected TableHelper tRelationshipHelper;
     protected TableHelper tFkOfDifferentType;
@@ -47,11 +45,10 @@ public class CAY_191IT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.dataContext();
-        dbHelper = env.dbHelper();
-        tRelationshipHelper = new TableHelper(dbHelper, "RELATIONSHIP_HELPER");
+        tRelationshipHelper = env.table("RELATIONSHIP_HELPER");
         tRelationshipHelper.setColumns("NAME", "RELATIONSHIP_HELPER_ID");
         
-        tFkOfDifferentType = new TableHelper(dbHelper, "FK_OF_DIFFERENT_TYPE");
+        tFkOfDifferentType = env.table("FK_OF_DIFFERENT_TYPE");
         tFkOfDifferentType.setColumns("ID", "RELATIONSHIP_HELPER_FK");
     }
     
