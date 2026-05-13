@@ -22,29 +22,33 @@ package org.apache.cayenne.util;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DeepMergeOperationIT extends RuntimeCase {
+public class DeepMergeOperationIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private DataChannelInterceptor queryInterceptor;
-
-    @Inject
     private DataContext context;
-
-    @Inject
     private DataContext context1;
+
+    @BeforeEach
+    public void setUp() {
+        queryInterceptor = env.getInstance(DataChannelInterceptor.class);
+        context = env.dataContext();
+        context1 = (DataContext) env.runtime().newContext();
+    }
 
     @Test
     public void deepMergeNonExistent() {

@@ -21,8 +21,6 @@ package org.apache.cayenne.access.dbsync;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -32,7 +30,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.SUS_PROJECT)
 public class ThrowOnPartialOrCreateSchemaStrategyIT extends SchemaUpdateStrategyBase {
 
     @Test

@@ -22,7 +22,6 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ProcedureResult;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -30,9 +29,10 @@ import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.ExternalTransaction;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.math.BigDecimal;
 import java.sql.Types;
@@ -41,22 +41,26 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class ProcedureCallIT extends RuntimeCase {
+public class ProcedureCallIT {
+
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     public static final String UPDATE_STORED_PROCEDURE = "cayenne_tst_upd_proc";
     public static final String UPDATE_STORED_PROCEDURE_NOPARAM = "cayenne_tst_upd_proc2";
     public static final String SELECT_STORED_PROCEDURE = "cayenne_tst_select_proc";
     public static final String OUT_STORED_PROCEDURE = "cayenne_tst_out_proc";
 
-    @Inject
     private DataContext context;
-
-    @Inject
     private UnitDbAdapter accessStackAdapter;
-
-    @Inject
     private JdbcEventLogger jdbcEventLogger;
+
+    @BeforeEach
+    public void setUp() {
+        context = env.dataContext();
+        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
+        jdbcEventLogger = env.getInstance(JdbcEventLogger.class);
+    }
 
     @Test
     public void update() throws Exception {

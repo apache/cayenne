@@ -21,16 +21,14 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.cay_2032.Team;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -38,32 +36,28 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 /**
  * @since 4.0
  */
-@UseCayenneRuntime(CayenneProjects.CAY_2032)
-public class Cay2032IT extends RuntimeCase {
+public class Cay2032IT {
 
-    @Inject
-    private DataContext context;
-
-    @Inject
-    private DBHelper dbHelper;
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.CAY_2032);
 
     @BeforeEach
     public void createTestData() throws Exception {
         // USERS table has field `name` BLOB to trigger suppressDistinct in translator
-        TableHelper tUser = new TableHelper(dbHelper, "USERS");
+        TableHelper tUser = new TableHelper(env.dbHelper(), "USERS");
         tUser.setColumns("user_id");
         tUser.insert(1);
         tUser.insert(2);
         tUser.insert(3);
 
-        TableHelper tTeam = new TableHelper(dbHelper, "TEAM");
+        TableHelper tTeam = new TableHelper(env.dbHelper(), "TEAM");
         tTeam.setColumns("team_id");
         tTeam.insert(1);
         tTeam.insert(2);
         tTeam.insert(3);
         tTeam.insert(4);
 
-        TableHelper tTeamHasUser = new TableHelper(dbHelper, "USER_HAS_TEAM");
+        TableHelper tTeamHasUser = new TableHelper(env.dbHelper(), "USER_HAS_TEAM");
         tTeamHasUser.setColumns("team_id", "user_id");
         tTeamHasUser.insert(1, 2);
         tTeamHasUser.insert(2, 1);
@@ -87,7 +81,7 @@ public class Cay2032IT extends RuntimeCase {
         List<Team> result = ObjectSelect.query(Team.class)
                 .prefetch(Team.TEAM_USERS.disjoint())
                 .orderBy(Team.TEAM_ID_PK_PROPERTY.asc())
-                .select(context);
+                .select(env.dataContext());
 
         checkResult(result);
     }
@@ -97,7 +91,7 @@ public class Cay2032IT extends RuntimeCase {
         List<Team> result = ObjectSelect.query(Team.class)
                 .prefetch(Team.TEAM_USERS.disjointById())
                 .orderBy(Team.TEAM_ID_PK_PROPERTY.asc())
-                .select(context);
+                .select(env.dataContext());
 
         checkResult(result);
     }
@@ -107,7 +101,7 @@ public class Cay2032IT extends RuntimeCase {
         List<Team> result = ObjectSelect.query(Team.class)
                 .prefetch(Team.TEAM_USERS.joint())
                 .orderBy(Team.TEAM_ID_PK_PROPERTY.asc())
-                .select(context);
+                .select(env.dataContext());
 
         checkResult(result);
     }

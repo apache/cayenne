@@ -23,14 +23,16 @@ import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.spi.DefaultScope;
-import org.apache.cayenne.unit.di.DICase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Shared DI injector for cgen tests. No DB schema or lifecycle; subclasses
+ * pull dependencies via {@link #getUnitTestInjector()}.
+ *
  * @since 4.2
  */
-public class CgenCase extends DICase {
+public class CgenCase {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(CgenCase.class);
 
@@ -41,7 +43,6 @@ public class CgenCase extends DICase {
         injector = DIBootstrap.createInjector(new CgenCaseModule(testScope), new CgenModule(), new ToolsModule(LOGGER));
     }
 
-    @Override
     protected Injector getUnitTestInjector() {
         return injector;
     }

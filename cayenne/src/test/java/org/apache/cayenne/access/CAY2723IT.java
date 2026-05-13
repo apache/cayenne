@@ -19,27 +19,26 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.dba.JdbcPkGenerator;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class CAY2723IT extends RuntimeCase {
-    @Inject
-    private DataContext context;
+public class CAY2723IT {
 
-    @Inject
-    private DataChannelInterceptor queryInterceptor;
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     @Test
     public void phantomToDepPKUpdate() {
+        DataContext context = env.dataContext();
+        DataChannelInterceptor queryInterceptor = env.getInstance(DataChannelInterceptor.class);
+
         // try to trigger PK generator. so it wouldn't random fail the actual test
         for (int i = 0; i < JdbcPkGenerator.DEFAULT_PK_CACHE_SIZE; i++) {
             int queryCounter = queryInterceptor.runWithQueryCounter(() -> {

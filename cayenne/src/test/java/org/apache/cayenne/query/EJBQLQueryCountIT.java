@@ -23,22 +23,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Collections;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class EJBQLQueryCountIT extends RuntimeCase {
+public class EJBQLQueryCountIT {
 
-	@Inject
+	@RegisterExtension
+	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
 	private ObjectContext context;
-
-	@Inject
 	protected DBHelper dbHelper;
 
 	protected TableHelper tArtist;
@@ -47,6 +45,8 @@ public class EJBQLQueryCountIT extends RuntimeCase {
 
 	@BeforeEach
 	public void before() throws Exception {
+		context = env.context();
+		dbHelper = env.dbHelper();
 		tArtist = new TableHelper(dbHelper, "ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 

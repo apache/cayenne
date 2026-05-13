@@ -28,26 +28,26 @@ import java.util.List;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.EmptyConfigurationNodeVisitor;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.inheritance_vertical.Iv2Sub1;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class ObjRelationshipIT extends RuntimeCase {
+public class ObjRelationshipIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private CayenneRuntime runtime;
 
     private DbEntity artistDBEntity;
@@ -58,6 +58,7 @@ public class ObjRelationshipIT extends RuntimeCase {
 
     @BeforeEach
     public void setUp() throws Exception {
+        runtime = env.runtime();
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
 
         artistDBEntity = resolver.getDbEntity("ARTIST");

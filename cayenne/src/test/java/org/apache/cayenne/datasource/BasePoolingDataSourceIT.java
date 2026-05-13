@@ -23,28 +23,28 @@ import java.sql.SQLException;
 
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class BasePoolingDataSourceIT extends RuntimeCase {
+public class BasePoolingDataSourceIT {
+
+	@RegisterExtension
+	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
 
 	protected static final long QUEUE_WAIT_TIME = 1000L;
-
-	@Inject
 	private DataSourceDescriptor dataSourceInfo;
-
-	@Inject
 	private AdhocObjectFactory objectFactory;
 
 	protected UnmanagedPoolingDataSource dataSource;
 
 	@BeforeEach
 	public void before() throws SQLException {
+		dataSourceInfo = env.getInstance(DataSourceDescriptor.class);
+		objectFactory = env.getInstance(AdhocObjectFactory.class);
 
 		Driver driver = objectFactory.newInstance(Driver.class, dataSourceInfo.getJdbcDriver());
 		DriverDataSource nonPooling = new DriverDataSource(driver, dataSourceInfo.getDataSourceUrl(),

@@ -26,25 +26,23 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships.ReflexiveAndToOne;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-@UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_PROJECT)
-public class AshwoodEntitySorter_RelationshipsIT extends RuntimeCase {
+public class AshwoodEntitySorter_RelationshipsIT {
 
-	@Inject
+	@RegisterExtension
+	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.RELATIONSHIPS_PROJECT);
+
 	protected DBHelper dbHelper;
-
-	@Inject
 	protected ObjectContext context;
 
 	private TableHelper tRelationshipHelper;
@@ -54,6 +52,8 @@ public class AshwoodEntitySorter_RelationshipsIT extends RuntimeCase {
 
 	@BeforeEach
 	public void setUp() throws Exception {
+		dbHelper = env.dbHelper();
+		context = env.context();
 		this.sorter = new AshwoodEntitySorter();
 		sorter.setEntityResolver(context.getEntityResolver());
 

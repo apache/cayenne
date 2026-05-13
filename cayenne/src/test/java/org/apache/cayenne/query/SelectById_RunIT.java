@@ -27,7 +27,6 @@ import java.util.Map;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -35,34 +34,34 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static java.util.Collections.singletonMap;
 import static org.junit.jupiter.api.Assertions.*;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class SelectById_RunIT extends RuntimeCase {
+public class SelectById_RunIT {
 
-	@Inject
+	@RegisterExtension
+	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
 	private DataChannelInterceptor interceptor;
-
-	@Inject
 	private DBHelper dbHelper;
+	private ObjectContext context;
 
 	private TableHelper tArtist;
 	private TableHelper tPainting;
 
-	@Inject
-	private ObjectContext context;
-
-	@Inject
 	private EntityResolver resolver;
 
 	@BeforeEach
 	public void setUp() throws Exception {
+		interceptor = env.getInstance(DataChannelInterceptor.class);
+		dbHelper = env.dbHelper();
+		context = env.context();
+		resolver = env.getInstance(EntityResolver.class);
 		tArtist = new TableHelper(dbHelper, "ARTIST").setColumns("ARTIST_ID", "ARTIST_NAME");
 		tPainting = new TableHelper(dbHelper, "PAINTING").setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE")
 				.setColumnTypes(Types.INTEGER, Types.BIGINT, Types.VARCHAR);

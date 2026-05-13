@@ -19,25 +19,31 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.testdo.annotation.ArtistAnnotation;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.2
  */
-@UseCayenneRuntime(CayenneProjects.ANNOTATION)
-public class AnnotationIT extends RuntimeCase {
+public class AnnotationIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.ANNOTATION);
+
     private ObjectContext objectContext;
+
+    @BeforeEach
+    public void setUp() {
+        objectContext = env.context();
+    }
 
     @Test
     public void availableCallback() {

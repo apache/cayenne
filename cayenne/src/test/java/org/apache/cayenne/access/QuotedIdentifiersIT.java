@@ -20,7 +20,6 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.EJBQLQuery;
@@ -32,8 +31,8 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.quotemap.QuoteAdress;
 import org.apache.cayenne.testdo.quotemap.Quote_Person;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -43,17 +42,18 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@UseCayenneRuntime(CayenneProjects.QUOTED_IDENTIFIERS_PROJECT)
-public class QuotedIdentifiersIT extends RuntimeCase {
+public class QuotedIdentifiersIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.QUOTED_IDENTIFIERS_PROJECT);
+
     private ObjectContext context;
-
-    @Inject
     protected DBHelper dbHelper;
 
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.context();
+        dbHelper = env.dbHelper();
         QuoteAdress quoteAdress = context.newObject(QuoteAdress.class);
         quoteAdress.setCity("city");
         quoteAdress.setGroup("324");

@@ -24,14 +24,19 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.unit.di.runtime.PeopleProjectCase;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.apache.cayenne.map.EntityResolver;
 
 public class EntityResolverInheritanceIT extends PeopleProjectCase {
 
-    @Inject
-    private EntityResolver resolver;
+        private EntityResolver resolver;
+
+    @BeforeEach
+    public void setUp() {
+        resolver = env.getInstance(EntityResolver.class);
+    }
 
     @Test
     public void getAbstractPersonTree() throws Exception {

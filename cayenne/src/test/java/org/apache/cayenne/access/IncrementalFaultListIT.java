@@ -18,25 +18,31 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.apache.cayenne.util.Util;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class IncrementalFaultListIT extends RuntimeCase {
+public class IncrementalFaultListIT {
 
-	@Inject
+	@RegisterExtension
+	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
 	protected DataContext context;
+
+	@BeforeEach
+	public void setUp() {
+		context = env.dataContext();
+	}
 
     @Test
 	public void serialization() throws Exception {

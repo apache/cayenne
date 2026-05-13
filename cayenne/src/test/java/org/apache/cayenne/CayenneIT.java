@@ -21,7 +21,6 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.SQLResult;
@@ -34,8 +33,8 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -50,13 +49,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class CayenneIT extends RuntimeCase {
+public class CayenneIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private ObjectContext context;
-
-    @Inject
     protected DBHelper dbHelper;
 
     protected TableHelper tArtist;
@@ -64,6 +62,8 @@ public class CayenneIT extends RuntimeCase {
 
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.context();
+        dbHelper = env.dbHelper();
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 

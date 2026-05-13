@@ -21,31 +21,35 @@ package org.apache.cayenne.query;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.lob.ClobTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@UseCayenneRuntime(CayenneProjects.LOB_PROJECT)
-public class SelectQueryClobIT extends RuntimeCase {
+public class SelectQueryClobIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.LOB_PROJECT);
+
     private ObjectContext context;
-
-    @Inject
     private DBHelper dbHelper;
-
-    @Inject
     private UnitDbAdapter accessStackAdapter;
+
+    @BeforeEach
+    public void setUp() {
+        context = env.context();
+        dbHelper = env.dbHelper();
+        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
+    }
 
     private void createClobDataSet() throws Exception {
         TableHelper tClobTest = new TableHelper(dbHelper, "CLOB_TEST");

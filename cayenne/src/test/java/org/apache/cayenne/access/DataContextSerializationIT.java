@@ -25,14 +25,13 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.apache.cayenne.util.Util;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,19 +48,14 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextSerializationIT extends RuntimeCase {
+public class DataContextSerializationIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     protected DataContext context;
-
-    @Inject
     protected CayenneRuntime runtime;
-
-    @Inject
     protected DBHelper dbHelper;
-
-    @Inject
     protected JdbcEventLogger logger;
 
     protected TableHelper tArtist;
@@ -69,6 +63,10 @@ public class DataContextSerializationIT extends RuntimeCase {
     
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.dataContext();
+        runtime = env.runtime();
+        dbHelper = env.dbHelper();
+        logger = env.getInstance(JdbcEventLogger.class);
         CayenneRuntime.bindThreadInjector(runtime.getInjector());
 
         tArtist = new TableHelper(dbHelper, "ARTIST");

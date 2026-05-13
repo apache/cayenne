@@ -20,17 +20,16 @@
 package org.apache.cayenne.tx;
 
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.sql.Connection;
 
@@ -44,22 +43,22 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @see TransactionPropagation
  * @since 4.1
  */
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class TransactionPropagationRollbackIT extends RuntimeCase {
+public class TransactionPropagationRollbackIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     DataContext context;
-
-    @Inject
     CayenneRuntime runtime;
-
-    @Inject
     UnitDbAdapter unitDbAdapter;
 
     TransactionManager manager;
 
     @BeforeEach
     public void initTransactionManager() {
+        context = env.dataContext();
+        runtime = env.runtime();
+        unitDbAdapter = env.getInstance(UnitDbAdapter.class);
         // no binding in test container, get it from runtime
         manager = runtime.getInjector().getInstance(TransactionManager.class);
     }

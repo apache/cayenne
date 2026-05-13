@@ -27,7 +27,6 @@ import java.util.List;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.UpdateBatchQuery;
@@ -35,29 +34,34 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 
-@UseCayenneRuntime(CayenneProjects.LOCKING_PROJECT)
-public class UpdateBatchTranslatorIT extends RuntimeCase {
+public class UpdateBatchTranslatorIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.LOCKING_PROJECT);
+
     private CayenneRuntime runtime;
-
-    @Inject
     private DbAdapter adapter;
-
-    @Inject
     private UnitDbAdapter unitAdapter;
-
-    @Inject
     private AdhocObjectFactory objectFactory;
+
+
+    @BeforeEach
+    public void setUp() {
+        runtime = env.runtime();
+        adapter = env.getInstance(DbAdapter.class);
+        unitAdapter = env.getInstance(UnitDbAdapter.class);
+        objectFactory = env.getInstance(AdhocObjectFactory.class);
+    }
 
     @Test
     public void constructor() {

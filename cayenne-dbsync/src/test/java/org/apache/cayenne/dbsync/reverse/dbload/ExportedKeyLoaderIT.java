@@ -22,8 +22,6 @@ package org.apache.cayenne.dbsync.reverse.dbload;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.junit.jupiter.api.Test;
@@ -32,9 +30,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class ExportedKeyLoaderIT extends BaseLoaderIT {
-
-    @Inject
-    DbAdapter adapter;
 
     @Test
     public void exportedKeyLoad() throws Exception {

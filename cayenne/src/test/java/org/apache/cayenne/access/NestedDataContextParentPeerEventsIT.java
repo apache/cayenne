@@ -21,16 +21,15 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.util.RuntimeCaseSyncModule;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.relationships_child_master.Child;
 import org.apache.cayenne.testdo.relationships_child_master.Master;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.ExtraModules;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -38,18 +37,23 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_CHILD_MASTER_PROJECT)
-@ExtraModules(RuntimeCaseSyncModule.class)
-public class NestedDataContextParentPeerEventsIT extends RuntimeCase {
+public class NestedDataContextParentPeerEventsIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.RELATIONSHIPS_CHILD_MASTER_PROJECT)
+            .withExtraModules(RuntimeCaseSyncModule.class);
+
     private CayenneRuntime runtime;
-
-    @Inject
     private DataContext parentContext1;
-
-    @Inject
     private DataContext parentContext2;
+
+    @BeforeEach
+    public void setUp() {
+        runtime = env.runtime();
+        parentContext1 = env.dataContext();
+        parentContext2 = (DataContext) env.runtime().newContext();
+    }
+
 
     @Test
     public void peerObjectUpdatedSimpleProperty() throws Exception {

@@ -22,17 +22,16 @@ package org.apache.cayenne.query;
 import java.util.List;
 
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.compound.CompoundFkTestEntity;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -42,16 +41,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @see <a href="https://issues.apache.org/jira/browse/CAY-2137">CAY-2137</a>
  * @since 4.0
  */
-@UseCayenneRuntime(CayenneProjects.COMPOUND_PROJECT)
-public class QueryWithCompoundJoinIT extends RuntimeCase {
+public class QueryWithCompoundJoinIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.COMPOUND_PROJECT);
+
     private DataContext context;
-
-    @Inject
     private CayenneRuntime runtime;
-
-    @Inject
     private DBHelper dbHelper;
 
     private TableHelper tCompoundPk;
@@ -59,6 +55,9 @@ public class QueryWithCompoundJoinIT extends RuntimeCase {
 
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.dataContext();
+        runtime = env.runtime();
+        dbHelper = env.dbHelper();
         tCompoundPk = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
         tCompoundPk.setColumns("KEY1", "KEY2", "NAME");
 

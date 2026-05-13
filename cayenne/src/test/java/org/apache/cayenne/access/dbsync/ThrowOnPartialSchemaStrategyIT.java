@@ -22,15 +22,12 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@UseCayenneRuntime(CayenneProjects.SUS_PROJECT)
 public class ThrowOnPartialSchemaStrategyIT extends SchemaUpdateStrategyBase {
 
     @Test

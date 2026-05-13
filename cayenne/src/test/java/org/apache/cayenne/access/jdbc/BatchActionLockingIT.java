@@ -28,7 +28,6 @@ import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.DeleteBatchTranslator;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -37,9 +36,10 @@ import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -52,17 +52,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
-@UseCayenneRuntime(CayenneProjects.LOCKING_PROJECT)
-public class BatchActionLockingIT extends RuntimeCase {
+public class BatchActionLockingIT {
 
-	@Inject
+	@RegisterExtension
+	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.LOCKING_PROJECT);
+
 	protected CayenneRuntime runtime;
-
-	@Inject
 	private Injector injector;
-
-	@Inject
 	private AdhocObjectFactory objectFactory;
+
+
+	@BeforeEach
+	public void setUp() {
+		runtime = env.runtime();
+		injector = env.getInstance(Injector.class);
+		objectFactory = env.getInstance(AdhocObjectFactory.class);
+	}
 
 	@Test
 	public void runAsIndividualQueriesSuccess() throws Exception {

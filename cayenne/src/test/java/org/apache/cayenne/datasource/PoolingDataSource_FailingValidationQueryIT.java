@@ -23,22 +23,27 @@ import java.sql.Driver;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class PoolingDataSource_FailingValidationQueryIT extends RuntimeCase {
+public class PoolingDataSource_FailingValidationQueryIT {
 
-	@Inject
+	@RegisterExtension
+	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
 	private DataSourceDescriptor dataSourceInfo;
-
-	@Inject
 	private AdhocObjectFactory objectFactory;
+
+	@BeforeEach
+	public void setUp() {
+		dataSourceInfo = env.getInstance(DataSourceDescriptor.class);
+		objectFactory = env.getInstance(AdhocObjectFactory.class);
+	}
 
 	protected PoolingDataSourceParameters createParameters() {
 		PoolingDataSourceParameters poolParameters = new PoolingDataSourceParameters();

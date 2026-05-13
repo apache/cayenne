@@ -21,29 +21,35 @@ package org.apache.cayenne.access.jdbc;
 import java.util.List;
 
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.lob.ClobTestEntity;
 import org.apache.cayenne.testdo.lob.ClobTestRelation;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Disabled("Temporary ignore this test to debug GitHub Actions failure")
-@UseCayenneRuntime(CayenneProjects.LOB_PROJECT)
-public class SelectActionIT extends RuntimeCase {
+public class SelectActionIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.LOB_PROJECT);
+
     private DataContext context;
-
-    @Inject
     private UnitDbAdapter accessStackAdapter;
+
+
+    @BeforeEach
+    public void setUp() {
+        context = env.dataContext();
+        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
+    }
 
     @Test
     public void fetchLimit_DistinctResultIterator() {

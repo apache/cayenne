@@ -19,22 +19,28 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKDep;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPk;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.ExtraModules;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-@UseCayenneRuntime(CayenneProjects.MEANINGFUL_PK_PROJECT)
-@ExtraModules(GraphSorterModule.class)
-public class DataContextEntityWithMeaningfulPKAndCustomDbRowOpSorterIT extends RuntimeCase {
+public class DataContextEntityWithMeaningfulPKAndCustomDbRowOpSorterIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt
+            .forProject(CayenneProjects.MEANINGFUL_PK_PROJECT)
+            .withExtraModules(GraphSorterModule.class);
+
     private DataContext context;
+
+    @BeforeEach
+    public void setUp() {
+        context = env.dataContext();
+    }
 
     @Test
     public void insertDelete() {

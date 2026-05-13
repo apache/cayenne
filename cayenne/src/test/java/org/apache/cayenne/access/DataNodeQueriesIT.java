@@ -20,15 +20,14 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,16 +41,13 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataNodeQueriesIT extends RuntimeCase {
+public class DataNodeQueriesIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     protected DataNode node;
-
-    @Inject
     protected DBHelper dbHelper;
-
-    @Inject
     protected SQLTemplateCustomizer sqlTemplateCustomizer;
 
     protected TableHelper tArtist;
@@ -59,6 +55,9 @@ public class DataNodeQueriesIT extends RuntimeCase {
     
     @BeforeEach
     public void setUp() throws Exception {
+        node = env.getInstance(DataNode.class);
+        dbHelper = env.dbHelper();
+        sqlTemplateCustomizer = env.getInstance(SQLTemplateCustomizer.class);
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
     }

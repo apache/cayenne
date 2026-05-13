@@ -27,13 +27,14 @@ import org.junit.jupiter.api.BeforeEach;
 
 public class RuntimeCase extends DICase {
 
-	private static final Injector injector;
+	static final DefaultScope testScope;
+	static final Injector injector;
 
 	@Inject
 	private DBCleaner dbCleaner;
 
 	static {
-		DefaultScope testScope = new DefaultScope();
+		testScope = new DefaultScope();
 		injector = DIBootstrap.createInjector(new RuntimeCaseModule(testScope));
 		injector.getInstance(SchemaBuilder.class).rebuildSchema();
 	}

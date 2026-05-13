@@ -21,13 +21,13 @@ package org.apache.cayenne.map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,14 +40,19 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class EntityResolverIT extends RuntimeCase {
+public class EntityResolverIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private CayenneRuntime runtime;
-
-    @Inject
     private DataContext context;
+
+    @BeforeEach
+    public void setUp() {
+        runtime = env.runtime();
+        context = env.dataContext();
+    }
 
     @Test
     public void getObjEntity() {

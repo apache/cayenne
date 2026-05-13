@@ -34,7 +34,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
@@ -50,30 +49,25 @@ import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.PostgresUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 4.0
  */
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class ColumnSelectIT extends RuntimeCase {
+public class ColumnSelectIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private DataContext context;
-
-    @Inject
     private CayenneRuntime runtime;
-
-    @Inject
     private DBHelper dbHelper;
-
-    @Inject
     private UnitDbAdapter unitDbAdapter;
 
     // Format: d/m/YY
@@ -83,6 +77,10 @@ public class ColumnSelectIT extends RuntimeCase {
 
     @BeforeEach
     public void createArtistsDataSet() throws Exception {
+        context = env.dataContext();
+        runtime = env.runtime();
+        dbHelper = env.dbHelper();
+        unitDbAdapter = env.getInstance(UnitDbAdapter.class);
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
         tArtist.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.DATE);

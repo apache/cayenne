@@ -26,7 +26,6 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.ValueHolder;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -36,9 +35,9 @@ import org.apache.cayenne.testdo.compound.CharPkTestEntity;
 import org.apache.cayenne.testdo.compound.CompoundFkTestEntity;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -46,14 +45,14 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Test prefetching of various obscure cases.
  */
-@UseCayenneRuntime(CayenneProjects.COMPOUND_PROJECT)
-public class DataContextPrefetchExtrasIT extends RuntimeCase {
+public class DataContextPrefetchExtrasIT  {
 
-    @Inject
-    protected ObjectContext context;
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.COMPOUND_PROJECT);
 
-    @Inject
-    protected DBHelper dbHelper;
+        protected ObjectContext context;
+
+        protected DBHelper dbHelper;
 
     protected TableHelper tCharPkTest;
     protected TableHelper tCharFkTest;
@@ -63,6 +62,8 @@ public class DataContextPrefetchExtrasIT extends RuntimeCase {
     
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.context();
+        dbHelper = env.dbHelper();
         tCharPkTest = new TableHelper(dbHelper, "CHAR_PK_TEST");
         tCharPkTest.setColumns("PK_COL", "OTHER_COL");
 

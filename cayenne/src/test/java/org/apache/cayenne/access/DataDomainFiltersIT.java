@@ -28,30 +28,35 @@ import org.apache.cayenne.DataChannelSyncFilterChain;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.annotation.PostPersist;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.apache.cayenne.util.ListResponse;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataDomainFiltersIT extends RuntimeCase {
+public class DataDomainFiltersIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private ObjectContext context;
-
-    @Inject
     private CayenneRuntime runtime;
+
+    @BeforeEach
+    public void setUp() {
+        context = env.context();
+        runtime = env.runtime();
+    }
 
     @Test
     public void defaultFilters() {

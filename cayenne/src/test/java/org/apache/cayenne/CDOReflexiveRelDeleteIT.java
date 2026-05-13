@@ -19,18 +19,18 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class CDOReflexiveRelDeleteIT extends RuntimeCase {
+public class CDOReflexiveRelDeleteIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private ObjectContext context;
     
     private ArtGroup parentGroup;
@@ -40,6 +40,7 @@ public class CDOReflexiveRelDeleteIT extends RuntimeCase {
 
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.context();
 
         parentGroup = context.newObject(ArtGroup.class);
         parentGroup.setName("parent");

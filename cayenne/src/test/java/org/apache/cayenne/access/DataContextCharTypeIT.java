@@ -20,30 +20,25 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.return_types.ReturnTypesMap1;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.RETURN_TYPES_PROJECT)
-public class DataContextCharTypeIT extends RuntimeCase {
+public class DataContextCharTypeIT {
 
-    @Inject
-    protected ObjectContext context;
-
-    @Inject
-    private UnitDbAdapter unitDbAdapter;
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.RETURN_TYPES_PROJECT);
 
     @Test
     public void charTrimming() {
-        if (unitDbAdapter.supportsLobs()) {
+        if (env.getInstance(UnitDbAdapter.class).supportsLobs()) {
+            DataContext context = env.dataContext();
             ReturnTypesMap1 map1 = context.newObject(ReturnTypesMap1.class);
             map1.setCharColumn("  text   ");
             ReturnTypesMap1 map2 = context.newObject(ReturnTypesMap1.class);
@@ -53,14 +48,14 @@ public class DataContextCharTypeIT extends RuntimeCase {
 
             context.commitChanges();
 
-            List<ReturnTypesMap1> result =  ObjectSelect.query(ReturnTypesMap1.class)
+            List<ReturnTypesMap1> result = ObjectSelect.query(ReturnTypesMap1.class)
                     .where(ReturnTypesMap1.CHAR_COLUMN.eq("  text"))
                     .select(context);
 
             assertTrue(result.get(0).getCharColumn().startsWith("  text"), "CHAR type trimming is not valid.");
             assertTrue(result.get(1).getCharColumn().startsWith("  text"), "CHAR type trimming is not valid.");
 
-            result =  ObjectSelect.query(ReturnTypesMap1.class)
+            result = ObjectSelect.query(ReturnTypesMap1.class)
                     .where(ReturnTypesMap1.CHAR_COLUMN.eq("text"))
                     .select(context);
 

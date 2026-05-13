@@ -25,13 +25,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.apache.cayenne.util.Util;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,13 +40,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * @since 4.1
  */
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextConcurrencyIT extends RuntimeCase {
+public class DataContextConcurrencyIT {
+
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
 
     private static final Logger logger = LoggerFactory.getLogger(DataContextConcurrencyIT.class);
-
-    @Inject
     private ObjectContext context;
+
+
+    @BeforeEach
+    public void setUp() {
+        context = env.context();
+    }
 
     /**
      * see https://issues.apache.org/jira/browse/CAY-2382

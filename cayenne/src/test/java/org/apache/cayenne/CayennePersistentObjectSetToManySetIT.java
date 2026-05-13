@@ -19,14 +19,13 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.map_to_many.MapToMany;
 import org.apache.cayenne.testdo.relationships_set_to_many.SetToMany;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -35,13 +34,12 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_SET_TO_MANY_PROJECT)
-public class CayennePersistentObjectSetToManySetIT extends RuntimeCase {
+public class CayennePersistentObjectSetToManySetIT {
 
-	@Inject
+	@RegisterExtension
+	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.RELATIONSHIPS_SET_TO_MANY_PROJECT);
+
 	protected ObjectContext context;
-
-	@Inject
 	protected DBHelper dbHelper;
 
 	protected TableHelper tSetToMany;
@@ -49,6 +47,8 @@ public class CayennePersistentObjectSetToManySetIT extends RuntimeCase {
 
 	@BeforeEach
 	public void setUp() throws Exception {
+		context = env.context();
+		dbHelper = env.dbHelper();
 		tSetToMany = new TableHelper(dbHelper, "SET_TO_MANY");
 		tSetToMany.setColumns("ID");
 

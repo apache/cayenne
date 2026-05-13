@@ -18,20 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.exp.parser.ASTEqual;
 import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.cay_2666.CAY2666;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.io.IOException;
 import java.util.List;
@@ -42,16 +40,10 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 /**
  * @since 4.2
  */
-@UseCayenneRuntime(CayenneProjects.CAY_2666)
-public class Cay2666IT extends RuntimeCase {
+public class Cay2666IT {
 
-    @Inject
-    private DataContext context;
-
-    @Inject
-    private DBHelper dbHelper;
-
-    private TableHelper tTest;
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.CAY_2666);
 
     @Test
     public void exp_Path() {
@@ -136,22 +128,22 @@ public class Cay2666IT extends RuntimeCase {
 
     @Test
     public void expressionWithDollarSign() throws Exception {
-        tTest = new TableHelper(dbHelper, "Cay2666");
+        TableHelper tTest = new TableHelper(env.dbHelper(), "Cay2666");
         tTest.setColumns("ID", "NAME$");
         tTest.insert(1, "st.One");
 
         Expression expression = ExpressionFactory.exp("name$ = 'st.One'");
-        List<CAY2666> cay2666List = ObjectSelect.query(CAY2666.class).where(expression).select(context);
+        List<CAY2666> cay2666List = ObjectSelect.query(CAY2666.class).where(expression).select(env.dataContext());
         assertEquals(1, cay2666List.size());
 
         expression = ExpressionFactory.exp("obj:name$ = 'st.Two'");
-        cay2666List = ObjectSelect.query(CAY2666.class).where(expression).select(context);
+        cay2666List = ObjectSelect.query(CAY2666.class).where(expression).select(env.dataContext());
         assertEquals(0, cay2666List.size());
 
         tTest.insert(2, "st.Two");
 
         expression = ExpressionFactory.exp("db:NAME$ = 'st.Two'");
-        cay2666List = ObjectSelect.query(CAY2666.class).where(expression).select(context);
+        cay2666List = ObjectSelect.query(CAY2666.class).where(expression).select(env.dataContext());
         assertEquals(1, cay2666List.size());
     }
 

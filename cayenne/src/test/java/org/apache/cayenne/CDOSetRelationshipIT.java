@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -26,8 +25,8 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships_set_to_many.SetToMany;
 import org.apache.cayenne.testdo.relationships_set_to_many.SetToManyTarget;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -40,13 +39,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_SET_TO_MANY_PROJECT)
-public class CDOSetRelationshipIT extends RuntimeCase {
+public class CDOSetRelationshipIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.RELATIONSHIPS_SET_TO_MANY_PROJECT);
+
     protected ObjectContext context;
-
-    @Inject
     protected DBHelper dbHelper;
 
     protected TableHelper tSetToMany;
@@ -54,6 +52,8 @@ public class CDOSetRelationshipIT extends RuntimeCase {
 
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.context();
+        dbHelper = env.dbHelper();
         tSetToMany = new TableHelper(dbHelper, "SET_TO_MANY");
         tSetToMany.setColumns("ID");
 

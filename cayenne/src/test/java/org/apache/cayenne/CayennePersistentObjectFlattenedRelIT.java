@@ -20,7 +20,6 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.access.MockDataNode;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -29,10 +28,11 @@ import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.DBCleaner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.sql.Types;
 import java.util.List;
@@ -42,19 +42,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class CayennePersistentObjectFlattenedRelIT extends RuntimeCase {
+public class CayennePersistentObjectFlattenedRelIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private CayenneRuntime runtime;
-
-    @Inject
     private ObjectContext context;
-
-    @Inject
     private DBHelper dbHelper;
-
-    @Inject
     private DataChannelInterceptor queryInterceptor;
 
     private TableHelper tArtist;
@@ -62,16 +57,15 @@ public class CayennePersistentObjectFlattenedRelIT extends RuntimeCase {
     private TableHelper tArtGroup;
 
     private TableHelper tArtistGroup;
-    
-	@BeforeEach
-	@Override
-	public void cleanUpDB() throws Exception {
-		dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
-		super.cleanUpDB();
-	}
 
     @BeforeEach
     public void setUp() throws Exception {
+        runtime = env.runtime();
+        context = env.context();
+        dbHelper = env.dbHelper();
+        queryInterceptor = env.getInstance(DataChannelInterceptor.class);
+        dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
+        env.getInstance(DBCleaner.class).clean();
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 

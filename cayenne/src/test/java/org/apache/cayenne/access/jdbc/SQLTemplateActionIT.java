@@ -36,7 +36,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLAction;
@@ -47,42 +46,38 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("deprecation")
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class SQLTemplateActionIT extends RuntimeCase {
+public class SQLTemplateActionIT {
 
-	@Inject
+	@RegisterExtension
+	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
 	protected RuntimeCaseDataSourceFactory dataSourceFactory;
-
-	@Inject
 	protected DataNode node;
-
-	@Inject
 	protected JdbcAdapter adapter;
-
-	@Inject
 	protected UnitDbAdapter unitDbAdapter;
-
-	@Inject
 	protected ObjectContext objectContext;
-
-	@Inject
 	protected DBHelper dbHelper;
-
-	@Inject
 	protected SQLTemplateCustomizer sqlTemplateCustomizer;
 
 	protected TableHelper tArtist;
 
 	@BeforeEach
 	public void setUp() throws Exception {
+		dataSourceFactory = env.getInstance(RuntimeCaseDataSourceFactory.class);
+		node = env.getInstance(DataNode.class);
+		adapter = env.getInstance(JdbcAdapter.class);
+		unitDbAdapter = env.getInstance(UnitDbAdapter.class);
+		objectContext = env.context();
+		dbHelper = env.dbHelper();
+		sqlTemplateCustomizer = env.getInstance(SQLTemplateCustomizer.class);
 		tArtist = new TableHelper(dbHelper, "ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 	}

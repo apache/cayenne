@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbAttribute;
@@ -33,15 +32,22 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class ASTDbPathIT extends RuntimeCase {
+public class ASTDbPathIT {
 
-	@Inject
+	@RegisterExtension
+	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
 	private ObjectContext context;
+
+	@BeforeEach
+	public void setUp() {
+		context = env.context();
+	}
 
 	@Test
 	public void evaluate_PersistentObject() {

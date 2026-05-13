@@ -24,7 +24,6 @@ import java.sql.Types;
 import java.util.List;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_people.CustomerRepresentative;
@@ -36,12 +35,12 @@ import org.junit.jupiter.api.Test;
 
 public class DataContextEJBQLInheritanceIT extends PeopleProjectCase {
 
-    @Inject
-    protected ObjectContext context;
+    private ObjectContext context;
 
-    
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.context();
+
         TableHelper person = new TableHelper(dbHelper, "PERSON");
         person.setColumns("PERSON_ID", "NAME", "PERSON_TYPE", "SALARY").setColumnTypes(Types.INTEGER, Types.VARCHAR,
                 Types.CHAR, Types.FLOAT);

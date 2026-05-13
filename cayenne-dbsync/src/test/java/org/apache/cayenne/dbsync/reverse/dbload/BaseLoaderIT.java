@@ -22,35 +22,29 @@ package org.apache.cayenne.dbsync.reverse.dbload;
 import java.sql.Connection;
 
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.dbsync.model.DetectedDbEntity;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class BaseLoaderIT extends RuntimeCase {
+public class BaseLoaderIT {
+
+    @RegisterExtension
+    protected static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     static final DbLoaderConfiguration EMPTY_CONFIG = new DbLoaderConfiguration();
 
-    @Inject
     protected DbAdapter adapter;
-
-    @Inject
     protected CayenneRuntime runtime;
-
-    @Inject
     protected RuntimeCaseDataSourceFactory dataSourceFactory;
-
-    @Inject
     protected UnitDbAdapter accessStackAdapter;
 
     Connection connection;
@@ -59,6 +53,10 @@ public class BaseLoaderIT extends RuntimeCase {
 
     @BeforeEach
     public void before() throws Exception {
+        adapter = env.getInstance(DbAdapter.class);
+        runtime = env.runtime();
+        dataSourceFactory = env.getInstance(RuntimeCaseDataSourceFactory.class);
+        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
         store = new DbLoadDataStore();
         assertTrue(store.getDbEntities().isEmpty(), "Store is not empty");
         this.connection = dataSourceFactory.getSharedDataSource().getConnection();

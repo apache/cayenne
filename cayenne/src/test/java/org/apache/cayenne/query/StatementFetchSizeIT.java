@@ -20,20 +20,26 @@ package org.apache.cayenne.query;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class StatementFetchSizeIT extends RuntimeCase {
+public class StatementFetchSizeIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private ObjectContext context;
+
+    @BeforeEach
+    public void setUp() {
+        context = env.context();
+    }
 
     @Test
     public void objectSelect() {

@@ -29,16 +29,14 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.util.RuntimeCaseSyncModule;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.ExtraModules;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,17 +47,14 @@ import static org.junit.jupiter.api.Assertions.*;
  * Test suite for testing behavior of multiple DataContexts that share the same underlying
  * DataDomain.
  */
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-@ExtraModules(RuntimeCaseSyncModule.class)
-public class DataContextSharedCacheIT extends RuntimeCase {
+public class DataContextSharedCacheIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT)
+            .withExtraModules(RuntimeCaseSyncModule.class);
+
     private DataContext context;
-
-    @Inject
     private DataContext context1;
-
-    @Inject
     private SQLTemplateCustomizer sqlTemplateCustomizer;
 
     private Artist artist;
@@ -67,6 +62,9 @@ public class DataContextSharedCacheIT extends RuntimeCase {
     
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.dataContext();
+        context1 = (DataContext) env.runtime().newContext();
+        sqlTemplateCustomizer = env.getInstance(SQLTemplateCustomizer.class);
         // prepare a single artist record
         artist = (Artist) context.newObject("Artist");
         artist.setArtistName("version1");

@@ -21,33 +21,33 @@ package org.apache.cayenne.unit.jira;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships.FkOfDifferentType;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_PROJECT)
-public class CAY_191IT extends RuntimeCase {
-    
-    @Inject
+public class CAY_191IT {
+
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.RELATIONSHIPS_PROJECT);
+
     protected DataContext context;
-    
-    @Inject
     protected DBHelper dbHelper;
-    
+
     protected TableHelper tRelationshipHelper;
     protected TableHelper tFkOfDifferentType;
 
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.dataContext();
+        dbHelper = env.dbHelper();
         tRelationshipHelper = new TableHelper(dbHelper, "RELATIONSHIP_HELPER");
         tRelationshipHelper.setColumns("NAME", "RELATIONSHIP_HELPER_ID");
         

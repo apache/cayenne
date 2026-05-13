@@ -20,25 +20,32 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyFkDep;
 import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyFkRoot;
 import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyRoot2;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 // TODO: this mapping scenario is really unsupported ... this is just an attempt at partial solution
-@UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_TO_MANY_FK_PROJECT)
-public class CDOOneToManyFKIT extends RuntimeCase {
+public class CDOOneToManyFKIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.RELATIONSHIPS_TO_MANY_FK_PROJECT);
+
     protected DataContext context;
+
+
+    @BeforeEach
+    public void setUp() {
+        context = env.dataContext();
+    }
 
     @Test
     public void readRelationship() {

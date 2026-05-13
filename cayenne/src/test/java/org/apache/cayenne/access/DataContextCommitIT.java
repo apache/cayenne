@@ -28,87 +28,87 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.NullTestEntity;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextCommitIT extends RuntimeCase {
+public class DataContextCommitIT {
 
-	@Inject
-	private DataContext context;
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-	@Test
-	public void flushToParent_Commit_New() {
+    @Test
+    public void flushToParent_Commit_New() {
+        DataContext context = env.dataContext();
 
-		// commit new object
-		Artist a = context.newObject(Artist.class);
-		a.setArtistName("Test");
+        // commit new object
+        Artist a = context.newObject(Artist.class);
+        a.setArtistName("Test");
 
-		assertTrue(context.hasChanges());
+        assertTrue(context.hasChanges());
 
-		ObjectId beforeId = a.getObjectId();
-		GraphDiff diff = context.flushToParent(true);
-		ObjectId afterId = a.getObjectId();
+        ObjectId beforeId = a.getObjectId();
+        GraphDiff diff = context.flushToParent(true);
+        ObjectId afterId = a.getObjectId();
 
-		assertNotNull(diff);
-		assertFalse(context.hasChanges());
-		assertNotEquals(beforeId, afterId);
+        assertNotNull(diff);
+        assertFalse(context.hasChanges());
+        assertNotEquals(beforeId, afterId);
 
-		GraphChangeHandler diffChecker = mock(GraphChangeHandler.class);
+        GraphChangeHandler diffChecker = mock(GraphChangeHandler.class);
 
-		diff.apply(diffChecker);
+        diff.apply(diffChecker);
 
-		verify(diffChecker).nodeIdChanged(beforeId, afterId);
-		verifyNoMoreInteractions(diffChecker);
+        verify(diffChecker).nodeIdChanged(beforeId, afterId);
+        verifyNoMoreInteractions(diffChecker);
+    }
 
-	}
+    @Test
+    public void flushToParent_Commit_Mix() {
+        DataContext context = env.dataContext();
 
-	@Test
-	public void flushToParent_Commit_Mix() {
+        Artist a = context.newObject(Artist.class);
+        a.setArtistName("Test");
+        context.flushToParent(true);
 
-		Artist a = context.newObject(Artist.class);
-		a.setArtistName("Test");
-		context.flushToParent(true);
+        // commit a mix of new and modified
+        Painting p = context.newObject(Painting.class);
+        p.setPaintingTitle("PT");
+        p.setToArtist(a);
+        a.setArtistName("Test_");
 
-		// commit a mix of new and modified
-		Painting p = context.newObject(Painting.class);
-		p.setPaintingTitle("PT");
-		p.setToArtist(a);
-		a.setArtistName("Test_");
+        ObjectId beforeId = p.getObjectId();
+        GraphDiff diff = context.flushToParent(true);
+        ObjectId afterId = p.getObjectId();
 
-		ObjectId beforeId = p.getObjectId();
-		GraphDiff diff = context.flushToParent(true);
-		ObjectId afterId = p.getObjectId();
+        assertNotNull(diff);
+        assertFalse(context.hasChanges());
 
-		assertNotNull(diff);
-		assertFalse(context.hasChanges());
+        GraphChangeHandler diffChecker = mock(GraphChangeHandler.class);
 
-		GraphChangeHandler diffChecker = mock(GraphChangeHandler.class);
+        diff.apply(diffChecker);
+        verify(diffChecker).nodeIdChanged(beforeId, afterId);
+        verifyNoMoreInteractions(diffChecker);
+    }
 
-		diff.apply(diffChecker);
-		verify(diffChecker).nodeIdChanged(beforeId, afterId);
-		verifyNoMoreInteractions(diffChecker);
-	}
+    @Test
+    public void flushToParent_NewNoAttributes() {
+        DataContext context = env.dataContext();
 
-	@Test
-	public void flushToParent_NewNoAttributes() {
+        // commit new object with uninitialized attributes
 
-		// commit new object with uninitialized attributes
+        context.newObject(NullTestEntity.class);
 
-		context.newObject(NullTestEntity.class);
+        assertTrue(context.hasChanges());
 
-		assertTrue(context.hasChanges());
-
-		GraphDiff diff3 = context.flushToParent(true);
-		assertNotNull(diff3);
-		assertFalse(context.hasChanges());
-	}
+        GraphDiff diff3 = context.flushToParent(true);
+        assertNotNull(diff3);
+        assertFalse(context.hasChanges());
+    }
 }

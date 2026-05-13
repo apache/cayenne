@@ -20,69 +20,65 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.binary_pk.BinaryPKTest1;
 import org.apache.cayenne.testdo.binary_pk.BinaryPKTest2;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@UseCayenneRuntime(CayenneProjects.BINARY_PK_PROJECT)
-public class DataContextBinaryPKIT extends RuntimeCase {
+public class DataContextBinaryPKIT {
 
-    @Inject
-    private DataContext context;
-
-    @Inject
-    private DataContext context1;
-
-    @Inject
-    private UnitDbAdapter accessStackAdapter;
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.BINARY_PK_PROJECT);
 
     @Test
     public void insertBinaryPK() throws Exception {
-        if (accessStackAdapter.supportsBinaryPK()) {
-
-            BinaryPKTest1 master = (BinaryPKTest1) context.newObject("BinaryPKTest1");
-            master.setName("master1");
-
-            BinaryPKTest2 detail = (BinaryPKTest2) context.newObject("BinaryPKTest2");
-            detail.setDetailName("detail2");
-
-            master.addToBinaryPKDetails(detail);
-
-            context.commitChanges();
+        if (!env.getInstance(UnitDbAdapter.class).supportsBinaryPK()) {
+            return;
         }
+
+        DataContext context = env.dataContext();
+        BinaryPKTest1 master = (BinaryPKTest1) context.newObject("BinaryPKTest1");
+        master.setName("master1");
+
+        BinaryPKTest2 detail = (BinaryPKTest2) context.newObject("BinaryPKTest2");
+        detail.setDetailName("detail2");
+
+        master.addToBinaryPKDetails(detail);
+
+        context.commitChanges();
     }
 
     @Test
     public void fetchRelationshipBinaryPK() throws Exception {
-        if (accessStackAdapter.supportsBinaryPK()) {
-
-            BinaryPKTest1 master = (BinaryPKTest1) context.newObject("BinaryPKTest1");
-            master.setName("master1");
-
-            BinaryPKTest2 detail = (BinaryPKTest2) context.newObject("BinaryPKTest2");
-            detail.setDetailName("detail2");
-
-            master.addToBinaryPKDetails(detail);
-
-            context.commitChanges();
-            context.invalidateObjects(master, detail);
-
-            BinaryPKTest2 fetchedDetail = ObjectSelect.query(BinaryPKTest2.class).selectFirst(context);
-            assertNotNull(fetchedDetail.readPropertyDirectly("toBinaryPKMaster"));
-
-            BinaryPKTest1 fetchedMaster = fetchedDetail.getToBinaryPKMaster();
-            assertNotNull(fetchedMaster);
-            assertEquals(PersistenceState.HOLLOW, fetchedMaster.getPersistenceState());
-            assertEquals("master1", fetchedMaster.getName());
+        if (!env.getInstance(UnitDbAdapter.class).supportsBinaryPK()) {
+            return;
         }
+
+        DataContext context = env.dataContext();
+        BinaryPKTest1 master = (BinaryPKTest1) context.newObject("BinaryPKTest1");
+        master.setName("master1");
+
+        BinaryPKTest2 detail = (BinaryPKTest2) context.newObject("BinaryPKTest2");
+        detail.setDetailName("detail2");
+
+        master.addToBinaryPKDetails(detail);
+
+        context.commitChanges();
+        context.invalidateObjects(master, detail);
+
+        BinaryPKTest2 fetchedDetail = ObjectSelect.query(BinaryPKTest2.class).selectFirst(context);
+        assertNotNull(fetchedDetail.readPropertyDirectly("toBinaryPKMaster"));
+
+        BinaryPKTest1 fetchedMaster = fetchedDetail.getToBinaryPKMaster();
+        assertNotNull(fetchedMaster);
+        assertEquals(PersistenceState.HOLLOW, fetchedMaster.getPersistenceState());
+        assertEquals("master1", fetchedMaster.getName());
     }
 }

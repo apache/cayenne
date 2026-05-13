@@ -20,13 +20,13 @@
 package org.apache.cayenne.tx;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -35,14 +35,19 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class UserTransactionIT extends RuntimeCase {
+public class UserTransactionIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private ObjectContext context;
-
-    @Inject
     private JdbcEventLogger logger;
+
+    @BeforeEach
+    public void setUp() {
+        context = env.context();
+        logger = env.getInstance(JdbcEventLogger.class);
+    }
 
     @Test
     public void commit() throws Exception {

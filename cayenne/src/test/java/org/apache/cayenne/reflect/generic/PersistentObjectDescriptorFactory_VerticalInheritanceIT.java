@@ -20,23 +20,29 @@ package org.apache.cayenne.reflect.generic;
 
 import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.SingletonFaultFactory;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
-@UseCayenneRuntime(CayenneProjects.INHERITANCE_VERTICAL_PROJECT)
-public class PersistentObjectDescriptorFactory_VerticalInheritanceIT extends RuntimeCase {
+public class PersistentObjectDescriptorFactory_VerticalInheritanceIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.INHERITANCE_VERTICAL_PROJECT);
+
     private EntityResolver resolver;
+
+    @BeforeEach
+    public void setUp() {
+        resolver = env.getInstance(EntityResolver.class);
+    }
 
     @Test
     public void visitProperties_IterationOrder() {

@@ -22,7 +22,6 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ResultBatchIterator;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -32,8 +31,8 @@ import org.apache.cayenne.testdo.embeddable.EmbedEntity2;
 import org.apache.cayenne.testdo.embeddable.EmbedRoot;
 import org.apache.cayenne.testdo.embeddable.Embeddable1;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -43,13 +42,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.EMBEDDABLE_PROJECT)
-public class EmbeddingIT extends RuntimeCase {
-    
-    @Inject
+public class EmbeddingIT {
+
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.EMBEDDABLE_PROJECT);
+
     protected ObjectContext context;
-    
-    @Inject
     protected DBHelper dbHelper;
     
     protected TableHelper tEmbedEntity1;
@@ -60,6 +58,8 @@ public class EmbeddingIT extends RuntimeCase {
     
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.context();
+        dbHelper = env.dbHelper();
         tEmbedEntity1 = new TableHelper(dbHelper, "EMBED_ENTITY1");
         tEmbedEntity1.setColumns("ID", "NAME", "EMBEDDED10", "EMBEDDED20", "EMBEDDED30", "EMBEDDED40");
 

@@ -21,13 +21,13 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -39,11 +39,17 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 // TODO: 1/16/2006 - the algorithm used to generate the PK may be included in
 // DataObjectUtils to pull the PK on demand. A caveat - we need to analyze DataObject in
 // question to see if a PK is numeric and not propagated.
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class PregeneratedPKIT extends RuntimeCase {
+public class PregeneratedPKIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private DataContext context;
+
+    @BeforeEach
+    public void setUp() {
+        context = env.dataContext();
+    }
 
     @Test
     public void longPk() throws Exception {

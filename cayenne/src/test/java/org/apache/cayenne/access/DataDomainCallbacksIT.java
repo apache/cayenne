@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.EJBQLQuery;
@@ -31,23 +30,28 @@ import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataDomainCallbacksIT extends RuntimeCase {
+public class DataDomainCallbacksIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private EntityResolver resolver;
-
-    @Inject
     private ObjectContext context;
-
-    @Inject
     private ObjectContext context1;
+
+    @BeforeEach
+    public void setUp() {
+        resolver = env.getInstance(EntityResolver.class);
+        context = env.context();
+        context1 = env.runtime().newContext();
+    }
 
     @Test
     public void postLoad() throws Exception {

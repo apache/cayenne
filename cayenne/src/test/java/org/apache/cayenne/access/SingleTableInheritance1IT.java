@@ -19,26 +19,33 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.inheritance_flat.Group;
 import org.apache.cayenne.testdo.inheritance_flat.Role;
 import org.apache.cayenne.testdo.inheritance_flat.User;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Special test cases per CAY-1378, CAY-1379.
  */
-@UseCayenneRuntime(CayenneProjects.INHERITANCE_SINGLE_TABLE1_PROJECT)
-public class SingleTableInheritance1IT extends RuntimeCase {
+public class SingleTableInheritance1IT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.INHERITANCE_SINGLE_TABLE1_PROJECT);
+
     private ObjectContext context;
+
+    @BeforeEach
+    public void setUp() {
+        context = env.context();
+    }
+
 
     @Test
     public void groupActions() throws Exception {

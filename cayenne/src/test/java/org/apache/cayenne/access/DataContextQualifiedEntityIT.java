@@ -23,7 +23,6 @@ import java.sql.Types;
 import java.util.List;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_people.AbstractPerson;
@@ -38,17 +37,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DataContextQualifiedEntityIT extends PeopleProjectCase {
 
-    @Inject
-    protected ObjectContext context;
+        protected ObjectContext context;
 
     protected TableHelper tPerson;
 
     
     @BeforeEach
     public void setUp() throws Exception {
-        // manually break circular deps
-        dbHelper.update("PERSON").set("DEPARTMENT_ID", null, Types.INTEGER).execute();
-
+        context = env.context();
         tPerson = new TableHelper(dbHelper, "PERSON");
         tPerson.setColumns(
                 "CLIENT_COMPANY_ID",

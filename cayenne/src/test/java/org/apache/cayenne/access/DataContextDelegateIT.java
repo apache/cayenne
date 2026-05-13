@@ -22,17 +22,16 @@ package org.apache.cayenne.access;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.MockQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -43,14 +42,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Tests various DataContextDelegate methods invocation and consequences on DataContext
  * behavior.
  */
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextDelegateIT extends RuntimeCase {
+public class DataContextDelegateIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private DataContext context;
 
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.dataContext();
+
         // prepare a single gallery record
         Gallery gallery = (Gallery) context.newObject("Gallery");
         gallery.setGalleryName("version1");

@@ -22,44 +22,42 @@ package org.apache.cayenne;
 import java.sql.Types;
 
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @since 4.1
  */
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class Cay2412IT extends RuntimeCase {
+public class Cay2412IT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     DataContext context;
-
-    @Inject
-    private DBHelper dbHelper;
 
     @BeforeEach
     public void prepareData() throws Exception {
-        TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
+        context = env.dataContext();
+
+        TableHelper tArtist = new TableHelper(env.dbHelper(), "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
         tArtist.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.DATE);
         tArtist.insert(1, "artist1", new java.sql.Date(System.currentTimeMillis()));
 
-        TableHelper tGallery = new TableHelper(dbHelper, "GALLERY");
+        TableHelper tGallery = new TableHelper(env.dbHelper(), "GALLERY");
         tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
         tGallery.insert(1, "tate modern");
 
-        TableHelper tPaintings = new TableHelper(dbHelper, "PAINTING");
+        TableHelper tPaintings = new TableHelper(env.dbHelper(), "PAINTING");
         tPaintings.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "GALLERY_ID", "ESTIMATED_PRICE");
         for (int i = 1; i <= 3; i++) {
             tPaintings.insert(i, "painting" + i, 1, 1, 22 - i);

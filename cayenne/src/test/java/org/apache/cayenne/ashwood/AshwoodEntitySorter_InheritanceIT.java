@@ -19,12 +19,10 @@
 package org.apache.cayenne.ashwood;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.PeopleProjectCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -34,11 +32,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.PEOPLE_PROJECT)
 public class AshwoodEntitySorter_InheritanceIT extends PeopleProjectCase {
 
-	@Inject
-	protected ObjectContext context;
+		protected ObjectContext context;
 
 	private EntityResolver resolver;
 	private AshwoodEntitySorter sorter;
@@ -51,6 +47,7 @@ public class AshwoodEntitySorter_InheritanceIT extends PeopleProjectCase {
 
 	@BeforeEach
 	public void before() {
+		context = env.context();
 
 		this.resolver = context.getEntityResolver();
 		this.sorter = new AshwoodEntitySorter();

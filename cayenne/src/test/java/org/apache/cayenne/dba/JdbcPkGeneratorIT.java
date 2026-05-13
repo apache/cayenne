@@ -20,36 +20,35 @@ package org.apache.cayenne.dba;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.derby.DerbyPkGenerator;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.apache.cayenne.unit.di.runtime.SchemaBuilder;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class JdbcPkGeneratorIT extends RuntimeCase {
+public class JdbcPkGeneratorIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private DbAdapter adapter;
-
-    @Inject
     private DataNode node;
-    
-    @Inject
     private SchemaBuilder schemaBuilder;
 
     @BeforeEach
     public void setUp() throws Exception {
+        adapter = env.getInstance(DbAdapter.class);
+        node = env.getInstance(DataNode.class);
+        schemaBuilder = env.getInstance(SchemaBuilder.class);
         schemaBuilder.dropPKSupport();
     }
     

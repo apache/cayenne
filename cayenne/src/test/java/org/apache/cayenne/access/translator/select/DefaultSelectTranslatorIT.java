@@ -22,7 +22,6 @@ package org.apache.cayenne.access.translator.select;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -41,9 +40,10 @@ import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,23 +53,26 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DefaultSelectTranslatorIT extends RuntimeCase {
+public class DefaultSelectTranslatorIT {
 
-	@Inject
+	@RegisterExtension
+	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
 	private DataContext context;
-
-	@Inject
 	private UnitDbAdapter unitAdapter;
-
-	@Inject
 	private DBHelper dbHelper;
-
-	@Inject
 	private JdbcEventLogger logger;
-
-	@Inject
 	private DataNode dataNode;
+
+
+	@BeforeEach
+	public void setUp() {
+		context = env.dataContext();
+		unitAdapter = env.getInstance(UnitDbAdapter.class);
+		dbHelper = env.dbHelper();
+		logger = env.getInstance(JdbcEventLogger.class);
+		dataNode = env.getInstance(DataNode.class);
+	}
 
 	/**
 	 * Tests query creation with qualifier and ordering.

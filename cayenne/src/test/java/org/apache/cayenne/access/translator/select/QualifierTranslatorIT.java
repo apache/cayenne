@@ -23,7 +23,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationVisitor;
 import org.apache.cayenne.access.sqlbuilder.StringBuilderAppendable;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
@@ -32,8 +31,8 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.compound.CompoundFkTestEntity;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -42,20 +41,20 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@UseCayenneRuntime(CayenneProjects.COMPOUND_PROJECT)
-public class QualifierTranslatorIT extends RuntimeCase {
+public class QualifierTranslatorIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.COMPOUND_PROJECT);
+
     private CayenneRuntime runtime;
-
-    @Inject
     private ObjectContext context;
-
-    @Inject
     protected DBHelper dbHelper;
 
     @BeforeEach
     public void setUp() throws Exception {
+        runtime = env.runtime();
+        context = env.context();
+        dbHelper = env.dbHelper();
         TableHelper tCompoundPKTest = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
         tCompoundPKTest.setColumns("KEY1", "KEY2", "NAME");
         tCompoundPKTest.insert("PK1", "PK2", "BBB");

@@ -27,7 +27,6 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.query.ObjectSelect;
@@ -37,9 +36,8 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.ExtraModules;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,16 +46,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-@ExtraModules(DataContextSharedCacheEmpiricIT.SyncContextsModule.class)
-public class DataContextSharedCacheEmpiricIT extends RuntimeCase {
+public class DataContextSharedCacheEmpiricIT {
+
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT)
+            .withExtraModules(DataContextSharedCacheEmpiricIT.SyncContextsModule.class);
+
 
     private static final String NEW_NAME = "versionX";
-
-    @Inject
     private CayenneRuntime runtime;
-
-    @Inject
     private DBHelper dbHelper;
 
     private DataContext c1;
@@ -68,6 +65,8 @@ public class DataContextSharedCacheEmpiricIT extends RuntimeCase {
     
     @BeforeEach
     public void setUp() throws Exception {
+        runtime = env.runtime();
+        dbHelper = env.dbHelper();
 
         eventManager = new DefaultEventManager();
         DataRowStore cache = new DataRowStore(

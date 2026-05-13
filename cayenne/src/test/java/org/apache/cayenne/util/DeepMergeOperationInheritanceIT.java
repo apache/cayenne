@@ -21,7 +21,6 @@ package org.apache.cayenne.util;
 
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.inheritance_people.Department;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
@@ -31,17 +30,22 @@ import org.apache.cayenne.unit.di.runtime.PeopleProjectCase;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
 
 public class DeepMergeOperationInheritanceIT extends PeopleProjectCase {
 
-    @Inject
-    private DataContext context;
+        private DataContext context;
 
-    @Inject
-    private DataContext context1;
+        private DataContext context1;
 
-    @Inject
-    protected DataChannelInterceptor queryInterceptor;
+        protected DataChannelInterceptor queryInterceptor;
+
+    @BeforeEach
+    public void setUp() {
+        context = env.dataContext();
+        context1 = (DataContext) env.runtime().newContext();
+        queryInterceptor = env.getInstance(DataChannelInterceptor.class);
+    }
 
     @Test
     public void deepMergeExistingSubclass() {

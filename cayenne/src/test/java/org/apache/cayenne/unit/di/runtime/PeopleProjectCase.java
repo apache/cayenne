@@ -20,21 +20,26 @@ package org.apache.cayenne.unit.di.runtime;
 
 import java.sql.Types;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.unit.di.runtime.DBCleaner;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-@UseCayenneRuntime(CayenneProjects.PEOPLE_PROJECT)
-public class PeopleProjectCase extends RuntimeCase {
+public class PeopleProjectCase {
 
-	@Inject
+	@RegisterExtension
+	protected static final CayenneTestsExt env = CayenneTestsExt
+			.forProject(CayenneProjects.PEOPLE_PROJECT)
+			.withoutAutoClean();
+
 	protected DBHelper dbHelper;
 
 	@BeforeEach
-	@Override
 	public void cleanUpDB() throws Exception {
-		// manually break circular deps
+		// must null out the circular FK before DBCleaner.clean() runs, otherwise
+		// PostgreSQL's strict FK enforcement aborts the cleanup
+		dbHelper = env.dbHelper();
 		dbHelper.update("PERSON").set("DEPARTMENT_ID", null, Types.INTEGER).execute();
-		super.cleanUpDB();
+		env.getInstance(DBCleaner.class).clean();
 	}
 }

@@ -18,24 +18,30 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class SQLTemplateCacheKeyIT extends RuntimeCase {
+public class SQLTemplateCacheKeyIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private EntityResolver resolver;
+
+    @BeforeEach
+    public void setUp() {
+        resolver = env.getInstance(EntityResolver.class);
+    }
 
     @Test
     public void noCache() {

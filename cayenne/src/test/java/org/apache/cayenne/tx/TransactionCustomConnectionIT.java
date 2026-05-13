@@ -20,16 +20,15 @@
 package org.apache.cayenne.tx;
 
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,18 +48,15 @@ import static org.mockito.Mockito.*;
  * @see BaseTransaction,TransactionDescriptor
  * @since 4.2
  */
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class TransactionCustomConnectionIT extends RuntimeCase {
+public class TransactionCustomConnectionIT {
+
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private final Logger logger = LoggerFactory.getLogger(TransactionIsolationIT.class);
 
-    @Inject
     DataContext context;
-
-    @Inject
     CayenneRuntime runtime;
-
-    @Inject
     private JdbcEventLogger jdbcEventLogger;
 
     TransactionManager manager;
@@ -68,6 +64,9 @@ public class TransactionCustomConnectionIT extends RuntimeCase {
 
     @BeforeEach
     public void initTransactionManager() {
+        context = env.dataContext();
+        runtime = env.runtime();
+        jdbcEventLogger = env.getInstance(JdbcEventLogger.class);
         // no binding in test container, get it from runtime
         manager = runtime.getInjector().getInstance(TransactionManager.class);
     }

@@ -24,14 +24,14 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.MockPersistentObject;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.util.Collections;
 import java.util.Date;
@@ -41,11 +41,18 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class ObjectStoreIT extends RuntimeCase {
+public class ObjectStoreIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private DataContext context;
+
+    @BeforeEach
+    public void setUp() {
+        context = env.dataContext();
+    }
+
 
     @Test
     public void registeredObjectsCount() throws Exception {

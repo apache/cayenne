@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -31,8 +30,8 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest3;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -40,13 +39,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_FLATTENED_PROJECT)
-public class FlattenedRelationshipInContextIT extends RuntimeCase {
+public class FlattenedRelationshipInContextIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.RELATIONSHIPS_FLATTENED_PROJECT);
+
     protected DataContext context;
-
-    @Inject
     protected DBHelper dbHelper;
 
     private TableHelper tFlattenedTest1;
@@ -56,6 +54,8 @@ public class FlattenedRelationshipInContextIT extends RuntimeCase {
     
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.dataContext();
+        dbHelper = env.dbHelper();
         tFlattenedTest1 = new TableHelper(dbHelper, "FLATTENED_TEST_1");
         tFlattenedTest1.setColumns("FT1_ID", "NAME");
 

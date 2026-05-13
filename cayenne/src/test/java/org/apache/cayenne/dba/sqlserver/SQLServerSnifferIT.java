@@ -21,31 +21,35 @@ package org.apache.cayenne.dba.sqlserver;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.unit.SQLServerUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.sql.Connection;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class SQLServerSnifferIT extends RuntimeCase {
+public class SQLServerSnifferIT {
 
-	@Inject
+	@RegisterExtension
+	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
 	private RuntimeCaseDataSourceFactory dataSourceFactory;
-
-	@Inject
 	private UnitDbAdapter accessStackAdapter;
-
-	@Inject
 	private AdhocObjectFactory objectFactory;
+
+	@BeforeEach
+	public void setUp() {
+		dataSourceFactory = env.getInstance(RuntimeCaseDataSourceFactory.class);
+		accessStackAdapter = env.getInstance(UnitDbAdapter.class);
+		objectFactory = env.getInstance(AdhocObjectFactory.class);
+	}
 
 	@Test
 	public void createAdapter() throws Exception {

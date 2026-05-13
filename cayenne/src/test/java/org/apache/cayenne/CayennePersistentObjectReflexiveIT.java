@@ -19,25 +19,31 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.reflexive.Other;
 import org.apache.cayenne.testdo.reflexive.Reflexive;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@UseCayenneRuntime(CayenneProjects.REFLEXIVE_PROJECT)
-public class CayennePersistentObjectReflexiveIT extends RuntimeCase {
+public class CayennePersistentObjectReflexiveIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.REFLEXIVE_PROJECT);
+
     private ObjectContext context;
-
-    @Inject
     private CayenneRuntime runtime;
+
+
+    @BeforeEach
+    public void setUp() {
+        context = env.context();
+        runtime = env.runtime();
+    }
 
     @Test
     public void addReflexiveParentAndChild() {

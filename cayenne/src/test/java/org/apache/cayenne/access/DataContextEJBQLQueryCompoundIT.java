@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -29,10 +28,10 @@ import org.apache.cayenne.testdo.compound.CompoundFkTestEntity;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.HashMap;
 import java.util.List;
@@ -40,16 +39,15 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@UseCayenneRuntime(CayenneProjects.COMPOUND_PROJECT)
-public class DataContextEJBQLQueryCompoundIT extends RuntimeCase {
+public class DataContextEJBQLQueryCompoundIT {
 
-	@Inject
+	@RegisterExtension
+	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.COMPOUND_PROJECT);
+
 	private ObjectContext context;
 
-	@Inject
 	private DBHelper dbHelper;
 
-	@Inject
 	private UnitDbAdapter accessStackAdapter;
 
 	private TableHelper tCompoundPk;
@@ -58,6 +56,9 @@ public class DataContextEJBQLQueryCompoundIT extends RuntimeCase {
 	
 	@BeforeEach
 	public void setUp() throws Exception {
+		context = env.context();
+		dbHelper = env.dbHelper();
+		accessStackAdapter = env.getInstance(UnitDbAdapter.class);
 		tCompoundPk = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
 		tCompoundPk.setColumns("KEY1", "KEY2");
 

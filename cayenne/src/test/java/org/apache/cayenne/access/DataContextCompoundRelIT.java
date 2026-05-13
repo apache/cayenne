@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.compound.CompoundFkTestEntity;
 import org.apache.cayenne.testdo.compound.CompoundOrder;
@@ -27,9 +26,10 @@ import org.apache.cayenne.testdo.compound.CompoundOrderLine;
 import org.apache.cayenne.testdo.compound.CompoundOrderLineInfo;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
 
@@ -38,14 +38,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Testing relationships with compound keys.
  */
-@UseCayenneRuntime(CayenneProjects.COMPOUND_PROJECT)
-public class DataContextCompoundRelIT extends RuntimeCase {
+public class DataContextCompoundRelIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.COMPOUND_PROJECT);
+
     private DataContext context;
-
-    @Inject
     private DataContext context1;
+
+    @BeforeEach
+    public void setUp() {
+        context  = env.dataContext();
+        context1 = (DataContext) env.runtime().newContext();
+    }
 
     @Test
     public void insert() {

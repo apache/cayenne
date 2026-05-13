@@ -20,33 +20,33 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.numeric_types.BigIntegerEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@UseCayenneRuntime(CayenneProjects.NUMERIC_TYPES_PROJECT)
-public class EJBQLQueryNumericIT extends RuntimeCase {
+public class EJBQLQueryNumericIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.NUMERIC_TYPES_PROJECT);
+
     protected DBHelper dbHelper;
-
-    @Inject
     private ObjectContext context;
 
     private TableHelper tBigIntegerEntity;
 
     @BeforeEach
     public void setUp() throws Exception {
+        dbHelper = env.dbHelper();
+        context = env.context();
         tBigIntegerEntity = new TableHelper(dbHelper, "BIGINTEGER_ENTITY");
         tBigIntegerEntity.setColumns("ID", "BIG_INTEGER_FIELD");
     }

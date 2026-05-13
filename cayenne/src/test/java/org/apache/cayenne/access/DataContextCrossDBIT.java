@@ -19,33 +19,29 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.db1.CrossdbM1E1;
 import org.apache.cayenne.testdo.db2.CrossdbM2E1;
 import org.apache.cayenne.testdo.db2.CrossdbM2E2;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-@UseCayenneRuntime(CayenneProjects.MULTINODE_PROJECT)
-public class DataContextCrossDBIT extends RuntimeCase {
+public class DataContextCrossDBIT {
 
-    @Inject
-    private DataContext context;
-
-    @Inject
-    private UnitDbAdapter dbAdapter;
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.MULTINODE_PROJECT);
 
     @Test
     public void multiDBUpdate() {
-
-        if(!dbAdapter.supportsPKGeneratorConcurrency()) {
+        if (!env.getInstance(UnitDbAdapter.class).supportsPKGeneratorConcurrency()) {
             return;
         }
         // for now testing that no exceptions are thrown... wouldn't hurt to check the
         // data as well???
+
+        DataContext context = env.dataContext();
 
         // insert
         CrossdbM1E1 o1 = context.newObject(CrossdbM1E1.class);

@@ -21,13 +21,12 @@ package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -37,16 +36,18 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * @since 4.2
  */
-@UseCayenneRuntime(CayenneProjects.INHERITANCE_VERTICAL_PROJECT)
-public class ObjPathProcessorIT extends RuntimeCase {
+public class ObjPathProcessorIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.INHERITANCE_VERTICAL_PROJECT);
+
     protected ObjectContext context;
 
     private ObjPathProcessor pathProcessor;
 
     @BeforeEach
     public void prepareTranslationContext() {
+        context = env.context();
         TranslatorContext translatorContext = new TranslatorContext(
                 new FluentSelectWrapper(ObjectSelect.query(Object.class)),
                 Mockito.mock(DbAdapter.class),

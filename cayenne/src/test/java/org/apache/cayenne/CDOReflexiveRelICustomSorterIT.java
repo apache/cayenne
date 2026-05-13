@@ -22,8 +22,6 @@ package org.apache.cayenne;
 import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
 import org.apache.cayenne.access.flush.operation.GraphBasedDbRowOpSorter;
 import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.unit.di.runtime.ExtraModules;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
@@ -32,19 +30,21 @@ import org.apache.cayenne.testdo.testmap.CompoundPaintingLongNames;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-@ExtraModules(CDOReflexiveRelICustomSorterIT.GraphSorterModule.class)
-public class CDOReflexiveRelICustomSorterIT extends RuntimeCase {
-    @Inject
-    private ObjectContext context;
+public class CDOReflexiveRelICustomSorterIT {
+
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt
+            .forProject(CayenneProjects.TESTMAP_PROJECT)
+            .withExtraModules(GraphSorterModule.class);
 
     @Test
     public void addDeleteNoCommit() {
+        ObjectContext context = env.context();
         ArtGroup parentGroup = context.newObject(ArtGroup.class);
         parentGroup.setName("parent");
 
@@ -57,6 +57,7 @@ public class CDOReflexiveRelICustomSorterIT extends RuntimeCase {
 
     @Test
     public void add() {
+        ObjectContext context = env.context();
         ArtGroup parentGroup = context.newObject(ArtGroup.class);
         parentGroup.setName("parent");
 
@@ -69,6 +70,7 @@ public class CDOReflexiveRelICustomSorterIT extends RuntimeCase {
 
     @Test
     public void addDeleteWithCommit() {
+        ObjectContext context = env.context();
         ArtGroup parentGroup = context.newObject(ArtGroup.class);
         parentGroup.setName("parent");
 
@@ -83,6 +85,7 @@ public class CDOReflexiveRelICustomSorterIT extends RuntimeCase {
 
     @Test
     public void replaceDeleteNoCommit() {
+        ObjectContext context = env.context();
         ArtGroup parentGroup1 = context.newObject(ArtGroup.class);
         parentGroup1.setName("parent1");
         ArtGroup parentGroup2 = context.newObject(ArtGroup.class);
@@ -100,6 +103,7 @@ public class CDOReflexiveRelICustomSorterIT extends RuntimeCase {
 
     @Test
     public void replaceDeleteWithCommit() {
+        ObjectContext context = env.context();
         ArtGroup parentGroup1 = context.newObject(ArtGroup.class);
         parentGroup1.setName("parent1");
         ArtGroup parentGroup2 = context.newObject(ArtGroup.class);
@@ -118,6 +122,7 @@ public class CDOReflexiveRelICustomSorterIT extends RuntimeCase {
 
     @Test
     public void commitReplaceCommit() {
+        ObjectContext context = env.context();
         ArtGroup parentGroup1 = context.newObject(ArtGroup.class);
         parentGroup1.setName("parent1");
         ArtGroup parentGroup2 = context.newObject(ArtGroup.class);
@@ -133,11 +138,11 @@ public class CDOReflexiveRelICustomSorterIT extends RuntimeCase {
 
     @Test
     public void complexInsertUpdateOrdering() {
+        ObjectContext context = env.context();
         ArtGroup parentGroup = context.newObject(ArtGroup.class);
         parentGroup.setName("parent");
         context.commitChanges();
 
-        // Check that the update and insert both work write
         ArtGroup childGroup1 = context.newObject(ArtGroup.class);
         childGroup1.setName("child1");
         childGroup1.setToParentGroup(parentGroup);
@@ -150,6 +155,7 @@ public class CDOReflexiveRelICustomSorterIT extends RuntimeCase {
     @Test
     @Disabled
     public void circledDependencyTest() {
+        ObjectContext context = env.context();
         ArtGroup artGroup1 = context.newObject(ArtGroup.class);
         artGroup1.setName("artGroup1");
 
@@ -162,6 +168,7 @@ public class CDOReflexiveRelICustomSorterIT extends RuntimeCase {
 
     @Test
     public void linkedDependencyTest() {
+        ObjectContext context = env.context();
         Gallery gallery = context.newObject(Gallery.class);
         gallery.setGalleryName("gallery1");
 

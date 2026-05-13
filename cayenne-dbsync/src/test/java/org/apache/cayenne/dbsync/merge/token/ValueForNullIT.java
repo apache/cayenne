@@ -27,7 +27,6 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.dbsync.merge.DataMapMerger;
 import org.apache.cayenne.dbsync.merge.MergeCase;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbAttribute;
@@ -36,6 +35,7 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,8 +46,12 @@ public class ValueForNullIT extends MergeCase {
 
     private static final String DEFAULT_VALUE_STRING = "DEFSTRING";
 
-    @Inject
     private DataContext context;
+
+    @BeforeEach
+    public void setUpContext() {
+        context = env.dataContext();
+    }
 
     @Test
     public void test() throws Exception {

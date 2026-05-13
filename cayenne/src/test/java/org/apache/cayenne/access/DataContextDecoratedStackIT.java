@@ -24,18 +24,16 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Map;
 
@@ -43,17 +41,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextDecoratedStackIT extends RuntimeCase {
+public class DataContextDecoratedStackIT {
 
-    @Inject
-    private CayenneRuntime runtime;
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     @Test
     public void commitDecorated() {
-        DataDomain dd = runtime.getDataDomain();
+        DataDomain dd = env.runtime().getDataDomain();
         DataChannel decorator = new DataChannelDecorator(dd);
-        DataContext context = (DataContext) runtime.newContext(decorator);
+        DataContext context = (DataContext) env.runtime().newContext(decorator);
 
         Artist a = context.newObject(Artist.class);
         a.setArtistName("XXX");
@@ -76,9 +73,9 @@ public class DataContextDecoratedStackIT extends RuntimeCase {
 
     @Test
     public void getParentDataDomain() {
-        DataDomain dd = runtime.getDataDomain();
+        DataDomain dd = env.runtime().getDataDomain();
         DataChannel decorator = new DataChannelDecorator(dd);
-        DataContext context = (DataContext) runtime.newContext(decorator);
+        DataContext context = (DataContext) env.runtime().newContext(decorator);
 
         assertSame(dd, context.getParentDataDomain());
     }

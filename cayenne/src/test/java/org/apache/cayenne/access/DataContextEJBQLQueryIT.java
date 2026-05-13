@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
@@ -31,10 +30,10 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.math.BigDecimal;
 import java.sql.Types;
@@ -47,16 +46,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextEJBQLQueryIT extends RuntimeCase {
+public class DataContextEJBQLQueryIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private ObjectContext context;
 
-    @Inject
     private DBHelper dbHelper;
 
-    @Inject
     private UnitDbAdapter accessStackAdapter;
 
     private TableHelper tArtist;
@@ -65,6 +63,9 @@ public class DataContextEJBQLQueryIT extends RuntimeCase {
     
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.context();
+        dbHelper = env.dbHelper();
+        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 

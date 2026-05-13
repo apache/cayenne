@@ -22,8 +22,6 @@ import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -32,7 +30,6 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.SUS_PROJECT)
 public class SchemaUpdateStrategyIT extends SchemaUpdateStrategyBase {
 
     @Test

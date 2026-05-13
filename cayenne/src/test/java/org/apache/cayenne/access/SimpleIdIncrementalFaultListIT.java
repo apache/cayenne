@@ -24,33 +24,33 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class SimpleIdIncrementalFaultListIT extends RuntimeCase {
+public class SimpleIdIncrementalFaultListIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private DataContext context;
-
-    @Inject
     private DBHelper dbHelper;
 
     private TableHelper tArtist;
 
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.dataContext();
+        dbHelper = env.dbHelper();
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
     }

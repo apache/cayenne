@@ -26,7 +26,6 @@ import java.util.List;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -34,22 +33,22 @@ import org.apache.cayenne.testdo.numeric_types.BigDecimalEntity;
 import org.apache.cayenne.testdo.numeric_types.BigIntegerEntity;
 import org.apache.cayenne.testdo.numeric_types.BooleanTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.NUMERIC_TYPES_PROJECT)
-public class DataContextEJBQLNumericalFunctionalIT extends RuntimeCase {
+public class DataContextEJBQLNumericalFunctionalIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.NUMERIC_TYPES_PROJECT);
+
     protected DBHelper dbHelper;
 
-    @Inject
     private ObjectContext context;
 
     private TableHelper tBigIntegerEntity;
@@ -57,6 +56,8 @@ public class DataContextEJBQLNumericalFunctionalIT extends RuntimeCase {
     
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.context();
+        dbHelper = env.dbHelper();
         tBigIntegerEntity = new TableHelper(dbHelper, "BIGINTEGER_ENTITY");
         tBigIntegerEntity.setColumns("ID", "BIG_INTEGER_FIELD");
     }

@@ -37,7 +37,6 @@ import org.apache.cayenne.dbsync.reverse.dbload.LoggingDbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -46,12 +45,12 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.ExtraModules;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.DBCleaner;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.slf4j.Logger;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
@@ -63,34 +62,37 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-@ExtraModules(DbSyncModule.class)
-public abstract class MergeCase extends RuntimeCase {
+public abstract class MergeCase {
 
-    @Inject
+    // disable auto-clean: we null out ARTGROUP.PARENT_GROUP_ID before cleanup
+    // to avoid FK violations on databases with strict FK enforcement (e.g. Postgres)
+    @RegisterExtension
+    protected static final CayenneTestsExt env = CayenneTestsExt
+            .forProject(CayenneProjects.TESTMAP_PROJECT)
+            .withExtraModules(DbSyncModule.class)
+            .withoutAutoClean();
+
     protected EntityResolver resolver;
-    @Inject
     protected DataNode node;
     protected DataMap map;
     private final Logger logger = LoggerFactory.getLogger(MergeCase.class);
-    @Inject
     private DBHelper dbHelper;
-    @Inject
     private CayenneRuntime runtime;
-    @Inject
     protected UnitDbAdapter accessStackAdapter;
-    @Inject
     private RuntimeCaseDataSourceFactory dataSourceFactory;
 
     @BeforeEach
-    @Override
-    public void cleanUpDB() throws Exception {
-        dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
-        super.cleanUpDB();
-    }
-
-    @BeforeEach
     public void setUp() throws Exception {
+        resolver = env.getInstance(EntityResolver.class);
+        node = env.getInstance(DataNode.class);
+        dbHelper = env.dbHelper();
+        runtime = env.runtime();
+        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
+        dataSourceFactory = env.getInstance(RuntimeCaseDataSourceFactory.class);
+
+        // break circular FK before DBCleaner.clean()
+        dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
+        env.getInstance(DBCleaner.class).clean();
 
         // this map can't be safely modified in this test, as it is reset by DI
         // container

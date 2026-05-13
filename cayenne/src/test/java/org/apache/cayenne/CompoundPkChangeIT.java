@@ -19,18 +19,21 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@UseCayenneRuntime(CayenneProjects.COMPOUND_PROJECT)
-public class CompoundPkChangeIT extends RuntimeCase {
+public class CompoundPkChangeIT {
+
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.COMPOUND_PROJECT);
+
 
     private static final String key1v1 = "-key1-v1-";
     private static final String key2v1 = "-key2-v1-";
@@ -38,9 +41,13 @@ public class CompoundPkChangeIT extends RuntimeCase {
     private static final String key2v2 = "-key2-v2-";
     private static final String key1v3 = "-key1-v3-";
     private static final String key2v3 = "-key2-v3-";
-
-    @Inject
     private DataContext context;
+
+
+    @BeforeEach
+    public void setUp() {
+        context = env.dataContext();
+    }
 
     @Test
     public void compoundPkChangeSingleElement() throws Exception {

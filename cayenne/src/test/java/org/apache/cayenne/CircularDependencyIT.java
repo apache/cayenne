@@ -19,7 +19,6 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships.E1;
@@ -28,26 +27,24 @@ import org.apache.cayenne.testdo.relationships.ReflexiveAndToOne;
 import org.apache.cayenne.unit.OracleUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.sql.SQLException;
 import java.sql.Types;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_PROJECT)
-public class CircularDependencyIT extends RuntimeCase {
+public class CircularDependencyIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.RELATIONSHIPS_PROJECT);
+
     private UnitDbAdapter unitDbAdapter;
-
-    @Inject
     private ObjectContext context;
-
-    @Inject
     private DBHelper dbHelper;
 
     @AfterEach
@@ -66,6 +63,14 @@ public class CircularDependencyIT extends RuntimeCase {
 
         reflexive.update().set("PARENT_ID", null, Types.INTEGER).execute();
         reflexive.deleteAll();
+    }
+
+
+    @BeforeEach
+    public void setUp() {
+        unitDbAdapter = env.getInstance(UnitDbAdapter.class);
+        context = env.context();
+        dbHelper = env.dbHelper();
     }
 
     @Test

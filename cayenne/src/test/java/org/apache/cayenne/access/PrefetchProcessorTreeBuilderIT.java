@@ -20,7 +20,6 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -34,9 +33,10 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,14 +49,20 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class PrefetchProcessorTreeBuilderIT extends RuntimeCase {
+public class PrefetchProcessorTreeBuilderIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private DataContext context;
-
-    @Inject
     private EntityResolver resolver;
+
+    @BeforeEach
+    public void setUp() {
+        context = env.dataContext();
+        resolver = env.getInstance(EntityResolver.class);
+    }
+
 
     @Test
     public void buildTreeNoPrefetches() {

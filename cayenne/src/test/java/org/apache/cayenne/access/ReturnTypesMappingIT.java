@@ -25,7 +25,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.MappedSelect;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.return_types.ReturnTypesMap1;
@@ -34,9 +33,10 @@ import org.apache.cayenne.testdo.return_types.ReturnTypesMapLobs1;
 import org.apache.cayenne.unit.PostgresUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,18 +47,24 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 /**
  * Test Types mapping for selected columns
  */
-@UseCayenneRuntime(CayenneProjects.RETURN_TYPES_PROJECT)
-public class ReturnTypesMappingIT extends RuntimeCase {
+public class ReturnTypesMappingIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.RETURN_TYPES_PROJECT);
+
     private DataContext context;
-
-    @Inject
     private UnitDbAdapter unitDbAdapter;
 
     /*
      * TODO: olga: We need divided TYPES_MAPPING_TES2 to 2 schemas with lobs columns and not lobs columns
      */
+
+
+    @BeforeEach
+    public void setUp() {
+        context = env.dataContext();
+        unitDbAdapter = env.getInstance(UnitDbAdapter.class);
+    }
 
     @Test
     public void bigint() throws Exception {

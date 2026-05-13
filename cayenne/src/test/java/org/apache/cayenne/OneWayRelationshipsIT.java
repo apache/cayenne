@@ -22,7 +22,6 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SQLSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -31,23 +30,22 @@ import org.apache.cayenne.testdo.oneway.OnewayTable2;
 import org.apache.cayenne.testdo.oneway.OnewayTable3;
 import org.apache.cayenne.testdo.oneway.OnewayTable4;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.ONEWAY_PROJECT)
-public class OneWayRelationshipsIT extends RuntimeCase {
+public class OneWayRelationshipsIT {
 
-	@Inject
+	@RegisterExtension
+	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.ONEWAY_PROJECT);
+
 	private ObjectContext context;
-
-	@Inject
 	private DBHelper dbHelper;
 
 	private TableHelper t1Helper;
@@ -57,6 +55,8 @@ public class OneWayRelationshipsIT extends RuntimeCase {
 
 	@BeforeEach
 	public void setUp() throws Exception {
+		context = env.context();
+		dbHelper = env.dbHelper();
 		t1Helper = new TableHelper(dbHelper, "oneway_table1");
 		t1Helper.setColumns("ID");
 		t2Helper = new TableHelper(dbHelper, "oneway_table2");

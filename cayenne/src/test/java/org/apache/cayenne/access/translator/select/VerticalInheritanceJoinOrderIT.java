@@ -21,26 +21,33 @@ package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.inheritance_vertical.IvBase;
 import org.apache.cayenne.testdo.inheritance_vertical.IvOther;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @since 5.0
  */
-@UseCayenneRuntime(CayenneProjects.INHERITANCE_VERTICAL_PROJECT)
-public class VerticalInheritanceJoinOrderIT extends RuntimeCase {
+public class VerticalInheritanceJoinOrderIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.INHERITANCE_VERTICAL_PROJECT);
+
     private DataNode dataNode;
+
+
+    @BeforeEach
+    public void setUp() {
+        dataNode = env.getInstance(DataNode.class);
+    }
 
     /**
      * Tests that INNER joins from WHERE clause relationships are added before

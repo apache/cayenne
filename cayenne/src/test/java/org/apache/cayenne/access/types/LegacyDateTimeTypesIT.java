@@ -21,15 +21,15 @@ package org.apache.cayenne.access.types;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.MappedSelect;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.legacy_datetime.CalendarEntity;
 import org.apache.cayenne.testdo.legacy_datetime.DateTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.sql.Time;
 import java.util.Calendar;
@@ -40,11 +40,18 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Tests Date handling in Cayenne.
  */
-@UseCayenneRuntime(CayenneProjects.LEGACY_DATE_TIME_PROJECT)
-public class LegacyDateTimeTypesIT extends RuntimeCase {
+public class LegacyDateTimeTypesIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.LEGACY_DATE_TIME_PROJECT);
+
     private DataContext context;
+
+
+    @BeforeEach
+    public void setUp() {
+        context = env.dataContext();
+    }
 
     @Test
     public void calendar() {

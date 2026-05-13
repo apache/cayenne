@@ -19,16 +19,18 @@ package org.apache.cayenne;
  *  under the License.
  ****************************************************************/
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
 
-public abstract class CayenneDOTestBase extends RuntimeCase {
+public abstract class CayenneDOTestBase {
 
     public static final String artistName = "artist with one painting";
     public static final String galleryName = "my gallery";
@@ -39,8 +41,15 @@ public abstract class CayenneDOTestBase extends RuntimeCase {
             2, 3, 4, 5
     };
 
-    @Inject
+    @RegisterExtension
+    protected static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     protected ObjectContext context;
+
+    @BeforeEach
+    public void setUpCayenneDOTestBase() {
+        context = env.context();
+    }
 
     protected Artist newArtist() {
         Artist a1 = context.newObject(Artist.class);

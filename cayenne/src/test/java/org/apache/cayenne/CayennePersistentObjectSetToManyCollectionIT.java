@@ -19,14 +19,13 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships_collection_to_many.CollectionToMany;
 import org.apache.cayenne.testdo.relationships_collection_to_many.CollectionToManyTarget;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -35,17 +34,18 @@ import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_COLLECTION_TO_MANY_PROJECT)
-public class CayennePersistentObjectSetToManyCollectionIT extends RuntimeCase {
+public class CayennePersistentObjectSetToManyCollectionIT {
 
-	@Inject
+	@RegisterExtension
+	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.RELATIONSHIPS_COLLECTION_TO_MANY_PROJECT);
+
 	private ObjectContext context;
-
-	@Inject
 	private DBHelper dbHelper;
 
 	@BeforeEach
 	public void setUp() throws Exception {
+		context = env.context();
+		dbHelper = env.dbHelper();
 		TableHelper tCollectionToMany = new TableHelper(dbHelper, "COLLECTION_TO_MANY");
 		tCollectionToMany.setColumns("ID");
 

@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_people.AbstractPerson;
@@ -40,19 +39,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DataContextObjectIdQuery_PolymorphicIT extends PeopleProjectCase {
 
-	@Inject
-	private DataContext context1;
+		private DataContext context1;
 
-	@Inject
-	private DataContext context2;
+		private DataContext context2;
 
-	@Inject
-	private DataChannelInterceptor queryInterceptor;
+		private DataChannelInterceptor queryInterceptor;
 
 	private TableHelper tPerson;
 
 	@BeforeEach
 	public void before() {
+		context1 = env.dataContext();
+		context2 = (DataContext) env.runtime().newContext();
+		queryInterceptor = env.getInstance(DataChannelInterceptor.class);
 		tPerson = new TableHelper(dbHelper, "PERSON").setColumns("PERSON_ID", "NAME", "PERSON_TYPE")
 				.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR);
 	}

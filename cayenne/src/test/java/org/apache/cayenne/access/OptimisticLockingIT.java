@@ -23,7 +23,6 @@ import java.sql.Types;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SortOrder;
@@ -32,8 +31,8 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.locking.RelLockingTestEntity;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -42,13 +41,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@UseCayenneRuntime(CayenneProjects.LOCKING_PROJECT)
-public class OptimisticLockingIT extends RuntimeCase {
+public class OptimisticLockingIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.LOCKING_PROJECT);
+
     protected DataContext context;
-
-    @Inject
     protected DBHelper dbHelper;
 
     protected TableHelper tSimpleLockingTest;
@@ -57,6 +55,8 @@ public class OptimisticLockingIT extends RuntimeCase {
 
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.dataContext();
+        dbHelper = env.dbHelper();
         tSimpleLockingTest = new TableHelper(dbHelper, "SIMPLE_LOCKING_TEST");
         tSimpleLockingTest.setColumns("LOCKING_TEST_ID", "NAME", "DESCRIPTION", "INT_COLUMN_NOTNULL")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.INTEGER);

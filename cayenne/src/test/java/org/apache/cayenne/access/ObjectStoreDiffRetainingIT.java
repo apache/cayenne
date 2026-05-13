@@ -20,14 +20,13 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,13 +35,12 @@ import java.sql.Types;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class ObjectStoreDiffRetainingIT extends RuntimeCase {
+public class ObjectStoreDiffRetainingIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     protected DataContext context;
-
-    @Inject
     protected DBHelper dbHelper;
 
     protected TableHelper tArtist;
@@ -50,6 +48,8 @@ public class ObjectStoreDiffRetainingIT extends RuntimeCase {
 
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.dataContext();
+        dbHelper = env.dbHelper();
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH")
                 .setColumnTypes(Types.BIGINT, Types.CHAR, Types.DATE);

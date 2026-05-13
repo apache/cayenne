@@ -18,18 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
-import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -37,24 +35,21 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextCallbacksIT extends RuntimeCase {
+public class DataContextCallbacksIT {
 
-    @Inject
-    private DataContext context;
-
-    @Inject
-    private CayenneRuntime runtime;
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     @AfterEach
     public void tearDown() throws Exception {
-        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
+        EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
         resolver.getCallbackRegistry().clear();
     }
 
     @Test
     public void postAddCallbacks() {
-        LifecycleCallbackRegistry registry = runtime
+        DataContext context = env.dataContext();
+        LifecycleCallbackRegistry registry = env.runtime()
                 .getDataDomain()
                 .getEntityResolver()
                 .getCallbackRegistry();
@@ -91,7 +86,8 @@ public class DataContextCallbacksIT extends RuntimeCase {
 
     @Test
     public void prePersistCallbacks() {
-        LifecycleCallbackRegistry registry = runtime
+        DataContext context = env.dataContext();
+        LifecycleCallbackRegistry registry = env.runtime()
                 .getDataDomain()
                 .getEntityResolver()
                 .getCallbackRegistry();
@@ -130,7 +126,8 @@ public class DataContextCallbacksIT extends RuntimeCase {
 
     @Test
     public void preRemoveCallbacks() {
-        LifecycleCallbackRegistry registry = runtime
+        DataContext context = env.dataContext();
+        LifecycleCallbackRegistry registry = env.runtime()
                 .getDataDomain()
                 .getEntityResolver()
                 .getCallbackRegistry();

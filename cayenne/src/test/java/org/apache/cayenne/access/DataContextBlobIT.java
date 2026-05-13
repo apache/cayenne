@@ -22,39 +22,40 @@ package org.apache.cayenne.access;
 import java.util.List;
 
 import org.apache.cayenne.access.types.ByteArrayTypeTest;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.lob.BlobTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-@UseCayenneRuntime(CayenneProjects.LOB_PROJECT)
-public class DataContextBlobIT extends RuntimeCase {
+public class DataContextBlobIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.LOB_PROJECT);
+
     private DataContext context;
-
-    @Inject
     private DataContext context2;
-
-    @Inject
     private DataContext context3;
 
-    @Inject
-    private UnitDbAdapter accessStackAdapter;
+    @BeforeEach
+    public void setUp() {
+        context  = env.dataContext();
+        context2 = (DataContext) env.runtime().newContext();
+        context3 = (DataContext) env.runtime().newContext();
+    }
 
     protected boolean skipTests() {
-        return !accessStackAdapter.supportsLobs();
+        return !env.getInstance(UnitDbAdapter.class).supportsLobs();
     }
 
     protected boolean skipEmptyLOBTests() {
-        return !accessStackAdapter.handlesNullVsEmptyLOBs();
+        return !env.getInstance(UnitDbAdapter.class).handlesNullVsEmptyLOBs();
     }
 
     @Test

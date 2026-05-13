@@ -24,10 +24,8 @@ import java.sql.SQLException;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
 
-import org.apache.cayenne.unit.UnitDbAdapter;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,12 +36,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EntityLoaderIT extends BaseLoaderIT {
 
-    @Inject
-    private UnitDbAdapter unitDbAdapter;
-
     @Test
     public void getTablesWithWrongCatalog() throws Exception {
-        if(unitDbAdapter.supportsCatalogs()) {
+        if(accessStackAdapter.supportsCatalogs()) {
             DbLoaderConfiguration config = new DbLoaderConfiguration();
             config.setFiltersConfig(
                     FiltersConfig.create("WRONG", null, TableFilter.everything(), PatternFilter.INCLUDE_NOTHING)

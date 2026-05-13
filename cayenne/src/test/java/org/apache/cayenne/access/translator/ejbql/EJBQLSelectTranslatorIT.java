@@ -19,7 +19,6 @@
 package org.apache.cayenne.access.translator.ejbql;
 
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLParser;
 import org.apache.cayenne.ejbql.EJBQLParserFactory;
@@ -27,9 +26,10 @@ import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,13 +38,12 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class EJBQLSelectTranslatorIT extends RuntimeCase {
+public class EJBQLSelectTranslatorIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private CayenneRuntime runtime;
-
-    @Inject
     private DbAdapter adapter;
 
     private SQLTemplate translateSelect(String ejbql) {
@@ -66,6 +65,13 @@ public class EJBQLSelectTranslatorIT extends RuntimeCase {
                 select, new JdbcEJBQLTranslatorFactory(), adapter.getQuotingStrategy());
         select.getExpression().visit(new EJBQLSelectTranslator(tr));
         return tr.getQuery();
+    }
+
+
+    @BeforeEach
+    public void setUp() {
+        runtime = env.runtime();
+        adapter = env.getInstance(DbAdapter.class);
     }
 
     @Test

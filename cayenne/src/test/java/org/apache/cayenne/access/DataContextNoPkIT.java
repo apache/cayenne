@@ -22,15 +22,14 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.no_pk.NoPkTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -40,18 +39,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.NO_PK_PROJECT)
-public class DataContextNoPkIT extends RuntimeCase {
+public class DataContextNoPkIT  {
 
-    @Inject
-    protected ObjectContext context;
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.NO_PK_PROJECT);
 
-    @Inject
-    protected DBHelper dbHelper;
+        protected ObjectContext context;
+
+        protected DBHelper dbHelper;
 
     
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.context();
+        dbHelper = env.dbHelper();
         TableHelper noPkTestTable = new TableHelper(dbHelper, "NO_PK_TEST", "ATTRIBUTE1");
         noPkTestTable.deleteAll();
 

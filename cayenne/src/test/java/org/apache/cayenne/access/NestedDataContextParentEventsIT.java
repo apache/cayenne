@@ -21,30 +21,35 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.util.RuntimeCaseSyncModule;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.ExtraModules;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-@ExtraModules(RuntimeCaseSyncModule.class)
-public class NestedDataContextParentEventsIT extends RuntimeCase {
+public class NestedDataContextParentEventsIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT)
+            .withExtraModules(RuntimeCaseSyncModule.class);
+
     protected CayenneRuntime runtime;
-
-    @Inject
     private DataContext context;
+
+    @BeforeEach
+    public void setUp() {
+        runtime = env.runtime();
+        context = env.dataContext();
+    }
+
 
     @Test
     public void parentUpdatedId() throws Exception {

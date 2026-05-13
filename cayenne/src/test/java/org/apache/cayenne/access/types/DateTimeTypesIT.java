@@ -20,7 +20,6 @@
 package org.apache.cayenne.access.types;
 
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLExec;
 import org.apache.cayenne.query.SQLSelect;
@@ -33,8 +32,8 @@ import org.apache.cayenne.testdo.datetime.PeriodTestEntity;
 import org.apache.cayenne.unit.MySQLUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -50,20 +49,20 @@ import java.util.TimeZone;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@UseCayenneRuntime(CayenneProjects.DATE_TIME_PROJECT)
-public class DateTimeTypesIT extends RuntimeCase {
+public class DateTimeTypesIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.DATE_TIME_PROJECT);
+
     private DataContext context;
-
-    @Inject
     private UnitDbAdapter unitDbAdapter;
-
-    @Inject
     private DBHelper dbHelper;
 
     @BeforeEach
     public void before() throws SQLException {
+        context = env.dataContext();
+        unitDbAdapter = env.getInstance(UnitDbAdapter.class);
+        dbHelper = env.dbHelper();
         dbHelper.deleteAll("LOCAL_DATE_TEST");
         dbHelper.deleteAll("LOCAL_DATETIME_TEST");
         dbHelper.deleteAll("LOCAL_TIME_TEST");

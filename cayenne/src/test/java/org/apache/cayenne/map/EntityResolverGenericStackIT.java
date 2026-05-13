@@ -20,11 +20,11 @@ package org.apache.cayenne.map;
 
 import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Collections;
 
@@ -33,11 +33,17 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@UseCayenneRuntime(CayenneProjects.GENERIC_PROJECT)
-public class EntityResolverGenericStackIT extends RuntimeCase {
+public class EntityResolverGenericStackIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.GENERIC_PROJECT);
+
     private EntityResolver resolver;
+
+    @BeforeEach
+    public void setUp() {
+        resolver = env.getInstance(EntityResolver.class);
+    }
 
     @Test
     public void objEntityLookupDuplicates() {

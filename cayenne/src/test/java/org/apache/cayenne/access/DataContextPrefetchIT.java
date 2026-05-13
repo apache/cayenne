@@ -31,7 +31,6 @@ import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.PropertyFactory;
@@ -50,24 +49,23 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextPrefetchIT extends RuntimeCase {
+public class DataContextPrefetchIT  {
 
-	@Inject
-	protected DataContext context;
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-	@Inject
-	protected DBHelper dbHelper;
+		protected DataContext context;
 
-	@Inject
-	protected DataChannelInterceptor queryInterceptor;
+		protected DBHelper dbHelper;
+
+		protected DataChannelInterceptor queryInterceptor;
 
 	protected TableHelper tArtist;
 	protected TableHelper tPainting;
@@ -81,6 +79,9 @@ public class DataContextPrefetchIT extends RuntimeCase {
 	
 	@BeforeEach
 	public void setUp() throws Exception {
+        context = env.dataContext();
+        dbHelper = env.dbHelper();
+        queryInterceptor = env.getInstance(DataChannelInterceptor.class);
 		tArtist = new TableHelper(dbHelper, "ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 

@@ -20,16 +20,15 @@
 package org.apache.cayenne.unit.jira;
 
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships.ReflexiveAndToOne;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.sql.Types;
 import java.util.List;
@@ -42,17 +41,18 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  */
 // TODO: this is really a qualifier translator general test...
 // need to find an appropriate place in unit tests..
-@UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_PROJECT)
-public class CAY_194IT extends RuntimeCase {
+public class CAY_194IT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.RELATIONSHIPS_PROJECT);
+
     protected DataContext context;
-
-    @Inject
     private DBHelper dbHelper;
 
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.dataContext();
+        dbHelper = env.dbHelper();
         TableHelper tReflexive = new TableHelper(dbHelper, "REFLEXIVE_AND_TO_ONE");
         tReflexive.setColumns("REFLEXIVE_AND_TO_ONE_ID", "PARENT_ID");
 

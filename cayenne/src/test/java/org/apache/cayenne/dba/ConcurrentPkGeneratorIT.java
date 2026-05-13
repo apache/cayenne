@@ -20,7 +20,6 @@
 package org.apache.cayenne.dba;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
@@ -30,10 +29,10 @@ import org.apache.cayenne.testdo.qualified.Qualified1;
 import org.apache.cayenne.unit.DerbyUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -46,17 +45,18 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-@UseCayenneRuntime(CayenneProjects.QUALIFIED_PROJECT)
-public class ConcurrentPkGeneratorIT extends RuntimeCase {
+public class ConcurrentPkGeneratorIT {
 
-    @Inject
-    private CayenneRuntime runtime;
+	@RegisterExtension
+	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.QUALIFIED_PROJECT);
 
-	@Inject
+	private CayenneRuntime runtime;
 	private UnitDbAdapter unitDbAdapter;
 
 	@BeforeEach
 	public void prepareDerbyDb() {
+		runtime = env.runtime();
+		unitDbAdapter = env.getInstance(UnitDbAdapter.class);
 		//use to fix random test failures on derby db
 		if(unitDbAdapter instanceof DerbyUnitDbAdapter) {
 			try(Connection connection = runtime.getDataDomain().getDataNode("qualified").getDataSource().getConnection()){

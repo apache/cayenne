@@ -24,7 +24,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.annotation.PostAdd;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
@@ -36,9 +35,10 @@ import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.annotations.Tag1;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -52,14 +52,19 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataDomainIT extends RuntimeCase {
+public class DataDomainIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private CayenneRuntime runtime;
-
-    @Inject
     private JdbcEventLogger logger;
+
+    @BeforeEach
+    public void setUp() {
+        runtime = env.runtime();
+        logger = env.getInstance(JdbcEventLogger.class);
+    }
 
     @Test
     public void name() throws Exception {

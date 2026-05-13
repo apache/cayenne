@@ -20,9 +20,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.things.Bag;
@@ -31,10 +29,10 @@ import org.apache.cayenne.testdo.things.Box;
 import org.apache.cayenne.testdo.things.Thing;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,19 +40,14 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@UseCayenneRuntime(CayenneProjects.THINGS_PROJECT)
-public class DataContextDisjointByIdPrefetch_ExtrasIT extends RuntimeCase {
+public class DataContextDisjointByIdPrefetch_ExtrasIT {
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.THINGS_PROJECT);
 
-    @Inject
     protected DataContext context;
 
-    @Inject
-    private CayenneRuntime runtime;
-
-    @Inject
     protected DBHelper dbHelper;
 
-    @Inject
     protected DataChannelInterceptor queryInterceptor;
 
     protected TableHelper tBag;
@@ -66,6 +59,9 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends RuntimeCase {
 
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.dataContext();
+        dbHelper = env.dbHelper();
+        queryInterceptor = env.getInstance(DataChannelInterceptor.class);
         tBag = new TableHelper(dbHelper, "BAG");
         tBag.setColumns("ID", "NAME");
 

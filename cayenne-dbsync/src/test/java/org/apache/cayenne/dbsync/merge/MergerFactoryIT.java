@@ -22,13 +22,13 @@ import java.sql.Types;
 
 import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -37,8 +37,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class MergerFactoryIT extends MergeCase {
 
-    @Inject
     private DataContext context;
+
+    @BeforeEach
+    public void setUpContext() {
+        context = env.dataContext();
+    }
 
     @Test
     public void addAndDropColumnToDb() throws Exception {

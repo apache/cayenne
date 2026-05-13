@@ -20,7 +20,6 @@ package org.apache.cayenne;
 
 import java.util.Map;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -29,8 +28,8 @@ import org.apache.cayenne.testdo.map_to_many.IdMapToMany;
 import org.apache.cayenne.testdo.map_to_many.MapToMany;
 import org.apache.cayenne.testdo.map_to_many.MapToManyTarget;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -41,13 +40,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.MAP_TO_MANY_PROJECT)
-public class CDOMapRelationshipIT extends RuntimeCase {
+public class CDOMapRelationshipIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.MAP_TO_MANY_PROJECT);
+
     protected ObjectContext context;
-
-    @Inject
     protected DBHelper dbHelper;
 
     protected TableHelper tMapToMany;
@@ -57,6 +55,8 @@ public class CDOMapRelationshipIT extends RuntimeCase {
 
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.context();
+        dbHelper = env.dbHelper();
         tMapToMany = new TableHelper(dbHelper, "MAP_TO_MANY");
         tMapToMany.setColumns("ID");
 

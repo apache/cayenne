@@ -20,15 +20,13 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.access.types.ByteArrayTypeTest;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
 import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
-import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Timestamp;
@@ -39,11 +37,14 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class CDOOneDep2OneIT extends CayenneDOTestBase {
 
-    @Inject
     private ObjectContext context1;
+
+    @BeforeEach
+    public void setUpContext1() {
+        context1 = env.runtime().newContext();
+    }
 
     @Test
     public void newAdd1() throws Exception {

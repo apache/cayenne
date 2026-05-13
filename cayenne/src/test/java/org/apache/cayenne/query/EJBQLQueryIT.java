@@ -22,7 +22,6 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.EmptyConfigurationNodeVisitor;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.exp.Expression;
@@ -38,11 +37,11 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.apache.cayenne.util.XMLEncoder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -51,19 +50,14 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class EJBQLQueryIT extends RuntimeCase {
+public class EJBQLQueryIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private DataContext context;
-
-    @Inject
     private CayenneRuntime runtime;
-
-    @Inject
     protected DataChannelInterceptor queryInterceptor;
-
-    @Inject
     private DBHelper dbHelper;
 
     private TableHelper tArtist;
@@ -71,6 +65,10 @@ public class EJBQLQueryIT extends RuntimeCase {
 
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.dataContext();
+        runtime = env.runtime();
+        queryInterceptor = env.getInstance(DataChannelInterceptor.class);
+        dbHelper = env.dbHelper();
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 

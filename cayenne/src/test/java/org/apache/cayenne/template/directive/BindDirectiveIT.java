@@ -37,7 +37,6 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ObjectSelect;
@@ -46,35 +45,38 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 /**
  * Tests BindDirective for passed null parameters and for not passed parameters
  */
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class BindDirectiveIT extends RuntimeCase {
+public class BindDirectiveIT {
+
+	@RegisterExtension
+	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
 
 	private static String INSERT_TEMPLATE = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) "
 			+ "VALUES (#bind($id), #bind($name), #bind($dob))";
 	private static String INSERT_TEMPLATE_WITH_TYPES = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) "
 			+ "VALUES (#bind($id), #bind($name), #bind($dob 'DATE'))";
 
-	@Inject
 	private JdbcAdapter adapter;
-
-	@Inject
 	private ObjectContext context;
-
-	@Inject
 	private JdbcEventLogger logger;
-
-	@Inject
 	private DataNode node;
-
-	@Inject
 	private DBHelper dbHelper;
+
+	@BeforeEach
+	public void setUp() {
+		adapter = env.getInstance(JdbcAdapter.class);
+		context = env.context();
+		logger = env.getInstance(JdbcEventLogger.class);
+		node = env.getInstance(DataNode.class);
+		dbHelper = env.dbHelper();
+	}
 
 	@Test
 	public void bind_Timestamp() throws Exception {

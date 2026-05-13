@@ -19,23 +19,29 @@
 package org.apache.cayenne.exp.parser;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.enum_test.Enum1;
 import org.apache.cayenne.testdo.enum_test.EnumEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@UseCayenneRuntime(CayenneProjects.ENUM_PROJECT)
-public class ASTObjPathEnumIT extends RuntimeCase {
+public class ASTObjPathEnumIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.ENUM_PROJECT);
+
     private ObjectContext context;
+
+    @BeforeEach
+    public void setUp() {
+        context = env.context();
+    }
 
     @Test
     public void injectEnumByName() {

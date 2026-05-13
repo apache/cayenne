@@ -30,29 +30,25 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.SQLSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 @SuppressWarnings("deprecation")
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class CayenneRuntimeBuilderIT extends RuntimeCase {
+public class CayenneRuntimeBuilderIT {
 
-	@Inject
+	@RegisterExtension
+	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
 	private DBHelper dbHelper;
-
-	@Inject
 	private CayenneRuntime runtime;
-
-	@Inject
 	private DataSourceDescriptor dsi;
 
 	private CayenneRuntime localRuntime;
@@ -71,6 +67,9 @@ public class CayenneRuntimeBuilderIT extends RuntimeCase {
 
 	@BeforeEach
 	public void setUp() throws Exception {
+		dbHelper = env.dbHelper();
+		runtime = env.runtime();
+		dsi = env.getInstance(DataSourceDescriptor.class);
 		TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 		tArtist.insert(33001, "AA1");

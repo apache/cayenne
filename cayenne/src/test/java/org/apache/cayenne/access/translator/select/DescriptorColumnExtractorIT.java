@@ -20,15 +20,15 @@ package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.testdo.testmap.CompoundPaintingLongNames;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
 
 import java.util.List;
@@ -36,9 +36,11 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DescriptorColumnExtractorIT extends RuntimeCase {
-    @Inject
+public class DescriptorColumnExtractorIT {
+
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private ObjectContext context;
 
     private final List<String> expectedFlattenedDbFields = List.of(
@@ -48,6 +50,12 @@ public class DescriptorColumnExtractorIT extends RuntimeCase {
             "toGallery.GALLERY_NAME",
             "toPaintingInfo.PAINTING_ID",
             "toPaintingInfo.TEXT_REVIEW");
+
+
+    @BeforeEach
+    public void setUp() {
+        context = env.context();
+    }
 
     @Test
     public void entityResultAddDbFieldsForFlattenedAttributes() {

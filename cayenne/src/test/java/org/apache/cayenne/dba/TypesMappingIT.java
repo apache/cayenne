@@ -20,13 +20,13 @@
 package org.apache.cayenne.dba;
 
 import org.apache.cayenne.MockSerializable;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -41,11 +41,17 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.EMPTY_PROJECT)
-public class TypesMappingIT extends RuntimeCase {
+public class TypesMappingIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.EMPTY_PROJECT);
+
     private RuntimeCaseDataSourceFactory dataSourceFactory;
+
+    @BeforeEach
+    public void setUp() {
+        dataSourceFactory = env.getInstance(RuntimeCaseDataSourceFactory.class);
+    }
 
     @Test
     public void getSqlTypeByJava() throws Exception {

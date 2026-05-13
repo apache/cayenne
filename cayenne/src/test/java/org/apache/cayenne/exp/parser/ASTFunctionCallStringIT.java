@@ -22,7 +22,6 @@ package org.apache.cayenne.exp.parser;
 import java.util.Date;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
@@ -30,9 +29,10 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.OracleUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -41,14 +41,19 @@ import static org.junit.jupiter.api.Assumptions.assumeFalse;
 /**
  * @since 4.0
  */
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class ASTFunctionCallStringIT extends RuntimeCase {
+public class ASTFunctionCallStringIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private UnitDbAdapter unitDbAdapter;
-
-    @Inject
     private ObjectContext context;
+
+    @BeforeEach
+    public void setUp() {
+        unitDbAdapter = env.getInstance(UnitDbAdapter.class);
+        context = env.context();
+    }
 
     private Artist createArtist(String name) throws Exception {
         Artist a1 = context.newObject(Artist.class);

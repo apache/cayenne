@@ -22,11 +22,12 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -37,20 +38,24 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class SchemaUpdateStrategyBase extends RuntimeCase {
+public class SchemaUpdateStrategyBase {
 
-	@Inject
+	// disable auto-clean: this test class drops/creates schema objects itself
+	// (the SUS DataMap is not registered with the global SchemaBuilder)
+	@RegisterExtension
+	protected static final CayenneTestsExt env = CayenneTestsExt
+			.forProject(CayenneProjects.SUS_PROJECT)
+			.withoutAutoClean();
+
 	protected ObjectContext context;
-
-	@Inject
 	protected DataNode node;
-
-	@Inject
 	protected DbAdapter adapter;
 
 	@BeforeEach
-	@Override
 	public void cleanUpDB() {
+		context = env.context();
+		node = env.getInstance(DataNode.class);
+		adapter = env.getInstance(DbAdapter.class);
 		DataMap map = node.getEntityResolver().getDataMap("sus-map");
 		for (String name : existingTables()) {
 

@@ -25,11 +25,11 @@ import java.util.List;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.merge.MergeCase;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -62,8 +62,12 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 public class SetGeneratedFlagToDbIT extends MergeCase {
 
-    @Inject
     UnitDbAdapter dbAdapter;
+
+    @BeforeEach
+    public void setUpDbAdapter() {
+        dbAdapter = env.getInstance(UnitDbAdapter.class);
+    }
 
     @Test
     public void setGeneratedFlag() throws Exception {

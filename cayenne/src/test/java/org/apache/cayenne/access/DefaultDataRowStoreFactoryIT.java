@@ -49,20 +49,23 @@ import org.apache.cayenne.tx.DefaultTransactionManager;
 import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.tx.TransactionManager;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-@UseCayenneRuntime(CayenneProjects.MULTI_TIER_PROJECT)
-public class DefaultDataRowStoreFactoryIT extends RuntimeCase {
+public class DefaultDataRowStoreFactoryIT {
+
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.MULTI_TIER_PROJECT);
+
 
     @Test
     public void getDataRowStore() {
-        CayenneRuntime runtime = getUnitTestInjector().getInstance(CayenneRuntime.class);
+        CayenneRuntime runtime = env.runtime();
         DataRowStore dataStore = runtime.getInjector().getInstance(DataRowStoreFactory.class)
                 .createDataRowStore("test");
 

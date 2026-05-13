@@ -23,40 +23,33 @@ import java.sql.Types;
 import java.util.List;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @since 4.2
  */
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class CAY2509IT extends RuntimeCase {
+public class CAY2509IT {
 
-    @Inject
-    private CayenneRuntime runtime;
-
-    @Inject
-    private DBHelper dbHelper;
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private TableHelper tArtist;
     private TableHelper tPainting;
 
     @BeforeEach
     public void before() {
-        this.tArtist = new TableHelper(dbHelper, "ARTIST").setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH")
+        this.tArtist = new TableHelper(env.dbHelper(), "ARTIST").setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH")
                 .setColumnTypes(Types.BIGINT, Types.CHAR, Types.DATE);
-        this.tPainting = new TableHelper(dbHelper, "PAINTING").setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE")
+        this.tPainting = new TableHelper(env.dbHelper(), "PAINTING").setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE")
                 .setColumnTypes(Types.INTEGER, Types.BIGINT, Types.VARCHAR);
     }
 
@@ -64,7 +57,7 @@ public class CAY2509IT extends RuntimeCase {
     public void selectionProblem() throws SQLException {
         tArtist.insert(1, "A1", null);
         tPainting.insert(1, 1, "P1");
-        ObjectContext context1 = runtime.newContext();
+        ObjectContext context1 = env.runtime().newContext();
         List<Artist> artists1 = ObjectSelect.query(Artist.class)
                 .select(context1);
         assertEquals("P1", artists1.get(0).getPaintingArray().get(0).getPaintingTitle());
@@ -74,7 +67,7 @@ public class CAY2509IT extends RuntimeCase {
                 .where("PAINTING_ID", 1)
                 .execute();
 
-        ObjectContext context2 = runtime.newContext();
+        ObjectContext context2 = env.runtime().newContext();
         List<Artist> artists2 = ObjectSelect.query(Artist.class)
                 .select(context2);
         assertEquals("P2", artists2.get(0).getPaintingArray().get(0).getPaintingTitle());
@@ -83,7 +76,7 @@ public class CAY2509IT extends RuntimeCase {
     @Test
     public void changesInTwoContexts() throws SQLException {
         tArtist.insert(1, "A1", null);
-        ObjectContext context1 = runtime.newContext();
+        ObjectContext context1 = env.runtime().newContext();
         Artist artist = ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.eq("A1"))
                 .selectFirst(context1);
@@ -91,7 +84,7 @@ public class CAY2509IT extends RuntimeCase {
         artist.setArtistName("A2");
         assertEquals("A2", artist.getArtistName());
 
-        ObjectContext context2 = runtime.newContext();
+        ObjectContext context2 = env.runtime().newContext();
         List<Artist> artists = ObjectSelect.query(Artist.class)
                 .select(context2);
         assertEquals(1, artists.size());
@@ -101,8 +94,8 @@ public class CAY2509IT extends RuntimeCase {
     @Test
     public void changesInChildContext() throws SQLException {
         tArtist.insert(1, "A1", null);
-        ObjectContext parentContext1 = runtime.newContext();
-        ObjectContext context1 = runtime.newContext(parentContext1);
+        ObjectContext parentContext1 = env.runtime().newContext();
+        ObjectContext context1 = env.runtime().newContext(parentContext1);
         Artist artist = ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.eq("A1"))
                 .selectFirst(context1);
@@ -110,7 +103,7 @@ public class CAY2509IT extends RuntimeCase {
         artist.setArtistName("A2");
         context1.commitChangesToParent();
 
-        ObjectContext parentContext2 = runtime.newContext();
+        ObjectContext parentContext2 = env.runtime().newContext();
         List<Artist> artists = ObjectSelect.query(Artist.class)
                 .select(parentContext2);
         assertEquals(1, artists.size());

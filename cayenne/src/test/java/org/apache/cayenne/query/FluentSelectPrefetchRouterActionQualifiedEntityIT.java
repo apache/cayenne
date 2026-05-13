@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
@@ -31,11 +30,16 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import org.junit.jupiter.api.BeforeEach;
 
 public class FluentSelectPrefetchRouterActionQualifiedEntityIT extends PeopleProjectCase {
 
-    @Inject
-    private EntityResolver resolver;
+        private EntityResolver resolver;
+
+    @BeforeEach
+    public void setUp() {
+        resolver = env.getInstance(EntityResolver.class);
+    }
 
     @Test
     public void prefetchEmployee() {

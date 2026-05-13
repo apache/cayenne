@@ -21,26 +21,25 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.array_type.ArrayTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
-@UseCayenneRuntime(CayenneProjects.ARRAY_TYPE_PROJECT)
-public class DataContextArrayTypeIT extends RuntimeCase {
+public class DataContextArrayTypeIT {
 
-    @Inject
-    private DataContext context;
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.ARRAY_TYPE_PROJECT);
 
     @Test
     public void doubleArray() {
+        DataContext context = env.dataContext();
         ArrayTestEntity arrayTest = context.newObject(ArrayTestEntity.class);
         Double[] doubleArray = {1.0, 2.0, 3.0};
 

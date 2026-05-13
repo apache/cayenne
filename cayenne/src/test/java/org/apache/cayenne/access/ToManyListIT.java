@@ -20,14 +20,14 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.apache.cayenne.util.PersistentObjectList;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.lang.reflect.Field;
 import java.util.LinkedList;
@@ -37,10 +37,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class ToManyListIT extends RuntimeCase {
+public class ToManyListIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private DataContext context;
 
     private ToManyList createForNewArtist() {
@@ -53,6 +54,12 @@ public class ToManyListIT extends RuntimeCase {
         artist.setArtistName("aa");
         context.commitChanges();
         return new ToManyList(artist, Artist.PAINTING_ARRAY.getName());
+    }
+
+
+    @BeforeEach
+    public void setUp() {
+        context = env.dataContext();
     }
 
     @Test

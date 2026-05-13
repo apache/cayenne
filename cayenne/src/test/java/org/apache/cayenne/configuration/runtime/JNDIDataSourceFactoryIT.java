@@ -20,13 +20,13 @@ package org.apache.cayenne.configuration.runtime;
 
 import com.mockrunner.mock.jdbc.MockDataSource;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.unit.JNDISetup;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import javax.naming.InitialContext;
 import javax.naming.NameNotFoundException;
@@ -35,11 +35,18 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Deprecated
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class JNDIDataSourceFactoryIT extends RuntimeCase {
-    
-    @Inject
+public class JNDIDataSourceFactoryIT {
+
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private Injector injector;
+
+
+    @BeforeEach
+    public void setUp() {
+        injector = env.getInstance(Injector.class);
+    }
 
     @Test
     public void getDataSource_NameBound() throws Exception {

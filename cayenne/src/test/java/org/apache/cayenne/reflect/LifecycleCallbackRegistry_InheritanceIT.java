@@ -21,7 +21,6 @@ package org.apache.cayenne.reflect;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.annotation.PostAdd;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.testdo.inheritance_flat.Group;
 import org.apache.cayenne.testdo.inheritance_flat.Role;
@@ -29,17 +28,24 @@ import org.apache.cayenne.testdo.inheritance_flat.User;
 import org.apache.cayenne.testdo.inheritance_flat.UserProperties;
 import org.apache.cayenne.testdo.testmap.annotations.Tag2;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@UseCayenneRuntime(CayenneProjects.INHERITANCE_SINGLE_TABLE1_PROJECT)
-public class LifecycleCallbackRegistry_InheritanceIT extends RuntimeCase {
+public class LifecycleCallbackRegistry_InheritanceIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.INHERITANCE_SINGLE_TABLE1_PROJECT);
+
     private ObjectContext context;
+
+    @BeforeEach
+    public void setUp() {
+        context = env.context();
+    }
 
     @Test
     public void addListener_PostAdd_EntityInheritance() {

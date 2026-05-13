@@ -21,17 +21,16 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.sql.Types;
 
@@ -39,16 +38,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextEJBQLDeleteIT extends RuntimeCase {
+public class DataContextEJBQLDeleteIT {
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    @Inject
     protected ObjectContext context;
 
-    @Inject
     protected DBHelper dbHelper;
 
-    @Inject
     protected CayenneRuntime runtime;
 
     protected TableHelper tPainting;
@@ -56,6 +53,9 @@ public class DataContextEJBQLDeleteIT extends RuntimeCase {
     
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.context();
+        dbHelper = env.dbHelper();
+        runtime = env.runtime();
         tPainting = new TableHelper(dbHelper, "PAINTING");
         tPainting.setColumns(
                 "PAINTING_ID",

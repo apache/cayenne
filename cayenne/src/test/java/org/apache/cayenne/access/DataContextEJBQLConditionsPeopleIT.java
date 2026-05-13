@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.testdo.inheritance_people.Address;
 import org.apache.cayenne.testdo.inheritance_people.Department;
@@ -38,12 +37,12 @@ import org.junit.jupiter.api.Test;
 
 public class DataContextEJBQLConditionsPeopleIT extends PeopleProjectCase {
 
-    @Inject
     private ObjectContext context;
 
-    
     @BeforeEach
     public void setUp() {
+        context = env.context();
+
         // TODO: use TableHelper to create test data
 
         Department d1 = context.newObject(Department.class);

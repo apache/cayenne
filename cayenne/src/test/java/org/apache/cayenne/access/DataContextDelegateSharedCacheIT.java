@@ -25,15 +25,13 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.util.RuntimeCaseSyncModule;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.ExtraModules;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -41,20 +39,20 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-@ExtraModules(RuntimeCaseSyncModule.class)
-public class DataContextDelegateSharedCacheIT extends RuntimeCase {
+public class DataContextDelegateSharedCacheIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT)
+            .withExtraModules(RuntimeCaseSyncModule.class);
+
     private DataContext context;
-
-    @Inject
     private DataContext context1;
-
     private Artist artist;
 
     @BeforeEach
     public void setUp() throws Exception {
+        context  = env.dataContext();
+        context1 = (DataContext) env.runtime().newContext();
 
         // prepare a single artist record
         artist = (Artist) context.newObject("Artist");
@@ -108,7 +106,7 @@ public class DataContextDelegateSharedCacheIT extends RuntimeCase {
 
     /**
      * Test case to prove that delegate method can block changes made by ObjectStore.
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -143,7 +141,7 @@ public class DataContextDelegateSharedCacheIT extends RuntimeCase {
     /**
      * Test case to prove that delegate method is invoked on external change of object in
      * the store.
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -187,7 +185,7 @@ public class DataContextDelegateSharedCacheIT extends RuntimeCase {
     /**
      * Test case to prove that delegate method is invoked on external change of object in
      * the store, and is able to block further object processing.
-     * 
+     *
      * @throws Exception
      */
     @Test

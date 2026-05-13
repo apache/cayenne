@@ -20,25 +20,31 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.testdo.inheritance.BaseEntity;
 import org.apache.cayenne.testdo.inheritance.DirectToSubEntity;
 import org.apache.cayenne.testdo.inheritance.RelatedEntity;
 import org.apache.cayenne.testdo.inheritance.SubEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@UseCayenneRuntime(CayenneProjects.INHERITANCE_PROJECT)
-public class EntityInheritanceIT extends RuntimeCase {
+public class EntityInheritanceIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.INHERITANCE_PROJECT);
+
     private DataContext context;
+
+    @BeforeEach
+    public void setUp() {
+        context = env.dataContext();
+    }
 
     /**
      * Test for CAY-1008: Reverse relationships may not be correctly set if inheritance is used.

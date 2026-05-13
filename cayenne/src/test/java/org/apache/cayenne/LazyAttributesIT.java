@@ -21,16 +21,15 @@ package org.apache.cayenne;
 
 import java.sql.Types;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.lazy.Lazyblob;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,17 +38,18 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 /**
  * @since 4.2
  */
-@UseCayenneRuntime(CayenneProjects.LAZY_ATTRIBUTES_PROJECT)
-public class LazyAttributesIT extends RuntimeCase {
+public class LazyAttributesIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.LAZY_ATTRIBUTES_PROJECT);
+
     private ObjectContext context;
-
-    @Inject
     private DBHelper dbHelper;
 
     @BeforeEach
     public void setup() throws Exception {
+        context = env.context();
+        dbHelper = env.dbHelper();
         TableHelper th = new TableHelper(dbHelper, "LAZYBLOB")
                 .setColumns("ID", "NAME", "LAZY_DATA")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.VARBINARY);

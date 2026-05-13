@@ -22,29 +22,34 @@ import java.lang.reflect.Array;
 
 import org.apache.cayenne.MockSerializable;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.misc_types.ArraysEntity;
 import org.apache.cayenne.testdo.misc_types.CharacterEntity;
 import org.apache.cayenne.testdo.misc_types.SerializableEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-@UseCayenneRuntime(CayenneProjects.MISC_TYPES_PROJECT)
-public class MiscTypesIT extends RuntimeCase {
+public class MiscTypesIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.MISC_TYPES_PROJECT);
+
     private ObjectContext context;
-
-    @Inject
     private UnitDbAdapter accessStackAdapter;
+
+    @BeforeEach
+    public void setUp() {
+        context = env.context();
+        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
+    }
 
     @Test
     public void serializable() throws Exception {

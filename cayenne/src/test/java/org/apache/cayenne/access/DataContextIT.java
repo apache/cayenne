@@ -25,7 +25,6 @@ import org.apache.cayenne.Fault;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.EJBQLQuery;
@@ -45,10 +44,10 @@ import org.apache.cayenne.testdo.testmap.ROArtist;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -63,22 +62,15 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextIT extends RuntimeCase {
+public class DataContextIT {
 
-	@Inject
+	@RegisterExtension
+	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
 	protected DataContext context;
-
-	@Inject
 	protected DBHelper dbHelper;
-
-	@Inject
 	protected UnitDbAdapter accessStackAdapter;
-
-	@Inject
 	protected DataChannelInterceptor queryInterceptor;
-
-	@Inject
 	protected RuntimeCaseDataSourceFactory dataSourceFactory;
 
 	protected TableHelper tArtist;
@@ -86,9 +78,13 @@ public class DataContextIT extends RuntimeCase {
 	protected TableHelper tGallery;
 	protected TableHelper tPainting;
 
-	
 	@BeforeEach
 	public void setUp() throws Exception {
+		context = env.dataContext();
+		dbHelper = env.dbHelper();
+		accessStackAdapter = env.getInstance(UnitDbAdapter.class);
+		queryInterceptor = env.getInstance(DataChannelInterceptor.class);
+		dataSourceFactory = env.getInstance(RuntimeCaseDataSourceFactory.class);
 		tArtist = new TableHelper(dbHelper, "ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 

@@ -20,7 +20,6 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
@@ -28,10 +27,11 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.hybrid.HybridEntity1;
 import org.apache.cayenne.testdo.hybrid.HybridEntity2;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.apache.cayenne.util.Util;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -40,14 +40,19 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 /**
  * @since 4.1
  */
-@UseCayenneRuntime(CayenneProjects.HYBRID_DATA_OBJECT_PROJECT)
-public class HybridPersistentObjectIT extends RuntimeCase {
+public class HybridPersistentObjectIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.HYBRID_DATA_OBJECT_PROJECT);
+
     private DataContext context;
-
-    @Inject
     private CayenneRuntime runtime;
+
+    @BeforeEach
+    public void setUp() {
+        context = env.dataContext();
+        runtime = env.runtime();
+    }
 
     @Test
     public void testCreateNew() {

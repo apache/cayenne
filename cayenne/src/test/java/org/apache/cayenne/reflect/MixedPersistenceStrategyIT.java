@@ -22,16 +22,15 @@ package org.apache.cayenne.reflect;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ValueHolder;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mixed_persistence_strategy.MixedPersistenceStrategy;
 import org.apache.cayenne.testdo.mixed_persistence_strategy.MixedPersistenceStrategy2;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -39,13 +38,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Tests conflicts between field and map-based persistence.
  */
-@UseCayenneRuntime(CayenneProjects.MIXED_PERSISTENCE_STRATEGY_PROJECT)
-public class MixedPersistenceStrategyIT extends RuntimeCase {
+public class MixedPersistenceStrategyIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.MIXED_PERSISTENCE_STRATEGY_PROJECT);
+
     protected ObjectContext context;
-
-    @Inject
     protected DBHelper dbHelper;
 
     protected TableHelper tMixedPersistenceStrategy;
@@ -53,6 +51,8 @@ public class MixedPersistenceStrategyIT extends RuntimeCase {
 
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.context();
+        dbHelper = env.dbHelper();
         tMixedPersistenceStrategy = new TableHelper(
                 dbHelper,
                 "MIXED_PERSISTENCE_STRATEGY");

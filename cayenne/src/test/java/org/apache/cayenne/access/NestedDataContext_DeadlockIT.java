@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Random;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -30,29 +29,29 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class NestedDataContext_DeadlockIT extends RuntimeCase {
+public class NestedDataContext_DeadlockIT {
 
-	@Inject
+	@RegisterExtension
+	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
 	private DataContext parent;
-
-	@Inject
 	private CayenneRuntime runtime;
-
-	@Inject
 	protected DBHelper dbHelper;
 
 	protected TableHelper tArtist;
 
 	@BeforeEach
 	public void setUp() throws Exception {
+		parent = env.dataContext();
+		runtime = env.runtime();
+		dbHelper = env.dbHelper();
 		tArtist = new TableHelper(dbHelper, "ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 	}

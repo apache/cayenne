@@ -20,7 +20,6 @@
 package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.parser.SimpleNode;
@@ -29,8 +28,8 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.MockQueryMetadata;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -39,16 +38,18 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class ExistsExpressionTranslatorIT extends RuntimeCase {
+public class ExistsExpressionTranslatorIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private ObjectContext context;
 
     private TranslatorContext translatorContext;
 
     @BeforeEach
     public void setUp() {
+        context = env.context();
         translatorContext = mock(TranslatorContext.class);
         DbEntity dbArtist = context.getEntityResolver().getDbEntity("ARTIST");
         ObjEntity objArtist = context.getEntityResolver().getObjEntity("Artist");

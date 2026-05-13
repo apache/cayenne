@@ -20,7 +20,6 @@
 package org.apache.cayenne.unit.jira;
 
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
@@ -29,10 +28,10 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships_clob.ClobMaster;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
 
@@ -40,23 +39,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  */
-@UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_CLOB_PROJECT)
-public class CAY_115IT extends RuntimeCase {
+public class CAY_115IT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.RELATIONSHIPS_CLOB_PROJECT);
+
     protected DataContext context;
-    
-    @Inject
     protected UnitDbAdapter accessStackAdapter;
-    
-    @Inject
     protected DBHelper dbHelper;
-    
+
     protected TableHelper tClobMaster;
     protected TableHelper tClobDetail;
 
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.dataContext();
+        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
+        dbHelper = env.dbHelper();
         tClobMaster = new TableHelper(dbHelper, "CLOB_MASTER");
         tClobMaster.setColumns("CLOB_MASTER_ID", "CLOB_COLUMN", "NAME");
         

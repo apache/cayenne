@@ -21,15 +21,15 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.datasource.UnmanagedPoolingDataSource;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLActionVisitor;
 import org.apache.cayenne.query.SQLSelect;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -37,14 +37,19 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataNodeQueryExceptionsIT extends RuntimeCase {
+public class DataNodeQueryExceptionsIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     protected DataNode node;
-
-    @Inject
     protected RuntimeCaseDataSourceFactory dataSourceFactory;
+
+    @BeforeEach
+    public void setUp() {
+        node = env.getInstance(DataNode.class);
+        dataSourceFactory = env.getInstance(RuntimeCaseDataSourceFactory.class);
+    }
 
     @Test
     public void queryException() {

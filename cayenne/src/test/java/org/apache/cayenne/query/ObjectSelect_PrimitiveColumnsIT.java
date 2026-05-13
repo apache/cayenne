@@ -22,7 +22,6 @@ package org.apache.cayenne.query;
 import java.util.List;
 
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
@@ -32,10 +31,10 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.primitive.PrimitivesTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -44,21 +43,22 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 /**
  * @since 4.0
  */
-@UseCayenneRuntime(CayenneProjects.PRIMITIVE_PROJECT)
-public class ObjectSelect_PrimitiveColumnsIT extends RuntimeCase {
-    @Inject
+public class ObjectSelect_PrimitiveColumnsIT {
+
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.PRIMITIVE_PROJECT);
+
     private DataContext context;
-
-    @Inject
     private DBHelper dbHelper;
-
-    @Inject
     private UnitDbAdapter unitDbAdapter;
 
     private TableHelper tPrimitives;
 
     @BeforeEach
     public void createTestRecords() throws Exception {
+        context = env.dataContext();
+        dbHelper = env.dbHelper();
+        unitDbAdapter = env.getInstance(UnitDbAdapter.class);
         tPrimitives = new TableHelper(dbHelper, "PRIMITIVES_TEST");
         tPrimitives.setColumns("ID", "BOOLEAN_COLUMN", "INT_COLUMN");
         for (int i = 1; i <= 20; i++) {

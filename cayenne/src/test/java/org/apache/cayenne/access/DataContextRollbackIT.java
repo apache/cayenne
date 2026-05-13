@@ -23,28 +23,34 @@ import java.util.List;
 
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextRollbackIT extends RuntimeCase {
+public class DataContextRollbackIT  {
 
-    @Inject
-    private DataContext context;
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    @Inject
-    private CayenneRuntime runtime;
+        private DataContext context;
+
+        private CayenneRuntime runtime;
+
+    @BeforeEach
+    public void setUp() {
+        context = env.dataContext();
+        runtime = env.runtime();
+    }
 
     @Test
     public void rollbackNew() {

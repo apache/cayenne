@@ -24,7 +24,6 @@ import java.math.BigInteger;
 import java.util.List;
 
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
@@ -43,8 +42,8 @@ import org.apache.cayenne.testdo.numeric_types.SmallintTestEntity;
 import org.apache.cayenne.testdo.numeric_types.TinyintTestEntity;
 import org.apache.cayenne.unit.di.CommitStats;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,19 +53,14 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  *
  */
-@UseCayenneRuntime(CayenneProjects.NUMERIC_TYPES_PROJECT)
-public class NumericTypesIT extends RuntimeCase {
+public class NumericTypesIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.NUMERIC_TYPES_PROJECT);
+
     protected DataContext context;
-
-    @Inject
     protected DataContext context1;
-
-    @Inject
     protected CayenneRuntime runtime;
-
-    @Inject
     protected DBHelper dbHelper;
 
     private final CommitStats commitStats = new CommitStats(() -> runtime.getDataDomain());
@@ -76,6 +70,10 @@ public class NumericTypesIT extends RuntimeCase {
 
     @BeforeEach
     public void before() {
+        context = env.dataContext();
+        context1 = (DataContext) env.runtime().newContext();
+        runtime = env.runtime();
+        dbHelper = env.dbHelper();
         commitStats.before();
 
         tSmallintTest = new TableHelper(dbHelper, "SMALLINT_TEST");

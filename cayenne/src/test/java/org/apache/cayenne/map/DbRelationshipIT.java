@@ -19,13 +19,12 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,10 +34,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DbRelationshipIT extends RuntimeCase {
+public class DbRelationshipIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private CayenneRuntime runtime;
 
     protected DbEntity artistEnt;
@@ -47,6 +47,7 @@ public class DbRelationshipIT extends RuntimeCase {
 
     @BeforeEach
     public void setUp() throws Exception {
+        runtime = env.runtime();
         artistEnt = runtime.getDataDomain().getEntityResolver().getDbEntity("ARTIST");
         paintingEnt = runtime.getDataDomain().getEntityResolver().getDbEntity("PAINTING");
         galleryEnt = runtime.getDataDomain().getEntityResolver().getDbEntity("GALLERY");

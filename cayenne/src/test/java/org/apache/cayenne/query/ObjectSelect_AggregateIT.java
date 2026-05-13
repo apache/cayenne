@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
@@ -37,12 +36,12 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.apache.cayenne.exp.FunctionExpressionFactory.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -50,16 +49,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * @since 4.0
  */
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class ObjectSelect_AggregateIT extends RuntimeCase {
+public class ObjectSelect_AggregateIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private DataContext context;
-
-    @Inject
     private DBHelper dbHelper;
-
-    @Inject
     private UnitDbAdapter dbAdapter;
 
     // Format: d/m/YY
@@ -67,6 +63,9 @@ public class ObjectSelect_AggregateIT extends RuntimeCase {
 
     @BeforeEach
     public void createArtistsDataSet() throws Exception {
+        context = env.dataContext();
+        dbHelper = env.dbHelper();
+        dbAdapter = env.getInstance(UnitDbAdapter.class);
         TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
         tArtist.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.DATE);

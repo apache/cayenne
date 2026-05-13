@@ -22,26 +22,32 @@ package org.apache.cayenne.exp.parser;
 import java.math.BigDecimal;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.table_primitives.TablePrimitives;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @since 4.0
  */
-@UseCayenneRuntime(CayenneProjects.TABLE_PRIMITIVES_PROJECT)
-public class ASTFunctionCallMathIT extends RuntimeCase {
+public class ASTFunctionCallMathIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TABLE_PRIMITIVES_PROJECT);
+
     private ObjectContext context;
+
+    @BeforeEach
+    public void setUp() {
+        context = env.context();
+    }
 
     private TablePrimitives createPrimitives(int value) {
         TablePrimitives primitives = context.newObject(TablePrimitives.class);

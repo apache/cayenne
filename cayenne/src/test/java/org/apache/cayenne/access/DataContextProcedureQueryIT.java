@@ -27,7 +27,6 @@ import java.util.Map.Entry;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.query.CapsStrategy;
@@ -40,31 +39,38 @@ import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.ExternalTransaction;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextProcedureQueryIT extends RuntimeCase {
+public class DataContextProcedureQueryIT  {
+
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     public static final String UPDATE_STORED_PROCEDURE = "cayenne_tst_upd_proc";
     public static final String UPDATE_STORED_PROCEDURE_NOPARAM = "cayenne_tst_upd_proc2";
     public static final String SELECT_STORED_PROCEDURE = "cayenne_tst_select_proc";
     public static final String OUT_STORED_PROCEDURE = "cayenne_tst_out_proc";
 
-    @Inject
-    private DataContext context;
+        private DataContext context;
 
-    @Inject
-    private UnitDbAdapter accessStackAdapter;
+        private UnitDbAdapter accessStackAdapter;
 
-    @Inject
-    private JdbcEventLogger jdbcEventLogger;
+        private JdbcEventLogger jdbcEventLogger;
+
+    @BeforeEach
+    public void setUp() {
+        context = env.dataContext();
+        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
+        jdbcEventLogger = env.getInstance(JdbcEventLogger.class);
+    }
 
     @Test
     public void update() throws Exception {

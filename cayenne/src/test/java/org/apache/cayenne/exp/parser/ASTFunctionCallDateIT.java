@@ -23,7 +23,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
@@ -31,10 +30,10 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.legacy_datetime.DateTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -43,20 +42,20 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 /**
  * @since 4.0
  */
-@UseCayenneRuntime(CayenneProjects.LEGACY_DATE_TIME_PROJECT)
-public class ASTFunctionCallDateIT extends RuntimeCase {
+public class ASTFunctionCallDateIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.LEGACY_DATE_TIME_PROJECT);
+
     private ObjectContext context;
-
-    @Inject
     private DBHelper dbHelper;
-
-    @Inject
     private UnitDbAdapter unitDbAdapter;
 
     @BeforeEach
     public void createDataSet() throws Exception {
+        context = env.context();
+        dbHelper = env.dbHelper();
+        unitDbAdapter = env.getInstance(UnitDbAdapter.class);
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.MILLISECOND, 0);
 

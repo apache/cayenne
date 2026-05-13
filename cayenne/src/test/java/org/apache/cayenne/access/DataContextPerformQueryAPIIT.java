@@ -20,7 +20,6 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -33,9 +32,9 @@ import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -48,26 +47,22 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextPerformQueryAPIIT extends RuntimeCase {
+public class DataContextPerformQueryAPIIT  {
 
-    @Inject
-    private DataContext context;
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    @Inject
-    private DataContext context2;
+        private DataContext context;
 
-    @Inject
-    private DBHelper dbHelper;
+        private DataContext context2;
 
-    @Inject
-    private UnitDbAdapter accessStackAdapter;
+        private DBHelper dbHelper;
 
-    @Inject
-    private DataChannelInterceptor queryInterceptor;
+        private UnitDbAdapter accessStackAdapter;
+
+        private DataChannelInterceptor queryInterceptor;
     
-    @Inject
-    private JdbcEventLogger jdbcEventLogger;
+        private JdbcEventLogger jdbcEventLogger;
 
     private TableHelper tArtist;
     private TableHelper tPainting;
@@ -75,6 +70,12 @@ public class DataContextPerformQueryAPIIT extends RuntimeCase {
     
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.dataContext();
+        context2 = (DataContext) env.runtime().newContext();
+        dbHelper = env.dbHelper();
+        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
+        queryInterceptor = env.getInstance(DataChannelInterceptor.class);
+        jdbcEventLogger = env.getInstance(JdbcEventLogger.class);
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 

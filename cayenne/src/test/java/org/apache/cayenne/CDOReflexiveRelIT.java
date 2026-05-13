@@ -19,22 +19,29 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * Some more tests regarding reflexive relationships, especially related to delete rules
  * etc. The implementation is hairy, and so needs a really good workout.
  */
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class CDOReflexiveRelIT extends RuntimeCase {
+public class CDOReflexiveRelIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private ObjectContext context;
+
+
+    @BeforeEach
+    public void setUp() {
+        context = env.context();
+    }
 
     @Test
     public void addDeleteNoCommit() {

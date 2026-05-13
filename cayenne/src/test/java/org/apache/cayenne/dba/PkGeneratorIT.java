@@ -20,14 +20,13 @@
 package org.apache.cayenne.dba;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,13 +35,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class PkGeneratorIT extends RuntimeCase {
+public class PkGeneratorIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private UnitDbAdapter accessStackAdapter;
-
-    @Inject
     private DataNode node;
 
     private PkGenerator pkGenerator;
@@ -50,6 +48,8 @@ public class PkGeneratorIT extends RuntimeCase {
 
     @BeforeEach
     public void setUp() throws Exception {
+        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
+        node = env.getInstance(DataNode.class);
         pkGenerator = node.getAdapter().getPkGenerator();
         paintingEntity = node.getEntityResolver().getDbEntity("PAINTING");
 

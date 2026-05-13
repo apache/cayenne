@@ -23,7 +23,6 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.cache.QueryCache;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
@@ -31,10 +30,10 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -45,14 +44,14 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextQueryCachingIT extends RuntimeCase {
+public class DataContextQueryCachingIT  {
 
-    @Inject
-    protected DataContext context;
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    @Inject
-    protected DBHelper dbHelper;
+        protected DataContext context;
+
+        protected DBHelper dbHelper;
 
     protected TableHelper tArtist;
     protected TableHelper tPainting;
@@ -67,6 +66,8 @@ public class DataContextQueryCachingIT extends RuntimeCase {
     
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.dataContext();
+        dbHelper = env.dbHelper();
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 

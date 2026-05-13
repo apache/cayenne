@@ -20,7 +20,6 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.parser.ASTBitwiseAnd;
 import org.apache.cayenne.exp.parser.ASTBitwiseNot;
@@ -35,25 +34,30 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.return_types.ReturnTypesMap1;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@UseCayenneRuntime(CayenneProjects.RETURN_TYPES_PROJECT)
-public class SelectQueryReturnTypesIT extends RuntimeCase {
+public class SelectQueryReturnTypesIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.RETURN_TYPES_PROJECT);
+
     private ObjectContext context;
-
-    @Inject
     private DBHelper dbHelper;
-
-    @Inject
     private UnitDbAdapter accessStackAdapter;
+
+    @BeforeEach
+    public void setUp() {
+        context = env.context();
+        dbHelper = env.dbHelper();
+        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
+    }
 
     protected void createNumericsDataSet() throws Exception {
         TableHelper tNumerics = new TableHelper(dbHelper, "TYPES_MAPPING_TEST1");

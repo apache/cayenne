@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -29,9 +28,9 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -40,12 +39,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextIteratedQueryIT extends RuntimeCase {
+public class DataContextIteratedQueryIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     protected DBHelper dbHelper;
-    @Inject
     private DataContext context;
     private TableHelper tArtist;
     private TableHelper tExhibit;
@@ -54,6 +53,8 @@ public class DataContextIteratedQueryIT extends RuntimeCase {
 
     @BeforeEach
     public void before() throws Exception {
+        context = env.dataContext();
+        dbHelper = env.dbHelper();
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 

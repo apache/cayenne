@@ -23,7 +23,6 @@ import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResult;
 import org.apache.cayenne.map.SQLResult;
@@ -35,8 +34,8 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,19 +48,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextSQLTemplateIT extends RuntimeCase {
+public class DataContextSQLTemplateIT {
 
-	@Inject
+	@RegisterExtension
+	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
 	private CayenneRuntime runtime;
-
-	@Inject
 	protected DataContext context;
-
-	@Inject
 	protected DBHelper dbHelper;
-
-	@Inject
 	protected SQLTemplateCustomizer sqlTemplateCustomizer;
 
 	protected TableHelper tPainting;
@@ -70,6 +64,10 @@ public class DataContextSQLTemplateIT extends RuntimeCase {
 	
 	@BeforeEach
 	public void setUp() throws Exception {
+		runtime = env.runtime();
+		context = env.dataContext();
+		dbHelper = env.dbHelper();
+		sqlTemplateCustomizer = env.getInstance(SQLTemplateCustomizer.class);
 		tArtist = new TableHelper(dbHelper, "ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 

@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SortOrder;
@@ -49,14 +48,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SingleTableInheritanceIT extends PeopleProjectCase {
 
-    @Inject
-    private DataContext context;
+        private DataContext context;
 
-    @Inject
-    private DataContext context2;
+        private DataContext context2;
 
-    @Inject
-    private DataChannelInterceptor queryBlocker;
+        private DataChannelInterceptor queryBlocker;
 
     private TableHelper tPerson;
     private TableHelper tAddress;
@@ -65,6 +61,9 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
 
     @BeforeEach
 	public void setUp() {
+    	context = env.dataContext();
+    	context2 = (DataContext) env.runtime().newContext();
+    	queryBlocker = env.getInstance(DataChannelInterceptor.class);
 		tAddress = new TableHelper(dbHelper, "ADDRESS");
 		tAddress.setColumns("ADDRESS_ID", "CITY", "PERSON_ID");
 

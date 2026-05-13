@@ -23,7 +23,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -35,10 +34,10 @@ import org.apache.cayenne.unit.OracleUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -48,29 +47,26 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class SQLTemplateIT extends RuntimeCase {
+public class SQLTemplateIT {
 
-	@Inject
+	@RegisterExtension
+	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
 	private DataContext context;
-
-	@Inject
 	private DBHelper dbHelper;
-
-	@Inject
 	protected DataChannelInterceptor queryInterceptor;
-
-	@Inject
 	protected UnitDbAdapter unitDbAdapter;
 
 	private TableHelper tPainting;
-
 	private TableHelper tArtist;
-
 	private TableHelper tArtistCt;
 
 	@BeforeEach
 	public void setUp() throws Exception {
+		context = env.dataContext();
+		dbHelper = env.dbHelper();
+		queryInterceptor = env.getInstance(DataChannelInterceptor.class);
+		unitDbAdapter = env.getInstance(UnitDbAdapter.class);
 		tArtist = new TableHelper(dbHelper, "ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 

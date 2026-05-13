@@ -19,7 +19,6 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -28,8 +27,8 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.ROPainting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -40,16 +39,13 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class CayennePersistentObjectSetToManyListIT extends RuntimeCase {
+public class CayennePersistentObjectSetToManyListIT {
 
-	@Inject
+	@RegisterExtension
+	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
 	private CayenneRuntime runtime;
-
-	@Inject
 	private ObjectContext context;
-
-	@Inject
 	private DBHelper dbHelper;
 
 	protected TableHelper tArtist;
@@ -57,6 +53,9 @@ public class CayennePersistentObjectSetToManyListIT extends RuntimeCase {
 
 	@BeforeEach
 	public void setUp() throws Exception {
+		runtime = env.runtime();
+		context = env.context();
+		dbHelper = env.dbHelper();
 		tArtist = new TableHelper(dbHelper, "ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 

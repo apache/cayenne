@@ -23,7 +23,6 @@ import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.translator.select.DefaultSelectTranslator;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DefaultEntityResultSegment;
 import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.EJBQLQuery;
@@ -39,9 +38,9 @@ import org.apache.cayenne.testdo.testmap.CompoundPaintingLongNames;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -54,16 +53,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextFlattenedAttributesIT extends RuntimeCase {
+public class DataContextFlattenedAttributesIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private CayenneRuntime runtime;
-
-    @Inject
     private DataContext context;
-
-    @Inject
     private DBHelper dbHelper;
 
     private TableHelper tArtist;
@@ -73,6 +69,9 @@ public class DataContextFlattenedAttributesIT extends RuntimeCase {
 
     @BeforeEach
     public void createTestDataSetStructure() {
+        context = env.dataContext();
+        runtime = env.runtime();
+        dbHelper = env.dbHelper();
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 

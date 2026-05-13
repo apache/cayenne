@@ -29,7 +29,6 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbAttribute;
@@ -41,29 +40,23 @@ import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.soft_delete.SoftDelete;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@UseCayenneRuntime(CayenneProjects.SOFT_DELETE_PROJECT)
-public class SoftDeleteBatchTranslatorIT extends RuntimeCase {
+public class SoftDeleteBatchTranslatorIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.SOFT_DELETE_PROJECT);
+
     private ObjectContext context;
-
-    @Inject
     protected DbAdapter adapter;
-
-    @Inject
     private DataNode dataNode;
-
-    @Inject
     private UnitDbAdapter unitAdapter;
-
-    @Inject
     private AdhocObjectFactory objectFactory;
 
     private DeleteBatchTranslator createTranslator(DeleteBatchQuery query) {
@@ -73,6 +66,16 @@ public class SoftDeleteBatchTranslatorIT extends RuntimeCase {
 
     private DeleteBatchTranslator createTranslator(DeleteBatchQuery query, JdbcAdapter adapter) {
         return (DeleteBatchTranslator) new SoftDeleteTranslatorFactory().translator(query, adapter, null);
+    }
+
+
+    @BeforeEach
+    public void setUp() {
+        context = env.context();
+        adapter = env.getInstance(DbAdapter.class);
+        dataNode = env.getInstance(DataNode.class);
+        unitAdapter = env.getInstance(UnitDbAdapter.class);
+        objectFactory = env.getInstance(AdhocObjectFactory.class);
     }
 
     @Test

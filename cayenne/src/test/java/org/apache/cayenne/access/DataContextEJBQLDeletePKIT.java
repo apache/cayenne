@@ -21,28 +21,26 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@UseCayenneRuntime(CayenneProjects.MEANINGFUL_PK_PROJECT)
-public class DataContextEJBQLDeletePKIT extends RuntimeCase {
+public class DataContextEJBQLDeletePKIT {
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.MEANINGFUL_PK_PROJECT);
 
-    @Inject
     protected ObjectContext context;
 
-    @Inject
     protected DBHelper dbHelper;
 
     protected TableHelper tMeaningfulPKTest1Table;
@@ -50,6 +48,8 @@ public class DataContextEJBQLDeletePKIT extends RuntimeCase {
     
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.context();
+        dbHelper = env.dbHelper();
         tMeaningfulPKTest1Table = new TableHelper(dbHelper, "MEANINGFUL_PK_TEST1");
         tMeaningfulPKTest1Table.setColumns("PK_ATTRIBUTE", "DESCR", "INT_ATTRIBUTE");
     }

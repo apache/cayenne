@@ -20,31 +20,31 @@
 package org.apache.cayenne.dba.oracle;
 
 import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class OraclePkGeneratorIT extends RuntimeCase {
-    
-    @Inject
+public class OraclePkGeneratorIT {
+
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     protected JdbcEventLogger logger;
-    
-    @Inject
     protected AdhocObjectFactory objectFactory;
 
     private OraclePkGenerator pkGenerator;
 
     @BeforeEach
     public void setUp() throws Exception {
+        logger = env.getInstance(JdbcEventLogger.class);
+        objectFactory = env.getInstance(AdhocObjectFactory.class);
         OracleAdapter adapter = objectFactory.newInstance(OracleAdapter.class, OracleAdapter.class.getName());
         pkGenerator = new OraclePkGenerator(adapter);
     }

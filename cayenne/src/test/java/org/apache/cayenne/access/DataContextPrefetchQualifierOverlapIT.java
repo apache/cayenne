@@ -20,7 +20,6 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -28,20 +27,21 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextPrefetchQualifierOverlapIT extends RuntimeCase {
+public class DataContextPrefetchQualifierOverlapIT  {
 
-    @Inject
-    private DataContext context;
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    @Inject
-    private DBHelper dbHelper;
+        private DataContext context;
+
+        private DBHelper dbHelper;
 
     private void createTwoArtistsThreePaintingsDataSet() throws Exception {
         TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
@@ -56,6 +56,12 @@ public class DataContextPrefetchQualifierOverlapIT extends RuntimeCase {
         tPainting.insert(1, "ABC", 1);
         tPainting.insert(2, "ABD", 1);
         tPainting.insert(3, "ACC", 1);
+    }
+
+    @BeforeEach
+    public void setUp() {
+        context = env.dataContext();
+        dbHelper = env.dbHelper();
     }
 
     @Test

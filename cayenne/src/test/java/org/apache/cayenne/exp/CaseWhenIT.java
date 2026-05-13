@@ -20,7 +20,6 @@
 package org.apache.cayenne.exp;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.query.ObjectSelect;
@@ -28,10 +27,10 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
 
@@ -40,17 +39,18 @@ import static org.apache.cayenne.exp.ExpressionFactory.caseWhen;
 import static org.apache.cayenne.exp.ExpressionFactory.wrapScalarValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class CaseWhenIT extends RuntimeCase {
+public class CaseWhenIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
     private ObjectContext context;
-
-    @Inject
     protected DBHelper dbHelper;
 
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.context();
+        dbHelper = env.dbHelper();
         new TableHelper(dbHelper, "PAINTING")
                 .setColumns("PAINTING_ID", "PAINTING_TITLE", "PAINTING_DESCRIPTION", "ESTIMATED_PRICE")
                 .insert(1, "Black square", "Oil on linen, 79.5 x 79.5 cm", 15);

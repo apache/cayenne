@@ -28,7 +28,6 @@ import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -36,14 +35,14 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import java.sql.Connection;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -54,21 +53,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * All tests have been moved to corresponding loaders tests.
  */
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DbLoaderIT extends RuntimeCase {
+public class DbLoaderIT {
+
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private static final DbLoaderConfiguration CONFIG = new DbLoaderConfiguration();
 
-    @Inject
     private CayenneRuntime runtime;
-
-    @Inject
     private DbAdapter adapter;
-
-    @Inject
     private RuntimeCaseDataSourceFactory dataSourceFactory;
-
-    @Inject
     private UnitDbAdapter accessStackAdapter;
 
     private Connection connection;
@@ -156,6 +150,10 @@ public class DbLoaderIT extends RuntimeCase {
 
     @BeforeEach
     public void before() throws Exception {
+        runtime = env.runtime();
+        adapter = env.getInstance(DbAdapter.class);
+        dataSourceFactory = env.getInstance(RuntimeCaseDataSourceFactory.class);
+        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
         this.connection = dataSourceFactory.getSharedDataSource().getConnection();
     }
 

@@ -22,16 +22,16 @@ import java.util.List;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -39,14 +39,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 /**
  * A test case for CAY-788.
  */
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextPrefetchExtras1IT extends RuntimeCase {
+public class DataContextPrefetchExtras1IT  {
 
-    @Inject
-    protected ObjectContext context;
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    @Inject
-    protected DBHelper dbHelper;
+        protected ObjectContext context;
+
+        protected DBHelper dbHelper;
 
     protected void createDataSet() throws Exception {
 
@@ -60,6 +60,12 @@ public class DataContextPrefetchExtras1IT extends RuntimeCase {
             tPainting.insert(i, "P" + i);
             tPaintingInfo.insert(i, "Review #" + i);
         }
+    }
+
+    @BeforeEach
+    public void setUp() {
+        context = env.context();
+        dbHelper = env.dbHelper();
     }
 
     @Test

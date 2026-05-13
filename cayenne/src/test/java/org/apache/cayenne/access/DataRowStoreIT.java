@@ -25,8 +25,8 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -44,8 +44,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * really heavy EventBridge (JavaGroupsBridge implementation) inside DataRowStore
  * and this behaviour is not anyhow tested here nor it affects existing tests.
  */
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataRowStoreIT extends RuntimeCase {
+public class DataRowStoreIT {
+
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+
 
     private DataRowStore cache;
 

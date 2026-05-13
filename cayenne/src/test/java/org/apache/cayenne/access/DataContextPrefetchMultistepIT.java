@@ -25,7 +25,6 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ValueHolder;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -36,9 +35,9 @@ import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Timestamp;
@@ -48,17 +47,16 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextPrefetchMultistepIT extends RuntimeCase {
+public class DataContextPrefetchMultistepIT  {
 
-    @Inject
-    protected DataContext context;
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    @Inject
-    protected CayenneRuntime runtime;
+        protected DataContext context;
 
-    @Inject
-    protected DBHelper dbHelper;
+        protected CayenneRuntime runtime;
+
+        protected DBHelper dbHelper;
 
     protected TableHelper tArtist;
     protected TableHelper tExhibit;
@@ -68,6 +66,9 @@ public class DataContextPrefetchMultistepIT extends RuntimeCase {
     
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.dataContext();
+        runtime = env.runtime();
+        dbHelper = env.dbHelper();
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 

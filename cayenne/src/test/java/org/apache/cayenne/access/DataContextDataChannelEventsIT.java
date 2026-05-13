@@ -23,17 +23,15 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelListener;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.util.RuntimeCaseSyncModule;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.graph.GraphEvent;
-import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.ExtraModules;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.apache.cayenne.util.EventUtil;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -41,18 +39,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Tests that DataContext sends DataChannel events.
  */
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-@ExtraModules(RuntimeCaseSyncModule.class)
-public class DataContextDataChannelEventsIT extends RuntimeCase {
+public class DataContextDataChannelEventsIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT)
+            .withExtraModules(RuntimeCaseSyncModule.class);
+
     private DataContext context;
-
-    @Inject
     private DataContext peer;
 
-    @Inject
-    private CayenneRuntime runtime;
+    @BeforeEach
+    public void setUp() {
+        context = env.dataContext();
+        peer    = (DataContext) env.runtime().newContext();
+    }
 
     @Test
     public void commitEvent() throws Exception {
@@ -110,7 +110,7 @@ public class DataContextDataChannelEventsIT extends RuntimeCase {
         final MockChannelListener listener = new MockChannelListener();
         EventUtil.listenForChannelEvents(context, listener);
 
-        ObjectContext childContext = runtime.newContext(context);
+        ObjectContext childContext = env.runtime().newContext(context);
 
         Artist a1 = childContext.localObject(a);
 
@@ -155,7 +155,7 @@ public class DataContextDataChannelEventsIT extends RuntimeCase {
 
     @Test
     public void changeEventOnPeerChangeSecondNestingLevel() throws Exception {
-        ObjectContext childPeer1 = runtime.newContext(context);
+        ObjectContext childPeer1 = env.runtime().newContext(context);
 
         Artist a = childPeer1.newObject(Artist.class);
         a.setArtistName("X");
@@ -164,7 +164,7 @@ public class DataContextDataChannelEventsIT extends RuntimeCase {
         final MockChannelListener listener = new MockChannelListener();
         EventUtil.listenForChannelEvents((DataChannel) childPeer1, listener);
 
-        ObjectContext childPeer2 = runtime.newContext(context);
+        ObjectContext childPeer2 = env.runtime().newContext(context);
 
         Artist a1 = childPeer2.localObject(a);
 

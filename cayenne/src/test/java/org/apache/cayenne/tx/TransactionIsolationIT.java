@@ -27,16 +27,15 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,24 +44,24 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * @since 4.1
  */
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class TransactionIsolationIT extends RuntimeCase {
+public class TransactionIsolationIT {
+
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private final Logger logger = LoggerFactory.getLogger(TransactionIsolationIT.class);
 
-    @Inject
     DataContext context;
-
-    @Inject
     CayenneRuntime runtime;
-
-    @Inject
     UnitDbAdapter unitDbAdapter;
 
     TransactionManager manager;
 
     @BeforeEach
     public void initTransactionManager() {
+        context = env.dataContext();
+        runtime = env.runtime();
+        unitDbAdapter = env.getInstance(UnitDbAdapter.class);
         // no binding in test container, get it from runtime
         manager = runtime.getInjector().getInstance(TransactionManager.class);
     }

@@ -22,19 +22,17 @@ import org.apache.cayenne.Fault;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.translator.select.DefaultSelectTranslator;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.cay_2641.ArtistLazy;
 import org.apache.cayenne.testdo.cay_2641.DatamapLazy;
 import org.apache.cayenne.testdo.cay_2641.PaintingLazy;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.testcontainers.shaded.org.hamcrest.MatcherAssert;
 import org.testcontainers.shaded.org.hamcrest.Matchers;
 
@@ -46,26 +44,25 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * @since 4.2
  */
-@UseCayenneRuntime(CayenneProjects.CAY_2641)
-public class Cay2641IT extends RuntimeCase {
+public class Cay2641IT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.CAY_2641);
+
     private ObjectContext context;
-
-    @Inject
-    private DBHelper dbHelper;
-
-    @Inject
     private DbAdapter adapter;
 
     @BeforeEach
     public void setup() throws Exception {
-        TableHelper th = new TableHelper(dbHelper, "ArtistLazy")
+        context = env.context();
+        adapter = env.getInstance(DbAdapter.class);
+
+        TableHelper th = new TableHelper(env.dbHelper(), "ArtistLazy")
                 .setColumns("ID", "NAME", "SURNAME")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.VARCHAR);
         th.insert(1, "artist1", "artist2");
 
-        th = new TableHelper(dbHelper, "PaintingLazy")
+        th = new TableHelper(env.dbHelper(), "PaintingLazy")
                 .setColumns("ID", "NAME", "ARTIST_ID")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
         th.insert(1, "painting1", 1);

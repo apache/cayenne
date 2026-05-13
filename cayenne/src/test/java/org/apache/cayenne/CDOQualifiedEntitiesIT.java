@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbEntity;
@@ -31,8 +30,8 @@ import org.apache.cayenne.testdo.qualified.Qualified3;
 import org.apache.cayenne.testdo.qualified.Qualified4;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -42,16 +41,13 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-@UseCayenneRuntime(CayenneProjects.QUALIFIED_PROJECT)
-public class CDOQualifiedEntitiesIT extends RuntimeCase {
+public class CDOQualifiedEntitiesIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.QUALIFIED_PROJECT);
+
     private ObjectContext context;
-
-    @Inject
     private UnitDbAdapter accessStackAdapter;
-
-    @Inject
     private DBHelper dbHelper;
 
     private TableHelper tQualified1;
@@ -61,6 +57,9 @@ public class CDOQualifiedEntitiesIT extends RuntimeCase {
 
     @BeforeEach
     public void setUp() throws Exception {
+        context = env.context();
+        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
+        dbHelper = env.dbHelper();
         int bool = accessStackAdapter.supportsBoolean() ? Types.BOOLEAN : Types.INTEGER;
 
         tQualified1 = new TableHelper(dbHelper, "TEST_QUALIFIED1")

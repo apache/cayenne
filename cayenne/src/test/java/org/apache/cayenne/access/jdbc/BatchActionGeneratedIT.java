@@ -23,28 +23,34 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.generated.GeneratedColumnTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-@UseCayenneRuntime(CayenneProjects.GENERATED_PROJECT)
-public class BatchActionGeneratedIT extends RuntimeCase {
+public class BatchActionGeneratedIT {
 
-    @Inject
+    @RegisterExtension
+    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.GENERATED_PROJECT);
+
     private CayenneRuntime runtime;
-
-    @Inject
     private AdhocObjectFactory objectFactory;
+
+
+    @BeforeEach
+    public void setUp() {
+        runtime = env.runtime();
+        objectFactory = env.getInstance(AdhocObjectFactory.class);
+    }
 
     @Test
     public void hasGeneratedKeys1() throws Exception {

@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
@@ -31,9 +30,8 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_vertical.*;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.ExtraModules;
-import org.apache.cayenne.unit.di.runtime.RuntimeCase;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,18 +47,15 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@UseCayenneRuntime(CayenneProjects.INHERITANCE_VERTICAL_PROJECT)
 // Default sorter fails to properly sort all the relationships in the test schema used
-@ExtraModules(GraphSorterModule.class)
-public class VerticalInheritanceIT extends RuntimeCase {
+public class VerticalInheritanceIT {
 
-	@Inject
+	@RegisterExtension
+	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.INHERITANCE_VERTICAL_PROJECT)
+	        .withExtraModules(GraphSorterModule.class);
+
 	protected ObjectContext context;
-
-	@Inject
 	protected DBHelper dbHelper;
-
-	@Inject
 	protected CayenneRuntime runtime;
 
 	TableHelper ivAbstractTable;
@@ -69,6 +64,9 @@ public class VerticalInheritanceIT extends RuntimeCase {
 
 	@BeforeEach
 	public void setup() {
+		context = env.context();
+		dbHelper = env.dbHelper();
+		runtime = env.runtime();
 		ivAbstractTable = new TableHelper(dbHelper, "IV_ABSTRACT");
 		ivAbstractTable.setColumns("ID", "PARENT_ID", "TYPE")
 				.setColumnTypes(Types.INTEGER, Types.INTEGER, Types.CHAR);
