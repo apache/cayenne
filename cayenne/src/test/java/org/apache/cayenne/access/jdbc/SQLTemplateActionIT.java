@@ -19,23 +19,11 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.sql.Connection;
-import java.sql.Date;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.MockOperationObserver;
-import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLAction;
@@ -46,11 +34,20 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
+import java.sql.Connection;
+import java.sql.Date;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("deprecation")
 public class SQLTemplateActionIT {
@@ -60,7 +57,7 @@ public class SQLTemplateActionIT {
 
 	protected RuntimeCaseDataSourceFactory dataSourceFactory;
 	protected DataNode node;
-	protected JdbcAdapter adapter;
+	protected DbAdapter adapter;
 	protected UnitDbAdapter unitDbAdapter;
 	protected ObjectContext objectContext;
 	protected SQLTemplateCustomizer sqlTemplateCustomizer;
@@ -71,7 +68,7 @@ public class SQLTemplateActionIT {
 	public void setUp() throws Exception {
 		dataSourceFactory = env.dataSourceFactory();
 		node = env.dataNode();
-		adapter = env.jdbcAdapter();
+		adapter = env.dbAdapter();
 		unitDbAdapter = env.unitDbAdapter();
 		objectContext = env.context();
 		sqlTemplateCustomizer = env.sqlTemplateCustomizer();

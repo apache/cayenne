@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.runtime;
 
-import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
 import org.apache.cayenne.access.ObjectMapRetainStrategy;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
@@ -43,7 +41,6 @@ import org.apache.cayenne.configuration.xml.NoopDataChannelMetaData;
 import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
 import org.apache.cayenne.configuration.xml.XMLReaderProvider;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.db2.DB2Adapter;
@@ -82,7 +79,6 @@ import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.Slf4jJdbcEventLogger;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
 import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
@@ -231,7 +227,6 @@ public class RuntimeCaseModule implements Module {
         });
         binder.bind(DataSourceFactory.class).to(RuntimeCaseSharedDataSourceFactory.class);
         binder.bind(DbAdapter.class).toProvider(RuntimeCaseDbAdapterProvider.class);
-        binder.bind(JdbcAdapter.class).toProvider(RuntimeCaseDbAdapterProvider.class);
         binder.bind(UnitDbAdapter.class).toProvider(UnitDbAdapterProvider.class);
 
         // this factory is a hack that allows to inject to DbAdapters loaded outside of
@@ -254,12 +249,9 @@ public class RuntimeCaseModule implements Module {
         binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(false)).withoutScope();
 
         // test-scoped objects
-        binder.bind(EntityResolver.class).toProvider(RuntimeCaseEntityResolverProvider.class).in(testScope);
-        binder.bind(DataNode.class).toProvider(RuntimeCaseDataNodeProvider.class).in(testScope);
         binder.bind(RuntimeCaseProperties.class).to(RuntimeCaseProperties.class).in(testScope);
         binder.bind(RuntimeCaseExtraModules.class).to(RuntimeCaseExtraModules.class).in(testScope);
         binder.bind(CayenneRuntime.class).toProvider(CayenneRuntimeProvider.class).in(testScope);
-        binder.bind(DataContext.class).toProvider(RuntimeCaseDataContextProvider.class).withoutScope();
         binder.bind(DBHelper.class).toProvider(FlavoredDBHelperProvider.class).in(testScope);
         binder.bind(DBCleaner.class).toProvider(DBCleanerProvider.class).in(testScope);
     }

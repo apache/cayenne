@@ -19,12 +19,12 @@
 package org.apache.cayenne.unit.di.runtime;
 
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
@@ -114,9 +114,9 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         }
         INJECTOR.getInstance(RuntimeCaseExtraModules.class).setExtraModules(effectiveExtras);
 
-        runtime = INJECTOR.getInstance(CayenneRuntime.class);
-        context = INJECTOR.getInstance(DataContext.class);
-        dbHelper = INJECTOR.getInstance(DBHelper.class);
+        this.runtime = INJECTOR.getInstance(CayenneRuntime.class);
+        this.context = (DataContext) runtime.newContext();
+        this.dbHelper = INJECTOR.getInstance(DBHelper.class);
 
         if (autoClean) {
             DBCleaner cleaner = dbCleaner();
@@ -131,9 +131,9 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     @Override
     public void afterEach(ExtensionContext ctx) {
         TEST_SCOPE.shutdown();
-        context = null;
-        dbHelper = null;
-        runtime = null;
+        this.context = null;
+        this.dbHelper = null;
+        this.runtime = null;
     }
 
     public DataContext context() {
@@ -160,16 +160,13 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         return INJECTOR.getInstance(DbAdapter.class);
     }
 
-    public JdbcAdapter jdbcAdapter() {
-        return INJECTOR.getInstance(JdbcAdapter.class);
-    }
-
     public EntityResolver entityResolver() {
-        return INJECTOR.getInstance(EntityResolver.class);
+        return runtime.getDataDomain().getEntityResolver();
     }
 
     public DataNode dataNode() {
-        return INJECTOR.getInstance(DataNode.class);
+        DataDomain channel = runtime.getDataDomain();
+        return channel.getDataNodes().iterator().next();
     }
 
     public DataChannelInterceptor dataChannelInterceptor() {
