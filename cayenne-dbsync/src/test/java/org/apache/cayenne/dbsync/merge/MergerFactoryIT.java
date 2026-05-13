@@ -18,31 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.merge;
 
-import java.sql.Types;
-
 import org.apache.cayenne.GenericPersistentObject;
-import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import java.sql.Types;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MergerFactoryIT extends MergeCase {
-
-    private DataContext context;
-
-    @BeforeEach
-    public void setUpContext() {
-        context = env.dataContext();
-    }
 
     @Test
     public void addAndDropColumnToDb() throws Exception {
@@ -165,11 +154,10 @@ public class MergerFactoryIT extends MergeCase {
         map.addObjEntity(objEntity);
 
         for (int i = 0; i < 5; i++) {
-            GenericPersistentObject dao = (GenericPersistentObject) context.newObject(objEntity
-                    .getName());
+            GenericPersistentObject dao = (GenericPersistentObject) env.context().newObject(objEntity.getName());
             dao.writeProperty(oatr1.getName(), "test " + i);
         }
-        context.commitChanges();
+        env.context().commitChanges();
 
         // clear up
         map.removeObjEntity(objEntity.getName(), true);

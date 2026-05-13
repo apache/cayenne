@@ -19,11 +19,7 @@
 
 package org.apache.cayenne.dbsync.merge.token;
 
-import java.sql.Types;
-import java.util.List;
-
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.dbsync.merge.DataMapMerger;
 import org.apache.cayenne.dbsync.merge.MergeCase;
@@ -35,23 +31,16 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.sql.Types;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ValueForNullIT extends MergeCase {
 
     private static final String DEFAULT_VALUE_STRING = "DEFSTRING";
-
-    private DataContext context;
-
-    @BeforeEach
-    public void setUpContext() {
-        context = env.dataContext();
-    }
 
     @Test
     public void test() throws Exception {
@@ -63,10 +52,10 @@ public class ValueForNullIT extends MergeCase {
         // insert some rows before adding "not null" column
         final int nrows = 10;
         for (int i = 0; i < nrows; i++) {
-            Persistent o = context.newObject("Painting");
+            Persistent o = env.context().newObject("Painting");
             o.writeProperty("paintingTitle", "ptitle" + i);
         }
-        context.commitChanges();
+        env.context().commitChanges();
 
         // create and add new column to model and db
         DbAttribute column = new DbAttribute("NEWCOL2", Types.VARCHAR, dbEntity);
@@ -98,7 +87,7 @@ public class ValueForNullIT extends MergeCase {
         // check values for null
         Expression qual = ExpressionFactory.matchExp(objAttr.getName(), DEFAULT_VALUE_STRING);
         ObjectSelect<Painting> query = ObjectSelect.query(Painting.class).where(qual);
-        List<Painting> rows = query.select(context);
+        List<Painting> rows = query.select(env.context());
         assertEquals(nrows, rows.size());
 
         // clean up

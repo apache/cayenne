@@ -134,10 +134,6 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         return dbHelper;
     }
 
-    public TableHelper table(String tableName) {
-        return new TableHelper(dbHelper, tableName);
-    }
-
     public TableHelper table(String tableName, String... columns) {
         return new TableHelper(dbHelper, tableName, columns);
     }
