@@ -45,8 +45,7 @@ public class MappedQueryIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     protected void createArtistsDataSet() throws Exception {
-        TableHelper tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
+        TableHelper tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 
         long dateBase = System.currentTimeMillis();
 

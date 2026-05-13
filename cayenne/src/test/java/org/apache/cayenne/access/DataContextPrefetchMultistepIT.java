@@ -66,17 +66,13 @@ public class DataContextPrefetchMultistepIT  {
     public void setUp() throws Exception {
         context = env.dataContext();
         runtime = env.runtime();
-        tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
-        tExhibit = env.table("EXHIBIT");
-        tExhibit.setColumns("EXHIBIT_ID", "GALLERY_ID", "OPENING_DATE", "CLOSING_DATE");
+        tExhibit = env.table("EXHIBIT", "EXHIBIT_ID", "GALLERY_ID", "OPENING_DATE", "CLOSING_DATE");
 
-        tArtistExhibit = env.table("ARTIST_EXHIBIT");
-        tArtistExhibit.setColumns("ARTIST_ID", "EXHIBIT_ID");
+        tArtistExhibit = env.table("ARTIST_EXHIBIT", "ARTIST_ID", "EXHIBIT_ID");
 
-        tGallery = env.table("GALLERY");
-        tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
+        tGallery = env.table("GALLERY", "GALLERY_ID", "GALLERY_NAME");
     }
 
     protected void createTwoArtistsWithExhibitsDataSet() throws Exception {

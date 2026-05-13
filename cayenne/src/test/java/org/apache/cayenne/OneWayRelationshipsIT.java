@@ -54,13 +54,10 @@ public class OneWayRelationshipsIT {
 	@BeforeEach
 	public void setUp() throws Exception {
 		context = env.context();
-		t1Helper = env.table("oneway_table1");
-		t1Helper.setColumns("ID");
-		t2Helper = env.table("oneway_table2");
-		t2Helper.setColumns("ID", "TABLE1_ID");
+		t1Helper = env.table("oneway_table1", "ID");
+		t2Helper = env.table("oneway_table2", "ID", "TABLE1_ID");
 
-		t3Helper = env.table("oneway_table3");
-		t3Helper.setColumns("ID");
+		t3Helper = env.table("oneway_table3", "ID");
 		t4Helper = env.table("oneway_table4");
 		t4Helper.setColumns("ID", "TABLE3_ID").setColumnTypes(Types.INTEGER, Types.INTEGER);
 	}

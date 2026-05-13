@@ -67,8 +67,7 @@ public class DataContextObjectTrackingIT  {
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
         context = env.dataContext();
         runtime = env.runtime();
-        tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING");
         tPainting.setColumns(

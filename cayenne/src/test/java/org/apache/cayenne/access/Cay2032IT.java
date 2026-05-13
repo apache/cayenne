@@ -44,21 +44,18 @@ public class Cay2032IT {
     @BeforeEach
     public void createTestData() throws Exception {
         // USERS table has field `name` BLOB to trigger suppressDistinct in translator
-        TableHelper tUser = env.table("USERS");
-        tUser.setColumns("user_id");
+        TableHelper tUser = env.table("USERS", "user_id");
         tUser.insert(1);
         tUser.insert(2);
         tUser.insert(3);
 
-        TableHelper tTeam = env.table("TEAM");
-        tTeam.setColumns("team_id");
+        TableHelper tTeam = env.table("TEAM", "team_id");
         tTeam.insert(1);
         tTeam.insert(2);
         tTeam.insert(3);
         tTeam.insert(4);
 
-        TableHelper tTeamHasUser = env.table("USER_HAS_TEAM");
-        tTeamHasUser.setColumns("team_id", "user_id");
+        TableHelper tTeamHasUser = env.table("USER_HAS_TEAM", "team_id", "user_id");
         tTeamHasUser.insert(1, 2);
         tTeamHasUser.insert(2, 1);
         tTeamHasUser.insert(2, 2);

@@ -50,11 +50,9 @@ public class MixedPersistenceStrategyIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        tMixedPersistenceStrategy = env.table("MIXED_PERSISTENCE_STRATEGY");
-        tMixedPersistenceStrategy.setColumns("ID", "DESCRIPTION", "NAME");
+        tMixedPersistenceStrategy = env.table("MIXED_PERSISTENCE_STRATEGY", "ID", "DESCRIPTION", "NAME");
 
-        tMixedPersistenceStrategy2 = env.table("MIXED_PERSISTENCE_STRATEGY2");
-        tMixedPersistenceStrategy2.setColumns("ID", "MASTER_ID", "NAME");
+        tMixedPersistenceStrategy2 = env.table("MIXED_PERSISTENCE_STRATEGY2", "ID", "MASTER_ID", "NAME");
     }
 
     protected void createConflictingFieldDataSet() throws Exception {

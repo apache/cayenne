@@ -84,8 +84,7 @@ public class VerticalInheritanceIT {
     @Test
 	public void insertRoot() throws Exception {
 
-		TableHelper ivRootTable = env.table("IV_ROOT");
-		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+		TableHelper ivRootTable = env.table("IV_ROOT", "ID", "NAME", "DISCRIMINATOR");
 
 		assertEquals(0, ivRootTable.getRowCount());
 
@@ -106,11 +105,9 @@ public class VerticalInheritanceIT {
     @Test
 	public void insertSub1() throws Exception {
 
-		TableHelper ivRootTable = env.table("IV_ROOT");
-		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+		TableHelper ivRootTable = env.table("IV_ROOT", "ID", "NAME", "DISCRIMINATOR");
 
-		TableHelper ivSub1Table = env.table("IV_SUB1");
-		ivSub1Table.setColumns("ID", "SUB1_NAME");
+		TableHelper ivSub1Table = env.table("IV_SUB1", "ID", "SUB1_NAME");
 
 		IvSub1 sub1 = context.newObject(IvSub1.class);
 		sub1.setName("XyZX");
@@ -150,11 +147,9 @@ public class VerticalInheritanceIT {
     @Test
 	public void insertSub2() throws Exception {
 
-		TableHelper ivRootTable = env.table("IV_ROOT");
-		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+		TableHelper ivRootTable = env.table("IV_ROOT", "ID", "NAME", "DISCRIMINATOR");
 
-		TableHelper ivSub2Table = env.table("IV_SUB2");
-		ivSub2Table.setColumns("ID", "SUB2_NAME", "SUB2_ATTR");
+		TableHelper ivSub2Table = env.table("IV_SUB2", "ID", "SUB2_NAME", "SUB2_ATTR");
 
 		IvSub2 sub2 = context.newObject(IvSub2.class);
 		sub2.setName("XyZX");
@@ -224,11 +219,9 @@ public class VerticalInheritanceIT {
 	@Test
 	public void validationOnInsertSub3Ok() throws Exception {
 
-		TableHelper ivRootTable = env.table("IV_ROOT");
-		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+		TableHelper ivRootTable = env.table("IV_ROOT", "ID", "NAME", "DISCRIMINATOR");
 
-		TableHelper ivSub3Table = env.table("IV_SUB3");
-		ivSub3Table.setColumns("ID", "IV_ROOT_ID");
+		TableHelper ivSub3Table = env.table("IV_SUB3", "ID", "IV_ROOT_ID");
 
 		IvSub3 sub3 = context.newObject(IvSub3.class);
 		sub3.setName("XyZX");
@@ -244,14 +237,12 @@ public class VerticalInheritanceIT {
 	 */
 	@Test
 	public void updateRelationSub3() throws Exception {
-		TableHelper ivRootTable = env.table("IV_ROOT");
-		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+		TableHelper ivRootTable = env.table("IV_ROOT", "ID", "NAME", "DISCRIMINATOR");
 		ivRootTable.insert(1, "root1", null);
 		ivRootTable.insert(2, "root2", null);
 		ivRootTable.insert(3, "name", "IvSub3");
 
-		TableHelper ivSub3Table = env.table("IV_SUB3");
-		ivSub3Table.setColumns("ID", "IV_ROOT_ID");
+		TableHelper ivSub3Table = env.table("IV_SUB3", "ID", "IV_ROOT_ID");
 		ivSub3Table.insert(3, 1);
 
 		IvRoot root = SelectById.query(IvRoot.class, 2).selectOne(context);
@@ -278,14 +269,11 @@ public class VerticalInheritanceIT {
     @Test
 	public void insertSub1Sub1() throws Exception {
 
-		TableHelper ivRootTable = env.table("IV_ROOT");
-		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+		TableHelper ivRootTable = env.table("IV_ROOT", "ID", "NAME", "DISCRIMINATOR");
 
-		TableHelper ivSub1Table = env.table("IV_SUB1");
-		ivSub1Table.setColumns("ID", "SUB1_NAME", "SUB1_PRICE");
+		TableHelper ivSub1Table = env.table("IV_SUB1", "ID", "SUB1_NAME", "SUB1_PRICE");
 
-		TableHelper ivSub1Sub1Table = env.table("IV_SUB1_SUB1");
-		ivSub1Sub1Table.setColumns("ID", "SUB1_SUB1_NAME", "SUB1_SUB1_PRICE");
+		TableHelper ivSub1Sub1Table = env.table("IV_SUB1_SUB1", "ID", "SUB1_SUB1_NAME", "SUB1_SUB1_PRICE");
 
 		IvSub1Sub1 sub1Sub1 = context.newObject(IvSub1Sub1.class);
 		sub1Sub1.setName("XyZN");
@@ -325,8 +313,7 @@ public class VerticalInheritanceIT {
 		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
 				Types.INTEGER, Types.VARCHAR, Types.VARCHAR);
 
-		TableHelper ivSub1Table = env.table("IV_SUB1");
-		ivSub1Table.setColumns("ID", "SUB1_NAME");
+		TableHelper ivSub1Table = env.table("IV_SUB1", "ID", "SUB1_NAME");
 
 		// insert
 		ivRootTable.insert(1, "xROOT", null);
@@ -367,14 +354,11 @@ public class VerticalInheritanceIT {
 		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
 				Types.INTEGER, Types.VARCHAR, Types.VARCHAR);
 
-		TableHelper ivSub1Table = env.table("IV_SUB1");
-		ivSub1Table.setColumns("ID", "SUB1_NAME");
+		TableHelper ivSub1Table = env.table("IV_SUB1", "ID", "SUB1_NAME");
 
-		TableHelper ivSub2Table = env.table("IV_SUB2");
-		ivSub2Table.setColumns("ID", "SUB2_NAME");
+		TableHelper ivSub2Table = env.table("IV_SUB2", "ID", "SUB2_NAME");
 
-		TableHelper ivSub1Sub1Table = env.table("IV_SUB1_SUB1");
-		ivSub1Sub1Table.setColumns("ID", "SUB1_SUB1_NAME");
+		TableHelper ivSub1Sub1Table = env.table("IV_SUB1_SUB1", "ID", "SUB1_SUB1_NAME");
 
 		// insert
 		ivRootTable.insert(1, "xROOT", null);
@@ -437,14 +421,11 @@ public class VerticalInheritanceIT {
 		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
 				Types.INTEGER, Types.VARCHAR, Types.VARCHAR);
 
-		TableHelper ivSub1Table = env.table("IV_SUB1");
-		ivSub1Table.setColumns("ID", "SUB1_NAME");
+		TableHelper ivSub1Table = env.table("IV_SUB1", "ID", "SUB1_NAME");
 
-		TableHelper ivSub2Table = env.table("IV_SUB2");
-		ivSub2Table.setColumns("ID", "SUB2_NAME");
+		TableHelper ivSub2Table = env.table("IV_SUB2", "ID", "SUB2_NAME");
 
-		TableHelper ivSub1Sub1Table = env.table("IV_SUB1_SUB1");
-		ivSub1Sub1Table.setColumns("ID", "SUB1_SUB1_NAME");
+		TableHelper ivSub1Sub1Table = env.table("IV_SUB1_SUB1", "ID", "SUB1_SUB1_NAME");
 
 		// insert
 		ivRootTable.insert(1, "xROOT", null);
@@ -496,14 +477,11 @@ public class VerticalInheritanceIT {
 		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
 				Types.INTEGER, Types.VARCHAR, Types.VARCHAR);
 
-		TableHelper ivSub1Table = env.table("IV_SUB1");
-		ivSub1Table.setColumns("ID", "SUB1_NAME");
+		TableHelper ivSub1Table = env.table("IV_SUB1", "ID", "SUB1_NAME");
 
-		TableHelper ivSub2Table = env.table("IV_SUB2");
-		ivSub2Table.setColumns("ID", "SUB2_NAME");
+		TableHelper ivSub2Table = env.table("IV_SUB2", "ID", "SUB2_NAME");
 
-		TableHelper ivSub1Sub1Table = env.table("IV_SUB1_SUB1");
-		ivSub1Sub1Table.setColumns("ID", "SUB1_SUB1_NAME");
+		TableHelper ivSub1Sub1Table = env.table("IV_SUB1_SUB1", "ID", "SUB1_SUB1_NAME");
 
 		// insert
 		ivRootTable.insert(1, "xROOT", null);
@@ -555,8 +533,7 @@ public class VerticalInheritanceIT {
 		iv1RootTable.setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
 				Types.INTEGER, Types.VARCHAR, Types.VARCHAR);
 
-		TableHelper iv1Sub1Table = env.table("IV1_SUB1");
-		iv1Sub1Table.setColumns("ID", "SUB1_NAME");
+		TableHelper iv1Sub1Table = env.table("IV1_SUB1", "ID", "SUB1_NAME");
 
 		// insert
 		iv1RootTable.insert(1, "xROOT", null);
@@ -1088,14 +1065,11 @@ public class VerticalInheritanceIT {
 
 	@Test
 	public void countEjbqlQuery() throws Exception {
-		TableHelper ivRootTable = env.table("IV_ROOT");
-		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+		TableHelper ivRootTable = env.table("IV_ROOT", "ID", "NAME", "DISCRIMINATOR");
 
-		TableHelper ivSub1Table = env.table("IV_SUB1");
-		ivSub1Table.setColumns("ID", "SUB1_NAME");
+		TableHelper ivSub1Table = env.table("IV_SUB1", "ID", "SUB1_NAME");
 
-		TableHelper ivSub2Table = env.table("IV_SUB2");
-		ivSub2Table.setColumns("ID", "SUB2_ATTR", "SUB2_NAME");
+		TableHelper ivSub2Table = env.table("IV_SUB2", "ID", "SUB2_ATTR", "SUB2_NAME");
 
 		// Root, IvSub1, IvSub2
 
@@ -1130,14 +1104,11 @@ public class VerticalInheritanceIT {
 
 	@Test
 	public void columnSelectVerticalInheritanceSub1() throws SQLException {
-		TableHelper ivRootTable = env.table("IV_ROOT");
-		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+		TableHelper ivRootTable = env.table("IV_ROOT", "ID", "NAME", "DISCRIMINATOR");
 
-		TableHelper ivSub1Table = env.table("IV_SUB1");
-		ivSub1Table.setColumns("ID", "SUB1_NAME", "SUB1_PRICE");
+		TableHelper ivSub1Table = env.table("IV_SUB1", "ID", "SUB1_NAME", "SUB1_PRICE");
 
-		TableHelper ivSub1Sub1Table = env.table("IV_SUB1_SUB1");
-		ivSub1Sub1Table.setColumns("ID", "SUB1_SUB1_NAME", "SUB1_SUB1_PRICE");
+		TableHelper ivSub1Sub1Table = env.table("IV_SUB1_SUB1", "ID", "SUB1_SUB1_NAME", "SUB1_SUB1_PRICE");
 
 		IvSub1Sub1 sub1Sub1 = context.newObject(IvSub1Sub1.class);
 		sub1Sub1.setName("XyZN");
@@ -1178,14 +1149,11 @@ public class VerticalInheritanceIT {
 
 	@Test
 	public void columnSelectVerticalInheritanceSub1Sub1() throws SQLException {
-		TableHelper ivRootTable = env.table("IV_ROOT");
-		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+		TableHelper ivRootTable = env.table("IV_ROOT", "ID", "NAME", "DISCRIMINATOR");
 
-		TableHelper ivSub1Table = env.table("IV_SUB1");
-		ivSub1Table.setColumns("ID", "SUB1_NAME", "SUB1_PRICE");
+		TableHelper ivSub1Table = env.table("IV_SUB1", "ID", "SUB1_NAME", "SUB1_PRICE");
 
-		TableHelper ivSub1Sub1Table = env.table("IV_SUB1_SUB1");
-		ivSub1Sub1Table.setColumns("ID", "SUB1_SUB1_NAME", "SUB1_SUB1_PRICE");
+		TableHelper ivSub1Sub1Table = env.table("IV_SUB1_SUB1", "ID", "SUB1_SUB1_NAME", "SUB1_SUB1_PRICE");
 
 		IvSub1Sub1 sub1Sub1 = context.newObject(IvSub1Sub1.class);
 		sub1Sub1.setName("XyZN");

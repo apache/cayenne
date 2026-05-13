@@ -50,8 +50,7 @@ public class DataContextEJBQLUpdateIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING");
         tPainting.setColumns(

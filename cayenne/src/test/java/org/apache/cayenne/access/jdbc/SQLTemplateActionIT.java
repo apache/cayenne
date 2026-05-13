@@ -75,8 +75,7 @@ public class SQLTemplateActionIT {
 		unitDbAdapter = env.getInstance(UnitDbAdapter.class);
 		objectContext = env.context();
 		sqlTemplateCustomizer = env.getInstance(SQLTemplateCustomizer.class);
-		tArtist = env.table("ARTIST");
-		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
+		tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 	}
 
 	protected void createFourArtists() throws Exception {

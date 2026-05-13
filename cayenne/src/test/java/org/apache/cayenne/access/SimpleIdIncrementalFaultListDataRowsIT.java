@@ -54,8 +54,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT {
     public void setUp() throws Exception {
         context = env.dataContext();
         context1 = (DataContext) env.runtime().newContext();
-        tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
         createArtistsDataSet();
 
         ObjectSelect<DataRow> q = ObjectSelect.dataRowQuery(Artist.class)

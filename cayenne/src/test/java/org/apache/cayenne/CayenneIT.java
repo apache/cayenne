@@ -61,11 +61,9 @@ public class CayenneIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
-        tPainting = env.table("PAINTING");
-        tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE");
+        tPainting = env.table("PAINTING", "PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE");
 
     }
 

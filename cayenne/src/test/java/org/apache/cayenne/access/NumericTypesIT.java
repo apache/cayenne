@@ -73,11 +73,9 @@ public class NumericTypesIT {
         runtime = env.runtime();
         commitStats.before();
 
-        tSmallintTest = env.table("SMALLINT_TEST");
-        tSmallintTest.setColumns("ID", "SMALLINT_COL");
+        tSmallintTest = env.table("SMALLINT_TEST", "ID", "SMALLINT_COL");
 
-        tTinyintTest = env.table("TINYINT_TEST");
-        tTinyintTest.setColumns("ID", "TINYINT_COL");
+        tTinyintTest = env.table("TINYINT_TEST", "ID", "TINYINT_COL");
     }
 
     @AfterEach

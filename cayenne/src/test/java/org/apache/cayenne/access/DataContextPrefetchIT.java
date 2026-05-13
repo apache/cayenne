@@ -79,30 +79,23 @@ public class DataContextPrefetchIT  {
 	public void setUp() throws Exception {
         context = env.dataContext();
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
-		tArtist = env.table("ARTIST");
-		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+		tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
 		tPainting = env.table("PAINTING");
 		tPainting.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "ESTIMATED_PRICE", "GALLERY_ID").setColumnTypes(
 				Types.INTEGER, Types.VARCHAR, Types.BIGINT, Types.DECIMAL, Types.INTEGER);
 
-		tPaintingInfo = env.table("PAINTING_INFO");
-		tPaintingInfo.setColumns("PAINTING_ID", "TEXT_REVIEW");
+		tPaintingInfo = env.table("PAINTING_INFO", "PAINTING_ID", "TEXT_REVIEW");
 
-		tExhibit = env.table("EXHIBIT");
-		tExhibit.setColumns("EXHIBIT_ID", "GALLERY_ID", "OPENING_DATE", "CLOSING_DATE");
+		tExhibit = env.table("EXHIBIT", "EXHIBIT_ID", "GALLERY_ID", "OPENING_DATE", "CLOSING_DATE");
 
-		tArtistExhibit = env.table("ARTIST_EXHIBIT");
-		tArtistExhibit.setColumns("ARTIST_ID", "EXHIBIT_ID");
+		tArtistExhibit = env.table("ARTIST_EXHIBIT", "ARTIST_ID", "EXHIBIT_ID");
 
-		tGallery = env.table("GALLERY");
-		tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
+		tGallery = env.table("GALLERY", "GALLERY_ID", "GALLERY_NAME");
 
-		tArtistGroup = env.table("ARTIST_GROUP");
-		tArtistGroup.setColumns("ARTIST_ID", "GROUP_ID");
+		tArtistGroup = env.table("ARTIST_GROUP", "ARTIST_ID", "GROUP_ID");
 
-		tArtGroup = env.table("ARTGROUP");
-		tArtGroup.setColumns("GROUP_ID", "NAME");
+		tArtGroup = env.table("ARTGROUP", "GROUP_ID", "NAME");
 	}
 
 	protected void createTwoArtistsAndTwoPaintingsDataSet() throws Exception {

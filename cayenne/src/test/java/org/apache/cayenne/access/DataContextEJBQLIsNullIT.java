@@ -53,8 +53,7 @@ public class DataContextEJBQLIsNullIT {
     public void setUp() throws Exception {
         context = env.context();
         accessStackAdapter = env.getInstance(UnitDbAdapter.class);
-        tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING");
         tPainting.setColumns(

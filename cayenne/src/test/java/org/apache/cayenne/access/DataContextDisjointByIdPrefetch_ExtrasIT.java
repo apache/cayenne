@@ -59,23 +59,17 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT {
     public void setUp() throws Exception {
         context = env.dataContext();
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
-        tBag = env.table("BAG");
-        tBag.setColumns("ID", "NAME");
+        tBag = env.table("BAG", "ID", "NAME");
 
-        tBall = env.table("BALL");
-        tBall.setColumns("ID", "BOX_ID", "THING_VOLUME", "THING_WEIGHT");
+        tBall = env.table("BALL", "ID", "BOX_ID", "THING_VOLUME", "THING_WEIGHT");
 
-        tBox = env.table("BOX");
-        tBox.setColumns("ID", "BAG_ID", "NAME");
+        tBox = env.table("BOX", "ID", "BAG_ID", "NAME");
 
-        tBoxInfo = env.table("BOX_INFO");
-        tBoxInfo.setColumns("ID" ,"BOX_ID", "COLOR");
+        tBoxInfo = env.table("BOX_INFO", "ID" ,"BOX_ID", "COLOR");
 
-        tBoxThing = env.table("BOX_THING");
-        tBoxThing.setColumns("BOX_ID", "THING_VOLUME", "THING_WEIGHT");
+        tBoxThing = env.table("BOX_THING", "BOX_ID", "THING_VOLUME", "THING_WEIGHT");
 
-        tThing = env.table("THING");
-        tThing.setColumns("ID", "VOLUME", "WEIGHT");
+        tThing = env.table("THING", "ID", "VOLUME", "WEIGHT");
     }
 
     private void createBagWithTwoBoxesAndPlentyOfBallsDataSet() throws Exception {

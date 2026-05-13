@@ -57,17 +57,13 @@ public class EmbeddingIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        tEmbedEntity1 = env.table("EMBED_ENTITY1");
-        tEmbedEntity1.setColumns("ID", "NAME", "EMBEDDED10", "EMBEDDED20", "EMBEDDED30", "EMBEDDED40");
+        tEmbedEntity1 = env.table("EMBED_ENTITY1", "ID", "NAME", "EMBEDDED10", "EMBEDDED20", "EMBEDDED30", "EMBEDDED40");
 
-        tEmbedEntity2 = env.table("EMBED_ENTITY2");
-        tEmbedEntity2.setColumns("ID", "NAME", "ENTITY1_ID", "EMBEDDED10", "EMBEDDED20");
+        tEmbedEntity2 = env.table("EMBED_ENTITY2", "ID", "NAME", "ENTITY1_ID", "EMBEDDED10", "EMBEDDED20");
 
-        tEmbedRoot = env.table("EMBED_ROOT");
-        tEmbedRoot.setColumns("ID", "NAME", "EMBEDDED10", "EMBEDDED20", "TYPE");
+        tEmbedRoot = env.table("EMBED_ROOT", "ID", "NAME", "EMBEDDED10", "EMBEDDED20", "TYPE");
 
-        tEmbedChild = env.table("EMBED_CHILD");
-        tEmbedChild.setColumns("ID", "CHILD_ATTR");
+        tEmbedChild = env.table("EMBED_CHILD", "ID", "CHILD_ATTR");
     }
     
     protected void createSelectDataSet() throws Exception {

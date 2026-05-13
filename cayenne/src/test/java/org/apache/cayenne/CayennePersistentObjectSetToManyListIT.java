@@ -53,8 +53,7 @@ public class CayennePersistentObjectSetToManyListIT {
 	public void setUp() throws Exception {
 		runtime = env.runtime();
 		context = env.context();
-		tArtist = env.table("ARTIST");
-		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+		tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
 		tPainting = env.table("PAINTING");
 		tPainting.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR,

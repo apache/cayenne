@@ -54,8 +54,7 @@ public class AshwoodEntitySorter_RelationshipsIT {
 		this.sorter = new AshwoodEntitySorter();
 		sorter.setEntityResolver(context.getEntityResolver());
 
-		tRelationshipHelper = env.table("RELATIONSHIP_HELPER");
-		tRelationshipHelper.setColumns("RELATIONSHIP_HELPER_ID", "NAME");
+		tRelationshipHelper = env.table("RELATIONSHIP_HELPER", "RELATIONSHIP_HELPER_ID", "NAME");
 
 		tReflexiveAndToOne = env.table("REFLEXIVE_AND_TO_ONE");
 		tReflexiveAndToOne.setColumns("REFLEXIVE_AND_TO_ONE_ID", "PARENT_ID", "RELATIONSHIP_HELPER_ID", "NAME")

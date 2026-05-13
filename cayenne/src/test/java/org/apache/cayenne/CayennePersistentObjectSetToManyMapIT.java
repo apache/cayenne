@@ -47,17 +47,13 @@ public class CayennePersistentObjectSetToManyMapIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        tMapToMany = env.table("MAP_TO_MANY");
-        tMapToMany.setColumns("ID");
+        tMapToMany = env.table("MAP_TO_MANY", "ID");
 
-        tMapToManyTarget = env.table("MAP_TO_MANY_TARGET");
-        tMapToManyTarget.setColumns("ID", "MAP_TO_MANY_ID", "NAME");
+        tMapToManyTarget = env.table("MAP_TO_MANY_TARGET", "ID", "MAP_TO_MANY_ID", "NAME");
 
-        tIdMapToMany = env.table("ID_MAP_TO_MANY");
-        tIdMapToMany.setColumns("ID");
+        tIdMapToMany = env.table("ID_MAP_TO_MANY", "ID");
 
-        tIdMapToManyTarget = env.table("ID_MAP_TO_MANY_TARGET");
-        tIdMapToManyTarget.setColumns("ID", "MAP_TO_MANY_ID");
+        tIdMapToManyTarget = env.table("ID_MAP_TO_MANY_TARGET", "ID", "MAP_TO_MANY_ID");
 
         createTestDataSet();
     }

@@ -47,8 +47,7 @@ public class SelectQueryReturnTypesIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RETURN_TYPES_PROJECT);
 
     protected void createNumericsDataSet() throws Exception {
-        TableHelper tNumerics = env.table("TYPES_MAPPING_TEST1");
-        tNumerics.setColumns("AAAID", "INTEGER_COLUMN");
+        TableHelper tNumerics = env.table("TYPES_MAPPING_TEST1", "AAAID", "INTEGER_COLUMN");
 
         tNumerics.insert(1, 0);
         tNumerics.insert(2, 1);

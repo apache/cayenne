@@ -48,8 +48,7 @@ public class SimpleIdIncrementalFaultListIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.dataContext();
-        tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
     }
 
     protected void createArtistsDataSet() throws Exception {

@@ -55,8 +55,7 @@ public class DataContextEJBQLNumericalFunctionalIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        tBigIntegerEntity = env.table("BIGINTEGER_ENTITY");
-        tBigIntegerEntity.setColumns("ID", "BIG_INTEGER_FIELD");
+        tBigIntegerEntity = env.table("BIGINTEGER_ENTITY", "ID", "BIG_INTEGER_FIELD");
     }
 
     @Test

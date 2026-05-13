@@ -61,15 +61,13 @@ public class DataContextDisjointByIdPrefetchIT {
     public void setUp() throws Exception {
         context = env.dataContext();
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
-        tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING");
         tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE").setColumnTypes(Types.INTEGER, Types.BIGINT,
                 Types.VARCHAR);
 
-        tPaintingInfo = env.table("PAINTING_INFO");
-        tPaintingInfo.setColumns("PAINTING_ID", "TEXT_REVIEW");
+        tPaintingInfo = env.table("PAINTING_INFO", "PAINTING_ID", "TEXT_REVIEW");
     }
 
     private void createArtistWithTwoPaintingsDataSet() throws Exception {

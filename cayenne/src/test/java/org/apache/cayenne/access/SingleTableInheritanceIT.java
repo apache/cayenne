@@ -64,14 +64,11 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
     	context = env.dataContext();
     	context2 = (DataContext) env.runtime().newContext();
     	queryBlocker = env.getInstance(DataChannelInterceptor.class);
-		tAddress = new TableHelper(dbHelper, "ADDRESS");
-		tAddress.setColumns("ADDRESS_ID", "CITY", "PERSON_ID");
+		tAddress = new TableHelper(dbHelper, "ADDRESS", "ADDRESS_ID", "CITY", "PERSON_ID");
 
-		tClientCompany = new TableHelper(dbHelper, "CLIENT_COMPANY");
-		tClientCompany.setColumns("CLIENT_COMPANY_ID", "NAME");
+		tClientCompany = new TableHelper(dbHelper, "CLIENT_COMPANY", "CLIENT_COMPANY_ID", "NAME");
 
-		tDepartment = new TableHelper(dbHelper, "DEPARTMENT");
-		tDepartment.setColumns("DEPARTMENT_ID", "NAME");
+		tDepartment = new TableHelper(dbHelper, "DEPARTMENT", "DEPARTMENT_ID", "NAME");
 
 		tPerson = new TableHelper(dbHelper, "PERSON").setColumns("PERSON_ID", "NAME", "PERSON_TYPE", "SALARY",
 				"CLIENT_COMPANY_ID", "DEPARTMENT_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR,

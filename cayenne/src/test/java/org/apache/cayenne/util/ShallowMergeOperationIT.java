@@ -57,8 +57,7 @@ public class ShallowMergeOperationIT {
         runtime = env.runtime();
         context = env.dataContext();
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
-        tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
     }
 

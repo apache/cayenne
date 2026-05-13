@@ -60,17 +60,13 @@ public class CayennePersistentObjectRelationshipsIT {
     public void setUp() throws Exception {
         context = env.context();
         runtime = env.runtime();
-        tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
-        tPainting = env.table("PAINTING");
-        tPainting.setColumns(
-                "PAINTING_ID",
+        tPainting = env.table("PAINTING", "PAINTING_ID",
                 "PAINTING_TITLE",
                 "ARTIST_ID");
 
-        tPaintingInfo = env.table("PAINTING_INFO");
-        tPaintingInfo.setColumns("PAINTING_ID", "TEXT_REVIEW");
+        tPaintingInfo = env.table("PAINTING_INFO", "PAINTING_ID", "TEXT_REVIEW");
     }
 
     private void createArtistWithPaintingDataSet() throws Exception {

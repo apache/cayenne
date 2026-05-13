@@ -51,8 +51,7 @@ public class EmbeddingSerializeIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        tEmbedEntity1 = env.table("EMBED_ENTITY1");
-        tEmbedEntity1.setColumns("ID", "NAME", "EMBEDDED10", "EMBEDDED20", "EMBEDDED30", "EMBEDDED40");
+        tEmbedEntity1 = env.table("EMBED_ENTITY1", "ID", "NAME", "EMBEDDED10", "EMBEDDED20", "EMBEDDED30", "EMBEDDED40");
     }
 
     protected void createSelectDataSet() throws Exception {

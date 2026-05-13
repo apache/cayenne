@@ -52,8 +52,7 @@ public class QualifierTranslatorIT {
     public void setUp() throws Exception {
         runtime = env.runtime();
         context = env.context();
-        TableHelper tCompoundPKTest = env.table("COMPOUND_PK_TEST");
-        tCompoundPKTest.setColumns("KEY1", "KEY2", "NAME");
+        TableHelper tCompoundPKTest = env.table("COMPOUND_PK_TEST", "KEY1", "KEY2", "NAME");
         tCompoundPKTest.insert("PK1", "PK2", "BBB");
         tCompoundPKTest.insert("PK3", "PK4", "CCC");
     }

@@ -56,8 +56,7 @@ public class ObjectSelect_PrimitiveColumnsIT {
     public void createTestRecords() throws Exception {
         context = env.dataContext();
         unitDbAdapter = env.getInstance(UnitDbAdapter.class);
-        tPrimitives = env.table("PRIMITIVES_TEST");
-        tPrimitives.setColumns("ID", "BOOLEAN_COLUMN", "INT_COLUMN");
+        tPrimitives = env.table("PRIMITIVES_TEST", "ID", "BOOLEAN_COLUMN", "INT_COLUMN");
         for (int i = 1; i <= 20; i++) {
             tPrimitives.insert(i, (i % 2 == 0), i * 10);
         }

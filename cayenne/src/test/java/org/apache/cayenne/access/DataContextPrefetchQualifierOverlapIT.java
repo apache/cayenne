@@ -38,11 +38,9 @@ public class DataContextPrefetchQualifierOverlapIT  {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private void createTwoArtistsThreePaintingsDataSet() throws Exception {
-        TableHelper tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        TableHelper tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
-        TableHelper tPainting = env.table("PAINTING");
-        tPainting.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID");
+        TableHelper tPainting = env.table("PAINTING", "PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID");
 
         tArtist.insert(1, "A1");
         tArtist.insert(2, "A2");

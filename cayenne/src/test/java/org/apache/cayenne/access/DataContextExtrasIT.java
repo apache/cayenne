@@ -72,8 +72,7 @@ public class DataContextExtrasIT {
         context = env.dataContext();
         logger = env.getInstance(JdbcEventLogger.class);
         objectFactory = env.getInstance(AdhocObjectFactory.class);
-        tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING");
         tPainting.setColumns(

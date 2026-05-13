@@ -57,12 +57,9 @@ public class SimpleIdIncrementalFaultListPrefetchIT {
     public void setUp() throws Exception {
         context = env.context();
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
-        tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
-        tPaining = env.table("PAINTING");
-        tPaining.setColumns(
-                "PAINTING_ID",
+        tPaining = env.table("PAINTING", "PAINTING_ID",
                 "PAINTING_TITLE",
                 "ARTIST_ID",
                 "ESTIMATED_PRICE");

@@ -128,8 +128,7 @@ public class Cay2666IT {
 
     @Test
     public void expressionWithDollarSign() throws Exception {
-        TableHelper tTest = env.table("Cay2666");
-        tTest.setColumns("ID", "NAME$");
+        TableHelper tTest = env.table("Cay2666", "ID", "NAME$");
         tTest.insert(1, "st.One");
 
         Expression expression = ExpressionFactory.exp("name$ = 'st.One'");

@@ -65,23 +65,17 @@ public class FlattenedRelationshipsIT {
         context = env.dataContext();
         context1 = (DataContext) env.runtime().newContext();
 
-        tFlattenedTest1 = env.table("FLATTENED_TEST_1");
-        tFlattenedTest1.setColumns("FT1_ID", "NAME");
+        tFlattenedTest1 = env.table("FLATTENED_TEST_1", "FT1_ID", "NAME");
 
-        tFlattenedTest2 = env.table("FLATTENED_TEST_2");
-        tFlattenedTest2.setColumns("FT2_ID", "FT1_ID", "NAME");
+        tFlattenedTest2 = env.table("FLATTENED_TEST_2", "FT2_ID", "FT1_ID", "NAME");
 
-        tFlattenedTest3 = env.table("FLATTENED_TEST_3");
-        tFlattenedTest3.setColumns("FT3_ID", "FT2_ID", "NAME");
+        tFlattenedTest3 = env.table("FLATTENED_TEST_3", "FT3_ID", "FT2_ID", "NAME");
 
-        tComplexJoin = env.table("COMPLEX_JOIN");
-        tComplexJoin.setColumns("PK", "FT1_FK", "FT3_FK", "EXTRA_COLUMN");
+        tComplexJoin = env.table("COMPLEX_JOIN", "PK", "FT1_FK", "FT3_FK", "EXTRA_COLUMN");
 
-        tFlattenedCircular = env.table("FLATTENED_CIRCULAR");
-        tFlattenedCircular.setColumns("ID");
+        tFlattenedCircular = env.table("FLATTENED_CIRCULAR", "ID");
 
-        tFlattenedCircularJoin = env.table("FLATTENED_CIRCULAR_JOIN");
-        tFlattenedCircularJoin.setColumns("SIDE1_ID", "SIDE2_ID");
+        tFlattenedCircularJoin = env.table("FLATTENED_CIRCULAR_JOIN", "SIDE1_ID", "SIDE2_ID");
     }
 
     private void createFlattenedTestDataSet() throws Exception {

@@ -69,8 +69,7 @@ public class DataContextFlattenedAttributesIT {
     public void createTestDataSetStructure() {
         context = env.dataContext();
         runtime = env.runtime();
-        tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
+        tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 
         tPainting = env.table("PAINTING");
         tPainting.setColumns(
@@ -85,11 +84,9 @@ public class DataContextFlattenedAttributesIT {
                 Types.DECIMAL,
                 Types.INTEGER);
 
-        tPaintingInfo = env.table("PAINTING_INFO");
-        tPaintingInfo.setColumns("PAINTING_ID", "TEXT_REVIEW");
+        tPaintingInfo = env.table("PAINTING_INFO", "PAINTING_ID", "TEXT_REVIEW");
 
-        tGallery = env.table("GALLERY");
-        tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
+        tGallery = env.table("GALLERY", "GALLERY_ID", "GALLERY_NAME");
     }
 
     private void createTestDataSet() throws Exception {

@@ -48,8 +48,7 @@ public class CayennePersistentObjectInContextIT {
     public void setUp() throws Exception {
         runtime = env.runtime();
         context = env.dataContext();
-        tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
     }
 
     @Test

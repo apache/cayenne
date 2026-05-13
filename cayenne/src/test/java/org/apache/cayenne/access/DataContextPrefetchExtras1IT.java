@@ -44,11 +44,9 @@ public class DataContextPrefetchExtras1IT  {
 
     protected void createDataSet() throws Exception {
 
-        TableHelper tPainting = env.table("PAINTING");
-        tPainting.setColumns("PAINTING_ID", "PAINTING_TITLE");
+        TableHelper tPainting = env.table("PAINTING", "PAINTING_ID", "PAINTING_TITLE");
 
-        TableHelper tPaintingInfo = env.table("PAINTING_INFO");
-        tPaintingInfo.setColumns("PAINTING_ID", "TEXT_REVIEW");
+        TableHelper tPaintingInfo = env.table("PAINTING_INFO", "PAINTING_ID", "TEXT_REVIEW");
 
         for (int i = 1; i <= 10; i++) {
             tPainting.insert(i, "P" + i);

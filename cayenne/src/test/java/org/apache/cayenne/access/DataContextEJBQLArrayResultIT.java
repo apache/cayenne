@@ -46,8 +46,7 @@ public class DataContextEJBQLArrayResultIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        TableHelper tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        TableHelper tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
         tArtist.insert(33001, "AA1");
         tArtist.insert(33002, "AA2");
         tArtist.insert(33003, "BB1");

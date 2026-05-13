@@ -66,8 +66,7 @@ public class DataContextEJBQLFetchJoinIT {
     public void setUp() throws Exception {
         context = env.context();
         queryBlocker = env.getInstance(DataChannelInterceptor.class);
-        tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING");
         tPainting.setColumns(
@@ -80,14 +79,11 @@ public class DataContextEJBQLFetchJoinIT {
                 Types.VARCHAR,
                 Types.DECIMAL);
 
-        tGallery = env.table("GALLERY");
-        tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
+        tGallery = env.table("GALLERY", "GALLERY_ID", "GALLERY_NAME");
 
-        tExhibit = env.table("EXHIBIT");
-        tExhibit.setColumns("EXHIBIT_ID", "GALLERY_ID", "CLOSING_DATE", "OPENING_DATE");
+        tExhibit = env.table("EXHIBIT", "EXHIBIT_ID", "GALLERY_ID", "CLOSING_DATE", "OPENING_DATE");
 
-        tArtistExhibit = env.table("ARTIST_EXHIBIT");
-        tArtistExhibit.setColumns("ARTIST_ID", "EXHIBIT_ID");
+        tArtistExhibit = env.table("ARTIST_EXHIBIT", "ARTIST_ID", "EXHIBIT_ID");
     }
 
     protected void createOneFetchJoinDataSet() throws Exception {

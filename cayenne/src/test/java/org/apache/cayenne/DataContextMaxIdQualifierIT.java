@@ -55,8 +55,7 @@ public class DataContextMaxIdQualifierIT {
         context = env.dataContext();
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
         runtime = env.runtime();
-        tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING");
         tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE").setColumnTypes(Types.INTEGER, Types.BIGINT,

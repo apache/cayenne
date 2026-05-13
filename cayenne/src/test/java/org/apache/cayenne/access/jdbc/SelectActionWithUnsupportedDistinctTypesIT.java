@@ -54,17 +54,13 @@ public class SelectActionWithUnsupportedDistinctTypesIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.dataContext();
-        tProduct = env.table("PRODUCT");
-        tProduct.setColumns("ID", "LONGVARCHAR_COL");
+        tProduct = env.table("PRODUCT", "ID", "LONGVARCHAR_COL");
 
-        tCustomer = env.table("CUSTOMER");
-        tCustomer.setColumns("ID", "LONGVARCHAR_COL");
+        tCustomer = env.table("CUSTOMER", "ID", "LONGVARCHAR_COL");
 
-        tComposition = env.table("COMPOSITION");
-        tComposition.setColumns("BASE_ID", "CONTAINED_ID");
+        tComposition = env.table("COMPOSITION", "BASE_ID", "CONTAINED_ID");
 
-        tOrders = env.table("ORDERS");
-        tOrders.setColumns("CUSTOMER_ID", "PRODUCT_ID");
+        tOrders = env.table("ORDERS", "CUSTOMER_ID", "PRODUCT_ID");
     }
 
     private void createCompositionManyToManyDataSet() throws SQLException {

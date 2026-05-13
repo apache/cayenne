@@ -62,21 +62,16 @@ public class FlattenedPrefetchIT {
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
         context = env.context();
 
-        tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
-        tPainting = env.table("PAINTING");
-        tPainting.setColumns(
-                "PAINTING_ID",
+        tPainting = env.table("PAINTING", "PAINTING_ID",
                 "PAINTING_TITLE",
                 "ARTIST_ID",
                 "ESTIMATED_PRICE");
 
-        tArtgroup = env.table("ARTGROUP");
-        tArtgroup.setColumns("GROUP_ID", "NAME");
+        tArtgroup = env.table("ARTGROUP", "GROUP_ID", "NAME");
 
-        tArtistGroup = env.table("ARTIST_GROUP");
-        tArtistGroup.setColumns("ARTIST_ID", "GROUP_ID");
+        tArtistGroup = env.table("ARTIST_GROUP", "ARTIST_ID", "GROUP_ID");
     }
 
     protected void createPrefetchDataSet1() throws Exception {

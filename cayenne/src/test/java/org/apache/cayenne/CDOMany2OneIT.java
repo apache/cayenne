@@ -59,16 +59,14 @@ public class CDOMany2OneIT {
     public void setUp() throws Exception {
         runtime = env.runtime();
         context = env.context();
-        tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING");
         tPainting
                 .setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "GALLERY_ID")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.BIGINT, Types.INTEGER);
 
-        tGallery = env.table("GALLERY");
-        tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
+        tGallery = env.table("GALLERY", "GALLERY_ID", "GALLERY_NAME");
     }
 
     private void createArtistWithPaintingDataSet() throws Exception {

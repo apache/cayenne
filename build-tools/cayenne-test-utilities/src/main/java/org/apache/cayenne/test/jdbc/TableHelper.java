@@ -29,19 +29,15 @@ import java.util.List;
  */
 public class TableHelper {
 
-    protected String tableName;
-    protected DBHelper dbHelper;
-    protected String[] columns;
-    protected int[] columnTypes;
-
-    public TableHelper(DBHelper dbHelper, String tableName) {
-        this.dbHelper = dbHelper;
-        this.tableName = tableName;
-    }
+    private final DBHelper dbHelper;
+    private final String tableName;
+    private String[] columns;
+    private int[] columnTypes;
 
     public TableHelper(DBHelper dbHelper, String tableName, String... columns) {
-        this(dbHelper, tableName);
-        setColumns(columns);
+        this.dbHelper = dbHelper;
+        this.tableName = tableName;
+        this.columns = columns;
     }
 
     public UpdateBuilder update() throws SQLException {

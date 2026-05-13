@@ -58,14 +58,11 @@ public class DataContextEJBQLFlattenedRelationshipsIT {
         context = env.context();
         ft1Helper = env.table("FLATTENED_TEST_1", "FT1_ID", "NAME");
 
-        ft2Helper = env.table("FLATTENED_TEST_2");
-        ft2Helper.setColumns("FT2_ID", "FT1_ID", "NAME");
+        ft2Helper = env.table("FLATTENED_TEST_2", "FT2_ID", "FT1_ID", "NAME");
 
-        ft3Helper = env.table("FLATTENED_TEST_3");
-        ft3Helper.setColumns("FT3_ID", "FT2_ID", "NAME");
+        ft3Helper = env.table("FLATTENED_TEST_3", "FT3_ID", "FT2_ID", "NAME");
 
-        ft4Helper = env.table("FLATTENED_TEST_4");
-        ft4Helper.setColumns("FT4_ID", "FT3_ID", "NAME");
+        ft4Helper = env.table("FLATTENED_TEST_4", "FT4_ID", "FT3_ID", "NAME");
     }
 
     private void createFt123() throws Exception {

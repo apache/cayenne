@@ -45,11 +45,9 @@ public class CAY_191IT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.dataContext();
-        tRelationshipHelper = env.table("RELATIONSHIP_HELPER");
-        tRelationshipHelper.setColumns("NAME", "RELATIONSHIP_HELPER_ID");
+        tRelationshipHelper = env.table("RELATIONSHIP_HELPER", "NAME", "RELATIONSHIP_HELPER_ID");
         
-        tFkOfDifferentType = env.table("FK_OF_DIFFERENT_TYPE");
-        tFkOfDifferentType.setColumns("ID", "RELATIONSHIP_HELPER_FK");
+        tFkOfDifferentType = env.table("FK_OF_DIFFERENT_TYPE", "ID", "RELATIONSHIP_HELPER_FK");
     }
     
     protected void createTestDataSet() throws Exception {

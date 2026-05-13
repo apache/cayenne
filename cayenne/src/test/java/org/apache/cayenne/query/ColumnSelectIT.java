@@ -78,8 +78,7 @@ public class ColumnSelectIT {
         context = env.dataContext();
         runtime = env.runtime();
         unitDbAdapter = env.getInstance(UnitDbAdapter.class);
-        tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
+        tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
         tArtist.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.DATE);
 
         java.sql.Date[] dates = new java.sql.Date[5];
@@ -90,12 +89,10 @@ public class ColumnSelectIT {
             tArtist.insert(i, "artist" + i, dates[i % 5]);
         }
 
-        TableHelper tGallery = env.table("GALLERY");
-        tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
+        TableHelper tGallery = env.table("GALLERY", "GALLERY_ID", "GALLERY_NAME");
         tGallery.insert(1, "tate modern");
 
-        tPaintings = env.table("PAINTING");
-        tPaintings.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "GALLERY_ID", "ESTIMATED_PRICE");
+        tPaintings = env.table("PAINTING", "PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "GALLERY_ID", "ESTIMATED_PRICE");
         for (int i = 1; i <= 20; i++) {
             tPaintings.insert(i, "painting" + i, i % 5 + 1, 1, 22 - i);
         }

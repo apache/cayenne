@@ -53,8 +53,7 @@ public class CAY_194IT {
     public void setUp() throws Exception {
         context = env.dataContext();
         dbHelper = env.dbHelper();
-        TableHelper tReflexive = new TableHelper(dbHelper, "REFLEXIVE_AND_TO_ONE");
-        tReflexive.setColumns("REFLEXIVE_AND_TO_ONE_ID", "PARENT_ID");
+        TableHelper tReflexive = new TableHelper(dbHelper, "REFLEXIVE_AND_TO_ONE", "REFLEXIVE_AND_TO_ONE_ID", "PARENT_ID");
 
         tReflexive.update().set("PARENT_ID", null, Types.INTEGER).execute();
 

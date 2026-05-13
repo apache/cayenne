@@ -48,8 +48,7 @@ public class PrimitiveAttributesIT {
 
     @Test
     public void selectTest() throws Exception {
-        TableHelper tPrimitives = env.table("PRIMITIVES_TEST");
-        tPrimitives.setColumns("ID", "BOOLEAN_COLUMN", "INT_COLUMN", "CHAR_COLUMN");
+        TableHelper tPrimitives = env.table("PRIMITIVES_TEST", "ID", "BOOLEAN_COLUMN", "INT_COLUMN", "CHAR_COLUMN");
         tPrimitives.insert(1, true, -100, String.valueOf('a'))
                 .insert(2, false, 0, String.valueOf('~'))
                 .insert(3, true, Integer.MAX_VALUE, String.valueOf('Z'));

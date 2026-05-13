@@ -54,14 +54,11 @@ public class CayenneCompoundIT {
 	@BeforeEach
 	public void setUp() throws Exception {
 		context = env.context();
-		tCompoundPKTest = env.table("COMPOUND_PK_TEST");
-		tCompoundPKTest.setColumns("KEY1", "KEY2", "NAME");
+		tCompoundPKTest = env.table("COMPOUND_PK_TEST", "KEY1", "KEY2", "NAME");
 
-		tCharPKTest = env.table("CHAR_PK_TEST");
-		tCharPKTest.setColumns("PK_COL", "OTHER_COL");
+		tCharPKTest = env.table("CHAR_PK_TEST", "PK_COL", "OTHER_COL");
 
-		tCompoundIntPKTest = env.table("COMPOUND_INT_PK");
-		tCompoundIntPKTest.setColumns("id1", "id2", "name");
+		tCompoundIntPKTest = env.table("COMPOUND_INT_PK", "id1", "id2", "name");
 	}
 
 	private void createOneCompoundPK() throws Exception {

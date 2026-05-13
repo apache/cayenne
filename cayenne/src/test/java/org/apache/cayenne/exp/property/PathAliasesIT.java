@@ -59,24 +59,20 @@ public class PathAliasesIT {
     @BeforeEach
     public void createArtistsDataSet() throws Exception {
         context = env.dataContext();
-        TableHelper tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
+        TableHelper tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 
         long dateBase = System.currentTimeMillis();
         for (int i = 1; i <= 20; i++) {
             tArtist.insert(i, "artist" + i, new java.sql.Date(dateBase + 10000 * i));
         }
 
-        TableHelper tGallery = env.table("GALLERY");
-        tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
+        TableHelper tGallery = env.table("GALLERY", "GALLERY_ID", "GALLERY_NAME");
         tGallery.insert(1, "tate modern");
 
-        TableHelper tGallery1 = env.table("GALLERY");
-        tGallery1.setColumns("GALLERY_ID", "GALLERY_NAME");
+        TableHelper tGallery1 = env.table("GALLERY", "GALLERY_ID", "GALLERY_NAME");
         tGallery1.insert(2, "test gallery");
 
-        TableHelper tPaintings = env.table("PAINTING");
-        tPaintings.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "GALLERY_ID");
+        TableHelper tPaintings = env.table("PAINTING", "PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "GALLERY_ID");
         for (int i = 1; i <= 20; i++) {
             tPaintings.insert(i, "painting" + i,
                     i % 2 == 0 ? 4 : i % 5 + 1,

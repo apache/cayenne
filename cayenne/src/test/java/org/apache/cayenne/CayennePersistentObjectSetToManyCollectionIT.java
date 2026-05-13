@@ -43,11 +43,9 @@ public class CayennePersistentObjectSetToManyCollectionIT {
 	@BeforeEach
 	public void setUp() throws Exception {
 		context = env.context();
-		TableHelper tCollectionToMany = env.table("COLLECTION_TO_MANY");
-		tCollectionToMany.setColumns("ID");
+		TableHelper tCollectionToMany = env.table("COLLECTION_TO_MANY", "ID");
 
-		TableHelper tCollectionToManyTarget = env.table("COLLECTION_TO_MANY_TARGET");
-		tCollectionToManyTarget.setColumns("ID", "COLLECTION_TO_MANY_ID");
+		TableHelper tCollectionToManyTarget = env.table("COLLECTION_TO_MANY_TARGET", "ID", "COLLECTION_TO_MANY_ID");
 
 		// single data set for all tests
 		tCollectionToMany.insert(1).insert(2);

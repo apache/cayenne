@@ -57,15 +57,13 @@ public class QueryWithInheritancePrefetchIT {
     public void createTestData() throws Exception {
         runtime = env.runtime();
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
-        TableHelper tRoot = env.table("iwe_root");
-        tRoot.setColumns("id", "type", "name", "enum");
+        TableHelper tRoot = env.table("iwe_root", "id", "type", "name", "enum");
 
         tRoot.insert(1, 0, "root1", null);
         tRoot.insert(2, 1, "enum1", Type.type1.ordinal());
         tRoot.insert(3, 1, "enum2", Type.type2.ordinal());
 
-        TableHelper tDependent = env.table("iwe_dependent");
-        tDependent.setColumns("id", "root_id", "name");
+        TableHelper tDependent = env.table("iwe_dependent", "id", "root_id", "name");
 
         tDependent.insert(1, 1, "test1");
         tDependent.insert(2, 2, "test2");

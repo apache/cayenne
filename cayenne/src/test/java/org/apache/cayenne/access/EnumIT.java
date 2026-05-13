@@ -44,8 +44,7 @@ public class EnumIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.ENUM_PROJECT);
 
     private void createDataSet() throws Exception {
-        TableHelper tEnumEntity = env.table("ENUM_ENTITY");
-        tEnumEntity.setColumns("ID", "ENUM_ATTRIBUTE");
+        TableHelper tEnumEntity = env.table("ENUM_ENTITY", "ID", "ENUM_ATTRIBUTE");
 
         tEnumEntity.insert(1, "two");
         tEnumEntity.insert(2, "one");

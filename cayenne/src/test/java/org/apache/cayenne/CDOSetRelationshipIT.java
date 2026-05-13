@@ -51,11 +51,9 @@ public class CDOSetRelationshipIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        tSetToMany = env.table("SET_TO_MANY");
-        tSetToMany.setColumns("ID");
+        tSetToMany = env.table("SET_TO_MANY", "ID");
 
-        tSetToManyTarget = env.table("SET_TO_MANY_TARGET");
-        tSetToManyTarget.setColumns("ID", "SET_TO_MANY_ID");
+        tSetToManyTarget = env.table("SET_TO_MANY_TARGET", "ID", "SET_TO_MANY_ID");
     }
 
     protected void createTestDataSet() throws Exception {

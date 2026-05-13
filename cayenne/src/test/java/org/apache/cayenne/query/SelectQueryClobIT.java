@@ -39,8 +39,7 @@ public class SelectQueryClobIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.LOB_PROJECT);
 
     private void createClobDataSet() throws Exception {
-        TableHelper tClobTest = env.table("CLOB_TEST");
-        tClobTest.setColumns("CLOB_TEST_ID", "CLOB_COL");
+        TableHelper tClobTest = env.table("CLOB_TEST", "CLOB_TEST_ID", "CLOB_COL");
 
         tClobTest.deleteAll();
 

@@ -66,14 +66,11 @@ public class CayennePersistentObjectFlattenedRelIT {
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
         dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
         env.getInstance(DBCleaner.class).clean();
-        tArtist = new TableHelper(dbHelper, "ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        tArtist = new TableHelper(dbHelper, "ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
-        tArtGroup = new TableHelper(dbHelper, "ARTGROUP");
-        tArtGroup.setColumns("GROUP_ID", "NAME");
+        tArtGroup = new TableHelper(dbHelper, "ARTGROUP", "GROUP_ID", "NAME");
 
-        tArtistGroup = new TableHelper(dbHelper, "ARTIST_GROUP");
-        tArtistGroup.setColumns("ARTIST_ID", "GROUP_ID");
+        tArtistGroup = new TableHelper(dbHelper, "ARTIST_GROUP", "ARTIST_ID", "GROUP_ID");
     }
 
     private void create1Artist1ArtGroupDataSet() throws Exception {

@@ -19,11 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.sql.Types;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
@@ -39,10 +34,15 @@ import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
+import java.sql.Types;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -63,8 +63,7 @@ public class NestedDataContextWriteIT {
         runtime = env.runtime();
         context = env.dataContext();
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
-        tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING");
         tPainting.setColumns(
@@ -76,9 +75,6 @@ public class NestedDataContextWriteIT {
                 Types.VARCHAR,
                 Types.BIGINT,
                 Types.DECIMAL);
-
-        TableHelper tPaintingInfo = env.table("PAINTING_INFO");
-        tPaintingInfo.setColumns("PAINTING_ID", "TEXT_REVIEW", "IMAGE_BLOB");
     }
 
     private void createArtistsDataSet() throws Exception {
@@ -645,11 +641,11 @@ public class NestedDataContextWriteIT {
 
         assertEquals(0, artist.getPaintingArray().size());
         assertEquals(1, localParentMt.getPaintingArray().size());
-        assertEquals(localParentMt.getPaintingArray().get(0).getObjectContext(), child);
+        assertEquals(localParentMt.getPaintingArray().getFirst().getObjectContext(), child);
 
         child.commitChangesToParent();
         assertEquals(1, artist.getPaintingArray().size());
-        assertEquals(artist.getPaintingArray().get(0).getObjectContext(), context);
+        assertEquals(artist.getPaintingArray().getFirst().getObjectContext(), context);
 
     }
     

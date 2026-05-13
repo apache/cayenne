@@ -53,11 +53,9 @@ public class CAY_115IT {
     public void setUp() throws Exception {
         context = env.dataContext();
         accessStackAdapter = env.getInstance(UnitDbAdapter.class);
-        tClobMaster = env.table("CLOB_MASTER");
-        tClobMaster.setColumns("CLOB_MASTER_ID", "CLOB_COLUMN", "NAME");
+        tClobMaster = env.table("CLOB_MASTER", "CLOB_MASTER_ID", "CLOB_COLUMN", "NAME");
         
-        tClobDetail = env.table("CLOB_DETAIL");
-        tClobDetail.setColumns("CLOB_DETAIL_ID", "CLOB_MASTER_ID", "NAME");
+        tClobDetail = env.table("CLOB_DETAIL", "CLOB_DETAIL_ID", "CLOB_MASTER_ID", "NAME");
     }
     
     protected void createDistinctClobFetchDataSet() throws Exception {

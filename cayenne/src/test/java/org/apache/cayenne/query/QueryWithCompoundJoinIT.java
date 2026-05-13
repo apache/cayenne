@@ -55,11 +55,9 @@ public class QueryWithCompoundJoinIT {
     public void setUp() throws Exception {
         context = env.dataContext();
         runtime = env.runtime();
-        tCompoundPk = env.table("COMPOUND_PK_TEST");
-        tCompoundPk.setColumns("KEY1", "KEY2", "NAME");
+        tCompoundPk = env.table("COMPOUND_PK_TEST", "KEY1", "KEY2", "NAME");
 
-        tCompoundFk = env.table("COMPOUND_FK_TEST");
-        tCompoundFk.setColumns("F_KEY1", "F_KEY2", "NAME", "PKEY");
+        tCompoundFk = env.table("COMPOUND_FK_TEST", "F_KEY1", "F_KEY2", "NAME", "PKEY");
 
         createDataSet();
     }

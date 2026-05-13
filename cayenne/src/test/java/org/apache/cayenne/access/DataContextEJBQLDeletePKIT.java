@@ -47,8 +47,7 @@ public class DataContextEJBQLDeletePKIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        tMeaningfulPKTest1Table = env.table("MEANINGFUL_PK_TEST1");
-        tMeaningfulPKTest1Table.setColumns("PK_ATTRIBUTE", "DESCR", "INT_ATTRIBUTE");
+        tMeaningfulPKTest1Table = env.table("MEANINGFUL_PK_TEST1", "PK_ATTRIBUTE", "DESCR", "INT_ATTRIBUTE");
     }
 
     protected void createMeaningfulPKDataSet() throws Exception {

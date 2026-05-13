@@ -57,8 +57,7 @@ public class DataContextEJBQLGroupByHavingIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING");
         tPainting.setColumns(
@@ -73,8 +72,7 @@ public class DataContextEJBQLGroupByHavingIT {
                 Types.VARCHAR,
                 Types.DECIMAL);
 
-        tGallery = env.table("GALLERY");
-        tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
+        tGallery = env.table("GALLERY", "GALLERY_ID", "GALLERY_NAME");
     }
 
     private void createFivePaintings() throws Exception {

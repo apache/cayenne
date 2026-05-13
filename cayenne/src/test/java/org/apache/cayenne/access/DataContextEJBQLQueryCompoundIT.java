@@ -56,11 +56,9 @@ public class DataContextEJBQLQueryCompoundIT {
 	public void setUp() throws Exception {
 		context = env.context();
 		accessStackAdapter = env.getInstance(UnitDbAdapter.class);
-		tCompoundPk = env.table("COMPOUND_PK_TEST");
-		tCompoundPk.setColumns("KEY1", "KEY2");
+		tCompoundPk = env.table("COMPOUND_PK_TEST", "KEY1", "KEY2");
 
-		tCompoundFk = env.table("COMPOUND_FK_TEST");
-		tCompoundFk.setColumns("PKEY", "F_KEY1", "F_KEY2");
+		tCompoundFk = env.table("COMPOUND_FK_TEST", "PKEY", "F_KEY1", "F_KEY2");
 	}
 
 	private void createTwoCompoundPKTwoFK() throws Exception {

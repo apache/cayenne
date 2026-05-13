@@ -73,15 +73,11 @@ public class JointPrefetchIT {
         context = env.dataContext();
         runtime = env.runtime();
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
-        tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
-        tGallery = env.table("GALLERY");
-        tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
+        tGallery = env.table("GALLERY", "GALLERY_ID", "GALLERY_NAME");
 
-        tPainting = env.table("PAINTING");
-        tPainting.setColumns(
-                "PAINTING_ID",
+        tPainting = env.table("PAINTING", "PAINTING_ID",
                 "PAINTING_TITLE",
                 "ARTIST_ID",
                 "ESTIMATED_PRICE",

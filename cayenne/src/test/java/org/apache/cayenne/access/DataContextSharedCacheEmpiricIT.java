@@ -77,8 +77,7 @@ public class DataContextSharedCacheEmpiricIT {
                 new ObjectStore(cache, new HashMap<>()));
 
         // prepare a single artist record
-        TableHelper tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        TableHelper tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
         tArtist.insert(1, "version1");
     }
 

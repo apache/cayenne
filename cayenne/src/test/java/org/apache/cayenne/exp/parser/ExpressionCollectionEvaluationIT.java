@@ -51,16 +51,13 @@ public class ExpressionCollectionEvaluationIT {
     @BeforeEach
     public void createArtistsDataSet() throws Exception {
         context = env.dataContext();
-        TableHelper tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
+        TableHelper tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
         tArtist.insert(1, "artist1", new java.sql.Date(System.currentTimeMillis()));
 
-        TableHelper tGallery = env.table("GALLERY");
-        tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
+        TableHelper tGallery = env.table("GALLERY", "GALLERY_ID", "GALLERY_NAME");
         tGallery.insert(1, "tate modern");
 
-        TableHelper tPaintings = env.table("PAINTING");
-        tPaintings.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "GALLERY_ID", "ESTIMATED_PRICE");
+        TableHelper tPaintings = env.table("PAINTING", "PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "GALLERY_ID", "ESTIMATED_PRICE");
         for (int i = 1; i <= 3; i++) {
             tPaintings.insert(i, i + "painting" + (Math.pow(10, i)), 1, 1, i * 100);
         }

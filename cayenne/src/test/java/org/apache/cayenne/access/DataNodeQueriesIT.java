@@ -55,8 +55,7 @@ public class DataNodeQueriesIT {
     public void setUp() throws Exception {
         node = env.getInstance(DataNode.class);
         sqlTemplateCustomizer = env.getInstance(SQLTemplateCustomizer.class);
-        tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
     }
 
     protected void createFourArtists() throws Exception {

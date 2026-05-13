@@ -54,11 +54,9 @@ public class DeleteObjectIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.dataContext();
-        tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+        tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
-        tPainting = env.table("PAINTING");
-        tPainting.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID");
+        tPainting = env.table("PAINTING", "PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID");
     }
 
     protected void createHollowDataSet() throws Exception {

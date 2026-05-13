@@ -67,8 +67,7 @@ public class CayenneRuntimeBuilderIT {
 	public void setUp() throws Exception {
 		runtime = env.runtime();
 		dsi = env.getInstance(DataSourceDescriptor.class);
-		TableHelper tArtist = env.table("ARTIST");
-		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+		TableHelper tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 		tArtist.insert(33001, "AA1");
 		tArtist.insert(33002, "AA2");
 

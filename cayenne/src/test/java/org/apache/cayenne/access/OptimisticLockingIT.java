@@ -58,14 +58,11 @@ public class OptimisticLockingIT {
         tSimpleLockingTest.setColumns("LOCKING_TEST_ID", "NAME", "DESCRIPTION", "INT_COLUMN_NOTNULL")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.INTEGER);
 
-        tRelLockingTest = env.table("REL_LOCKING_TEST");
-        tRelLockingTest.setColumns(
-                "REL_LOCKING_TEST_ID",
+        tRelLockingTest = env.table("REL_LOCKING_TEST", "REL_LOCKING_TEST_ID",
                 "SIMPLE_LOCKING_TEST_ID",
                 "NAME");
 
-        tLockingHelper = env.table("LOCKING_HELPER");
-        tLockingHelper.setColumns("LOCKING_HELPER_ID", "REL_LOCKING_TEST_ID", "NAME");
+        tLockingHelper = env.table("LOCKING_HELPER", "LOCKING_HELPER_ID", "REL_LOCKING_TEST_ID", "NAME");
     }
 
     protected void createSimpleLockingDataSet() throws Exception {

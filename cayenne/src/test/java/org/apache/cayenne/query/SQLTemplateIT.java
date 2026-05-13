@@ -64,14 +64,11 @@ public class SQLTemplateIT {
 		context = env.dataContext();
 		queryInterceptor = env.getInstance(DataChannelInterceptor.class);
 		unitDbAdapter = env.getInstance(UnitDbAdapter.class);
-		tArtist = env.table("ARTIST");
-		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
+		tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 
-		tPainting = env.table("PAINTING");
-		tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE", "ESTIMATED_PRICE");
+		tPainting = env.table("PAINTING", "PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE", "ESTIMATED_PRICE");
 
-		tArtistCt = env.table("ARTIST_CT");
-		tArtistCt.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
+		tArtistCt = env.table("ARTIST_CT", "ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 	}
 
 	private void createArtistDataSet() throws SQLException {
