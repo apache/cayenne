@@ -19,9 +19,6 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import com.mockrunner.mock.jdbc.MockConnection;
-import com.mockrunner.mock.jdbc.MockResultSet;
-import com.mockrunner.mock.jdbc.MockStatement;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.jdbc.reader.DefaultRowReaderFactory;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
@@ -29,6 +26,9 @@ import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.MockQueryMetadata;
+import org.apache.cayenne.unit.jdbc.TestConnection;
+import org.apache.cayenne.unit.jdbc.TestResultSet;
+import org.apache.cayenne.unit.jdbc.TestStatement;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -45,9 +45,9 @@ public class JDBCResultIteratorTest {
 
 	@Test
 	public void nextDataRow() throws Exception {
-		Connection c = new MockConnection();
-		Statement s = new MockStatement(c);
-		MockResultSet rs = new MockResultSet("rs");
+		Connection c = new TestConnection();
+		Statement s = new TestStatement(c);
+		TestResultSet rs = new TestResultSet("rs");
 		rs.addColumn("a", new Object[] { "1", "2", "3" });
 
 		RowDescriptor descriptor = new RowDescriptorBuilder().setResultSet(rs).getDescriptor(new ExtendedTypeMap());
@@ -65,9 +65,9 @@ public class JDBCResultIteratorTest {
 
 	@Test
 	public void close() throws Exception {
-		Connection c = new MockConnection();
-		MockStatement s = new MockStatement(c);
-		MockResultSet rs = new MockResultSet("rs");
+		Connection c = new TestConnection();
+		TestStatement s = new TestStatement(c);
+		TestResultSet rs = new TestResultSet("rs");
 		rs.addColumn("a", new Object[] { "1", "2", "3" });
 
 		RowReader<?> rowReader = mock(RowReader.class);

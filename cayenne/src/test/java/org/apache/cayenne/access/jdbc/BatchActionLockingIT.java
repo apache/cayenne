@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import com.mockrunner.jdbc.PreparedStatementResultSetHandler;
-import com.mockrunner.mock.jdbc.MockConnection;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.access.OptimisticLockException;
@@ -33,7 +31,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.DeleteBatchQuery;
-import org.apache.cayenne.runtime.CayenneRuntime;
+import org.apache.cayenne.unit.jdbc.TestConnection;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
@@ -78,12 +76,8 @@ public class BatchActionLockingIT {
 
 		DeleteBatchTranslator batchQueryBuilder = new DeleteBatchTranslator(batchQuery, adapter);
 
-		MockConnection mockConnection = new MockConnection();
-		PreparedStatementResultSetHandler preparedStatementResultSetHandler = mockConnection
-				.getPreparedStatementResultSetHandler();
-		preparedStatementResultSetHandler.setExactMatch(false);
-		preparedStatementResultSetHandler.setCaseSensitive(false);
-		preparedStatementResultSetHandler.prepareUpdateCount("DELETE", 1);
+		TestConnection mockConnection = new TestConnection();
+		mockConnection.prepareUpdateCount("DELETE", 1);
 
 		boolean generatesKeys = false;
 
@@ -120,12 +114,8 @@ public class BatchActionLockingIT {
 
 		DeleteBatchTranslator batchQueryBuilder = new DeleteBatchTranslator(batchQuery, adapter);
 
-		MockConnection mockConnection = new MockConnection();
-		PreparedStatementResultSetHandler preparedStatementResultSetHandler = mockConnection
-				.getPreparedStatementResultSetHandler();
-		preparedStatementResultSetHandler.setExactMatch(false);
-		preparedStatementResultSetHandler.setCaseSensitive(false);
-		preparedStatementResultSetHandler.prepareUpdateCount("DELETE", 0);
+		TestConnection mockConnection = new TestConnection();
+		mockConnection.prepareUpdateCount("DELETE", 0);
 
 		boolean generatesKeys = false;
 		DataNode node = new DataNode();

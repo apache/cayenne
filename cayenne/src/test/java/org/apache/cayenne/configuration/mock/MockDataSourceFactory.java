@@ -23,11 +23,11 @@ import javax.sql.DataSource;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.runtime.DataSourceFactory;
 
-import com.mockrunner.mock.jdbc.MockDataSource;
+import org.apache.cayenne.unit.jdbc.TestDataSource;
 
 public class MockDataSourceFactory implements DataSourceFactory {
 
     public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) {
-        return new MockDataSource();
+        return new TestDataSource();
     }
 }

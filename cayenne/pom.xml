@@ -63,23 +63,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.mockrunner</groupId>
-            <artifactId>mockrunner-jdbc</artifactId>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <!-- this one have old Xerces dependency that clashes with JDK's one -->
-                    <groupId>nekohtml</groupId>
-                    <artifactId>nekohtml</artifactId>
-                </exclusion>
-                <exclusion>
-                    <!-- don't use anything related to this, and this is an old version -->
-                    <groupId>ant</groupId>
-                    <artifactId>ant</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>

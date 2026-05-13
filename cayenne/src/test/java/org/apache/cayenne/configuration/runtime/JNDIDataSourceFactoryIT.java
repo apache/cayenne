@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.runtime;
 
-import com.mockrunner.mock.jdbc.MockDataSource;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.unit.jdbc.TestDataSource;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
@@ -45,7 +45,7 @@ public class JNDIDataSourceFactoryIT {
 
         JNDISetup.doSetup();
 
-        MockDataSource dataSource = new MockDataSource();
+        TestDataSource dataSource = new TestDataSource();
         InitialContext context = new InitialContext();
         context.bind(descriptor.getParameters(), dataSource);
 
@@ -69,7 +69,7 @@ public class JNDIDataSourceFactoryIT {
 
         JNDISetup.doSetup();
 
-        MockDataSource dataSource = new MockDataSource();
+        TestDataSource dataSource = new TestDataSource();
         InitialContext context = new InitialContext();
         context.bind("java:comp/env/" + descriptor.getParameters(), dataSource);
 

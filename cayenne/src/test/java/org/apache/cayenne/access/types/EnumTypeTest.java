@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.types;
 
-import com.mockrunner.mock.jdbc.MockResultSet;
+import org.apache.cayenne.unit.jdbc.TestResultSet;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
@@ -55,7 +55,7 @@ public class EnumTypeTest {
     public void materializeStringObject() throws Exception {
         EnumType type = new EnumType(MockEnum.class);
         
-        MockResultSet rs = new MockResultSet("Test");
+        TestResultSet rs = new TestResultSet("Test");
         rs.addColumn("Enum");
         rs.addRow(new Object[] {"b"});
         rs.next();
@@ -68,7 +68,7 @@ public class EnumTypeTest {
     public void materializeNumericObject() throws Exception {
         EnumType type = new EnumType(MockEnum.class);
         
-        MockResultSet rs = new MockResultSet("Test");
+        TestResultSet rs = new TestResultSet("Test");
         rs.addColumn("Enum");
         rs.addRow(new Object[] {2});
         rs.next();
@@ -81,7 +81,7 @@ public class EnumTypeTest {
     public void materializeStringObjectInnerEnum() throws Exception {
         EnumType type = new EnumType(InnerEnumHolder.InnerEnum.class);
         
-        MockResultSet rs = new MockResultSet("Test");
+        TestResultSet rs = new TestResultSet("Test");
         rs.addColumn("Enum");
         rs.addRow(new Object[] {"b"});
         rs.next();
@@ -94,7 +94,7 @@ public class EnumTypeTest {
     public void materializeNumericObjectInnerEnum() throws Exception {
         EnumType type = new EnumType(InnerEnumHolder.InnerEnum.class);
         
-        MockResultSet rs = new MockResultSet("Test");
+        TestResultSet rs = new TestResultSet("Test");
         rs.addColumn("Enum");
         rs.addRow(new Object[] {2});
         rs.next();

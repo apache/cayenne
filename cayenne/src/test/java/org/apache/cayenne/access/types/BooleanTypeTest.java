@@ -19,10 +19,9 @@
 
 package org.apache.cayenne.access.types;
 
-import java.sql.SQLException;
 import java.sql.Types;
 
-import com.mockrunner.mock.jdbc.MockResultSet;
+import org.apache.cayenne.unit.jdbc.TestResultSet;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -41,13 +40,10 @@ public class BooleanTypeTest {
 
     @Test
     public void materializeObjectFromResultSet() throws Exception {
-        MockResultSet rs = new MockResultSet("") {
-
-            @Override
-            public boolean getBoolean(int i) throws SQLException {
-                return (i + 2) % 2 == 0;
-            }
-        };
+        TestResultSet rs = new TestResultSet("");
+        rs.addColumn("odd", new Object[]{Boolean.FALSE});
+        rs.addColumn("even", new Object[]{Boolean.TRUE});
+        rs.next();
 
         BooleanType type = new BooleanType();
 

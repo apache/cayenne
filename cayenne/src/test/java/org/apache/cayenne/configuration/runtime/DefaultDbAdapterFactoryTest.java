@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.runtime;
 
-import com.mockrunner.mock.jdbc.MockConnection;
-import com.mockrunner.mock.jdbc.MockDataSource;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
@@ -48,6 +46,8 @@ import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
 import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
+import org.apache.cayenne.unit.jdbc.TestConnection;
+import org.apache.cayenne.unit.jdbc.TestDataSource;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -70,9 +70,9 @@ public class DefaultDbAdapterFactoryTest {
         List<DbAdapterDetector> detectors = new ArrayList<>();
         detectors.add(md -> adapter);
 
-        MockConnection connection = new MockConnection();
+        TestConnection connection = new TestConnection();
 
-        MockDataSource dataSource = new MockDataSource();
+        TestDataSource dataSource = new TestDataSource();
         dataSource.setupConnection(connection);
 
         Module testModule = binder -> {
@@ -124,7 +124,7 @@ public class DefaultDbAdapterFactoryTest {
         DefaultDbAdapterFactory factory = new DefaultDbAdapterFactory(detectors);
         injector.injectMembers(factory);
 
-        DbAdapter createdAdapter = factory.createAdapter(new DataNodeDescriptor(), new MockDataSource());
+        DbAdapter createdAdapter = factory.createAdapter(new DataNodeDescriptor(), new TestDataSource());
         assertNotNull(createdAdapter);
         assertTrue(createdAdapter instanceof AutoAdapter, "Unexpected class: " + createdAdapter.getClass().getName());
         assertEquals("CREATE TABLE Test ()", createdAdapter.createTable(new DbEntity("Test")));
@@ -160,7 +160,7 @@ public class DefaultDbAdapterFactoryTest {
         DefaultDbAdapterFactory factory = new DefaultDbAdapterFactory(detectors);
         injector.injectMembers(factory);
 
-        DbAdapter createdAdapter = factory.createAdapter(nodeDescriptor, new MockDataSource());
+        DbAdapter createdAdapter = factory.createAdapter(nodeDescriptor, new TestDataSource());
         assertNotNull(createdAdapter);
         assertTrue(createdAdapter instanceof SybaseAdapter, "Unexpected class: " + createdAdapter.getClass().getName());
     }
@@ -175,9 +175,9 @@ public class DefaultDbAdapterFactoryTest {
         List<DbAdapterDetector> detectors = new ArrayList<>();
         detectors.add(md -> adapter);
 
-        MockConnection connection = new MockConnection();
+        TestConnection connection = new TestConnection();
 
-        MockDataSource dataSource = new MockDataSource();
+        TestDataSource dataSource = new TestDataSource();
         dataSource.setupConnection(connection);
 
         Module testModule = binder -> {
