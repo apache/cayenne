@@ -42,28 +42,28 @@ public class AutoAdapterIT {
 
     @Test
     public void getAdapter_Proxy() {
-        AutoAdapter adapter = new AutoAdapter(() -> env.getInstance(DataNode.class).getAdapter(), NoopJdbcEventLogger.getInstance());
+        AutoAdapter adapter = new AutoAdapter(() -> env.dataNode().getAdapter(), NoopJdbcEventLogger.getInstance());
         DbAdapter detected = adapter.getAdapter();
-        assertSame(env.getInstance(DataNode.class).getAdapter(), detected);
+        assertSame(env.dataNode().getAdapter(), detected);
     }
 
     @Test
     public void createSQLTemplateAction() {
-        AutoAdapter autoAdapter = new AutoAdapter(() -> env.getInstance(DataNode.class).getAdapter(), NoopJdbcEventLogger.getInstance());
+        AutoAdapter autoAdapter = new AutoAdapter(() -> env.dataNode().getAdapter(), NoopJdbcEventLogger.getInstance());
 
         SQLTemplateAction action = (SQLTemplateAction) autoAdapter.getAction(new SQLTemplate(Artist.class,
-                "select * from artist"), env.getInstance(DataNode.class));
+                "select * from artist"), env.dataNode());
 
         // it is important for SQLTemplateAction to be used with unwrapped adapter,
         // as the adapter class name is used as a key to the correct SQL template.
         assertNotNull(action.getAdapter());
         assertFalse(action.getAdapter() instanceof AutoAdapter);
-        assertSame(env.getInstance(DataNode.class).getAdapter(), action.getAdapter());
+        assertSame(env.dataNode().getAdapter(), action.getAdapter());
     }
 
     @Test
     public void correctProxyMethods() {
-        DbAdapter adapter = env.getInstance(DataNode.class).getAdapter();
+        DbAdapter adapter = env.dataNode().getAdapter();
         AutoAdapter autoAdapter = new AutoAdapter(() -> adapter, NoopJdbcEventLogger.getInstance());
 
         ObjectSelect<Artist> select = ObjectSelect.query(Artist.class);
@@ -89,8 +89,8 @@ public class AutoAdapterIT {
         assertSame(adapter.getEjbqlTranslatorFactory(),
                 autoAdapter.getEjbqlTranslatorFactory());
         // returns a new instance for each call
-        assertSame(adapter.getSelectTranslator(select, env.getInstance(DataNode.class).getEntityResolver()).getClass(),
-                autoAdapter.getSelectTranslator(select, env.getInstance(DataNode.class).getEntityResolver()).getClass());
+        assertSame(adapter.getSelectTranslator(select, env.dataNode().getEntityResolver()).getClass(),
+                autoAdapter.getSelectTranslator(select, env.dataNode().getEntityResolver()).getClass());
 
         // reverse engineering related methods
         assertEquals(adapter.supportsCatalogsOnReverseEngineering(),

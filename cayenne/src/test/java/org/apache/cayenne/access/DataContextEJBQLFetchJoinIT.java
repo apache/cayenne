@@ -59,7 +59,7 @@ public class DataContextEJBQLFetchJoinIT {
     
     @BeforeEach
     public void setUp() throws Exception {
-        queryBlocker = env.getInstance(DataChannelInterceptor.class);
+        queryBlocker = env.dataChannelInterceptor();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING").setColumns(

@@ -79,9 +79,9 @@ public class DataContextIT {
 	@BeforeEach
 	public void setUp() throws Exception {
 		context = env.context();
-		accessStackAdapter = env.getInstance(UnitDbAdapter.class);
-		queryInterceptor = env.getInstance(DataChannelInterceptor.class);
-		dataSourceFactory = env.getInstance(RuntimeCaseDataSourceFactory.class);
+		accessStackAdapter = env.unitDbAdapter();
+		queryInterceptor = env.dataChannelInterceptor();
+		dataSourceFactory = env.dataSourceFactory();
 		tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
 		tExhibit = env.table("EXHIBIT", "EXHIBIT_ID", "GALLERY_ID", "OPENING_DATE", "CLOSING_DATE");

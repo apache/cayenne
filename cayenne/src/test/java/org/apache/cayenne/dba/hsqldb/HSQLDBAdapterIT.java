@@ -39,7 +39,7 @@ public class HSQLDBAdapterIT {
 
     @Test
     public void createTableIgnoresDoublePrecision() {
-        HSQLDBAdapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(
+        HSQLDBAdapter adapter = env.adhocObjectFactory().newInstance(
                 HSQLDBAdapter.class, 
                 HSQLDBAdapter.class.getName());
         DbEntity e = new DbEntity("Test");
@@ -58,7 +58,7 @@ public class HSQLDBAdapterIT {
 
     @Test
     public void createTableAddsCachedKeyword() {
-        HSQLDBAdapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(
+        HSQLDBAdapter adapter = env.adhocObjectFactory().newInstance(
                 HSQLDBAdapter.class, 
                 HSQLDBAdapter.class.getName());
         DbEntity e = new DbEntity("Test");

@@ -46,7 +46,7 @@ public class ASTExtractIT {
 
     @BeforeEach
     public void createDataSet() throws Exception {
-        unitDbAdapter = env.getInstance(UnitDbAdapter.class);
+        unitDbAdapter = env.unitDbAdapter();
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.MILLISECOND, 0);
 

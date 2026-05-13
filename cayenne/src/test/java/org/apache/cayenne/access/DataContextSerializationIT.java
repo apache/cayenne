@@ -63,7 +63,7 @@ public class DataContextSerializationIT {
     public void setUp() throws Exception {
         context = env.context();
         runtime = env.runtime();
-        logger = env.getInstance(JdbcEventLogger.class);
+        logger = env.jdbcEventLogger();
         CayenneRuntime.bindThreadInjector(runtime.getInjector());
 
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");

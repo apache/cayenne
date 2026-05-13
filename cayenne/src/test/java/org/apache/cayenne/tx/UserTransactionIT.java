@@ -45,7 +45,7 @@ public class UserTransactionIT {
         Artist a = env.context().newObject(Artist.class);
         a.setArtistName("AAA");
 
-        TxWrapper t = new TxWrapper(new CayenneTransaction(env.getInstance(JdbcEventLogger.class)));
+        TxWrapper t = new TxWrapper(new CayenneTransaction(env.jdbcEventLogger()));
         BaseTransaction.bindThreadTransaction(t);
 
         try {

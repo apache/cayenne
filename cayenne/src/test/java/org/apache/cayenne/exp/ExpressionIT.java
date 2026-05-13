@@ -125,7 +125,7 @@ public class ExpressionIT {
 		try {
             artists = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.lt((String) null)).select(env.context());
         } catch (CayenneRuntimeException ex) {
-		    if(env.getInstance(UnitDbAdapter.class).supportsNullComparison()) {
+		    if(env.unitDbAdapter().supportsNullComparison()) {
 		        throw ex;
             } else {
 		        return;
@@ -145,7 +145,7 @@ public class ExpressionIT {
         try {
             artists = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.in("Picasso", (String) null)).select(env.context());
         } catch (CayenneRuntimeException ex) {
-            if(env.getInstance(UnitDbAdapter.class).supportsNullComparison()) {
+            if(env.unitDbAdapter().supportsNullComparison()) {
                 throw ex;
             } else {
                 return;
@@ -194,7 +194,7 @@ public class ExpressionIT {
 	 */
 	@Test
 	public void selectWithScalarAsWhereCondition() {
-		if (env.getInstance(UnitDbAdapter.class).supportScalarAsExpression()){
+		if (env.unitDbAdapter().supportScalarAsExpression()){
 			return;
 		}
 		ObjectSelect<Artist> objectSelect = ObjectSelect.query(Artist.class).where(ExpressionFactory.wrapScalarValue("abc"));

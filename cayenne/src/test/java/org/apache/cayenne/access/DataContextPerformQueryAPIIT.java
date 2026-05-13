@@ -70,9 +70,9 @@ public class DataContextPerformQueryAPIIT  {
     public void setUp() throws Exception {
         context = env.context();
         context2 = (DataContext) env.runtime().newContext();
-        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
-        queryInterceptor = env.getInstance(DataChannelInterceptor.class);
-        jdbcEventLogger = env.getInstance(JdbcEventLogger.class);
+        accessStackAdapter = env.unitDbAdapter();
+        queryInterceptor = env.dataChannelInterceptor();
+        jdbcEventLogger = env.jdbcEventLogger();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING").setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE", "ESTIMATED_PRICE").setColumnTypes(

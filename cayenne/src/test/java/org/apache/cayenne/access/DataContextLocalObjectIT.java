@@ -60,7 +60,7 @@ public class DataContextLocalObjectIT  {
     public void setUp() throws Exception {
         context1 = env.context();
         context2 = (DataContext) env.runtime().newContext();
-        interceptor = env.getInstance(DataChannelInterceptor.class);
+        interceptor = env.dataChannelInterceptor();
         runtime = env.runtime();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
     }

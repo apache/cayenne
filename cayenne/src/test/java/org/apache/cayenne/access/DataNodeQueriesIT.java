@@ -53,8 +53,8 @@ public class DataNodeQueriesIT {
     
     @BeforeEach
     public void setUp() throws Exception {
-        node = env.getInstance(DataNode.class);
-        sqlTemplateCustomizer = env.getInstance(SQLTemplateCustomizer.class);
+        node = env.dataNode();
+        sqlTemplateCustomizer = env.sqlTemplateCustomizer();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
     }
 

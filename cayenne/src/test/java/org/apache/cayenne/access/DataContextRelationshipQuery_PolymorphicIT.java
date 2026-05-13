@@ -49,7 +49,7 @@ public class DataContextRelationshipQuery_PolymorphicIT extends PeopleProjectCas
     public void before() {
         context1 = env.context();
         context2 = (DataContext) env.runtime().newContext();
-        queryInterceptor = env.getInstance(DataChannelInterceptor.class);
+        queryInterceptor = env.dataChannelInterceptor();
         tPerson = new TableHelper(dbHelper, "PERSON").setColumns("PERSON_ID", "NAME", "PERSON_TYPE")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR);
 

@@ -38,7 +38,7 @@ public class TransactionThreadIT {
     @Test
     public void threadConnectionReuseOnSelect() throws Exception {
 
-        Transaction t = new CayenneTransaction(env.getInstance(JdbcEventLogger.class));
+        Transaction t = new CayenneTransaction(env.jdbcEventLogger());
         BaseTransaction.bindThreadTransaction(t);
 
         try {

@@ -131,7 +131,7 @@ public class TypesMappingIT {
         // check counts
         // since more then 1 database type can map to a single JDBC type
         int len = 0;
-        try (Connection conn = env.getInstance(RuntimeCaseDataSourceFactory.class).getSharedDataSource().getConnection()) {
+        try (Connection conn = env.dataSourceFactory().getSharedDataSource().getConnection()) {
             DatabaseMetaData md = conn.getMetaData();
             try (ResultSet rs = md.getTypeInfo()) {
                 while (rs.next()) {
@@ -154,7 +154,7 @@ public class TypesMappingIT {
     }
 
     private TypesMapping createTypesMapping() throws Exception {
-        try (Connection conn = env.getInstance(RuntimeCaseDataSourceFactory.class).getSharedDataSource().getConnection()) {
+        try (Connection conn = env.dataSourceFactory().getSharedDataSource().getConnection()) {
             DatabaseMetaData md = conn.getMetaData();
             return new TypesMapping(md);
         }

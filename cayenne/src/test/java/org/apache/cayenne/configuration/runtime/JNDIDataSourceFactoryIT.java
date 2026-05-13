@@ -20,7 +20,6 @@ package org.apache.cayenne.configuration.runtime;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.unit.jdbc.TestDataSource;
-import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -52,7 +51,6 @@ public class JNDIDataSourceFactoryIT {
         try {
 
             JNDIDataSourceFactory factory = new JNDIDataSourceFactory();
-            env.getInstance(Injector.class).injectMembers(factory);
             assertSame(dataSource, factory.getDataSource(descriptor));
         }
         finally {
@@ -76,7 +74,6 @@ public class JNDIDataSourceFactoryIT {
         try {
 
             JNDIDataSourceFactory factory = new JNDIDataSourceFactory();
-            env.getInstance(Injector.class).injectMembers(factory);
             assertSame(dataSource, factory.getDataSource(descriptor));
         }
         finally {
@@ -94,8 +91,6 @@ public class JNDIDataSourceFactoryIT {
         JNDISetup.doSetup();
 
         JNDIDataSourceFactory factory = new JNDIDataSourceFactory();
-        env.getInstance(Injector.class).injectMembers(factory);
-
         assertThrows(NameNotFoundException.class, () -> factory.getDataSource(descriptor));
     }
 }

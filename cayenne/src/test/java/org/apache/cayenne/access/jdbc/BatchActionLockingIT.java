@@ -25,8 +25,6 @@ import org.apache.cayenne.access.OptimisticLockException;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.DeleteBatchTranslator;
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -130,9 +128,8 @@ public class BatchActionLockingIT {
 	}
 
 	JdbcAdapter buildAdapter(boolean supportGeneratedKeys) {
-		JdbcAdapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(JdbcAdapter.class, JdbcAdapter.class.getName());
+		JdbcAdapter adapter = env.adhocObjectFactory().newInstance(JdbcAdapter.class, JdbcAdapter.class.getName());
 		adapter.setSupportsGeneratedKeys(supportGeneratedKeys);
-		env.getInstance(Injector.class).injectMembers(adapter);
 		return adapter;
 	}
 }

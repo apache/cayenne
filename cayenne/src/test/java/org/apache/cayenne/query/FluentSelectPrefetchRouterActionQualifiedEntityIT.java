@@ -38,7 +38,7 @@ public class FluentSelectPrefetchRouterActionQualifiedEntityIT extends PeoplePro
 
     @BeforeEach
     public void setUp() {
-        resolver = env.getInstance(EntityResolver.class);
+        resolver = env.entityResolver();
     }
 
     @Test

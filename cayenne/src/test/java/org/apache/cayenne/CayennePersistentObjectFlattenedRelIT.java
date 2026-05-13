@@ -53,9 +53,9 @@ public class CayennePersistentObjectFlattenedRelIT {
     @BeforeEach
     public void setUp() throws Exception {
         runtime = env.runtime();
-        queryInterceptor = env.getInstance(DataChannelInterceptor.class);
+        queryInterceptor = env.dataChannelInterceptor();
         env.dbHelper().update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
-        env.getInstance(DBCleaner.class).clean();
+        env.dbCleaner().clean();
 
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
         tArtGroup = env.table("ARTGROUP", "GROUP_ID", "NAME");

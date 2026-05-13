@@ -47,7 +47,7 @@ public class DataDomainCallbacksIT {
 
     @BeforeEach
     public void setUp() {
-        resolver = env.getInstance(EntityResolver.class);
+        resolver = env.entityResolver();
         context1 = env.runtime().newContext();
     }
 

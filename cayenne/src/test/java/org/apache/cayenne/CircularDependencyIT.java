@@ -71,7 +71,7 @@ public class CircularDependencyIT {
 
         CayenneRuntimeException ex = assertThrows(CayenneRuntimeException.class, () -> env.context().commitChanges());
         // TODO: Oracle adapter still does not fully support key generation.
-        if (env.getInstance(UnitDbAdapter.class) instanceof OracleUnitDbAdapter) {
+        if (env.unitDbAdapter() instanceof OracleUnitDbAdapter) {
             assertTrue(ex.getCause().getMessage().contains("parent key not found"));
         } else {
             assertTrue(ex.getMessage().contains("PK is not generated"),

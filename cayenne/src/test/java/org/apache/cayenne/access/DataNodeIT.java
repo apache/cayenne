@@ -68,14 +68,14 @@ public class DataNodeIT {
 
         assertNull(node.getAdapter());
 
-        JdbcAdapter a1 = env.getInstance(AdhocObjectFactory.class).newInstance(
+        JdbcAdapter a1 = env.adhocObjectFactory().newInstance(
                 JdbcAdapter.class, 
                 JdbcAdapter.class.getName());
         node.setAdapter(a1);
 
         assertSame(a1, node.getAdapter());
 
-        JdbcAdapter a2 = env.getInstance(AdhocObjectFactory.class).newInstance(
+        JdbcAdapter a2 = env.adhocObjectFactory().newInstance(
                 JdbcAdapter.class, 
                 JdbcAdapter.class.getName());
         node.setAdapter(a2);

@@ -60,7 +60,7 @@ public class DateTimeTypesIT {
     @BeforeEach
     public void before() throws SQLException {
         context = env.context();
-        unitDbAdapter = env.getInstance(UnitDbAdapter.class);
+        unitDbAdapter = env.unitDbAdapter();
         DBHelper dbHelper = env.dbHelper();
         dbHelper.deleteAll("LOCAL_DATE_TEST");
         dbHelper.deleteAll("LOCAL_DATETIME_TEST");

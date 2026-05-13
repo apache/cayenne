@@ -54,7 +54,7 @@ public class OracleAdapterIT {
     @Test
     public void timestampMapping() throws Exception {
         
-        OracleAdapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(
+        OracleAdapter adapter = env.adhocObjectFactory().newInstance(
                 OracleAdapter.class, 
                 OracleAdapter.class.getName());
 

@@ -62,8 +62,8 @@ public class SQLTemplateIT {
 	@BeforeEach
 	public void setUp() throws Exception {
 		context = env.context();
-		queryInterceptor = env.getInstance(DataChannelInterceptor.class);
-		unitDbAdapter = env.getInstance(UnitDbAdapter.class);
+		queryInterceptor = env.dataChannelInterceptor();
+		unitDbAdapter = env.unitDbAdapter();
 		tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 
 		tPainting = env.table("PAINTING", "PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE", "ESTIMATED_PRICE");

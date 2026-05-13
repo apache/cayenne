@@ -58,7 +58,7 @@ public class DataContextDeleteRulesIT {
     public void cleanUpDB() throws Exception {
         // Break ARTGROUP self-referencing FK before DB clean, then re-clean
         env.dbHelper().update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
-        env.getInstance(DBCleaner.class).clean();
+        env.dbCleaner().clean();
         context = env.context();
     }
 

@@ -48,8 +48,8 @@ public class PkGeneratorIT {
 
     @BeforeEach
     public void setUp() throws Exception {
-        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
-        node = env.getInstance(DataNode.class);
+        accessStackAdapter = env.unitDbAdapter();
+        node = env.dataNode();
         pkGenerator = node.getAdapter().getPkGenerator();
         paintingEntity = node.getEntityResolver().getDbEntity("PAINTING");
 

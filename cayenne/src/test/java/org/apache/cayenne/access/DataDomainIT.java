@@ -111,11 +111,11 @@ public class DataDomainIT {
         DataDomain domain = new DataDomain("dom1");
         assertEquals(0, domain.getDataNodes().size());
         DataNode node = new DataNode("1");
-        node.setJdbcEventLogger(env.getInstance(JdbcEventLogger.class));
+        node.setJdbcEventLogger(env.jdbcEventLogger());
         domain.addNode(node);
         assertEquals(1, domain.getDataNodes().size());
         node = new DataNode("2");
-        node.setJdbcEventLogger(env.getInstance(JdbcEventLogger.class));
+        node.setJdbcEventLogger(env.jdbcEventLogger());
         domain.addNode(node);
         assertEquals(2, domain.getDataNodes().size());
     }
@@ -126,7 +126,7 @@ public class DataDomainIT {
         assertNull(domain.getDataMap("map"));
 
         DataNode node = new DataNode("1");
-        node.setJdbcEventLogger(env.getInstance(JdbcEventLogger.class));
+        node.setJdbcEventLogger(env.jdbcEventLogger());
         node.addDataMap(new DataMap("map"));
 
         domain.addNode(node);

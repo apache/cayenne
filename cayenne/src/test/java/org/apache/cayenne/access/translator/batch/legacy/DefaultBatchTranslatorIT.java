@@ -45,7 +45,7 @@ public class DefaultBatchTranslatorIT {
 
     @Test
     public void constructor() throws Exception {
-        DbAdapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(DbAdapter.class, JdbcAdapter.class.getName());
+        DbAdapter adapter = env.adhocObjectFactory().newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         DefaultBatchTranslator builder = new DefaultBatchTranslator(mock(BatchQuery.class), adapter, null) {
             @Override
             protected String createSql() {
@@ -68,7 +68,7 @@ public class DefaultBatchTranslatorIT {
 
     @Test
     public void appendDbAttribute1() throws Exception {
-        DbAdapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(DbAdapter.class, JdbcAdapter.class.getName());
+        DbAdapter adapter = env.adhocObjectFactory().newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         String trimFunction = "testTrim";
 
         DefaultBatchTranslator builder = new DefaultBatchTranslator(mock(BatchQuery.class), adapter, trimFunction) {
@@ -105,7 +105,7 @@ public class DefaultBatchTranslatorIT {
 
     @Test
     public void appendDbAttribute2() throws Exception {
-        DbAdapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(DbAdapter.class, JdbcAdapter.class.getName());
+        DbAdapter adapter = env.adhocObjectFactory().newInstance(DbAdapter.class, JdbcAdapter.class.getName());
 
         DefaultBatchTranslator builder = new DefaultBatchTranslator(mock(BatchQuery.class), adapter, null) {
             @Override

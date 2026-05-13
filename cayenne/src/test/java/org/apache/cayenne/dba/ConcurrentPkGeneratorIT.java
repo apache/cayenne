@@ -56,7 +56,7 @@ public class ConcurrentPkGeneratorIT {
 	@BeforeEach
 	public void prepareDerbyDb() {
 		runtime = env.runtime();
-		unitDbAdapter = env.getInstance(UnitDbAdapter.class);
+		unitDbAdapter = env.unitDbAdapter();
 		//use to fix random test failures on derby db
 		if(unitDbAdapter instanceof DerbyUnitDbAdapter) {
 			try(Connection connection = runtime.getDataDomain().getDataNode("qualified").getDataSource().getConnection()){

@@ -40,7 +40,7 @@ public class FluentSelectPrefetchRouterActionIT {
 
     @Test
     public void paintings1() {
-        ObjEntity paintingEntity = env.getInstance(EntityResolver.class).getObjEntity(Painting.class);
+        ObjEntity paintingEntity = env.entityResolver().getObjEntity(Painting.class);
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("abc"))
                 .prefetch(Artist.PAINTING_ARRAY.disjoint());
@@ -48,7 +48,7 @@ public class FluentSelectPrefetchRouterActionIT {
         FluentSelectPrefetchRouterAction action = new FluentSelectPrefetchRouterAction();
 
         MockQueryRouter router = new MockQueryRouter();
-        action.route(query, router, env.getInstance(EntityResolver.class));
+        action.route(query, router, env.entityResolver());
         assertEquals(1, router.getQueryCount());
 
         PrefetchSelectQuery prefetch = (PrefetchSelectQuery) router.getQueries().get(0);
@@ -59,7 +59,7 @@ public class FluentSelectPrefetchRouterActionIT {
 
     @Test
     public void prefetchPaintings2() {
-        ObjEntity paintingEntity = env.getInstance(EntityResolver.class).getObjEntity(Painting.class);
+        ObjEntity paintingEntity = env.entityResolver().getObjEntity(Painting.class);
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.eq("abc"))
@@ -69,7 +69,7 @@ public class FluentSelectPrefetchRouterActionIT {
         FluentSelectPrefetchRouterAction action = new FluentSelectPrefetchRouterAction();
 
         MockQueryRouter router = new MockQueryRouter();
-        action.route(query, router, env.getInstance(EntityResolver.class));
+        action.route(query, router, env.entityResolver());
         assertEquals(1, router.getQueryCount());
 
         PrefetchSelectQuery prefetch = (PrefetchSelectQuery) router.getQueries().get(0);
@@ -80,14 +80,14 @@ public class FluentSelectPrefetchRouterActionIT {
 
     @Test
     public void galleries() {
-        ObjEntity galleryEntity = env.getInstance(EntityResolver.class).getObjEntity(Gallery.class);
+        ObjEntity galleryEntity = env.entityResolver().getObjEntity(Gallery.class);
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("abc"))
                 .prefetch(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).disjoint());
         FluentSelectPrefetchRouterAction action = new FluentSelectPrefetchRouterAction();
 
         MockQueryRouter router = new MockQueryRouter();
-        action.route(query, router, env.getInstance(EntityResolver.class));
+        action.route(query, router, env.entityResolver());
         assertEquals(1, router.getQueryCount());
 
         PrefetchSelectQuery prefetch = (PrefetchSelectQuery) router.getQueries().get(0);

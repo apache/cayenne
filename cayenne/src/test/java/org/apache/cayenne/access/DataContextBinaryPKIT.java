@@ -39,7 +39,7 @@ public class DataContextBinaryPKIT {
 
     @Test
     public void insertBinaryPK() throws Exception {
-        if (!env.getInstance(UnitDbAdapter.class).supportsBinaryPK()) {
+        if (!env.unitDbAdapter().supportsBinaryPK()) {
             return;
         }
 
@@ -57,7 +57,7 @@ public class DataContextBinaryPKIT {
 
     @Test
     public void fetchRelationshipBinaryPK() throws Exception {
-        if (!env.getInstance(UnitDbAdapter.class).supportsBinaryPK()) {
+        if (!env.unitDbAdapter().supportsBinaryPK()) {
             return;
         }
 

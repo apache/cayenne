@@ -47,7 +47,7 @@ public class ASTNotExistsIT {
 
     @BeforeEach
     public void createArtistsDataSet() throws Exception {
-        queryInterceptor = env.getInstance(DataChannelInterceptor.class);
+        queryInterceptor = env.dataChannelInterceptor();
         TableHelper tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 
         long dateBase = System.currentTimeMillis();

@@ -49,7 +49,7 @@ public class Cay2641IT {
 
     @BeforeEach
     public void setup() throws Exception {
-        adapter = env.getInstance(DbAdapter.class);
+        adapter = env.dbAdapter();
 
         TableHelper th = env.table("ArtistLazy")
                 .setColumns("ID", "NAME", "SURNAME")

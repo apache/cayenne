@@ -45,7 +45,7 @@ public class DeepMergeOperationIT {
 
     @BeforeEach
     public void setUp() {
-        queryInterceptor = env.getInstance(DataChannelInterceptor.class);
+        queryInterceptor = env.dataChannelInterceptor();
         context = env.context();
         context1 = (DataContext) env.runtime().newContext();
     }

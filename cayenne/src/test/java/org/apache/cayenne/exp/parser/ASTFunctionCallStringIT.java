@@ -63,7 +63,7 @@ public class ASTFunctionCallStringIT {
         // TODO: This will fail for Oracle, so skip for now.
         //       It is necessary to provide connection with "fixedString=true" property somehow.
         //       Also see CAY-1470.
-        assumeFalse(env.getInstance(UnitDbAdapter.class) instanceof OracleUnitDbAdapter);
+        assumeFalse(env.unitDbAdapter() instanceof OracleUnitDbAdapter);
         Artist a1 = createArtist("name");
         Artist a2 = ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.upper().eq("NAME")).selectOne(env.context());
@@ -75,7 +75,7 @@ public class ASTFunctionCallStringIT {
         // TODO: This will fail for Oracle, so skip for now.
         //       It is necessary to provide connection with "fixedString=true" property somehow.
         //       Also see CAY-1470.
-        assumeFalse(env.getInstance(UnitDbAdapter.class) instanceof OracleUnitDbAdapter);
+        assumeFalse(env.unitDbAdapter() instanceof OracleUnitDbAdapter);
         Artist a1 = createArtist("NAME");
         Artist a2 = ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.lower().eq("name")).selectOne(env.context());

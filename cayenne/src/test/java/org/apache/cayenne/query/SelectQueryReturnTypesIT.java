@@ -59,7 +59,7 @@ public class SelectQueryReturnTypesIT {
     @Test
     public void selectBitwiseNot() throws Exception {
 
-        if (!env.getInstance(UnitDbAdapter.class).supportsBitwiseOps()) {
+        if (!env.unitDbAdapter().supportsBitwiseOps()) {
             return;
         }
 
@@ -79,7 +79,7 @@ public class SelectQueryReturnTypesIT {
     @Test
     public void selectBitwiseOr() throws Exception {
 
-        if (!env.getInstance(UnitDbAdapter.class).supportsBitwiseOps()) {
+        if (!env.unitDbAdapter().supportsBitwiseOps()) {
             return;
         }
 
@@ -100,7 +100,7 @@ public class SelectQueryReturnTypesIT {
     @Test
     public void selectBitwiseAnd() throws Exception {
 
-        if (!env.getInstance(UnitDbAdapter.class).supportsBitwiseOps()) {
+        if (!env.unitDbAdapter().supportsBitwiseOps()) {
             return;
         }
 
@@ -121,7 +121,7 @@ public class SelectQueryReturnTypesIT {
     @Test
     public void selectBitwiseXor() throws Exception {
 
-        if (!env.getInstance(UnitDbAdapter.class).supportsBitwiseOps()) {
+        if (!env.unitDbAdapter().supportsBitwiseOps()) {
             return;
         }
 

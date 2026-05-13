@@ -652,7 +652,7 @@ public class JsonTypeIT {
 
     private void testJson(String jsonString) {
         testJsonVarchar(jsonString);
-        if (env.getInstance(UnitDbAdapter.class).supportsJsonType()) {
+        if (env.unitDbAdapter().supportsJsonType()) {
             testJsonOther(jsonString);
         }
     }

@@ -62,7 +62,7 @@ public class NestedDataContextWriteIT {
     public void setUp() throws Exception {
         runtime = env.runtime();
         context = env.context();
-        queryInterceptor = env.getInstance(DataChannelInterceptor.class);
+        queryInterceptor = env.dataChannelInterceptor();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING").setColumns(

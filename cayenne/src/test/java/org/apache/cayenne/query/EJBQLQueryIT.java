@@ -64,7 +64,7 @@ public class EJBQLQueryIT {
     public void setUp() throws Exception {
         context = env.context();
         runtime = env.runtime();
-        queryInterceptor = env.getInstance(DataChannelInterceptor.class);
+        queryInterceptor = env.dataChannelInterceptor();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING", "PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE");

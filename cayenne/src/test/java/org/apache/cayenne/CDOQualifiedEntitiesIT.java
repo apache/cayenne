@@ -54,7 +54,7 @@ public class CDOQualifiedEntitiesIT {
 
     @BeforeEach
     public void setUp() throws Exception {
-        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
+        accessStackAdapter = env.unitDbAdapter();
         int bool = accessStackAdapter.supportsBoolean() ? Types.BOOLEAN : Types.INTEGER;
 
         tQualified1 = env.table("TEST_QUALIFIED1")

@@ -44,11 +44,11 @@ public class PersistentObjectDescriptorFactory_InheritanceMapsIT {
     public void visitProperties_IterationOrder() {
 
         PersistentObjectDescriptorFactory factory = new PersistentObjectDescriptorFactory(
-                env.getInstance(EntityResolver.class).getClassDescriptorMap(),
+                env.entityResolver().getClassDescriptorMap(),
                 new SingletonFaultFactory(),
                 new DefaultValueComparisonStrategyFactory(mock(ValueObjectTypeRegistry.class)));
 
-        for (ObjEntity e : env.getInstance(EntityResolver.class).getObjEntities()) {
+        for (ObjEntity e : env.entityResolver().getObjEntities()) {
             ClassDescriptor descriptor = factory.getDescriptor(e.getName());
 
             final PropertyDescriptor[] lastProcessed = new PropertyDescriptor[1];

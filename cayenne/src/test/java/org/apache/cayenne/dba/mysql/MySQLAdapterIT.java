@@ -39,7 +39,7 @@ public class MySQLAdapterIT {
 
     @Test
     public void createTableAppendPKClause() {
-        MySQLAdapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(
+        MySQLAdapter adapter = env.adhocObjectFactory().newInstance(
                 MySQLAdapter.class, 
                 MySQLAdapter.class.getName());
 
@@ -71,7 +71,7 @@ public class MySQLAdapterIT {
 
     @Test
     public void createTableAppendColumnWithTimeAndTimestamp() {
-        MySQLAdapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(
+        MySQLAdapter adapter = env.adhocObjectFactory().newInstance(
                 MySQLAdapter.class,
                 MySQLAdapter.class.getName());
 
@@ -96,7 +96,7 @@ public class MySQLAdapterIT {
 
     @Test
     public void createTableAppendColumnWithTimeAndTimestampWihoutScale() {
-        MySQLAdapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(
+        MySQLAdapter adapter = env.adhocObjectFactory().newInstance(
                 MySQLAdapter.class,
                 MySQLAdapter.class.getName());
 

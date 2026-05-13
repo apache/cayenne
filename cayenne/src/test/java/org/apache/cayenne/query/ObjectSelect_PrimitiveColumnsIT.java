@@ -52,7 +52,7 @@ public class ObjectSelect_PrimitiveColumnsIT {
     @BeforeEach
     public void createTestRecords() throws Exception {
         context = env.context();
-        unitDbAdapter = env.getInstance(UnitDbAdapter.class);
+        unitDbAdapter = env.unitDbAdapter();
         tPrimitives = env.table("PRIMITIVES_TEST", "ID", "BOOLEAN_COLUMN", "INT_COLUMN");
         for (int i = 1; i <= 20; i++) {
             tPrimitives.insert(i, (i % 2 == 0), i * 10);

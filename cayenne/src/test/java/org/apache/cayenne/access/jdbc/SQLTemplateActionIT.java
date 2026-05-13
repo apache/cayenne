@@ -69,12 +69,12 @@ public class SQLTemplateActionIT {
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		dataSourceFactory = env.getInstance(RuntimeCaseDataSourceFactory.class);
-		node = env.getInstance(DataNode.class);
-		adapter = env.getInstance(JdbcAdapter.class);
-		unitDbAdapter = env.getInstance(UnitDbAdapter.class);
+		dataSourceFactory = env.dataSourceFactory();
+		node = env.dataNode();
+		adapter = env.jdbcAdapter();
+		unitDbAdapter = env.unitDbAdapter();
 		objectContext = env.context();
-		sqlTemplateCustomizer = env.getInstance(SQLTemplateCustomizer.class);
+		sqlTemplateCustomizer = env.sqlTemplateCustomizer();
 		tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 	}
 

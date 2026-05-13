@@ -35,7 +35,7 @@ public class EntityResolverInheritanceIT extends PeopleProjectCase {
 
     @BeforeEach
     public void setUp() {
-        resolver = env.getInstance(EntityResolver.class);
+        resolver = env.entityResolver();
     }
 
     @Test

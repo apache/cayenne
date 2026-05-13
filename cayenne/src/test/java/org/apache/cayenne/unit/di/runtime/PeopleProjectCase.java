@@ -39,6 +39,6 @@ public class PeopleProjectCase {
 		// PostgreSQL's strict FK enforcement aborts the cleanup
 		dbHelper = env.dbHelper();
 		dbHelper.update("PERSON").set("DEPARTMENT_ID", null, Types.INTEGER).execute();
-		env.getInstance(DBCleaner.class).clean();
+		env.dbCleaner().clean();
 	}
 }

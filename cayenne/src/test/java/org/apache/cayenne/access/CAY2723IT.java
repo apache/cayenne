@@ -37,7 +37,7 @@ public class CAY2723IT {
     @Test
     public void phantomToDepPKUpdate() {
         DataContext context = env.context();
-        DataChannelInterceptor queryInterceptor = env.getInstance(DataChannelInterceptor.class);
+        DataChannelInterceptor queryInterceptor = env.dataChannelInterceptor();
 
         // try to trigger PK generator. so it wouldn't random fail the actual test
         for (int i = 0; i < JdbcPkGenerator.DEFAULT_PK_CACHE_SIZE; i++) {

@@ -42,15 +42,15 @@ public class SQLServerSnifferIT {
 	@Test
 	public void createAdapter() throws Exception {
 
-		SQLServerSniffer sniffer = new SQLServerSniffer(env.getInstance(AdhocObjectFactory.class));
+		SQLServerSniffer sniffer = new SQLServerSniffer(env.adhocObjectFactory());
 
 		DbAdapter adapter;
 
-		try (Connection c = env.getInstance(RuntimeCaseDataSourceFactory.class).getSharedDataSource().getConnection()) {
+		try (Connection c = env.dataSourceFactory().getSharedDataSource().getConnection()) {
 			adapter = sniffer.createAdapter(c.getMetaData());
 		}
 
-		if (env.getInstance(UnitDbAdapter.class) instanceof SQLServerUnitDbAdapter) {
+		if (env.unitDbAdapter() instanceof SQLServerUnitDbAdapter) {
 			assertNotNull(adapter);
 		} else {
 			assertNull(adapter);

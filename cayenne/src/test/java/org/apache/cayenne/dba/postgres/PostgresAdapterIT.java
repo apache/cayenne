@@ -38,7 +38,7 @@ public class PostgresAdapterIT {
 
     @Test
     public void createTableWithFloatAttributeWithScale() {
-        PostgresAdapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(
+        PostgresAdapter adapter = env.adhocObjectFactory().newInstance(
                 PostgresAdapter.class, 
                 PostgresAdapter.class.getName());
         DbEntity e = new DbEntity("Test");

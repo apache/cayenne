@@ -67,10 +67,10 @@ public class SoftDeleteBatchTranslatorIT {
 
     @BeforeEach
     public void setUp() {
-        adapter = env.getInstance(DbAdapter.class);
-        dataNode = env.getInstance(DataNode.class);
-        unitAdapter = env.getInstance(UnitDbAdapter.class);
-        objectFactory = env.getInstance(AdhocObjectFactory.class);
+        adapter = env.dbAdapter();
+        dataNode = env.dataNode();
+        unitAdapter = env.unitDbAdapter();
+        objectFactory = env.adhocObjectFactory();
     }
 
     @Test

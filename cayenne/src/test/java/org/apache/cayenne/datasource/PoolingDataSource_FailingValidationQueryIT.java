@@ -47,9 +47,9 @@ public class PoolingDataSource_FailingValidationQueryIT {
 	@Test
 	public void constructor() {
 		assertThrows(CayenneRuntimeException.class, () -> {
-			Driver driver = env.getInstance(AdhocObjectFactory.class).newInstance(Driver.class, env.getInstance(DataSourceDescriptor.class).getJdbcDriver());
-			DriverDataSource nonPooling = new DriverDataSource(driver, env.getInstance(DataSourceDescriptor.class).getDataSourceUrl(),
-					env.getInstance(DataSourceDescriptor.class).getUserName(), env.getInstance(DataSourceDescriptor.class).getPassword());
+			Driver driver = env.adhocObjectFactory().newInstance(Driver.class, env.dataSourceDescriptor().getJdbcDriver());
+			DriverDataSource nonPooling = new DriverDataSource(driver, env.dataSourceDescriptor().getDataSourceUrl(),
+					env.dataSourceDescriptor().getUserName(), env.dataSourceDescriptor().getPassword());
 
 			PoolingDataSourceParameters poolParameters = createParameters();
 			UnmanagedPoolingDataSource ds = new UnmanagedPoolingDataSource(nonPooling, poolParameters);

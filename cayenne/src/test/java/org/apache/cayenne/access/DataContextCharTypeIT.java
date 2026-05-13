@@ -37,7 +37,7 @@ public class DataContextCharTypeIT {
 
     @Test
     public void charTrimming() {
-        if (env.getInstance(UnitDbAdapter.class).supportsLobs()) {
+        if (env.unitDbAdapter().supportsLobs()) {
             DataContext context = env.context();
             ReturnTypesMap1 map1 = context.newObject(ReturnTypesMap1.class);
             map1.setCharColumn("  text   ");

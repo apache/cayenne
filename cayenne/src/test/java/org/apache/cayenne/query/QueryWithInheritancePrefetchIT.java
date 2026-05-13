@@ -54,7 +54,7 @@ public class QueryWithInheritancePrefetchIT {
     @BeforeEach
     public void createTestData() throws Exception {
         runtime = env.runtime();
-        queryInterceptor = env.getInstance(DataChannelInterceptor.class);
+        queryInterceptor = env.dataChannelInterceptor();
         TableHelper tRoot = env.table("iwe_root", "id", "type", "name", "enum");
 
         tRoot.insert(1, 0, "root1", null);

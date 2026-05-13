@@ -44,7 +44,7 @@ public class DeepMergeOperationInheritanceIT extends PeopleProjectCase {
     public void setUp() {
         context = env.context();
         context1 = (DataContext) env.runtime().newContext();
-        queryInterceptor = env.getInstance(DataChannelInterceptor.class);
+        queryInterceptor = env.dataChannelInterceptor();
     }
 
     @Test

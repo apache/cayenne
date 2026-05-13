@@ -64,7 +64,7 @@ public class DefaultSelectTranslatorIT {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.like("a%"))
 				.orderBy(Artist.DATE_OF_BIRTH.asc());
 
-		SelectTranslator defaultSelectTranslator = new DefaultSelectTranslator(q, env.getInstance(DataNode.class).getAdapter(), env.getInstance(DataNode.class).getEntityResolver());
+		SelectTranslator defaultSelectTranslator = new DefaultSelectTranslator(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver());
 		String generatedSql = defaultSelectTranslator.getSql();
 
 		// do some simple assertions to make sure all parts are in
@@ -86,7 +86,7 @@ public class DefaultSelectTranslatorIT {
 		final DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
 		final DbEntity middleEntity = env.context().getEntityResolver().getDbEntity("ARTIST_GROUP");
 
-		SelectTranslator transl = new DefaultSelectTranslator(q, env.getInstance(DataNode.class).getAdapter(), env.getInstance(DataNode.class).getEntityResolver());
+		SelectTranslator transl = new DefaultSelectTranslator(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver());
 
 		entity.setQualifier(ExpressionFactory.exp("ARTIST_NAME = \"123\""));
 		middleEntity.setQualifier(ExpressionFactory.exp("GROUP_ID = 1987"));
@@ -121,7 +121,7 @@ public class DefaultSelectTranslatorIT {
 		final DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
 		final DbEntity middleEntity = env.context().getEntityResolver().getDbEntity("ARTIST_GROUP");
 
-		SelectTranslator transl = new DefaultSelectTranslator(q, env.getInstance(DataNode.class).getAdapter(), env.getInstance(DataNode.class).getEntityResolver());
+		SelectTranslator transl = new DefaultSelectTranslator(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver());
 
 		entity.setQualifier(ExpressionFactory.exp("ARTIST_NAME = \"123\""));
 		middleEntity.setQualifier(ExpressionFactory.exp("GROUP_ID = 1987"));
@@ -160,7 +160,7 @@ public class DefaultSelectTranslatorIT {
 		final DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
 		final DbEntity middleEntity = env.context().getEntityResolver().getDbEntity("ARTIST_GROUP");
 
-		SelectTranslator transl = new DefaultSelectTranslator(q, env.getInstance(DataNode.class).getAdapter(), env.getInstance(DataNode.class).getEntityResolver());
+		SelectTranslator transl = new DefaultSelectTranslator(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver());
 
 		entity.setQualifier(ExpressionFactory.exp("ARTIST_NAME = \"123\""));
 		middleEntity.setQualifier(ExpressionFactory.exp("GROUP_ID = 1987"));
@@ -195,7 +195,7 @@ public class DefaultSelectTranslatorIT {
 		final DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
 		final DbEntity middleEntity = env.context().getEntityResolver().getDbEntity("ARTIST_GROUP");
 
-		SelectTranslator transl = new DefaultSelectTranslator(q, env.getInstance(DataNode.class).getAdapter(), env.getInstance(DataNode.class).getEntityResolver());
+		SelectTranslator transl = new DefaultSelectTranslator(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver());
 
 		entity.setQualifier(ExpressionFactory.exp("ARTIST_NAME = \"123\""));
 		middleEntity.setQualifier(ExpressionFactory.exp("GROUP_ID = 1987"));
@@ -230,7 +230,7 @@ public class DefaultSelectTranslatorIT {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 		q.distinct();
 
-		String generatedSql = new DefaultSelectTranslator(q, env.getInstance(DataNode.class).getAdapter(), env.getInstance(DataNode.class).getEntityResolver()).getSql();
+		String generatedSql = new DefaultSelectTranslator(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).getSql();
 
 		// do some simple assertions to make sure all parts are in
 		assertNotNull(generatedSql);
@@ -253,7 +253,7 @@ public class DefaultSelectTranslatorIT {
 						.dot(Painting.TO_ARTIST)
 						.dot(Artist.ARTIST_NAME).like("a%"));
 
-		String generatedSql = new DefaultSelectTranslator(q, env.getInstance(DataNode.class).getAdapter(), env.getInstance(DataNode.class).getEntityResolver()).getSql();
+		String generatedSql = new DefaultSelectTranslator(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).getSql();
 		// logObj.warn("Query: " + generatedSql);
 
 		// do some simple assertions to make sure all parts are in
@@ -283,7 +283,7 @@ public class DefaultSelectTranslatorIT {
 				.where(ArtistExhibit.TO_ARTIST.dot(Artist.ARTIST_NAME).like("a%"))
 				.and(ArtistExhibit.TO_ARTIST.dot(Artist.PAINTING_ARRAY).dot(Painting.PAINTING_TITLE).like("p%"));
 
-		String generatedSql = new DefaultSelectTranslator(q, env.getInstance(DataNode.class).getAdapter(), env.getInstance(DataNode.class).getEntityResolver())
+		String generatedSql = new DefaultSelectTranslator(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver())
 				.getSql();
 
 		// do some simple assertions to make sure all parts are in
@@ -311,7 +311,7 @@ public class DefaultSelectTranslatorIT {
 				.where(Artist.DATE_OF_BIRTH.gt(new Date()))
 				.and(Artist.DATE_OF_BIRTH.lt(new Date()));
 
-		String generatedSql = new DefaultSelectTranslator(q, env.getInstance(DataNode.class).getAdapter(), env.getInstance(DataNode.class).getEntityResolver())
+		String generatedSql = new DefaultSelectTranslator(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver())
 				.getSql();
 		// logObj.warn("Query: " + generatedSql);
 
@@ -344,7 +344,7 @@ public class DefaultSelectTranslatorIT {
 				.where(Painting.TO_ARTIST.dot(Artist.DATE_OF_BIRTH).gt(new Date()))
 				.and(Painting.TO_ARTIST.dot(Artist.DATE_OF_BIRTH).lt(new Date()));
 
-		String generatedSql = new DefaultSelectTranslator(q, env.getInstance(DataNode.class).getAdapter(), env.getInstance(DataNode.class).getEntityResolver()).getSql();
+		String generatedSql = new DefaultSelectTranslator(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).getSql();
 
 		// do some simple assertions to make sure all parts are in
 		assertNotNull(generatedSql);
@@ -368,7 +368,7 @@ public class DefaultSelectTranslatorIT {
 		// query for a compound ObjEntity with qualifier
 		ObjectSelect<CompoundPainting> q = ObjectSelect.query(CompoundPainting.class, CompoundPainting.ARTIST_NAME.like("a%"));
 
-		String sql = new DefaultSelectTranslator(q, env.getInstance(DataNode.class).getAdapter(), env.getInstance(DataNode.class).getEntityResolver()).getSql();
+		String sql = new DefaultSelectTranslator(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).getSql();
 
 		// do some simple assertions to make sure all parts are in
 		assertNotNull(sql);
@@ -420,8 +420,8 @@ public class DefaultSelectTranslatorIT {
 		// query with to-many joint prefetches
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).prefetch(Artist.PAINTING_ARRAY.joint());
 
-		SelectTranslator transl = new DefaultSelectTranslator(q, env.getInstance(DataNode.class).getAdapter(),
-				env.getInstance(DataNode.class).getEntityResolver());
+		SelectTranslator transl = new DefaultSelectTranslator(q, env.dataNode().getAdapter(),
+				env.dataNode().getEntityResolver());
 		String sql = transl.getSql();
 		assertNotNull(sql);
 		assertTrue(sql.startsWith("SELECT "));
@@ -445,8 +445,8 @@ public class DefaultSelectTranslatorIT {
 				.where(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).eq("a"))
 				.prefetch(Artist.PAINTING_ARRAY.joint());
 
-		SelectTranslator transl = new DefaultSelectTranslator(q, env.getInstance(DataNode.class).getAdapter(),
-				env.getInstance(DataNode.class).getEntityResolver());
+		SelectTranslator transl = new DefaultSelectTranslator(q, env.dataNode().getAdapter(),
+				env.dataNode().getEntityResolver());
 
 		transl.getSql();
 
@@ -459,8 +459,8 @@ public class DefaultSelectTranslatorIT {
 		// query with to-one joint prefetches
 		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class).prefetch(Painting.TO_ARTIST.joint());
 
-		SelectTranslator transl = new DefaultSelectTranslator(q, env.getInstance(DataNode.class).getAdapter(),
-				env.getInstance(DataNode.class).getEntityResolver());
+		SelectTranslator transl = new DefaultSelectTranslator(q, env.dataNode().getAdapter(),
+				env.dataNode().getEntityResolver());
 
 		String sql = transl.getSql();
 		assertNotNull(sql);
@@ -484,7 +484,7 @@ public class DefaultSelectTranslatorIT {
 		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
 				.prefetch("invalid.invalid", PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 		try {
-			new DefaultSelectTranslator(q, env.getInstance(DataNode.class).getAdapter(), env.getInstance(DataNode.class).getEntityResolver()).getSql();
+			new DefaultSelectTranslator(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).getSql();
 			fail("Invalid jointPrefetch must have thrown...");
 		} catch (ExpressionException e) {
 			// expected
@@ -500,10 +500,10 @@ public class DefaultSelectTranslatorIT {
 			DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
 			entity.getDataMap().setQuotingSQLIdentifiers(true);
 
-			String charStart = env.getInstance(UnitDbAdapter.class).getIdentifiersStartQuote();
-			String charEnd = env.getInstance(UnitDbAdapter.class).getIdentifiersEndQuote();
+			String charStart = env.unitDbAdapter().getIdentifiersStartQuote();
+			String charEnd = env.unitDbAdapter().getIdentifiersEndQuote();
 
-			String s = new DefaultSelectTranslator(q, env.getInstance(DataNode.class).getAdapter(), env.getInstance(DataNode.class).getEntityResolver()).getSql();
+			String s = new DefaultSelectTranslator(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).getSql();
 			assertTrue(s.startsWith("SELECT "));
 			int iFrom = s.indexOf(" FROM ");
 			assertTrue(iFrom > 0);
@@ -539,10 +539,10 @@ public class DefaultSelectTranslatorIT {
 			DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
 			entity.getDataMap().setQuotingSQLIdentifiers(true);
 
-			String charStart = env.getInstance(UnitDbAdapter.class).getIdentifiersStartQuote();
-			String charEnd = env.getInstance(UnitDbAdapter.class).getIdentifiersEndQuote();
+			String charStart = env.unitDbAdapter().getIdentifiersStartQuote();
+			String charEnd = env.unitDbAdapter().getIdentifiersEndQuote();
 
-			String s = new DefaultSelectTranslator(q, env.getInstance(DataNode.class).getAdapter(), env.getInstance(DataNode.class).getEntityResolver()).getSql();
+			String s = new DefaultSelectTranslator(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).getSql();
 
 			assertTrue(s.startsWith("SELECT "));
 			int iFrom = s.indexOf(" FROM ");
@@ -585,10 +585,10 @@ public class DefaultSelectTranslatorIT {
 			DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
 			entity.getDataMap().setQuotingSQLIdentifiers(true);
 
-			String charStart = env.getInstance(UnitDbAdapter.class).getIdentifiersStartQuote();
-			String charEnd = env.getInstance(UnitDbAdapter.class).getIdentifiersEndQuote();
+			String charStart = env.unitDbAdapter().getIdentifiersStartQuote();
+			String charEnd = env.unitDbAdapter().getIdentifiersEndQuote();
 
-			String s = new DefaultSelectTranslator(q, env.getInstance(DataNode.class).getAdapter(), env.getInstance(DataNode.class).getEntityResolver()).getSql();
+			String s = new DefaultSelectTranslator(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).getSql();
 
 			assertTrue(s.startsWith("SELECT DISTINCT "), s);
 			int iFrom = s.indexOf(" FROM ");
@@ -662,10 +662,10 @@ public class DefaultSelectTranslatorIT {
 			DbEntity entity = env.context().getEntityResolver().getDbEntity("PAINTING");
 			entity.getDataMap().setQuotingSQLIdentifiers(true);
 
-			String charStart = env.getInstance(UnitDbAdapter.class).getIdentifiersStartQuote();
-			String charEnd = env.getInstance(UnitDbAdapter.class).getIdentifiersEndQuote();
+			String charStart = env.unitDbAdapter().getIdentifiersStartQuote();
+			String charEnd = env.unitDbAdapter().getIdentifiersEndQuote();
 
-			String s = new DefaultSelectTranslator(q, env.getInstance(DataNode.class).getAdapter(), env.getInstance(DataNode.class).getEntityResolver()).getSql();
+			String s = new DefaultSelectTranslator(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).getSql();
 
 			assertTrue(s.startsWith("SELECT "), s);
 			int iFrom = s.indexOf(" FROM ");
@@ -719,7 +719,7 @@ public class DefaultSelectTranslatorIT {
 	@Test
 	public void buildResultColumns1() throws Exception {
 		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class);
-		SelectTranslator tr = new DefaultSelectTranslator(q, env.getInstance(DataNode.class).getAdapter(), env.getInstance(DataNode.class).getEntityResolver());
+		SelectTranslator tr = new DefaultSelectTranslator(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver());
 
 		tr.getSql();
 
@@ -749,7 +749,7 @@ public class DefaultSelectTranslatorIT {
 	@Test
 	public void buildResultColumns2() throws Exception {
 		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class).prefetch(Painting.TO_ARTIST.joint());
-		SelectTranslator tr = new DefaultSelectTranslator(q, env.getInstance(DataNode.class).getAdapter(), env.getInstance(DataNode.class).getEntityResolver());
+		SelectTranslator tr = new DefaultSelectTranslator(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver());
 
 		tr.getSql();
 
@@ -785,7 +785,7 @@ public class DefaultSelectTranslatorIT {
 				));
 		query.select(env.context());
 
-		DefaultSelectTranslator translator = new DefaultSelectTranslator(query, env.getInstance(DataNode.class).getAdapter(),
+		DefaultSelectTranslator translator = new DefaultSelectTranslator(query, env.dataNode().getAdapter(),
 																		 env.context().getEntityResolver());
 		translator.translate();
 
@@ -802,7 +802,7 @@ public class DefaultSelectTranslatorIT {
 				));
 		query.select(env.context());
 
-		DefaultSelectTranslator translator = new DefaultSelectTranslator(query, env.getInstance(DataNode.class).getAdapter(),
+		DefaultSelectTranslator translator = new DefaultSelectTranslator(query, env.dataNode().getAdapter(),
 																		 env.context().getEntityResolver());
 		translator.translate();
 
@@ -819,7 +819,7 @@ public class DefaultSelectTranslatorIT {
 				));
 		query.select(env.context());
 
-		DefaultSelectTranslator translator = new DefaultSelectTranslator(query, env.getInstance(DataNode.class).getAdapter(),
+		DefaultSelectTranslator translator = new DefaultSelectTranslator(query, env.dataNode().getAdapter(),
 																		 env.context().getEntityResolver());
 		translator.translate();
 
@@ -835,7 +835,7 @@ public class DefaultSelectTranslatorIT {
 				));
 		query.select(env.context());
 
-		DefaultSelectTranslator translator = new DefaultSelectTranslator(query, env.getInstance(DataNode.class).getAdapter(),
+		DefaultSelectTranslator translator = new DefaultSelectTranslator(query, env.dataNode().getAdapter(),
 																		 env.context().getEntityResolver());
 		translator.translate();
 
@@ -858,7 +858,7 @@ public class DefaultSelectTranslatorIT {
 
 		// If the DbEntity qualifier is set on the WHERE condition then the OR expression will fail to find matches
 
-		SelectTranslator transl = new DefaultSelectTranslator(q, env.getInstance(DataNode.class).getAdapter(), env.getInstance(DataNode.class).getEntityResolver());
+		SelectTranslator transl = new DefaultSelectTranslator(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver());
 		try {
 			String generatedSql = transl.getSql();
 			int whereNdx = generatedSql.indexOf(" WHERE ");

@@ -64,7 +64,7 @@ public class SetGeneratedFlagToDbIT extends MergeCase {
 
     @BeforeEach
     public void setUpDbAdapter() {
-        dbAdapter = env.getInstance(UnitDbAdapter.class);
+        dbAdapter = env.unitDbAdapter();
     }
 
     @Test

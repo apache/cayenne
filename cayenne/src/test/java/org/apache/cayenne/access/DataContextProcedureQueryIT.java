@@ -60,7 +60,7 @@ public class DataContextProcedureQueryIT  {
 
     @Test
     public void update() throws Exception {
-        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
+        if (!env.unitDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -73,7 +73,7 @@ public class DataContextProcedureQueryIT  {
         // since stored procedure commits its stuff, we must use an explicit
         // non-committing transaction
 
-        BaseTransaction t = new ExternalTransaction(env.getInstance(JdbcEventLogger.class));
+        BaseTransaction t = new ExternalTransaction(env.jdbcEventLogger());
         BaseTransaction.bindThreadTransaction(t);
 
         try {
@@ -97,7 +97,7 @@ public class DataContextProcedureQueryIT  {
 
     @Test
     public void updateNoParam() throws Exception {
-        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
+        if (!env.unitDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -109,7 +109,7 @@ public class DataContextProcedureQueryIT  {
         // since stored procedure commits its stuff, we must use an explicit
         // non-committing transaction
 
-        BaseTransaction t = new ExternalTransaction(env.getInstance(JdbcEventLogger.class));
+        BaseTransaction t = new ExternalTransaction(env.jdbcEventLogger());
         BaseTransaction.bindThreadTransaction(t);
 
         try {
@@ -133,7 +133,7 @@ public class DataContextProcedureQueryIT  {
 
     @Test
     public void select1() throws Exception {
-        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
+        if (!env.unitDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -159,7 +159,7 @@ public class DataContextProcedureQueryIT  {
 
     @Test
     public void select2() throws Exception {
-        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
+        if (!env.unitDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -186,7 +186,7 @@ public class DataContextProcedureQueryIT  {
 
     @Test
     public void select3() throws Exception {
-        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
+        if (!env.unitDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -215,7 +215,7 @@ public class DataContextProcedureQueryIT  {
 
     @Test
     public void fetchLimit() throws Exception {
-        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
+        if (!env.unitDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -235,7 +235,7 @@ public class DataContextProcedureQueryIT  {
 
     @Test
     public void fetchOffset() throws Exception {
-        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
+        if (!env.unitDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -255,7 +255,7 @@ public class DataContextProcedureQueryIT  {
 
     @Test
     public void columnNameCapitalization() throws Exception {
-        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
+        if (!env.unitDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -283,7 +283,7 @@ public class DataContextProcedureQueryIT  {
 
     @Test
     public void outParams() throws Exception {
-        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
+        if (!env.unitDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -304,11 +304,11 @@ public class DataContextProcedureQueryIT  {
 
     @Test
     public void selectPersistentObject() throws Exception {
-        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
+        if (!env.unitDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
-        if (!env.getInstance(UnitDbAdapter.class).canMakeObjectsOutOfProcedures()) {
+        if (!env.unitDbAdapter().canMakeObjectsOutOfProcedures()) {
             return;
         }
 
@@ -334,7 +334,7 @@ public class DataContextProcedureQueryIT  {
     @Test
     public void selectWithRowDescriptor() throws Exception {
 
-        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
+        if (!env.unitDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -384,7 +384,7 @@ public class DataContextProcedureQueryIT  {
         // e.g.
         // http://stackoverflow.com/questions/16921942/porting-apache-cayenne-from-oracle-to-postgresql
 
-        BaseTransaction t = new ExternalTransaction(env.getInstance(JdbcEventLogger.class));
+        BaseTransaction t = new ExternalTransaction(env.jdbcEventLogger());
         BaseTransaction.bindThreadTransaction(t);
 
         try {

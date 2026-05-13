@@ -52,7 +52,7 @@ public class ProcedureCallIT {
 
     @Test
     public void update() throws Exception {
-        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
+        if (!env.unitDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -72,7 +72,7 @@ public class ProcedureCallIT {
 
     @Test
     public void updateNoParam() throws Exception {
-        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
+        if (!env.unitDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -92,7 +92,7 @@ public class ProcedureCallIT {
 
     @Test
     public void select() throws Exception {
-        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
+        if (!env.unitDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -119,7 +119,7 @@ public class ProcedureCallIT {
 
     @Test
     public void fetchLimit() throws Exception {
-        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
+        if (!env.unitDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -140,7 +140,7 @@ public class ProcedureCallIT {
 
     @Test
     public void fetchOffset() throws Exception {
-        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
+        if (!env.unitDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -161,7 +161,7 @@ public class ProcedureCallIT {
 
     @Test
     public void columnNameCapitalization() throws Exception {
-        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
+        if (!env.unitDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -189,7 +189,7 @@ public class ProcedureCallIT {
 
     @Test
     public void outParams() throws Exception {
-        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
+        if (!env.unitDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -204,11 +204,11 @@ public class ProcedureCallIT {
 
     @Test
     public void selectPersistentObject() throws Exception {
-        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
+        if (!env.unitDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
-        if (!env.getInstance(UnitDbAdapter.class).canMakeObjectsOutOfProcedures()) {
+        if (!env.unitDbAdapter().canMakeObjectsOutOfProcedures()) {
             return;
         }
 
@@ -232,7 +232,7 @@ public class ProcedureCallIT {
 
     @Test
     public void selectWithRowDescriptor() throws Exception {
-        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
+        if (!env.unitDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -278,7 +278,7 @@ public class ProcedureCallIT {
         // e.g.
         // http://stackoverflow.com/questions/16921942/porting-apache-cayenne-from-oracle-to-postgresql
 
-        BaseTransaction t = new ExternalTransaction(env.getInstance(JdbcEventLogger.class));
+        BaseTransaction t = new ExternalTransaction(env.jdbcEventLogger());
         BaseTransaction.bindThreadTransaction(t);
 
         try {

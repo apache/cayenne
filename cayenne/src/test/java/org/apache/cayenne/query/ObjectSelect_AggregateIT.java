@@ -59,7 +59,7 @@ public class ObjectSelect_AggregateIT {
     @BeforeEach
     public void createArtistsDataSet() throws Exception {
         context = env.context();
-        dbAdapter = env.getInstance(UnitDbAdapter.class);
+        dbAdapter = env.unitDbAdapter();
         TableHelper tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
         tArtist.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.DATE);
 

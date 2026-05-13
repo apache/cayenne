@@ -217,7 +217,7 @@ public class BindDirectiveIT {
 		SQLTemplate template = new SQLTemplate(Object.class, templateString);
 		template.setParams(parameters);
 		MockOperationObserver observer = new MockOperationObserver();
-		env.getInstance(DataNode.class).performQueries(Collections.singletonList(template), observer);
+		env.dataNode().performQueries(Collections.singletonList(template), observer);
 
 		return ObjectSelect.dataRowQuery(Artist.class).selectOne(env.context());
 	}

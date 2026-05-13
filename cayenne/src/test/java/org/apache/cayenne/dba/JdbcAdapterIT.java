@@ -50,7 +50,7 @@ public class JdbcAdapterIT {
     }
 
     private void checkType(int type) throws java.lang.Exception {
-        JdbcAdapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(
+        JdbcAdapter adapter = env.adhocObjectFactory().newInstance(
                 JdbcAdapter.class, 
                 JdbcAdapter.class.getName());
 
@@ -63,7 +63,7 @@ public class JdbcAdapterIT {
     @Test
     public void createTableQuoteSqlIdentifiers() {
 
-        if (env.getInstance(DbAdapter.class) instanceof MySQLAdapter) {
+        if (env.dbAdapter() instanceof MySQLAdapter) {
 
             DbEntity entity = new DbEntity();
             DbAttribute attr = new DbAttribute();
@@ -79,7 +79,7 @@ public class JdbcAdapterIT {
             entity.setDataMap(dm);
             entity.setName("name table");
 
-            MySQLAdapter adaptMySQL = (MySQLAdapter) env.getInstance(DbAdapter.class);
+            MySQLAdapter adaptMySQL = (MySQLAdapter) env.dbAdapter();
             String str = "CREATE TABLE `name table` (`name column` CHAR NULL) ENGINE=InnoDB";
             assertEquals(str, adaptMySQL.createTable(entity));
         }

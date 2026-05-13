@@ -53,7 +53,7 @@ public class DataContextMaxIdQualifierIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        queryInterceptor = env.getInstance(DataChannelInterceptor.class);
+        queryInterceptor = env.dataChannelInterceptor();
         runtime = env.runtime();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 

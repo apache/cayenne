@@ -51,11 +51,11 @@ public class DataContextBlobIT {
     }
 
     protected boolean skipTests() {
-        return !env.getInstance(UnitDbAdapter.class).supportsLobs();
+        return !env.unitDbAdapter().supportsLobs();
     }
 
     protected boolean skipEmptyLOBTests() {
-        return !env.getInstance(UnitDbAdapter.class).handlesNullVsEmptyLOBs();
+        return !env.unitDbAdapter().handlesNullVsEmptyLOBs();
     }
 
     @Test

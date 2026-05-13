@@ -72,7 +72,7 @@ public class JointPrefetchIT {
     public void setUp() throws Exception {
         context = env.context();
         runtime = env.runtime();
-        queryInterceptor = env.getInstance(DataChannelInterceptor.class);
+        queryInterceptor = env.dataChannelInterceptor();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tGallery = env.table("GALLERY", "GALLERY_ID", "GALLERY_NAME");

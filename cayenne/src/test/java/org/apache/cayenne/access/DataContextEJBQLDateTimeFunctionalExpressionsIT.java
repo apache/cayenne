@@ -83,7 +83,7 @@ public class DataContextEJBQLDateTimeFunctionalExpressionsIT {
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT d FROM DateTestEntity d WHERE d.timeColumn < CURRENT_TIME");
         List<?> objects = env.context().performQuery(query);
-        if(!env.getInstance(UnitDbAdapter.class).supportsTimeSqlType()) {
+        if(!env.unitDbAdapter().supportsTimeSqlType()) {
             // check only that query is executed without error
             // result will be invalid most likely as DB doesn't support TIME data type
             return;

@@ -43,8 +43,8 @@ public class OraclePkGeneratorIT {
 
     @BeforeEach
     public void setUp() throws Exception {
-        logger = env.getInstance(JdbcEventLogger.class);
-        objectFactory = env.getInstance(AdhocObjectFactory.class);
+        logger = env.jdbcEventLogger();
+        objectFactory = env.adhocObjectFactory();
         OracleAdapter adapter = objectFactory.newInstance(OracleAdapter.class, OracleAdapter.class.getName());
         pkGenerator = new OraclePkGenerator(adapter);
     }

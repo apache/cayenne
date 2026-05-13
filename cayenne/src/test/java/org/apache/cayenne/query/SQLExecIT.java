@@ -54,7 +54,7 @@ public class SQLExecIT {
 
     @Test
     public void returnGeneratedKeys() {
-        if(env.getInstance(UnitDbAdapter.class).supportsGeneratedKeys()) {
+        if(env.unitDbAdapter().supportsGeneratedKeys()) {
             QueryResult response = SQLExec.query("testmap", "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Surikov')")
                     .returnGeneratedKeys(true)
                     .execute(env.context());
@@ -88,7 +88,7 @@ public class SQLExecIT {
         assertEquals(1, result.firstList().size());
 
         DataRow row = (DataRow)result.firstList().get(0);
-        if(env.getInstance(UnitDbAdapter.class).isLowerCaseNames()) {
+        if(env.unitDbAdapter().isLowerCaseNames()) {
             assertTrue(row.containsKey("artist_id"));
             assertEquals(1L, ((Number)row.get("artist_id")).longValue());
             assertEquals("a", row.get("artist_name"));

@@ -78,7 +78,7 @@ public class DataContextPrefetchIT  {
 	@BeforeEach
 	public void setUp() throws Exception {
         context = env.context();
-        queryInterceptor = env.getInstance(DataChannelInterceptor.class);
+        queryInterceptor = env.dataChannelInterceptor();
 		tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
 		tPainting = env.table("PAINTING").setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "ESTIMATED_PRICE", "GALLERY_ID").setColumnTypes(

@@ -19,16 +19,26 @@
 package org.apache.cayenne.unit.di.runtime;
 
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.configuration.runtime.CoreModule;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultScope;
+import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
+import org.apache.cayenne.unit.UnitDbAdapter;
+import org.apache.cayenne.unit.di.DataChannelInterceptor;
+import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -75,8 +85,8 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
      * Disables the automatic {@code DBCleaner.clean()} call in {@link #beforeEach}.
      * Use this when the test (or a base class) needs to perform schema-specific
      * setup (e.g. break circular FKs) before cleaning. The caller is then
-     * responsible for invoking {@code env.getInstance(DBCleaner.class).clean()}
-     * from its own {@code @BeforeEach}.
+     * responsible for invoking {@code env.dbCleaner().clean()} from its own
+     * {@code @BeforeEach}.
      */
     public CayenneTestsEnv withoutAutoClean() {
         return new CayenneTestsEnv(project, extraModules, false, weakReferenceStrategy);
@@ -109,11 +119,11 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         dbHelper = INJECTOR.getInstance(DBHelper.class);
 
         if (autoClean) {
-            DBCleaner dbCleaner = INJECTOR.getInstance(DBCleaner.class);
+            DBCleaner cleaner = dbCleaner();
             try {
-                dbCleaner.clean();
+                cleaner.clean();
             } catch (Exception ex) {
-                dbCleaner.clean();
+                cleaner.clean();
             }
         }
     }
@@ -142,11 +152,56 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         return runtime;
     }
 
-    /**
-     * Access to less-common injectable types (DataChannelInterceptor, UnitDbAdapter, etc.).
-     */
-    public <T> T getInstance(Class<T> type) {
-        return INJECTOR.getInstance(type);
+    public UnitDbAdapter unitDbAdapter() {
+        return INJECTOR.getInstance(UnitDbAdapter.class);
+    }
+
+    public DbAdapter dbAdapter() {
+        return INJECTOR.getInstance(DbAdapter.class);
+    }
+
+    public JdbcAdapter jdbcAdapter() {
+        return INJECTOR.getInstance(JdbcAdapter.class);
+    }
+
+    public EntityResolver entityResolver() {
+        return INJECTOR.getInstance(EntityResolver.class);
+    }
+
+    public DataNode dataNode() {
+        return INJECTOR.getInstance(DataNode.class);
+    }
+
+    public DataChannelInterceptor dataChannelInterceptor() {
+        return INJECTOR.getInstance(DataChannelInterceptor.class);
+    }
+
+    public AdhocObjectFactory adhocObjectFactory() {
+        return INJECTOR.getInstance(AdhocObjectFactory.class);
+    }
+
+    public JdbcEventLogger jdbcEventLogger() {
+        return INJECTOR.getInstance(JdbcEventLogger.class);
+    }
+
+    public RuntimeCaseDataSourceFactory dataSourceFactory() {
+        return INJECTOR.getInstance(RuntimeCaseDataSourceFactory.class);
+    }
+
+    public DBCleaner dbCleaner() {
+        return INJECTOR.getInstance(DBCleaner.class);
+    }
+
+    public DataSourceDescriptor dataSourceDescriptor() {
+        return INJECTOR.getInstance(DataSourceDescriptor.class);
+    }
+
+    public SQLTemplateCustomizer sqlTemplateCustomizer() {
+        return INJECTOR.getInstance(SQLTemplateCustomizer.class);
+    }
+
+    public SchemaBuilder schemaBuilder() {
+        return INJECTOR.getInstance(SchemaBuilder.class);
     }
 
     public static class WeakReferenceStrategyModule implements Module {

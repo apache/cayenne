@@ -72,7 +72,7 @@ public class BatchActionIT {
     }
 
     JdbcAdapter buildAdapter(boolean supportGeneratedKeys) {
-        JdbcAdapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(JdbcAdapter.class, JdbcAdapter.class.getName());
+        JdbcAdapter adapter = env.adhocObjectFactory().newInstance(JdbcAdapter.class, JdbcAdapter.class.getName());
         adapter.setSupportsGeneratedKeys(supportGeneratedKeys);
         return adapter;
     }

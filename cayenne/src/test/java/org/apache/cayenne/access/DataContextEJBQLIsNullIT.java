@@ -47,7 +47,7 @@ public class DataContextEJBQLIsNullIT {
     
     @BeforeEach
     public void setUp() throws Exception {
-        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
+        accessStackAdapter = env.unitDbAdapter();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING").setColumns(

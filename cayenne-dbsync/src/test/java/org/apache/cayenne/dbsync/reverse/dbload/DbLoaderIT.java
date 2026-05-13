@@ -150,9 +150,9 @@ public class DbLoaderIT {
     @BeforeEach
     public void before() throws Exception {
         runtime = env.runtime();
-        adapter = env.getInstance(DbAdapter.class);
-        dataSourceFactory = env.getInstance(RuntimeCaseDataSourceFactory.class);
-        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
+        adapter = env.dbAdapter();
+        dataSourceFactory = env.dataSourceFactory();
+        accessStackAdapter = env.unitDbAdapter();
         this.connection = dataSourceFactory.getSharedDataSource().getConnection();
     }
 

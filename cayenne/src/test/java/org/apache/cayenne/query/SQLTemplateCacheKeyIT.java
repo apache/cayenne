@@ -40,11 +40,11 @@ public class SQLTemplateCacheKeyIT {
 
         SQLTemplate query = new SQLTemplate(Artist.class, "SELECT ME");
 
-        QueryMetadata md1 = query.getMetaData(env.getInstance(EntityResolver.class));
+        QueryMetadata md1 = query.getMetaData(env.entityResolver());
         assertEquals(QueryCacheStrategy.NO_CACHE, md1.getCacheStrategy());
         assertNull(md1.getCacheKey());
 
-        QueryMetadata md2 = query.getMetaData(env.getInstance(EntityResolver.class));
+        QueryMetadata md2 = query.getMetaData(env.entityResolver());
         assertEquals(QueryCacheStrategy.NO_CACHE, md2.getCacheStrategy());
         assertNull(md2.getCacheKey());
     }
@@ -56,7 +56,7 @@ public class SQLTemplateCacheKeyIT {
 
         query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
-        QueryMetadata md1 = query.getMetaData(env.getInstance(EntityResolver.class));
+        QueryMetadata md1 = query.getMetaData(env.entityResolver());
         assertEquals(QueryCacheStrategy.LOCAL_CACHE, md1.getCacheStrategy());
         assertNotNull(md1.getCacheKey());
     }
@@ -68,7 +68,7 @@ public class SQLTemplateCacheKeyIT {
 
         query.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 
-        QueryMetadata md1 = query.getMetaData(env.getInstance(EntityResolver.class));
+        QueryMetadata md1 = query.getMetaData(env.entityResolver());
         assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.getCacheStrategy());
         assertNotNull(md1.getCacheKey());
     }
@@ -80,7 +80,7 @@ public class SQLTemplateCacheKeyIT {
 
         query.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 
-        QueryMetadata md1 = query.getMetaData(env.getInstance(EntityResolver.class));
+        QueryMetadata md1 = query.getMetaData(env.entityResolver());
         assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.getCacheStrategy());
         assertFalse("XYZ".equals(md1.getCacheKey()));
     }
@@ -97,8 +97,8 @@ public class SQLTemplateCacheKeyIT {
         q2.setFetchLimit(10);
         q2.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 
-        assertEquals(q1.getMetaData(env.getInstance(EntityResolver.class)).getCacheKey(), q2
-                .getMetaData(env.getInstance(EntityResolver.class))
+        assertEquals(q1.getMetaData(env.entityResolver()).getCacheKey(), q2
+                .getMetaData(env.entityResolver())
                 .getCacheKey());
     }
 }

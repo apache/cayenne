@@ -64,7 +64,7 @@ public class DataContextSQLTemplateIT {
 	public void setUp() throws Exception {
 		runtime = env.runtime();
 		context = env.context();
-		sqlTemplateCustomizer = env.getInstance(SQLTemplateCustomizer.class);
+		sqlTemplateCustomizer = env.sqlTemplateCustomizer();
 		tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
 		tPainting = env.table("PAINTING").setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "ESTIMATED_PRICE").setColumnTypes(

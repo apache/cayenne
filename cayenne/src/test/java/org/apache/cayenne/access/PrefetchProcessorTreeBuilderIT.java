@@ -60,7 +60,7 @@ public class PrefetchProcessorTreeBuilderIT {
     @BeforeEach
     public void setUp() {
         context = env.context();
-        resolver = env.getInstance(EntityResolver.class);
+        resolver = env.entityResolver();
     }
 
 

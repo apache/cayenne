@@ -54,8 +54,8 @@ public class SchemaUpdateStrategyBase {
 	@BeforeEach
 	public void cleanUpDB() {
 		context = env.context();
-		node = env.getInstance(DataNode.class);
-		adapter = env.getInstance(DbAdapter.class);
+		node = env.dataNode();
+		adapter = env.dbAdapter();
 		DataMap map = node.getEntityResolver().getDataMap("sus-map");
 		for (String name : existingTables()) {
 

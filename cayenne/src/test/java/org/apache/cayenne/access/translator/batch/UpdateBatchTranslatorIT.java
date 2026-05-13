@@ -58,9 +58,9 @@ public class UpdateBatchTranslatorIT {
     @BeforeEach
     public void setUp() {
         runtime = env.runtime();
-        adapter = env.getInstance(DbAdapter.class);
-        unitAdapter = env.getInstance(UnitDbAdapter.class);
-        objectFactory = env.getInstance(AdhocObjectFactory.class);
+        adapter = env.dbAdapter();
+        unitAdapter = env.unitDbAdapter();
+        objectFactory = env.adhocObjectFactory();
     }
 
     @Test

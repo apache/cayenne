@@ -40,7 +40,7 @@ public class PersistentObjectDescriptorFactory_VerticalInheritanceIT {
     public void visitProperties_IterationOrder() {
 
         PersistentObjectDescriptorFactory factory = new PersistentObjectDescriptorFactory(
-                env.getInstance(EntityResolver.class).getClassDescriptorMap(),
+                env.entityResolver().getClassDescriptorMap(),
                 new SingletonFaultFactory(),
                 new DefaultValueComparisonStrategyFactory(mock(ValueObjectTypeRegistry.class))
         );

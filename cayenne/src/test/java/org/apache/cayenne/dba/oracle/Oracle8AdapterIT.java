@@ -40,7 +40,7 @@ public class Oracle8AdapterIT {
     @Test
     public void timestampMapping() throws Exception {
         
-        Oracle8Adapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(
+        Oracle8Adapter adapter = env.adhocObjectFactory().newInstance(
                 Oracle8Adapter.class, 
                 Oracle8Adapter.class.getName());
 
@@ -53,7 +53,7 @@ public class Oracle8AdapterIT {
     @Test
     public void findAdapterResource() throws Exception {
         
-        Oracle8Adapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(
+        Oracle8Adapter adapter = env.adhocObjectFactory().newInstance(
                 Oracle8Adapter.class, 
                 Oracle8Adapter.class.getName());
 

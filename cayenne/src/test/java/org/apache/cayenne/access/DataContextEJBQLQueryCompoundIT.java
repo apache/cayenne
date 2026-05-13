@@ -50,7 +50,7 @@ public class DataContextEJBQLQueryCompoundIT {
 	
 	@BeforeEach
 	public void setUp() throws Exception {
-		accessStackAdapter = env.getInstance(UnitDbAdapter.class);
+		accessStackAdapter = env.unitDbAdapter();
 		tCompoundPk = env.table("COMPOUND_PK_TEST", "KEY1", "KEY2");
 
 		tCompoundFk = env.table("COMPOUND_FK_TEST", "PKEY", "F_KEY1", "F_KEY2");

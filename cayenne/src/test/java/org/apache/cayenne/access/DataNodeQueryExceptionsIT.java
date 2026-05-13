@@ -51,7 +51,7 @@ public class DataNodeQueryExceptionsIT {
         };
 
         assertEquals(0, activeConnections());
-        assertThrows(CayenneRuntimeException.class, () -> env.getInstance(DataNode.class).performQueries(
+        assertThrows(CayenneRuntimeException.class, () -> env.dataNode().performQueries(
                 Collections.singletonList(throwingSS),
                 new MockOperationObserver()));
 
@@ -69,7 +69,7 @@ public class DataNodeQueryExceptionsIT {
         };
 
         assertEquals(0, activeConnections());
-        assertThrows(Error.class, () -> env.getInstance(DataNode.class).performQueries(
+        assertThrows(Error.class, () -> env.dataNode().performQueries(
                 Collections.singletonList(throwingSS),
                 new MockOperationObserver()));
 
@@ -78,7 +78,7 @@ public class DataNodeQueryExceptionsIT {
 
     int activeConnections() {
         try {
-            UnmanagedPoolingDataSource ds = env.getInstance(RuntimeCaseDataSourceFactory.class).getSharedDataSource().unwrap(UnmanagedPoolingDataSource.class);
+            UnmanagedPoolingDataSource ds = env.dataSourceFactory().getSharedDataSource().unwrap(UnmanagedPoolingDataSource.class);
 
             Method poolSize = UnmanagedPoolingDataSource.class.getDeclaredMethod("poolSize");
             poolSize.setAccessible(true);

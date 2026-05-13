@@ -49,9 +49,9 @@ public class DbGeneratorIT {
     
     @BeforeEach
     public void setUp() throws Exception {
-        adapter = env.getInstance(DbAdapter.class);
+        adapter = env.dbAdapter();
         runtime = env.runtime();
-        logger = env.getInstance(JdbcEventLogger.class);
+        logger = env.jdbcEventLogger();
         generator = new DbGenerator(adapter, runtime
                 .getDataDomain()
                 .getDataMap("testmap"), logger);

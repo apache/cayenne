@@ -38,7 +38,7 @@ public class SQLServerAdapterIT {
 
     @Test
     public void createTableWithFloatAttributeWithScale() {
-        SQLServerAdapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(
+        SQLServerAdapter adapter = env.adhocObjectFactory().newInstance(
                 SQLServerAdapter.class, 
                 SQLServerAdapter.class.getName());
         DbEntity e = new DbEntity("Test");

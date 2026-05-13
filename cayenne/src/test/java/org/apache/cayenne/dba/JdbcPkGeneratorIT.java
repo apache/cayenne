@@ -46,9 +46,9 @@ public class JdbcPkGeneratorIT {
 
     @BeforeEach
     public void setUp() throws Exception {
-        adapter = env.getInstance(DbAdapter.class);
-        node = env.getInstance(DataNode.class);
-        schemaBuilder = env.getInstance(SchemaBuilder.class);
+        adapter = env.dbAdapter();
+        node = env.dataNode();
+        schemaBuilder = env.schemaBuilder();
         schemaBuilder.dropPKSupport();
     }
     

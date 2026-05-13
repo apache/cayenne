@@ -41,7 +41,7 @@ public class SelectActionIT {
 
     @Test
     public void fetchLimit_DistinctResultIterator() {
-        if (env.getInstance(UnitDbAdapter.class).supportsLobs()) {
+        if (env.unitDbAdapter().supportsLobs()) {
 
             insertClobDb();
 
@@ -57,7 +57,7 @@ public class SelectActionIT {
 
     @Test
     public void columnSelect_DistinctResultIterator() {
-        if (env.getInstance(UnitDbAdapter.class).supportsLobs()) {
+        if (env.unitDbAdapter().supportsLobs()) {
 
             insertClobDb();
 

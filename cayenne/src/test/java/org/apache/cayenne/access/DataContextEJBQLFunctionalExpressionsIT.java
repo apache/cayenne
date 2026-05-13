@@ -238,7 +238,7 @@ public class DataContextEJBQLFunctionalExpressionsIT {
     @Test
     public void tRIMChar() {
 
-        if (!env.getInstance(UnitDbAdapter.class).supportsTrimChar()) {
+        if (!env.unitDbAdapter().supportsTrimChar()) {
             return;
         }
 

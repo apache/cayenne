@@ -48,7 +48,7 @@ public class DataContextOuterJoinsIT {
     @BeforeEach
     public void cleanUpDB() throws Exception {
         env.dbHelper().update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
-        env.getInstance(DBCleaner.class).clean();
+        env.dbCleaner().clean();
 
         artistHelper = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
         paintingHelper = env

@@ -83,16 +83,16 @@ public abstract class MergeCase {
 
     @BeforeEach
     public void setUp() throws Exception {
-        resolver = env.getInstance(EntityResolver.class);
-        node = env.getInstance(DataNode.class);
+        resolver = env.entityResolver();
+        node = env.dataNode();
         dbHelper = env.dbHelper();
         runtime = env.runtime();
-        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
-        dataSourceFactory = env.getInstance(RuntimeCaseDataSourceFactory.class);
+        accessStackAdapter = env.unitDbAdapter();
+        dataSourceFactory = env.dataSourceFactory();
 
         // break circular FK before DBCleaner.clean()
         dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
-        env.getInstance(DBCleaner.class).clean();
+        env.dbCleaner().clean();
 
         // this map can't be safely modified in this test, as it is reset by DI
         // container

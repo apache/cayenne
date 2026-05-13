@@ -109,11 +109,11 @@ public class MappedQueryIT {
 
     @Test
     public void procedureQuery() throws Exception {
-        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
+        if (!env.unitDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
-        if (!env.getInstance(UnitDbAdapter.class).canMakeObjectsOutOfProcedures()) {
+        if (!env.unitDbAdapter().canMakeObjectsOutOfProcedures()) {
             return;
         }
 
@@ -177,7 +177,7 @@ public class MappedQueryIT {
         // e.g.
         // http://stackoverflow.com/questions/16921942/porting-apache-cayenne-from-oracle-to-postgresql
 
-        BaseTransaction t = new ExternalTransaction(env.getInstance(JdbcEventLogger.class));
+        BaseTransaction t = new ExternalTransaction(env.jdbcEventLogger());
         BaseTransaction.bindThreadTransaction(t);
 
         try {

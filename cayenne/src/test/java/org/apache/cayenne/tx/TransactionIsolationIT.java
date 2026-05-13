@@ -58,7 +58,7 @@ public class TransactionIsolationIT {
     public void initTransactionManager() {
         context = env.context();
         runtime = env.runtime();
-        unitDbAdapter = env.getInstance(UnitDbAdapter.class);
+        unitDbAdapter = env.unitDbAdapter();
         // no binding in test container, get it from runtime
         manager = runtime.getInjector().getInstance(TransactionManager.class);
     }

@@ -61,8 +61,8 @@ public class IdentityColumnsIT {
     
     @BeforeEach
     public void setUp() throws Exception {
-        adapter = env.getInstance(DbAdapter.class);
-        node = env.getInstance(DataNode.class);
+        adapter = env.dbAdapter();
+        node = env.dataNode();
         joinTable = env.table("GENERATED_JOIN");
     }
 

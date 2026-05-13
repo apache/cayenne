@@ -40,8 +40,8 @@ public class BasePoolingDataSourceIT {
 
 	@BeforeEach
 	public void before() throws SQLException {
-        DataSourceDescriptor dataSourceInfo = env.getInstance(DataSourceDescriptor.class);
-        AdhocObjectFactory objectFactory = env.getInstance(AdhocObjectFactory.class);
+        DataSourceDescriptor dataSourceInfo = env.dataSourceDescriptor();
+        AdhocObjectFactory objectFactory = env.adhocObjectFactory();
 
 		Driver driver = objectFactory.newInstance(Driver.class, dataSourceInfo.getJdbcDriver());
 		DriverDataSource nonPooling = new DriverDataSource(driver, dataSourceInfo.getDataSourceUrl(),

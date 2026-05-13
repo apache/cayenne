@@ -53,10 +53,10 @@ public class BaseLoaderIT {
 
     @BeforeEach
     public void before() throws Exception {
-        adapter = env.getInstance(DbAdapter.class);
+        adapter = env.dbAdapter();
         runtime = env.runtime();
-        dataSourceFactory = env.getInstance(RuntimeCaseDataSourceFactory.class);
-        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
+        dataSourceFactory = env.dataSourceFactory();
+        accessStackAdapter = env.unitDbAdapter();
         store = new DbLoadDataStore();
         assertTrue(store.getDbEntities().isEmpty(), "Store is not empty");
         this.connection = dataSourceFactory.getSharedDataSource().getConnection();
