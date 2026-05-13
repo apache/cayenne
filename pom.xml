@@ -991,22 +991,6 @@
             </dependencies>
         </profile>
         <profile>
-            <id>mysql</id>
-            <activation>
-                <property>
-                    <name>cayenneTestConnection</name>
-                    <value>mysql</value>
-                </property>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>com.mysql</groupId>
-                    <artifactId>mysql-connector-j</artifactId>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
             <id>mysql-tc</id>
             <activation>
                 <property>
@@ -1040,33 +1024,6 @@
             </dependencies>
         </profile>
         <profile>
-            <id>oracle</id>
-            <activation>
-                <property>
-                    <name>cayenneTestConnection</name>
-                    <value>oracle</value>
-                </property>
-            </activation>
-            <dependencyManagement>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.oracle.database.jdbc</groupId>
-                        <artifactId>ojdbc-bom</artifactId>
-                        <version>21.8.0.0</version>
-                        <type>pom</type>
-                        <scope>import</scope>
-                    </dependency>
-                </dependencies>
-            </dependencyManagement>
-            <dependencies>
-                <dependency>
-                    <groupId>com.oracle.database.jdbc</groupId>
-                    <artifactId>ojdbc11</artifactId>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
             <id>oracle-tc</id>
             <activation>
                 <property>
@@ -1089,23 +1046,6 @@
                 <dependency>
                     <groupId>com.oracle.database.jdbc</groupId>
                     <artifactId>ojdbc11</artifactId>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>postgres</id>
-            <activation>
-                <property>
-                    <name>cayenneTestConnection</name>
-                    <value>postgres</value>
-                </property>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>org.postgresql</groupId>
-                    <artifactId>postgresql</artifactId>
-                    <version>42.7.2</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
@@ -1139,23 +1079,6 @@
                 <dependency>
                     <groupId>org.apache.derby</groupId>
                     <artifactId>derby</artifactId>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>sqlserver</id>
-            <activation>
-                <property>
-                    <name>cayenneTestConnection</name>
-                    <value>sqlserver</value>
-                </property>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>com.microsoft.sqlserver</groupId>
-                    <artifactId>mssql-jdbc</artifactId>
-                    <version>12.10.0.jre11</version>
-                    <scope>test</scope>
                 </dependency>
             </dependencies>
         </profile>
@@ -1223,23 +1146,6 @@
                     <groupId>org.xerial</groupId>
                     <artifactId>sqlite-jdbc</artifactId>
                     <version>3.46.0.1</version>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>db2</id>
-            <activation>
-                <property>
-                    <name>cayenneTestConnection</name>
-                    <value>db2</value>
-                </property>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>com.ibm.db2</groupId>
-                    <artifactId>jcc</artifactId>
-                    <version>11.5.7.0</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
