@@ -30,8 +30,8 @@
 
     <description>
         Apache Cayenne is a powerful, full-featured, and open source
-        Java framework, plus developer tools, that provides Object
-        Relational Mapping (ORM) and remoting services for persistence.
+        framework with developer tools, that provides Object
+        Relational Mapping (ORM) services for Java persistence.
         The software is licensed under the Apache License.
     </description>
 
@@ -542,13 +542,6 @@
                 <artifactId>mcp</artifactId>
                 <version>${mcp-sdk.version}</version>
             </dependency>
-            <!-- This dependency update the one provided by the testcontainers,
-                 should be removed once testcontainers uses a version without active CVEs -->
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-compress</artifactId>
-                <version>1.28.0</version>
-            </dependency>
             <dependency>
                 <groupId>org.testcontainers</groupId>
                 <artifactId>testcontainers</artifactId>
@@ -639,8 +632,7 @@
 
     <dependencies>
         <!-- JDBC drivers from Maven Central; available on every module's test classpath.
-             Tests pick a backend via -DcayenneTestConnection=<value>. Non-MC drivers
-             (frontbase, ingres, sybase) live in profiles below. -->
+            Non-Maven Central drivers frontbase, ingres, sybase) live in profiles below. -->
         <dependency>
             <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
@@ -694,6 +686,43 @@
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Testcontainers, available on every module's test classpath -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-mysql</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-mariadb</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-oracle-xe</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-mssqlserver</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-db2</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
