@@ -68,6 +68,9 @@ Do not add `@since` tags to test classes — version tags are only meaningful on
 All POM plugins from submodules must be delcared in the parent module `<pluginManagement>`. All plugin versions should be 
 declared as properties in the root pom.xml
 
+Do not set `<scope>` inside `<dependencyManagement>` (except `<scope>import</scope>` for BOMs). `<dependencyManagement>`
+pins versions only — each consuming `<dependency>` declares its own scope explicitly.
+
 
 ## CI Matrix
 
