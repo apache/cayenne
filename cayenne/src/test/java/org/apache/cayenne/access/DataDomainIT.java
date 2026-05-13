@@ -25,10 +25,8 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.annotation.PostAdd;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.event.DefaultEventManager;
-import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
@@ -36,19 +34,14 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.annotations.Tag1;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DataDomainIT {
 
@@ -111,11 +104,9 @@ public class DataDomainIT {
         DataDomain domain = new DataDomain("dom1");
         assertEquals(0, domain.getDataNodes().size());
         DataNode node = new DataNode("1");
-        node.setJdbcEventLogger(env.jdbcEventLogger());
         domain.addNode(node);
         assertEquals(1, domain.getDataNodes().size());
         node = new DataNode("2");
-        node.setJdbcEventLogger(env.jdbcEventLogger());
         domain.addNode(node);
         assertEquals(2, domain.getDataNodes().size());
     }
@@ -126,7 +117,6 @@ public class DataDomainIT {
         assertNull(domain.getDataMap("map"));
 
         DataNode node = new DataNode("1");
-        node.setJdbcEventLogger(env.jdbcEventLogger());
         node.addDataMap(new DataMap("map"));
 
         domain.addNode(node);

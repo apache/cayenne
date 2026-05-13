@@ -21,14 +21,12 @@ package org.apache.cayenne.query;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.ResultBatchIterator;
-import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.ExternalTransaction;
-import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
@@ -177,7 +175,7 @@ public class MappedQueryIT {
         // e.g.
         // http://stackoverflow.com/questions/16921942/porting-apache-cayenne-from-oracle-to-postgresql
 
-        BaseTransaction t = new ExternalTransaction(env.jdbcEventLogger());
+        BaseTransaction t = new ExternalTransaction(NoopJdbcEventLogger.getInstance());
         BaseTransaction.bindThreadTransaction(t);
 
         try {

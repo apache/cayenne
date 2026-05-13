@@ -20,20 +20,17 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DbGeneratorIT {
 
@@ -42,19 +39,15 @@ public class DbGeneratorIT {
 
     private DbAdapter adapter;
     private CayenneRuntime runtime;
-    private JdbcEventLogger logger;
-
     private DbGenerator generator;
-
     
     @BeforeEach
     public void setUp() throws Exception {
         adapter = env.dbAdapter();
         runtime = env.runtime();
-        logger = env.jdbcEventLogger();
         generator = new DbGenerator(adapter, runtime
                 .getDataDomain()
-                .getDataMap("testmap"), logger);
+                .getDataMap("testmap"), NoopJdbcEventLogger.getInstance());
     }
 
     @Test

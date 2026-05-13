@@ -31,7 +31,6 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultScope;
-import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -174,11 +173,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     }
 
     public AdhocObjectFactory adhocObjectFactory() {
-        return INJECTOR.getInstance(AdhocObjectFactory.class);
-    }
-
-    public JdbcEventLogger jdbcEventLogger() {
-        return INJECTOR.getInstance(JdbcEventLogger.class);
+        return runtime.getInjector().getInstance(AdhocObjectFactory.class);
     }
 
     public RuntimeCaseDataSourceFactory dataSourceFactory() {

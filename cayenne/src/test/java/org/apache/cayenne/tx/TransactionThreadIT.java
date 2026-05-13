@@ -19,8 +19,7 @@
 
 package org.apache.cayenne.tx;
 
-import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -36,9 +35,9 @@ public class TransactionThreadIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     @Test
-    public void threadConnectionReuseOnSelect() throws Exception {
+    public void threadConnectionReuseOnSelect() {
 
-        Transaction t = new CayenneTransaction(env.jdbcEventLogger());
+        Transaction t = new CayenneTransaction(NoopJdbcEventLogger.getInstance());
         BaseTransaction.bindThreadTransaction(t);
 
         try {

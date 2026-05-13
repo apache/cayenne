@@ -20,7 +20,6 @@
 package org.apache.cayenne.dba.oracle;
 
 import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -36,14 +35,12 @@ public class OraclePkGeneratorIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    protected JdbcEventLogger logger;
     protected AdhocObjectFactory objectFactory;
 
     private OraclePkGenerator pkGenerator;
 
     @BeforeEach
     public void setUp() throws Exception {
-        logger = env.jdbcEventLogger();
         objectFactory = env.adhocObjectFactory();
         OracleAdapter adapter = objectFactory.newInstance(OracleAdapter.class, OracleAdapter.class.getName());
         pkGenerator = new OraclePkGenerator(adapter);

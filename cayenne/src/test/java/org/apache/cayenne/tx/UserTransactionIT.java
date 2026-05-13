@@ -19,8 +19,7 @@
 
 package org.apache.cayenne.tx;
 
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
@@ -45,7 +44,7 @@ public class UserTransactionIT {
         Artist a = env.context().newObject(Artist.class);
         a.setArtistName("AAA");
 
-        TxWrapper t = new TxWrapper(new CayenneTransaction(env.jdbcEventLogger()));
+        TxWrapper t = new TxWrapper(new CayenneTransaction(NoopJdbcEventLogger.getInstance()));
         BaseTransaction.bindThreadTransaction(t);
 
         try {

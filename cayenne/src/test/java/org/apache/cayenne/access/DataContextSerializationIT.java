@@ -23,29 +23,23 @@ import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.apache.cayenne.util.Util;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DataContextSerializationIT {
 
@@ -54,7 +48,6 @@ public class DataContextSerializationIT {
 
     protected DataContext context;
     protected CayenneRuntime runtime;
-    protected JdbcEventLogger logger;
 
     protected TableHelper tArtist;
 
@@ -63,7 +56,6 @@ public class DataContextSerializationIT {
     public void setUp() throws Exception {
         context = env.context();
         runtime = env.runtime();
-        logger = env.jdbcEventLogger();
         CayenneRuntime.bindThreadInjector(runtime.getInjector());
 
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");

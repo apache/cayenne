@@ -20,7 +20,7 @@
 package org.apache.cayenne.tx;
 
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -29,15 +29,13 @@ import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -52,11 +50,8 @@ public class TransactionCustomConnectionIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private final Logger logger = LoggerFactory.getLogger(TransactionIsolationIT.class);
-
     DataContext context;
     CayenneRuntime runtime;
-    private JdbcEventLogger jdbcEventLogger;
 
     TransactionManager manager;
     private static boolean firstReadonlyCondition;
@@ -65,7 +60,6 @@ public class TransactionCustomConnectionIT {
     public void initTransactionManager() {
         context = env.context();
         runtime = env.runtime();
-        jdbcEventLogger = env.jdbcEventLogger();
         // no binding in test container, get it from runtime
         manager = runtime.getInjector().getInstance(TransactionManager.class);
     }
@@ -79,7 +73,7 @@ public class TransactionCustomConnectionIT {
      */
     @Test
     public void connectionDecorationWithListeners() {
-        Transaction t = new CayenneTransaction(jdbcEventLogger);
+        Transaction t = new CayenneTransaction(NoopJdbcEventLogger.getInstance());
         //add listeners which will check if connection object will be changed after every decorate call
         List<TransactionListener> listeners = addAndGetListenersWithCustomReadonlyTo(t);
         BaseTransaction.bindThreadTransaction(t);
@@ -186,7 +180,7 @@ public class TransactionCustomConnectionIT {
 
     @Test
     public void defaultConnectionInDescriptor() {
-        Transaction t = new CayenneTransaction(jdbcEventLogger);
+        Transaction t = new CayenneTransaction(NoopJdbcEventLogger.getInstance());
         BaseTransaction.bindThreadTransaction(t);
         try {
             ObjectSelect.query(Artist.class).select(context);

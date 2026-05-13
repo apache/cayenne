@@ -19,15 +19,9 @@
 
 package org.apache.cayenne.access;
 
-import java.math.BigDecimal;
-import java.sql.Types;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ObjectSelect;
@@ -37,16 +31,18 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.ExternalTransaction;
-import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.math.BigDecimal;
+import java.sql.Types;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DataContextProcedureQueryIT  {
 
@@ -73,7 +69,7 @@ public class DataContextProcedureQueryIT  {
         // since stored procedure commits its stuff, we must use an explicit
         // non-committing transaction
 
-        BaseTransaction t = new ExternalTransaction(env.jdbcEventLogger());
+        BaseTransaction t = new ExternalTransaction(NoopJdbcEventLogger.getInstance());
         BaseTransaction.bindThreadTransaction(t);
 
         try {
@@ -109,7 +105,7 @@ public class DataContextProcedureQueryIT  {
         // since stored procedure commits its stuff, we must use an explicit
         // non-committing transaction
 
-        BaseTransaction t = new ExternalTransaction(env.jdbcEventLogger());
+        BaseTransaction t = new ExternalTransaction(NoopJdbcEventLogger.getInstance());
         BaseTransaction.bindThreadTransaction(t);
 
         try {
@@ -384,7 +380,7 @@ public class DataContextProcedureQueryIT  {
         // e.g.
         // http://stackoverflow.com/questions/16921942/porting-apache-cayenne-from-oracle-to-postgresql
 
-        BaseTransaction t = new ExternalTransaction(env.jdbcEventLogger());
+        BaseTransaction t = new ExternalTransaction(NoopJdbcEventLogger.getInstance());
         BaseTransaction.bindThreadTransaction(t);
 
         try {

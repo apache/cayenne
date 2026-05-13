@@ -20,7 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -33,8 +33,8 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.math.BigDecimal;
 import java.sql.Types;
@@ -46,33 +46,27 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class DataContextPerformQueryAPIIT  {
+public class DataContextPerformQueryAPIIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-        private DataContext context;
+    private DataContext context;
+    private DataContext context2;
 
-        private DataContext context2;
-
-
-        private UnitDbAdapter accessStackAdapter;
-
-        private DataChannelInterceptor queryInterceptor;
-    
-        private JdbcEventLogger jdbcEventLogger;
+    private UnitDbAdapter accessStackAdapter;
+    private DataChannelInterceptor queryInterceptor;
 
     private TableHelper tArtist;
     private TableHelper tPainting;
 
-    
+
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
         context2 = (DataContext) env.runtime().newContext();
         accessStackAdapter = env.unitDbAdapter();
         queryInterceptor = env.dataChannelInterceptor();
-        jdbcEventLogger = env.jdbcEventLogger();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING").setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE", "ESTIMATED_PRICE").setColumnTypes(
@@ -130,9 +124,8 @@ public class DataContextPerformQueryAPIIT  {
 
         List<?> artists;
 
-        // Sybase blows whenever a transaction wraps a SP, so turn of
-        // transactions
-        Transaction t = new ExternalTransaction(jdbcEventLogger);
+        // Sybase blows whenever a transaction wraps a SP, so turn of transactions
+        Transaction t = new ExternalTransaction(NoopJdbcEventLogger.getInstance());
         BaseTransaction.bindThreadTransaction(t);
         try {
             artists = context.performQuery("ProcedureQuery", parameters, true);
