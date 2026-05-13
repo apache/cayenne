@@ -46,7 +46,6 @@
 
         <!-- Dependency versions -->
         <ant.version>1.10.15</ant.version>
-        <junit4.version>4.13.2</junit4.version>
         <junit.version>5.14.4</junit.version>
         <logback.version>1.5.32</logback.version>
         <mcp-sdk.version>1.1.2</mcp-sdk.version>
@@ -455,7 +454,6 @@
                 <version>${hsqldb.version}</version>
                 <scope>test</scope>
             </dependency>
-            <!-- Derby 10.16 requires Java 17, Derby 10.15 requires additional dependency - derbytools -->
             <dependency>
                 <groupId>org.apache.derby</groupId>
                 <artifactId>derby</artifactId>
@@ -566,12 +564,6 @@
                 <groupId>io.modelcontextprotocol.sdk</groupId>
                 <artifactId>mcp</artifactId>
                 <version>${mcp-sdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit4.version}</version>
-                <scope>test</scope>
             </dependency>
             <!-- This dependency update the one provided by the testcontainers,
                  should be removed once testcontainers uses a version without active CVEs -->
