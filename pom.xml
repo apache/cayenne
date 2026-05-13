@@ -364,11 +364,6 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.apache.ant</groupId>
-                <artifactId>ant-testutil</artifactId>
-                <version>${ant.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.jgoodies</groupId>
                 <artifactId>forms</artifactId>
                 <version>1.2.1</version>
