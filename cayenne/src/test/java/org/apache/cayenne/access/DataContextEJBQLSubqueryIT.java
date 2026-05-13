@@ -19,7 +19,6 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -44,10 +43,7 @@ public class DataContextEJBQLSubqueryIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private ObjectContext context;
-
     private UnitDbAdapter accessStackAdapter;
-
 
     private TableHelper tArtist;
     private TableHelper tPainting;
@@ -55,7 +51,6 @@ public class DataContextEJBQLSubqueryIT {
     
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
         accessStackAdapter = env.getInstance(UnitDbAdapter.class);
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
@@ -93,7 +88,7 @@ public class DataContextEJBQLSubqueryIT {
                 + ")";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertEquals(1, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -116,7 +111,7 @@ public class DataContextEJBQLSubqueryIT {
                 + ")";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertEquals(1, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -142,7 +137,7 @@ public class DataContextEJBQLSubqueryIT {
                 + ")";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertEquals(2, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -170,7 +165,7 @@ public class DataContextEJBQLSubqueryIT {
                 + ")";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertEquals(2, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -198,7 +193,7 @@ public class DataContextEJBQLSubqueryIT {
                 + ")";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertEquals(3, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -227,7 +222,7 @@ public class DataContextEJBQLSubqueryIT {
                 + ")";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertEquals(3, objects.size());
 
         Set<Object> ids = new HashSet<>();

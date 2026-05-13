@@ -20,8 +20,6 @@
 package org.apache.cayenne.access;
 
 import java.util.List;
-
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ValueHolder;
@@ -47,7 +45,6 @@ public class SimpleIdIncrementalFaultListPrefetchIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    protected ObjectContext context;
     protected DataChannelInterceptor queryInterceptor;
 
     protected TableHelper tArtist;
@@ -55,7 +52,6 @@ public class SimpleIdIncrementalFaultListPrefetchIT {
 
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
@@ -94,7 +90,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT {
         List<?> result = ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.like("artist1%"))
                 .pageSize(4)
-                .select(context);
+                .select(env.context());
         assertTrue(result instanceof SimpleIdIncrementalFaultList);
     }
 
@@ -111,7 +107,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT {
                 .prefetch("paintingArray", PrefetchTreeNode.UNDEFINED_SEMANTICS)
                 .pageSize(3);
 
-        final IncrementalFaultList<?> result = (IncrementalFaultList) context
+        final IncrementalFaultList<?> result = (IncrementalFaultList) env.context()
                 .performQuery(q);
 
         assertEquals(6, result.size());
@@ -143,7 +139,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT {
                 .prefetch("paintingArray", PrefetchTreeNode.UNDEFINED_SEMANTICS)
                 .pageSize(3);
 
-        IncrementalFaultList result = (IncrementalFaultList) context.performQuery(q);
+        IncrementalFaultList result = (IncrementalFaultList) env.context().performQuery(q);
 
         assertEquals(6, result.size());
 
@@ -171,7 +167,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT {
                 .pageSize(3)
                 .prefetch("toArtist", PrefetchTreeNode.UNDEFINED_SEMANTICS);
 
-        IncrementalFaultList<?> result = (IncrementalFaultList<Painting>) context.performQuery(q);
+        IncrementalFaultList<?> result = (IncrementalFaultList<Painting>) env.context().performQuery(q);
 
         // get an objects from the second page
         final Persistent p1 = (Persistent) result.get(q.getPageSize());

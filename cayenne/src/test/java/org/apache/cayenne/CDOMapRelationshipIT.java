@@ -44,8 +44,6 @@ public class CDOMapRelationshipIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.MAP_TO_MANY_PROJECT);
 
-    protected ObjectContext context;
-
     protected TableHelper tMapToMany;
     protected TableHelper tMapToManyTarget;
     protected TableHelper tIdMapToMany;
@@ -53,7 +51,6 @@ public class CDOMapRelationshipIT {
 
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
         tMapToMany = env.table("MAP_TO_MANY", "ID");
 
         tMapToManyTarget = env.table("MAP_TO_MANY_TARGET", "ID", "MAP_TO_MANY_ID", "NAME");
@@ -85,7 +82,7 @@ public class CDOMapRelationshipIT {
     public void readToMany() throws Exception {
         createTestDataSet();
 
-        MapToMany o1 = Cayenne.objectForPK(context, MapToMany.class, 1);
+        MapToMany o1 = Cayenne.objectForPK(env.context(), MapToMany.class, 1);
 
         Map targets = o1.getTargets();
 
@@ -106,7 +103,7 @@ public class CDOMapRelationshipIT {
     public void readToManyId() throws Exception {
         createTestIdDataSet();
 
-        IdMapToMany o1 = Cayenne.objectForPK(context, IdMapToMany.class, 1);
+        IdMapToMany o1 = Cayenne.objectForPK(env.context(), IdMapToMany.class, 1);
 
         Map targets = o1.getTargets();
 
@@ -127,7 +124,7 @@ public class CDOMapRelationshipIT {
     public void readToManyPrefetching() throws Exception {
         createTestDataSet();
 
-        MapToMany o1 = SelectById.query(MapToMany.class, 1).prefetch(MapToMany.TARGETS.disjoint()).selectOne(context);
+        MapToMany o1 = SelectById.query(MapToMany.class, 1).prefetch(MapToMany.TARGETS.disjoint()).selectOne(env.context());
         Map targets = o1.getTargets();
 
         assertFalse(((ValueHolder) targets).isFault());
@@ -143,7 +140,7 @@ public class CDOMapRelationshipIT {
     public void addToMany() throws Exception {
         createTestDataSet();
 
-        MapToMany o1 = Cayenne.objectForPK(context, MapToMany.class, 1);
+        MapToMany o1 = Cayenne.objectForPK(env.context(), MapToMany.class, 1);
 
         Map targets = o1.getTargets();
         assertNotNull(targets);
@@ -169,7 +166,7 @@ public class CDOMapRelationshipIT {
     public void removeToMany() throws Exception {
         createTestDataSet();
 
-        MapToMany o1 = Cayenne.objectForPK(context, MapToMany.class, 1);
+        MapToMany o1 = Cayenne.objectForPK(env.context(), MapToMany.class, 1);
 
         Map targets = o1.getTargets();
         assertEquals(3, targets.size());
@@ -193,7 +190,7 @@ public class CDOMapRelationshipIT {
     public void addToManyViaReverse() throws Exception {
         createTestDataSet();
 
-        MapToMany o1 = Cayenne.objectForPK(context, MapToMany.class, 1);
+        MapToMany o1 = Cayenne.objectForPK(env.context(), MapToMany.class, 1);
 
         Map targets = o1.getTargets();
         assertNotNull(targets);
@@ -219,7 +216,7 @@ public class CDOMapRelationshipIT {
     public void modifyToManyKey() throws Exception {
         createTestDataSet();
 
-        MapToMany o1 = Cayenne.objectForPK(context, MapToMany.class, 1);
+        MapToMany o1 = Cayenne.objectForPK(env.context(), MapToMany.class, 1);
 
         Map targets = o1.getTargets();
         MapToManyTarget target = (MapToManyTarget) targets.get("B");

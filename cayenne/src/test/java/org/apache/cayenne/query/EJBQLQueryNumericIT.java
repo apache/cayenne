@@ -18,8 +18,6 @@
  ****************************************************************/
 
 package org.apache.cayenne.query;
-
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.numeric_types.BigIntegerEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -37,13 +35,10 @@ public class EJBQLQueryNumericIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.NUMERIC_TYPES_PROJECT);
 
-    private ObjectContext context;
-
     private TableHelper tBigIntegerEntity;
 
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
         tBigIntegerEntity = env.table("BIGINTEGER_ENTITY", "ID", "BIG_INTEGER_FIELD");
     }
 
@@ -57,7 +52,7 @@ public class EJBQLQueryNumericIT {
         String ejbql = "SELECT bie FROM BigIntegerEntity bie WHERE bie.bigIntegerField > ?1";
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter(1,744073709551615L);
-        List<BigIntegerEntity> result = context.performQuery(query);
+        List<BigIntegerEntity> result = env.context().performQuery(query);
         assertEquals(1, result.size());
     }
 
@@ -66,7 +61,7 @@ public class EJBQLQueryNumericIT {
         createBigIntegerEntitiesDataSet();
         String ejbql = "SELECT bie FROM BigIntegerEntity bie WHERE bie.bigIntegerField > 744073709551615";
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<BigIntegerEntity> result = context.performQuery(query);
+        List<BigIntegerEntity> result = env.context().performQuery(query);
         assertEquals(1, result.size());
     }
 }

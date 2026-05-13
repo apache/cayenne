@@ -53,7 +53,6 @@ public class VerticalInheritanceIT {
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.INHERITANCE_VERTICAL_PROJECT)
 	        .withExtraModules(GraphSorterModule.class);
 
-	protected ObjectContext context;
 	protected CayenneRuntime runtime;
 
 	TableHelper ivAbstractTable;
@@ -62,7 +61,6 @@ public class VerticalInheritanceIT {
 
 	@BeforeEach
 	public void setup() {
-		context = env.context();
 		runtime = env.runtime();
 		ivAbstractTable = env.table("IV_ABSTRACT").setColumns("ID", "PARENT_ID", "TYPE")
 				.setColumnTypes(Types.INTEGER, Types.INTEGER, Types.CHAR);
@@ -86,7 +84,7 @@ public class VerticalInheritanceIT {
 
 		assertEquals(0, ivRootTable.getRowCount());
 
-		IvRoot root = context.newObject(IvRoot.class);
+		IvRoot root = env.context().newObject(IvRoot.class);
 		root.setName("XyZ");
 		root.getObjectContext().commitChanges();
 
@@ -107,7 +105,7 @@ public class VerticalInheritanceIT {
 
 		TableHelper ivSub1Table = env.table("IV_SUB1", "ID", "SUB1_NAME");
 
-		IvSub1 sub1 = context.newObject(IvSub1.class);
+		IvSub1 sub1 = env.context().newObject(IvSub1.class);
 		sub1.setName("XyZX");
 		sub1.getObjectContext().commitChanges();
 
@@ -124,7 +122,7 @@ public class VerticalInheritanceIT {
 		ivSub1Table.deleteAll();
 		ivRootTable.deleteAll();
 
-		IvSub1 sub11 = context.newObject(IvSub1.class);
+		IvSub1 sub11 = env.context().newObject(IvSub1.class);
 		sub11.setName("XyZXY");
 		sub11.setSub1Name("BdE2");
 		sub11.getObjectContext().commitChanges();
@@ -149,7 +147,7 @@ public class VerticalInheritanceIT {
 
 		TableHelper ivSub2Table = env.table("IV_SUB2", "ID", "SUB2_NAME", "SUB2_ATTR");
 
-		IvSub2 sub2 = context.newObject(IvSub2.class);
+		IvSub2 sub2 = env.context().newObject(IvSub2.class);
 		sub2.setName("XyZX");
 		sub2.getObjectContext().commitChanges();
 
@@ -166,7 +164,7 @@ public class VerticalInheritanceIT {
 		ivSub2Table.deleteAll();
 		ivRootTable.deleteAll();
 
-		IvSub2 sub21 = context.newObject(IvSub2.class);
+		IvSub2 sub21 = env.context().newObject(IvSub2.class);
 		sub21.setName("XyZXY");
 		sub21.setSub2Name("BdE2");
 		sub21.setSub2Attr("aTtR");
@@ -206,9 +204,9 @@ public class VerticalInheritanceIT {
 	 */
     @Test
     public void validationOnInsertSub3Exception() {
-        IvSub3 sub3 = context.newObject(IvSub3.class);
+        IvSub3 sub3 = env.context().newObject(IvSub3.class);
         sub3.setName("XyZX");
-        assertThrows(org.apache.cayenne.validation.ValidationException.class, context::commitChanges);
+        assertThrows(org.apache.cayenne.validation.ValidationException.class, env.context()::commitChanges);
     }
 
 	/**
@@ -221,10 +219,10 @@ public class VerticalInheritanceIT {
 
 		TableHelper ivSub3Table = env.table("IV_SUB3", "ID", "IV_ROOT_ID");
 
-		IvSub3 sub3 = context.newObject(IvSub3.class);
+		IvSub3 sub3 = env.context().newObject(IvSub3.class);
 		sub3.setName("XyZX");
 		sub3.setIvRoot(sub3);
-		context.commitChanges();
+		env.context().commitChanges();
 
 		assertEquals(1, ivRootTable.getRowCount());
 		assertEquals(1, ivSub3Table.getRowCount());
@@ -243,14 +241,14 @@ public class VerticalInheritanceIT {
 		TableHelper ivSub3Table = env.table("IV_SUB3", "ID", "IV_ROOT_ID");
 		ivSub3Table.insert(3, 1);
 
-		IvRoot root = SelectById.query(IvRoot.class, 2).selectOne(context);
-		IvSub3 sub3 = SelectById.query(IvSub3.class, 3).selectOne(context);
+		IvRoot root = SelectById.query(IvRoot.class, 2).selectOne(env.context());
+		IvSub3 sub3 = SelectById.query(IvSub3.class, 3).selectOne(env.context());
 		sub3.setName("new name");
 		sub3.setIvRoot(root);
 
 		// this will create 3 queries...
 		// update for name, insert for new relationship, delete for old relationship
-		context.commitChanges();
+		env.context().commitChanges();
 
 		ObjectContext cleanContext = runtime.newContext();
 		IvSub3 sub3Clean = SelectById.query(IvSub3.class, 3).selectOne(cleanContext);
@@ -273,7 +271,7 @@ public class VerticalInheritanceIT {
 
 		TableHelper ivSub1Sub1Table = env.table("IV_SUB1_SUB1", "ID", "SUB1_SUB1_NAME", "SUB1_SUB1_PRICE");
 
-		IvSub1Sub1 sub1Sub1 = context.newObject(IvSub1Sub1.class);
+		IvSub1Sub1 sub1Sub1 = env.context().newObject(IvSub1Sub1.class);
 		sub1Sub1.setName("XyZN");
 		sub1Sub1.setSub1Name("mDA");
 		sub1Sub1.setPrice(42.0);
@@ -318,7 +316,7 @@ public class VerticalInheritanceIT {
 		ivSub1Table.insert(2, "xSUB1");
 
 		ObjectSelect<IvRoot> query = ObjectSelect.query(IvRoot.class);
-		List<IvRoot> results = context.select(query);
+		List<IvRoot> results = env.context().select(query);
 
 		assertEquals(2, results.size());
 
@@ -370,7 +368,7 @@ public class VerticalInheritanceIT {
 		ivSub2Table.insert(4, "xSUB2");
 
 		ObjectSelect<IvRoot> query = ObjectSelect.query(IvRoot.class);
-		List<IvRoot> results = context.select(query);
+		List<IvRoot> results = env.context().select(query);
 
 		assertEquals(4, results.size());
 
@@ -436,7 +434,7 @@ public class VerticalInheritanceIT {
 		ivSub2Table.insert(4, "xSUB2");
 
 		ObjectSelect<IvSub1> query = ObjectSelect.query(IvSub1.class);
-		List<IvSub1> results = context.select(query);
+		List<IvSub1> results = env.context().select(query);
 
 		assertEquals(2, results.size());
 
@@ -492,7 +490,7 @@ public class VerticalInheritanceIT {
 
 		ObjectSelect<IvRoot> query = ObjectSelect.query(IvRoot.class);
 
-		List<IvRoot> results = query.select(context);
+		List<IvRoot> results = query.select(env.context());
 
 		assertEquals(4, results.size());
 		Map<String, IvRoot> resultTypes = new HashMap<>();
@@ -504,19 +502,19 @@ public class VerticalInheritanceIT {
 		assertEquals(4, resultTypes.size());
 
 		IvRoot root = resultTypes.get(IvRoot.class.getName());
-		context.deleteObjects(root);
+		env.context().deleteObjects(root);
 
 		IvSub1 sub1 = (IvSub1) resultTypes.get(IvSub1.class.getName());
-		context.deleteObjects(sub1);
+		env.context().deleteObjects(sub1);
 
-		context.commitChanges();
+		env.context().commitChanges();
 
 		assertEquals(2, ivRootTable.getRowCount());
 		assertEquals(1, ivSub1Table.getRowCount());
 		assertEquals(1, ivSub1Sub1Table.getRowCount());
 		assertEquals(1, ivSub2Table.getRowCount());
 
-		results = context.select(query);
+		results = env.context().select(query);
 		assertEquals(2, results.size());
 	}
 
@@ -534,7 +532,7 @@ public class VerticalInheritanceIT {
 		iv1Sub1Table.insert(2, "xSUB1");
 
 		ObjectSelect<Iv1Root> query = ObjectSelect.query(Iv1Root.class);
-		List<Iv1Root> results = context.select(query);
+		List<Iv1Root> results = env.context().select(query);
 
 		assertEquals(2, results.size());
 
@@ -569,11 +567,11 @@ public class VerticalInheritanceIT {
 		assertEquals(0, rootTable.getRowCount());
 		assertEquals(0, sub1Table.getRowCount());
 
-		Iv2Sub1 root = context.newObject(Iv2Sub1.class);
-		Iv2X x = context.newObject(Iv2X.class);
+		Iv2Sub1 root = env.context().newObject(Iv2Sub1.class);
+		Iv2X x = env.context().newObject(Iv2X.class);
 		root.setX(x);
 
-		context.commitChanges();
+		env.context().commitChanges();
 
 		assertEquals(1, xTable.getRowCount());
 		assertEquals(1, rootTable.getRowCount());
@@ -582,27 +580,27 @@ public class VerticalInheritanceIT {
 
 	@Test
 	public void updateWithRelationship() throws SQLException {
-		IvConcrete parent1 = context.newObject(IvConcrete.class);
+		IvConcrete parent1 = env.context().newObject(IvConcrete.class);
 		parent1.setName("Parent1");
-		context.commitChanges();
+		env.context().commitChanges();
 
-		IvConcrete parent2 = context.newObject(IvConcrete.class);
+		IvConcrete parent2 = env.context().newObject(IvConcrete.class);
 		parent2.setName("Parent2");
-		context.commitChanges();
+		env.context().commitChanges();
 
-		IvConcrete child = context.newObject(IvConcrete.class);
+		IvConcrete child = env.context().newObject(IvConcrete.class);
 		child.setName("Child");
 		child.setParent(parent1);
-		context.commitChanges();
+		env.context().commitChanges();
 
 		child.setParent(parent2);
-		context.commitChanges();
+		env.context().commitChanges();
 
 		assertEquals(parent2, child.getParent());
 
 		// Manually delete child to prevent a foreign key constraint failure while cleaning MySQL db
-		context.deleteObject(child);
-		context.commitChanges();
+		env.context().deleteObject(child);
+		env.context().commitChanges();
 	}
 
 	/**
@@ -610,12 +608,12 @@ public class VerticalInheritanceIT {
      */
 	@Test
 	public void nullifyFlattenedAttribute() throws SQLException {
-		IvConcrete concrete = context.newObject(IvConcrete.class);
+		IvConcrete concrete = env.context().newObject(IvConcrete.class);
 		concrete.setName("Concrete");
-		context.commitChanges();
+		env.context().commitChanges();
 
 		concrete.setName(null);
-		context.commitChanges();
+		env.context().commitChanges();
 
 		assertNull(concrete.getName());
 
@@ -629,16 +627,16 @@ public class VerticalInheritanceIT {
 
 	@Test
 	public void nullifyFlattenedRelationship() {
-		IvOther other = context.newObject(IvOther.class);
+		IvOther other = env.context().newObject(IvOther.class);
 		other.setName("other");
 
-		IvImpl impl = context.newObject(IvImpl.class);
+		IvImpl impl = env.context().newObject(IvImpl.class);
 		impl.setName("Impl 1");
 		impl.setOther1(other);
-		context.commitChanges();
+		env.context().commitChanges();
 
 		impl.setOther1(null);
-		context.commitChanges();
+		env.context().commitChanges();
 
 		assertNull(impl.getOther1());
 
@@ -664,11 +662,11 @@ public class VerticalInheritanceIT {
 		ivBaseTable.insert(1, "Impl 1", "I");
 		ivImplTable.insert(1, "attr1", 1);
 
-		IvImpl impl = SelectById.query(IvImpl.class, 1).selectOne(context);
-		IvOther other = SelectById.query(IvOther.class, 2).selectOne(context);
+		IvImpl impl = SelectById.query(IvImpl.class, 1).selectOne(env.context());
+		IvOther other = SelectById.query(IvOther.class, 2).selectOne(env.context());
 
 		impl.setOther3(other);
-		context.commitChanges();
+		env.context().commitChanges();
 		assertEquals("Impl 1", impl.getName());
 		assertEquals("attr1", impl.getAttr1());
 		assertEquals(impl.getOther3(), other);
@@ -687,12 +685,12 @@ public class VerticalInheritanceIT {
 	public void deleteFlattenedNoValues() throws SQLException {
 		ivAbstractTable.insert(1, null, "S");
 
-		IvConcrete concrete = SelectById.query(IvConcrete.class, 1).selectOne(context);
+		IvConcrete concrete = SelectById.query(IvConcrete.class, 1).selectOne(env.context());
 		assertNotNull(concrete);
 		assertNull(concrete.getName());
 
-		context.deleteObject(concrete);
-		context.commitChanges();
+		env.context().deleteObject(concrete);
+		env.context().commitChanges();
 
 		assertEquals(0, ivAbstractTable.getRowCount());
 		assertEquals(0, ivConcreteTable.getRowCount());
@@ -703,12 +701,12 @@ public class VerticalInheritanceIT {
 		ivAbstractTable.insert(1, null, "S");
 		ivConcreteTable.insert(1, null, null);
 
-		IvConcrete concrete = SelectById.query(IvConcrete.class, 1).selectOne(context);
+		IvConcrete concrete = SelectById.query(IvConcrete.class, 1).selectOne(env.context());
 		assertNotNull(concrete);
 		assertNull(concrete.getName());
 
-		context.deleteObject(concrete);
-		context.commitChanges();
+		env.context().deleteObject(concrete);
+		env.context().commitChanges();
 
 		assertEquals(0, ivAbstractTable.getRowCount());
 		assertEquals(0, ivConcreteTable.getRowCount());
@@ -719,19 +717,19 @@ public class VerticalInheritanceIT {
 		ivAbstractTable.insert(1, null, "S");
 		ivConcreteTable.insert(1, "test", null);
 
-		IvConcrete concrete = SelectById.query(IvConcrete.class, 1).selectOne(context);
+		IvConcrete concrete = SelectById.query(IvConcrete.class, 1).selectOne(env.context());
 		assertNotNull(concrete);
 		assertEquals("test", concrete.getName());
 
 		concrete.setName(null);
-		context.commitChanges();
+		env.context().commitChanges();
         assertNull(concrete.getName());
 
 		assertEquals(1, ivAbstractTable.getRowCount());
 		assertEquals(1, ivConcreteTable.getRowCount());
 
-		context.deleteObject(concrete);
-		context.commitChanges();
+		env.context().deleteObject(concrete);
+		env.context().commitChanges();
 
 		assertEquals(0, ivAbstractTable.getRowCount());
 		assertEquals(0, ivConcreteTable.getRowCount());
@@ -744,10 +742,10 @@ public class VerticalInheritanceIT {
 		ivAbstractTable.insert(2, null, "S");
 		ivConcreteTable.insert(2, "Two", 1);
 
-		IvConcrete concrete = SelectById.query(IvConcrete.class, 2).selectOne(context);
+		IvConcrete concrete = SelectById.query(IvConcrete.class, 2).selectOne(env.context());
 		concrete.setRelatedAbstract(null);
 
-		context.commitChanges();
+		env.context().commitChanges();
 		assertNull(concrete.getRelatedAbstract());
 
 		{
@@ -760,26 +758,26 @@ public class VerticalInheritanceIT {
 
 	@Test//(expected = ValidationException.class) // other2 is not mandatory for now
 	public void insertWithAttributeAndRelationship() {
-		IvOther other = context.newObject(IvOther.class);
+		IvOther other = env.context().newObject(IvOther.class);
 		other.setName("other");
 
-		IvImpl impl = context.newObject(IvImpl.class);
+		IvImpl impl = env.context().newObject(IvImpl.class);
 		impl.setName("Impl 1");
 		impl.setAttr1("attr1");
 		impl.setOther1(other);
 
-		context.commitChanges();
+		env.context().commitChanges();
 	}
 
 	@Test
 	public void insertWithMultipleAttributeAndMultipleRelationship() {
-		IvOther other1 = context.newObject(IvOther.class);
+		IvOther other1 = env.context().newObject(IvOther.class);
 		other1.setName("other1");
 
-		IvOther other2 = context.newObject(IvOther.class);
+		IvOther other2 = env.context().newObject(IvOther.class);
 		other2.setName("other2");
 
-		IvImpl impl = context.newObject(IvImpl.class);
+		IvImpl impl = env.context().newObject(IvImpl.class);
 		impl.setName("Impl 1");
 		impl.setAttr0(new Date());
 		impl.setAttr1("attr1");
@@ -787,38 +785,38 @@ public class VerticalInheritanceIT {
 		impl.setOther1(other1);
 		impl.setOther2(other2);
 
-		context.commitChanges();
+		env.context().commitChanges();
 
-		IvImpl impl2 = ObjectSelect.query(IvImpl.class).selectFirst(context);
+		IvImpl impl2 = ObjectSelect.query(IvImpl.class).selectFirst(env.context());
 		assertEquals(other1, impl2.getOther1());
 		assertEquals(other2, impl2.getOther2());
 	}
 
 	@Test
 	public void insertTwoObjectsWithMultipleAttributeAndMultipleRelationship() {
-		IvOther other1 = context.newObject(IvOther.class);
+		IvOther other1 = env.context().newObject(IvOther.class);
 		other1.setName("other1");
 
-		IvOther other2 = context.newObject(IvOther.class);
+		IvOther other2 = env.context().newObject(IvOther.class);
 		other2.setName("other2");
 
-		IvImpl impl1 = context.newObject(IvImpl.class);
+		IvImpl impl1 = env.context().newObject(IvImpl.class);
 		impl1.setName("Impl 1");
 		impl1.setAttr1("attr1");
 		impl1.setAttr2("attr2");
 		impl1.setOther1(other1);
 		impl1.setOther2(other2);
 
-		IvImpl impl2 = context.newObject(IvImpl.class);
+		IvImpl impl2 = env.context().newObject(IvImpl.class);
 		impl2.setName("Impl 2");
 		impl2.setAttr1("attr1");
 		impl2.setAttr2("attr2");
 		impl2.setOther1(other1);
 		impl2.setOther2(other2);
 
-		context.commitChanges();
+		env.context().commitChanges();
 
-		assertEquals(2, ObjectSelect.query(IvImpl.class).selectCount(context));
+		assertEquals(2, ObjectSelect.query(IvImpl.class).selectCount(env.context()));
 	}
 
 	/**
@@ -836,7 +834,7 @@ public class VerticalInheritanceIT {
 		ivImplTable.insert(1, "attr1");
 		ivOtherTable.insert(1, "other1", 1);
 
-		IvOther other = ObjectSelect.query(IvOther.class).prefetch(IvOther.BASE.joint()).selectOne(context);
+		IvOther other = ObjectSelect.query(IvOther.class).prefetch(IvOther.BASE.joint()).selectOne(env.context());
 		assertNotNull(other);
 		assertNotNull(other.getBase());
 		assertTrue(IvImpl.class.isAssignableFrom(other.getBase().getClass()));
@@ -863,7 +861,7 @@ public class VerticalInheritanceIT {
 		ivImplTable.insert(1, "attr1");
 		ivOtherTable.insert(1, "other1", 1);
 
-		IvOther other = ObjectSelect.query(IvOther.class).prefetch(IvOther.BASE.disjoint()).selectOne(context);
+		IvOther other = ObjectSelect.query(IvOther.class).prefetch(IvOther.BASE.disjoint()).selectOne(env.context());
 		assertNotNull(other);
 		assertNotNull(other.getBase());
 		assertTrue(IvImpl.class.isAssignableFrom(other.getBase().getClass()));
@@ -890,7 +888,7 @@ public class VerticalInheritanceIT {
 		ivImplTable.insert(1, "attr1");
 		ivOtherTable.insert(1, "other1", 1);
 
-		IvOther other = ObjectSelect.query(IvOther.class).prefetch(IvOther.BASE.disjointById()).selectOne(context);
+		IvOther other = ObjectSelect.query(IvOther.class).prefetch(IvOther.BASE.disjointById()).selectOne(env.context());
 		assertNotNull(other);
 		assertNotNull(other.getBase());
 		assertTrue(IvImpl.class.isAssignableFrom(other.getBase().getClass()));
@@ -917,7 +915,7 @@ public class VerticalInheritanceIT {
 		ivImplTable.insert(1, "attr1");
 		ivOtherTable.insert(1, "other1", 1);
 
-		IvOther other = ObjectSelect.query(IvOther.class).prefetch(IvOther.IMPL.joint()).limit(1).selectOne(context);
+		IvOther other = ObjectSelect.query(IvOther.class).prefetch(IvOther.IMPL.joint()).limit(1).selectOne(env.context());
 		assertNotNull(other);
 
 		IvImpl impl = other.getImpl();
@@ -930,7 +928,7 @@ public class VerticalInheritanceIT {
 		impl.setOther1(null);
 		impl.setOther2(null);
 		impl.setOther3(null);
-		context.commitChanges();
+		env.context().commitChanges();
 		ivOtherTable.deleteAll();
 	}
 
@@ -951,7 +949,7 @@ public class VerticalInheritanceIT {
 
 		IvOther other = ObjectSelect.query(IvOther.class)
 				.prefetch(IvOther.IMPL.disjoint())
-				.selectOne(context);
+				.selectOne(env.context());
 		assertNotNull(other);
 
 		IvImpl impl = other.getImpl();
@@ -964,7 +962,7 @@ public class VerticalInheritanceIT {
 		impl.setOther1(null);
 		impl.setOther2(null);
 		impl.setOther3(null);
-		context.commitChanges();
+		env.context().commitChanges();
 		ivOtherTable.deleteAll();
 	}
 
@@ -985,7 +983,7 @@ public class VerticalInheritanceIT {
 
 		IvOther other = ObjectSelect.query(IvOther.class)
 				.prefetch(IvOther.IMPL.disjointById())
-				.selectOne(context);
+				.selectOne(env.context());
 		assertNotNull(other);
 
 		IvImpl impl = other.getImpl();
@@ -998,7 +996,7 @@ public class VerticalInheritanceIT {
 		impl.setOther1(null);
 		impl.setOther2(null);
 		impl.setOther3(null);
-		context.commitChanges();
+		env.context().commitChanges();
 		ivOtherTable.deleteAll();
 	}
 
@@ -1023,13 +1021,13 @@ public class VerticalInheritanceIT {
 		ivImplWithLockTable.insert(1, "attr1", 1);
 
 		// Fetch and update the records
-		for(IvImplWithLock record : ObjectSelect.query(IvImplWithLock.class).select(context)) {
+		for(IvImplWithLock record : ObjectSelect.query(IvImplWithLock.class).select(env.context())) {
 			record.setName(record.getName() + "-Change");
 			record.setAttr1(record.getAttr1() + "-Change");
 		}
 
 		// commit should pass without any exceptions
-		context.commitChanges();
+		env.context().commitChanges();
 	}
 
 	@Test
@@ -1053,20 +1051,20 @@ public class VerticalInheritanceIT {
 		ivSub2Table.insert(4, "attr2", "sub_name2_2");
 
 		EJBQLQuery query1 = new EJBQLQuery("SELECT COUNT(a) FROM IvRoot a");
-		assertEquals(Collections.singletonList(4L), context.performQuery(query1));
+		assertEquals(Collections.singletonList(4L), env.context().performQuery(query1));
 
 		EJBQLQuery query2 = new EJBQLQuery("SELECT COUNT(a) FROM IvSub1 a");
-		assertEquals(Collections.singletonList(1L), context.performQuery(query2));
+		assertEquals(Collections.singletonList(1L), env.context().performQuery(query2));
 
 		EJBQLQuery query3 = new EJBQLQuery("SELECT COUNT(a) FROM IvSub2 a");
-		assertEquals(Collections.singletonList(2L), context.performQuery(query3));
+		assertEquals(Collections.singletonList(2L), env.context().performQuery(query3));
 	}
 
 	@Test
 	public void propagatedGeneratedPK() {
-		IvGenKeySub sub = context.newObject(IvGenKeySub.class);
+		IvGenKeySub sub = env.context().newObject(IvGenKeySub.class);
 		sub.setName("test");
-		context.commitChanges();
+		env.context().commitChanges();
 
 		assertTrue(Cayenne.intPKForObject(sub) > 0);
 	}
@@ -1079,7 +1077,7 @@ public class VerticalInheritanceIT {
 
 		TableHelper ivSub1Sub1Table = env.table("IV_SUB1_SUB1", "ID", "SUB1_SUB1_NAME", "SUB1_SUB1_PRICE");
 
-		IvSub1Sub1 sub1Sub1 = context.newObject(IvSub1Sub1.class);
+		IvSub1Sub1 sub1Sub1 = env.context().newObject(IvSub1Sub1.class);
 		sub1Sub1.setName("XyZN");
 		sub1Sub1.setSub1Name("mDA");
 		sub1Sub1.setPrice(42.0);
@@ -1110,7 +1108,7 @@ public class VerticalInheritanceIT {
 		ColumnSelect<IvSub1> originalQueryForSub1 = ObjectSelect.query(IvSub1.class)
 				.column(IvSub1.SELF);
 
-		IvSub1 result = originalQueryForSub1.selectOne(context);
+		IvSub1 result = originalQueryForSub1.selectOne(env.context());
 		assertEquals("XyZN", result.getName());
 		assertEquals(Double.valueOf(42.0), result.getPrice());
 		assertEquals("mDA", result.getSub1Name());
@@ -1124,7 +1122,7 @@ public class VerticalInheritanceIT {
 
 		TableHelper ivSub1Sub1Table = env.table("IV_SUB1_SUB1", "ID", "SUB1_SUB1_NAME", "SUB1_SUB1_PRICE");
 
-		IvSub1Sub1 sub1Sub1 = context.newObject(IvSub1Sub1.class);
+		IvSub1Sub1 sub1Sub1 = env.context().newObject(IvSub1Sub1.class);
 		sub1Sub1.setName("XyZN");
 		sub1Sub1.setSub1Name("mDA");
 		sub1Sub1.setPrice(42.0);
@@ -1155,7 +1153,7 @@ public class VerticalInheritanceIT {
 		ColumnSelect<IvSub1Sub1> originalQueryForSub1Sub1 = ObjectSelect.query(IvSub1Sub1.class)
 				.column(IvSub1Sub1.SELF);
 
-		IvSub1Sub1 result = originalQueryForSub1Sub1.selectOne(context);
+		IvSub1Sub1 result = originalQueryForSub1Sub1.selectOne(env.context());
 		assertEquals("XyZN", result.getName());
 		assertEquals(Double.valueOf(42.0), result.getPrice());
 		assertEquals("mDA", result.getSub1Name());
@@ -1165,7 +1163,7 @@ public class VerticalInheritanceIT {
 	@Test
 	public void insertTwoGenericVerticalInheritanceObjects() {
 		// Generic DataObjects play nicer with a DataContext
-		final DataContext dataContext = (DataContext) context;
+		final DataContext dataContext = (DataContext) env.context();
 
 		final Persistent girlEmma = dataContext.newObject("GenGirl");
 		final Persistent boyLuke = dataContext.newObject("GenBoy");
@@ -1181,17 +1179,17 @@ public class VerticalInheritanceIT {
 		boyLuke.writeProperty("name", "Luke");
 		boyLuke.writeProperty("toyTrucks", 12);
 
-		context.commitChanges();
+		env.context().commitChanges();
 
-		assertEquals(2, ObjectSelect.query(Persistent.class, "GenStudent").selectCount(context));
+		assertEquals(2, ObjectSelect.query(Persistent.class, "GenStudent").selectCount(env.context()));
 
-		final List<Persistent> students = ObjectSelect.query(Persistent.class, "GenStudent").select(context);
+		final List<Persistent> students = ObjectSelect.query(Persistent.class, "GenStudent").select(env.context());
 		assertTrue(students.contains(girlEmma));
 		assertTrue(students.contains(boyLuke));
 
-		final List<Persistent> girls = ObjectSelect.query(Persistent.class, "GenGirl").select(context);
+		final List<Persistent> girls = ObjectSelect.query(Persistent.class, "GenGirl").select(env.context());
 		assertEquals(1, girls.size());
-		final List<Persistent> boys = ObjectSelect.query(Persistent.class, "GenBoy").select(context);
+		final List<Persistent> boys = ObjectSelect.query(Persistent.class, "GenBoy").select(env.context());
 		assertEquals(1, boys.size());
 	}
 }

@@ -19,7 +19,6 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -40,10 +39,7 @@ public class DataContextEJBQLIsNullIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private ObjectContext context;
-
     private UnitDbAdapter accessStackAdapter;
-
 
     protected TableHelper tArtist;
     protected TableHelper tPainting;
@@ -51,7 +47,6 @@ public class DataContextEJBQLIsNullIT {
     
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
         accessStackAdapter = env.getInstance(UnitDbAdapter.class);
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
@@ -96,7 +91,7 @@ public class DataContextEJBQLIsNullIT {
         // note that some databases (notably Sybase) actually allow = NULL comparison,
         // most do not; per JPA spec the result is undefined.. so we can't make any
         // assertions about the result. Just making sure the query doesn't blow up
-        context.performQuery(query1);
+        env.context().performQuery(query1);
     }
 
     @Test
@@ -112,7 +107,7 @@ public class DataContextEJBQLIsNullIT {
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
         query1.setParameter("x", null);
 
-        context.performQuery(query1);
+        env.context().performQuery(query1);
     }
 
     @Test
@@ -127,7 +122,7 @@ public class DataContextEJBQLIsNullIT {
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
         query1.setParameter("x", null);
 
-        context.performQuery(query1);
+        env.context().performQuery(query1);
     }
 
     @Test
@@ -138,7 +133,7 @@ public class DataContextEJBQLIsNullIT {
         String ejbql1 = "SELECT p FROM Painting p WHERE p.estimatedPrice IS NULL";
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
 
-        List<?> results = context.performQuery(query1);
+        List<?> results = env.context().performQuery(query1);
         assertEquals(1, results.size());
         assertEquals(33001, Cayenne.intPKForObject((Persistent) results.get(0)));
     }
@@ -151,7 +146,7 @@ public class DataContextEJBQLIsNullIT {
         String ejbql1 = "SELECT p FROM Painting p WHERE p.estimatedPrice IS NOT NULL";
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
 
-        List<?> results = context.performQuery(query1);
+        List<?> results = env.context().performQuery(query1);
         assertEquals(1, results.size());
         assertEquals(33002, Cayenne.intPKForObject((Persistent) results.get(0)));
     }
@@ -164,7 +159,7 @@ public class DataContextEJBQLIsNullIT {
         String ejbql1 = "SELECT p FROM Painting p WHERE p.toArtist IS NULL";
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
 
-        List<?> results = context.performQuery(query1);
+        List<?> results = env.context().performQuery(query1);
         assertEquals(1, results.size());
         assertEquals(33001, Cayenne.intPKForObject((Persistent) results.get(0)));
     }
@@ -177,7 +172,7 @@ public class DataContextEJBQLIsNullIT {
         String ejbql1 = "SELECT p FROM Painting p WHERE p.toArtist IS NOT NULL";
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
 
-        List<?> results = context.performQuery(query1);
+        List<?> results = env.context().performQuery(query1);
         assertEquals(1, results.size());
         assertEquals(33003, Cayenne.intPKForObject((Persistent) results.get(0)));
     }

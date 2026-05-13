@@ -49,7 +49,6 @@ public class CDOOne2ManyIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private CayenneRuntime runtime;
-    private ObjectContext context;
 
     protected TableHelper tArtist;
     protected TableHelper tPainting;
@@ -57,7 +56,6 @@ public class CDOOne2ManyIT {
     @BeforeEach
     public void setUp() throws Exception {
         runtime = env.runtime();
-        context = env.context();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING", "PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "GALLERY_ID");
@@ -70,28 +68,28 @@ public class CDOOne2ManyIT {
         // since this reduces a chance that painting and artist primary keys
         // would accidentally match, resulting in success when it should fail
 
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("Xyz");
 
-        Painting p1 = context.newObject(Painting.class);
+        Painting p1 = env.context().newObject(Painting.class);
         p1.setPaintingTitle("1");
         a1.addToPaintingArray(p1);
 
-        Painting p2 = context.newObject(Painting.class);
+        Painting p2 = env.context().newObject(Painting.class);
         p2.setPaintingTitle("2");
         a1.addToPaintingArray(p2);
 
-        Painting p3 = context.newObject(Painting.class);
+        Painting p3 = env.context().newObject(Painting.class);
         p3.setPaintingTitle("3");
         a1.addToPaintingArray(p3);
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         // do select
         Expression e = ExpressionFactory.matchDbExp("paintingArray", p2);
 
         // *** TESTING THIS ***
-        List<Artist> artists = ObjectSelect.query(Artist.class, e).select(context);
+        List<Artist> artists = ObjectSelect.query(Artist.class, e).select(env.context());
         assertEquals(1, artists.size());
         assertSame(a1, artists.get(0));
     }
@@ -103,38 +101,38 @@ public class CDOOne2ManyIT {
         // since this reduces a chance that painting and artist primary keys
         // would accidentally match, resulting in success when it should fail
 
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("Xyz");
 
-        Painting p1 = context.newObject(Painting.class);
+        Painting p1 = env.context().newObject(Painting.class);
         p1.setPaintingTitle("1");
         a1.addToPaintingArray(p1);
 
-        Painting p2 = context.newObject(Painting.class);
+        Painting p2 = env.context().newObject(Painting.class);
         p2.setPaintingTitle("2");
         a1.addToPaintingArray(p2);
 
-        Painting p3 = context.newObject(Painting.class);
+        Painting p3 = env.context().newObject(Painting.class);
         p3.setPaintingTitle("3");
         a1.addToPaintingArray(p3);
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         // do select
         Expression e = ExpressionFactory.matchExp("paintingArray", p2);
 
         // *** TESTING THIS ***
-        List<Artist> artists = ObjectSelect.query(Artist.class, e).select(context);
+        List<Artist> artists = ObjectSelect.query(Artist.class, e).select(env.context());
         assertEquals(1, artists.size());
         assertSame(a1, artists.get(0));
     }
 
     @Test
     public void newAdd() throws Exception {
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XyzQ");
 
-        Painting p1 = context.newObject(Painting.class);
+        Painting p1 = env.context().newObject(Painting.class);
         p1.setPaintingTitle("1");
 
         // *** TESTING THIS ***
@@ -144,7 +142,7 @@ public class CDOOne2ManyIT {
         assertSame(p1, a1.getPaintingArray().get(0));
         assertSame(a1, p1.getToArtist());
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         // test database data
 
@@ -161,14 +159,14 @@ public class CDOOne2ManyIT {
 
     @Test
     public void newAddMultiples() {
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XyzV");
 
-        Painting p1 = context.newObject(Painting.class);
+        Painting p1 = env.context().newObject(Painting.class);
         p1.setPaintingTitle("1");
         a1.addToPaintingArray(p1);
 
-        Painting p2 = context.newObject(Painting.class);
+        Painting p2 = env.context().newObject(Painting.class);
         p2.setPaintingTitle("2");
         a1.addToPaintingArray(p2);
 
@@ -177,7 +175,7 @@ public class CDOOne2ManyIT {
         assertSame(a1, p1.getToArtist());
         assertSame(a1, p2.getToArtist());
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         ObjectContext context2 = runtime.newContext();
 
@@ -188,14 +186,14 @@ public class CDOOne2ManyIT {
 
     @Test
     public void remove1() {
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XyzE");
 
-        Painting p1 = context.newObject(Painting.class);
+        Painting p1 = env.context().newObject(Painting.class);
         p1.setPaintingTitle("1");
         a1.addToPaintingArray(p1);
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         ObjectContext context2 = runtime.newContext();
 
@@ -224,18 +222,18 @@ public class CDOOne2ManyIT {
 
     @Test
     public void remove2() {
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XyzQ");
 
-        Painting p01 = context.newObject(Painting.class);
+        Painting p01 = env.context().newObject(Painting.class);
         p01.setPaintingTitle("1");
         a1.addToPaintingArray(p01);
 
-        Painting p02 = context.newObject(Painting.class);
+        Painting p02 = env.context().newObject(Painting.class);
         p02.setPaintingTitle("2");
         a1.addToPaintingArray(p02);
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         ObjectContext context2 = runtime.newContext();
 
@@ -262,21 +260,21 @@ public class CDOOne2ManyIT {
 
     @Test
     public void propagatePK() {
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XyBn");
 
-        Gallery g1 = context.newObject(Gallery.class);
+        Gallery g1 = env.context().newObject(Gallery.class);
         g1.setGalleryName("Tyu");
 
-        Exhibit e1 = context.newObject(Exhibit.class);
+        Exhibit e1 = env.context().newObject(Exhibit.class);
         e1.setToGallery(g1);
         e1.setOpeningDate(new Date());
         e1.setClosingDate(new Date());
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         // *** TESTING THIS ***
-        ArtistExhibit ae1 = context.newObject(ArtistExhibit.class);
+        ArtistExhibit ae1 = env.context().newObject(ArtistExhibit.class);
         e1.addToArtistExhibitArray(ae1);
         a1.addToArtistExhibitArray(ae1);
 
@@ -286,21 +284,21 @@ public class CDOOne2ManyIT {
 
         // save
         // test "assertion" is that commit succeeds (PK of ae1 was set properly)
-        context.commitChanges();
+        env.context().commitChanges();
     }
 
     @Test
     public void replace() {
 
-        Painting p1 = context.newObject(Painting.class);
+        Painting p1 = env.context().newObject(Painting.class);
         p1.setPaintingTitle("xa");
 
-        Gallery g1 = context.newObject(Gallery.class);
+        Gallery g1 = env.context().newObject(Gallery.class);
         g1.setGalleryName("yTW");
 
         p1.setToGallery(g1);
 
-        context.commitChanges();
+        env.context().commitChanges();
         ObjectContext context2 = runtime.newContext();
 
         // test database data
@@ -336,15 +334,15 @@ public class CDOOne2ManyIT {
     @Test
     public void replaceToSame() {
 
-        Painting p1 = context.newObject(Painting.class);
+        Painting p1 = env.context().newObject(Painting.class);
         p1.setPaintingTitle("xa");
 
-        Gallery g1 = context.newObject(Gallery.class);
+        Gallery g1 = env.context().newObject(Gallery.class);
         g1.setGalleryName("yTW");
 
         p1.setToGallery(g1);
 
-        context.commitChanges();
+        env.context().commitChanges();
         ObjectContext context2 = runtime.newContext();
 
         // test database data

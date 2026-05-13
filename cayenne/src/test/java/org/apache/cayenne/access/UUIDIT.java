@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 import java.util.UUID;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.query.ObjectSelect;
@@ -42,42 +41,39 @@ public class UUIDIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.UUID_PROJECT);
 
-    private ObjectContext context;
-
     private TableHelper uuidPkEntity;
 
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
         uuidPkEntity = env.table("UUID_PK_ENTITY", "ID");
     }
 
     @Test
     public void uuid() throws Exception {
 
-        UuidTestEntity test = context.newObject(UuidTestEntity.class);
+        UuidTestEntity test = env.context().newObject(UuidTestEntity.class);
 
         UUID id = UUID.randomUUID();
         test.setUuid(id);
-        context.commitChanges();
+        env.context().commitChanges();
 
         UuidTestEntity testRead = ObjectSelect.query(UuidTestEntity.class)
-                .selectFirst(context);
+                .selectFirst(env.context());
         assertNotNull(testRead.getUuid());
         assertEquals(id, testRead.getUuid());
 
         test.setUuid(null);
-        context.commitChanges();
+        env.context().commitChanges();
     }
 
     @Test
     public void uuidMeaningfulPkInsert() throws Exception {
         UUID id = UUID.randomUUID();
 
-        UuidPkEntity o1 = context.newObject(UuidPkEntity.class);
+        UuidPkEntity o1 = env.context().newObject(UuidPkEntity.class);
         o1.setId(id);
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         String fetched = uuidPkEntity.getString("ID");
         assertEquals(id, UUID.fromString(fetched));
@@ -89,7 +85,7 @@ public class UUIDIT {
 
         uuidPkEntity.insert(id.toString());
 
-        UuidPkEntity o1 = Cayenne.objectForPK(context, UuidPkEntity.class, id);
+        UuidPkEntity o1 = Cayenne.objectForPK(env.context(), UuidPkEntity.class, id);
 
         assertNotNull(o1);
         assertEquals(id, o1.getId());
@@ -98,18 +94,18 @@ public class UUIDIT {
 
     @Test
     public void uuidColumnSelect() throws Exception {
-        UuidTestEntity test = context.newObject(UuidTestEntity.class);
+        UuidTestEntity test = env.context().newObject(UuidTestEntity.class);
         UUID id = UUID.randomUUID();
         test.setUuid(id);
-        context.commitChanges();
+        env.context().commitChanges();
 
         UUID readValue = ObjectSelect.query(UuidTestEntity.class)
-                .column(UuidTestEntity.UUID).selectOne(context);
+                .column(UuidTestEntity.UUID).selectOne(env.context());
 
         assertEquals(id, readValue);
 
         UUID readValue2 = ObjectSelect.query(UuidTestEntity.class)
-                .column(PropertyFactory.createBase(ExpressionFactory.dbPathExp("UUID"), UUID.class)).selectOne(context);
+                .column(PropertyFactory.createBase(ExpressionFactory.dbPathExp("UUID"), UUID.class)).selectOne(env.context());
 
         assertEquals(id, readValue2);
     }

@@ -49,7 +49,6 @@ public class CayennePersistentObjectRelationshipsIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private ObjectContext context;
     private CayenneRuntime runtime;
 
     private TableHelper tArtist;
@@ -58,7 +57,6 @@ public class CayennePersistentObjectRelationshipsIT {
 
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
         runtime = env.runtime();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
@@ -84,7 +82,7 @@ public class CayennePersistentObjectRelationshipsIT {
     public void readNestedProperty1() throws Exception {
         createArtistWithPaintingDataSet();
 
-        Painting p1 = Cayenne.objectForPK(context, Painting.class, 6);
+        Painting p1 = Cayenne.objectForPK(env.context(), Painting.class, 6);
         assertEquals("aX", p1.readNestedProperty("toArtist.artistName"));
     }
 
@@ -92,7 +90,7 @@ public class CayennePersistentObjectRelationshipsIT {
     public void readNestedProperty2() throws Exception {
         createArtistWithPaintingDataSet();
 
-        Painting p1 = Cayenne.objectForPK(context, Painting.class, 6);
+        Painting p1 = Cayenne.objectForPK(env.context(), Painting.class, 6);
         assertTrue(p1.getToArtist().readNestedProperty("paintingArray") instanceof List<?>);
     }
 
@@ -100,7 +98,7 @@ public class CayennePersistentObjectRelationshipsIT {
     public void reciprocalRel1() throws Exception {
         createArtistWithPaintingDataSet();
 
-        Painting p1 = Cayenne.objectForPK(context, Painting.class, 6);
+        Painting p1 = Cayenne.objectForPK(env.context(), Painting.class, 6);
         Artist a1 = p1.getToArtist();
 
         assertNotNull(a1);
@@ -116,7 +114,7 @@ public class CayennePersistentObjectRelationshipsIT {
     public void readToOneRel1() throws Exception {
         createArtistWithPaintingDataSet();
 
-        Painting p1 = Cayenne.objectForPK(context, Painting.class, 6);
+        Painting p1 = Cayenne.objectForPK(env.context(), Painting.class, 6);
         Artist a1 = p1.getToArtist();
 
         assertNotNull(a1);
@@ -130,7 +128,7 @@ public class CayennePersistentObjectRelationshipsIT {
         // test chained calls to read relationships
         createArtistWithPaintingAndInfoDataSet();
 
-        PaintingInfo pi1 = Cayenne.objectForPK(context, PaintingInfo.class, 6);
+        PaintingInfo pi1 = Cayenne.objectForPK(env.context(), PaintingInfo.class, 6);
         Painting p1 = pi1.getPainting();
         p1.getPaintingTitle();
 
@@ -146,7 +144,7 @@ public class CayennePersistentObjectRelationshipsIT {
     public void readToOneRel3() throws Exception {
         createArtistWithPaintingDataSet();
 
-        Painting p1 = Cayenne.objectForPK(context, Painting.class, 6);
+        Painting p1 = Cayenne.objectForPK(env.context(), Painting.class, 6);
         Gallery g1 = p1.getToGallery();
         assertNull(g1);
     }
@@ -155,7 +153,7 @@ public class CayennePersistentObjectRelationshipsIT {
     public void readToManyRel1() throws Exception {
         createArtistWithPaintingDataSet();
 
-        Artist a1 = Cayenne.objectForPK(context, Artist.class, 8);
+        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 8);
         List<Painting> plist = a1.getPaintingArray();
 
         assertNotNull(plist);
@@ -169,7 +167,7 @@ public class CayennePersistentObjectRelationshipsIT {
         // test empty relationship
         tArtist.insert(11, "aX");
 
-        Artist a1 = Cayenne.objectForPK(context, Artist.class, 11);
+        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 11);
         List<Painting> plist = a1.getPaintingArray();
 
         assertNotNull(plist);
@@ -179,90 +177,90 @@ public class CayennePersistentObjectRelationshipsIT {
     @Test
     public void reflexiveRelationshipInsertOrder1() {
 
-        ArtGroup parentGroup = context.newObject(ArtGroup.class);
+        ArtGroup parentGroup = env.context().newObject(ArtGroup.class);
         parentGroup.setName("parent");
 
-        ArtGroup childGroup1 = context.newObject(ArtGroup.class);
+        ArtGroup childGroup1 = env.context().newObject(ArtGroup.class);
         childGroup1.setName("child1");
         childGroup1.setToParentGroup(parentGroup);
-        context.commitChanges();
+        env.context().commitChanges();
 
         childGroup1.setToParentGroup(null);
-        context.commitChanges();
+        env.context().commitChanges();
     }
 
     @Test
     public void reflexiveRelationshipInsertOrder2() {
 
-        ArtGroup childGroup1 = context.newObject(ArtGroup.class);
+        ArtGroup childGroup1 = env.context().newObject(ArtGroup.class);
         childGroup1.setName("child1");
 
-        ArtGroup parentGroup = context.newObject(ArtGroup.class);
+        ArtGroup parentGroup = env.context().newObject(ArtGroup.class);
         parentGroup.setName("parent");
 
         childGroup1.setToParentGroup(parentGroup);
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         childGroup1.setToParentGroup(null);
-        context.commitChanges();
+        env.context().commitChanges();
     }
 
     @Test
     public void reflexiveRelationshipInsertOrder3() {
         // multiple children, one created before parent, one after
 
-        ArtGroup childGroup1 = context.newObject(ArtGroup.class);
+        ArtGroup childGroup1 = env.context().newObject(ArtGroup.class);
         childGroup1.setName("child1");
 
-        ArtGroup parentGroup = context.newObject(ArtGroup.class);
+        ArtGroup parentGroup = env.context().newObject(ArtGroup.class);
         parentGroup.setName("parent");
 
         childGroup1.setToParentGroup(parentGroup);
 
-        ArtGroup childGroup2 = context.newObject(ArtGroup.class);
+        ArtGroup childGroup2 = env.context().newObject(ArtGroup.class);
         childGroup2.setName("child2");
         childGroup2.setToParentGroup(parentGroup);
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         childGroup1.setToParentGroup(null);
-        context.commitChanges();
+        env.context().commitChanges();
 
         childGroup2.setToParentGroup(null);
-        context.commitChanges();
+        env.context().commitChanges();
     }
 
     @Test
     public void reflexiveRelationshipInsertOrder4() {
         // multiple children, one created before parent, one after
 
-        ArtGroup childGroup1 = context.newObject(ArtGroup.class);
+        ArtGroup childGroup1 = env.context().newObject(ArtGroup.class);
         childGroup1.setName("child1");
 
-        ArtGroup parentGroup = context.newObject(ArtGroup.class);
+        ArtGroup parentGroup = env.context().newObject(ArtGroup.class);
         parentGroup.setName("parent");
 
         childGroup1.setToParentGroup(parentGroup);
 
-        ArtGroup childGroup2 = context.newObject(ArtGroup.class);
+        ArtGroup childGroup2 = env.context().newObject(ArtGroup.class);
         childGroup2.setName("subchild");
         childGroup2.setToParentGroup(childGroup1);
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         childGroup1.setToParentGroup(null);
-        context.commitChanges();
+        env.context().commitChanges();
 
         childGroup2.setToParentGroup(null);
-        context.commitChanges();
+        env.context().commitChanges();
     }
 
     @Test
     public void crossContextRelationshipException() {
 
         // Create this object in one context...
-        Artist artist = context.newObject(Artist.class);
+        Artist artist = env.context().newObject(Artist.class);
 
         // ...and this object in another context
         Painting painting = runtime.newContext().newObject(Painting.class);
@@ -278,32 +276,32 @@ public class CayennePersistentObjectRelationshipsIT {
 
     @Test
     public void complexInsertUpdateOrdering() {
-        Artist artist = context.newObject(Artist.class);
+        Artist artist = env.context().newObject(Artist.class);
         artist.setArtistName("a name");
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         // Cause an update and an insert that need correct ordering
-        Painting painting = context.newObject(Painting.class);
+        Painting painting = env.context().newObject(Painting.class);
         painting.setPaintingTitle("a painting");
         artist.addToPaintingArray(painting);
 
-        context.commitChanges();
+        env.context().commitChanges();
 
-        context.deleteObjects(artist);
-        context.commitChanges();
+        env.context().deleteObjects(artist);
+        env.context().commitChanges();
     }
 
     @Test
     public void newToMany() throws Exception {
-        Artist artist = context.newObject(Artist.class);
+        Artist artist = env.context().newObject(Artist.class);
         artist.setArtistName("test");
         assertTrue(artist.readPropertyDirectly("paintingArray") instanceof ToManyList);
 
         ToManyList list = (ToManyList) artist.readPropertyDirectly("paintingArray");
         assertFalse(list.isFault());
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         assertFalse(list.isFault());
     }
@@ -312,32 +310,32 @@ public class CayennePersistentObjectRelationshipsIT {
     public void transientInsertAndDeleteOfToManyRelationship() throws Exception {
         createArtistWithPaintingDataSet();
 
-        Artist artist = ObjectSelect.query(Artist.class).selectOne(context);
+        Artist artist = ObjectSelect.query(Artist.class).selectOne(env.context());
 
         // create and then immediately delete a to-many relationship value
-        Painting object2 = context.newObject(Painting.class);
+        Painting object2 = env.context().newObject(Painting.class);
         artist.addToPaintingArray(object2);
         artist.removeFromPaintingArray(object2);
-        context.deleteObject(object2);
+        env.context().deleteObject(object2);
         assertEquals(1, artist.getPaintingArray().size());
 
         artist.setArtistName("updated artist name"); // this will force the commit to actually execute some SQL
-        context.commitChanges();
+        env.context().commitChanges();
     }
     
     @Test
     public void transientSetAndNullOfToOneRelationship() throws Exception {
         createArtistWithPaintingDataSet();
 
-        Artist artist = ObjectSelect.query(Artist.class).selectOne(context);
+        Artist artist = ObjectSelect.query(Artist.class).selectOne(env.context());
 
-        Painting object2 = context.newObject(Painting.class);
+        Painting object2 = env.context().newObject(Painting.class);
         object2.setPaintingTitle("Title");
         object2.setToArtist(artist);
         object2.setToArtist(null);
-        context.commitChanges();
+        env.context().commitChanges();
         
-        context.invalidateObjects(object2);
+        env.context().invalidateObjects(object2);
         assertNull(object2.getToArtist());
     }
     

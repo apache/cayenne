@@ -19,7 +19,6 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -40,16 +39,12 @@ public class DataContextEJBQLUpdateIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private ObjectContext context;
-
-
     private TableHelper tArtist;
     private TableHelper tPainting;
 
     
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING").setColumns(
@@ -79,20 +74,20 @@ public class DataContextEJBQLUpdateIT {
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
                 + "WHERE p.paintingTitle is NULL or p.paintingTitle <> 'XX'");
 
-        Object notUpdated = Cayenne.objectForQuery(context, check);
+        Object notUpdated = Cayenne.objectForQuery(env.context(), check);
         assertEquals(2L, notUpdated);
 
         String ejbql = "UPDATE Painting AS p SET p.paintingTitle = 'XX' WHERE p.paintingTitle = 'P1'";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        QueryResponse result = context.performGenericQuery(query);
+        QueryResponse result = env.context().performGenericQuery(query);
 
         int[] count = result.firstUpdateCount();
         assertNotNull(count);
         assertEquals(1, count.length);
         assertEquals(1, count[0]);
 
-        notUpdated = Cayenne.objectForQuery(context, check);
+        notUpdated = Cayenne.objectForQuery(env.context(), check);
         assertEquals(1L, notUpdated);
     }
 
@@ -103,20 +98,20 @@ public class DataContextEJBQLUpdateIT {
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
                 + "WHERE p.paintingTitle is NULL or p.paintingTitle <> 'XX'");
 
-        Object notUpdated = Cayenne.objectForQuery(context, check);
+        Object notUpdated = Cayenne.objectForQuery(env.context(), check);
         assertEquals(2L, notUpdated);
 
         String ejbql = "UPDATE Painting AS p SET p.paintingTitle = 'XX'";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        QueryResponse result = context.performGenericQuery(query);
+        QueryResponse result = env.context().performGenericQuery(query);
 
         int[] count = result.firstUpdateCount();
         assertNotNull(count);
         assertEquals(1, count.length);
         assertEquals(2, count[0]);
 
-        notUpdated = Cayenne.objectForQuery(context, check);
+        notUpdated = Cayenne.objectForQuery(env.context(), check);
         assertEquals(0L, notUpdated);
     }
 
@@ -127,20 +122,20 @@ public class DataContextEJBQLUpdateIT {
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
                 + "WHERE p.estimatedPrice is not null");
 
-        Object notUpdated = Cayenne.objectForQuery(context, check);
+        Object notUpdated = Cayenne.objectForQuery(env.context(), check);
         assertEquals(2L, notUpdated);
 
         String ejbql = "UPDATE Painting AS p SET p.estimatedPrice = NULL";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        QueryResponse result = context.performGenericQuery(query);
+        QueryResponse result = env.context().performGenericQuery(query);
 
         int[] count = result.firstUpdateCount();
         assertNotNull(count);
         assertEquals(1, count.length);
         assertEquals(2, count[0]);
 
-        notUpdated = Cayenne.objectForQuery(context, check);
+        notUpdated = Cayenne.objectForQuery(env.context(), check);
         assertEquals(0L, notUpdated);
     }
 
@@ -177,20 +172,20 @@ public class DataContextEJBQLUpdateIT {
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
                 + "WHERE p.estimatedPrice is NULL or p.estimatedPrice <> 1");
 
-        Object notUpdated = Cayenne.objectForQuery(context, check);
+        Object notUpdated = Cayenne.objectForQuery(env.context(), check);
         assertEquals(2L, notUpdated);
 
         String ejbql = "UPDATE Painting AS p SET p.paintingTitle = 'XX', p.estimatedPrice = 1";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        QueryResponse result = context.performGenericQuery(query);
+        QueryResponse result = env.context().performGenericQuery(query);
 
         int[] count = result.firstUpdateCount();
         assertNotNull(count);
         assertEquals(1, count.length);
         assertEquals(2, count[0]);
 
-        notUpdated = Cayenne.objectForQuery(context, check);
+        notUpdated = Cayenne.objectForQuery(env.context(), check);
         assertEquals(0L, notUpdated);
     }
 
@@ -201,20 +196,20 @@ public class DataContextEJBQLUpdateIT {
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
                 + "WHERE p.estimatedPrice is NULL or p.estimatedPrice <> 1.1");
 
-        Object notUpdated = Cayenne.objectForQuery(context, check);
+        Object notUpdated = Cayenne.objectForQuery(env.context(), check);
         assertEquals(2L, notUpdated);
 
         String ejbql = "UPDATE Painting AS p SET p.estimatedPrice = 1.1";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        QueryResponse result = context.performGenericQuery(query);
+        QueryResponse result = env.context().performGenericQuery(query);
 
         int[] count = result.firstUpdateCount();
         assertNotNull(count);
         assertEquals(1, count.length);
         assertEquals(2, count[0]);
 
-        notUpdated = Cayenne.objectForQuery(context, check);
+        notUpdated = Cayenne.objectForQuery(env.context(), check);
         assertEquals(0L, notUpdated);
     }
 
@@ -222,27 +217,27 @@ public class DataContextEJBQLUpdateIT {
     public void updateNoQualifierToOne() throws Exception {
         createThreeArtistsTwoPaintings();
 
-        Artist object = Cayenne.objectForPK(context, Artist.class, 33003);
+        Artist object = Cayenne.objectForPK(env.context(), Artist.class, 33003);
 
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
                 + "WHERE p.toArtist <> :artist");
         check.setParameter("artist", object);
 
-        Object notUpdated = Cayenne.objectForQuery(context, check);
+        Object notUpdated = Cayenne.objectForQuery(env.context(), check);
         assertEquals(2L, notUpdated);
 
         String ejbql = "UPDATE Painting AS p SET p.toArtist = :artist";
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("artist", object);
 
-        QueryResponse result = context.performGenericQuery(query);
+        QueryResponse result = env.context().performGenericQuery(query);
 
         int[] count = result.firstUpdateCount();
         assertNotNull(count);
         assertEquals(1, count.length);
         assertEquals(2, count[0]);
 
-        notUpdated = Cayenne.objectForQuery(context, check);
+        notUpdated = Cayenne.objectForQuery(env.context(), check);
         assertEquals(0L, notUpdated);
     }
 

@@ -31,7 +31,6 @@ public class CDOReflexiveRelDeleteIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private ObjectContext context;
     
     private ArtGroup parentGroup;
     private ArtGroup childGroup1;
@@ -40,24 +39,23 @@ public class CDOReflexiveRelDeleteIT {
 
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
 
-        parentGroup = context.newObject(ArtGroup.class);
+        parentGroup = env.context().newObject(ArtGroup.class);
         parentGroup.setName("parent");
 
-        childGroup1 = context.newObject(ArtGroup.class);
+        childGroup1 = env.context().newObject(ArtGroup.class);
         childGroup1.setName("child1");
         childGroup1.setToParentGroup(parentGroup);
 
-        childGroup2 = context.newObject(ArtGroup.class);
+        childGroup2 = env.context().newObject(ArtGroup.class);
         childGroup2.setName("child2");
         childGroup2.setToParentGroup(parentGroup);
 
-        childGroup3 = context.newObject(ArtGroup.class);
+        childGroup3 = env.context().newObject(ArtGroup.class);
         childGroup3.setName("subchild");
         childGroup3.setToParentGroup(childGroup1);
 
-        context.commitChanges();
+        env.context().commitChanges();
     }
 
     // Test various delete orders. There are more possible literal combinations, but the
@@ -66,38 +64,38 @@ public class CDOReflexiveRelDeleteIT {
     // problems come to light
     @Test
     public void reflexiveRelationshipDelete1() {
-        context.deleteObjects(parentGroup);
-        context.deleteObjects(childGroup1);
-        context.deleteObjects(childGroup2);
-        context.deleteObjects(childGroup3);
-        context.commitChanges();
+        env.context().deleteObjects(parentGroup);
+        env.context().deleteObjects(childGroup1);
+        env.context().deleteObjects(childGroup2);
+        env.context().deleteObjects(childGroup3);
+        env.context().commitChanges();
     }
 
     @Test
     public void reflexiveRelationshipDelete2() {
-        context.deleteObjects(childGroup1);
-        context.deleteObjects(parentGroup);
-        context.deleteObjects(childGroup2);
-        context.deleteObjects(childGroup3);
-        context.commitChanges();
+        env.context().deleteObjects(childGroup1);
+        env.context().deleteObjects(parentGroup);
+        env.context().deleteObjects(childGroup2);
+        env.context().deleteObjects(childGroup3);
+        env.context().commitChanges();
     }
 
     @Test
     public void reflexiveRelationshipDelete3() {
-        context.deleteObjects(childGroup1);
-        context.deleteObjects(childGroup3);
-        context.deleteObjects(parentGroup);
-        context.deleteObjects(childGroup2);
-        context.commitChanges();
+        env.context().deleteObjects(childGroup1);
+        env.context().deleteObjects(childGroup3);
+        env.context().deleteObjects(parentGroup);
+        env.context().deleteObjects(childGroup2);
+        env.context().commitChanges();
     }
 
     @Test
     public void reflexiveRelationshipDelete4() {
-        context.deleteObjects(childGroup3);
-        context.deleteObjects(parentGroup);
-        context.deleteObjects(childGroup1);
-        context.deleteObjects(childGroup2);
-        context.commitChanges();
+        env.context().deleteObjects(childGroup3);
+        env.context().deleteObjects(parentGroup);
+        env.context().deleteObjects(childGroup1);
+        env.context().deleteObjects(childGroup2);
+        env.context().commitChanges();
     }
 
 }

@@ -19,7 +19,6 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.query.ObjectSelect;
@@ -46,7 +45,6 @@ public class EmbeddingIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.EMBEDDABLE_PROJECT);
 
-    protected ObjectContext context;
     
     protected TableHelper tEmbedEntity1;
     protected TableHelper tEmbedEntity2;
@@ -56,7 +54,6 @@ public class EmbeddingIT {
     
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
         tEmbedEntity1 = env.table("EMBED_ENTITY1", "ID", "NAME", "EMBEDDED10", "EMBEDDED20", "EMBEDDED30", "EMBEDDED40");
 
         tEmbedEntity2 = env.table("EMBED_ENTITY2", "ID", "NAME", "ENTITY1_ID", "EMBEDDED10", "EMBEDDED20");
@@ -91,7 +88,7 @@ public class EmbeddingIT {
     public void select() throws Exception {
         createSelectDataSet();
 
-        List<EmbedEntity1> results = ObjectSelect.query(EmbedEntity1.class).orderBy(EmbedEntity1.NAME.asc()).select(context);
+        List<EmbedEntity1> results = ObjectSelect.query(EmbedEntity1.class).orderBy(EmbedEntity1.NAME.asc()).select(env.context());
         assertEquals(2, results.size());
 
         EmbedEntity1 o1 = results.get(0);
@@ -128,7 +125,7 @@ public class EmbeddingIT {
         List<EmbedEntity1> result = ObjectSelect.query(EmbedEntity1.class)
                 .where(EmbedEntity1.EMBEDDED1.dot(Embeddable1.EMBEDDED10).eq("e1"))
                 .orderBy(EmbedEntity1.EMBEDDED1.dot(Embeddable1.EMBEDDED10).asc())
-                .select(context);
+                .select(env.context());
         assertEquals(1, result.size());
         assertEquals("e1", result.get(0).getEmbedded1().getEmbedded10());
     }
@@ -136,7 +133,7 @@ public class EmbeddingIT {
     @Test
     public void insert() {
 
-        EmbedEntity1 o1 = context.newObject(EmbedEntity1.class);
+        EmbedEntity1 o1 = env.context().newObject(EmbedEntity1.class);
         o1.setName("NAME");
 
         Embeddable1 e1 = new Embeddable1();
@@ -153,9 +150,9 @@ public class EmbeddingIT {
         e2.setEmbedded10("E21");
         e2.setEmbedded20("E22");
 
-        context.commitChanges();
+        env.context().commitChanges();
 
-        DataRow row = ObjectSelect.dataRowQuery(EmbedEntity1.class).selectOne(context);
+        DataRow row = ObjectSelect.dataRowQuery(EmbedEntity1.class).selectOne(env.context());
         assertNotNull(row);
         assertEquals("E11", row.get("EMBEDDED10"));
         assertEquals("E12", row.get("EMBEDDED20"));
@@ -167,7 +164,7 @@ public class EmbeddingIT {
     public void updateEmbeddedProperties() throws Exception {
         createUpdateDataSet();
 
-        List<EmbedEntity1> results = ObjectSelect.query(EmbedEntity1.class).orderBy(EmbedEntity1.NAME.asc()).select(context);
+        List<EmbedEntity1> results = ObjectSelect.query(EmbedEntity1.class).orderBy(EmbedEntity1.NAME.asc()).select(env.context());
         EmbedEntity1 o1 = results.get(0);
 
         Embeddable1 e11 = o1.getEmbedded1();
@@ -175,9 +172,9 @@ public class EmbeddingIT {
 
         assertEquals(PersistenceState.MODIFIED, o1.getPersistenceState());
 
-        context.commitChanges();
+        env.context().commitChanges();
 
-        DataRow row = ObjectSelect.dataRowQuery(EmbedEntity1.class).selectOne(context);
+        DataRow row = ObjectSelect.dataRowQuery(EmbedEntity1.class).selectOne(env.context());
         assertNotNull(row);
         assertEquals("x1", row.get("EMBEDDED10"));
     }
@@ -186,7 +183,7 @@ public class EmbeddingIT {
     public void updateEmbedded() throws Exception {
         createUpdateDataSet();
 
-        List<EmbedEntity1> results = ObjectSelect.query(EmbedEntity1.class).orderBy(EmbedEntity1.NAME.asc()).select(context);
+        List<EmbedEntity1> results = ObjectSelect.query(EmbedEntity1.class).orderBy(EmbedEntity1.NAME.asc()).select(env.context());
         EmbedEntity1 o1 = results.get(0);
 
         Embeddable1 e11 = new Embeddable1();
@@ -196,9 +193,9 @@ public class EmbeddingIT {
 
         assertEquals(PersistenceState.MODIFIED, o1.getPersistenceState());
 
-        context.commitChanges();
+        env.context().commitChanges();
 
-        DataRow row = ObjectSelect.dataRowQuery(EmbedEntity1.class).selectOne(context);
+        DataRow row = ObjectSelect.dataRowQuery(EmbedEntity1.class).selectOne(env.context());
         assertNotNull(row);
         assertEquals("x1", row.get("EMBEDDED10"));
     }
@@ -210,7 +207,7 @@ public class EmbeddingIT {
         List<EmbedEntity1> result = ObjectSelect.query(EmbedEntity1.class)
                 .where(EmbedEntity1.EMBEDDED1.dot(Embeddable1.EMBEDDED10).eq("e1"))
                 .orderBy(EmbedEntity1.EMBEDDED2.dot(Embeddable1.EMBEDDED20).desc())
-                .select(context);
+                .select(env.context());
 
         assertEquals(1, result.size());
     }
@@ -222,7 +219,7 @@ public class EmbeddingIT {
         List<EmbedEntity2> result = ObjectSelect.query(EmbedEntity2.class)
                 .where(EmbedEntity2.ENTITY1.dot(EmbedEntity1.EMBEDDED1).dot(Embeddable1.EMBEDDED10).eq("e1"))
                 .orderBy(EmbedEntity2.ENTITY1.dot(EmbedEntity1.EMBEDDED2).dot(Embeddable1.EMBEDDED20).desc())
-                .select(context);
+                .select(env.context());
 
         assertEquals(1, result.size());
     }
@@ -233,7 +230,7 @@ public class EmbeddingIT {
 
         List<EmbedEntity2> result = ObjectSelect.query(EmbedEntity2.class)
                 .prefetch(EmbedEntity2.ENTITY1.joint())
-                .select(context);
+                .select(env.context());
 
         assertEquals(2, result.size());
         assertNotNull(result.get(0).getEntity1().getEmbedded1());
@@ -244,7 +241,7 @@ public class EmbeddingIT {
     public void inMemoryFilteringByEmbeddable() throws Exception {
         createSelectDataSet();
 
-        List<EmbedEntity1> result = ObjectSelect.query(EmbedEntity1.class).select(context);
+        List<EmbedEntity1> result = ObjectSelect.query(EmbedEntity1.class).select(env.context());
         assertEquals(2, result.size());
 
         List<EmbedEntity1> filtered = EmbedEntity1.EMBEDDED1.dot(Embeddable1.EMBEDDED10).eq("e1").filterObjects(result);
@@ -258,7 +255,7 @@ public class EmbeddingIT {
 
         List<Embeddable1> result = ObjectSelect.columnQuery(EmbedEntity1.class, EmbedEntity1.EMBEDDED2)
                 .orderBy(EmbedEntity1.EMBEDDED2.dot(Embeddable1.EMBEDDED10).asc())
-                .select(context);
+                .select(env.context());
         assertEquals(2, result.size());
         assertEquals("e3", result.get(0).getEmbedded10());
         assertEquals("e4", result.get(0).getEmbedded20());
@@ -266,7 +263,7 @@ public class EmbeddingIT {
         assertEquals("ex4", result.get(1).getEmbedded20());
 
         result.get(0).setEmbedded10("test");
-        context.commitChanges();
+        env.context().commitChanges();
      }
 
     @Test
@@ -275,7 +272,7 @@ public class EmbeddingIT {
 
         List<Object[]> result = ObjectSelect.columnQuery(EmbedEntity1.class, EmbedEntity1.EMBEDDED1, EmbedEntity1.EMBEDDED2)
                 .orderBy(EmbedEntity1.EMBEDDED2.dot(Embeddable1.EMBEDDED10).asc())
-                .select(context);
+                .select(env.context());
         assertEquals(2, result.size());
         assertEquals("e3", ((Embeddable1)result.get(0)[1]).getEmbedded10());
         assertEquals("e4", ((Embeddable1)result.get(0)[1]).getEmbedded20());
@@ -289,7 +286,7 @@ public class EmbeddingIT {
 
         List<Object[]> result = ObjectSelect.columnQuery(EmbedEntity1.class, EmbedEntity1.EMBEDDED1.dot(Embeddable1.EMBEDDED10), EmbedEntity1.EMBEDDED2)
                 .orderBy(EmbedEntity1.EMBEDDED2.dot(Embeddable1.EMBEDDED10).asc())
-                .select(context);
+                .select(env.context());
         assertEquals(2, result.size());
         assertEquals("e3", ((Embeddable1)result.get(0)[1]).getEmbedded10());
         assertEquals("e4", ((Embeddable1)result.get(0)[1]).getEmbedded20());
@@ -307,7 +304,7 @@ public class EmbeddingIT {
 
         List<EmbedEntity1> result = ObjectSelect.query(EmbedEntity1.class)
                 .where(EmbedEntity1.EMBEDDED1.eq(embeddable1))
-                .select(context);
+                .select(env.context());
         assertEquals(1, result.size());
     }
 
@@ -317,7 +314,7 @@ public class EmbeddingIT {
 
         List<EmbedRoot> roots = ObjectSelect.query(EmbedRoot.class)
                 .orderBy(EmbedRoot.NAME.asc())
-                .select(context);
+                .select(env.context());
 
         assertEquals(2, roots.size());
 
@@ -336,7 +333,7 @@ public class EmbeddingIT {
     @Test
     public void insertWithInheritance() {
         {
-            EmbedRoot root = context.newObject(EmbedRoot.class);
+            EmbedRoot root = env.context().newObject(EmbedRoot.class);
             root.setName("root");
             Embeddable1 embeddable1 = new Embeddable1();
             embeddable1.setEmbedded10("root-10");
@@ -345,7 +342,7 @@ public class EmbeddingIT {
         }
 
         {
-            EmbedChild child = context.newObject(EmbedChild.class);
+            EmbedChild child = env.context().newObject(EmbedChild.class);
             child.setName("child");
             Embeddable1 embeddable1 = new Embeddable1();
             embeddable1.setEmbedded10("child-10");
@@ -353,14 +350,14 @@ public class EmbeddingIT {
             child.setEmbedded(embeddable1);
         }
 
-        context.commitChanges();
+        env.context().commitChanges();
     }
 
     @Test
     public void queryWithBatchIterator() throws Exception {
         createSelectDataSet2();
         try (ResultBatchIterator<EmbedEntity1> iterator = ObjectSelect.query(EmbedEntity1.class)
-                .batchIterator(context, 2)) {
+                .batchIterator(env.context(), 2)) {
             assertNotNull(iterator.next().get(0).getEmbedded2());
         }
 

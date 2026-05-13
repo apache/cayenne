@@ -37,8 +37,6 @@ public class CayennePersistentObjectSetToManyMapIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.MAP_TO_MANY_PROJECT);
 
-    protected ObjectContext context;
-
     protected TableHelper tMapToMany;
     protected TableHelper tMapToManyTarget;
     protected TableHelper tIdMapToMany;
@@ -46,7 +44,6 @@ public class CayennePersistentObjectSetToManyMapIT {
 
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
         tMapToMany = env.table("MAP_TO_MANY", "ID");
 
         tMapToManyTarget = env.table("MAP_TO_MANY_TARGET", "ID", "MAP_TO_MANY_ID", "NAME");
@@ -72,7 +69,7 @@ public class CayennePersistentObjectSetToManyMapIT {
      */
     @Test
     public void relationCollectionTypeMap() {
-        MapToMany o1 = Cayenne.objectForPK(context, MapToMany.class, 1);
+        MapToMany o1 = Cayenne.objectForPK(env.context(), MapToMany.class, 1);
         assertTrue(o1.readProperty(MapToMany.TARGETS.getName()) instanceof Map);
         assertDoesNotThrow(() -> o1.setToManyTarget(MapToMany.TARGETS.getName(), new ArrayList<MapToMany>(0), true));
         assertEquals(0, o1.getTargets().size());

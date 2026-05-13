@@ -43,13 +43,11 @@ public class DataDomainCallbacksIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private EntityResolver resolver;
-    private ObjectContext context;
     private ObjectContext context1;
 
     @BeforeEach
     public void setUp() {
         resolver = env.getInstance(EntityResolver.class);
-        context = env.context();
         context1 = env.runtime().newContext();
     }
 
@@ -65,13 +63,13 @@ public class DataDomainCallbacksIT {
                 listener,
                 "publicCallback");
 
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XX");
-        context.commitChanges();
+        env.context().commitChanges();
         assertEquals(0, a1.getPostLoaded());
         assertNull(listener.getPublicCalledbackEntity());
 
-        ObjectSelect.query(Artist.class).select(context);
+        ObjectSelect.query(Artist.class).select(env.context());
         assertEquals(1, a1.getPostLoaded());
         assertSame(a1, listener.getPublicCalledbackEntity());
 
@@ -82,13 +80,13 @@ public class DataDomainCallbacksIT {
         a1.resetCallbackFlags();
         listener.reset();
 
-        context.rollbackChanges();
+        env.context().rollbackChanges();
         assertEquals(0, a1.getPostLoaded());
         assertNull(listener.getPublicCalledbackEntity());
 
         // now change and rollback the artist - postLoad must be called
         a1.setArtistName("YY");
-        context.rollbackChanges();
+        env.context().rollbackChanges();
         assertEquals(1, a1.getPostLoaded());
         assertSame(a1, listener.getPublicCalledbackEntity());
 
@@ -98,7 +96,7 @@ public class DataDomainCallbacksIT {
         assertEquals(0, a1.getPostLoaded());
         assertNull(listener.getPublicCalledbackEntity());
 
-        context.performQuery(new RefreshQuery(a1));
+        env.context().performQuery(new RefreshQuery(a1));
         assertEquals(0, a1.getPostLoaded());
         assertNull(listener.getPublicCalledbackEntity());
 
@@ -119,14 +117,14 @@ public class DataDomainCallbacksIT {
                 listener,
                 "publicCallback");
 
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XX");
-        context.commitChanges();
+        env.context().commitChanges();
         assertEquals(0, a1.getPostLoaded());
         assertNull(listener.getPublicCalledbackEntity());
 
         EJBQLQuery q = new EJBQLQuery("select a, a.artistName from Artist a");
-        context.performQuery(q);
+        env.context().performQuery(q);
         assertEquals(1, a1.getPostLoaded());
         assertSame(a1, listener.getPublicCalledbackEntity());
     }
@@ -143,16 +141,16 @@ public class DataDomainCallbacksIT {
                 listener,
                 "publicCallback");
 
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XX");
-        Painting p1 = context.newObject(Painting.class);
+        Painting p1 = env.context().newObject(Painting.class);
         p1.setToArtist(a1);
         p1.setPaintingTitle("XXX");
-        context.commitChanges();
+        env.context().commitChanges();
 
-        context.invalidateObjects(a1, p1);
+        env.context().invalidateObjects(a1, p1);
 
-        p1 = ObjectSelect.query(Painting.class).select(context).get(0);
+        p1 = ObjectSelect.query(Painting.class).select(env.context()).get(0);
 
         // this should be a hollow object, so no callback just yet
         a1 = p1.getToArtist();
@@ -177,16 +175,16 @@ public class DataDomainCallbacksIT {
                 listener,
                 "publicCallback");
 
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XX");
-        Painting p1 = context.newObject(Painting.class);
+        Painting p1 = env.context().newObject(Painting.class);
         p1.setToArtist(a1);
         p1.setPaintingTitle("XXX");
-        context.commitChanges();
+        env.context().commitChanges();
 
         p1 = ObjectSelect.query(Painting.class)
                 .prefetch(Painting.TO_ARTIST.disjoint())
-                .select(context).get(0);
+                .select(env.context()).get(0);
 
         // artist is prefetched here, and a callback must have been invoked
         a1 = p1.getToArtist();
@@ -199,9 +197,9 @@ public class DataDomainCallbacksIT {
     public void postLoad_LocalObject() throws Exception {
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XX");
-        context.commitChanges();
+        env.context().commitChanges();
 
         registry.addCallback(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
         MockCallingBackListener listener = new MockCallingBackListener();
@@ -241,14 +239,14 @@ public class DataDomainCallbacksIT {
                 listener,
                 "publicCallback");
 
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XX");
-        Painting p1 = context.newObject(Painting.class);
+        Painting p1 = env.context().newObject(Painting.class);
         p1.setToArtist(a1);
         p1.setPaintingTitle("XXX");
-        context.commitChanges();
+        env.context().commitChanges();
 
-        context.invalidateObjects(a1, p1);
+        env.context().invalidateObjects(a1, p1);
 
         p1 = ObjectSelect.query(Painting.class)
                 .select(context1).get(0);
@@ -269,19 +267,19 @@ public class DataDomainCallbacksIT {
 
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XX");
-        context.commitChanges();
+        env.context().commitChanges();
         assertFalse(a1.isPreUpdated());
 
         a1.setArtistName("YY");
-        context.commitChanges();
+        env.context().commitChanges();
         assertFalse(a1.isPreUpdated());
 
         registry
                 .addCallback(LifecycleEvent.PRE_UPDATE, Artist.class, "preUpdateCallback");
         a1.setArtistName("ZZ");
-        context.commitChanges();
+        env.context().commitChanges();
         assertTrue(a1.isPreUpdated());
 
         a1.resetCallbackFlags();
@@ -295,7 +293,7 @@ public class DataDomainCallbacksIT {
                 "publicCallback");
 
         a1.setArtistName("AA");
-        context.commitChanges();
+        env.context().commitChanges();
 
         assertTrue(a1.isPreUpdated());
         assertSame(a1, listener2.getPublicCalledbackEntity());
@@ -306,13 +304,13 @@ public class DataDomainCallbacksIT {
 
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XX");
-        context.commitChanges();
+        env.context().commitChanges();
         assertFalse(a1.isPostUpdated());
 
         a1.setArtistName("YY");
-        context.commitChanges();
+        env.context().commitChanges();
         assertFalse(a1.isPostUpdated());
 
         registry.addCallback(
@@ -320,7 +318,7 @@ public class DataDomainCallbacksIT {
                 Artist.class,
                 "postUpdateCallback");
         a1.setArtistName("ZZ");
-        context.commitChanges();
+        env.context().commitChanges();
         assertTrue(a1.isPostUpdated());
 
         a1.resetCallbackFlags();
@@ -334,7 +332,7 @@ public class DataDomainCallbacksIT {
                 "publicCallback");
 
         a1.setArtistName("AA");
-        context.commitChanges();
+        env.context().commitChanges();
 
         assertTrue(a1.isPostUpdated());
         assertSame(a1, listener2.getPublicCalledbackEntity());
@@ -345,9 +343,9 @@ public class DataDomainCallbacksIT {
 
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XX");
-        context.commitChanges();
+        env.context().commitChanges();
 
         registry.addCallback(
                 LifecycleEvent.POST_REMOVE,
@@ -360,8 +358,8 @@ public class DataDomainCallbacksIT {
                 listener2,
                 "publicCallback");
 
-        context.deleteObjects(a1);
-        context.commitChanges();
+        env.context().deleteObjects(a1);
+        env.context().commitChanges();
 
         assertTrue(a1.isPostRemoved());
         assertSame(a1, listener2.getPublicCalledbackEntity());
@@ -372,9 +370,9 @@ public class DataDomainCallbacksIT {
 
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XX");
-        context.commitChanges();
+        env.context().commitChanges();
 
         MockCallingBackListener listener1 = new MockCallingBackListener();
         registry.addListener(
@@ -392,8 +390,8 @@ public class DataDomainCallbacksIT {
 
         // change before removing
         a1.setArtistName("YY");
-        context.deleteObjects(a1);
-        context.commitChanges();
+        env.context().deleteObjects(a1);
+        env.context().commitChanges();
 
         assertNull(listener2.getPublicCalledbackEntity());
         assertSame(a1, listener1.getPublicCalledbackEntity());
@@ -425,10 +423,10 @@ public class DataDomainCallbacksIT {
                 listener2,
                 "publicCallback");
 
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XX");
-        context.deleteObjects(a1);
-        context.commitChanges();
+        env.context().deleteObjects(a1);
+        env.context().commitChanges();
 
         assertNull(listener0.getPublicCalledbackEntity());
         assertNull(listener1.getPublicCalledbackEntity());
@@ -440,9 +438,9 @@ public class DataDomainCallbacksIT {
 
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XX");
-        context.commitChanges();
+        env.context().commitChanges();
         assertFalse(a1.isPostPersisted());
 
         registry.addCallback(
@@ -463,9 +461,9 @@ public class DataDomainCallbacksIT {
                 listener2,
                 "publicCallback");
 
-        Artist a2 = context.newObject(Artist.class);
+        Artist a2 = env.context().newObject(Artist.class);
         a2.setArtistName("XX");
-        context.commitChanges();
+        env.context().commitChanges();
 
         assertFalse(a1.isPostPersisted());
         assertTrue(a2.isPostPersisted());

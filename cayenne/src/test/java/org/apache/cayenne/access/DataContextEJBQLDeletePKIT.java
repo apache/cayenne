@@ -18,8 +18,6 @@
  ****************************************************************/
 
 package org.apache.cayenne.access;
-
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -38,15 +36,11 @@ public class DataContextEJBQLDeletePKIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.MEANINGFUL_PK_PROJECT);
 
-    protected ObjectContext context;
-
-
     protected TableHelper tMeaningfulPKTest1Table;
 
     
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
         tMeaningfulPKTest1Table = env.table("MEANINGFUL_PK_TEST1", "PK_ATTRIBUTE", "DESCR", "INT_ATTRIBUTE");
     }
 
@@ -64,13 +58,13 @@ public class DataContextEJBQLDeletePKIT {
         EJBQLQuery q = new EJBQLQuery("select m.pkAttribute from MeaningfulPKTest1 m");
 
         @SuppressWarnings("unchecked")
-        List<Integer> id = (List<Integer>)context.performQuery(q);
+        List<Integer> id = (List<Integer>)env.context().performQuery(q);
 
         String ejbql = "delete from MeaningfulPKTest1 m WHERE m.pkAttribute in (:id)";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("id", id);
-        QueryResponse result = context.performGenericQuery(query);
+        QueryResponse result = env.context().performGenericQuery(query);
 
         int[] count = result.firstUpdateCount();
         assertNotNull(count);

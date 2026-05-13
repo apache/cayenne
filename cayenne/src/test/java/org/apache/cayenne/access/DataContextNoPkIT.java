@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.no_pk.NoPkTestEntity;
@@ -43,13 +42,9 @@ public class DataContextNoPkIT  {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.NO_PK_PROJECT);
 
-        protected ObjectContext context;
-
-
     
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
         TableHelper noPkTestTable = env.table("NO_PK_TEST", "ATTRIBUTE1");
         noPkTestTable.deleteAll();
 
@@ -59,13 +54,13 @@ public class DataContextNoPkIT  {
 
     @Test
     public void noPkFetchObjects() {
-        assertThrows(CayenneRuntimeException.class, () -> ObjectSelect.query(NoPkTestEntity.class).select(context));
+        assertThrows(CayenneRuntimeException.class, () -> ObjectSelect.query(NoPkTestEntity.class).select(env.context()));
     }
 
     @Test
     public void noPkFetchDataRows() {
 
-        List<DataRow> rows = ObjectSelect.dataRowQuery(NoPkTestEntity.class).select(context);
+        List<DataRow> rows = ObjectSelect.dataRowQuery(NoPkTestEntity.class).select(env.context());
         assertNotNull(rows);
         assertEquals(2, rows.size());
 

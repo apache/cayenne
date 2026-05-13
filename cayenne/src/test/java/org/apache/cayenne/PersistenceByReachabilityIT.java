@@ -35,18 +35,16 @@ public class PersistenceByReachabilityIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private ObjectContext context;
     private ObjectContext context1;
 
     @BeforeEach
     public void setUp() {
-        context = env.context();
         context1 = env.runtime().newContext();
     }
 
     @Test
     public void toOneTargetTransient() throws Exception {
-        Painting persistentDO = context.newObject(Painting.class);
+        Painting persistentDO = env.context().newObject(Painting.class);
 
         Artist transientDO = new Artist();
         persistentDO.setToOneTarget(Painting.TO_ARTIST.getName(), transientDO, false);
@@ -56,7 +54,7 @@ public class PersistenceByReachabilityIT {
 
     @Test
     public void toOneTargetPersistent() throws Exception {
-        Painting transientDO = context.newObject(Painting.class);
+        Painting transientDO = env.context().newObject(Painting.class);
 
         Artist persistentDO = new Artist();
         transientDO.setToOneTarget(Painting.TO_ARTIST.getName(), persistentDO, false);
@@ -67,7 +65,7 @@ public class PersistenceByReachabilityIT {
     @Test
     public void toOneTargetDifferentContext() throws Exception {
 
-        Painting doC1 = context.newObject(Painting.class);
+        Painting doC1 = env.context().newObject(Painting.class);
         Artist doC2 = context1.newObject(Artist.class);
 
         // this is the case where exception must be thrown as DataContexts are different
@@ -77,7 +75,7 @@ public class PersistenceByReachabilityIT {
 
     @Test
     public void toManyTargetDifferentContext() throws Exception {
-        Painting doC1 = context.newObject(Painting.class);
+        Painting doC1 = env.context().newObject(Painting.class);
         Artist doC2 = context1.newObject(Artist.class);
 
         // this is the case where exception must be thrown as DataContexts are different
@@ -87,7 +85,7 @@ public class PersistenceByReachabilityIT {
 
     @Test
     public void toManyTargetTransient() throws Exception {
-        Painting transientDO = context.newObject(Painting.class);
+        Painting transientDO = env.context().newObject(Painting.class);
 
         Artist persistentDO = new Artist();
         persistentDO.addToManyTarget(Artist.PAINTING_ARRAY.getName(), transientDO, false);
@@ -97,7 +95,7 @@ public class PersistenceByReachabilityIT {
 
     @Test
     public void toManyTargetPersistent() throws Exception {
-        Painting persistentDO = context.newObject(Painting.class);
+        Painting persistentDO = env.context().newObject(Painting.class);
 
         Artist transientDO = new Artist();
         transientDO.addToManyTarget(Artist.PAINTING_ARRAY.getName(), persistentDO, false);

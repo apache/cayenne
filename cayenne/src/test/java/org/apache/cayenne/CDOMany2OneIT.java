@@ -49,7 +49,6 @@ public class CDOMany2OneIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private CayenneRuntime runtime;
-    private ObjectContext context;
 
     protected TableHelper tArtist;
     protected TableHelper tPainting;
@@ -58,7 +57,6 @@ public class CDOMany2OneIT {
     @BeforeEach
     public void setUp() throws Exception {
         runtime = env.runtime();
-        context = env.context();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING");
@@ -87,29 +85,29 @@ public class CDOMany2OneIT {
 
         // was a problem per CAY-901
 
-        Painting p = context.newObject(Painting.class);
+        Painting p = env.context().newObject(Painting.class);
         p.setPaintingTitle("P1");
 
-        Artist a = context.newObject(Artist.class);
+        Artist a = env.context().newObject(Artist.class);
         a.setArtistName("A1");
 
-        Gallery g = context.newObject(Gallery.class);
+        Gallery g = env.context().newObject(Gallery.class);
         g.setGalleryName("G1");
 
         p.setToArtist(a);
         p.setToGallery(g);
-        context.commitChanges();
+        env.context().commitChanges();
 
         p.setToArtist(null);
         p.setToGallery(null);
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         SQLTemplate q = new SQLTemplate(Painting.class, "SELECT * from PAINTING");
         q.setColumnNamesCapitalization(CapsStrategy.UPPER);
         q.setFetchingDataRows(true);
 
-        DataRow row = (DataRow) Cayenne.objectForQuery(context, q);
+        DataRow row = (DataRow) Cayenne.objectForQuery(env.context(), q);
         assertNotNull(row);
         assertEquals("P1", row.get("PAINTING_TITLE"));
         assertNull(row.get("ARTIST_ID"));
@@ -121,9 +119,9 @@ public class CDOMany2OneIT {
 
         createArtistWithPaintingDataSet();
 
-        Artist a1 = Cayenne.objectForPK(context, Artist.class, 8);
+        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 8);
 
-        List<ROPainting> paints = ObjectSelect.query(ROPainting.class, ROPainting.TO_ARTIST.eq(a1)).select(context);
+        List<ROPainting> paints = ObjectSelect.query(ROPainting.class, ROPainting.TO_ARTIST.eq(a1)).select(env.context());
         assertEquals(1, paints.size());
 
         ROPainting rop1 = paints.get(0);
@@ -135,9 +133,9 @@ public class CDOMany2OneIT {
 
         createArtistWithPaintingDataSet();
 
-        Artist a1 = Cayenne.objectForPK(context, Artist.class, 8);
+        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 8);
 
-        List<ROPainting> paints = ObjectSelect.query(ROPainting.class, ROPainting.TO_ARTIST.eq(a1)).select(context);
+        List<ROPainting> paints = ObjectSelect.query(ROPainting.class, ROPainting.TO_ARTIST.eq(a1)).select(env.context());
         assertEquals(1, paints.size());
 
         ROPainting rop1 = paints.get(0);
@@ -152,10 +150,10 @@ public class CDOMany2OneIT {
     public void selectViaRelationship() throws Exception {
 
         createArtistWithPaintingDataSet();
-        Artist a1 = Cayenne.objectForPK(context, Artist.class, 8);
-        Painting p1 = Cayenne.objectForPK(context, Painting.class, 6);
+        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 8);
+        Painting p1 = Cayenne.objectForPK(env.context(), Painting.class, 6);
 
-        List<Painting> paints = ObjectSelect.query(Painting.class, Painting.TO_ARTIST.eq(a1)).select(context);
+        List<Painting> paints = ObjectSelect.query(Painting.class, Painting.TO_ARTIST.eq(a1)).select(env.context());
         assertEquals(1, paints.size());
         assertSame(p1, paints.get(0));
     }
@@ -165,22 +163,22 @@ public class CDOMany2OneIT {
 
         createArtistWithPaintingsInGalleryDataSet();
 
-        Artist a1 = Cayenne.objectForPK(context, Artist.class, 8);
-        Gallery g1 = Cayenne.objectForPK(context, Gallery.class, 11);
+        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 8);
+        Gallery g1 = Cayenne.objectForPK(env.context(), Gallery.class, 11);
 
         List<Artist> artists = ObjectSelect.query(Artist.class)
                 .where(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).eq(g1))
-                .select(context);
+                .select(env.context());
         assertEquals(1, artists.size());
         assertSame(a1, artists.get(0));
     }
 
     @Test
     public void newAdd() throws Exception {
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("bL");
 
-        Painting p1 = context.newObject(Painting.class);
+        Painting p1 = env.context().newObject(Painting.class);
         p1.setPaintingTitle("xa");
 
         p1.setToArtist(a1);
@@ -189,7 +187,7 @@ public class CDOMany2OneIT {
         assertEquals(1, a1.getPaintingArray().size());
         assertSame(p1, a1.getPaintingArray().get(0));
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         assertEquals(Cayenne.longPKForObject(a1), tArtist.getLong("ARTIST_ID"));
         assertEquals(Cayenne.longPKForObject(a1), tPainting.getLong("ARTIST_ID"));
@@ -197,16 +195,16 @@ public class CDOMany2OneIT {
 
     @Test
     public void remove() {
-        Painting p1 = context.newObject(Painting.class);
+        Painting p1 = env.context().newObject(Painting.class);
         p1.setPaintingTitle("xa");
 
-        Gallery g1 = context.newObject(Gallery.class);
+        Gallery g1 = env.context().newObject(Gallery.class);
         g1.setGalleryName("yT");
 
         p1.setToGallery(g1);
 
         // do save
-        context.commitChanges();
+        env.context().commitChanges();
 
         ObjectContext context2 = runtime.newContext();
 
@@ -232,15 +230,15 @@ public class CDOMany2OneIT {
     @Test
     public void replace() {
 
-        Painting p1 = context.newObject(Painting.class);
+        Painting p1 = env.context().newObject(Painting.class);
         p1.setPaintingTitle("xa");
 
-        Gallery g1 = context.newObject(Gallery.class);
+        Gallery g1 = env.context().newObject(Gallery.class);
         g1.setGalleryName("yTW");
 
         p1.setToGallery(g1);
 
-        context.commitChanges();
+        env.context().commitChanges();
         ObjectContext context2 = runtime.newContext();
 
         // test database data
@@ -275,13 +273,13 @@ public class CDOMany2OneIT {
 
     @Test
     public void savedAdd() {
-        Painting p1 = context.newObject(Painting.class);
+        Painting p1 = env.context().newObject(Painting.class);
         p1.setPaintingTitle("xa");
 
-        assertTrue(context.hasChanges());
+        assertTrue(env.context().hasChanges());
 
         // do save
-        context.commitChanges();
+        env.context().commitChanges();
         ObjectContext context2 = runtime.newContext();
 
         // test database data

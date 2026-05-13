@@ -42,11 +42,8 @@ public class LazyAttributesIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.LAZY_ATTRIBUTES_PROJECT);
 
-    private ObjectContext context;
-
     @BeforeEach
     public void setup() throws Exception {
-        context = env.context();
         TableHelper th = env.table("LAZYBLOB")
                 .setColumns("ID", "NAME", "LAZY_DATA")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.VARBINARY);
@@ -55,7 +52,7 @@ public class LazyAttributesIT {
 
     @Test
     public void testRead() {
-        Lazyblob lazyblob = ObjectSelect.query(Lazyblob.class).selectOne(context);
+        Lazyblob lazyblob = ObjectSelect.query(Lazyblob.class).selectOne(env.context());
         byte[] expected = {1, 2, 3, 4, 5};
 
         assertInstanceOf(Fault.class, lazyblob.readPropertyDirectly("lazyData"));
@@ -65,50 +62,50 @@ public class LazyAttributesIT {
 
     @Test
     public void testReadColumn() {
-        byte[] lazyData = ObjectSelect.columnQuery(Lazyblob.class, Lazyblob.LAZY_DATA).selectOne(context);
+        byte[] lazyData = ObjectSelect.columnQuery(Lazyblob.class, Lazyblob.LAZY_DATA).selectOne(env.context());
         byte[] expected = {1, 2, 3, 4, 5};
         assertArrayEquals(expected, lazyData);
     }
 
     @Test
     public void testWrite() {
-        Lazyblob lazyblob = ObjectSelect.query(Lazyblob.class).selectOne(context);
+        Lazyblob lazyblob = ObjectSelect.query(Lazyblob.class).selectOne(env.context());
         byte[] expected = {5, 4, 3, 2, 1};
 
         // this cause resolve of the fault
         lazyblob.setLazyData(expected);
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         assertInstanceOf(byte[].class, lazyblob.readPropertyDirectly("lazyData"));
         assertArrayEquals(expected, (byte[])lazyblob.readProperty("lazyData"));
         assertArrayEquals(expected, lazyblob.getLazyData());
 
-        Lazyblob lazyblob2 = ObjectSelect.query(Lazyblob.class).selectOne(context);
+        Lazyblob lazyblob2 = ObjectSelect.query(Lazyblob.class).selectOne(env.context());
         assertArrayEquals(expected, lazyblob2.getLazyData());
     }
 
     @Test
     public void testUpdateNoFetch() {
-        Lazyblob lazyblob = ObjectSelect.query(Lazyblob.class).selectOne(context);
+        Lazyblob lazyblob = ObjectSelect.query(Lazyblob.class).selectOne(env.context());
         lazyblob.setName("updated_name");
 
-        context.commitChanges();
+        env.context().commitChanges();
 
-        Lazyblob lazyblob2 = ObjectSelect.query(Lazyblob.class).selectOne(context);
+        Lazyblob lazyblob2 = ObjectSelect.query(Lazyblob.class).selectOne(env.context());
         assertEquals("updated_name", lazyblob2.getName());
         assertArrayEquals(new byte[]{1, 2, 3, 4, 5}, lazyblob2.getLazyData());
     }
 
     @Test
     public void testUpdateFetch() {
-        Lazyblob lazyblob = ObjectSelect.query(Lazyblob.class).selectOne(context);
+        Lazyblob lazyblob = ObjectSelect.query(Lazyblob.class).selectOne(env.context());
         lazyblob.setName("updated_name");
         lazyblob.getLazyData();
 
-        context.commitChanges();
+        env.context().commitChanges();
 
-        Lazyblob lazyblob2 = ObjectSelect.query(Lazyblob.class).selectOne(context);
+        Lazyblob lazyblob2 = ObjectSelect.query(Lazyblob.class).selectOne(env.context());
         assertEquals("updated_name", lazyblob2.getName());
         assertArrayEquals(new byte[]{1, 2, 3, 4, 5}, lazyblob2.getLazyData());
     }

@@ -18,8 +18,6 @@
  ****************************************************************/
 
 package org.apache.cayenne.access.translator.select;
-
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.ObjEntity;
@@ -41,20 +39,17 @@ public class ObjPathProcessorIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.INHERITANCE_VERTICAL_PROJECT);
 
-    protected ObjectContext context;
-
     private ObjPathProcessor pathProcessor;
 
     @BeforeEach
     public void prepareTranslationContext() {
-        context = env.context();
         TranslatorContext translatorContext = new TranslatorContext(
                 new FluentSelectWrapper(ObjectSelect.query(Object.class)),
                 Mockito.mock(DbAdapter.class),
-                context.getEntityResolver(),
+                env.context().getEntityResolver(),
                 null
         );
-        ObjEntity entity = context.getEntityResolver().getObjEntity("IvSub3");
+        ObjEntity entity = env.context().getEntityResolver().getObjEntity("IvSub3");
         pathProcessor = new ObjPathProcessor(translatorContext, entity, null);
     }
 

@@ -23,7 +23,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
@@ -46,17 +45,15 @@ public class ASTExtractIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.LEGACY_DATE_TIME_PROJECT);
 
-    private ObjectContext context;
     private UnitDbAdapter unitDbAdapter;
 
     @BeforeEach
     public void createDataSet() throws Exception {
-        context = env.context();
         unitDbAdapter = env.getInstance(UnitDbAdapter.class);
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.MILLISECOND, 0);
 
-        DateTestEntity o1 = context.newObject(DateTestEntity.class);
+        DateTestEntity o1 = env.context().newObject(DateTestEntity.class);
         cal.set(2015, Calendar.FEBRUARY, 28,
                 0, 0, 0);
         o1.setDateColumn(cal.getTime());
@@ -68,7 +65,7 @@ public class ASTExtractIT {
         cal.set(Calendar.DAY_OF_MONTH, 29);
         o1.setTimestampColumn(cal.getTime());
 
-        DateTestEntity o2 = context.newObject(DateTestEntity.class);
+        DateTestEntity o2 = env.context().newObject(DateTestEntity.class);
         cal.set(2016, Calendar.MARCH, 29,
                 0, 0, 0);
         o2.setDateColumn(cal.getTime());
@@ -80,16 +77,15 @@ public class ASTExtractIT {
         cal.set(Calendar.DAY_OF_MONTH, 2);
         o2.setTimestampColumn(cal.getTime());
 
-        context.commitChanges();
+        env.context().commitChanges();
     }
-
 
     @Test
     public void year() {
         Expression exp = ExpressionFactory.exp("year(dateColumn) = 2015");
 
         try {
-            long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(context);
+            long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(env.context());
             assertEquals(1, res);
         } catch (CayenneRuntimeException e) {
             if(unitDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.YEAR)) {
@@ -103,7 +99,7 @@ public class ASTExtractIT {
         Expression exp = ExpressionFactory.exp("month(dateColumn) = 3");
 
         try {
-            long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(context);
+            long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(env.context());
             assertEquals(1, res);
         } catch (CayenneRuntimeException e) {
             if(unitDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.MONTH)) {
@@ -117,7 +113,7 @@ public class ASTExtractIT {
         // 13 or 14 depends of first day in week in current db
         Expression exp = ExpressionFactory.exp("week(dateColumn) in (13, 14)");
         try {
-            long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(context);
+            long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(env.context());
             assertEquals(1, res);
         } catch (CayenneRuntimeException e) {
             if(unitDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.WEEK)) {
@@ -131,7 +127,7 @@ public class ASTExtractIT {
         // day can start from 0
         Expression exp = ExpressionFactory.exp("dayOfYear(dateColumn) in (59, 58)");
         try {
-            long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(context);
+            long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(env.context());
             assertEquals(1, res);
         } catch (CayenneRuntimeException e) {
             if(unitDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.DAY_OF_YEAR)) {
@@ -144,7 +140,7 @@ public class ASTExtractIT {
     public void dayOfYearSelect() {
         try {
             List<Integer> res = ObjectSelect.query(DateTestEntity.class)
-                    .column(DateTestEntity.DATE_COLUMN.dayOfYear()).select(context);
+                    .column(DateTestEntity.DATE_COLUMN.dayOfYear()).select(env.context());
             assertEquals(2, res.size());
             assertTrue(res.contains(59));
             assertTrue(res.contains(89));
@@ -159,7 +155,7 @@ public class ASTExtractIT {
     public void day() {
         Expression exp = ExpressionFactory.exp("day(dateColumn) = 28");
         try {
-            long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(context);
+            long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(env.context());
             assertEquals(1, res);
         } catch (CayenneRuntimeException e) {
             if(unitDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.DAY)) {
@@ -172,7 +168,7 @@ public class ASTExtractIT {
     public void dayOfMonth() {
         Expression exp = ExpressionFactory.exp("dayOfMonth(dateColumn) = 28");
         try {
-            long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(context);
+            long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(env.context());
             assertEquals(1, res);
         } catch (CayenneRuntimeException e) {
             if(unitDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.DAY_OF_MONTH)) {
@@ -185,7 +181,7 @@ public class ASTExtractIT {
     public void dayOfWeek() {
         Expression exp = ExpressionFactory.exp("dayOfWeek(dateColumn) in (2, 3)");
         try {
-            long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(context);
+            long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(env.context());
             assertEquals(1, res);
         } catch (CayenneRuntimeException e) {
             if(unitDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.DAY_OF_WEEK)) {
@@ -198,7 +194,7 @@ public class ASTExtractIT {
     public void hour() {
         Expression exp = ExpressionFactory.exp("hour(timestampColumn) = 23");
         try {
-            long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(context);
+            long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(env.context());
             assertEquals(1, res);
         } catch (CayenneRuntimeException e) {
             if(unitDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.HOUR)) {
@@ -211,7 +207,7 @@ public class ASTExtractIT {
     public void minute() {
         Expression exp = ExpressionFactory.exp("minute(timestampColumn) = 59");
         try {
-            long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(context);
+            long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(env.context());
             assertEquals(1, res);
         } catch (CayenneRuntimeException e) {
             if(unitDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.MINUTE)) {
@@ -224,7 +220,7 @@ public class ASTExtractIT {
     public void second() {
         Expression exp = ExpressionFactory.exp("second(timestampColumn) = 39");
         try {
-            long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(context);
+            long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(env.context());
             assertEquals(1, res);
         } catch (CayenneRuntimeException e) {
             if(unitDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.SECOND)) {

@@ -48,7 +48,6 @@ public class CayennePersistentObjectFlattenedRelIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private CayenneRuntime runtime;
-    private ObjectContext context;
     private DBHelper dbHelper;
     private DataChannelInterceptor queryInterceptor;
 
@@ -61,7 +60,6 @@ public class CayennePersistentObjectFlattenedRelIT {
     @BeforeEach
     public void setUp() throws Exception {
         runtime = env.runtime();
-        context = env.context();
         dbHelper = env.dbHelper();
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
         dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
@@ -92,7 +90,7 @@ public class CayennePersistentObjectFlattenedRelIT {
     public void readFlattenedRelationship() throws Exception {
         create1Artist1ArtGroupDataSet();
 
-        Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
+        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 33001);
         List<ArtGroup> groupList = a1.getGroupArray();
         assertNotNull(groupList);
         assertEquals(0, groupList.size());
@@ -103,7 +101,7 @@ public class CayennePersistentObjectFlattenedRelIT {
 
         create1Artist1ArtGroup1ArtistGroupDataSet();
 
-        Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
+        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 33001);
         List<ArtGroup> groupList = a1.getGroupArray();
         assertNotNull(groupList);
         assertEquals(1, groupList.size());
@@ -116,16 +114,16 @@ public class CayennePersistentObjectFlattenedRelIT {
 
         create1Artist1ArtGroupDataSet();
 
-        Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
+        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 33001);
         assertEquals(0, a1.getGroupArray().size());
 
-        List<ArtGroup> results = ObjectSelect.query(ArtGroup.class, ArtGroup.NAME.eq("g1")).select(context);
+        List<ArtGroup> results = ObjectSelect.query(ArtGroup.class, ArtGroup.NAME.eq("g1")).select(env.context());
         assertEquals(1, results.size());
 
-        assertFalse(context.hasChanges());
+        assertFalse(env.context().hasChanges());
         ArtGroup group = results.get(0);
         a1.addToGroupArray(group);
-        assertTrue(context.hasChanges());
+        assertTrue(env.context().hasChanges());
 
         List<?> groupList = a1.getGroupArray();
         assertEquals(1, groupList.size());
@@ -135,7 +133,7 @@ public class CayennePersistentObjectFlattenedRelIT {
         a1.getObjectContext().commitChanges();
 
         // and check again
-        assertFalse(context.hasChanges());
+        assertFalse(env.context().hasChanges());
 
         // refetch artist with a different context
         ObjectContext context2 = runtime.newContext();
@@ -150,9 +148,9 @@ public class CayennePersistentObjectFlattenedRelIT {
     public void doubleCommitAddToFlattenedRelationship() throws Exception {
         create1Artist1ArtGroupDataSet();
 
-        Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
+        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 33001);
 
-        List<ArtGroup> results = ObjectSelect.query(ArtGroup.class, ArtGroup.NAME.eq("g1")).select(context);
+        List<ArtGroup> results = ObjectSelect.query(ArtGroup.class, ArtGroup.NAME.eq("g1")).select(env.context());
         assertEquals(1, results.size());
 
         ArtGroup group = results.get(0);
@@ -173,7 +171,7 @@ public class CayennePersistentObjectFlattenedRelIT {
     public void removeFromFlattenedRelationship() throws Exception {
         create1Artist1ArtGroup1ArtistGroupDataSet();
 
-        Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
+        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 33001);
 
         ArtGroup group = a1.getGroupArray().get(0);
         a1.removeFromGroupArray(group);
@@ -195,39 +193,39 @@ public class CayennePersistentObjectFlattenedRelIT {
     @Test
     public void removeFlattenedRelationshipAndRootRecord() throws Exception {
         create1Artist1ArtGroup1ArtistGroupDataSet();
-        Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
+        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 33001);
 
         ArtGroup group = a1.getGroupArray().get(0);
         a1.removeFromGroupArray(group); // Cause the delete of the link record
 
-        context.deleteObjects(a1); // Cause the deletion of the artist
+        env.context().deleteObjects(a1); // Cause the deletion of the artist
 
-        context.commitChanges();
+        env.context().commitChanges();
     }
 
     @Test
     public void addRemoveFlattenedRelationship1() throws Exception {
         create1Artist1ArtGroupDataSet();
 
-        Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
+        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 33001);
 
-        List<ArtGroup> results = ObjectSelect.query(ArtGroup.class, ArtGroup.NAME.eq("g1")).select(context);;
+        List<ArtGroup> results = ObjectSelect.query(ArtGroup.class, ArtGroup.NAME.eq("g1")).select(env.context());;
         assertEquals(1, results.size());
 
         ArtGroup group = results.get(0);
         a1.addToGroupArray(group);
         group.removeFromArtistArray(a1);
 
-        queryInterceptor.runWithQueriesBlocked(() -> context.commitChanges());
+        queryInterceptor.runWithQueriesBlocked(() -> env.context().commitChanges());
     }
 
     @Test
     public void addRemoveFlattenedRelationship2() throws Exception {
         create1Artist2ArtGroupDataSet();
 
-        Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
+        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 33001);
 
-        List<?> results = ObjectSelect.query(ArtGroup.class).select(context);
+        List<?> results = ObjectSelect.query(ArtGroup.class).select(env.context());
         assertEquals(2, results.size());
 
         ArtGroup g1 = (ArtGroup) results.get(0);
@@ -243,7 +241,7 @@ public class CayennePersistentObjectFlattenedRelIT {
                 runtime.getDataDomain(),
                 runtime.getDataDomain().getDataNodes().iterator().next());
         try {
-            context.commitChanges();
+            env.context().commitChanges();
         } finally {
             nodeWrapper.stopInterceptNode();
         }

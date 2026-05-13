@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -47,7 +46,6 @@ public class SelectById_RunIT {
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
 	private DataChannelInterceptor interceptor;
-	private ObjectContext context;
 
 	private TableHelper tArtist;
 	private TableHelper tPainting;
@@ -57,7 +55,6 @@ public class SelectById_RunIT {
 	@BeforeEach
 	public void setUp() throws Exception {
 		interceptor = env.getInstance(DataChannelInterceptor.class);
-		context = env.context();
 		resolver = env.getInstance(EntityResolver.class);
 		tArtist = env.table("ARTIST").setColumns("ARTIST_ID", "ARTIST_NAME");
 		tPainting = env.table("PAINTING").setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE")
@@ -73,72 +70,72 @@ public class SelectById_RunIT {
 	public void intPk() throws Exception {
 		createTwoArtists();
 
-		Artist a3 = SelectById.queryId(Artist.class, 3).selectOne(context);
+		Artist a3 = SelectById.queryId(Artist.class, 3).selectOne(env.context());
 		assertNotNull(a3);
 		assertEquals("artist3", a3.getArtistName());
 
-		Artist a2 = SelectById.queryId(Artist.class, 2).selectOne(context);
+		Artist a2 = SelectById.queryId(Artist.class, 2).selectOne(env.context());
 		assertNotNull(a2);
 		assertEquals("artist2", a2.getArtistName());
 	}
 
 	@Test
 	public void nullPk() {
-		List<Artist> artists = SelectById.queryId(Artist.class, null).select(context);
+		List<Artist> artists = SelectById.queryId(Artist.class, null).select(env.context());
 		assertEquals(0, artists.size());
 	}
 
 	@Test
 	public void dataRowNullPk() {
-		List<DataRow> artists = SelectById.dataRowQueryId(Artist.class, null).select(context);
+		List<DataRow> artists = SelectById.dataRowQueryId(Artist.class, null).select(env.context());
 		assertEquals(0, artists.size());
 	}
 
 	@Test
 	public void emptyPkMulti() {
-		List<Artist> artists = SelectById.queryIds(Artist.class).select(context);
+		List<Artist> artists = SelectById.queryIds(Artist.class).select(env.context());
 		assertEquals(0, artists.size());
 	}
 
 	@Test
 	public void emptyPkCollection() {
-		List<Artist> artists = SelectById.queryIdsCollection(Artist.class, Collections.emptyList()).select(context);
+		List<Artist> artists = SelectById.queryIdsCollection(Artist.class, Collections.emptyList()).select(env.context());
 		assertEquals(0, artists.size());
 	}
 
 	@Test
 	public void emptyMapPkMulti() {
-		List<Artist> artists = SelectById.queryMaps(Artist.class).select(context);
+		List<Artist> artists = SelectById.queryMaps(Artist.class).select(env.context());
 		assertEquals(0, artists.size());
 	}
 
 	@Test
 	public void emptyMapPkCollection() {
-		List<Artist> artists = SelectById.queryMapsCollection(Artist.class, Collections.emptyList()).select(context);
+		List<Artist> artists = SelectById.queryMapsCollection(Artist.class, Collections.emptyList()).select(env.context());
 		assertEquals(0, artists.size());
 	}
 
 	@Test
 	public void dataRowEmptyPkMulti() {
-		List<DataRow> artists = SelectById.dataRowQueryIds(Artist.class).select(context);
+		List<DataRow> artists = SelectById.dataRowQueryIds(Artist.class).select(env.context());
 		assertEquals(0, artists.size());
 	}
 
 	@Test
 	public void dataRowEmptyPkCollection() {
-		List<DataRow> artists = SelectById.dataRowQueryIdsCollection(Artist.class, Collections.emptyList()).select(context);
+		List<DataRow> artists = SelectById.dataRowQueryIdsCollection(Artist.class, Collections.emptyList()).select(env.context());
 		assertEquals(0, artists.size());
 	}
 
 	@Test
 	public void dataRowEmptyMapPkMulti() {
-		List<DataRow> artists = SelectById.dataRowQueryMaps(Artist.class).select(context);
+		List<DataRow> artists = SelectById.dataRowQueryMaps(Artist.class).select(env.context());
 		assertEquals(0, artists.size());
 	}
 
 	@Test
 	public void dataRowEmptyMapPkCollection() {
-		List<DataRow> artists = SelectById.dataRowQueryMapsCollection(Artist.class, Collections.emptyList()).select(context);
+		List<DataRow> artists = SelectById.dataRowQueryMapsCollection(Artist.class, Collections.emptyList()).select(env.context());
 		assertEquals(0, artists.size());
 	}
 
@@ -147,7 +144,7 @@ public class SelectById_RunIT {
 		createTwoArtists();
 
 		List<Artist> artists = SelectById.queryIds(Artist.class, 2, 3)
-				.select(context);
+				.select(env.context());
 		assertEquals(2, artists.size());
 		assertInstanceOf(Artist.class, artists.get(0));
 	}
@@ -157,7 +154,7 @@ public class SelectById_RunIT {
 		createTwoArtists();
 
 		List<Artist> artists = SelectById.queryIdsCollection(Artist.class, Arrays.asList(1, 2, 3, 4, 5))
-				.select(context);
+				.select(env.context());
 		assertEquals(2, artists.size());
 		assertInstanceOf(Artist.class, artists.get(0));
 	}
@@ -166,11 +163,11 @@ public class SelectById_RunIT {
 	public void mapPk() throws Exception {
 		createTwoArtists();
 
-		Artist a3 = SelectById.queryMap(Artist.class, singletonMap(Artist.ARTIST_ID_PK_COLUMN, 3)).selectOne(context);
+		Artist a3 = SelectById.queryMap(Artist.class, singletonMap(Artist.ARTIST_ID_PK_COLUMN, 3)).selectOne(env.context());
 		assertNotNull(a3);
 		assertEquals("artist3", a3.getArtistName());
 
-		Artist a2 = SelectById.queryMap(Artist.class, singletonMap(Artist.ARTIST_ID_PK_COLUMN, 2)).selectOne(context);
+		Artist a2 = SelectById.queryMap(Artist.class, singletonMap(Artist.ARTIST_ID_PK_COLUMN, 2)).selectOne(env.context());
 		assertNotNull(a2);
 		assertEquals("artist2", a2.getArtistName());
 	}
@@ -183,7 +180,7 @@ public class SelectById_RunIT {
 		Map<String, ?> id3 = Collections.singletonMap(Artist.ARTIST_ID_PK_COLUMN, 3);
 
 		List<Artist> artists = SelectById.queryMaps(Artist.class, id2, id3)
-				.select(context);
+				.select(env.context());
 		assertEquals(2, artists.size());
 		assertInstanceOf(Artist.class, artists.get(0));
 	}
@@ -196,7 +193,7 @@ public class SelectById_RunIT {
 		Map<String, ?> id3 = Collections.singletonMap(Artist.ARTIST_ID_PK_COLUMN, 3);
 
 		List<Artist> artists = SelectById.queryMapsCollection(Artist.class, Arrays.asList(id2, id3))
-				.select(context);
+				.select(env.context());
 		assertEquals(2, artists.size());
 		assertInstanceOf(Artist.class, artists.get(0));
 	}
@@ -206,12 +203,12 @@ public class SelectById_RunIT {
 		createTwoArtists();
 
 		ObjectId oid3 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 3);
-		Artist a3 = SelectById.queryObjectId(Artist.class, oid3).selectOne(context);
+		Artist a3 = SelectById.queryObjectId(Artist.class, oid3).selectOne(env.context());
 		assertNotNull(a3);
 		assertEquals("artist3", a3.getArtistName());
 
 		ObjectId oid2 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 2);
-		Artist a2 = SelectById.queryObjectId(Artist.class, oid2).selectOne(context);
+		Artist a2 = SelectById.queryObjectId(Artist.class, oid2).selectOne(env.context());
 		assertNotNull(a2);
 		assertEquals("artist2", a2.getArtistName());
 	}
@@ -224,7 +221,7 @@ public class SelectById_RunIT {
 		ObjectId oid3 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 3);
 
 		List<Artist> artists = SelectById.queryObjectIds(Artist.class, oid2, oid3)
-				.select(context);
+				.select(env.context());
 		assertEquals(2, artists.size());
 		assertInstanceOf(Artist.class, artists.get(0));
 	}
@@ -237,7 +234,7 @@ public class SelectById_RunIT {
 		ObjectId oid3 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 3);
 
 		List<Artist> artists = SelectById.queryObjectIdsCollection(Artist.class, Arrays.asList(oid2, oid3))
-				.select(context);
+				.select(env.context());
 		assertEquals(2, artists.size());
 		assertInstanceOf(Artist.class, artists.get(0));
 	}
@@ -246,11 +243,11 @@ public class SelectById_RunIT {
 	public void dataRowIntPk() throws Exception {
 		createTwoArtists();
 
-		DataRow a3 = SelectById.dataRowQueryId(Artist.class, 3).selectOne(context);
+		DataRow a3 = SelectById.dataRowQueryId(Artist.class, 3).selectOne(env.context());
 		assertNotNull(a3);
 		assertEquals("artist3", a3.get("ARTIST_NAME"));
 
-		DataRow a2 = SelectById.dataRowQueryId(Artist.class, 2).selectOne(context);
+		DataRow a2 = SelectById.dataRowQueryId(Artist.class, 2).selectOne(env.context());
 		assertNotNull(a2);
 		assertEquals("artist2", a2.get("ARTIST_NAME"));
 	}
@@ -260,12 +257,12 @@ public class SelectById_RunIT {
 		createTwoArtists();
 
 		Map<String, ?> id3 = Collections.singletonMap(Artist.ARTIST_ID_PK_COLUMN, 3);
-		DataRow a3 = SelectById.dataRowQueryMap(Artist.class, id3).selectOne(context);
+		DataRow a3 = SelectById.dataRowQueryMap(Artist.class, id3).selectOne(env.context());
 		assertNotNull(a3);
 		assertEquals("artist3", a3.get("ARTIST_NAME"));
 
 		Map<String, ?> id2 = Collections.singletonMap(Artist.ARTIST_ID_PK_COLUMN, 2);
-		DataRow a2 = SelectById.dataRowQueryMap(Artist.class, id2).selectOne(context);
+		DataRow a2 = SelectById.dataRowQueryMap(Artist.class, id2).selectOne(env.context());
 		assertNotNull(a2);
 		assertEquals("artist2", a2.get("ARTIST_NAME"));
 	}
@@ -275,12 +272,12 @@ public class SelectById_RunIT {
 		createTwoArtists();
 
 		ObjectId oid3 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 3);
-		DataRow a3 = SelectById.dataRowQueryObjectId(oid3).selectOne(context);
+		DataRow a3 = SelectById.dataRowQueryObjectId(oid3).selectOne(env.context());
 		assertNotNull(a3);
 		assertEquals("artist3", a3.get("ARTIST_NAME"));
 
 		ObjectId oid2 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 2);
-		DataRow a2 = SelectById.dataRowQueryObjectId(oid2).selectOne(context);
+		DataRow a2 = SelectById.dataRowQueryObjectId(oid2).selectOne(env.context());
 		assertNotNull(a2);
 		assertEquals("artist2", a2.get("ARTIST_NAME"));
 	}
@@ -290,7 +287,7 @@ public class SelectById_RunIT {
 		createTwoArtists();
 
 		List<DataRow> artists = SelectById.dataRowQueryIds(Artist.class, 2, 3)
-				.select(context);
+				.select(env.context());
 		assertEquals(2, artists.size());
 		assertInstanceOf(DataRow.class, artists.get(0));
 	}
@@ -303,7 +300,7 @@ public class SelectById_RunIT {
 		ObjectId oid3 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 3);
 
 		List<DataRow> artists = SelectById.dataRowQueryObjectIds(oid2, oid3)
-				.select(context);
+				.select(env.context());
 		assertEquals(2, artists.size());
 		assertInstanceOf(DataRow.class, artists.get(0));
 	}
@@ -316,7 +313,7 @@ public class SelectById_RunIT {
 		Map<String, ?> id3 = Collections.singletonMap(Artist.ARTIST_ID_PK_COLUMN, 3);
 
 		List<DataRow> artists = SelectById.dataRowQueryMaps(Artist.class, id2, id3)
-				.select(context);
+				.select(env.context());
 		assertEquals(2, artists.size());
 		assertInstanceOf(DataRow.class, artists.get(0));
 	}
@@ -326,7 +323,7 @@ public class SelectById_RunIT {
 		createTwoArtists();
 
 		List<DataRow> artists = SelectById.dataRowQueryIdsCollection(Artist.class, Arrays.asList(2, 3))
-				.select(context);
+				.select(env.context());
 		assertEquals(2, artists.size());
 		assertInstanceOf(DataRow.class, artists.get(0));
 	}
@@ -339,7 +336,7 @@ public class SelectById_RunIT {
 		ObjectId oid3 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 3);
 
 		List<DataRow> artists = SelectById.dataRowQueryObjectIdsCollection(Arrays.asList(oid2, oid3))
-				.select(context);
+				.select(env.context());
 		assertEquals(2, artists.size());
 		assertInstanceOf(DataRow.class, artists.get(0));
 	}
@@ -352,7 +349,7 @@ public class SelectById_RunIT {
 		Map<String, ?> id3 = Collections.singletonMap(Artist.ARTIST_ID_PK_COLUMN, 3);
 
 		List<DataRow> artists = SelectById.dataRowQueryMapsCollection(Artist.class, Arrays.asList(id2, id3))
-				.select(context);
+				.select(env.context());
 		assertEquals(2, artists.size());
 		assertInstanceOf(DataRow.class, artists.get(0));
 	}
@@ -361,11 +358,11 @@ public class SelectById_RunIT {
 	public void intPk_SelectFirst() throws Exception {
 		createTwoArtists();
 
-		Artist a3 = SelectById.queryId(Artist.class, 3).selectFirst(context);
+		Artist a3 = SelectById.queryId(Artist.class, 3).selectFirst(env.context());
 		assertNotNull(a3);
 		assertEquals("artist3", a3.getArtistName());
 
-		Artist a2 = SelectById.queryId(Artist.class, 2).selectFirst(context);
+		Artist a2 = SelectById.queryId(Artist.class, 2).selectFirst(env.context());
 		assertNotNull(a2);
 		assertEquals("artist2", a2.getArtistName());
 	}
@@ -417,20 +414,20 @@ public class SelectById_RunIT {
 		final Artist[] a3 = new Artist[1];
 
 		assertEquals(1, interceptor.runWithQueryCounter(() -> {
-			a3[0] = SelectById.queryId(Artist.class, 3).localCache("g1").selectOne(context);
+			a3[0] = SelectById.queryId(Artist.class, 3).localCache("g1").selectOne(env.context());
 			assertNotNull(a3[0]);
 			assertEquals("artist3", a3[0].getArtistName());
 		}));
 
 		interceptor.runWithQueriesBlocked(() -> {
-			Artist a3cached = SelectById.queryId(Artist.class, 3).localCache("g1").selectOne(context);
+			Artist a3cached = SelectById.queryId(Artist.class, 3).localCache("g1").selectOne(env.context());
 			assertSame(a3[0], a3cached);
 		});
 
-		context.performGenericQuery(new RefreshQuery("g1"));
+		env.context().performGenericQuery(new RefreshQuery("g1"));
 
 		assertEquals(1, interceptor.runWithQueryCounter(() ->
-				SelectById.queryId(Artist.class, 3).localCache("g1").selectOne(context)));
+				SelectById.queryId(Artist.class, 3).localCache("g1").selectOne(env.context())));
 	}
 
 	@Test
@@ -441,7 +438,7 @@ public class SelectById_RunIT {
 
 		final Artist a3 = SelectById.queryId(Artist.class, 3)
 				.prefetch(Artist.PAINTING_ARRAY.joint())
-				.selectOne(context);
+				.selectOne(env.context());
 
 		interceptor.runWithQueriesBlocked(() -> {
 			assertNotNull(a3);
@@ -460,11 +457,11 @@ public class SelectById_RunIT {
 	public void intPkDeprecated() throws Exception {
 		createTwoArtists();
 
-		Artist a3 = SelectById.query(Artist.class, 3).selectOne(context);
+		Artist a3 = SelectById.query(Artist.class, 3).selectOne(env.context());
 		assertNotNull(a3);
 		assertEquals("artist3", a3.getArtistName());
 
-		Artist a2 = SelectById.query(Artist.class, 2).selectOne(context);
+		Artist a2 = SelectById.query(Artist.class, 2).selectOne(env.context());
 		assertNotNull(a2);
 		assertEquals("artist2", a2.getArtistName());
 	}
@@ -475,7 +472,7 @@ public class SelectById_RunIT {
 		createTwoArtists();
 
 		List<Artist> artists = SelectById.query(Artist.class, 2, 3)
-				.select(context);
+				.select(env.context());
 		assertEquals(2, artists.size());
 		assertInstanceOf(Artist.class, artists.get(0));
 	}
@@ -486,7 +483,7 @@ public class SelectById_RunIT {
 		createTwoArtists();
 
 		List<Artist> artists = SelectById.query(Artist.class, Arrays.asList(1, 2, 3, 4, 5))
-				.select(context);
+				.select(env.context());
 		assertEquals(2, artists.size());
 		assertInstanceOf(Artist.class, artists.get(0));
 	}
@@ -496,11 +493,11 @@ public class SelectById_RunIT {
 	public void mapPkDeprecation() throws Exception {
 		createTwoArtists();
 
-		Artist a3 = SelectById.query(Artist.class, singletonMap(Artist.ARTIST_ID_PK_COLUMN, 3)).selectOne(context);
+		Artist a3 = SelectById.query(Artist.class, singletonMap(Artist.ARTIST_ID_PK_COLUMN, 3)).selectOne(env.context());
 		assertNotNull(a3);
 		assertEquals("artist3", a3.getArtistName());
 
-		Artist a2 = SelectById.query(Artist.class, singletonMap(Artist.ARTIST_ID_PK_COLUMN, 2)).selectOne(context);
+		Artist a2 = SelectById.query(Artist.class, singletonMap(Artist.ARTIST_ID_PK_COLUMN, 2)).selectOne(env.context());
 		assertNotNull(a2);
 		assertEquals("artist2", a2.getArtistName());
 	}
@@ -514,7 +511,7 @@ public class SelectById_RunIT {
 		Map<String, ?> id3 = Collections.singletonMap(Artist.ARTIST_ID_PK_COLUMN, 3);
 
 		List<Artist> artists = SelectById.query(Artist.class, id2, id3)
-				.select(context);
+				.select(env.context());
 		assertEquals(2, artists.size());
 		assertInstanceOf(Artist.class, artists.get(0));
 	}
@@ -525,12 +522,12 @@ public class SelectById_RunIT {
 		createTwoArtists();
 
 		ObjectId oid3 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 3);
-		Artist a3 = SelectById.query(Artist.class, oid3).selectOne(context);
+		Artist a3 = SelectById.query(Artist.class, oid3).selectOne(env.context());
 		assertNotNull(a3);
 		assertEquals("artist3", a3.getArtistName());
 
 		ObjectId oid2 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 2);
-		Artist a2 = SelectById.query(Artist.class, oid2).selectOne(context);
+		Artist a2 = SelectById.query(Artist.class, oid2).selectOne(env.context());
 		assertNotNull(a2);
 		assertEquals("artist2", a2.getArtistName());
 	}
@@ -544,7 +541,7 @@ public class SelectById_RunIT {
 		ObjectId oid3 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 3);
 
 		List<Artist> artists = SelectById.query(Artist.class, oid2, oid3)
-				.select(context);
+				.select(env.context());
 		assertEquals(2, artists.size());
 		assertInstanceOf(Artist.class, artists.get(0));
 	}
@@ -554,11 +551,11 @@ public class SelectById_RunIT {
 	public void dataRowIntPkDeprecation() throws Exception {
 		createTwoArtists();
 
-		DataRow a3 = SelectById.dataRowQuery(Artist.class, 3).selectOne(context);
+		DataRow a3 = SelectById.dataRowQuery(Artist.class, 3).selectOne(env.context());
 		assertNotNull(a3);
 		assertEquals("artist3", a3.get("ARTIST_NAME"));
 
-		DataRow a2 = SelectById.dataRowQuery(Artist.class, 2).selectOne(context);
+		DataRow a2 = SelectById.dataRowQuery(Artist.class, 2).selectOne(env.context());
 		assertNotNull(a2);
 		assertEquals("artist2", a2.get("ARTIST_NAME"));
 	}
@@ -569,12 +566,12 @@ public class SelectById_RunIT {
 		createTwoArtists();
 
 		Map<String, ?> id3 = Collections.singletonMap(Artist.ARTIST_ID_PK_COLUMN, 3);
-		DataRow a3 = SelectById.dataRowQuery(Artist.class, id3).selectOne(context);
+		DataRow a3 = SelectById.dataRowQuery(Artist.class, id3).selectOne(env.context());
 		assertNotNull(a3);
 		assertEquals("artist3", a3.get("ARTIST_NAME"));
 
 		Map<String, ?> id2 = Collections.singletonMap(Artist.ARTIST_ID_PK_COLUMN, 2);
-		DataRow a2 = SelectById.dataRowQuery(Artist.class, id2).selectOne(context);
+		DataRow a2 = SelectById.dataRowQuery(Artist.class, id2).selectOne(env.context());
 		assertNotNull(a2);
 		assertEquals("artist2", a2.get("ARTIST_NAME"));
 	}
@@ -585,12 +582,12 @@ public class SelectById_RunIT {
 		createTwoArtists();
 
 		ObjectId oid3 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 3);
-		DataRow a3 = SelectById.dataRowQuery(oid3).selectOne(context);
+		DataRow a3 = SelectById.dataRowQuery(oid3).selectOne(env.context());
 		assertNotNull(a3);
 		assertEquals("artist3", a3.get("ARTIST_NAME"));
 
 		ObjectId oid2 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 2);
-		DataRow a2 = SelectById.dataRowQuery(oid2).selectOne(context);
+		DataRow a2 = SelectById.dataRowQuery(oid2).selectOne(env.context());
 		assertNotNull(a2);
 		assertEquals("artist2", a2.get("ARTIST_NAME"));
 	}
@@ -601,7 +598,7 @@ public class SelectById_RunIT {
 		createTwoArtists();
 
 		List<DataRow> artists = SelectById.dataRowQuery(Artist.class, 2, 3)
-				.select(context);
+				.select(env.context());
 		assertEquals(2, artists.size());
 		assertInstanceOf(DataRow.class, artists.get(0));
 	}
@@ -615,7 +612,7 @@ public class SelectById_RunIT {
 		ObjectId oid3 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 3);
 
 		List<DataRow> artists = SelectById.dataRowQuery(oid2, oid3)
-				.select(context);
+				.select(env.context());
 		assertEquals(2, artists.size());
 		assertInstanceOf(DataRow.class, artists.get(0));
 	}
@@ -629,7 +626,7 @@ public class SelectById_RunIT {
 		Map<String, ?> id3 = Collections.singletonMap(Artist.ARTIST_ID_PK_COLUMN, 3);
 
 		List<DataRow> artists = SelectById.dataRowQuery(Artist.class, id2, id3)
-				.select(context);
+				.select(env.context());
 		assertEquals(2, artists.size());
 		assertInstanceOf(DataRow.class, artists.get(0));
 	}

@@ -20,7 +20,6 @@
 package org.apache.cayenne.reflect;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mixed_persistence_strategy.MixedPersistenceStrategy;
@@ -42,14 +41,11 @@ public class MixedPersistenceStrategyIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.MIXED_PERSISTENCE_STRATEGY_PROJECT);
 
-    protected ObjectContext context;
-
     protected TableHelper tMixedPersistenceStrategy;
     protected TableHelper tMixedPersistenceStrategy2;
 
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
         tMixedPersistenceStrategy = env.table("MIXED_PERSISTENCE_STRATEGY", "ID", "DESCRIPTION", "NAME");
 
         tMixedPersistenceStrategy2 = env.table("MIXED_PERSISTENCE_STRATEGY2", "ID", "MASTER_ID", "NAME");
@@ -67,7 +63,7 @@ public class MixedPersistenceStrategyIT {
         createConflictingFieldDataSet();
 
         MixedPersistenceStrategy object = Cayenne.objectForPK(
-                context,
+                env.context(),
                 MixedPersistenceStrategy.class,
                 1);
 
@@ -84,12 +80,12 @@ public class MixedPersistenceStrategyIT {
         createConflictingFieldDataSet();
 
         MixedPersistenceStrategy2 detail1 = Cayenne.objectForPK(
-                context,
+                env.context(),
                 MixedPersistenceStrategy2.class,
                 1);
 
         MixedPersistenceStrategy2 detail2 = Cayenne.objectForPK(
-                context,
+                env.context(),
                 MixedPersistenceStrategy2.class,
                 2);
 

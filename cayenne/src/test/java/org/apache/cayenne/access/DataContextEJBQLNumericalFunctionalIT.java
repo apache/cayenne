@@ -24,7 +24,6 @@ import java.math.BigInteger;
 import java.util.List;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -46,32 +45,28 @@ public class DataContextEJBQLNumericalFunctionalIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.NUMERIC_TYPES_PROJECT);
 
-
-    private ObjectContext context;
-
     private TableHelper tBigIntegerEntity;
 
     
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
         tBigIntegerEntity = env.table("BIGINTEGER_ENTITY", "ID", "BIG_INTEGER_FIELD");
     }
 
     @Test
     public void aBS() {
 
-        BigDecimalEntity o1 = context.newObject(BigDecimalEntity.class);
+        BigDecimalEntity o1 = env.context().newObject(BigDecimalEntity.class);
         o1.setBigDecimalNumeric(new BigDecimal("4.1"));
 
-        BigDecimalEntity o2 = context.newObject(BigDecimalEntity.class);
+        BigDecimalEntity o2 = env.context().newObject(BigDecimalEntity.class);
         o2.setBigDecimalNumeric(new BigDecimal("-5.1"));
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT d FROM BigDecimalEntity d WHERE ABS(d.bigDecimalNumeric) < 5.0");
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertEquals(1, objects.size());
         assertTrue(objects.contains(o1));
     }
@@ -79,17 +74,17 @@ public class DataContextEJBQLNumericalFunctionalIT {
     @Test
     public void sQRT() {
 
-        BigDecimalEntity o1 = context.newObject(BigDecimalEntity.class);
+        BigDecimalEntity o1 = env.context().newObject(BigDecimalEntity.class);
         o1.setBigDecimalNumeric(new BigDecimal("9"));
 
-        BigDecimalEntity o2 = context.newObject(BigDecimalEntity.class);
+        BigDecimalEntity o2 = env.context().newObject(BigDecimalEntity.class);
         o2.setBigDecimalNumeric(new BigDecimal("16"));
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT d FROM BigDecimalEntity d WHERE SQRT(d.bigDecimalNumeric) > 3.1");
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertEquals(1, objects.size());
         assertTrue(objects.contains(o2));
     }
@@ -97,17 +92,17 @@ public class DataContextEJBQLNumericalFunctionalIT {
     @Test
     public void mOD() {
 
-        BigIntegerEntity o1 = context.newObject(BigIntegerEntity.class);
+        BigIntegerEntity o1 = env.context().newObject(BigIntegerEntity.class);
         o1.setBigIntegerField(new BigInteger("9"));
 
-        BigIntegerEntity o2 = context.newObject(BigIntegerEntity.class);
+        BigIntegerEntity o2 = env.context().newObject(BigIntegerEntity.class);
         o2.setBigIntegerField(new BigInteger("10"));
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT d FROM BigIntegerEntity d WHERE MOD(d.bigIntegerField, 4) = 2");
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertEquals(1, objects.size());
         assertTrue(objects.contains(o2));
     }
@@ -115,34 +110,34 @@ public class DataContextEJBQLNumericalFunctionalIT {
     @Test
     public void updateNoQualifierBoolean() throws Exception {
 
-        BooleanTestEntity o1 = context.newObject(BooleanTestEntity.class);
+        BooleanTestEntity o1 = env.context().newObject(BooleanTestEntity.class);
         o1.setBooleanColumn(Boolean.TRUE);
 
-        BooleanTestEntity o2 = context.newObject(BooleanTestEntity.class);
+        BooleanTestEntity o2 = env.context().newObject(BooleanTestEntity.class);
         o2.setBooleanColumn(Boolean.FALSE);
 
-        BooleanTestEntity o3 = context.newObject(BooleanTestEntity.class);
+        BooleanTestEntity o3 = env.context().newObject(BooleanTestEntity.class);
         o3.setBooleanColumn(Boolean.FALSE);
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         EJBQLQuery check = new EJBQLQuery("select count(p) from BooleanTestEntity p "
                 + "WHERE p.booleanColumn = true");
 
-        Object notUpdated = Cayenne.objectForQuery(context, check);
+        Object notUpdated = Cayenne.objectForQuery(env.context(), check);
         assertEquals(1L, notUpdated);
 
         String ejbql = "UPDATE BooleanTestEntity AS p SET p.booleanColumn = true";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        QueryResponse result = context.performGenericQuery(query);
+        QueryResponse result = env.context().performGenericQuery(query);
 
         int[] count = result.firstUpdateCount();
         assertNotNull(count);
         assertEquals(1, count.length);
         assertEquals(3, count[0]);
 
-        notUpdated = Cayenne.objectForQuery(context, check);
+        notUpdated = Cayenne.objectForQuery(env.context(), check);
         assertEquals(3L, notUpdated);
     }
 }

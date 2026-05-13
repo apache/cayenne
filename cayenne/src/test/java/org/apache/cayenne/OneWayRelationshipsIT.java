@@ -44,8 +44,6 @@ public class OneWayRelationshipsIT {
 	@RegisterExtension
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.ONEWAY_PROJECT);
 
-	private ObjectContext context;
-
 	private TableHelper t1Helper;
 	private TableHelper t2Helper;
 	private TableHelper t3Helper;
@@ -53,7 +51,6 @@ public class OneWayRelationshipsIT {
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		context = env.context();
 		t1Helper = env.table("oneway_table1", "ID");
 		t2Helper = env.table("oneway_table2", "ID", "TABLE1_ID");
 
@@ -64,11 +61,11 @@ public class OneWayRelationshipsIT {
 	@Test
 	public void testToOne_TwoNew() throws SQLException {
 
-		OnewayTable1 t1 = context.newObject(OnewayTable1.class);
-		OnewayTable2 t2 = context.newObject(OnewayTable2.class);
+		OnewayTable1 t1 = env.context().newObject(OnewayTable1.class);
+		OnewayTable2 t2 = env.context().newObject(OnewayTable2.class);
 		t2.setToOneOneWayDb(t1);
 
-		context.commitChanges();
+		env.context().commitChanges();
 
 		int t1Pk = t1Helper.getInt("ID");
 		assertEquals(Cayenne.intPKForObject(t1), t1Pk);
@@ -82,14 +79,14 @@ public class OneWayRelationshipsIT {
 		t1Helper.insert(1).insert(2);
 		t2Helper.insert(1, 1);
 
-		OnewayTable1 t11 = Cayenne.objectForPK(context, OnewayTable1.class, 1);
-		OnewayTable1 t12 = Cayenne.objectForPK(context, OnewayTable1.class, 2);
-		OnewayTable2 t2 = Cayenne.objectForPK(context, OnewayTable2.class, 1);
+		OnewayTable1 t11 = Cayenne.objectForPK(env.context(), OnewayTable1.class, 1);
+		OnewayTable1 t12 = Cayenne.objectForPK(env.context(), OnewayTable1.class, 2);
+		OnewayTable2 t2 = Cayenne.objectForPK(env.context(), OnewayTable2.class, 1);
 
 		assertSame(t11, t2.getToOneOneWayDb());
 
 		t2.setToOneOneWayDb(t12);
-		context.commitChanges();
+		env.context().commitChanges();
 
 		assertSame(t12, t2.getToOneOneWayDb());
 
@@ -103,13 +100,13 @@ public class OneWayRelationshipsIT {
 		t1Helper.insert(1);
 		t2Helper.insert(1, 1);
 
-		OnewayTable1 t11 = Cayenne.objectForPK(context, OnewayTable1.class, 1);
-		OnewayTable2 t2 = Cayenne.objectForPK(context, OnewayTable2.class, 1);
+		OnewayTable1 t11 = Cayenne.objectForPK(env.context(), OnewayTable1.class, 1);
+		OnewayTable2 t2 = Cayenne.objectForPK(env.context(), OnewayTable2.class, 1);
 
 		assertSame(t11, t2.getToOneOneWayDb());
 
 		t2.setToOneOneWayDb(null);
-		context.commitChanges();
+		env.context().commitChanges();
 
 		assertNull(t2.getToOneOneWayDb());
 
@@ -120,11 +117,11 @@ public class OneWayRelationshipsIT {
 	@Test
 	public void testToMany_TwoNew() throws SQLException {
 
-		OnewayTable3 t3 = context.newObject(OnewayTable3.class);
-		OnewayTable4 t4 = context.newObject(OnewayTable4.class);
+		OnewayTable3 t3 = env.context().newObject(OnewayTable3.class);
+		OnewayTable4 t4 = env.context().newObject(OnewayTable4.class);
 		t3.addToToManyOneWayDb(t4);
 
-		context.commitChanges();
+		env.context().commitChanges();
 
 		int t3Pk = t3Helper.getInt("ID");
 		assertEquals(Cayenne.intPKForObject(t3), t3Pk);
@@ -138,22 +135,22 @@ public class OneWayRelationshipsIT {
 		t3Helper.insert(1);
 		t4Helper.insert(1, 1);
 
-		OnewayTable3 t3 = Cayenne.objectForPK(context, OnewayTable3.class, 1);
+		OnewayTable3 t3 = Cayenne.objectForPK(env.context(), OnewayTable3.class, 1);
 		assertEquals(1, t3.getToManyOneWayDb().size());
 
-		OnewayTable4 t41 = Cayenne.objectForPK(context, OnewayTable4.class, 1);
+		OnewayTable4 t41 = Cayenne.objectForPK(env.context(), OnewayTable4.class, 1);
 		assertTrue(t3.getToManyOneWayDb().contains(t41));
 
-		OnewayTable4 t42 = context.newObject(OnewayTable4.class);
+		OnewayTable4 t42 = env.context().newObject(OnewayTable4.class);
 		t3.addToToManyOneWayDb(t42);
-		context.commitChanges();
+		env.context().commitChanges();
 
 		assertEquals(2, t3.getToManyOneWayDb().size());
 
 		SQLSelect<Integer> fksQuery = SQLSelect.scalarQuery("SELECT TABLE3_ID FROM oneway_table4",
 				"oneway-rels",Integer.class);
 
-		List<Integer> fks = context.select(fksQuery);
+		List<Integer> fks = env.context().select(fksQuery);
 		assertEquals(2, fks.size());
 		for (Integer fk : fks) {
 			assertEquals(Integer.valueOf(1), fk);
@@ -166,23 +163,23 @@ public class OneWayRelationshipsIT {
 		t3Helper.insert(1);
 		t4Helper.insert(1, 1).insert(2, null);
 
-		OnewayTable3 t3 = Cayenne.objectForPK(context, OnewayTable3.class, 1);
+		OnewayTable3 t3 = Cayenne.objectForPK(env.context(), OnewayTable3.class, 1);
 		assertEquals(1, t3.getToManyOneWayDb().size());
 
-		OnewayTable4 t41 = Cayenne.objectForPK(context, OnewayTable4.class, 1);
+		OnewayTable4 t41 = Cayenne.objectForPK(env.context(), OnewayTable4.class, 1);
 		assertTrue(t3.getToManyOneWayDb().contains(t41));
 
-		OnewayTable4 t42 = Cayenne.objectForPK(context, OnewayTable4.class, 2);
+		OnewayTable4 t42 = Cayenne.objectForPK(env.context(), OnewayTable4.class, 2);
 
 		t3.addToToManyOneWayDb(t42);
-		context.commitChanges();
+		env.context().commitChanges();
 
 		assertEquals(2, t3.getToManyOneWayDb().size());
 
 		SQLSelect<Integer> fksQuery = SQLSelect.scalarQuery("SELECT TABLE3_ID FROM oneway_table4",
 				"oneway-rels", Integer.class);
 
-		List<Integer> fks = context.select(fksQuery);
+		List<Integer> fks = env.context().select(fksQuery);
 		assertEquals(2, fks.size());
 		for (Integer fk : fks) {
 			assertEquals(Integer.valueOf(1), fk);
@@ -195,24 +192,24 @@ public class OneWayRelationshipsIT {
 		t3Helper.insert(1);
 		t4Helper.insert(1, 1).insert(2, 1);
 
-		OnewayTable3 t3 = Cayenne.objectForPK(context, OnewayTable3.class, 1);
+		OnewayTable3 t3 = Cayenne.objectForPK(env.context(), OnewayTable3.class, 1);
 		assertEquals(2, t3.getToManyOneWayDb().size());
 
-		OnewayTable4 t41 = Cayenne.objectForPK(context, OnewayTable4.class, 1);
+		OnewayTable4 t41 = Cayenne.objectForPK(env.context(), OnewayTable4.class, 1);
 		assertTrue(t3.getToManyOneWayDb().contains(t41));
 
-		OnewayTable4 t42 = Cayenne.objectForPK(context, OnewayTable4.class, 2);
+		OnewayTable4 t42 = Cayenne.objectForPK(env.context(), OnewayTable4.class, 2);
 		assertTrue(t3.getToManyOneWayDb().contains(t42));
 
 		t3.removeFromToManyOneWayDb(t42);
-		context.commitChanges();
+		env.context().commitChanges();
 
 		assertEquals(1, t3.getToManyOneWayDb().size());
 
 		SQLSelect<Integer> fksQuery = SQLSelect.scalarQuery("SELECT TABLE3_ID FROM oneway_table4",
 				"oneway-rels", Integer.class);
 
-		List<Integer> fks = context.select(fksQuery);
+		List<Integer> fks = env.context().select(fksQuery);
 		assertEquals(2, fks.size());
 		assertTrue(fks.contains(1));
 		assertTrue(fks.contains(null));

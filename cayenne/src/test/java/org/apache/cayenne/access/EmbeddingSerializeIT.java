@@ -20,8 +20,6 @@
 package org.apache.cayenne.access;
 
 import java.util.List;
-
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -43,14 +41,11 @@ public class EmbeddingSerializeIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.EMBEDDABLE_PROJECT);
 
-    protected ObjectContext context;
-
     protected TableHelper tEmbedEntity1;
 
     
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
         tEmbedEntity1 = env.table("EMBED_ENTITY1", "ID", "NAME", "EMBEDDED10", "EMBEDDED20", "EMBEDDED30", "EMBEDDED40");
     }
 
@@ -64,7 +59,7 @@ public class EmbeddingSerializeIT {
         createSelectDataSet();
 
         ObjectSelect<EmbedEntity1> query = ObjectSelect.query(EmbedEntity1.class);
-        List<EmbedEntity1> results = query.select(context);
+        List<EmbedEntity1> results = query.select(env.context());
         assertEquals(1, results.size());
 
         EmbedEntity1 o1 = results.get(0);
@@ -88,7 +83,7 @@ public class EmbeddingSerializeIT {
         createSelectDataSet();
 
         ObjectSelect<EmbedEntity1> query = ObjectSelect.query(EmbedEntity1.class);
-        List<EmbedEntity1> results = query.select(context);
+        List<EmbedEntity1> results = query.select(env.context());
         assertEquals(1, results.size());
 
         EmbedEntity1 o1 = results.get(0);
@@ -113,7 +108,7 @@ public class EmbeddingSerializeIT {
         createSelectDataSet();
 
         ObjectSelect<EmbedEntity1> query = ObjectSelect.query(EmbedEntity1.class);
-        List<EmbedEntity1> results = query.select(context);
+        List<EmbedEntity1> results = query.select(env.context());
         assertEquals(1, results.size());
 
         EmbedEntity1 o1 = results.get(0);

@@ -20,8 +20,6 @@
 package org.apache.cayenne.query;
 
 import java.util.List;
-
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -37,13 +35,10 @@ public class ObjectSelect_FetchLimitOrderingIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    protected ObjectContext context;
-
     protected TableHelper tArtist;
 
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
     }
 
@@ -61,7 +56,7 @@ public class ObjectSelect_FetchLimitOrderingIT {
 
         creatArtistsDataSet();
 
-        List<Artist> results = ObjectSelect.query(Artist.class).orderBy(Artist.ARTIST_NAME.asc()).limit(4).select(context);
+        List<Artist> results = ObjectSelect.query(Artist.class).orderBy(Artist.ARTIST_NAME.asc()).limit(4).select(env.context());
         assertEquals(4, results.size());
 
         assertEquals("a", results.get(0).getArtistName());

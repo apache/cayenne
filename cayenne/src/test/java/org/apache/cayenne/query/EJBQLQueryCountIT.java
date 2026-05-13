@@ -21,8 +21,6 @@ package org.apache.cayenne.query;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collections;
-
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
@@ -35,15 +33,12 @@ public class EJBQLQueryCountIT {
 	@RegisterExtension
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-	private ObjectContext context;
-
 	protected TableHelper tArtist;
 	protected TableHelper tPainting;
 	protected TableHelper tGallery;
 
 	@BeforeEach
 	public void before() throws Exception {
-		context = env.context();
 		tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
 		tPainting = env.table("PAINTING", "PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE");
@@ -58,7 +53,7 @@ public class EJBQLQueryCountIT {
 		EJBQLQuery query = new EJBQLQuery("SELECT COUNT(a) FROM Artist a");
 
 		// this should be simply a count of painting/artist joins
-		assertEquals(Collections.singletonList(3L), context.performQuery(query));
+		assertEquals(Collections.singletonList(3L), env.context().performQuery(query));
 	}
 
 	@Test
@@ -74,7 +69,7 @@ public class EJBQLQueryCountIT {
 		EJBQLQuery query = new EJBQLQuery("SELECT COUNT(p.toArtist) FROM Painting p");
 
 		// this should be simply a count of painting/artist joins
-		assertEquals(Collections.singletonList(3L), context.performQuery(query));
+		assertEquals(Collections.singletonList(3L), env.context().performQuery(query));
 	}
 
 	@Test
@@ -89,7 +84,7 @@ public class EJBQLQueryCountIT {
 
 		EJBQLQuery query = new EJBQLQuery("SELECT COUNT(DISTINCT p.toArtist) FROM Painting p");
 		// this should be a count of artists that have paintings
-		assertEquals(Collections.singletonList(2L), context.performQuery(query));
+		assertEquals(Collections.singletonList(2L), env.context().performQuery(query));
 	}
 	
 	@Test
@@ -104,7 +99,7 @@ public class EJBQLQueryCountIT {
 
 		EJBQLQuery query = new EJBQLQuery("SELECT COUNT(DISTINCT p.toArtist.artistName) FROM Painting p");
 		// this should be a count of artists that have paintings
-		assertEquals(Collections.singletonList(1L), context.performQuery(query));
+		assertEquals(Collections.singletonList(1L), env.context().performQuery(query));
 	}
 	
 }

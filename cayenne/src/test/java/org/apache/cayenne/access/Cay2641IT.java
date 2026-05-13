@@ -19,7 +19,6 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Fault;
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.translator.select.DefaultSelectTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.query.ColumnSelect;
@@ -49,12 +48,10 @@ public class Cay2641IT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.CAY_2641);
 
-    private ObjectContext context;
     private DbAdapter adapter;
 
     @BeforeEach
     public void setup() throws Exception {
-        context = env.context();
         adapter = env.getInstance(DbAdapter.class);
 
         TableHelper th = env.table("ArtistLazy")
@@ -72,7 +69,7 @@ public class Cay2641IT {
     public void translatorSql() {
         ObjectSelect<ArtistLazy> artists = ObjectSelect.query(ArtistLazy.class);
 
-        DefaultSelectTranslator translator = new DefaultSelectTranslator(artists, adapter, context.getEntityResolver());
+        DefaultSelectTranslator translator = new DefaultSelectTranslator(artists, adapter, env.context().getEntityResolver());
 
         String sql = translator.getSql();
         assertFalse(sql.contains("t0.NAME"));
@@ -81,7 +78,7 @@ public class Cay2641IT {
         MatcherAssert.assertThat(sql, Matchers.matchesPattern(pattern));
 
         ColumnSelect<String> select = ObjectSelect.columnQuery(ArtistLazy.class, ArtistLazy.NAME);
-        translator = new DefaultSelectTranslator(select, adapter, context.getEntityResolver());
+        translator = new DefaultSelectTranslator(select, adapter, env.context().getEntityResolver());
         sql = translator.getSql();
 
         assertTrue(sql.contains("t0.NAME"));
@@ -89,7 +86,7 @@ public class Cay2641IT {
 
     @Test
     public void typeAttributes() {
-        List<ArtistLazy> artists = ObjectSelect.query(ArtistLazy.class).select(context);
+        List<ArtistLazy> artists = ObjectSelect.query(ArtistLazy.class).select(env.context());
 
         Object object = artists.get(0).readPropertyDirectly("name");
         assertTrue(object instanceof Fault);
@@ -100,7 +97,7 @@ public class Cay2641IT {
 
     @Test
     public void typeLazyAttribute() {
-        ArtistLazy artist = ObjectSelect.query(ArtistLazy.class).selectFirst(context);
+        ArtistLazy artist = ObjectSelect.query(ArtistLazy.class).selectFirst(env.context());
 
         Object object = artist.readPropertyDirectly("name");
         assertTrue(object instanceof Fault);
@@ -113,7 +110,7 @@ public class Cay2641IT {
     @Test
     public void prefetchLazyTranslatorSql() {
         ObjectSelect<PaintingLazy> paintingLazyObjectSelect = ObjectSelect.query(PaintingLazy.class).prefetch(PaintingLazy.ARTIST.joint());
-        DefaultSelectTranslator translator = new DefaultSelectTranslator(paintingLazyObjectSelect, adapter, context.getEntityResolver());
+        DefaultSelectTranslator translator = new DefaultSelectTranslator(paintingLazyObjectSelect, adapter, env.context().getEntityResolver());
         String sql = translator.getSql();
         assertFalse(sql.contains("t0.NAME"));
 
@@ -126,7 +123,7 @@ public class Cay2641IT {
     public void prefetchLazyTypeAttributes() {
         List<PaintingLazy> paintingLazyList = ObjectSelect.query(PaintingLazy.class)
                 .prefetch(PaintingLazy.ARTIST.joint())
-                .select(context);
+                .select(env.context());
 
         Object object = paintingLazyList.get(0).readPropertyDirectly("name");
         assertTrue(object instanceof Fault);
@@ -150,7 +147,7 @@ public class Cay2641IT {
     @Test
     public void simpleSelectCustomer() {
         DatamapLazy optimistic = DatamapLazy.getInstance();
-        List<ArtistLazy> artistLazies = optimistic.performSimpleSelect(context);
+        List<ArtistLazy> artistLazies = optimistic.performSimpleSelect(env.context());
 
         Object object = artistLazies.get(0).readPropertyDirectly("name");
         assertTrue(object instanceof Fault);
@@ -163,7 +160,7 @@ public class Cay2641IT {
     @Test
     public void prefetchSelectCustomer() {
         DatamapLazy optimistic = DatamapLazy.getInstance();
-        List<PaintingLazy> paintingLazies = optimistic.performPrefetchSelect(context);
+        List<PaintingLazy> paintingLazies = optimistic.performPrefetchSelect(env.context());
 
         Object object = paintingLazies.get(0).readPropertyDirectly("name");
         assertTrue(object instanceof Fault);

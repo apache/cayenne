@@ -18,8 +18,6 @@
  ****************************************************************/
 
 package org.apache.cayenne.exp.parser;
-
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -44,12 +42,10 @@ public class ASTExistsIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private ObjectContext context;
     private DataChannelInterceptor queryInterceptor;
 
     @BeforeEach
     public void createArtistsDataSet() throws Exception {
-        context = env.context();
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
         TableHelper tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 
@@ -79,7 +75,6 @@ public class ASTExistsIT {
     
         });
     }
-
 
     @Test
     public void evaluateInMemoryExistsExpression() {
@@ -118,14 +113,14 @@ public class ASTExistsIT {
     private void doEvaluateNoQuery(Expression exp) {
         List<Artist> artistSelected = ObjectSelect.query(Artist.class, exp)
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
-                .select(context);
+                .select(env.context());
 
         List<Artist> artists = ObjectSelect.query(Artist.class)
                 .prefetch(Artist.PAINTING_ARRAY.disjoint())
                 .prefetch(Artist.PAINTING_ARRAY.dot(Painting.TO_PAINTING_INFO).disjoint())
                 .prefetch(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).disjoint())
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
-                .select(context);
+                .select(env.context());
 
         queryInterceptor.runWithQueriesBlocked(() -> {
             List<Artist> artistsFiltered = exp.filterObjects(artists);
@@ -134,14 +129,14 @@ public class ASTExistsIT {
     }
 
     private void doEvaluateWithQuery(Expression exp) {
-        List<Artist> artistSelected = ObjectSelect.query(Artist.class, exp).select(context);
+        List<Artist> artistSelected = ObjectSelect.query(Artist.class, exp).select(env.context());
 
         List<Artist> artists = ObjectSelect.query(Artist.class)
                 .prefetch(Artist.PAINTING_ARRAY.disjoint())
                 .prefetch(Artist.PAINTING_ARRAY.dot(Painting.TO_PAINTING_INFO).disjoint())
                 .prefetch(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).disjoint())
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
-                .select(context);
+                .select(env.context());
 
         List<Artist> artistsFiltered = exp.filterObjects(artists);
         assertEquals(artistSelected, artistsFiltered, exp.toString());

@@ -41,9 +41,6 @@ public class DataContextEJBQLDeleteIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    protected ObjectContext context;
-
-
     protected CayenneRuntime runtime;
 
     protected TableHelper tPainting;
@@ -51,7 +48,6 @@ public class DataContextEJBQLDeleteIT {
     
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
         runtime = env.runtime();
         tPainting = env.table("PAINTING").setColumns(
                 "PAINTING_ID",
@@ -76,7 +72,7 @@ public class DataContextEJBQLDeleteIT {
         String ejbql = "delete from Painting";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        QueryResponse result = context.performGenericQuery(query);
+        QueryResponse result = env.context().performGenericQuery(query);
 
         int[] count = result.firstUpdateCount();
         assertNotNull(count);
@@ -91,7 +87,7 @@ public class DataContextEJBQLDeleteIT {
         String ejbql = "delete from Painting AS p";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        QueryResponse result = context.performGenericQuery(query);
+        QueryResponse result = env.context().performGenericQuery(query);
 
         int[] count = result.firstUpdateCount();
         assertNotNull(count);
@@ -106,7 +102,7 @@ public class DataContextEJBQLDeleteIT {
         String ejbql = "delete from Painting AS p WHERE p.paintingTitle = 'P2'";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        QueryResponse result = context.performGenericQuery(query);
+        QueryResponse result = env.context().performGenericQuery(query);
 
         int[] count = result.firstUpdateCount();
         assertNotNull(count);

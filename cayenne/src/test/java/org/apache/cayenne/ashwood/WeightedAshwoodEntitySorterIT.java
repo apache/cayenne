@@ -20,8 +20,6 @@ package org.apache.cayenne.ashwood;
 
 import java.util.Arrays;
 import java.util.List;
-
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -37,14 +35,11 @@ public class WeightedAshwoodEntitySorterIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.WEIGHTED_SORT_PROJECT);
 
-    protected ObjectContext context;
-
     EntityResolver resolver;
 
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
-        this.resolver = context.getEntityResolver();
+        this.resolver = env.context().getEntityResolver();
     }
 
     @Test

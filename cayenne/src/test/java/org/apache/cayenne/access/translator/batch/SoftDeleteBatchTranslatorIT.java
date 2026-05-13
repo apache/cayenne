@@ -22,8 +22,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
@@ -53,7 +51,6 @@ public class SoftDeleteBatchTranslatorIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.SOFT_DELETE_PROJECT);
 
-    private ObjectContext context;
     protected DbAdapter adapter;
     private DataNode dataNode;
     private UnitDbAdapter unitAdapter;
@@ -68,10 +65,8 @@ public class SoftDeleteBatchTranslatorIT {
         return (DeleteBatchTranslator) new SoftDeleteTranslatorFactory().translator(query, adapter, null);
     }
 
-
     @BeforeEach
     public void setUp() {
-        context = env.context();
         adapter = env.getInstance(DbAdapter.class);
         dataNode = env.getInstance(DataNode.class);
         unitAdapter = env.getInstance(UnitDbAdapter.class);
@@ -80,7 +75,7 @@ public class SoftDeleteBatchTranslatorIT {
 
     @Test
     public void createSqlString() {
-        DbEntity entity = context.getEntityResolver().getObjEntity(SoftDelete.class).getDbEntity();
+        DbEntity entity = env.context().getEntityResolver().getObjEntity(SoftDelete.class).getDbEntity();
 
         List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("ID"));
 
@@ -93,7 +88,7 @@ public class SoftDeleteBatchTranslatorIT {
 
     @Test
     public void createSqlStringWithNulls() {
-        DbEntity entity = context.getEntityResolver().getObjEntity(SoftDelete.class).getDbEntity();
+        DbEntity entity = env.context().getEntityResolver().getObjEntity(SoftDelete.class).getDbEntity();
 
         List<DbAttribute> idAttributes = Arrays.asList(entity.getAttribute("ID"), entity.getAttribute("NAME"));
 
@@ -108,7 +103,7 @@ public class SoftDeleteBatchTranslatorIT {
 
     @Test
     public void createSqlStringWithIdentifiersQuote() {
-        DbEntity entity = context.getEntityResolver().getObjEntity(SoftDelete.class).getDbEntity();
+        DbEntity entity = env.context().getEntityResolver().getObjEntity(SoftDelete.class).getDbEntity();
         try {
 
             entity.getDataMap().setQuotingSQLIdentifiers(true);
@@ -135,46 +130,46 @@ public class SoftDeleteBatchTranslatorIT {
     @Test
     public void update() throws Exception {
 
-        final DbEntity entity = context.getEntityResolver().getObjEntity(SoftDelete.class).getDbEntity();
+        final DbEntity entity = env.context().getEntityResolver().getObjEntity(SoftDelete.class).getDbEntity();
 
         BatchTranslatorFactory oldFactory = dataNode.getBatchTranslatorFactory();
         try {
             dataNode.setBatchTranslatorFactory(new SoftDeleteTranslatorFactory());
 
-            final SoftDelete test = context.newObject(SoftDelete.class);
+            final SoftDelete test = env.context().newObject(SoftDelete.class);
             test.setName("SoftDeleteBatchQueryBuilderTest");
-            context.commitChanges();
+            env.context().commitChanges();
 
             new ParallelTestContainer() {
 
                 @Override
                 protected void assertResult() {
                     Expression exp = ExpressionFactory.matchExp("name", test.getName());
-                    assertEquals(1, ObjectSelect.query(SoftDelete.class, exp).selectCount(context));
+                    assertEquals(1, ObjectSelect.query(SoftDelete.class, exp).selectCount(env.context()));
 
                     exp = ExpressionFactory.matchDbExp("DELETED", true);
-                    assertEquals(0, ObjectSelect.query(SoftDelete.class, exp).selectCount(context));
+                    assertEquals(0, ObjectSelect.query(SoftDelete.class, exp).selectCount(env.context()));
                 }
             }.runTest(200);
 
-            context.deleteObjects(test);
+            env.context().deleteObjects(test);
             assertEquals(test.getPersistenceState(), PersistenceState.DELETED);
-            context.commitChanges();
+            env.context().commitChanges();
 
             new ParallelTestContainer() {
 
                 @Override
                 protected void assertResult() {
                     Expression exp = ExpressionFactory.matchExp("name", test.getName());
-                    assertEquals(0, ObjectSelect.query(SoftDelete.class, exp).selectCount(context));
+                    assertEquals(0, ObjectSelect.query(SoftDelete.class, exp).selectCount(env.context()));
 
                     SQLTemplate template = new SQLTemplate(entity, "SELECT * FROM SOFT_DELETE");
                     template.setFetchingDataRows(true);
-                    assertEquals(1, context.performQuery(template).size());
+                    assertEquals(1, env.context().performQuery(template).size());
                 }
             }.runTest(200);
         } finally {
-            context.performQuery(new SQLTemplate(entity, "DELETE FROM SOFT_DELETE"));
+            env.context().performQuery(new SQLTemplate(entity, "DELETE FROM SOFT_DELETE"));
             dataNode.setBatchTranslatorFactory(oldFactory);
         }
     }

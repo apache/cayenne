@@ -18,8 +18,6 @@
  ****************************************************************/
 
 package org.apache.cayenne.exp;
-
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.query.ObjectSelect;
@@ -43,11 +41,8 @@ public class CaseWhenIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private ObjectContext context;
-
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
         env.table("PAINTING")
                 .setColumns("PAINTING_ID", "PAINTING_TITLE", "PAINTING_DESCRIPTION", "ESTIMATED_PRICE")
                 .insert(1, "Black square", "Oil on linen, 79.5 x 79.5 cm", 15);
@@ -62,7 +57,7 @@ public class CaseWhenIT {
                         (wrapScalarValue("secondThenResult"))));
 
         StringProperty<String> propertyNoDefault = PropertyFactory.createString(caseWhenNoDefault, String.class);
-        String result = ObjectSelect.columnQuery(Painting.class, propertyNoDefault).selectFirst(context);
+        String result = ObjectSelect.columnQuery(Painting.class, propertyNoDefault).selectFirst(env.context());
         assertEquals("secondThenResult", result);
     }
 
@@ -74,7 +69,7 @@ public class CaseWhenIT {
                 wrapScalarValue("defaultResult"));
 
         StringProperty<String> propertyNoDefault = PropertyFactory.createString(caseWhenNoDefault, String.class);
-        String result = ObjectSelect.columnQuery(Painting.class, propertyNoDefault).selectFirst(context);
+        String result = ObjectSelect.columnQuery(Painting.class, propertyNoDefault).selectFirst(env.context());
         assertEquals("defaultResult", result.trim());
 
     }

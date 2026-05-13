@@ -19,7 +19,6 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -44,9 +43,6 @@ public class DataContextEJBQLFlattenedRelationshipsIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RELATIONSHIPS_FLATTENED_PROJECT);
 
-    protected ObjectContext context;
-
-
     protected TableHelper ft1Helper;
     protected TableHelper ft2Helper;
     protected TableHelper ft3Helper;
@@ -55,7 +51,6 @@ public class DataContextEJBQLFlattenedRelationshipsIT {
     
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
         ft1Helper = env.table("FLATTENED_TEST_1", "FT1_ID", "NAME");
 
         ft2Helper = env.table("FLATTENED_TEST_2", "FT2_ID", "FT1_ID", "NAME");
@@ -83,11 +78,11 @@ public class DataContextEJBQLFlattenedRelationshipsIT {
         String ejbql = "SELECT f FROM FlattenedTest3 f, FlattenedTest1 ft "
                 + "WHERE f MEMBER OF ft.ft3Array AND ft = :ft";
 
-        FlattenedTest1 ft = Cayenne.objectForPK(context, FlattenedTest1.class, 2);
+        FlattenedTest1 ft = Cayenne.objectForPK(env.context(), FlattenedTest1.class, 2);
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("ft", ft);
 
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertEquals(2, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -109,11 +104,11 @@ public class DataContextEJBQLFlattenedRelationshipsIT {
         String ejbql = "SELECT f FROM FlattenedTest4 f, FlattenedTest1 ft "
                 + "WHERE f MEMBER OF ft.ft4ArrayFor1 AND ft = :ft";
 
-        FlattenedTest1 ft = Cayenne.objectForPK(context, FlattenedTest1.class, 1);
+        FlattenedTest1 ft = Cayenne.objectForPK(env.context(), FlattenedTest1.class, 1);
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("ft", ft);
 
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertEquals(1, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -125,11 +120,11 @@ public class DataContextEJBQLFlattenedRelationshipsIT {
 
         assertTrue(ids.contains(1));
 
-        ft = Cayenne.objectForPK(context, FlattenedTest1.class, 2);
+        ft = Cayenne.objectForPK(env.context(), FlattenedTest1.class, 2);
         query = new EJBQLQuery(ejbql);
         query.setParameter("ft", ft);
 
-        objects = context.performQuery(query);
+        objects = env.context().performQuery(query);
         assertEquals(0, objects.size());
     }
 
@@ -139,11 +134,11 @@ public class DataContextEJBQLFlattenedRelationshipsIT {
         createFt123();
         String ejbql = "SELECT ft FROM FlattenedTest1 ft INNER JOIN ft.ft3Array f WHERE ft = :ft";
 
-        FlattenedTest1 ft = Cayenne.objectForPK(context, FlattenedTest1.class, 1);
+        FlattenedTest1 ft = Cayenne.objectForPK(env.context(), FlattenedTest1.class, 1);
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("ft", ft);
 
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertNotNull(objects);
         assertFalse(objects.isEmpty());
         assertEquals(1, objects.size());
@@ -167,11 +162,11 @@ public class DataContextEJBQLFlattenedRelationshipsIT {
         // this query is equivalent to the previous INNER JOIN example
         String ejbql = "SELECT OBJECT(ft) FROM FlattenedTest1 ft, IN(ft.ft3Array) f WHERE ft = :ft";
 
-        FlattenedTest1 ft = Cayenne.objectForPK(context, FlattenedTest1.class, 1);
+        FlattenedTest1 ft = Cayenne.objectForPK(env.context(), FlattenedTest1.class, 1);
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("ft", ft);
 
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertNotNull(objects);
         assertFalse(objects.isEmpty());
         assertEquals(1, objects.size());
@@ -195,7 +190,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertNotNull(objects);
         assertFalse(objects.isEmpty());
         assertEquals(2, objects.size());
@@ -217,11 +212,11 @@ public class DataContextEJBQLFlattenedRelationshipsIT {
 
         String ejbql = "SELECT ft.ft3Array FROM FlattenedTest1 ft WHERE ft = :ft";
 
-        FlattenedTest1 ft = Cayenne.objectForPK(context, FlattenedTest1.class, 2);
+        FlattenedTest1 ft = Cayenne.objectForPK(env.context(), FlattenedTest1.class, 2);
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("ft", ft);
 
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertNotNull(objects);
         assertFalse(objects.isEmpty());
         assertEquals(2, objects.size());
@@ -244,11 +239,11 @@ public class DataContextEJBQLFlattenedRelationshipsIT {
 
         String ejbql = "SELECT ft3.toFT1 FROM FlattenedTest3 ft3 WHERE ft3.toFT1 = :ft";
 
-        FlattenedTest1 ft = Cayenne.objectForPK(context, FlattenedTest1.class, 1);
+        FlattenedTest1 ft = Cayenne.objectForPK(env.context(), FlattenedTest1.class, 1);
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("ft", ft);
 
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertEquals(1, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -294,7 +289,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
 
         assertNotNull(objects);
         assertFalse(objects.isEmpty());
@@ -319,7 +314,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT {
         String ejbql = "SELECT COUNT(ft3), ft3.toFT1 FROM FlattenedTest3 ft3  GROUP BY ft3.toFT1 ";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertEquals(2, objects.size());
     }
 }

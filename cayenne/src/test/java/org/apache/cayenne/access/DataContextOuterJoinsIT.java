@@ -17,8 +17,6 @@
  *  under the License.
  ****************************************************************/
 package org.apache.cayenne.access;
-
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -42,7 +40,6 @@ public class DataContextOuterJoinsIT {
 	@RegisterExtension
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-	protected ObjectContext context;
 	protected DBHelper dbHelper;
 
 	protected TableHelper artistHelper;
@@ -52,7 +49,6 @@ public class DataContextOuterJoinsIT {
 
 	@BeforeEach
 	public void cleanUpDB() throws Exception {
-		context = env.context();
 		dbHelper = env.dbHelper();
 		dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
 		env.getInstance(DBCleaner.class).clean();
@@ -85,7 +81,7 @@ public class DataContextOuterJoinsIT {
 		List<Artist> artists = ObjectSelect.query(Artist.class)
 				.where(Artist.GROUP_ARRAY.outer().isNull())
 				.orderBy(Artist.ARTIST_NAME.asc())
-				.select(context);
+				.select(env.context());
 		assertEquals(1, artists.size());
 		assertEquals("BB1", artists.get(0).getArtistName());
 	}
@@ -104,7 +100,7 @@ public class DataContextOuterJoinsIT {
 		List<Artist> artists = ObjectSelect.query(Artist.class)
 				.where(Artist.PAINTING_ARRAY.outer().isNull())
 				.orderBy(Artist.ARTIST_NAME.asc())
-				.select(context);
+				.select(env.context());
 		assertEquals(2, artists.size());
 		assertEquals("BB1", artists.get(0).getArtistName());
 
@@ -112,7 +108,7 @@ public class DataContextOuterJoinsIT {
 				.where(Artist.PAINTING_ARRAY.outer().isNull())
 				.or(Artist.ARTIST_NAME.eq("AA1"))
 				.orderBy(Artist.ARTIST_NAME.asc())
-				.select(context);
+				.select(env.context());
 		assertEquals(3, artists.size());
 		assertEquals("AA1", artists.get(0).getArtistName());
 		assertEquals("BB1", artists.get(1).getArtistName());
@@ -133,7 +129,7 @@ public class DataContextOuterJoinsIT {
 		List<Artist> artists = ObjectSelect.query(Artist.class)
 				.where(ExpressionFactory.exp("paintingArray+ = null"))
 				.orderBy(Artist.ARTIST_NAME.asc())
-				.select(context);
+				.select(env.context());
 		assertEquals(2, artists.size());
 		assertEquals("BB1", artists.get(0).getArtistName());
 
@@ -141,7 +137,7 @@ public class DataContextOuterJoinsIT {
 				.where(ExpressionFactory.exp("paintingArray+ = null"))
 				.or(Artist.ARTIST_NAME.eq("AA1"))
 				.orderBy(Artist.ARTIST_NAME.asc())
-				.select(context);
+				.select(env.context());
 		assertEquals(3, artists.size());
 		assertEquals("AA1", artists.get(0).getArtistName());
 		assertEquals("BB1", artists.get(1).getArtistName());
@@ -160,7 +156,7 @@ public class DataContextOuterJoinsIT {
 
 		List<Painting> paintings = ObjectSelect.query(Painting.class)
 				.orderBy(Painting.TO_ARTIST.outer().dot(Artist.ARTIST_NAME).desc())
-				.select(context);
+				.select(env.context());
 		assertEquals(3, paintings.size());
 	}
 }

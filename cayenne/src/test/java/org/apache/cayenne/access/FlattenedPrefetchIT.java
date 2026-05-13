@@ -22,8 +22,6 @@ package org.apache.cayenne.access;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.query.ObjectSelect;
@@ -49,7 +47,6 @@ public class FlattenedPrefetchIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     protected DataChannelInterceptor queryInterceptor;
-    protected ObjectContext context;
 
     protected TableHelper tArtist;
     protected TableHelper tPainting;
@@ -60,7 +57,6 @@ public class FlattenedPrefetchIT {
     @BeforeEach
     public void setUp() throws Exception {
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
-        context = env.context();
 
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
@@ -111,7 +107,7 @@ public class FlattenedPrefetchIT {
 
         List<Artist> objects = ObjectSelect.query(Artist.class)
                 .prefetch(Artist.GROUP_ARRAY.disjoint())
-                .select(context);
+                .select(env.context());
 
         queryInterceptor.runWithQueriesBlocked(() -> assertArtistResult(objects));
     }
@@ -123,7 +119,7 @@ public class FlattenedPrefetchIT {
         List<Painting> objects = ObjectSelect.query(Painting.class)
                 .prefetch(Painting.TO_ARTIST.disjoint())
                 .prefetch(Painting.TO_ARTIST.dot(Artist.GROUP_ARRAY).disjoint())
-                .select(context);
+                .select(env.context());
 
         queryInterceptor.runWithQueriesBlocked(() -> assertPaintingResult(objects));
     }
@@ -134,7 +130,7 @@ public class FlattenedPrefetchIT {
 
         List<Artist> objects = ObjectSelect.query(Artist.class)
                 .prefetch(Artist.GROUP_ARRAY.joint())
-                .select(context);
+                .select(env.context());
 
         queryInterceptor.runWithQueriesBlocked(() -> assertArtistResult(objects));
 
@@ -147,7 +143,7 @@ public class FlattenedPrefetchIT {
         List<Painting> objects = ObjectSelect.query(Painting.class)
                 .prefetch(Painting.TO_ARTIST.joint())
                 .prefetch(Painting.TO_ARTIST.dot(Artist.GROUP_ARRAY).joint())
-                .select(context);
+                .select(env.context());
 
         queryInterceptor.runWithQueriesBlocked(() -> assertPaintingResult(objects));
     }

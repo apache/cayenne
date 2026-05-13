@@ -22,8 +22,6 @@ package org.apache.cayenne.exp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -42,14 +40,11 @@ public class ParsedExpQualifierCompatIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    protected ObjectContext context;
-
     protected TableHelper tArtist;
     protected TableHelper tPainting;
 
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING", "PAINTING_ID",
@@ -80,7 +75,7 @@ public class ParsedExpQualifierCompatIT {
         if (prefetch != null) {
             query.prefetch(prefetch, PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
         }
-        return query.select(context);
+        return query.select(env.context());
     }
 
     @Test

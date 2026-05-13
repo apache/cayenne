@@ -20,7 +20,6 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -37,14 +36,10 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-
 public class DataContextEJBQLUpdateCompoundIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.COMPOUND_PROJECT);
-
-    private ObjectContext context;
-
 
     private TableHelper tCompoundPk;
     private TableHelper tCompoundFk;
@@ -52,7 +47,6 @@ public class DataContextEJBQLUpdateCompoundIT {
     
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
         tCompoundPk = env.table("COMPOUND_PK_TEST", "KEY1", "KEY2");
 
         tCompoundFk = env.table("COMPOUND_FK_TEST", "PKEY", "F_KEY1", "F_KEY2");
@@ -73,7 +67,7 @@ public class DataContextEJBQLUpdateCompoundIT {
         key1.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "b1");
         key1.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "b2");
         CompoundPkTestEntity object = Cayenne.objectForPK(
-                context,
+                env.context(),
                 CompoundPkTestEntity.class,
                 key1);
 
@@ -81,21 +75,21 @@ public class DataContextEJBQLUpdateCompoundIT {
                 "select count(e) from CompoundFkTestEntity e WHERE e.toCompoundPk <> :param");
         check.setParameter("param", object);
 
-        Object notUpdated = Cayenne.objectForQuery(context, check);
+        Object notUpdated = Cayenne.objectForQuery(env.context(), check);
         assertEquals(1L, notUpdated);
 
         String ejbql = "UPDATE CompoundFkTestEntity e SET e.toCompoundPk = :param";
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("param", object);
 
-        QueryResponse result = context.performGenericQuery(query);
+        QueryResponse result = env.context().performGenericQuery(query);
 
         int[] count = result.firstUpdateCount();
         assertNotNull(count);
         assertEquals(1, count.length);
         assertEquals(2, count[0]);
 
-        notUpdated = Cayenne.objectForQuery(context, check);
+        notUpdated = Cayenne.objectForQuery(env.context(), check);
         assertEquals(0L, notUpdated);
     }
 

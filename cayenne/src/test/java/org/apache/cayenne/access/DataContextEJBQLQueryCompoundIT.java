@@ -20,7 +20,6 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.compound.CompoundFkTestEntity;
@@ -43,9 +42,6 @@ public class DataContextEJBQLQueryCompoundIT {
 	@RegisterExtension
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.COMPOUND_PROJECT);
 
-	private ObjectContext context;
-
-
 	private UnitDbAdapter accessStackAdapter;
 
 	private TableHelper tCompoundPk;
@@ -54,7 +50,6 @@ public class DataContextEJBQLQueryCompoundIT {
 	
 	@BeforeEach
 	public void setUp() throws Exception {
-		context = env.context();
 		accessStackAdapter = env.getInstance(UnitDbAdapter.class);
 		tCompoundPk = env.table("COMPOUND_PK_TEST", "KEY1", "KEY2");
 
@@ -75,13 +70,13 @@ public class DataContextEJBQLQueryCompoundIT {
 		Map<String, String> key1 = new HashMap<>();
 		key1.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "b1");
 		key1.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "b2");
-		CompoundPkTestEntity a = Cayenne.objectForPK(context, CompoundPkTestEntity.class, key1);
+		CompoundPkTestEntity a = Cayenne.objectForPK(env.context(), CompoundPkTestEntity.class, key1);
 
 		String ejbql = "select e from CompoundFkTestEntity e WHERE e.toCompoundPk = :param";
 		EJBQLQuery query = new EJBQLQuery(ejbql);
 		query.setParameter("param", a);
 
-		List<?> ps = context.performQuery(query);
+		List<?> ps = env.context().performQuery(query);
 		assertEquals(1, ps.size());
 
 		CompoundFkTestEntity o1 = (CompoundFkTestEntity) ps.get(0);
@@ -99,13 +94,13 @@ public class DataContextEJBQLQueryCompoundIT {
 		Map<String, String> key1 = new HashMap<>();
 		key1.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "b1");
 		key1.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "b2");
-		CompoundPkTestEntity a = Cayenne.objectForPK(context, CompoundPkTestEntity.class, key1);
+		CompoundPkTestEntity a = Cayenne.objectForPK(env.context(), CompoundPkTestEntity.class, key1);
 
 		String ejbql = "select e from CompoundFkTestEntity e WHERE :param = e.toCompoundPk";
 		EJBQLQuery query = new EJBQLQuery(ejbql);
 		query.setParameter("param", a);
 
-		List<?> ps = context.performQuery(query);
+		List<?> ps = env.context().performQuery(query);
 		assertEquals(1, ps.size());
 
 		CompoundFkTestEntity o1 = (CompoundFkTestEntity) ps.get(0);
@@ -119,13 +114,13 @@ public class DataContextEJBQLQueryCompoundIT {
 		Map<String, String> key1 = new HashMap<>();
 		key1.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "b1");
 		key1.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "b2");
-		CompoundPkTestEntity a = Cayenne.objectForPK(context, CompoundPkTestEntity.class, key1);
+		CompoundPkTestEntity a = Cayenne.objectForPK(env.context(), CompoundPkTestEntity.class, key1);
 
 		String ejbql = "select e from CompoundFkTestEntity e WHERE e.toCompoundPk <> :param";
 		EJBQLQuery query = new EJBQLQuery(ejbql);
 		query.setParameter("param", a);
 
-		List<?> ps = context.performQuery(query);
+		List<?> ps = env.context().performQuery(query);
 		assertEquals(1, ps.size());
 
 		CompoundFkTestEntity o1 = (CompoundFkTestEntity) ps.get(0);

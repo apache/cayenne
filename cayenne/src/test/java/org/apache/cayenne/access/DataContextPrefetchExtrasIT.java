@@ -20,8 +20,6 @@
 package org.apache.cayenne.access;
 
 import java.util.List;
-
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.PersistentObject;
@@ -49,9 +47,6 @@ public class DataContextPrefetchExtrasIT  {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.COMPOUND_PROJECT);
 
-        protected ObjectContext context;
-
-
     protected TableHelper tCharPkTest;
     protected TableHelper tCharFkTest;
     protected TableHelper tCompoundPkTest;
@@ -60,7 +55,6 @@ public class DataContextPrefetchExtrasIT  {
     
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
         tCharPkTest = env.table("CHAR_PK_TEST", "PK_COL", "OTHER_COL");
 
         tCharFkTest = env.table("CHAR_FK_TEST", "PK", "FK_COL", "NAME");
@@ -99,7 +93,7 @@ public class DataContextPrefetchExtrasIT  {
                 .prefetch("charFKs", PrefetchTreeNode.UNDEFINED_SEMANTICS)
                 .orderBy(CharPkTestEntity.OTHER_COL.asc());
 
-        List<CharPkTestEntity> pks = q.select(context);
+        List<CharPkTestEntity> pks = q.select(env.context());
         assertEquals(2, pks.size());
 
         CharPkTestEntity pk1 = pks.get(0);
@@ -125,7 +119,7 @@ public class DataContextPrefetchExtrasIT  {
                 .where(CompoundFkTestEntity.NAME.eq("CFK2"))
                 .prefetch("toCompoundPk", PrefetchTreeNode.UNDEFINED_SEMANTICS);
 
-        List<CompoundFkTestEntity> objects = q.select(context);
+        List<CompoundFkTestEntity> objects = q.select(env.context());
         assertEquals(1, objects.size());
         PersistentObject fk1 = objects.get(0);
 
@@ -151,7 +145,7 @@ public class DataContextPrefetchExtrasIT  {
                 .where(CompoundPkTestEntity.NAME.eq("CPK2"))
                 .prefetch("compoundFkArray", PrefetchTreeNode.UNDEFINED_SEMANTICS);
 
-        List<CompoundPkTestEntity> pks = q.select(context);
+        List<CompoundPkTestEntity> pks = q.select(env.context());
         assertEquals(1, pks.size());
         PersistentObject pk1 = pks.get(0);
 

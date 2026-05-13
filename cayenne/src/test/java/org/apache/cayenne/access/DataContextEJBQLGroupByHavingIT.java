@@ -17,8 +17,6 @@
  *  under the License.
  ****************************************************************/
 package org.apache.cayenne.access;
-
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -46,9 +44,6 @@ public class DataContextEJBQLGroupByHavingIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    protected ObjectContext context;
-
-
     protected TableHelper tArtist;
     protected TableHelper tPainting;
     protected TableHelper tGallery;
@@ -56,7 +51,6 @@ public class DataContextEJBQLGroupByHavingIT {
     
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING").setColumns(
@@ -118,7 +112,7 @@ public class DataContextEJBQLGroupByHavingIT {
                 + " ORDER BY p.estimatedPrice";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> data = context.performQuery(query);
+        List<?> data = env.context().performQuery(query);
         assertEquals(2, data.size());
         assertTrue(data.get(0) instanceof Object[]);
 
@@ -140,7 +134,7 @@ public class DataContextEJBQLGroupByHavingIT {
                 + " ORDER BY p.estimatedPrice, p.paintingTitle";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> data = context.performQuery(query);
+        List<?> data = env.context().performQuery(query);
         assertEquals(3, data.size());
         assertTrue(data.get(0) instanceof Object[]);
 
@@ -170,7 +164,7 @@ public class DataContextEJBQLGroupByHavingIT {
                 + "ORDER BY a.artistName";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> data = context.performQuery(query);
+        List<?> data = env.context().performQuery(query);
         assertEquals(2, data.size());
 
         assertTrue(data.get(0) instanceof Object[]);
@@ -188,7 +182,7 @@ public class DataContextEJBQLGroupByHavingIT {
         String ejbql = "SELECT count(p), p FROM Painting p GROUP BY p";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> data = context.performQuery(query);
+        List<?> data = env.context().performQuery(query);
         assertEquals(5, data.size());
 
         // TODO: andrus, 8/3/2007 the rest of the unit test fails as currently Cayenne
@@ -211,7 +205,7 @@ public class DataContextEJBQLGroupByHavingIT {
                 + " HAVING p.estimatedPrice > 1";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> data = context.performQuery(query);
+        List<?> data = env.context().performQuery(query);
         assertEquals(1, data.size());
         assertTrue(data.get(0) instanceof Object[]);
 
@@ -229,7 +223,7 @@ public class DataContextEJBQLGroupByHavingIT {
                 + " HAVING count(p) > 2";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> data = context.performQuery(query);
+        List<?> data = env.context().performQuery(query);
         assertEquals(1, data.size());
         assertTrue(data.get(0) instanceof Object[]);
 
@@ -247,7 +241,7 @@ public class DataContextEJBQLGroupByHavingIT {
                 + " HAVING count(p) > 2 AND p.estimatedPrice < 10";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> data = context.performQuery(query);
+        List<?> data = env.context().performQuery(query);
         assertEquals(1, data.size());
         assertTrue(data.get(0) instanceof Object[]);
 
@@ -262,7 +256,7 @@ public class DataContextEJBQLGroupByHavingIT {
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT COUNT(p), p.toArtist FROM Painting p GROUP BY p.toArtist ");
-        List<Object[]> data = context.performQuery(query);
+        List<Object[]> data = env.context().performQuery(query);
         assertNotNull(data);
         assertEquals(2, data.size());
 
@@ -287,7 +281,7 @@ public class DataContextEJBQLGroupByHavingIT {
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT COUNT(p), p.toArtist, p.toGallery FROM Painting p "
                         + "GROUP BY p.toGallery, p.toArtist ");
-        List<Object[]> data = context.performQuery(query);
+        List<Object[]> data = env.context().performQuery(query);
         assertNotNull(data);
         assertEquals(2, data.size());
 
@@ -312,7 +306,7 @@ public class DataContextEJBQLGroupByHavingIT {
                 "SELECT COUNT(p.toArtist), p.paintingTitle FROM Painting p "
                         + "GROUP BY p.paintingTitle "
                         + "HAVING p.paintingTitle LIKE 'P1%'");
-        List<Object[]> data = context.performQuery(query);
+        List<Object[]> data = env.context().performQuery(query);
         assertNotNull(data);
         assertEquals(3, data.size());
 
@@ -333,12 +327,12 @@ public class DataContextEJBQLGroupByHavingIT {
         String ejbql = "SELECT p.painting.toArtist.paintingArray FROM PaintingInfo p"
                 + " GROUP BY p.painting.toArtist.paintingArray";
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        context.performQuery(query);
+        env.context().performQuery(query);
 
         ejbql = "SELECT p.painting.toArtist FROM PaintingInfo p"
                 + " GROUP BY p.painting.toArtist";
         query = new EJBQLQuery(ejbql);
-        context.performQuery(query);
+        env.context().performQuery(query);
     }
 
 }

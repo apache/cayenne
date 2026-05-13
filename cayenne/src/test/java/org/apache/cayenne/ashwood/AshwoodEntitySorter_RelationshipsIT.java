@@ -24,8 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.sql.Types;
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -41,8 +39,6 @@ public class AshwoodEntitySorter_RelationshipsIT {
 	@RegisterExtension
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RELATIONSHIPS_PROJECT);
 
-	protected ObjectContext context;
-
 	private TableHelper tRelationshipHelper;
 	private TableHelper tReflexiveAndToOne;
 
@@ -50,9 +46,8 @@ public class AshwoodEntitySorter_RelationshipsIT {
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		context = env.context();
 		this.sorter = new AshwoodEntitySorter();
-		sorter.setEntityResolver(context.getEntityResolver());
+		sorter.setEntityResolver(env.context().getEntityResolver());
 
 		tRelationshipHelper = env.table("RELATIONSHIP_HELPER", "RELATIONSHIP_HELPER_ID", "NAME");
 
@@ -68,9 +63,9 @@ public class AshwoodEntitySorter_RelationshipsIT {
 		tReflexiveAndToOne.insert(2, 1, 1, "r2");
 		tReflexiveAndToOne.insert(3, 2, 1, "r3");
 
-		ObjEntity entity = context.getEntityResolver().getObjEntity(ReflexiveAndToOne.class);
+		ObjEntity entity = env.context().getEntityResolver().getObjEntity(ReflexiveAndToOne.class);
 
-		List<ReflexiveAndToOne> objects = ObjectSelect.query(ReflexiveAndToOne.class).select(context);
+		List<ReflexiveAndToOne> objects = ObjectSelect.query(ReflexiveAndToOne.class).select(env.context());
 		Collections.shuffle(objects);
 		assertEquals(3, objects.size());
 

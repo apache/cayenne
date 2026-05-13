@@ -18,8 +18,6 @@
  ****************************************************************/
 
 package org.apache.cayenne.access.translator.select;
-
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.parser.SimpleNode;
@@ -43,16 +41,13 @@ public class ExistsExpressionTranslatorIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private ObjectContext context;
-
     private TranslatorContext translatorContext;
 
     @BeforeEach
     public void setUp() {
-        context = env.context();
         translatorContext = mock(TranslatorContext.class);
-        DbEntity dbArtist = context.getEntityResolver().getDbEntity("ARTIST");
-        ObjEntity objArtist = context.getEntityResolver().getObjEntity("Artist");
+        DbEntity dbArtist = env.context().getEntityResolver().getDbEntity("ARTIST");
+        ObjEntity objArtist = env.context().getEntityResolver().getObjEntity("Artist");
         when(translatorContext.getRootDbEntity()).thenReturn(dbArtist);
         QueryMetadata metadata = new MockQueryMetadata() {
             @Override
@@ -153,7 +148,7 @@ public class ExistsExpressionTranslatorIT {
         Expression exp = ExpressionFactory.exp("db:PAINTING_ARRAY").exists();
 
         translatorContext = mock(TranslatorContext.class);
-        DbEntity dbArtist = context.getEntityResolver().getDbEntity("ARTIST");
+        DbEntity dbArtist = env.context().getEntityResolver().getDbEntity("ARTIST");
         when(translatorContext.getRootDbEntity()).thenReturn(dbArtist);
         when(translatorContext.getMetadata()).thenReturn(new MockQueryMetadata());
 

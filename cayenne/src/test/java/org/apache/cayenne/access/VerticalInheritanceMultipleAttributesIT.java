@@ -47,14 +47,12 @@ public class VerticalInheritanceMultipleAttributesIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.INHERITANCE_VERTICAL_PROJECT);
 
-    protected ObjectContext context;
     protected CayenneRuntime runtime;
 
     TableHelper ivOtherTable, ivBaseTable, ivImplTable;
 
     @BeforeEach
     public void setupTableHelpers() throws Exception {
-        context = env.context();
         runtime = env.runtime();
         ivOtherTable = env.table("IV_OTHER").setColumns("ID", "NAME")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR);
@@ -86,10 +84,10 @@ public class VerticalInheritanceMultipleAttributesIT {
         ivImplTable.insert(2, "attr1", "attr2", 1, 2);
 
         // Fetch and update the records
-        IvOther other1 = ObjectSelect.query(IvOther.class).where(IvOther.NAME.eq("other1")).selectOne(context);
-        IvOther other2 = ObjectSelect.query(IvOther.class).where(IvOther.NAME.eq("other2")).selectOne(context);
+        IvOther other1 = ObjectSelect.query(IvOther.class).where(IvOther.NAME.eq("other1")).selectOne(env.context());
+        IvOther other2 = ObjectSelect.query(IvOther.class).where(IvOther.NAME.eq("other2")).selectOne(env.context());
 
-        List<IvImpl> implResult = ObjectSelect.query(IvImpl.class).select(context);
+        List<IvImpl> implResult = ObjectSelect.query(IvImpl.class).select(env.context());
         assertEquals(2, implResult.size());
         for(IvImpl record : implResult) {
             record.setName(record.getName() + "-Change");
@@ -99,7 +97,7 @@ public class VerticalInheritanceMultipleAttributesIT {
             record.setOther2(other1);
         }
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         // Check result via clean context
         ObjectContext cleanContext = runtime.newContext();
@@ -119,24 +117,24 @@ public class VerticalInheritanceMultipleAttributesIT {
         ivOtherTable.insert(1, "other1");
         ivOtherTable.insert(2, "other2");
 
-        IvOther other1 = ObjectSelect.query(IvOther.class).where(IvOther.NAME.eq("other1")).selectOne(context);
-        IvOther other2 = ObjectSelect.query(IvOther.class).where(IvOther.NAME.eq("other2")).selectOne(context);
+        IvOther other1 = ObjectSelect.query(IvOther.class).where(IvOther.NAME.eq("other1")).selectOne(env.context());
+        IvOther other2 = ObjectSelect.query(IvOther.class).where(IvOther.NAME.eq("other2")).selectOne(env.context());
 
-        IvImpl impl1 = context.newObject(IvImpl.class);
+        IvImpl impl1 = env.context().newObject(IvImpl.class);
         impl1.setName("name");
         impl1.setAttr1("attr1");
         impl1.setAttr2("attr2");
         impl1.setOther1(other1);
         impl1.setOther2(other2);
 
-        IvImpl impl2 = context.newObject(IvImpl.class);
+        IvImpl impl2 = env.context().newObject(IvImpl.class);
         impl2.setName("name");
         impl2.setAttr1("attr1");
         impl2.setAttr2("attr2");
         impl2.setOther1(other1);
         impl2.setOther2(other2);
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         // Check result via clean context
         ObjectContext cleanContext = runtime.newContext();
@@ -153,13 +151,13 @@ public class VerticalInheritanceMultipleAttributesIT {
 
     @Test
     public void createEmptyObjects() throws SQLException {
-        IvImpl impl1 = context.newObject(IvImpl.class);
+        IvImpl impl1 = env.context().newObject(IvImpl.class);
         impl1.setName("name");
 
-        IvImpl impl2 = context.newObject(IvImpl.class);
+        IvImpl impl2 = env.context().newObject(IvImpl.class);
         impl2.setName("name");
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         ObjectContext cleanContext = runtime.newContext();
         List<IvImpl> implResult = ObjectSelect.query(IvImpl.class).select(cleanContext);
@@ -178,16 +176,16 @@ public class VerticalInheritanceMultipleAttributesIT {
         ivOtherTable.insert(1, "other1");
         ivOtherTable.insert(2, "other2");
 
-        IvOther other1 = ObjectSelect.query(IvOther.class).where(IvOther.NAME.eq("other1")).selectOne(context);
-        IvOther other2 = ObjectSelect.query(IvOther.class).where(IvOther.NAME.eq("other2")).selectOne(context);
+        IvOther other1 = ObjectSelect.query(IvOther.class).where(IvOther.NAME.eq("other1")).selectOne(env.context());
+        IvOther other2 = ObjectSelect.query(IvOther.class).where(IvOther.NAME.eq("other2")).selectOne(env.context());
 
-        IvImpl impl1 = context.newObject(IvImpl.class);
+        IvImpl impl1 = env.context().newObject(IvImpl.class);
         impl1.setName("name");
 
-        IvImpl impl2 = context.newObject(IvImpl.class);
+        IvImpl impl2 = env.context().newObject(IvImpl.class);
         impl2.setName("name");
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         ObjectContext cleanContext = runtime.newContext();
         List<IvImpl> implResult = ObjectSelect.query(IvImpl.class).select(cleanContext);
@@ -210,7 +208,7 @@ public class VerticalInheritanceMultipleAttributesIT {
         impl2.setOther1(other1);
         impl2.setOther2(other2);
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         cleanContext = runtime.newContext();
         implResult = ObjectSelect.query(IvImpl.class).select(cleanContext);
@@ -229,18 +227,18 @@ public class VerticalInheritanceMultipleAttributesIT {
         ivOtherTable.insert(1, "other1");
         ivOtherTable.insert(2, "other2");
 
-        IvOther other1 = ObjectSelect.query(IvOther.class).where(IvOther.NAME.eq("other1")).selectOne(context);
-        IvOther other2 = ObjectSelect.query(IvOther.class).where(IvOther.NAME.eq("other2")).selectOne(context);
+        IvOther other1 = ObjectSelect.query(IvOther.class).where(IvOther.NAME.eq("other1")).selectOne(env.context());
+        IvOther other2 = ObjectSelect.query(IvOther.class).where(IvOther.NAME.eq("other2")).selectOne(env.context());
 
-        IvImpl impl1 = context.newObject(IvImpl.class);
+        IvImpl impl1 = env.context().newObject(IvImpl.class);
         impl1.setName("name");
         impl1.setAttr1("attr1");
 
-        IvImpl impl2 = context.newObject(IvImpl.class);
+        IvImpl impl2 = env.context().newObject(IvImpl.class);
         impl2.setName("name");
         impl2.setAttr1("attr1");
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         ObjectContext cleanContext = runtime.newContext();
         List<IvImpl> implResult = ObjectSelect.query(IvImpl.class).select(cleanContext);
@@ -263,7 +261,7 @@ public class VerticalInheritanceMultipleAttributesIT {
         impl2.setOther1(other1);
         impl2.setOther2(other2);
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         cleanContext = runtime.newContext();
         implResult = ObjectSelect.query(IvImpl.class).select(cleanContext);
@@ -289,15 +287,15 @@ public class VerticalInheritanceMultipleAttributesIT {
         ivImplTable.insert(1, "attr1", "attr2", 1, 2);
         ivImplTable.insert(2, "attr1", "attr2", 1, 2);
 
-        List<IvImpl> implResult = ObjectSelect.query(IvImpl.class).select(context);
+        List<IvImpl> implResult = ObjectSelect.query(IvImpl.class).select(env.context());
         assertEquals(2, implResult.size());
 
         for(IvImpl iv : implResult) {
-            context.deleteObject(iv);
+            env.context().deleteObject(iv);
         }
 
-        context.commitChanges();
+        env.context().commitChanges();
 
-        assertEquals(0L, ObjectSelect.query(IvImpl.class).selectCount(context));
+        assertEquals(0L, ObjectSelect.query(IvImpl.class).selectCount(env.context()));
     }
 }

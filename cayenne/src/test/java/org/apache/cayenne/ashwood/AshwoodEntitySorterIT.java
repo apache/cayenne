@@ -23,8 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -38,8 +36,6 @@ public class AshwoodEntitySorterIT {
 	@RegisterExtension
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-	protected ObjectContext context;
-
 	private EntityResolver resolver;
 	private AshwoodEntitySorter sorter;
 
@@ -52,9 +48,8 @@ public class AshwoodEntitySorterIT {
 
 	@BeforeEach
 	public void before() {
-		context = env.context();
 
-		this.resolver = context.getEntityResolver();
+		this.resolver = env.context().getEntityResolver();
 		this.sorter = new AshwoodEntitySorter();
 		sorter.setEntityResolver(resolver);
 

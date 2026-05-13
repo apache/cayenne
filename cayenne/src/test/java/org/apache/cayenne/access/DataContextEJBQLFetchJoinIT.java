@@ -17,8 +17,6 @@
  *  under the License.
  ****************************************************************/
 package org.apache.cayenne.access;
-
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.query.EJBQLQuery;
@@ -50,9 +48,6 @@ public class DataContextEJBQLFetchJoinIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    protected ObjectContext context;
-
-
     protected DataChannelInterceptor queryBlocker;
 
     protected TableHelper tArtist;
@@ -64,7 +59,6 @@ public class DataContextEJBQLFetchJoinIT {
     
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
         queryBlocker = env.getInstance(DataChannelInterceptor.class);
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
@@ -118,7 +112,7 @@ public class DataContextEJBQLFetchJoinIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        final List<?> objects = context.performQuery(query);
+        final List<?> objects = env.context().performQuery(query);
 
         queryBlocker.runWithQueriesBlocked(() -> {
 
@@ -150,7 +144,7 @@ public class DataContextEJBQLFetchJoinIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        final List<?> objects = context.performQuery(query);
+        final List<?> objects = env.context().performQuery(query);
 
         queryBlocker.runWithQueriesBlocked(() -> {
 
@@ -198,7 +192,7 @@ public class DataContextEJBQLFetchJoinIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        final List<?> objects = context.performQuery(query);
+        final List<?> objects = env.context().performQuery(query);
 
         queryBlocker.runWithQueriesBlocked(() -> {
             assertNotNull(objects);
@@ -217,7 +211,7 @@ public class DataContextEJBQLFetchJoinIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        final List<?> objects = context.performQuery(query);
+        final List<?> objects = env.context().performQuery(query);
 
         queryBlocker.runWithQueriesBlocked(() -> {
 
@@ -294,7 +288,7 @@ public class DataContextEJBQLFetchJoinIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        final List<?> objects = context.performQuery(query);
+        final List<?> objects = env.context().performQuery(query);
         queryBlocker.runWithQueriesBlocked(() -> {
 
             assertEquals(6, objects.size());

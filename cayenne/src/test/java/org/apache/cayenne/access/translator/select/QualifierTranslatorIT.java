@@ -18,8 +18,6 @@
  ****************************************************************/
 
 package org.apache.cayenne.access.translator.select;
-
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationVisitor;
 import org.apache.cayenne.access.sqlbuilder.StringBuilderAppendable;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
@@ -46,12 +44,10 @@ public class QualifierTranslatorIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.COMPOUND_PROJECT);
 
     private CayenneRuntime runtime;
-    private ObjectContext context;
 
     @BeforeEach
     public void setUp() throws Exception {
         runtime = env.runtime();
-        context = env.context();
         TableHelper tCompoundPKTest = env.table("COMPOUND_PK_TEST", "KEY1", "KEY2", "NAME");
         tCompoundPKTest.insert("PK1", "PK2", "BBB");
         tCompoundPKTest.insert("PK3", "PK4", "CCC");
@@ -59,7 +55,7 @@ public class QualifierTranslatorIT {
 
     @Test
     public void compoundPK() {
-        CompoundPkTestEntity testEntity = ObjectSelect.query(CompoundPkTestEntity.class).selectFirst(context);
+        CompoundPkTestEntity testEntity = ObjectSelect.query(CompoundPkTestEntity.class).selectFirst(env.context());
         assertNotNull(testEntity);
 
         ObjectSelect<CompoundFkTestEntity> query = ObjectSelect.query(CompoundFkTestEntity.class)
@@ -68,7 +64,7 @@ public class QualifierTranslatorIT {
                 .and(CompoundFkTestEntity.NAME.contains("a"));
 
         DefaultSelectTranslator translator
-                = new DefaultSelectTranslator(query, runtime.getDataDomain().getDefaultNode().getAdapter(), context.getEntityResolver());
+                = new DefaultSelectTranslator(query, runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver());
 
         QualifierTranslator qualifierTranslator = translator.getContext().getQualifierTranslator();
 
@@ -84,7 +80,7 @@ public class QualifierTranslatorIT {
     public void multipleCompoundPK() {
         List<CompoundPkTestEntity> testEntity = ObjectSelect.query(CompoundPkTestEntity.class)
                 .limit(2)
-                .select(context);
+                .select(env.context());
         assertNotNull(testEntity);
         assertEquals(2, testEntity.size());
 
@@ -93,7 +89,7 @@ public class QualifierTranslatorIT {
                 .or(CompoundFkTestEntity.TO_COMPOUND_PK.eq(testEntity.get(1)));
 
         DefaultSelectTranslator translator
-                = new DefaultSelectTranslator(query, runtime.getDataDomain().getDefaultNode().getAdapter(), context.getEntityResolver());
+                = new DefaultSelectTranslator(query, runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver());
 
         QualifierTranslator qualifierTranslator = translator.getContext().getQualifierTranslator();
 
@@ -111,7 +107,7 @@ public class QualifierTranslatorIT {
                 .where(ExpressionFactory.exp("name = -1"));
 
         DefaultSelectTranslator translator
-                = new DefaultSelectTranslator(query, runtime.getDataDomain().getDefaultNode().getAdapter(), context.getEntityResolver());
+                = new DefaultSelectTranslator(query, runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver());
 
         QualifierTranslator qualifierTranslator = translator.getContext().getQualifierTranslator();
 

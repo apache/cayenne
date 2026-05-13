@@ -19,7 +19,6 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -43,9 +42,6 @@ public class DataContextEJBQLJoinsIT {
 	@RegisterExtension
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-	private ObjectContext context;
-
-
 	protected TableHelper tArtist;
 	protected TableHelper tPainting;
 	protected TableHelper tGallery;
@@ -53,7 +49,6 @@ public class DataContextEJBQLJoinsIT {
 	
 	@BeforeEach
 	public void setUp() throws Exception {
-		context = env.context();
 		tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
 		tPainting = env.table("PAINTING").setColumns("PAINTING_ID", "ARTIST_ID", "GALLERY_ID", "PAINTING_TITLE", "ESTIMATED_PRICE")
@@ -103,7 +98,7 @@ public class DataContextEJBQLJoinsIT {
 		String ejbql = "SELECT DISTINCT a FROM Artist a, Painting b " + "WHERE a.artistName = b.paintingTitle";
 
 		EJBQLQuery query = new EJBQLQuery(ejbql);
-		List<?> artists = context.performQuery(query);
+		List<?> artists = env.context().performQuery(query);
 		assertEquals(2, artists.size());
 
 		Set<String> names = new HashSet<String>(2);
@@ -123,7 +118,7 @@ public class DataContextEJBQLJoinsIT {
 
 		String ejbql = "SELECT a FROM Artist a INNER JOIN a.paintingArray p " + "WHERE a.artistName = 'AA1'";
 
-		List<?> artists = context.performQuery(new EJBQLQuery(ejbql));
+		List<?> artists = env.context().performQuery(new EJBQLQuery(ejbql));
 		assertEquals(1, artists.size());
 		assertEquals(33001, Cayenne.intPKForObject((Artist) artists.get(0)));
 	}
@@ -134,7 +129,7 @@ public class DataContextEJBQLJoinsIT {
 
 		String ejbql = "SELECT a FROM Artist a LEFT JOIN a.paintingArray p " + "WHERE a.artistName = 'AA1'";
 
-		List<?> artists = context.performQuery(new EJBQLQuery(ejbql));
+		List<?> artists = env.context().performQuery(new EJBQLQuery(ejbql));
 		assertEquals(2, artists.size());
 		Set<Object> ids = new HashSet<>(2);
 		Iterator<?> it = artists.iterator();
@@ -156,7 +151,7 @@ public class DataContextEJBQLJoinsIT {
 
 		EJBQLQuery query = new EJBQLQuery(ejbql);
 
-		List<?> artists = context.performQuery(query);
+		List<?> artists = env.context().performQuery(query);
 		assertEquals(1, artists.size());
 		assertEquals(33002, Cayenne.intPKForObject((Artist) artists.get(0)));
 	}
@@ -169,7 +164,7 @@ public class DataContextEJBQLJoinsIT {
 
 		EJBQLQuery query = new EJBQLQuery(ejbql);
 
-		List<?> artists = context.performQuery(query);
+		List<?> artists = env.context().performQuery(query);
 		assertEquals(1, artists.size());
 		assertEquals(33002, Cayenne.intPKForObject((Artist) artists.get(0)));
 	}
@@ -186,7 +181,7 @@ public class DataContextEJBQLJoinsIT {
 
 		EJBQLQuery query = new EJBQLQuery(ejbql);
 
-		List<?> artists = context.performQuery(query);
+		List<?> artists = env.context().performQuery(query);
 		assertEquals(1, artists.size());
 		assertEquals(33002, Cayenne.intPKForObject((Artist) artists.get(0)));
 	}
@@ -205,7 +200,7 @@ public class DataContextEJBQLJoinsIT {
 
 		EJBQLQuery query = new EJBQLQuery(ejbql);
 
-		List<?> artists = context.performQuery(query);
+		List<?> artists = env.context().performQuery(query);
 		assertEquals(1, artists.size());
 		assertEquals(33002, Cayenne.intPKForObject((Artist) artists.get(0)));
 	}
@@ -217,7 +212,7 @@ public class DataContextEJBQLJoinsIT {
 		String ejbql = "SELECT a " + "FROM Artist a JOIN a.paintingArray b "
 				+ "WHERE a.paintingArray.toGallery.galleryName = 'gallery2'";
 
-		List<?> artists = context.performQuery(new EJBQLQuery(ejbql));
+		List<?> artists = env.context().performQuery(new EJBQLQuery(ejbql));
 		assertEquals(1, artists.size());
 		assertEquals(33002, Cayenne.intPKForObject((Artist) artists.get(0)));
 	}
@@ -229,7 +224,7 @@ public class DataContextEJBQLJoinsIT {
 		String ejbql = "SELECT a " + "FROM Artist a JOIN a.paintingArray b "
 				+ "WHERE a.paintingArray.paintingTitle = 'CC2'";
 
-		List<?> artists = context.performQuery(new EJBQLQuery(ejbql));
+		List<?> artists = env.context().performQuery(new EJBQLQuery(ejbql));
 		assertEquals(1, artists.size());
 		assertEquals(33002, Cayenne.intPKForObject((Artist) artists.get(0)));
 	}
@@ -241,7 +236,7 @@ public class DataContextEJBQLJoinsIT {
 		String ejbql = "SELECT a " + "FROM Artist a JOIN a.paintingArray b JOIN a.paintingArray c "
 				+ "WHERE b.paintingTitle = 'P1' AND c.paintingTitle = 'P2'";
 
-		List<?> artists = context.performQuery(new EJBQLQuery(ejbql));
+		List<?> artists = env.context().performQuery(new EJBQLQuery(ejbql));
 		assertEquals(1, artists.size());
 		assertEquals(33001, Cayenne.intPKForObject((Artist) artists.get(0)));
 	}

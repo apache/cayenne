@@ -45,15 +45,12 @@ public class CayenneCompoundIT {
 	@RegisterExtension
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.COMPOUND_PROJECT);
 
-	private ObjectContext context;
-
 	private TableHelper tCompoundPKTest;
 	private TableHelper tCharPKTest;
 	private TableHelper tCompoundIntPKTest;
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		context = env.context();
 		tCompoundPKTest = env.table("COMPOUND_PK_TEST", "KEY1", "KEY2", "NAME");
 
 		tCharPKTest = env.table("CHAR_PK_TEST", "PK_COL", "OTHER_COL");
@@ -82,7 +79,7 @@ public class CayenneCompoundIT {
 		Map<String, Object> pk = new HashMap<>();
 		pk.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "PK1");
 		pk.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "PK2");
-		CompoundPkTestEntity object = Cayenne.objectForPK(context, CompoundPkTestEntity.class, pk);
+		CompoundPkTestEntity object = Cayenne.objectForPK(env.context(), CompoundPkTestEntity.class, pk);
 
 		assertNotNull(object);
 		assertEquals("BBB", object.getName());
@@ -92,7 +89,7 @@ public class CayenneCompoundIT {
 	public void compoundPKForObject() throws Exception {
 		createOneCompoundPK();
 
-		List<CompoundPkTestEntity> objects = ObjectSelect.query(CompoundPkTestEntity.class).select(context);
+		List<CompoundPkTestEntity> objects = ObjectSelect.query(CompoundPkTestEntity.class).select(env.context());
 		assertEquals(1, objects.size());
 		CompoundPkTestEntity object = objects.get(0);
 
@@ -107,7 +104,7 @@ public class CayenneCompoundIT {
 	public void intPKForObjectFailureForCompound() throws Exception {
 		createOneCompoundPK();
 
-		List<CompoundPkTestEntity> objects = ObjectSelect.query(CompoundPkTestEntity.class).select(context);
+		List<CompoundPkTestEntity> objects = ObjectSelect.query(CompoundPkTestEntity.class).select(env.context());
 		assertEquals(1, objects.size());
 		CompoundPkTestEntity object = objects.get(0);
 
@@ -118,7 +115,7 @@ public class CayenneCompoundIT {
 	public void intPKForObjectFailureForNonNumeric() throws Exception {
 		createOneCharPK();
 
-		List<CharPkTestEntity> objects = ObjectSelect.query(CharPkTestEntity.class).select(context);
+		List<CharPkTestEntity> objects = ObjectSelect.query(CharPkTestEntity.class).select(env.context());
 		assertEquals(1, objects.size());
 		CharPkTestEntity object = objects.get(0);
 
@@ -129,7 +126,7 @@ public class CayenneCompoundIT {
 	public void pkForObjectFailureForCompound() throws Exception {
 		createOneCompoundPK();
 
-		List<CompoundPkTestEntity> objects = ObjectSelect.query(CompoundPkTestEntity.class).select(context);
+		List<CompoundPkTestEntity> objects = ObjectSelect.query(CompoundPkTestEntity.class).select(env.context());
 		assertEquals(1, objects.size());
 		CompoundPkTestEntity object = objects.get(0);
 
@@ -140,7 +137,7 @@ public class CayenneCompoundIT {
 	public void intPKForObjectNonNumeric() throws Exception {
 		createOneCharPK();
 
-		List<CharPkTestEntity> objects = ObjectSelect.query(CharPkTestEntity.class).select(context);
+		List<CharPkTestEntity> objects = ObjectSelect.query(CharPkTestEntity.class).select(env.context());
 		assertEquals(1, objects.size());
 		CharPkTestEntity object = objects.get(0);
 
@@ -154,7 +151,7 @@ public class CayenneCompoundIT {
 		List<Object[]> result = ObjectSelect.query(CompoundPkTestEntity.class)
 				.columns(CompoundPkTestEntity.NAME, PropertyFactory.createSelf(CompoundPkTestEntity.class))
 				.pageSize(7)
-				.select(context);
+				.select(env.context());
 		assertEquals(20, result.size());
 		for(Object[] next : result) {
 			assertEquals(2, next.length);
@@ -171,6 +168,6 @@ public class CayenneCompoundIT {
 		tCompoundIntPKTest.insert(2, 5, "test");
 
 		EJBQLQuery query = new EJBQLQuery("SELECT COUNT(a) FROM CompoundIntPk a");
-		assertEquals(Collections.singletonList(4L), context.performQuery(query));
+		assertEquals(Collections.singletonList(4L), env.context().performQuery(query));
 	}
 }

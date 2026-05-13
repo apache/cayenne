@@ -38,11 +38,8 @@ public class CayennePersistentObjectSetToManyCollectionIT {
 	@RegisterExtension
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RELATIONSHIPS_COLLECTION_TO_MANY_PROJECT);
 
-	private ObjectContext context;
-
 	@BeforeEach
 	public void setUp() throws Exception {
-		context = env.context();
 		TableHelper tCollectionToMany = env.table("COLLECTION_TO_MANY", "ID");
 
 		TableHelper tCollectionToManyTarget = env.table("COLLECTION_TO_MANY_TARGET", "ID", "COLLECTION_TO_MANY_ID");
@@ -55,7 +52,7 @@ public class CayennePersistentObjectSetToManyCollectionIT {
 	@Test
 	public void readToMany() {
 
-		CollectionToMany o1 = Cayenne.objectForPK(context, CollectionToMany.class, 1);
+		CollectionToMany o1 = Cayenne.objectForPK(env.context(), CollectionToMany.class, 1);
 
 		Collection<?> targets = o1.getTargets();
 
@@ -74,7 +71,7 @@ public class CayennePersistentObjectSetToManyCollectionIT {
 	 */
 	@Test
 	public void relationCollectionTypeCollection() {
-		CollectionToMany o1 = Cayenne.objectForPK(context, CollectionToMany.class, 1);
+		CollectionToMany o1 = Cayenne.objectForPK(env.context(), CollectionToMany.class, 1);
 		assertTrue(o1.readProperty(CollectionToMany.TARGETS.getName()) instanceof Collection);
 		assertDoesNotThrow(() -> o1.setToManyTarget(CollectionToMany.TARGETS.getName(), new ArrayList<CollectionToMany>(0), true));
 		assertEquals(0, o1.getTargets().size());

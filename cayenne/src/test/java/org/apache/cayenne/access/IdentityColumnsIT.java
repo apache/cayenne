@@ -22,7 +22,6 @@ package org.apache.cayenne.access;
 import java.util.List;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.dba.DbAdapter;
@@ -54,7 +53,6 @@ public class IdentityColumnsIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.GENERATED_PROJECT);
 
-    protected ObjectContext context;
     protected DbAdapter adapter;
     protected DataNode node;
 
@@ -63,7 +61,6 @@ public class IdentityColumnsIT {
     
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
         adapter = env.getInstance(DbAdapter.class);
         node = env.getInstance(DataNode.class);
         joinTable = env.table("GENERATED_JOIN");
@@ -76,7 +73,7 @@ public class IdentityColumnsIT {
     @Test
     public void cAY823() throws Exception {
 
-        GeneratedColumnTestEntity idObject = context.newObject(GeneratedColumnTestEntity.class);
+        GeneratedColumnTestEntity idObject = env.context().newObject(GeneratedColumnTestEntity.class);
 
         String name = "n_" + System.currentTimeMillis();
         idObject.setName(name);
@@ -84,11 +81,11 @@ public class IdentityColumnsIT {
         idObject.getObjectContext().commitChanges();
 
         ObjectId id = idObject.getObjectId();
-        context.invalidateObjects(idObject);
+        env.context().invalidateObjects(idObject);
         
         List<?> results = ObjectSelect.query(GeneratedColumnTestEntity.class)
                 .pageSize(10)
-                .select(context);
+                .select(env.context());
         assertEquals(1, results.size());
 
         // per CAY-823 an attempt to resolve an object results in an exception
@@ -98,7 +95,7 @@ public class IdentityColumnsIT {
     @Test
     public void newObject() throws Exception {
 
-        GeneratedColumnTestEntity idObject = context.newObject(GeneratedColumnTestEntity.class);
+        GeneratedColumnTestEntity idObject = env.context().newObject(GeneratedColumnTestEntity.class);
 
         String name = "n_" + System.currentTimeMillis();
         idObject.setName(name);
@@ -111,8 +108,8 @@ public class IdentityColumnsIT {
         assertTrue(id >= 0);
 
         // make sure that id is the same as id in the DB
-        context.invalidateObjects(idObject);
-        GeneratedColumnTestEntity object = Cayenne.objectForPK(context, GeneratedColumnTestEntity.class, id);
+        env.context().invalidateObjects(idObject);
+        GeneratedColumnTestEntity object = Cayenne.objectForPK(env.context(), GeneratedColumnTestEntity.class, id);
         assertNotNull(object);
         assertEquals(name, object.getName());
     }
@@ -123,15 +120,15 @@ public class IdentityColumnsIT {
         // before saving objects, let's manually access PKGenerator to get a
         // base PK value
         // for comparison
-        DbEntity joinTableEntity = context.getEntityResolver().getDbEntity(joinTable.getTableName());
+        DbEntity joinTableEntity = env.context().getEntityResolver().getDbEntity(joinTable.getTableName());
         DbAttribute pkAttribute = joinTableEntity.getAttribute("ID");
         Number pk = (Number) adapter.getPkGenerator().generatePk(node, pkAttribute);
 
-        GeneratedF1 f1 = context.newObject(GeneratedF1.class);
-        GeneratedF2 f2 = context.newObject(GeneratedF2.class);
+        GeneratedF1 f1 = env.context().newObject(GeneratedF1.class);
+        GeneratedF2 f2 = env.context().newObject(GeneratedF2.class);
         f1.addToF2(f2);
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         int id = joinTable.getInt("ID");
         assertTrue(id > 0);
@@ -153,24 +150,24 @@ public class IdentityColumnsIT {
     @Test
     public void unrelatedUpdate() throws Exception {
 
-        GeneratedColumnTestEntity m = context.newObject(GeneratedColumnTestEntity.class);
+        GeneratedColumnTestEntity m = env.context().newObject(GeneratedColumnTestEntity.class);
 
         m.setName("m");
 
-        GeneratedColumnDep d = context.newObject(GeneratedColumnDep.class);
+        GeneratedColumnDep d = env.context().newObject(GeneratedColumnDep.class);
         d.setName("d");
         d.setToMaster(m);
-        context.commitChanges();
+        env.context().commitChanges();
 
-        context.invalidateObjects(m, d);
+        env.context().invalidateObjects(m, d);
 
-        context.prepareForAccess(d, null, false);
+        env.context().prepareForAccess(d, null, false);
 
         // this line caused CAY-422 error
         d.getToMaster();
 
         d.setName("new name");
-        context.commitChanges();
+        env.context().commitChanges();
     }
 
     /**
@@ -180,13 +177,13 @@ public class IdentityColumnsIT {
     @Test
     public void multipleNewObjectsSeparateTables() throws Exception {
 
-        GeneratedColumnTestEntity idObject1 = context.newObject(GeneratedColumnTestEntity.class);
+        GeneratedColumnTestEntity idObject1 = env.context().newObject(GeneratedColumnTestEntity.class);
         idObject1.setName("o1");
 
-        GeneratedColumnTest2 idObject2 = context.newObject(GeneratedColumnTest2.class);
+        GeneratedColumnTest2 idObject2 = env.context().newObject(GeneratedColumnTest2.class);
         idObject2.setName("o2");
 
-        context.commitChanges();
+        env.context().commitChanges();
     }
 
     @Test
@@ -196,14 +193,14 @@ public class IdentityColumnsIT {
                 "n3_" + System.currentTimeMillis() };
 
         GeneratedColumnTestEntity[] idObjects = new GeneratedColumnTestEntity[] {
-                context.newObject(GeneratedColumnTestEntity.class), context.newObject(GeneratedColumnTestEntity.class),
-                context.newObject(GeneratedColumnTestEntity.class) };
+                env.context().newObject(GeneratedColumnTestEntity.class), env.context().newObject(GeneratedColumnTestEntity.class),
+                env.context().newObject(GeneratedColumnTestEntity.class) };
 
         for (int i = 0; i < idObjects.length; i++) {
             idObjects[i].setName(names[i]);
         }
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         int[] ids = new int[idObjects.length];
         for (int i = 0; i < idObjects.length; i++) {
@@ -211,10 +208,10 @@ public class IdentityColumnsIT {
             assertTrue(ids[i] > 0);
         }
 
-        context.invalidateObjects(idObjects);
+        env.context().invalidateObjects(idObjects);
 
         for (int i = 0; i < ids.length; i++) {
-            GeneratedColumnTestEntity object = Cayenne.objectForPK(context, GeneratedColumnTestEntity.class, ids[i]);
+            GeneratedColumnTestEntity object = Cayenne.objectForPK(env.context(), GeneratedColumnTestEntity.class, ids[i]);
             assertNotNull(object);
             assertEquals(names[i], object.getName());
         }
@@ -231,18 +228,18 @@ public class IdentityColumnsIT {
             String depName1 = "dep1_" + System.currentTimeMillis();
             String depName2 = "dep2_" + System.currentTimeMillis();
 
-            GeneratedColumnCompMaster master = context.newObject(GeneratedColumnCompMaster.class);
+            GeneratedColumnCompMaster master = env.context().newObject(GeneratedColumnCompMaster.class);
             master.setName(masterName);
 
-            GeneratedColumnCompKey dep1 = context.newObject(GeneratedColumnCompKey.class);
+            GeneratedColumnCompKey dep1 = env.context().newObject(GeneratedColumnCompKey.class);
             dep1.setName(depName1);
             dep1.setToMaster(master);
 
-            GeneratedColumnCompKey dep2 = context.newObject(GeneratedColumnCompKey.class);
+            GeneratedColumnCompKey dep2 = env.context().newObject(GeneratedColumnCompKey.class);
             dep2.setName(depName2);
             dep2.setToMaster(master);
 
-            context.commitChanges();
+            env.context().commitChanges();
 
             int masterId = Cayenne.intPKForObject(master);
 
@@ -261,9 +258,9 @@ public class IdentityColumnsIT {
             Number dbGeneratedID2 = (Number) id2.getIdSnapshot().get(GeneratedColumnCompKey.GENERATED_COLUMN_PK_COLUMN);
             assertNotNull(dbGeneratedID2);
 
-            context.invalidateObjects(master, dep1, dep2);
+            env.context().invalidateObjects(master, dep1, dep2);
 
-            Object fetchedDep2 = Cayenne.objectForPK(context, id2);
+            Object fetchedDep2 = Cayenne.objectForPK(env.context(), id2);
             assertNotNull(fetchedDep2);
         }
     }
@@ -271,22 +268,22 @@ public class IdentityColumnsIT {
     @Test
     public void updateDependentWithNewMaster() throws Exception {
 
-        GeneratedColumnTestEntity master1 = context.newObject(GeneratedColumnTestEntity.class);
+        GeneratedColumnTestEntity master1 = env.context().newObject(GeneratedColumnTestEntity.class);
         master1.setName("aaa");
 
-        GeneratedColumnDep dependent = context.newObject(GeneratedColumnDep.class);
+        GeneratedColumnDep dependent = env.context().newObject(GeneratedColumnDep.class);
         dependent.setName("aaa");
         dependent.setToMaster(master1);
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         // change master
-        GeneratedColumnTestEntity master2 = context.newObject(GeneratedColumnTestEntity.class);
+        GeneratedColumnTestEntity master2 = env.context().newObject(GeneratedColumnTestEntity.class);
         master2.setName("bbb");
 
         // TESTING THIS
         dependent.setToMaster(master2);
-        context.commitChanges();
+        env.context().commitChanges();
 
         int id1 = Cayenne.intPKForObject(master2);
         assertTrue(id1 >= 0);
@@ -295,10 +292,10 @@ public class IdentityColumnsIT {
         assertTrue(id2 >= 0);
         assertEquals(id1, id2);
 
-        context.invalidateObjects(master2, dependent);
+        env.context().invalidateObjects(master2, dependent);
 
-        assertNotNull(Cayenne.objectForPK(context, GeneratedColumnTestEntity.class, id1));
-        assertNotNull(Cayenne.objectForPK(context, GeneratedColumnDep.class, id2));
+        assertNotNull(Cayenne.objectForPK(env.context(), GeneratedColumnTestEntity.class, id1));
+        assertNotNull(Cayenne.objectForPK(env.context(), GeneratedColumnDep.class, id2));
     }
 
     @Test
@@ -312,14 +309,14 @@ public class IdentityColumnsIT {
     @Test
     public void propagateToDependent() throws Exception {
 
-        GeneratedColumnTestEntity idObject = context.newObject(GeneratedColumnTestEntity.class);
+        GeneratedColumnTestEntity idObject = env.context().newObject(GeneratedColumnTestEntity.class);
         idObject.setName("aaa");
 
         GeneratedColumnDep dependent = idObject.getObjectContext().newObject(GeneratedColumnDep.class);
         dependent.setName("aaa");
         dependent.setToMaster(idObject);
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         // this will throw an exception if id wasn't generated
         int id1 = Cayenne.intPKForObject(idObject);
@@ -331,37 +328,37 @@ public class IdentityColumnsIT {
         assertEquals(id1, id2);
 
         // refetch from DB
-        context.invalidateObjects(idObject, dependent);
+        env.context().invalidateObjects(idObject, dependent);
 
-        assertNotNull(Cayenne.objectForPK(context, GeneratedColumnTestEntity.class, id1));
-        assertNotNull(Cayenne.objectForPK(context, GeneratedColumnDep.class, id2));
+        assertNotNull(Cayenne.objectForPK(env.context(), GeneratedColumnTestEntity.class, id1));
+        assertNotNull(Cayenne.objectForPK(env.context(), GeneratedColumnDep.class, id2));
     }
 
     @Test
     public void reflexiveDep() {
 
-        GeneratedReflexive reflexive3 = context.newObject(GeneratedReflexive.class);
+        GeneratedReflexive reflexive3 = env.context().newObject(GeneratedReflexive.class);
         reflexive3.setName("3");
 
-        GeneratedReflexive reflexive2 = context.newObject(GeneratedReflexive.class);
+        GeneratedReflexive reflexive2 = env.context().newObject(GeneratedReflexive.class);
         reflexive2.setName("2");
 
-        GeneratedReflexive reflexive4 = context.newObject(GeneratedReflexive.class);
+        GeneratedReflexive reflexive4 = env.context().newObject(GeneratedReflexive.class);
         reflexive4.setName("4");
 
-        GeneratedReflexive reflexive1 = context.newObject(GeneratedReflexive.class);
+        GeneratedReflexive reflexive1 = env.context().newObject(GeneratedReflexive.class);
         reflexive1.setName("1");
 
         reflexive1.setNext(reflexive2);
         reflexive2.setNext(reflexive3);
         reflexive3.setNext(reflexive4);
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         reflexive1.setNext(null);
         reflexive2.setNext(null);
         reflexive3.setNext(null);
 
-        context.commitChanges();
+        env.context().commitChanges();
     }
 }

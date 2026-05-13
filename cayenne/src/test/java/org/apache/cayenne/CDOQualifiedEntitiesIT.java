@@ -45,7 +45,6 @@ public class CDOQualifiedEntitiesIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.QUALIFIED_PROJECT);
 
-    private ObjectContext context;
     private UnitDbAdapter accessStackAdapter;
 
     private TableHelper tQualified1;
@@ -55,7 +54,6 @@ public class CDOQualifiedEntitiesIT {
 
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
         accessStackAdapter = env.getInstance(UnitDbAdapter.class);
         int bool = accessStackAdapter.supportsBoolean() ? Types.BOOLEAN : Types.INTEGER;
 
@@ -112,7 +110,7 @@ public class CDOQualifiedEntitiesIT {
 
             createReadToManyDataSet();
 
-            List<Qualified1> roots = ObjectSelect.query(Qualified1.class).select(context);
+            List<Qualified1> roots = ObjectSelect.query(Qualified1.class).select(env.context());
 
             assertEquals(1, roots.size());
 
@@ -136,7 +134,7 @@ public class CDOQualifiedEntitiesIT {
 
             List<Qualified1> roots = ObjectSelect.query(Qualified1.class)
                     .prefetch(Qualified1.QUALIFIED2S.joint())
-                    .select(context);
+                    .select(env.context());
 
             assertEquals(1, roots.size());
 
@@ -160,7 +158,7 @@ public class CDOQualifiedEntitiesIT {
 
             List<Qualified1> roots = ObjectSelect.query(Qualified1.class)
                     .prefetch(Qualified1.QUALIFIED2S.disjoint())
-                    .select(context);
+                    .select(env.context());
 
             assertEquals(1, roots.size());
 
@@ -184,7 +182,7 @@ public class CDOQualifiedEntitiesIT {
 
             List<Qualified1> roots = ObjectSelect.query(Qualified1.class)
                     .prefetch(Qualified1.QUALIFIED2S.disjointById())
-                    .select(context);
+                    .select(env.context());
 
             assertEquals(1, roots.size());
 
@@ -206,7 +204,7 @@ public class CDOQualifiedEntitiesIT {
 
             createReadToOneDataSet();
 
-            List<Qualified2> roots = ObjectSelect.query(Qualified2.class).select(context);
+            List<Qualified2> roots = ObjectSelect.query(Qualified2.class).select(env.context());
             assertEquals(1, roots.size());
 
             Qualified2 root = roots.get(0);
@@ -223,7 +221,7 @@ public class CDOQualifiedEntitiesIT {
 
         List<Qualified4> result = ObjectSelect.query(Qualified4.class)
                 .where(Qualified4.QUALIFIED3.dot(Qualified3.NAME).like("O%"))
-                .select(context);
+                .select(env.context());
 
         assertEquals(1, result.size());
         assertEquals("SHOULD_SELECT", result.get(0).getName());
@@ -236,7 +234,7 @@ public class CDOQualifiedEntitiesIT {
         List<Qualified4> result = ObjectSelect.query(Qualified4.class)
                 .where(Qualified4.QUALIFIED3.alias("a1").dot(Qualified3.NAME).like("O%"))
                 .or(Qualified4.QUALIFIED3.alias("a2").dot(Qualified3.NAME).like("1%"))
-                .select(context);
+                .select(env.context());
 
         assertEquals(2, result.size());
         assertEquals("SHOULD_SELECT", result.get(0).getName());
@@ -247,8 +245,8 @@ public class CDOQualifiedEntitiesIT {
     public void joinWithCustomDbQualifier() throws Exception {
         createJoinDataSet();
 
-        DbEntity entity1 = context.getEntityResolver().getDbEntity("TEST_QUALIFIED3");
-        DbEntity entity2 = context.getEntityResolver().getDbEntity("TEST_QUALIFIED4");
+        DbEntity entity1 = env.context().getEntityResolver().getDbEntity("TEST_QUALIFIED3");
+        DbEntity entity2 = env.context().getEntityResolver().getDbEntity("TEST_QUALIFIED4");
         Expression oldExpression1 = entity1.getQualifier();
         Expression oldExpression2 = entity2.getQualifier();
         try {
@@ -257,7 +255,7 @@ public class CDOQualifiedEntitiesIT {
 
             List<Qualified4> result = ObjectSelect.query(Qualified4.class)
                     .where(Qualified4.QUALIFIED3.dot(Qualified3.NAME).like("O%"))
-                    .select(context);
+                    .select(env.context());
 
             assertEquals(1, result.size());
             assertEquals("SHOULD_SELECT", result.get(0).getName());

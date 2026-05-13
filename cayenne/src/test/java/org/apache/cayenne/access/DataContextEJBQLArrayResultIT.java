@@ -17,8 +17,6 @@
  *  under the License.
  ****************************************************************/
 package org.apache.cayenne.access;
-
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -39,13 +37,9 @@ public class DataContextEJBQLArrayResultIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    protected ObjectContext context;
-
-
     
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.context();
         TableHelper tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
         tArtist.insert(33001, "AA1");
         tArtist.insert(33002, "AA2");
@@ -73,7 +67,7 @@ public class DataContextEJBQLArrayResultIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertEquals(1, objects.size());
 
         Object o1 = objects.get(0);
@@ -87,7 +81,7 @@ public class DataContextEJBQLArrayResultIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertEquals(1, objects.size());
 
         Object o1 = objects.get(0);
@@ -108,7 +102,7 @@ public class DataContextEJBQLArrayResultIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertEquals(4, objects.size());
 
         Object o1 = objects.get(0);
