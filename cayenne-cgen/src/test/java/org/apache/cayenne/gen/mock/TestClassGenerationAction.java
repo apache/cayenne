@@ -25,9 +25,6 @@ import java.util.Collection;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.TemplateType;
 
-/**
- * @since 4.2
- */
 public class TestClassGenerationAction extends ClassGenerationAction {
 
     private Collection<StringWriter> writers;

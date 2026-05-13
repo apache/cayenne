@@ -30,9 +30,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- * @since 4.2
- */
 public class MapPropertyTest {
 
     private MapProperty<Integer, Artist> property;

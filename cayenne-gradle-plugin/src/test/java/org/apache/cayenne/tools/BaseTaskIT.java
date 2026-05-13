@@ -34,9 +34,6 @@ import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
 
-/**
- * @since 4.0
- */
 public class BaseTaskIT {
 
     @TempDir

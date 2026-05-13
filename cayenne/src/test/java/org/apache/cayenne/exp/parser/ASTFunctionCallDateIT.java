@@ -36,9 +36,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-/**
- * @since 4.0
- */
 public class ASTFunctionCallDateIT {
 
     @RegisterExtension

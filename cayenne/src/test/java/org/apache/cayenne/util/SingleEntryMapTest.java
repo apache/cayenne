@@ -32,9 +32,6 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @since 4.2
- */
 public class SingleEntryMapTest {
 
     private SingleEntryMap<String, Integer> map;

@@ -47,10 +47,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-
-/**
- * @since 4.0
- */
 public class FunctionExpressionFactoryTest {
 
     @Test
@@ -122,7 +118,6 @@ public class FunctionExpressionFactoryTest {
         assertEquals(exp1, exp2);
     }
 
-
     @Test
     public void locateExp() throws Exception {
         Expression exp1 = FunctionExpressionFactory.locateExp("abc", Artist.ARTIST_NAME.getExpression());
@@ -138,7 +133,6 @@ public class FunctionExpressionFactoryTest {
         assertEquals(exp1, exp2);
         assertEquals(exp2, exp3);
     }
-
 
     @Test
     public void absExp() throws Exception {
@@ -166,7 +160,6 @@ public class FunctionExpressionFactoryTest {
         assertEquals(exp1, exp2);
     }
 
-
     @Test
     public void modExp() throws Exception {
         Expression exp1 = FunctionExpressionFactory.modExp(Artist.ARTIST_NAME.getExpression(), 10);
@@ -183,7 +176,6 @@ public class FunctionExpressionFactoryTest {
         assertEquals(exp2, exp3);
     }
 
-
     @Test
     public void concatExp() throws Exception {
         Expression exp1 = FunctionExpressionFactory.concatExp(Artist.ARTIST_NAME.getExpression(), new ASTScalar("abc"), Artist.DATE_OF_BIRTH.getExpression());
@@ -193,7 +185,6 @@ public class FunctionExpressionFactoryTest {
         assertEquals(Artist.ARTIST_NAME.getExpression(), exp1.getOperand(0));
         assertEquals("abc", exp1.getOperand(1));
         assertEquals(Artist.DATE_OF_BIRTH.getExpression(), exp1.getOperand(2));
-
 
         Expression exp2 = FunctionExpressionFactory.concatExp(Artist.ARTIST_NAME.getName(), Artist.DATE_OF_BIRTH.getName(), Artist.PAINTING_ARRAY.getName());
         assertTrue(exp2 instanceof ASTConcat);

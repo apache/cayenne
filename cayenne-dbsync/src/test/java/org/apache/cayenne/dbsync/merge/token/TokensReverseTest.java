@@ -34,9 +34,6 @@ import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbAttr;
 import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbEntity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- * @since 4.0.
- */
 public class TokensReverseTest {
 
     @Test

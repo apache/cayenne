@@ -19,8 +19,5 @@
 
 package org.apache.cayenne.di.spi;
 
-/**
- * @since 5.0
- */
 public interface CircularModuleProvider extends ModuleProvider {
 }

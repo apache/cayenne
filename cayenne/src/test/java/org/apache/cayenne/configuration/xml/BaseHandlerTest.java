@@ -29,9 +29,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-/**
- * @since 4.1
- */
 public abstract class BaseHandlerTest {
 
     protected void parse(String tag, HandlerFactory factory) throws Exception {

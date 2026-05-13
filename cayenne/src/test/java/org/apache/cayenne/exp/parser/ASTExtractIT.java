@@ -37,9 +37,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * @since 4.0
- */
 public class ASTExtractIT {
 
     @RegisterExtension

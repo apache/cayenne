@@ -23,9 +23,6 @@ import org.apache.cayenne.runtime.CayenneRuntimeModuleProvider;
 import org.apache.cayenne.unit.util.ModuleProviderChecker;
 import org.junit.jupiter.api.Test;
 
-/**
- * @since 4.1
- */
 public class VelocityModuleProviderTest {
 
     @Test

@@ -38,8 +38,6 @@ import static org.mockito.Mockito.when;
 
 /**
  * This class is testing converting Expressions to cache key part.
- *
- * @since 4.0
  */
 public class SelectQueryMetadataCacheKeyTest {
 

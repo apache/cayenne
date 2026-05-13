@@ -32,9 +32,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-/**
- * @since 4.0
- */
 public class ObjectStoreTest {
 
     private ObjectStore objectStore;

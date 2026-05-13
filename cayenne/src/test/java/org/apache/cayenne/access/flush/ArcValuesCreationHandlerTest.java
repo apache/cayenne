@@ -43,9 +43,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-/**
- * @since 4.2
- */
 public class ArcValuesCreationHandlerTest {
 
     private ArcValuesCreationHandler handler;

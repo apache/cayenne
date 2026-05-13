@@ -22,9 +22,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.util.Util;
 
-/**
- * @since 4.0.
- */
 public class DbEntityBuilder extends DefaultBuilder<DbEntity> {
 
     public DbEntityBuilder() {
@@ -68,7 +65,6 @@ public class DbEntityBuilder extends DefaultBuilder<DbEntity> {
 
         return this;
     }
-
 
     @Override
     public DbEntity build() {

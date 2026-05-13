@@ -23,9 +23,6 @@ import org.apache.cayenne.di.Module;
 import java.util.ArrayList;
 import java.util.Collection;
 
-/**
- * @since 5.0
- */
 public class RuntimeCaseExtraModules {
     protected Class<?>[] extraModules;
 

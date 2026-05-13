@@ -20,9 +20,6 @@ package org.apache.cayenne.datafactory;
 
 import java.util.Random;
 
-/**
- * @since 4.0
- */
 public interface ValueProvider<T> {
     Random RANDOM = new Random();
 
@@ -694,7 +691,6 @@ public interface ValueProvider<T> {
                     "Zimmerman"};
         }
     };
-
 
     T randomValue();
 

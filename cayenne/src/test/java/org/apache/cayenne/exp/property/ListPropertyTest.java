@@ -32,9 +32,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @since 4.2
- */
 public class ListPropertyTest {
 
     private ListProperty<Artist> property;
@@ -45,7 +42,6 @@ public class ListPropertyTest {
         property = new ListProperty<>(CayennePath.of("path"), null, Artist.class);
         property1 = new ListProperty<>(CayennePath.of("path.artist"), null, Artist.class);
     }
-
 
     @Test
     public void alias() {

@@ -28,9 +28,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * @since 4.0
- */
 public class ASTCurrentTimestampTest {
 
     @Test

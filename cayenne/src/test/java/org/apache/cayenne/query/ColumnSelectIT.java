@@ -56,9 +56,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @since 4.0
- */
 public class ColumnSelectIT {
 
     @RegisterExtension
@@ -336,9 +333,6 @@ public class ColumnSelectIT {
         assertEquals(20L, minMaxAvgPrice[4]);
     }
 
-    /**
-     * @since 5.0
-     */
     @Test
     public void aggregateOnRelation_withCustomAggregates() {
         BigDecimal min = new BigDecimal(3);
@@ -964,7 +958,6 @@ public class ColumnSelectIT {
                 .select(context);
         assertEquals(20, result.size());
     }
-
 
     @Test
     public void suppressDistinct() throws Exception {

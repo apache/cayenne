@@ -34,9 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
-/**
- * @since 4.2
- */
 public class LazyAttributesIT {
 
     @RegisterExtension

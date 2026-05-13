@@ -21,9 +21,6 @@ package org.apache.cayenne.crypto;
 
 import org.junit.jupiter.api.BeforeEach;
 
-/**
- * @since 4.0
- */
 public class Runtime_AES128_GZIP_HMAC_IT extends Runtime_AES128_GZIP_IT {
 
     @BeforeEach

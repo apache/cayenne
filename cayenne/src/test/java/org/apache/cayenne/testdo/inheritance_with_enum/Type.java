@@ -19,9 +19,6 @@
 
 package org.apache.cayenne.testdo.inheritance_with_enum;
 
-/**
- * @since 4.1
- */
 public enum Type {
     type1,
     type2

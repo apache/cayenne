@@ -31,9 +31,6 @@ import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- * @since 4.0
- */
 public class CacheInvalidationCustomHandlerIT extends CacheInvalidationCase {
 
     @Override
@@ -60,7 +57,6 @@ public class CacheInvalidationCustomHandlerIT extends CacheInvalidationCase {
         assertEquals(0, g0.selectCount(context));
         assertEquals(0, g1.selectCount(context));
         assertEquals(0, g2.selectCount(context));
-
 
         E1 e1 = context.newObject(E1.class);
         context.commitChanges();

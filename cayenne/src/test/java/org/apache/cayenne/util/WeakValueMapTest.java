@@ -32,8 +32,6 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * As WeakValueMap and SoftValueMap share almost all code from their super class
  * only one test is present for both of them.
- *
- * @since 4.1
  */
 public class WeakValueMapTest {
 

@@ -28,9 +28,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @since 4.2
- */
 public class SetPropertyTest {
 
     private SetProperty<Artist> property;

@@ -42,9 +42,6 @@ import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V9;
 
 import static org.mockito.Mockito.mock;
 
-/**
- * @since 4.1
- */
 public class CompatibilityTestModule implements Module {
 
     @Override

@@ -19,8 +19,5 @@
 
 package org.apache.cayenne.di.spi;
 
-/**
- * @since 4.0
- */
 public interface CustomModuleProvider extends ModuleProvider {
 }

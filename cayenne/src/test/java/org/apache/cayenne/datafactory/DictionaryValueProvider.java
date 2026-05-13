@@ -20,9 +20,6 @@ package org.apache.cayenne.datafactory;
 
 import java.util.Random;
 
-/**
- * @since 4.0
- */
 public abstract class DictionaryValueProvider<T> implements ValueProvider<T> {
 
     private Random random = ValueProvider.RANDOM;

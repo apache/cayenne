@@ -30,9 +30,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- * @since 4.2
- */
 public class EntityPropertyTest {
 
     private EntityProperty<Artist> property;

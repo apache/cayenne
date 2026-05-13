@@ -26,9 +26,6 @@ import org.junit.jupiter.api.Test;
 import static org.apache.cayenne.exp.ExpressionFactory.exp;
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @since 4.2
- */
 public class StringPropertyTest {
 
     private StringProperty<String> property;

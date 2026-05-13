@@ -30,9 +30,6 @@ import static org.apache.cayenne.exp.ExpressionFactory.*;
 import static org.apache.cayenne.exp.property.PropertyFactory.createNumericId;
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @since 4.2
- */
 public class IdPropertyTest {
 
     @Test
@@ -64,7 +61,6 @@ public class IdPropertyTest {
     
         });
     }
-
 
     @Test
     public void eqObjectIdCompound() {

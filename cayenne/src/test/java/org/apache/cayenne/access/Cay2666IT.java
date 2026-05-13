@@ -37,9 +37,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-/**
- * @since 4.2
- */
 public class Cay2666IT {
 
     @RegisterExtension
@@ -119,7 +116,6 @@ public class Cay2666IT {
         exp = ExpressionFactory.exp("x$ = 'A'");
         expression = new ASTEqual(new ASTObjPath("x$"), "A");
         assertEquals(exp, expression);
-
 
         exp = ExpressionFactory.exp("obj:x$ = $name", "A");
         expression = new ASTEqual(new ASTObjPath("x$"), "A");

@@ -57,8 +57,6 @@ import static org.junit.jupiter.api.Assertions.fail;
  * @see UnitDbAdapter#supportsGeneratedKeys()
  * @see UnitDbAdapter#supportsGeneratedKeysAdd()
  * @see UnitDbAdapter#supportsGeneratedKeysDrop()
- *
- * @since 4.0
  */
 public class SetGeneratedFlagToDbIT extends MergeCase {
 

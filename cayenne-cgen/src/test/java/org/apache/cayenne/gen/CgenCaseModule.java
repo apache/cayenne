@@ -26,9 +26,6 @@ import org.apache.cayenne.gen.mock.CustomPropertyDescriptor;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseExtraModules;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseProperties;
 
-/**
- * @since 4.2
- */
 public class CgenCaseModule implements Module {
 
     protected DefaultScope testScope;

@@ -34,9 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
-/**
- * @since 4.0
- */
 public class CgenTaskTest {
 
     @TempDir

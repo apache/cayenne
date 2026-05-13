@@ -39,9 +39,6 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-/**
- * @since 4.0
- */
 public class ObjectSelect_PrimitiveColumnsIT {
 
     @RegisterExtension

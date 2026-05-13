@@ -26,9 +26,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @since 4.1
- */
 public class DbRelationshipHandlerTest extends BaseHandlerTest {
 
     @Test

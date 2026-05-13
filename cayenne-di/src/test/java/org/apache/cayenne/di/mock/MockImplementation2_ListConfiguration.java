@@ -23,9 +23,6 @@ import java.util.List;
 
 import org.apache.cayenne.di.Inject;
 
-/**
- * @since 4.0
- */
 public class MockImplementation2_ListConfiguration implements MockInterface2 {
 
     private List<Object> configuration;

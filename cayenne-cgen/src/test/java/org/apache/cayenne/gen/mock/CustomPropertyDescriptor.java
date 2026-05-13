@@ -24,9 +24,6 @@ import org.apache.cayenne.access.types.TimestampType;
 import org.apache.cayenne.gen.PropertyDescriptor;
 import org.apache.cayenne.gen.property.PropertyDescriptorCreator;
 
-/**
- * @since 4.2
- */
 public class CustomPropertyDescriptor implements PropertyDescriptorCreator {
 
     @Override

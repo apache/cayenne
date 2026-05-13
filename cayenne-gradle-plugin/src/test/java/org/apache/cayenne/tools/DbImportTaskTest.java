@@ -36,9 +36,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
-/**
- * @since 4.0
- */
 public class DbImportTaskTest {
 
     private DbImportTask task;
@@ -121,6 +118,5 @@ public class DbImportTaskTest {
         assertTrue(dbImportConfiguration.isUseJava7Types());
         assertFalse(dbImportConfiguration.isUsePrimitives());
     }
-
 
 }

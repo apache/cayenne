@@ -31,9 +31,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @since 5.0
- */
 public class VerticalInheritanceJoinOrderIT {
 
     @RegisterExtension

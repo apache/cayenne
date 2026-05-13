@@ -61,6 +61,7 @@ mvn test -Dtest=SomeTest -DcayenneTestConnection=h2
 
 Test naming: `*Test.java` = unit tests (Surefire), `*IT.java` = integration tests (Failsafe).
 All new tests must use JUnit 5. Test classes and methods must be `public`. Method names must not use the `test` prefix (e.g. `someFeature()` not `testSomeFeature()`).
+Do not add `@since` tags to test classes — version tags are only meaningful on public API.
 
 ## `pom.xml` Style
 

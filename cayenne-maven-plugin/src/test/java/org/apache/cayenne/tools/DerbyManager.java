@@ -18,10 +18,6 @@
  */
 package org.apache.cayenne.tools;
 
-/**
- * @since 4.0
- */
-
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;

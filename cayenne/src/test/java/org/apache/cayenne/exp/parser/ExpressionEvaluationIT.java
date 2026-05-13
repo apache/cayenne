@@ -46,8 +46,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *  - To-Many relationships comparisons
  *  - Null comparisons
  *  - Null in AND and OR expressions
- *
- * @since 4.0
  */
 public class ExpressionEvaluationIT {
 

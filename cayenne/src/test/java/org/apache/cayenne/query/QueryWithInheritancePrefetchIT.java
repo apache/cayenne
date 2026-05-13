@@ -42,8 +42,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  *
  * This one is about https://issues.apache.org/jira/browse/CAY-2405
- *
- * @since 4.1
  */
 public class QueryWithInheritancePrefetchIT {
 

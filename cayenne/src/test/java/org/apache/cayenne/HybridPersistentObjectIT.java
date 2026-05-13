@@ -36,9 +36,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-/**
- * @since 4.1
- */
 public class HybridPersistentObjectIT {
 
     @RegisterExtension

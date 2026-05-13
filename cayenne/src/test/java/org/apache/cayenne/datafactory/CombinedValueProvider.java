@@ -18,8 +18,5 @@
  ****************************************************************/
 package org.apache.cayenne.datafactory;
 
-/**
- * @since 4.0
- */
 public class CombinedValueProvider {
 }

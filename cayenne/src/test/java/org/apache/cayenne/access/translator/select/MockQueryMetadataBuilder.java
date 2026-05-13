@@ -27,9 +27,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.MockQueryMetadata;
 import org.apache.cayenne.query.QueryMetadata;
 
-/**
- * @since 4.2
- */
 class MockQueryMetadataBuilder {
 
     private ObjEntity objEntity;

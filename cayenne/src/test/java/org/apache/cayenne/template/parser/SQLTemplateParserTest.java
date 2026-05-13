@@ -34,9 +34,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @since 4.1
- */
 public class SQLTemplateParserTest {
 
     private TemplateContextFactory contextFactory;
@@ -93,7 +90,6 @@ public class SQLTemplateParserTest {
         assertEquals(1, context.getParameterBindings().length);
         assertEquals("var", context.getParameterBindings()[0].getValue());
     }
-
 
     @Test
     public void complexParse() throws Exception {

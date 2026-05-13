@@ -41,7 +41,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * This test checks rollback behaviour of different propagation modes.
  *
  * @see TransactionPropagation
- * @since 4.1
  */
 public class TransactionPropagationRollbackIT {
 

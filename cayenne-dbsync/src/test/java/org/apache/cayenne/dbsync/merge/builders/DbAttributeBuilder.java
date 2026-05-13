@@ -24,9 +24,6 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.util.Util;
 
-/**
- * @since 4.0.
- */
 public class DbAttributeBuilder extends DefaultBuilder<DbAttribute> {
 
     private static final ValueProvider<String> TYPES_RANDOM = new DictionaryValueProvider<String>(ValueProvider.RANDOM) {

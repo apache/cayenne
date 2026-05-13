@@ -27,9 +27,6 @@ import org.xml.sax.helpers.AttributesImpl;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-/**
- * @since 4.1
- */
 public class VersionAwareHandlerTest {
 
     private static String[] VERSION_SET_1 = {"10", "11", "9"}; // sorted as strings

@@ -38,7 +38,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Test join on compound primary key
  * @see <a href="https://issues.apache.org/jira/browse/CAY-2137">CAY-2137</a>
- * @since 4.0
  */
 public class QueryWithCompoundJoinIT {
 

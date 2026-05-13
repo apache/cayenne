@@ -25,9 +25,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @since 4.1
- */
 public class DbKeyGeneratorHandlerTest extends BaseHandlerTest {
 
     @Test
@@ -46,6 +43,5 @@ public class DbKeyGeneratorHandlerTest extends BaseHandlerTest {
         assertEquals(20, (int)dbEntity.getPrimaryKeyGenerator().getKeyCacheSize());
         assertEquals(DbKeyGenerator.ORACLE_TYPE, dbEntity.getPrimaryKeyGenerator().getGeneratorType());
     }
-
 
 }

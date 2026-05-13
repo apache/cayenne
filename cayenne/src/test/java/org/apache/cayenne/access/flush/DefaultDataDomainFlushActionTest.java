@@ -44,9 +44,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-/**
- * @since 4.2
- */
 public class DefaultDataDomainFlushActionTest {
 
     @Test

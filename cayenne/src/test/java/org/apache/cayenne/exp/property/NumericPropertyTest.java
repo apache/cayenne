@@ -29,9 +29,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.apache.cayenne.exp.ExpressionFactory.exp;
 
-/**
- * @since 4.2
- */
 public class NumericPropertyTest {
 
     private NumericProperty<Integer> property;

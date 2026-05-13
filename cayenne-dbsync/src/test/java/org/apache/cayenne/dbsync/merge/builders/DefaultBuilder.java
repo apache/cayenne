@@ -21,14 +21,10 @@ package org.apache.cayenne.dbsync.merge.builders;
 import org.apache.cayenne.datafactory.DataFactory;
 import org.apache.cayenne.util.Util;
 
-/**
- * @since 4.0.
- */
 public abstract class DefaultBuilder<T> implements Builder<T> {
 
     protected final DataFactory dataFactory;
     protected final T obj;
-
 
     protected DefaultBuilder(T obj) {
         this.dataFactory = new DataFactory();

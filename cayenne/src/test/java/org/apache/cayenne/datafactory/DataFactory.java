@@ -22,9 +22,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
-/**
- * @since 4.0
- */
 public class DataFactory {
 
     private Random random = ValueProvider.RANDOM;

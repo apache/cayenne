@@ -34,9 +34,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- * @since 4.1
- */
 public class Cay2412IT {
 
     @RegisterExtension

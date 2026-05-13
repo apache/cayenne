@@ -28,9 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * @since 4.0
- */
 public class ASTAggregateTest {
 
     @Test
@@ -49,7 +46,6 @@ public class ASTAggregateTest {
     
         });
     }
-
 
     @Test
     public void avgParse() {
@@ -155,9 +151,6 @@ public class ASTAggregateTest {
         assertEquals(expressionString, exp.toString());
     }
 
-    /**
-     * @since 5.0
-     */
     @Test
     public void customConstruct() {
         AggregateCustom sum = new AggregateCustom();

@@ -33,9 +33,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-/**
- * @since 4.0
- */
 public class Cay2032IT {
 
     @RegisterExtension

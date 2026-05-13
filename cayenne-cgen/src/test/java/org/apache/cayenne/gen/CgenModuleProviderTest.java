@@ -23,9 +23,6 @@ import org.apache.cayenne.tools.CayenneToolsModuleProvider;
 import org.apache.cayenne.unit.util.ModuleProviderChecker;
 import org.junit.jupiter.api.Test;
 
-/**
- * @since 4.2
- */
 public class CgenModuleProviderTest {
     @Test
     public void providerPresent() {

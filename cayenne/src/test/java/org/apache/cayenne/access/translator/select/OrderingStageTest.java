@@ -37,9 +37,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @since 4.2
- */
 public class OrderingStageTest {
 
     private TranslatorContext context;

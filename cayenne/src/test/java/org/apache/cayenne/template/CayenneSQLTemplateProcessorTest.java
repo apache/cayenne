@@ -35,9 +35,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @since 4.1
- */
 public class CayenneSQLTemplateProcessorTest {
 
     private CayenneSQLTemplateProcessor processor;

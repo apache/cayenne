@@ -36,9 +36,6 @@ import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * @since 4.1
- */
 public class DataContextConcurrencyIT {
 
     @RegisterExtension

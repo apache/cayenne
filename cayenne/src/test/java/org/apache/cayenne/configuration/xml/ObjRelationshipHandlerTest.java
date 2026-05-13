@@ -27,9 +27,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @since 4.1
- */
 public class ObjRelationshipHandlerTest extends BaseHandlerTest {
 
     @Test
@@ -39,7 +36,6 @@ public class ObjRelationshipHandlerTest extends BaseHandlerTest {
         ObjEntity entity = new ObjEntity("ArtGroup");
         map.addObjEntity(entity);
         assertEquals(0, entity.getRelationships().size());
-
 
         parse("obj-relationship", new HandlerFactory() {
             @Override

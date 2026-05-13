@@ -29,9 +29,6 @@ import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-/**
- * @since 4.2
- */
 public class SelectBuilderTest extends BaseSqlBuilderTest  {
 
     @Test

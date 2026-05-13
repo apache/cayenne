@@ -22,9 +22,6 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 
-/**
- * @since 4.0.
- */
 public class DbRelationshipBuilder extends DefaultBuilder<DbRelationship> {
 
     private String[] from;

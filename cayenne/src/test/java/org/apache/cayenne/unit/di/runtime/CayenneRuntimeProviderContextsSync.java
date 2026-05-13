@@ -28,9 +28,6 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import java.util.ArrayList;
 import java.util.Collection;
 
-/**
- * @since 4.1
- */
 public class CayenneRuntimeProviderContextsSync extends CayenneRuntimeProvider {
 
     public CayenneRuntimeProviderContextsSync(@Inject RuntimeCaseDataSourceFactory dataSourceFactory,

@@ -46,7 +46,6 @@ import static org.mockito.Mockito.*;
  * has major priority
  *
  * @see BaseTransaction,TransactionDescriptor
- * @since 4.2
  */
 public class TransactionCustomConnectionIT {
 

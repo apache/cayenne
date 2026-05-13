@@ -25,9 +25,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- * @since 4.1
- */
 public class PrefetchTypeForSelectQueryHandlerTest extends BaseHandlerTest{
 
     @Test

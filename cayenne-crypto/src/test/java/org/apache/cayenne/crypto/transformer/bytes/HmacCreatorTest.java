@@ -35,9 +35,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-/**
- * @since 4.0
- */
 public class HmacCreatorTest {
 
     /**

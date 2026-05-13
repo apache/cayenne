@@ -28,9 +28,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * @since 4.0
- */
 public class HmacEncryptorTest {
 
     @Test

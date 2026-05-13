@@ -31,9 +31,6 @@ import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.Select;
 
-/**
- * @since 4.2
- */
 class MockQueryWrapperBuilder {
 
     private boolean distinct;

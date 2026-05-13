@@ -20,9 +20,6 @@ package org.apache.cayenne.dbsync.merge.builders;
 
 import org.apache.cayenne.map.ObjAttribute;
 
-/**
- * @since 4.0.
- */
 public class ObjAttributeBuilder extends DefaultBuilder<ObjAttribute> {
 
     public ObjAttributeBuilder() {

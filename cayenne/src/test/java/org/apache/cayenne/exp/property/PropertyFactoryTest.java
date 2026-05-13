@@ -30,9 +30,6 @@ import org.junit.jupiter.api.Test;
 import static org.apache.cayenne.exp.ExpressionFactory.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @since 4.2
- */
 public class PropertyFactoryTest {
 
     @Test

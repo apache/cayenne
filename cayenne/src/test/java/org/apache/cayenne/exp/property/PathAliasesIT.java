@@ -46,9 +46,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * @since 4.2
- */
 public class PathAliasesIT {
 
     @RegisterExtension
@@ -183,7 +180,6 @@ public class PathAliasesIT {
         });
     }
 
-
     @Test
 
     public void theSameAliasesToDifferentProperties() {
@@ -196,7 +192,6 @@ public class PathAliasesIT {
     
         });
     }
-
 
     @Test
     public void expWithAliases() {
@@ -313,7 +308,6 @@ public class PathAliasesIT {
     
         });
     }
-
 
     @Test
 

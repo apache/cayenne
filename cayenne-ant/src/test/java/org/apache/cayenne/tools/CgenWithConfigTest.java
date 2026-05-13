@@ -32,9 +32,6 @@ import java.nio.file.Path;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * @since 4.1
- */
 public class CgenWithConfigTest {
 
     @TempDir

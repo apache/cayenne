@@ -24,9 +24,6 @@ import java.sql.Types;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
-/**
- * @since 4.2
- */
 public class BaseColumnExtractorTest {
 
     DbEntity createMockDbEntity(String entityName) {

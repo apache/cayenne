@@ -38,9 +38,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- * @since 4.0
- */
 public class ExpressionCollectionEvaluationIT {
 
     @RegisterExtension

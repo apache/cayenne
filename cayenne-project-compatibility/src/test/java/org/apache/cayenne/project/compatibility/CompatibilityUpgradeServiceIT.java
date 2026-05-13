@@ -31,9 +31,6 @@ import org.w3c.dom.Document;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @since 4.1
- */
 public class CompatibilityUpgradeServiceIT {
 
     @Test

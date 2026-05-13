@@ -34,9 +34,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @since 4.0
- */
 public class ColumnSelectTest {
 
     @Test
@@ -120,7 +117,6 @@ public class ColumnSelectTest {
         assertEquals(Arrays.asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY), q.getColumns());
     }
 
-
     @Test
     public void havingExpression() {
         ColumnSelect<?> q = new ColumnSelect<>();
@@ -192,7 +188,6 @@ public class ColumnSelectTest {
         assertEquals(ExpressionFactory.exp("false or false"), q.getHaving());
         assertEquals(ExpressionFactory.exp("true or true"), q.getWhere());
     }
-
 
     @Test
     public void testColumnsAddByOne() {

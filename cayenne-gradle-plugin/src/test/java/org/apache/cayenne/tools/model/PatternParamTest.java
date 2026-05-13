@@ -29,9 +29,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @since 4.0
- */
 public class PatternParamTest {
 
     private PatternParam param;

@@ -29,8 +29,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Shared DI injector for cgen tests. No DB schema or lifecycle; subclasses
  * pull dependencies via {@link #getUnitTestInjector()}.
- *
- * @since 4.2
  */
 public class CgenCase {
 

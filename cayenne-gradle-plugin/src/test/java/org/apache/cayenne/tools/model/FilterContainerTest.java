@@ -26,9 +26,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @since 4.0
- */
 public class FilterContainerTest {
 
     @Test
@@ -67,7 +64,6 @@ public class FilterContainerTest {
         assertEquals(1, schema.getIncludeTables().size());
         assertEquals("table_from_closure", schema.getIncludeTables().iterator().next().getPattern());
     }
-
 
     @Test
     public void fillContainer() throws Exception {
@@ -116,6 +112,5 @@ public class FilterContainerTest {
         assertEquals(3, catalog.getExcludeProcedures().size());
         assertEquals("proc4", catalog.getExcludeProcedures().iterator().next().getPattern());
     }
-
 
 }

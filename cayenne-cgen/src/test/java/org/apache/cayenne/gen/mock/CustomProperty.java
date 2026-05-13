@@ -23,9 +23,6 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.property.BaseProperty;
 
-/**
- * @since 4.2
- */
 public class CustomProperty extends BaseProperty<TimestampType> {
 
     public CustomProperty(String name, Class<? super TimestampType> type) {

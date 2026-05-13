@@ -33,9 +33,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @since 4.2
- */
 public class BasePropertyTest {
 
     private BaseProperty<Integer> property;
@@ -44,7 +41,6 @@ public class BasePropertyTest {
     public void createProperty() {
         property = new BaseProperty<>(CayennePath.of("path"), null, Integer.class);
     }
-
 
     @Test
     public void pathExpConstructor() {

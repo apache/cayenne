@@ -22,9 +22,6 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.util.Util;
 
-/**
- * @since 4.0.
- */
 public class ObjEntityBuilder extends DefaultBuilder<ObjEntity> {
 
     public ObjEntityBuilder() {
@@ -64,7 +61,6 @@ public class ObjEntityBuilder extends DefaultBuilder<ObjEntity> {
 
         return this;
     }
-
 
     @Override
     public ObjEntity build() {

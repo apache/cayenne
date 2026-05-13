@@ -24,9 +24,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-/**
- * @since 4.2
- */
 public class JsonTokenizerTest {
 
     @Test
@@ -383,7 +380,6 @@ public class JsonTokenizerTest {
 
         assertEquals(JsonTokenizer.TokenType.NONE, token.type);
     }
-
 
     private static final String JSON = "[\n" +
             "  {\n" +

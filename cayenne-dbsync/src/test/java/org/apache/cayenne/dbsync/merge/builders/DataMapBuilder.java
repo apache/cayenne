@@ -26,9 +26,6 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 
-/**
- * @since 4.0.
- */
 public class DataMapBuilder extends DefaultBuilder<DataMap> {
 
     public DataMapBuilder() {
@@ -138,7 +135,6 @@ public class DataMapBuilder extends DefaultBuilder<DataMap> {
         if (dataFactory.chance(90)) {
             withDbEntities(dataFactory.getNumberUpTo(10));
         }
-
 
         return build();
     }

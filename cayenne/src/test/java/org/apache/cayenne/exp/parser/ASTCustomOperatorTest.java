@@ -26,9 +26,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @since 4.2
- */
 public class ASTCustomOperatorTest {
 
     @Test
@@ -49,6 +46,5 @@ public class ASTCustomOperatorTest {
     
         });
     }
-
 
 }

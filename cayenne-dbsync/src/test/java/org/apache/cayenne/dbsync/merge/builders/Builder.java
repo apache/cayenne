@@ -20,8 +20,6 @@ package org.apache.cayenne.dbsync.merge.builders;
 
 /**
  * Base interface for all domain builders
- *
- * @since 4.0.
  */
 public interface Builder<T> {
 

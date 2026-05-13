@@ -39,9 +39,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @since 4.2
- */
 public class IdPropertyIT {
 
     @RegisterExtension

@@ -26,9 +26,6 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 
-/**
- * @since 1.1
- */
 public class SQLServerUnitDbAdapter extends SybaseUnitDbAdapter {
 
     public SQLServerUnitDbAdapter(DbAdapter adapter) {

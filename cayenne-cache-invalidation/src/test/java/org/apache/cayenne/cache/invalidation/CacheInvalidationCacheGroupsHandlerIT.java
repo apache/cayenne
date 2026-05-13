@@ -33,9 +33,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- * @since 4.0
- */
 public class CacheInvalidationCacheGroupsHandlerIT extends CacheInvalidationCase {
 
     private AtomicInteger removeGroupUntypedCounter;
@@ -86,7 +83,6 @@ public class CacheInvalidationCacheGroupsHandlerIT extends CacheInvalidationCase
         assertEquals(0, g1.selectCount(context));
         assertEquals(0, g2.selectCount(context));
 
-
         context.newObject(E1.class);
         context.commitChanges();
 
@@ -122,7 +118,6 @@ public class CacheInvalidationCacheGroupsHandlerIT extends CacheInvalidationCase
         assertEquals(0, g2.selectCount(context));
         assertEquals(0, g3.selectCount(context));
         assertEquals(0, g5.selectCount(context));
-
 
         context.newObject(E2.class);
         context.commitChanges();

@@ -27,9 +27,6 @@ import org.junit.jupiter.api.Test;
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
-/**
- * @since 4.2
- */
 public class UpdateBuilderTest extends BaseSqlBuilderTest {
 
     @Test

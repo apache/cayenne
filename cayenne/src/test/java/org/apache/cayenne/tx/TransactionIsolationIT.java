@@ -41,9 +41,6 @@ import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @since 4.1
- */
 public class TransactionIsolationIT {
 
     @RegisterExtension

@@ -39,9 +39,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @since 4.2
- */
 public class QualifierTranslatorTest {
 
     private QualifierTranslator translator;

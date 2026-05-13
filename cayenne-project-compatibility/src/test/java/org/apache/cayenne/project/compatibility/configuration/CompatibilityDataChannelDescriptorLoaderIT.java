@@ -37,9 +37,6 @@ import org.xml.sax.XMLReader;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @since 4.1
- */
 public class CompatibilityDataChannelDescriptorLoaderIT {
 
     @Test
