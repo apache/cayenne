@@ -56,8 +56,7 @@ public class AshwoodEntitySorter_RelationshipsIT {
 
 		tRelationshipHelper = env.table("RELATIONSHIP_HELPER", "RELATIONSHIP_HELPER_ID", "NAME");
 
-		tReflexiveAndToOne = env.table("REFLEXIVE_AND_TO_ONE");
-		tReflexiveAndToOne.setColumns("REFLEXIVE_AND_TO_ONE_ID", "PARENT_ID", "RELATIONSHIP_HELPER_ID", "NAME")
+		tReflexiveAndToOne = env.table("REFLEXIVE_AND_TO_ONE").setColumns("REFLEXIVE_AND_TO_ONE_ID", "PARENT_ID", "RELATIONSHIP_HELPER_ID", "NAME")
 				.setColumnTypes(Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.VARCHAR);
 	}
 

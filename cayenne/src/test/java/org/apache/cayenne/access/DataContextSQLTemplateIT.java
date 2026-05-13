@@ -67,8 +67,7 @@ public class DataContextSQLTemplateIT {
 		sqlTemplateCustomizer = env.getInstance(SQLTemplateCustomizer.class);
 		tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
-		tPainting = env.table("PAINTING");
-		tPainting.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "ESTIMATED_PRICE").setColumnTypes(
+		tPainting = env.table("PAINTING").setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "ESTIMATED_PRICE").setColumnTypes(
 				Types.INTEGER, Types.VARCHAR, Types.BIGINT, Types.DECIMAL);
 	}
 

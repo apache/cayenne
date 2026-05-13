@@ -52,8 +52,7 @@ public class DataContextEJBQLArrayResultIT {
         tArtist.insert(33003, "BB1");
         tArtist.insert(33004, "BB2");
 
-        TableHelper tPainting = env.table("PAINTING");
-        tPainting.setColumns(
+        TableHelper tPainting = env.table("PAINTING").setColumns(
                 "PAINTING_ID",
                 "ARTIST_ID",
                 "PAINTING_TITLE",

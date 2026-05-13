@@ -54,8 +54,7 @@ public class OptimisticLockingIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.dataContext();
-        tSimpleLockingTest = env.table("SIMPLE_LOCKING_TEST");
-        tSimpleLockingTest.setColumns("LOCKING_TEST_ID", "NAME", "DESCRIPTION", "INT_COLUMN_NOTNULL")
+        tSimpleLockingTest = env.table("SIMPLE_LOCKING_TEST").setColumns("LOCKING_TEST_ID", "NAME", "DESCRIPTION", "INT_COLUMN_NOTNULL")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.INTEGER);
 
         tRelLockingTest = env.table("REL_LOCKING_TEST", "REL_LOCKING_TEST_ID",

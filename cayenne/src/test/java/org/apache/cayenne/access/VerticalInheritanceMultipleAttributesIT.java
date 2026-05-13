@@ -56,16 +56,13 @@ public class VerticalInheritanceMultipleAttributesIT {
     public void setupTableHelpers() throws Exception {
         context = env.context();
         runtime = env.runtime();
-        ivOtherTable = env.table("IV_OTHER");
-        ivOtherTable.setColumns("ID", "NAME")
+        ivOtherTable = env.table("IV_OTHER").setColumns("ID", "NAME")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR);
 
-        ivBaseTable = env.table("IV_BASE");
-        ivBaseTable.setColumns("ID", "NAME", "TYPE")
+        ivBaseTable = env.table("IV_BASE").setColumns("ID", "NAME", "TYPE")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR);
 
-        ivImplTable = env.table("IV_IMPL");
-        ivImplTable.setColumns("ID", "ATTR1", "ATTR2", "OTHER1_ID", "OTHER2_ID")
+        ivImplTable = env.table("IV_IMPL").setColumns("ID", "ATTR1", "ATTR2", "OTHER1_ID", "OTHER2_ID")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.INTEGER);
 
         ivImplTable.deleteAll();

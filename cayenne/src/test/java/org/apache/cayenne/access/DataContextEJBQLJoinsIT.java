@@ -56,8 +56,7 @@ public class DataContextEJBQLJoinsIT {
 		context = env.context();
 		tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
-		tPainting = env.table("PAINTING");
-		tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "GALLERY_ID", "PAINTING_TITLE", "ESTIMATED_PRICE")
+		tPainting = env.table("PAINTING").setColumns("PAINTING_ID", "ARTIST_ID", "GALLERY_ID", "PAINTING_TITLE", "ESTIMATED_PRICE")
 				.setColumnTypes(Types.INTEGER, Types.BIGINT, Types.INTEGER, Types.VARCHAR, Types.DECIMAL);
 
 		tGallery = env.table("GALLERY", "GALLERY_ID", "GALLERY_NAME");

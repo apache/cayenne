@@ -47,12 +47,10 @@ public class ObjectStoreDiffRetainingIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.dataContext();
-        tArtist = env.table("ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH")
+        tArtist = env.table("ARTIST").setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH")
                 .setColumnTypes(Types.BIGINT, Types.CHAR, Types.DATE);
 
-        tPainting = env.table("PAINTING");
-        tPainting.setColumns(
+        tPainting = env.table("PAINTING").setColumns(
                 "ARTIST_ID",
                 "ESTIMATED_PRICE",
                 "GALLERY_ID",

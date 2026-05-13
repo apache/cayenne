@@ -55,8 +55,7 @@ public class CayennePersistentObjectSetToManyListIT {
 		context = env.context();
 		tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
-		tPainting = env.table("PAINTING");
-		tPainting.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR,
+		tPainting = env.table("PAINTING").setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR,
 				Types.BIGINT);
 
 		createArtistWithPaintingDataSet();

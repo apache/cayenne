@@ -41,8 +41,7 @@ public class DataContextEJBQLInheritanceIT extends PeopleProjectCase {
     public void setUp() throws Exception {
         context = env.context();
 
-        TableHelper person = new TableHelper(dbHelper, "PERSON");
-        person.setColumns("PERSON_ID", "NAME", "PERSON_TYPE", "SALARY").setColumnTypes(Types.INTEGER, Types.VARCHAR,
+        TableHelper person = new TableHelper(dbHelper, "PERSON").setColumns("PERSON_ID", "NAME", "PERSON_TYPE", "SALARY").setColumnTypes(Types.INTEGER, Types.VARCHAR,
                 Types.CHAR, Types.FLOAT);
 
         person.insert(1, "a", "EE", 20000);

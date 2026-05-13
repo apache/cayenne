@@ -71,8 +71,7 @@ public class DataContextFlattenedAttributesIT {
         runtime = env.runtime();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 
-        tPainting = env.table("PAINTING");
-        tPainting.setColumns(
+        tPainting = env.table("PAINTING").setColumns(
                 "PAINTING_ID",
                 "PAINTING_TITLE",
                 "ARTIST_ID",

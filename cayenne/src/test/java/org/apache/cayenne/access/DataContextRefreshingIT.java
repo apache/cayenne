@@ -65,8 +65,7 @@ public class DataContextRefreshingIT  {
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
-        tPainting = env.table("PAINTING");
-        tPainting.setColumns(
+        tPainting = env.table("PAINTING").setColumns(
                 "PAINTING_ID",
                 "PAINTING_TITLE",
                 "ARTIST_ID",

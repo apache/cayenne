@@ -53,8 +53,7 @@ public class DataContextEJBQLDeleteIT {
     public void setUp() throws Exception {
         context = env.context();
         runtime = env.runtime();
-        tPainting = env.table("PAINTING");
-        tPainting.setColumns(
+        tPainting = env.table("PAINTING").setColumns(
                 "PAINTING_ID",
                 "ARTIST_ID",
                 "PAINTING_TITLE",

@@ -64,11 +64,9 @@ public class VerticalInheritanceIT {
 	public void setup() {
 		context = env.context();
 		runtime = env.runtime();
-		ivAbstractTable = env.table("IV_ABSTRACT");
-		ivAbstractTable.setColumns("ID", "PARENT_ID", "TYPE")
+		ivAbstractTable = env.table("IV_ABSTRACT").setColumns("ID", "PARENT_ID", "TYPE")
 				.setColumnTypes(Types.INTEGER, Types.INTEGER, Types.CHAR);
-		ivConcreteTable = env.table("IV_CONCRETE");
-		ivConcreteTable.setColumns("ID", "NAME", "RELATED_ABSTRACT_ID")
+		ivConcreteTable = env.table("IV_CONCRETE").setColumns("ID", "NAME", "RELATED_ABSTRACT_ID")
 				.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
 	}
 
@@ -309,8 +307,7 @@ public class VerticalInheritanceIT {
     @Test
 	public void selectQuerySuperSub() throws Exception {
 
-		TableHelper ivRootTable = env.table("IV_ROOT");
-		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
+		TableHelper ivRootTable = env.table("IV_ROOT").setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
 				Types.INTEGER, Types.VARCHAR, Types.VARCHAR);
 
 		TableHelper ivSub1Table = env.table("IV_SUB1", "ID", "SUB1_NAME");
@@ -350,8 +347,7 @@ public class VerticalInheritanceIT {
     @Test
 	public void selectQueryDeepAndWide() throws Exception {
 
-		TableHelper ivRootTable = env.table("IV_ROOT");
-		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
+		TableHelper ivRootTable = env.table("IV_ROOT").setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
 				Types.INTEGER, Types.VARCHAR, Types.VARCHAR);
 
 		TableHelper ivSub1Table = env.table("IV_SUB1", "ID", "SUB1_NAME");
@@ -417,8 +413,7 @@ public class VerticalInheritanceIT {
     @Test
 	public void selectQueryMiddleLeaf() throws Exception {
 
-		TableHelper ivRootTable = env.table("IV_ROOT");
-		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
+		TableHelper ivRootTable = env.table("IV_ROOT").setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
 				Types.INTEGER, Types.VARCHAR, Types.VARCHAR);
 
 		TableHelper ivSub1Table = env.table("IV_SUB1", "ID", "SUB1_NAME");
@@ -473,8 +468,7 @@ public class VerticalInheritanceIT {
     @Test
 	public void deleteMix() throws Exception {
 
-		TableHelper ivRootTable = env.table("IV_ROOT");
-		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
+		TableHelper ivRootTable = env.table("IV_ROOT").setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
 				Types.INTEGER, Types.VARCHAR, Types.VARCHAR);
 
 		TableHelper ivSub1Table = env.table("IV_SUB1", "ID", "SUB1_NAME");
@@ -529,8 +523,7 @@ public class VerticalInheritanceIT {
     @Test
 	public void selectQueryAttributeOverrides() throws Exception {
 
-		TableHelper iv1RootTable = env.table("IV1_ROOT");
-		iv1RootTable.setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
+		TableHelper iv1RootTable = env.table("IV1_ROOT").setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
 				Types.INTEGER, Types.VARCHAR, Types.VARCHAR);
 
 		TableHelper iv1Sub1Table = env.table("IV1_SUB1", "ID", "SUB1_NAME");
@@ -660,14 +653,11 @@ public class VerticalInheritanceIT {
 
 	@Test
 	public void updateFlattenedRelationshipWithInverse() throws SQLException {
-		TableHelper ivOtherTable = env.table("IV_OTHER");
-		ivOtherTable.setColumns("ID", "NAME").setColumnTypes(Types.INTEGER, Types.VARCHAR);
+		TableHelper ivOtherTable = env.table("IV_OTHER").setColumns("ID", "NAME").setColumnTypes(Types.INTEGER, Types.VARCHAR);
 
-		TableHelper ivBaseTable = env.table("IV_BASE");
-		ivBaseTable.setColumns("ID", "NAME", "TYPE").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR);
+		TableHelper ivBaseTable = env.table("IV_BASE").setColumns("ID", "NAME", "TYPE").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR);
 
-		TableHelper ivImplTable = env.table("IV_IMPL");
-		ivImplTable.setColumns("ID", "ATTR1", "OTHER3_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
+		TableHelper ivImplTable = env.table("IV_IMPL").setColumns("ID", "ATTR1", "OTHER3_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
 
 		ivOtherTable.insert(1, "other1");
 		ivOtherTable.insert(2, "other2");
@@ -836,14 +826,11 @@ public class VerticalInheritanceIT {
 	 */
 	@Test
 	public void baseJointPrefetchBelongsTo() throws SQLException {
-		TableHelper ivOtherTable = env.table("IV_OTHER");
-		ivOtherTable.setColumns("ID", "NAME", "BASE_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
+		TableHelper ivOtherTable = env.table("IV_OTHER").setColumns("ID", "NAME", "BASE_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
 
-		TableHelper ivBaseTable = env.table("IV_BASE");
-		ivBaseTable.setColumns("ID", "NAME", "TYPE").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR);
+		TableHelper ivBaseTable = env.table("IV_BASE").setColumns("ID", "NAME", "TYPE").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR);
 
-		TableHelper ivImplTable = env.table("IV_IMPL");
-		ivImplTable.setColumns("ID", "ATTR1").setColumnTypes(Types.INTEGER, Types.VARCHAR);
+		TableHelper ivImplTable = env.table("IV_IMPL").setColumns("ID", "ATTR1").setColumnTypes(Types.INTEGER, Types.VARCHAR);
 
 		ivBaseTable.insert(1, "Impl 1", "I");
 		ivImplTable.insert(1, "attr1");
@@ -866,14 +853,11 @@ public class VerticalInheritanceIT {
 	 */
 	@Test
 	public void baseDisjointPrefetchBelongsTo() throws SQLException {
-		TableHelper ivOtherTable = env.table("IV_OTHER");
-		ivOtherTable.setColumns("ID", "NAME", "BASE_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
+		TableHelper ivOtherTable = env.table("IV_OTHER").setColumns("ID", "NAME", "BASE_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
 
-		TableHelper ivBaseTable = env.table("IV_BASE");
-		ivBaseTable.setColumns("ID", "NAME", "TYPE").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR);
+		TableHelper ivBaseTable = env.table("IV_BASE").setColumns("ID", "NAME", "TYPE").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR);
 
-		TableHelper ivImplTable = env.table("IV_IMPL");
-		ivImplTable.setColumns("ID", "ATTR1").setColumnTypes(Types.INTEGER, Types.VARCHAR);
+		TableHelper ivImplTable = env.table("IV_IMPL").setColumns("ID", "ATTR1").setColumnTypes(Types.INTEGER, Types.VARCHAR);
 
 		ivBaseTable.insert(1, "Impl 1", "I");
 		ivImplTable.insert(1, "attr1");
@@ -896,14 +880,11 @@ public class VerticalInheritanceIT {
 	 */
 	@Test
 	public void baseDisjointByIdPrefetchBelongsTo() throws SQLException {
-		TableHelper ivOtherTable = env.table("IV_OTHER");
-		ivOtherTable.setColumns("ID", "NAME", "BASE_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
+		TableHelper ivOtherTable = env.table("IV_OTHER").setColumns("ID", "NAME", "BASE_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
 
-		TableHelper ivBaseTable = env.table("IV_BASE");
-		ivBaseTable.setColumns("ID", "NAME", "TYPE").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR);
+		TableHelper ivBaseTable = env.table("IV_BASE").setColumns("ID", "NAME", "TYPE").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR);
 
-		TableHelper ivImplTable = env.table("IV_IMPL");
-		ivImplTable.setColumns("ID", "ATTR1").setColumnTypes(Types.INTEGER, Types.VARCHAR);
+		TableHelper ivImplTable = env.table("IV_IMPL").setColumns("ID", "ATTR1").setColumnTypes(Types.INTEGER, Types.VARCHAR);
 
 		ivBaseTable.insert(1, "Impl 1", "I");
 		ivImplTable.insert(1, "attr1");
@@ -926,14 +907,11 @@ public class VerticalInheritanceIT {
 	 */
 	@Test
 	public void implJointPrefetchBelongsTo() throws SQLException {
-		TableHelper ivOtherTable = env.table("IV_OTHER");
-		ivOtherTable.setColumns("ID", "NAME", "IMPL_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
+		TableHelper ivOtherTable = env.table("IV_OTHER").setColumns("ID", "NAME", "IMPL_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
 
-		TableHelper ivBaseTable = env.table("IV_BASE");
-		ivBaseTable.setColumns("ID", "NAME", "TYPE").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR);
+		TableHelper ivBaseTable = env.table("IV_BASE").setColumns("ID", "NAME", "TYPE").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR);
 
-		TableHelper ivImplTable = env.table("IV_IMPL");
-		ivImplTable.setColumns("ID", "ATTR1").setColumnTypes(Types.INTEGER, Types.VARCHAR);
+		TableHelper ivImplTable = env.table("IV_IMPL").setColumns("ID", "ATTR1").setColumnTypes(Types.INTEGER, Types.VARCHAR);
 
 		ivBaseTable.insert(1, "Impl 1", "I");
 		ivImplTable.insert(1, "attr1");
@@ -961,14 +939,11 @@ public class VerticalInheritanceIT {
 	 */
 	@Test
 	public void implDisjointPrefetchBelongsTo() throws SQLException {
-		TableHelper ivOtherTable = env.table("IV_OTHER");
-		ivOtherTable.setColumns("ID", "NAME", "IMPL_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
+		TableHelper ivOtherTable = env.table("IV_OTHER").setColumns("ID", "NAME", "IMPL_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
 
-		TableHelper ivBaseTable = env.table("IV_BASE");
-		ivBaseTable.setColumns("ID", "NAME", "TYPE").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR);
+		TableHelper ivBaseTable = env.table("IV_BASE").setColumns("ID", "NAME", "TYPE").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR);
 
-		TableHelper ivImplTable = env.table("IV_IMPL");
-		ivImplTable.setColumns("ID", "ATTR1").setColumnTypes(Types.INTEGER, Types.VARCHAR);
+		TableHelper ivImplTable = env.table("IV_IMPL").setColumns("ID", "ATTR1").setColumnTypes(Types.INTEGER, Types.VARCHAR);
 
 		ivBaseTable.insert(1, "Impl 1", "I");
 		ivImplTable.insert(1, "attr1");
@@ -998,14 +973,11 @@ public class VerticalInheritanceIT {
 	 */
 	@Test
 	public void implDisjointByIdPrefetchBelongsTo() throws SQLException {
-		TableHelper ivOtherTable = env.table("IV_OTHER");
-		ivOtherTable.setColumns("ID", "NAME", "IMPL_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
+		TableHelper ivOtherTable = env.table("IV_OTHER").setColumns("ID", "NAME", "IMPL_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
 
-		TableHelper ivBaseTable = env.table("IV_BASE");
-		ivBaseTable.setColumns("ID", "NAME", "TYPE").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR);
+		TableHelper ivBaseTable = env.table("IV_BASE").setColumns("ID", "NAME", "TYPE").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR);
 
-		TableHelper ivImplTable = env.table("IV_IMPL");
-		ivImplTable.setColumns("ID", "ATTR1").setColumnTypes(Types.INTEGER, Types.VARCHAR);
+		TableHelper ivImplTable = env.table("IV_IMPL").setColumns("ID", "ATTR1").setColumnTypes(Types.INTEGER, Types.VARCHAR);
 
 		ivBaseTable.insert(1, "Impl 1", "I");
 		ivImplTable.insert(1, "attr1");
@@ -1035,15 +1007,12 @@ public class VerticalInheritanceIT {
 	 */
 	@Test
 	public void updateWithOptimisticLocks() throws SQLException {
-		TableHelper ivOtherTable = env.table("IV_OTHER");
-		ivOtherTable.setColumns("ID", "NAME").setColumnTypes(Types.INTEGER, Types.VARCHAR);
+		TableHelper ivOtherTable = env.table("IV_OTHER").setColumns("ID", "NAME").setColumnTypes(Types.INTEGER, Types.VARCHAR);
 
-		TableHelper ivBaseWithLockTable = env.table("IV_BASE_WITH_LOCK");
-		ivBaseWithLockTable.setColumns("ID", "NAME", "TYPE")
+		TableHelper ivBaseWithLockTable = env.table("IV_BASE_WITH_LOCK").setColumns("ID", "NAME", "TYPE")
 				.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR);
 
-		TableHelper ivImplWithLockTable = env.table("IV_IMPL_WITH_LOCK");
-		ivImplWithLockTable.setColumns("ID", "ATTR1", "OTHER1_ID")
+		TableHelper ivImplWithLockTable = env.table("IV_IMPL_WITH_LOCK").setColumns("ID", "ATTR1", "OTHER1_ID")
 				.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
 
 		// Insert records we want to update (will end up adding more records for final test)

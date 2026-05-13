@@ -58,8 +58,7 @@ public class OneWayRelationshipsIT {
 		t2Helper = env.table("oneway_table2", "ID", "TABLE1_ID");
 
 		t3Helper = env.table("oneway_table3", "ID");
-		t4Helper = env.table("oneway_table4");
-		t4Helper.setColumns("ID", "TABLE3_ID").setColumnTypes(Types.INTEGER, Types.INTEGER);
+		t4Helper = env.table("oneway_table4").setColumns("ID", "TABLE3_ID").setColumnTypes(Types.INTEGER, Types.INTEGER);
 	}
 
 	@Test

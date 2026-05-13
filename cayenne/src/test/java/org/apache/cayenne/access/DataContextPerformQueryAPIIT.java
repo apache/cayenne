@@ -75,8 +75,7 @@ public class DataContextPerformQueryAPIIT  {
         jdbcEventLogger = env.getInstance(JdbcEventLogger.class);
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
-        tPainting = env.table("PAINTING");
-        tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE", "ESTIMATED_PRICE").setColumnTypes(
+        tPainting = env.table("PAINTING").setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE", "ESTIMATED_PRICE").setColumnTypes(
                 Types.INTEGER, Types.BIGINT, Types.VARCHAR, Types.DECIMAL);
     }
 

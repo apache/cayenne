@@ -51,8 +51,7 @@ public class DataContextEJBQLOrderByIT {
         context = env.context();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
-        tPainting = env.table("PAINTING");
-        tPainting.setColumns(
+        tPainting = env.table("PAINTING").setColumns(
                 "PAINTING_ID",
                 "ARTIST_ID",
                 "PAINTING_TITLE",
