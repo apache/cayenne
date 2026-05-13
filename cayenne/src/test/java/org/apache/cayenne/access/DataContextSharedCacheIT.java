@@ -62,7 +62,7 @@ public class DataContextSharedCacheIT {
     
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.dataContext();
+        context = env.context();
         context1 = (DataContext) env.runtime().newContext();
         sqlTemplateCustomizer = env.getInstance(SQLTemplateCustomizer.class);
         // prepare a single artist record

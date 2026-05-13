@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.runtime;
 
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
@@ -260,7 +259,6 @@ public class RuntimeCaseModule implements Module {
         binder.bind(RuntimeCaseProperties.class).to(RuntimeCaseProperties.class).in(testScope);
         binder.bind(RuntimeCaseExtraModules.class).to(RuntimeCaseExtraModules.class).in(testScope);
         binder.bind(CayenneRuntime.class).toProvider(CayenneRuntimeProvider.class).in(testScope);
-        binder.bind(ObjectContext.class).toProvider(RuntimeCaseObjectContextProvider.class).withoutScope();
         binder.bind(DataContext.class).toProvider(RuntimeCaseDataContextProvider.class).withoutScope();
         binder.bind(DBHelper.class).toProvider(FlavoredDBHelperProvider.class).in(testScope);
         binder.bind(DBCleaner.class).toProvider(DBCleanerProvider.class).in(testScope);

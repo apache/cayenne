@@ -67,7 +67,7 @@ public class DataContextFlattenedAttributesIT {
 
     @BeforeEach
     public void createTestDataSetStructure() {
-        context = env.dataContext();
+        context = env.context();
         runtime = env.runtime();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 

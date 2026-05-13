@@ -77,7 +77,7 @@ public class DataContextProcedureQueryIT  {
         BaseTransaction.bindThreadTransaction(t);
 
         try {
-            env.dataContext().performGenericQuery(q);
+            env.context().performGenericQuery(q);
         } finally {
             BaseTransaction.bindThreadTransaction(null);
             t.commit();
@@ -87,7 +87,7 @@ public class DataContextProcedureQueryIT  {
         ObjectSelect<Artist> select = ObjectSelect.query(Artist.class)
                 .prefetch("paintingArray", PrefetchTreeNode.UNDEFINED_SEMANTICS);
 
-        List<Artist> artists = select.select(env.dataContext());
+        List<Artist> artists = select.select(env.context());
         assertEquals(1, artists.size());
 
         Artist a = artists.get(0);
@@ -113,7 +113,7 @@ public class DataContextProcedureQueryIT  {
         BaseTransaction.bindThreadTransaction(t);
 
         try {
-            env.dataContext().performGenericQuery(q);
+            env.context().performGenericQuery(q);
         } finally {
             BaseTransaction.bindThreadTransaction(null);
             t.commit();
@@ -123,7 +123,7 @@ public class DataContextProcedureQueryIT  {
         ObjectSelect<Artist> select = ObjectSelect.query(Artist.class)
                 .prefetch("paintingArray", PrefetchTreeNode.UNDEFINED_SEMANTICS);
 
-        List<Artist> artists = select.select(env.dataContext());
+        List<Artist> artists = select.select(env.context());
         assertEquals(1, artists.size());
 
         Artist a = artists.get(0);
@@ -149,11 +149,11 @@ public class DataContextProcedureQueryIT  {
         assertNotNull(artists, "Null result from StoredProcedure.");
         assertEquals(1, artists.size());
         DataRow artistRow = (DataRow) artists.get(0);
-        Artist a = env.dataContext().objectFromDataRow(Artist.class, uppercaseConverter(artistRow));
+        Artist a = env.context().objectFromDataRow(Artist.class, uppercaseConverter(artistRow));
         Painting p = a.getPaintingArray().get(0);
 
         // invalidate painting, it may have been updated in the proc
-        env.dataContext().invalidateObjects(p);
+        env.context().invalidateObjects(p);
         assertEquals(2000, p.getEstimatedPrice().intValue());
     }
 
@@ -176,11 +176,11 @@ public class DataContextProcedureQueryIT  {
         assertNotNull(artists, "Null result from StoredProcedure.");
         assertEquals(1, artists.size());
         DataRow artistRow = (DataRow) artists.get(0);
-        Artist a = env.dataContext().objectFromDataRow(Artist.class, uppercaseConverter(artistRow));
+        Artist a = env.context().objectFromDataRow(Artist.class, uppercaseConverter(artistRow));
         Painting p = a.getPaintingArray().get(0);
 
         // invalidate painting, it may have been updated in the proc
-        env.dataContext().invalidateObjects(p);
+        env.context().invalidateObjects(p);
         assertEquals(2000, p.getEstimatedPrice().intValue());
     }
 
@@ -194,7 +194,7 @@ public class DataContextProcedureQueryIT  {
         createArtist(1000.0);
 
         // test ProcedureQuery with Procedure as root
-        Procedure proc = env.dataContext().getEntityResolver().getProcedure(SELECT_STORED_PROCEDURE);
+        Procedure proc = env.context().getEntityResolver().getProcedure(SELECT_STORED_PROCEDURE);
         ProcedureQuery q = new ProcedureQuery(proc);
         q.addParameter("aName", "An Artist");
         q.addParameter("paintingPrice", 3000);
@@ -205,11 +205,11 @@ public class DataContextProcedureQueryIT  {
         assertNotNull(artists, "Null result from StoredProcedure.");
         assertEquals(1, artists.size());
         DataRow artistRow = (DataRow) artists.get(0);
-        Artist a = env.dataContext().objectFromDataRow(Artist.class, uppercaseConverter(artistRow));
+        Artist a = env.context().objectFromDataRow(Artist.class, uppercaseConverter(artistRow));
         Painting p = a.getPaintingArray().get(0);
 
         // invalidate painting, it may have been updated in the proc
-        env.dataContext().invalidateObjects(p);
+        env.context().invalidateObjects(p);
         assertEquals(2000, p.getEstimatedPrice().intValue());
     }
 
@@ -327,7 +327,7 @@ public class DataContextProcedureQueryIT  {
         Painting p = a.getPaintingArray().get(0);
 
         // invalidate painting, it may have been updated in the proc
-        env.dataContext().invalidateObjects(p);
+        env.context().invalidateObjects(p);
         assertEquals(1101.01, p.getEstimatedPrice().doubleValue(), 0.02);
     }
 
@@ -342,7 +342,7 @@ public class DataContextProcedureQueryIT  {
         createArtist(1000.0);
 
         // test ProcedureQuery with Procedure as root
-        Procedure proc = env.dataContext().getEntityResolver().getProcedure(SELECT_STORED_PROCEDURE);
+        Procedure proc = env.context().getEntityResolver().getProcedure(SELECT_STORED_PROCEDURE);
         ProcedureQuery q = new ProcedureQuery(proc);
         q.setFetchingDataRows(true);
         q.addParameter("aName", "An Artist");
@@ -388,7 +388,7 @@ public class DataContextProcedureQueryIT  {
         BaseTransaction.bindThreadTransaction(t);
 
         try {
-            return env.dataContext().performQuery(q);
+            return env.context().performQuery(q);
         } finally {
             BaseTransaction.bindThreadTransaction(null);
             t.commit();
@@ -396,16 +396,16 @@ public class DataContextProcedureQueryIT  {
     }
 
     protected void createArtist(double paintingPrice) {
-        Artist a = env.dataContext().newObject(Artist.class);
+        Artist a = env.context().newObject(Artist.class);
         a.setArtistName("An Artist");
 
-        Painting p = env.dataContext().newObject(Painting.class);
+        Painting p = env.context().newObject(Painting.class);
         p.setPaintingTitle("A Painting");
         // converting double to string prevents rounding weirdness...
         p.setEstimatedPrice(new BigDecimal("" + paintingPrice));
         a.addToPaintingArray(p);
 
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
     }
 
     /**

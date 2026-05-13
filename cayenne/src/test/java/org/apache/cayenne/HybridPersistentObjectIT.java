@@ -43,29 +43,29 @@ public class HybridPersistentObjectIT {
 
     @Test
     public void testCreateNew() {
-        HybridEntity1 entity1 = env.dataContext().newObject(HybridEntity1.class);
-        HybridEntity2 entity2 = env.dataContext().newObject(HybridEntity2.class);
-        env.dataContext().commitChanges();
+        HybridEntity1 entity1 = env.context().newObject(HybridEntity1.class);
+        HybridEntity2 entity2 = env.context().newObject(HybridEntity2.class);
+        env.context().commitChanges();
 
         assertNull(entity1.values);
         assertNull(entity2.values);
 
-        HybridEntity1 selectEntity1 = ObjectSelect.query(HybridEntity1.class).selectOne(env.dataContext());
+        HybridEntity1 selectEntity1 = ObjectSelect.query(HybridEntity1.class).selectOne(env.context());
         assertEquals(0, selectEntity1.getIntField());
         assertEquals(null, selectEntity1.getStrField());
 
-        HybridEntity2 selectEntity2 = ObjectSelect.query(HybridEntity2.class).selectOne(env.dataContext());
+        HybridEntity2 selectEntity2 = ObjectSelect.query(HybridEntity2.class).selectOne(env.context());
         assertEquals(0, selectEntity2.getIntField());
         assertEquals(null, selectEntity2.getStrField());
     }
 
     @Test
     public void testSetFieldAttributes() {
-        HybridEntity1 entity1 = env.dataContext().newObject(HybridEntity1.class);
+        HybridEntity1 entity1 = env.context().newObject(HybridEntity1.class);
         entity1.setIntField(123);
         entity1.setStrField("abc");
 
-        HybridEntity2 entity2 = env.dataContext().newObject(HybridEntity2.class);
+        HybridEntity2 entity2 = env.context().newObject(HybridEntity2.class);
         entity2.setIntField(321);
         entity2.setStrField("cba");
         entity2.setHybridEntity1(entity1);
@@ -73,13 +73,13 @@ public class HybridPersistentObjectIT {
         assertNull(entity1.values);
         assertNull(entity2.values);
 
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
 
-        HybridEntity1 selectEntity1 = ObjectSelect.query(HybridEntity1.class).selectOne(env.dataContext());
+        HybridEntity1 selectEntity1 = ObjectSelect.query(HybridEntity1.class).selectOne(env.context());
         assertEquals(123, selectEntity1.getIntField());
         assertEquals("abc", selectEntity1.getStrField());
 
-        HybridEntity2 selectEntity2 = ObjectSelect.query(HybridEntity2.class).selectOne(env.dataContext());
+        HybridEntity2 selectEntity2 = ObjectSelect.query(HybridEntity2.class).selectOne(env.context());
         assertEquals(321, selectEntity2.getIntField());
         assertEquals("cba", selectEntity2.getStrField());
         assertEquals(selectEntity1, selectEntity2.getHybridEntity1());
@@ -92,25 +92,25 @@ public class HybridPersistentObjectIT {
         addRuntimeAttribute(HybridEntity2.class, "BOOLEAN_FIELD", "boolean");
 
         try {
-            HybridEntity1 entity1 = env.dataContext().newObject(HybridEntity1.class);
+            HybridEntity1 entity1 = env.context().newObject(HybridEntity1.class);
             entity1.writeProperty("FLOAT_FIELD", 3.14);
 
-            HybridEntity2 entity2 = env.dataContext().newObject(HybridEntity2.class);
+            HybridEntity2 entity2 = env.context().newObject(HybridEntity2.class);
             entity2.writeProperty("BOOLEAN_FIELD", true);
 
             assertNotNull(entity1.values);
             assertNotNull(entity2.values);
 
-            env.dataContext().commitChanges();
+            env.context().commitChanges();
 
             entity1.writeProperty("FLOAT_FIELD", 2.17);
             entity2.writeProperty("BOOLEAN_FIELD", false);
 
             // attributes should be merged with context cache
-            HybridEntity1 selectEntity1 = ObjectSelect.query(HybridEntity1.class).selectOne(env.dataContext());
+            HybridEntity1 selectEntity1 = ObjectSelect.query(HybridEntity1.class).selectOne(env.context());
             assertEquals(2.17, selectEntity1.readProperty("FLOAT_FIELD"));
 
-            HybridEntity2 selectEntity2 = ObjectSelect.query(HybridEntity2.class).selectOne(env.dataContext());
+            HybridEntity2 selectEntity2 = ObjectSelect.query(HybridEntity2.class).selectOne(env.context());
             assertEquals(false, selectEntity2.readProperty("BOOLEAN_FIELD"));
 
             // attributes should be read from DB
@@ -129,16 +129,16 @@ public class HybridPersistentObjectIT {
     @Test
     public void testSetDynamicNonDbAttributes() {
         // test write arbitrary data into object
-        HybridEntity1 entity1 = env.dataContext().newObject(HybridEntity1.class);
+        HybridEntity1 entity1 = env.context().newObject(HybridEntity1.class);
         entity1.writeProperty("CUSTOM_NON_DB_ATTRIBUTE", 42L);
         assertEquals(42L, entity1.readProperty("CUSTOM_NON_DB_ATTRIBUTE"));
         assertNotNull(entity1.values);
 
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
 
         entity1.writeProperty("CUSTOM_NON_DB_ATTRIBUTE", 12L);
 
-        HybridEntity1 selectEntity1 = ObjectSelect.query(HybridEntity1.class).selectOne(env.dataContext());
+        HybridEntity1 selectEntity1 = ObjectSelect.query(HybridEntity1.class).selectOne(env.context());
         // this will be restored from context cache
         assertEquals(12L, selectEntity1.readProperty("CUSTOM_NON_DB_ATTRIBUTE"));
 

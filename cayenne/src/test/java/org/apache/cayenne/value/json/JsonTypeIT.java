@@ -658,20 +658,20 @@ public class JsonTypeIT {
     }
 
     private void testJsonOther(String jsonString) {
-        JsonOther jsonInsert = env.dataContext().newObject(JsonOther.class);
+        JsonOther jsonInsert = env.context().newObject(JsonOther.class);
         jsonInsert.setData(new Json(jsonString));
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
 
-        JsonOther jsonSelect = env.dataContext().selectOne(SelectById.query(JsonOther.class, jsonInsert.getObjectId()));
+        JsonOther jsonSelect = env.context().selectOne(SelectById.query(JsonOther.class, jsonInsert.getObjectId()));
         assertEquals(jsonInsert.getData(), jsonSelect.getData());
     }
 
     private void testJsonVarchar(String jsonString) {
-        JsonVarchar jsonInsert = env.dataContext().newObject(JsonVarchar.class);
+        JsonVarchar jsonInsert = env.context().newObject(JsonVarchar.class);
         jsonInsert.setData(new Json(jsonString));
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
 
-        JsonVarchar jsonSelect = env.dataContext().selectOne(SelectById.query(JsonVarchar.class, jsonInsert.getObjectId()));
+        JsonVarchar jsonSelect = env.context().selectOne(SelectById.query(JsonVarchar.class, jsonInsert.getObjectId()));
         assertEquals(jsonInsert.getData(), jsonSelect.getData());
     }
 }

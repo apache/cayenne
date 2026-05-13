@@ -128,17 +128,17 @@ public class Cay2666IT {
         tTest.insert(1, "st.One");
 
         Expression expression = ExpressionFactory.exp("name$ = 'st.One'");
-        List<CAY2666> cay2666List = ObjectSelect.query(CAY2666.class).where(expression).select(env.dataContext());
+        List<CAY2666> cay2666List = ObjectSelect.query(CAY2666.class).where(expression).select(env.context());
         assertEquals(1, cay2666List.size());
 
         expression = ExpressionFactory.exp("obj:name$ = 'st.Two'");
-        cay2666List = ObjectSelect.query(CAY2666.class).where(expression).select(env.dataContext());
+        cay2666List = ObjectSelect.query(CAY2666.class).where(expression).select(env.context());
         assertEquals(0, cay2666List.size());
 
         tTest.insert(2, "st.Two");
 
         expression = ExpressionFactory.exp("db:NAME$ = 'st.Two'");
-        cay2666List = ObjectSelect.query(CAY2666.class).where(expression).select(env.dataContext());
+        cay2666List = ObjectSelect.query(CAY2666.class).where(expression).select(env.context());
         assertEquals(1, cay2666List.size());
     }
 

@@ -45,7 +45,7 @@ public class DataContextCommitIT {
 
     @Test
     public void flushToParent_Commit_New() {
-        DataContext context = env.dataContext();
+        DataContext context = env.context();
 
         // commit new object
         Artist a = context.newObject(Artist.class);
@@ -71,7 +71,7 @@ public class DataContextCommitIT {
 
     @Test
     public void flushToParent_Commit_Mix() {
-        DataContext context = env.dataContext();
+        DataContext context = env.context();
 
         Artist a = context.newObject(Artist.class);
         a.setArtistName("Test");
@@ -99,7 +99,7 @@ public class DataContextCommitIT {
 
     @Test
     public void flushToParent_NewNoAttributes() {
-        DataContext context = env.dataContext();
+        DataContext context = env.context();
 
         // commit new object with uninitialized attributes
 

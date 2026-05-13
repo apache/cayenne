@@ -51,7 +51,7 @@ public class CAY_115IT {
 
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.dataContext();
+        context = env.context();
         accessStackAdapter = env.getInstance(UnitDbAdapter.class);
         tClobMaster = env.table("CLOB_MASTER", "CLOB_MASTER_ID", "CLOB_COLUMN", "NAME");
         

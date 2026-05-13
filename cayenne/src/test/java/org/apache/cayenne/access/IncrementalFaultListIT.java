@@ -40,7 +40,7 @@ public class IncrementalFaultListIT {
 		ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
 				.pageSize(10);
 
-		IncrementalFaultList<Artist> i1 = new IncrementalFaultList<Artist>(env.dataContext(), query, 10, List.of());
+		IncrementalFaultList<Artist> i1 = new IncrementalFaultList<Artist>(env.context(), query, 10, List.of());
 		IncrementalFaultList<Artist> i2 = Util.cloneViaSerialization(i1);
 
 		assertNotNull(i2);

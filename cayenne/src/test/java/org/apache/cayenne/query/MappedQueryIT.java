@@ -59,7 +59,7 @@ public class MappedQueryIT {
         createArtistsDataSet();
 
         Artist a = MappedSelect.query("ParameterizedQueryWithLocalCache", Artist.class)
-                .param("name", "artist14").select(env.dataContext()).get(0);
+                .param("name", "artist14").select(env.context()).get(0);
         assertNotNull(a);
         assertEquals("artist14", a.getArtistName());
     }
@@ -71,7 +71,7 @@ public class MappedQueryIT {
         try (ResultBatchIterator<Artist> iterator = MappedSelect
                 .query("ParameterizedQueryWithSharedCache", Artist.class)
                 .param("name", "artist14")
-                .batchIterator(env.dataContext(), 1)) {
+                .batchIterator(env.context(), 1)) {
             int count = 0;
             while (iterator.hasNext()) {
                 count++;
@@ -91,18 +91,18 @@ public class MappedQueryIT {
     public void sqlTemplateSelect() throws Exception {
         createArtistsDataSet();
 
-        List<DataRow> result = MappedSelect.query("SelectTestLower", DataRow.class).select(env.dataContext());
+        List<DataRow> result = MappedSelect.query("SelectTestLower", DataRow.class).select(env.context());
         assertEquals(20, result.size());
         assertInstanceOf(DataRow.class, result.get(0));
     }
 
     @Test
     public void sqlTemplateUpdate() throws Exception {
-        int updated = MappedExec.query("NonSelectingQuery").update(env.dataContext())[0];
+        int updated = MappedExec.query("NonSelectingQuery").update(env.context())[0];
 
         assertEquals(1, updated);
 
-        Painting painting = ObjectSelect.query(Painting.class).selectOne(env.dataContext());
+        Painting painting = ObjectSelect.query(Painting.class).selectOne(env.context());
         assertEquals("No Painting Like This", painting.getPaintingTitle());
         assertEquals(12.5, painting.getEstimatedPrice().doubleValue(), 0);
     }
@@ -118,16 +118,16 @@ public class MappedQueryIT {
         }
 
         // create an artist with painting in the database
-        Artist a = env.dataContext().newObject(Artist.class);
+        Artist a = env.context().newObject(Artist.class);
         a.setArtistName("An Artist");
 
-        Painting p = env.dataContext().newObject(Painting.class);
+        Painting p = env.context().newObject(Painting.class);
         p.setPaintingTitle("A Painting");
         // converting double to string prevents rounding weirdness...
         p.setEstimatedPrice(new BigDecimal(1000));
         a.addToPaintingArray(p);
 
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
 
         List<?> artists = runProcedureSelect(MappedSelect.query("ProcedureQuery", Artist.class)
                 .param("aName", "An Artist")
@@ -144,7 +144,7 @@ public class MappedQueryIT {
     public void ejbqlQuery() throws Exception {
         createArtistsDataSet();
 
-        List result = MappedSelect.query("EjbqlQueryTest").select(env.dataContext());
+        List result = MappedSelect.query("EjbqlQueryTest").select(env.context());
         assertEquals(20, result.size());
         assertInstanceOf(DataRow.class, result.get(0));
     }
@@ -160,11 +160,11 @@ public class MappedQueryIT {
                 .query("ParameterizedQueryWithLocalCache", Artist.class).param("name", "artist2");
 
         assertNotEquals(
-                query1.getMetaData(env.dataContext().getEntityResolver()).getCacheKey(),
-                query2.getMetaData(env.dataContext().getEntityResolver()).getCacheKey());
+                query1.getMetaData(env.context().getEntityResolver()).getCacheKey(),
+                query2.getMetaData(env.context().getEntityResolver()).getCacheKey());
         assertEquals(
-                query2.getMetaData(env.dataContext().getEntityResolver()).getCacheKey(),
-                query3.getMetaData(env.dataContext().getEntityResolver()).getCacheKey());
+                query2.getMetaData(env.context().getEntityResolver()).getCacheKey(),
+                query3.getMetaData(env.context().getEntityResolver()).getCacheKey());
     }
 
     protected QueryResponse runProcedureSelect(AbstractMappedQuery q) throws Exception {
@@ -181,7 +181,7 @@ public class MappedQueryIT {
         BaseTransaction.bindThreadTransaction(t);
 
         try {
-            return env.dataContext().performGenericQuery(q);
+            return env.context().performGenericQuery(q);
         } finally {
             BaseTransaction.bindThreadTransaction(null);
             t.commit();

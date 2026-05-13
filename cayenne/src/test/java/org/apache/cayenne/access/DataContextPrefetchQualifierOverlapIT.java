@@ -58,7 +58,7 @@ public class DataContextPrefetchQualifierOverlapIT  {
                 .and(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).like("AB%"))
                 .prefetch(Artist.PAINTING_ARRAY.disjoint());
 
-        List<Artist> result = query.select(env.dataContext());
+        List<Artist> result = query.select(env.context());
         assertEquals(1, result.size());
 
         Artist a = result.get(0);
@@ -73,7 +73,7 @@ public class DataContextPrefetchQualifierOverlapIT  {
                 .and(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).like("AB%"))
                 .prefetch(Artist.PAINTING_ARRAY.joint());
 
-        List<Artist> result = query.select(env.dataContext());
+        List<Artist> result = query.select(env.context());
         assertEquals(1, result.size());
 
         Artist a = result.get(0);
@@ -90,7 +90,7 @@ public class DataContextPrefetchQualifierOverlapIT  {
                 .or(Artist.ARTIST_NAME.like("A%"))
                 .orderBy(Artist.ARTIST_NAME.asc());
 
-        List<Artist> result = query.select(env.dataContext());
+        List<Artist> result = query.select(env.context());
         assertEquals(2, result.size());
 
         Artist a = result.get(0);

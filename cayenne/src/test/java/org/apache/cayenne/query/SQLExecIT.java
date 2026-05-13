@@ -42,13 +42,13 @@ public class SQLExecIT {
     @Test
     public void dataMapNameRoot() throws Exception {
         int inserted = SQLExec.query("testmap", "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'a')").update(
-                env.dataContext());
+                env.context());
         assertEquals(1, inserted);
     }
 
     @Test
     public void defaultRoot() throws Exception {
-        int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'a')").update(env.dataContext());
+        int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'a')").update(env.context());
         assertEquals(1, inserted);
     }
 
@@ -57,12 +57,12 @@ public class SQLExecIT {
         if(env.getInstance(UnitDbAdapter.class).supportsGeneratedKeys()) {
             QueryResult response = SQLExec.query("testmap", "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Surikov')")
                     .returnGeneratedKeys(true)
-                    .execute(env.dataContext());
+                    .execute(env.context());
             assertEquals(2, response.size());
 
             QueryResult response1 = SQLExec.query("testmap", "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Sidorov')")
                     .returnGeneratedKeys(false)
-                    .execute(env.dataContext());
+                    .execute(env.context());
             assertEquals(1, response1.size());
         }
     }
@@ -71,7 +71,7 @@ public class SQLExecIT {
     public void paramsArray_Single() throws Exception {
 
         int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, #bind($name))")
-                .paramsArray("a3").update(env.dataContext());
+                .paramsArray("a3").update(env.context());
 
         assertEquals(1, inserted);
         assertEquals("a3", env.dbHelper().getString("ARTIST", "ARTIST_NAME").trim());
@@ -79,10 +79,10 @@ public class SQLExecIT {
 
     @Test
     public void executeSelect() throws Exception {
-        int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'a')").update(env.dataContext());
+        int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'a')").update(env.context());
         assertEquals(1, inserted);
 
-        QueryResult result = SQLExec.query("SELECT * FROM ARTIST").execute(env.dataContext());
+        QueryResult result = SQLExec.query("SELECT * FROM ARTIST").execute(env.context());
         assertEquals(2, result.size());
         assertTrue(result.isList());
         assertEquals(1, result.firstList().size());
@@ -103,7 +103,7 @@ public class SQLExecIT {
     public void paramsArray_Multiple() throws Exception {
 
         int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (#bind($id), #bind($name))")
-                .paramsArray(55, "a3").update(env.dataContext());
+                .paramsArray(55, "a3").update(env.context());
 
         assertEquals(1, inserted);
         assertEquals(55L, env.dbHelper().getLong("ARTIST", "ARTIST_ID"));
@@ -114,7 +114,7 @@ public class SQLExecIT {
     public void execute_MultipleArrayBind() throws Exception {
         SQLExec inserter = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (#bind($id), #bind($name))");
         for(int i = 0; i < 2; i++) {
-            QueryResult<?> result = inserter.paramsArray(i, "artist " + i).execute(env.dataContext());
+            QueryResult<?> result = inserter.paramsArray(i, "artist " + i).execute(env.context());
             assertEquals(1, result.firstUpdateCount());
         }
         assertEquals(2, env.dbHelper().getRowCount("ARTIST"));
@@ -127,7 +127,7 @@ public class SQLExecIT {
             Map<String, Object> params = new HashMap<>();
             params.put("id", i);
             params.put("name", "artist " + i);
-            QueryResult<?> result = inserter.params(params).execute(env.dataContext());
+            QueryResult<?> result = inserter.params(params).execute(env.context());
             assertEquals(1, result.firstUpdateCount());
         }
         assertEquals(2, env.dbHelper().getRowCount("ARTIST"));

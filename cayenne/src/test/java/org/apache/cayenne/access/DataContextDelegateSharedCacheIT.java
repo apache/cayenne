@@ -51,7 +51,7 @@ public class DataContextDelegateSharedCacheIT {
 
     @BeforeEach
     public void setUp() throws Exception {
-        context  = env.dataContext();
+        context  = env.context();
         context1 = (DataContext) env.runtime().newContext();
 
         // prepare a single artist record

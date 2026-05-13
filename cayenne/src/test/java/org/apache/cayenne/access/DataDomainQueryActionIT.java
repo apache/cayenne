@@ -52,7 +52,7 @@ public class DataDomainQueryActionIT {
 
         DataDomain domain = env.runtime().getDataDomain();
 
-        Painting p = env.dataContext().newObject(Painting.class);
+        Painting p = env.context().newObject(Painting.class);
         p.setPaintingTitle("sample");
 
         ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
@@ -81,7 +81,7 @@ public class DataDomainQueryActionIT {
             }
         };
 
-        DataDomainQueryAction action = new DataDomainQueryAction(env.dataContext(), domain, query);
+        DataDomainQueryAction action = new DataDomainQueryAction(env.context(), domain, query);
         action.execute();
 
         domain.queryCache = cache;

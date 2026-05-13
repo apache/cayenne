@@ -48,7 +48,7 @@ public class DataContextCallbacksIT {
 
     @Test
     public void postAddCallbacks() {
-        DataContext context = env.dataContext();
+        DataContext context = env.context();
         LifecycleCallbackRegistry registry = env.runtime()
                 .getDataDomain()
                 .getEntityResolver()
@@ -86,7 +86,7 @@ public class DataContextCallbacksIT {
 
     @Test
     public void prePersistCallbacks() {
-        DataContext context = env.dataContext();
+        DataContext context = env.context();
         LifecycleCallbackRegistry registry = env.runtime()
                 .getDataDomain()
                 .getEntityResolver()
@@ -126,7 +126,7 @@ public class DataContextCallbacksIT {
 
     @Test
     public void preRemoveCallbacks() {
-        DataContext context = env.dataContext();
+        DataContext context = env.context();
         LifecycleCallbackRegistry registry = env.runtime()
                 .getDataDomain()
                 .getEntityResolver()

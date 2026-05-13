@@ -48,7 +48,7 @@ public class DataContextCompoundRelIT {
 
     @BeforeEach
     public void setUp() {
-        context  = env.dataContext();
+        context  = env.context();
         context1 = (DataContext) env.runtime().newContext();
     }
 

@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.runtime;
 
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.runtime.CoreModule;
@@ -35,19 +34,7 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 /**
- * JUnit 5 extension that wires a Cayenne test environment without requiring
- * a base class or {@code @Inject} fields. Declare it as a static field and
- * use its getter methods from test methods and {@code @BeforeEach} callbacks:
- *
- * <pre>{@code
- * @RegisterExtension
- * static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
- *
- * @Test
- * void someTest() {
- *     ObjectContext ctx = env.context();
- * }
- * }</pre>
+ * JUnit 5 extension that wires a Cayenne test environment.
  */
 public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
@@ -65,8 +52,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     private final boolean autoClean;
     private final boolean weakReferenceStrategy;
 
-    private ObjectContext context;
-    private DataContext dataContext;
+    private DataContext context;
     private DBHelper dbHelper;
     private CayenneRuntime runtime;
 
@@ -119,8 +105,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         INJECTOR.getInstance(RuntimeCaseExtraModules.class).setExtraModules(effectiveExtras);
 
         runtime = INJECTOR.getInstance(CayenneRuntime.class);
-        context = INJECTOR.getInstance(ObjectContext.class);
-        dataContext = INJECTOR.getInstance(DataContext.class);
+        context = INJECTOR.getInstance(DataContext.class);
         dbHelper = INJECTOR.getInstance(DBHelper.class);
 
         if (autoClean) {
@@ -137,17 +122,12 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     public void afterEach(ExtensionContext ctx) {
         TEST_SCOPE.shutdown();
         context = null;
-        dataContext = null;
         dbHelper = null;
         runtime = null;
     }
 
-    public ObjectContext context() {
+    public DataContext context() {
         return context;
-    }
-
-    public DataContext dataContext() {
-        return dataContext;
     }
 
     public DBHelper dbHelper() {

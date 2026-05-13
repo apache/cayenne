@@ -52,7 +52,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT {
 
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.dataContext();
+        context = env.context();
         context1 = (DataContext) env.runtime().newContext();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
         createArtistsDataSet();

@@ -75,7 +75,7 @@ public class Cay2032IT {
         List<Team> result = ObjectSelect.query(Team.class)
                 .prefetch(Team.TEAM_USERS.disjoint())
                 .orderBy(Team.TEAM_ID_PK_PROPERTY.asc())
-                .select(env.dataContext());
+                .select(env.context());
 
         checkResult(result);
     }
@@ -85,7 +85,7 @@ public class Cay2032IT {
         List<Team> result = ObjectSelect.query(Team.class)
                 .prefetch(Team.TEAM_USERS.disjointById())
                 .orderBy(Team.TEAM_ID_PK_PROPERTY.asc())
-                .select(env.dataContext());
+                .select(env.context());
 
         checkResult(result);
     }
@@ -95,7 +95,7 @@ public class Cay2032IT {
         List<Team> result = ObjectSelect.query(Team.class)
                 .prefetch(Team.TEAM_USERS.joint())
                 .orderBy(Team.TEAM_ID_PK_PROPERTY.asc())
-                .select(env.dataContext());
+                .select(env.context());
 
         checkResult(result);
     }

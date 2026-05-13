@@ -52,7 +52,7 @@ public class DataContextRefreshQueryIT  {
     
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.dataContext();
+        context = env.context();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING", "PAINTING_ID",

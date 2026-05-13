@@ -62,7 +62,7 @@ public class ProcedureCallIT {
         runProcedureSelect(ProcedureCall.query(UPDATE_STORED_PROCEDURE).param("paintingPrice", 3000));
 
         // check that price have doubled
-        List<Artist> artists = ObjectSelect.query(Artist.class).prefetch(Artist.PAINTING_ARRAY.disjoint()).select(env.dataContext());
+        List<Artist> artists = ObjectSelect.query(Artist.class).prefetch(Artist.PAINTING_ARRAY.disjoint()).select(env.context());
         assertEquals(1, artists.size());
 
         Artist a = artists.get(0);
@@ -82,7 +82,7 @@ public class ProcedureCallIT {
         runProcedureSelect(ProcedureCall.query(UPDATE_STORED_PROCEDURE_NOPARAM));
 
         // check that price have doubled
-        List<Artist> artists = ObjectSelect.query(Artist.class).prefetch(Artist.PAINTING_ARRAY.disjoint()).select(env.dataContext());
+        List<Artist> artists = ObjectSelect.query(Artist.class).prefetch(Artist.PAINTING_ARRAY.disjoint()).select(env.context());
         assertEquals(1, artists.size());
 
         Artist a = artists.get(0);
@@ -109,11 +109,11 @@ public class ProcedureCallIT {
         assertNotNull(artists, "Null result from StoredProcedure.");
         assertEquals(1, artists.size());
         DataRow artistRow = (DataRow) artists.get(0);
-        Artist a = env.dataContext().objectFromDataRow(Artist.class, uppercaseConverter(artistRow));
+        Artist a = env.context().objectFromDataRow(Artist.class, uppercaseConverter(artistRow));
         Painting p = a.getPaintingArray().get(0);
 
         // invalidate painting, it may have been updated in the proc
-        env.dataContext().invalidateObjects(p);
+        env.context().invalidateObjects(p);
         assertEquals(2000, p.getEstimatedPrice().intValue());
     }
 
@@ -226,7 +226,7 @@ public class ProcedureCallIT {
         Painting p = a.getPaintingArray().get(0);
 
         // invalidate painting, it may have been updated in the proc
-        env.dataContext().invalidateObjects(p);
+        env.context().invalidateObjects(p);
         assertEquals(1101.01, p.getEstimatedPrice().doubleValue(), 0.02);
     }
 
@@ -282,7 +282,7 @@ public class ProcedureCallIT {
         BaseTransaction.bindThreadTransaction(t);
 
         try {
-            return q.call(env.dataContext());
+            return q.call(env.context());
         } finally {
             BaseTransaction.bindThreadTransaction(null);
             t.commit();
@@ -290,16 +290,16 @@ public class ProcedureCallIT {
     }
 
     private void createArtist(double paintingPrice) {
-        Artist a = env.dataContext().newObject(Artist.class);
+        Artist a = env.context().newObject(Artist.class);
         a.setArtistName("An Artist");
 
-        Painting p = env.dataContext().newObject(Painting.class);
+        Painting p = env.context().newObject(Painting.class);
         p.setPaintingTitle("A Painting");
         // converting double to string prevents rounding weirdness...
         p.setEstimatedPrice(new BigDecimal("" + paintingPrice));
         a.addToPaintingArray(p);
 
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
     }
 
     /**

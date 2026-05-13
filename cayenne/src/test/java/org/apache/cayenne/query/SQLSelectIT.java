@@ -55,7 +55,7 @@ public class SQLSelectIT {
 
 	@BeforeEach
 	public void before() {
-		context = env.dataContext();
+		context = env.context();
 		tPainting = env.table("PAINTING")
 				.setColumns("PAINTING_ID", "PAINTING_TITLE", "ESTIMATED_PRICE")
 				.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.DECIMAL);

@@ -54,7 +54,7 @@ public class AggregateExpInMemoryEvaluationIT {
 
     @BeforeEach
     public void createArtistsDataSet() throws Exception {
-        context = env.dataContext();
+        context = env.context();
         TableHelper tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
         tArtist.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.DATE);
 

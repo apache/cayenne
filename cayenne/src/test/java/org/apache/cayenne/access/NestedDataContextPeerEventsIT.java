@@ -44,14 +44,14 @@ public class NestedDataContextPeerEventsIT {
     @Test
 	public void peerObjectUpdatedTempOID() throws Exception {
 
-		ObjectContext peer1 = env.runtime().newContext(env.dataContext());
+		ObjectContext peer1 = env.runtime().newContext(env.context());
 		final Artist a1 = peer1.newObject(Artist.class);
 		a1.setArtistName("Y");
 
 		ObjectId a1TempId = a1.getObjectId();
 		assertTrue(a1TempId.isTemporary());
 
-		ObjectContext peer2 = env.runtime().newContext(env.dataContext());
+		ObjectContext peer2 = env.runtime().newContext(env.context());
 		final Artist a2 = peer2.localObject(a1);
 
 		assertEquals(a1TempId, a2.getObjectId());
@@ -72,14 +72,14 @@ public class NestedDataContextPeerEventsIT {
 
     @Test
 	public void peerObjectUpdatedSimpleProperty() throws Exception {
-		Artist a = env.dataContext().newObject(Artist.class);
+		Artist a = env.context().newObject(Artist.class);
 		a.setArtistName("X");
-		env.dataContext().commitChanges();
+		env.context().commitChanges();
 
-		ObjectContext peer1 = env.runtime().newContext(env.dataContext());
+		ObjectContext peer1 = env.runtime().newContext(env.context());
 		Artist a1 = peer1.localObject(a);
 
-		final ObjectContext peer2 = env.runtime().newContext(env.dataContext());
+		final ObjectContext peer2 = env.runtime().newContext(env.context());
 		final Artist a2 = peer2.localObject(a);
 
 		a1.setArtistName("Y");
@@ -101,21 +101,21 @@ public class NestedDataContextPeerEventsIT {
     @Test
 	public void peerObjectUpdatedToOneRelationship() throws Exception {
 
-		Artist a = env.dataContext().newObject(Artist.class);
-		Artist altA = env.dataContext().newObject(Artist.class);
+		Artist a = env.context().newObject(Artist.class);
+		Artist altA = env.context().newObject(Artist.class);
 
-		Painting p = env.dataContext().newObject(Painting.class);
+		Painting p = env.context().newObject(Painting.class);
 		p.setToArtist(a);
 		p.setPaintingTitle("PPP");
 		a.setArtistName("X");
 		altA.setArtistName("Y");
-		env.dataContext().commitChanges();
+		env.context().commitChanges();
 
-		ObjectContext peer1 = env.runtime().newContext(env.dataContext());
+		ObjectContext peer1 = env.runtime().newContext(env.context());
 		Painting p1 = peer1.localObject(p);
 		Artist altA1 = peer1.localObject(altA);
 
-		final ObjectContext peer2 = env.runtime().newContext(env.dataContext());
+		final ObjectContext peer2 = env.runtime().newContext(env.context());
 		final Painting p2 = peer2.localObject(p);
 		final Artist altA2 = peer2.localObject(altA);
 		Artist a2 = peer2.localObject(a);
@@ -140,25 +140,25 @@ public class NestedDataContextPeerEventsIT {
     @Test
 	public void peerObjectUpdatedToManyRelationship() throws Exception {
 
-		Artist a = env.dataContext().newObject(Artist.class);
+		Artist a = env.context().newObject(Artist.class);
 		a.setArtistName("X");
 
-		Painting px = env.dataContext().newObject(Painting.class);
+		Painting px = env.context().newObject(Painting.class);
 		px.setToArtist(a);
 		px.setPaintingTitle("PX");
 
-		Painting py = env.dataContext().newObject(Painting.class);
+		Painting py = env.context().newObject(Painting.class);
 		py.setPaintingTitle("PY");
 
-		env.dataContext().commitChanges();
+		env.context().commitChanges();
 		// pause to let the context events propagate
 		Thread.sleep(500);
 
-		ObjectContext peer1 = env.runtime().newContext(env.dataContext());
+		ObjectContext peer1 = env.runtime().newContext(env.context());
 		Painting py1 = peer1.localObject(py);
 		Artist a1 = peer1.localObject(a);
 
-		final ObjectContext peer2 = env.runtime().newContext(env.dataContext());
+		final ObjectContext peer2 = env.runtime().newContext(env.context());
 		final Painting py2 = peer2.localObject(py);
 		final Artist a2 = peer2.localObject(a);
 

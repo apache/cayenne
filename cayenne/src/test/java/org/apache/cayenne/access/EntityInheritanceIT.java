@@ -43,15 +43,15 @@ public class EntityInheritanceIT {
     @Disabled("This test fails")
     @Test
     public void cAY1008() {
-        RelatedEntity related = env.dataContext().newObject(RelatedEntity.class);
+        RelatedEntity related = env.context().newObject(RelatedEntity.class);
 
-        BaseEntity base = env.dataContext().newObject(BaseEntity.class);
+        BaseEntity base = env.context().newObject(BaseEntity.class);
         base.setToRelatedEntity(related);
 
         assertEquals(1, related.getBaseEntities().size());
         assertEquals(0, related.getSubEntities().size());
 
-        SubEntity sub = env.dataContext().newObject(SubEntity.class);
+        SubEntity sub = env.context().newObject(SubEntity.class);
         sub.setToRelatedEntity(related);
 
         assertEquals(2, related.getBaseEntities().size());
@@ -67,37 +67,37 @@ public class EntityInheritanceIT {
     @Test
     public void cAY1009() {
         // We should have only one relationship. DirectToSubEntity -> SubEntity.
-        assertEquals(1, env.dataContext()
+        assertEquals(1, env.context()
                 .getEntityResolver()
                 .getObjEntity("DirectToSubEntity")
                 .getRelationships()
                 .size());
 
-        DirectToSubEntity direct = env.dataContext().newObject(DirectToSubEntity.class);
+        DirectToSubEntity direct = env.context().newObject(DirectToSubEntity.class);
 
-        SubEntity sub = env.dataContext().newObject(SubEntity.class);
+        SubEntity sub = env.context().newObject(SubEntity.class);
         sub.setToDirectToSubEntity(direct);
 
         assertEquals(1, direct.getSubEntities().size());
 
-        env.dataContext().deleteObject(sub);
+        env.context().deleteObject(sub);
 
         assertEquals(0, direct.getSubEntities().size());
     }
 
     @Test
     public void cAY2091() {
-        RelatedEntity related = env.dataContext().newObject(RelatedEntity.class);
-        SubEntity subEntity = env.dataContext().newObject(SubEntity.class);
+        RelatedEntity related = env.context().newObject(RelatedEntity.class);
+        SubEntity subEntity = env.context().newObject(SubEntity.class);
         subEntity.setToRelatedEntity(related);
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
 
         int subEntityId = Cayenne.intPKForObject(subEntity);
 
-        BaseEntity forPkLoadedEntity = Cayenne.objectForPK(env.dataContext(), BaseEntity.class, subEntityId);
+        BaseEntity forPkLoadedEntity = Cayenne.objectForPK(env.context(), BaseEntity.class, subEntityId);
         assertEquals(forPkLoadedEntity.getClass(), SubEntity.class);
 
-        BaseEntity selectLoadedEntity = SelectById.query(BaseEntity.class, subEntityId).selectOne(env.dataContext());
+        BaseEntity selectLoadedEntity = SelectById.query(BaseEntity.class, subEntityId).selectOne(env.context());
         assertEquals(selectLoadedEntity.getClass(), SubEntity.class);
     }
 }

@@ -51,7 +51,7 @@ public class SQLSelectIteratedQueryIT {
 
     @BeforeEach
     public void before() throws Exception {
-        context = env.dataContext();
+        context = env.context();
         tPainting = env.table("PAINTING")
                 .setColumns("PAINTING_ID", "PAINTING_TITLE", "ESTIMATED_PRICE", "ARTIST_ID")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.DECIMAL, Types.INTEGER);

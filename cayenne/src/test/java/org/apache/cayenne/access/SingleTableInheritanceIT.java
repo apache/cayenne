@@ -61,7 +61,7 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
 
     @BeforeEach
 	public void setUp() {
-    	context = env.dataContext();
+    	context = env.context();
     	context2 = (DataContext) env.runtime().newContext();
     	queryBlocker = env.getInstance(DataChannelInterceptor.class);
 		tAddress = new TableHelper(dbHelper, "ADDRESS", "ADDRESS_ID", "CITY", "PERSON_ID");

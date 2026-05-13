@@ -49,7 +49,7 @@ public class DataContextObjectIdQuery_PolymorphicIT extends PeopleProjectCase {
 
 	@BeforeEach
 	public void before() {
-		context1 = env.dataContext();
+		context1 = env.context();
 		context2 = (DataContext) env.runtime().newContext();
 		queryInterceptor = env.getInstance(DataChannelInterceptor.class);
 		tPerson = new TableHelper(dbHelper, "PERSON").setColumns("PERSON_ID", "NAME", "PERSON_TYPE")

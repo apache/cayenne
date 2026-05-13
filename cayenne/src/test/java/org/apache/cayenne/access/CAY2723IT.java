@@ -36,7 +36,7 @@ public class CAY2723IT {
 
     @Test
     public void phantomToDepPKUpdate() {
-        DataContext context = env.dataContext();
+        DataContext context = env.context();
         DataChannelInterceptor queryInterceptor = env.getInstance(DataChannelInterceptor.class);
 
         // try to trigger PK generator. so it wouldn't random fail the actual test

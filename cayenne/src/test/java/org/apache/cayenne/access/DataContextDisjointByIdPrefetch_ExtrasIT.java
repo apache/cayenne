@@ -57,7 +57,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT {
 
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.dataContext();
+        context = env.context();
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
         tBag = env.table("BAG", "ID", "NAME");
 

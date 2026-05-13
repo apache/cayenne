@@ -43,19 +43,19 @@ public class NestedDataContextLocalCacheIT {
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
                 .cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
-        ObjectContext child1 = env.runtime().newContext(env.dataContext());
+        ObjectContext child1 = env.runtime().newContext(env.context());
 
         assertNull(((DataContext) child1).getQueryCache().get(
                 query.getMetaData(child1.getEntityResolver())));
 
-        assertNull(env.dataContext().getQueryCache().get(
-                query.getMetaData(env.dataContext().getEntityResolver())));
+        assertNull(env.context().getQueryCache().get(
+                query.getMetaData(env.context().getEntityResolver())));
 
         List<?> results = child1.performQuery(query);
         assertSame(results, ((DataContext) child1).getQueryCache().get(
                 query.getMetaData(child1.getEntityResolver())));
 
-        assertNull(env.dataContext().getQueryCache().get(
-                query.getMetaData(env.dataContext().getEntityResolver())));
+        assertNull(env.context().getQueryCache().get(
+                query.getMetaData(env.context().getEntityResolver())));
     }
 }

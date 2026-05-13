@@ -51,7 +51,7 @@ public class DataContextDelegateIT {
 
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.dataContext();
+        context = env.context();
 
         // prepare a single gallery record
         Gallery gallery = (Gallery) context.newObject("Gallery");

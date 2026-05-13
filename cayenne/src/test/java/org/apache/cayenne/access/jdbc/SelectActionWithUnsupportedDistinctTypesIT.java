@@ -53,7 +53,7 @@ public class SelectActionWithUnsupportedDistinctTypesIT {
 
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.dataContext();
+        context = env.context();
         tProduct = env.table("PRODUCT", "ID", "LONGVARCHAR_COL");
 
         tCustomer = env.table("CUSTOMER", "ID", "LONGVARCHAR_COL");

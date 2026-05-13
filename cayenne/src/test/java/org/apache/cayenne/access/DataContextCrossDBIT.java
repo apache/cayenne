@@ -41,7 +41,7 @@ public class DataContextCrossDBIT {
         // for now testing that no exceptions are thrown... wouldn't hurt to check the
         // data as well???
 
-        DataContext context = env.dataContext();
+        DataContext context = env.context();
 
         // insert
         CrossdbM1E1 o1 = context.newObject(CrossdbM1E1.class);

@@ -41,14 +41,14 @@ public class ToManyListIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private ToManyList createForNewArtist() {
-        Artist artist = env.dataContext().newObject(Artist.class);
+        Artist artist = env.context().newObject(Artist.class);
         return new ToManyList(artist, Artist.PAINTING_ARRAY.getName());
     }
 
     private ToManyList createForExistingArtist() {
-        Artist artist = env.dataContext().newObject(Artist.class);
+        Artist artist = env.context().newObject(Artist.class);
         artist.setArtistName("aa");
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
         return new ToManyList(artist, Artist.PAINTING_ARRAY.getName());
     }
 
@@ -58,11 +58,11 @@ public class ToManyListIT {
         assertFalse(list.isFault(), "Expected resolved list when created with a new object");
         assertEquals(0, list.size());
 
-        Painting p1 = env.dataContext().newObject(Painting.class);
+        Painting p1 = env.context().newObject(Painting.class);
         list.add(p1);
         assertEquals(1, list.size());
 
-        Painting p2 = env.dataContext().newObject(Painting.class);
+        Painting p2 = env.context().newObject(Painting.class);
         list.add(p2);
         assertEquals(2, list.size());
 
@@ -80,12 +80,12 @@ public class ToManyListIT {
 
         assertTrue(list.isFault(), "List must be unresolved for an existing object");
 
-        Painting p1 = env.dataContext().newObject(Painting.class);
+        Painting p1 = env.context().newObject(Painting.class);
         list.add(p1);
         assertTrue(list.isFault(), "List must be unresolved when adding an object...");
         assertTrue(addedToUnresolved(list).contains(p1));
 
-        Painting p2 = env.dataContext().newObject(Painting.class);
+        Painting p2 = env.context().newObject(Painting.class);
         list.add(p2);
         assertTrue(list.isFault(), "List must be unresolved when adding an object...");
         assertTrue(addedToUnresolved(list).contains(p2));
@@ -105,14 +105,14 @@ public class ToManyListIT {
     public void savedUnresolvedMerge() throws Exception {
         ToManyList list = createForExistingArtist();
 
-        Painting p1 = env.dataContext().newObject(Painting.class);
+        Painting p1 = env.context().newObject(Painting.class);
         p1.setPaintingTitle("p1");
 
         // list being tested is a separate copy from
         // the relationship list that Artist has, so adding a painting
         // here will not add the painting to the array being tested
         ((Artist) list.getRelationshipOwner()).addToPaintingArray(p1);
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
 
         // immediately tag Artist as MODIFIED, since we are messing up with relationship
         // bypassing normal PersistentObject methods
@@ -123,7 +123,7 @@ public class ToManyListIT {
         assertTrue(list.isFault(), "List must be unresolved when adding an object...");
         assertTrue(addedToUnresolved(list).contains(p1));
 
-        Painting p2 = env.dataContext().newObject(Painting.class);
+        Painting p2 = env.context().newObject(Painting.class);
         list.add(p2);
         assertTrue(list.isFault(), "List must be unresolved when adding an object...");
         assertTrue(addedToUnresolved(list).contains(p2));
@@ -140,9 +140,9 @@ public class ToManyListIT {
     public void throwOutDeleted() throws Exception {
         ToManyList list = createForExistingArtist();
 
-        Painting p1 = env.dataContext().newObject(Painting.class);
+        Painting p1 = env.context().newObject(Painting.class);
         p1.setPaintingTitle("p1");
-        Painting p2 = env.dataContext().newObject(Painting.class);
+        Painting p2 = env.context().newObject(Painting.class);
         p2.setPaintingTitle("p2");
 
         // list being tested is a separate copy from
@@ -150,7 +150,7 @@ public class ToManyListIT {
         // here will not add the painting to the array being tested
         ((Artist) list.getRelationshipOwner()).addToPaintingArray(p1);
         ((Artist) list.getRelationshipOwner()).addToPaintingArray(p2);
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
 
         // immediately tag Artist as MODIFIED, since we are messing up with relationship
         // bypassing normal PersistentObject methods
@@ -165,8 +165,8 @@ public class ToManyListIT {
 
         // now delete p2 and resolve list
         ((Artist) list.getRelationshipOwner()).removeFromPaintingArray(p2);
-        env.dataContext().deleteObjects(p2);
-        env.dataContext().commitChanges();
+        env.context().deleteObjects(p2);
+        env.context().commitChanges();
 
         assertTrue(list.isFault(), "List must be unresolved...");
         assertTrue(
@@ -185,26 +185,26 @@ public class ToManyListIT {
 
     @Test
     public void realRelationship() throws Exception {
-        Artist artist = env.dataContext().newObject(Artist.class);
+        Artist artist = env.context().newObject(Artist.class);
         artist.setArtistName("aaa");
 
-        Painting p1 = env.dataContext().newObject(Painting.class);
+        Painting p1 = env.context().newObject(Painting.class);
         p1.setPaintingTitle("p1");
 
-        env.dataContext().commitChanges();
-        env.dataContext().invalidateObjects(artist);
+        env.context().commitChanges();
+        env.context().invalidateObjects(artist);
 
         ToManyList list = (ToManyList) artist.getPaintingArray();
         assertTrue(list.isFault(), "List must be unresolved...");
 
-        Painting p2 = env.dataContext().newObject(Painting.class);
+        Painting p2 = env.context().newObject(Painting.class);
         p2.setPaintingTitle("p2");
 
         artist.addToPaintingArray(p1);
         artist.addToPaintingArray(p2);
         assertTrue(list.isFault(), "List must be unresolved...");
 
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
 
         assertTrue(list.isFault(), "List must be unresolved...");
 
@@ -217,25 +217,25 @@ public class ToManyListIT {
 
     @Test
     public void realRelationshipRollback() throws Exception {
-        Artist artist = env.dataContext().newObject(Artist.class);
+        Artist artist = env.context().newObject(Artist.class);
         artist.setArtistName("aaa");
 
-        Painting p1 = env.dataContext().newObject(Painting.class);
+        Painting p1 = env.context().newObject(Painting.class);
         p1.setPaintingTitle("p1");
         artist.addToPaintingArray(p1);
-        env.dataContext().commitChanges();
-        env.dataContext().invalidateObjects(artist);
+        env.context().commitChanges();
+        env.context().invalidateObjects(artist);
 
         ToManyList list = (ToManyList) artist.getPaintingArray();
         assertTrue(list.isFault(), "List must be unresolved...");
 
-        Painting p2 = env.dataContext().newObject(Painting.class);
+        Painting p2 = env.context().newObject(Painting.class);
 
         artist.addToPaintingArray(p2);
         assertTrue(list.isFault(), "List must be unresolved...");
         assertTrue(addedToUnresolved(list).contains(p2));
 
-        env.dataContext().rollbackChanges();
+        env.context().rollbackChanges();
 
         assertTrue(list.isFault(), "List must be unresolved...");
 

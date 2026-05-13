@@ -39,7 +39,7 @@ public class DataContextArrayTypeIT {
 
     @Test
     public void doubleArray() {
-        DataContext context = env.dataContext();
+        DataContext context = env.context();
         ArrayTestEntity arrayTest = context.newObject(ArrayTestEntity.class);
         Double[] doubleArray = {1.0, 2.0, 3.0};
 

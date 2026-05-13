@@ -44,7 +44,7 @@ public class CAY_191IT {
 
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.dataContext();
+        context = env.context();
         tRelationshipHelper = env.table("RELATIONSHIP_HELPER", "NAME", "RELATIONSHIP_HELPER_ID");
         
         tFkOfDifferentType = env.table("FK_OF_DIFFERENT_TYPE", "ID", "RELATIONSHIP_HELPER_FK");

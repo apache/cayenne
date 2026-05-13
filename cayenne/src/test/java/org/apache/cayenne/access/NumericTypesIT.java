@@ -68,7 +68,7 @@ public class NumericTypesIT {
 
     @BeforeEach
     public void before() {
-        context = env.dataContext();
+        context = env.context();
         context1 = (DataContext) env.runtime().newContext();
         runtime = env.runtime();
         commitStats.before();

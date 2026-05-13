@@ -22,7 +22,6 @@ package org.apache.cayenne;
 import org.apache.cayenne.access.MockDataNode;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -37,10 +36,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import java.sql.Types;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CayennePersistentObjectFlattenedRelIT {
 
@@ -48,27 +44,22 @@ public class CayennePersistentObjectFlattenedRelIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private CayenneRuntime runtime;
-    private DBHelper dbHelper;
     private DataChannelInterceptor queryInterceptor;
 
     private TableHelper tArtist;
-
     private TableHelper tArtGroup;
-
     private TableHelper tArtistGroup;
 
     @BeforeEach
     public void setUp() throws Exception {
         runtime = env.runtime();
-        dbHelper = env.dbHelper();
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
-        dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
+        env.dbHelper().update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
         env.getInstance(DBCleaner.class).clean();
-        tArtist = new TableHelper(dbHelper, "ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
-        tArtGroup = new TableHelper(dbHelper, "ARTGROUP", "GROUP_ID", "NAME");
-
-        tArtistGroup = new TableHelper(dbHelper, "ARTIST_GROUP", "ARTIST_ID", "GROUP_ID");
+        tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
+        tArtGroup = env.table("ARTGROUP", "GROUP_ID", "NAME");
+        tArtistGroup = env.table("ARTIST_GROUP", "ARTIST_ID", "GROUP_ID");
     }
 
     private void create1Artist1ArtGroupDataSet() throws Exception {
@@ -209,7 +200,8 @@ public class CayennePersistentObjectFlattenedRelIT {
 
         Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 33001);
 
-        List<ArtGroup> results = ObjectSelect.query(ArtGroup.class, ArtGroup.NAME.eq("g1")).select(env.context());;
+        List<ArtGroup> results = ObjectSelect.query(ArtGroup.class, ArtGroup.NAME.eq("g1")).select(env.context());
+        ;
         assertEquals(1, results.size());
 
         ArtGroup group = results.get(0);

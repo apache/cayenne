@@ -39,7 +39,7 @@ public class DataContextCharPKIT {
 
     @Test
     public void insert() throws Exception {
-        DataContext context = env.dataContext();
+        DataContext context = env.context();
         CharPkTestEntity object = context.newObject(CharPkTestEntity.class);
         object.setOtherCol("object-XYZ");
         object.setPkCol("PK1");
@@ -71,7 +71,7 @@ public class DataContextCharPKIT {
 
     @Test
     public void delete() throws Exception {
-        DataContext context = env.dataContext();
+        DataContext context = env.context();
         CharPkTestEntity object = context.newObject(CharPkTestEntity.class);
         object.setOtherCol("object-XYZ");
         object.setPkCol("PK1");
@@ -92,7 +92,7 @@ public class DataContextCharPKIT {
 
     @Test
     public void update() throws Exception {
-        DataContext context = env.dataContext();
+        DataContext context = env.context();
         CharPkTestEntity object = context.newObject(CharPkTestEntity.class);
         object.setOtherCol("object-XYZ");
         object.setPkCol("PK1");

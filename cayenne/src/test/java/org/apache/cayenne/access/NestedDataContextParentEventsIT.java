@@ -41,17 +41,17 @@ public class NestedDataContextParentEventsIT {
 
     @Test
     public void parentUpdatedId() throws Exception {
-        ObjectContext child1 = env.runtime().newContext(env.dataContext());
+        ObjectContext child1 = env.runtime().newContext(env.context());
 
         final Artist ac = child1.newObject(Artist.class);
         ac.setArtistName("X");
         child1.commitChangesToParent();
 
-        final Artist ap = (Artist) env.dataContext().getGraphManager().getNode(ac.getObjectId());
+        final Artist ap = (Artist) env.context().getGraphManager().getNode(ac.getObjectId());
         assertNotNull(ap);
 
         assertTrue(ap.getObjectId().isTemporary());
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
 
         new ParallelTestContainer() {
 

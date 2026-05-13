@@ -61,7 +61,7 @@ public class DataContextSerializationIT {
     
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.dataContext();
+        context = env.context();
         runtime = env.runtime();
         logger = env.getInstance(JdbcEventLogger.class);
         CayenneRuntime.bindThreadInjector(runtime.getInjector());

@@ -40,15 +40,15 @@ public class DataContextQueryChainIT  {
 
     @Test
     public void selectQuery() {
-        Artist a1 = env.dataContext().newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("X");
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
 
         QueryChain chain = new QueryChain();
         chain.addQuery(ObjectSelect.query(Artist.class));
         chain.addQuery(ObjectSelect.query(Artist.class));
 
-        QueryResponse r = env.dataContext().performGenericQuery(chain);
+        QueryResponse r = env.context().performGenericQuery(chain);
 
         // data comes back as datarows
         assertEquals(2, r.size());

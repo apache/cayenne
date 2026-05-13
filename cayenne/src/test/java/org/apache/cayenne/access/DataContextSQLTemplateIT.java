@@ -63,7 +63,7 @@ public class DataContextSQLTemplateIT {
 	@BeforeEach
 	public void setUp() throws Exception {
 		runtime = env.runtime();
-		context = env.dataContext();
+		context = env.context();
 		sqlTemplateCustomizer = env.getInstance(SQLTemplateCustomizer.class);
 		tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 

@@ -52,7 +52,7 @@ public class FlattenedRelationshipInContextIT {
     
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.dataContext();
+        context = env.context();
         tFlattenedTest1 = env.table("FLATTENED_TEST_1", "FT1_ID", "NAME");
 
         tFlattenedTest2 = env.table("FLATTENED_TEST_2", "FT2_ID", "FT1_ID", "NAME");

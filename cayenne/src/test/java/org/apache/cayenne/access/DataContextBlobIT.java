@@ -45,7 +45,7 @@ public class DataContextBlobIT {
 
     @BeforeEach
     public void setUp() {
-        context  = env.dataContext();
+        context  = env.context();
         context2 = (DataContext) env.runtime().newContext();
         context3 = (DataContext) env.runtime().newContext();
     }

@@ -50,7 +50,7 @@ public class NestedDataContextParentPeerEventsIT {
     @BeforeEach
     public void setUp() {
         runtime = env.runtime();
-        parentContext1 = env.dataContext();
+        parentContext1 = env.context();
         parentContext2 = (DataContext) env.runtime().newContext();
     }
 

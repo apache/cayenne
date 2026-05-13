@@ -43,7 +43,7 @@ public class DataContextBinaryPKIT {
             return;
         }
 
-        DataContext context = env.dataContext();
+        DataContext context = env.context();
         BinaryPKTest1 master = (BinaryPKTest1) context.newObject("BinaryPKTest1");
         master.setName("master1");
 
@@ -61,7 +61,7 @@ public class DataContextBinaryPKIT {
             return;
         }
 
-        DataContext context = env.dataContext();
+        DataContext context = env.context();
         BinaryPKTest1 master = (BinaryPKTest1) context.newObject("BinaryPKTest1");
         master.setName("master1");
 

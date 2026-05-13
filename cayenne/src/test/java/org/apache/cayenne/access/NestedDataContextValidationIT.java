@@ -38,9 +38,9 @@ public class NestedDataContextValidationIT {
 
     @Test
     public void validateOnCommitToParent() {
-        env.dataContext().setValidatingObjectsOnCommit(true);
+        env.context().setValidatingObjectsOnCommit(true);
 
-        ObjectContext childContext = env.runtime().newContext(env.dataContext());
+        ObjectContext childContext = env.runtime().newContext(env.context());
         assertTrue(
                 ((DataContext) childContext).isValidatingObjectsOnCommit(),
                 "Child context must have inherited the validation flag from parent");
@@ -48,7 +48,7 @@ public class NestedDataContextValidationIT {
         Artist a1 = childContext.newObject(Artist.class);
         assertThrows(ValidationException.class, childContext::commitChangesToParent);
 
-        assertFalse(env.dataContext().hasChanges());
+        assertFalse(env.context().hasChanges());
 
         a1.setArtistName("T");
         childContext.commitChangesToParent();

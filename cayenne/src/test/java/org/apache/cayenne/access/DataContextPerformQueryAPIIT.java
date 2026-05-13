@@ -68,7 +68,7 @@ public class DataContextPerformQueryAPIIT  {
     
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.dataContext();
+        context = env.context();
         context2 = (DataContext) env.runtime().newContext();
         accessStackAdapter = env.getInstance(UnitDbAdapter.class);
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);

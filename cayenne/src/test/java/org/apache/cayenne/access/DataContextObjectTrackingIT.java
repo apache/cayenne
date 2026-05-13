@@ -65,7 +65,7 @@ public class DataContextObjectTrackingIT  {
     @BeforeEach
     public void setUp() throws Exception {
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
-        context = env.dataContext();
+        context = env.context();
         runtime = env.runtime();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 

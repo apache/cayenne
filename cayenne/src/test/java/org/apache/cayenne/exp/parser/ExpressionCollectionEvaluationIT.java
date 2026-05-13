@@ -47,7 +47,7 @@ public class ExpressionCollectionEvaluationIT {
 
     @BeforeEach
     public void createArtistsDataSet() throws Exception {
-        context = env.dataContext();
+        context = env.context();
         TableHelper tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
         tArtist.insert(1, "artist1", new java.sql.Date(System.currentTimeMillis()));
 

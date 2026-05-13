@@ -63,7 +63,7 @@ public class TransactionCustomConnectionIT {
 
     @BeforeEach
     public void initTransactionManager() {
-        context = env.dataContext();
+        context = env.context();
         runtime = env.runtime();
         jdbcEventLogger = env.getInstance(JdbcEventLogger.class);
         // no binding in test container, get it from runtime

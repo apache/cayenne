@@ -53,7 +53,7 @@ public class OptimisticLockingIT {
 
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.dataContext();
+        context = env.context();
         tSimpleLockingTest = env.table("SIMPLE_LOCKING_TEST").setColumns("LOCKING_TEST_ID", "NAME", "DESCRIPTION", "INT_COLUMN_NOTNULL")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.INTEGER);
 

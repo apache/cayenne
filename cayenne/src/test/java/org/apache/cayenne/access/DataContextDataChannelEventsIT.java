@@ -50,7 +50,7 @@ public class DataContextDataChannelEventsIT {
 
     @BeforeEach
     public void setUp() {
-        context = env.dataContext();
+        context = env.context();
         peer    = (DataContext) env.runtime().newContext();
     }
 

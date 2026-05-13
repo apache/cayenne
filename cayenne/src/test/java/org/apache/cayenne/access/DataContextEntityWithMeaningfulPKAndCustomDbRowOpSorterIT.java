@@ -36,66 +36,66 @@ public class DataContextEntityWithMeaningfulPKAndCustomDbRowOpSorterIT {
 
     @Test
     public void insertDelete() {
-        MeaningfulPk pkObj = env.dataContext().newObject(MeaningfulPk.class);
+        MeaningfulPk pkObj = env.context().newObject(MeaningfulPk.class);
         pkObj.setPk("123");
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
 
-        env.dataContext().deleteObject(pkObj);
+        env.context().deleteObject(pkObj);
 
-        MeaningfulPk pkObj2 = env.dataContext().newObject(MeaningfulPk.class);
+        MeaningfulPk pkObj2 = env.context().newObject(MeaningfulPk.class);
         pkObj2.setPk("123");
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
     }
 
     @Test
     public void test_MeaningfulPkInsertDeleteCascade() {
         // setup
-        MeaningfulPKTest1 obj = env.dataContext().newObject(MeaningfulPKTest1.class);
+        MeaningfulPKTest1 obj = env.context().newObject(MeaningfulPKTest1.class);
         obj.setPkAttribute(1000);
         obj.setDescr("aaa");
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
 
         // must be able to set reverse relationship
-        MeaningfulPKDep dep = env.dataContext().newObject(MeaningfulPKDep.class);
+        MeaningfulPKDep dep = env.context().newObject(MeaningfulPKDep.class);
         dep.setToMeaningfulPK(obj);
         dep.setPk(10);
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
 
         // test
-        env.dataContext().deleteObject(obj);
+        env.context().deleteObject(obj);
 
-        MeaningfulPKTest1 obj2 = env.dataContext().newObject(MeaningfulPKTest1.class);
+        MeaningfulPKTest1 obj2 = env.context().newObject(MeaningfulPKTest1.class);
         obj2.setPkAttribute(1000);
         obj2.setDescr("bbb");
 
-        MeaningfulPKDep dep2 = env.dataContext().newObject(MeaningfulPKDep.class);
+        MeaningfulPKDep dep2 = env.context().newObject(MeaningfulPKDep.class);
         dep2.setToMeaningfulPK(obj2);
         dep2.setPk(10);
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
     }
 
     @Test
     public void test_MeaningfulPkWithFkUpdate() {
         // setup
-        MeaningfulPKTest1 obj = env.dataContext().newObject(MeaningfulPKTest1.class);
+        MeaningfulPKTest1 obj = env.context().newObject(MeaningfulPKTest1.class);
         obj.setPkAttribute(1001);
         obj.setDescr("aaa");
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
 
-        MeaningfulPKDep dep = env.dataContext().newObject(MeaningfulPKDep.class);
+        MeaningfulPKDep dep = env.context().newObject(MeaningfulPKDep.class);
         dep.setToMeaningfulPK(obj);
         dep.setPk(10);
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
 
         // check that operations are sorted correctly
         dep.setToMeaningfulPK(null);
         obj.setPkAttribute(1002);
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
 
         // set relationship with a new PK
         dep.setDescr("test");
         dep.setToMeaningfulPK(obj);
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
     }
 
 }

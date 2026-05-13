@@ -64,7 +64,7 @@ public class DataContextPrefetchMultistepIT  {
     
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.dataContext();
+        context = env.context();
         runtime = env.runtime();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 

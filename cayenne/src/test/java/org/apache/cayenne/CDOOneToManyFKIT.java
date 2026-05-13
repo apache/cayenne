@@ -40,31 +40,31 @@ public class CDOOneToManyFKIT {
     @Test
     public void readRelationship() {
 
-        ToManyRoot2 src2 = env.dataContext().newObject(ToManyRoot2.class);
-        ToManyFkRoot src = env.dataContext().newObject(ToManyFkRoot.class);
+        ToManyRoot2 src2 = env.context().newObject(ToManyRoot2.class);
+        ToManyFkRoot src = env.context().newObject(ToManyFkRoot.class);
 
         // this should go away when such mapping becomes fully supported
         src.setDepId(1);
-        ToManyFkDep target = env.dataContext().newObject(ToManyFkDep.class);
+        ToManyFkDep target = env.context().newObject(ToManyFkDep.class);
 
         // this should go away when such mapping becomes fully supported
         target.setDepId(1);
         target.setRoot2(src2);
 
         src.addToDeps(target);
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
 
-        env.dataContext().invalidateObjects(src, target, src2);
+        env.context().invalidateObjects(src, target, src2);
 
-        ToManyFkRoot src1 = (ToManyFkRoot) Cayenne.objectForPK(env.dataContext(), src.getObjectId());
+        ToManyFkRoot src1 = (ToManyFkRoot) Cayenne.objectForPK(env.context(), src.getObjectId());
         assertNotNull(src1.getDeps());
         assertEquals(1, src1.getDeps().size());
         // resolve HOLLOW
         assertSame(src1, src1.getDeps().get(0).getRoot());
 
-        env.dataContext().invalidateObjects(src1, src1.getDeps().get(0));
+        env.context().invalidateObjects(src1, src1.getDeps().get(0));
 
-        ToManyFkDep target2 = (ToManyFkDep) Cayenne.objectForPK(env.dataContext(), target.getObjectId());
+        ToManyFkDep target2 = (ToManyFkDep) Cayenne.objectForPK(env.context(), target.getObjectId());
         assertNotNull(target2.getRoot());
 
         // resolve HOLLOW

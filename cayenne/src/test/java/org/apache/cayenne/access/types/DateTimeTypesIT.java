@@ -56,13 +56,12 @@ public class DateTimeTypesIT {
 
     private DataContext context;
     private UnitDbAdapter unitDbAdapter;
-    private DBHelper dbHelper;
 
     @BeforeEach
     public void before() throws SQLException {
-        context = env.dataContext();
+        context = env.context();
         unitDbAdapter = env.getInstance(UnitDbAdapter.class);
-        dbHelper = env.dbHelper();
+        DBHelper dbHelper = env.dbHelper();
         dbHelper.deleteAll("LOCAL_DATE_TEST");
         dbHelper.deleteAll("LOCAL_DATETIME_TEST");
         dbHelper.deleteAll("LOCAL_TIME_TEST");

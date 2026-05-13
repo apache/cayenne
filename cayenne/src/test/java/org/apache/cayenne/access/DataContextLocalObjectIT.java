@@ -58,7 +58,7 @@ public class DataContextLocalObjectIT  {
     
     @BeforeEach
     public void setUp() throws Exception {
-        context1 = env.dataContext();
+        context1 = env.context();
         context2 = (DataContext) env.runtime().newContext();
         interceptor = env.getInstance(DataChannelInterceptor.class);
         runtime = env.runtime();

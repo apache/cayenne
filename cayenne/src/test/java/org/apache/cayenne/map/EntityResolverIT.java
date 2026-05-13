@@ -65,7 +65,7 @@ public class EntityResolverIT {
     @Test
     public void lookupObjEntityByPersistentObject() {
         EntityResolver resolver = new EntityResolver(env.runtime().getDataDomain().getDataMaps());
-        Artist artist = (Artist) env.dataContext().newObject("Artist");
+        Artist artist = (Artist) env.context().newObject("Artist");
         assertIsArtistObjEntity(resolver.getObjEntity(artist));
     }
 

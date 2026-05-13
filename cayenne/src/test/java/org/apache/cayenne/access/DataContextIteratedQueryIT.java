@@ -51,7 +51,7 @@ public class DataContextIteratedQueryIT {
 
     @BeforeEach
     public void before() throws Exception {
-        context = env.dataContext();
+        context = env.context();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tExhibit = env.table("EXHIBIT", "EXHIBIT_ID", "GALLERY_ID", "OPENING_DATE", "CLOSING_DATE");

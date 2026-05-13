@@ -48,7 +48,7 @@ public class PregeneratedPKIT {
 
     @BeforeEach
     public void setUp() {
-        context = env.dataContext();
+        context = env.context();
     }
 
     @Test

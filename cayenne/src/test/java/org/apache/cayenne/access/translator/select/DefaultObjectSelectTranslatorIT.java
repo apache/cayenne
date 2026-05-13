@@ -38,7 +38,7 @@ public class DefaultObjectSelectTranslatorIT {
     @Test
     public void simpleSql() {
         ObjectSelect<Artist> select = ObjectSelect.query(Artist.class);
-        DefaultSelectTranslator translator = new DefaultSelectTranslator(select, env.getInstance(DbAdapter.class), env.dataContext().getEntityResolver());
+        DefaultSelectTranslator translator = new DefaultSelectTranslator(select, env.getInstance(DbAdapter.class), env.context().getEntityResolver());
 
         String sql = translator.getSql();
         assertTrue(sql.startsWith("SELECT "));
@@ -61,7 +61,7 @@ public class DefaultObjectSelectTranslatorIT {
         ObjectSelect<Artist> select = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("artist")
                 .andExp(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).eq("painting")));
 
-        DefaultSelectTranslator translator = new DefaultSelectTranslator(select, env.getInstance(DbAdapter.class), env.dataContext().getEntityResolver());
+        DefaultSelectTranslator translator = new DefaultSelectTranslator(select, env.getInstance(DbAdapter.class), env.context().getEntityResolver());
 
         String sql = translator.getSql();
         assertTrue(sql.startsWith("SELECT DISTINCT"));
@@ -89,7 +89,7 @@ public class DefaultObjectSelectTranslatorIT {
     public void selectWithJointPrefetch() {
         ObjectSelect<Painting> select = ObjectSelect.query(Painting.class).prefetch(Painting.TO_ARTIST.joint());
 
-        DefaultSelectTranslator translator = new DefaultSelectTranslator(select, env.getInstance(DbAdapter.class), env.dataContext().getEntityResolver());
+        DefaultSelectTranslator translator = new DefaultSelectTranslator(select, env.getInstance(DbAdapter.class), env.context().getEntityResolver());
 
         String sql = translator.getSql();
 

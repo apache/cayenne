@@ -72,7 +72,7 @@ public class ColumnSelectIT {
 
     @BeforeEach
     public void createArtistsDataSet() throws Exception {
-        context = env.dataContext();
+        context = env.context();
         runtime = env.runtime();
         unitDbAdapter = env.getInstance(UnitDbAdapter.class);
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");

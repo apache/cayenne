@@ -35,37 +35,37 @@ public class NestedDataContextRollbackIT {
 
     @Test
     public void rollbackChanges() {
-        ObjectContext child1 = env.runtime().newContext(env.dataContext());
+        ObjectContext child1 = env.runtime().newContext(env.context());
 
-        assertFalse(env.dataContext().hasChanges());
+        assertFalse(env.context().hasChanges());
         assertFalse(child1.hasChanges());
 
-        env.dataContext().newObject(Artist.class);
+        env.context().newObject(Artist.class);
         child1.newObject(Artist.class);
 
-        assertTrue(env.dataContext().hasChanges());
+        assertTrue(env.context().hasChanges());
         assertTrue(child1.hasChanges());
 
         child1.rollbackChanges();
-        assertFalse(env.dataContext().hasChanges());
+        assertFalse(env.context().hasChanges());
         assertFalse(child1.hasChanges());
     }
 
     @Test
     public void rollbackChangesLocally() {
-        ObjectContext child1 = env.runtime().newContext(env.dataContext());
+        ObjectContext child1 = env.runtime().newContext(env.context());
 
-        assertFalse(env.dataContext().hasChanges());
+        assertFalse(env.context().hasChanges());
         assertFalse(child1.hasChanges());
 
-        env.dataContext().newObject(Artist.class);
+        env.context().newObject(Artist.class);
         child1.newObject(Artist.class);
 
-        assertTrue(env.dataContext().hasChanges());
+        assertTrue(env.context().hasChanges());
         assertTrue(child1.hasChanges());
 
         child1.rollbackChangesLocally();
-        assertTrue(env.dataContext().hasChanges());
+        assertTrue(env.context().hasChanges());
         assertFalse(child1.hasChanges());
     }
 }

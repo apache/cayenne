@@ -40,27 +40,27 @@ public class DataContextValidationIT {
 
     @Test
     public void validatingObjectsOnCommitProperty() throws Exception {
-        env.dataContext().setValidatingObjectsOnCommit(true);
-        assertTrue(env.dataContext().isValidatingObjectsOnCommit());
+        env.context().setValidatingObjectsOnCommit(true);
+        assertTrue(env.context().isValidatingObjectsOnCommit());
 
-        env.dataContext().setValidatingObjectsOnCommit(false);
-        assertFalse(env.dataContext().isValidatingObjectsOnCommit());
+        env.context().setValidatingObjectsOnCommit(false);
+        assertFalse(env.context().isValidatingObjectsOnCommit());
     }
 
     @Test
     public void validatingObjectsOnCommit() throws Exception {
         // test that validation is called properly
 
-        env.dataContext().setValidatingObjectsOnCommit(true);
-        Artist a1 = env.dataContext().newObject(Artist.class);
+        env.context().setValidatingObjectsOnCommit(true);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("a1");
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
         assertTrue(a1.isValidateForSaveCalled());
 
-        env.dataContext().setValidatingObjectsOnCommit(false);
-        Artist a2 = env.dataContext().newObject(Artist.class);
+        env.context().setValidatingObjectsOnCommit(false);
+        Artist a2 = env.context().newObject(Artist.class);
         a2.setArtistName("a2");
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
         assertFalse(a2.isValidateForSaveCalled());
     }
 
@@ -75,18 +75,18 @@ public class DataContextValidationIT {
             p.setToArtist(a);
         };
 
-        env.dataContext().setValidatingObjectsOnCommit(true);
-        Artist a1 = env.dataContext().newObject(Artist.class);
+        env.context().setValidatingObjectsOnCommit(true);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setValidationDelegate(delegate);
         a1.setArtistName("a1");
 
         // add another artist to ensure that modifying context works when more than one
         // object is committed
-        Artist a2 = env.dataContext().newObject(Artist.class);
+        Artist a2 = env.context().newObject(Artist.class);
         a2.setValidationDelegate(delegate);
         a2.setArtistName("a2");
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
 
-        assertEquals(2, ObjectSelect.query(Painting.class).select(env.dataContext()).size());
+        assertEquals(2, ObjectSelect.query(Painting.class).select(env.context()).size());
     }
 }

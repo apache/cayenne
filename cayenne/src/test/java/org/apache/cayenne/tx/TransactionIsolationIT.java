@@ -56,7 +56,7 @@ public class TransactionIsolationIT {
 
     @BeforeEach
     public void initTransactionManager() {
-        context = env.dataContext();
+        context = env.context();
         runtime = env.runtime();
         unitDbAdapter = env.getInstance(UnitDbAdapter.class);
         // no binding in test container, get it from runtime

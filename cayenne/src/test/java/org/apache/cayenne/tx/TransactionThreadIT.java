@@ -42,11 +42,11 @@ public class TransactionThreadIT {
         BaseTransaction.bindThreadTransaction(t);
 
         try {
-            ObjectSelect.query(Artist.class).select(env.dataContext());
+            ObjectSelect.query(Artist.class).select(env.context());
             assertEquals(1, t.getConnections().size());
 
             // delegate will fail if the second query opens a new connection
-            ObjectSelect.query(Artist.class).select(env.dataContext());
+            ObjectSelect.query(Artist.class).select(env.context());
 
             assertEquals(1, t.getConnections().size());
 

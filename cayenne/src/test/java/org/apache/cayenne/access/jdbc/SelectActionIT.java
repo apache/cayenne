@@ -48,7 +48,7 @@ public class SelectActionIT {
             List<ClobTestEntity> resultRows = ObjectSelect.query(ClobTestEntity.class)
                     .where(ClobTestEntity.CLOB_VALUE.dot(ClobTestRelation.VALUE).eq(100))
                     .limit(25)
-                    .select(env.dataContext());
+                    .select(env.context());
 
             assertNotNull(resultRows);
             assertEquals(25, resultRows.size());
@@ -64,7 +64,7 @@ public class SelectActionIT {
             List<String> result = ObjectSelect.query(ClobTestEntity.class)
                     .column(ClobTestEntity.CLOB_COL)
                     .where(ClobTestEntity.CLOB_VALUE.dot(ClobTestRelation.VALUE).eq(100))
-                    .select(env.dataContext());
+                    .select(env.context());
 
             // this should be 80, but we got only single values and we forcing distinct on them
             // so here will be only 21 elements that are unique
@@ -74,7 +74,7 @@ public class SelectActionIT {
 
     protected void insertClobDb() {
         for (int i = 0; i < 80; i++) {
-            ClobTestEntity obj = env.dataContext().newObject(ClobTestEntity.class);
+            ClobTestEntity obj = env.context().newObject(ClobTestEntity.class);
             if (i < 20) {
                 obj.setClobCol("a1" + i);
             } else {
@@ -82,12 +82,12 @@ public class SelectActionIT {
             }
             insertClobRel(obj);
         }
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
     }
 
     protected void insertClobRel(ClobTestEntity clobId) {
         for (int i = 0; i < 20; i++) {
-            ClobTestRelation obj = env.dataContext().newObject(ClobTestRelation.class);
+            ClobTestRelation obj = env.context().newObject(ClobTestRelation.class);
             obj.setValue(100);
             obj.setClobId(clobId);
         }

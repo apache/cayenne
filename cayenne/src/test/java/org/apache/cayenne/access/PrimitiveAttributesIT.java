@@ -39,11 +39,11 @@ public class PrimitiveAttributesIT {
 
     @Test
     public void commit() {
-        PrimitivesTestEntity e = env.dataContext().newObject(PrimitivesTestEntity.class);
+        PrimitivesTestEntity e = env.context().newObject(PrimitivesTestEntity.class);
         e.setBooleanColumn(true);
         e.setIntColumn(88);
         e.setCharColumn('B');
-        env.dataContext().commitChanges();
+        env.context().commitChanges();
     }
 
     @Test
@@ -54,7 +54,7 @@ public class PrimitiveAttributesIT {
                 .insert(3, true, Integer.MAX_VALUE, String.valueOf('Z'));
 
         List<PrimitivesTestEntity> result = ObjectSelect.query(PrimitivesTestEntity.class)
-                .orderBy(PrimitivesTestEntity.INT_COLUMN.asc()).select(env.dataContext());
+                .orderBy(PrimitivesTestEntity.INT_COLUMN.asc()).select(env.context());
         assertEquals(3, result.size());
         assertEquals(-100, result.get(0).getIntColumn());
         assertEquals('a', result.get(0).getCharColumn());

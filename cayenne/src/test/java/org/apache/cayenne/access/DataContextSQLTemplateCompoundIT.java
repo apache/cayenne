@@ -51,7 +51,7 @@ public class DataContextSQLTemplateCompoundIT {
     
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.dataContext();
+        context = env.context();
         tCompoundPkTest = env.table("COMPOUND_PK_TEST", "KEY1", "KEY2");
 
         tCompoundFkTest = env.table("COMPOUND_FK_TEST", "PKEY", "F_KEY1", "F_KEY2");

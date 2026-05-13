@@ -78,7 +78,7 @@ public class DataContextIT {
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		context = env.dataContext();
+		context = env.context();
 		accessStackAdapter = env.getInstance(UnitDbAdapter.class);
 		queryInterceptor = env.getInstance(DataChannelInterceptor.class);
 		dataSourceFactory = env.getInstance(RuntimeCaseDataSourceFactory.class);

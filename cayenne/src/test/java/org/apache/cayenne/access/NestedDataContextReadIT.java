@@ -58,7 +58,7 @@ public class NestedDataContextReadIT {
     @BeforeEach
     public void setUp() throws Exception {
         runtime = env.runtime();
-        context = env.dataContext();
+        context = env.context();
         queryInterceptor = env.getInstance(DataChannelInterceptor.class);
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 

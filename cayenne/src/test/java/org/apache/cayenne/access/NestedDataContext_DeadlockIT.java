@@ -47,7 +47,7 @@ public class NestedDataContext_DeadlockIT {
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		parent = env.dataContext();
+		parent = env.context();
 		runtime = env.runtime();
 		tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 	}

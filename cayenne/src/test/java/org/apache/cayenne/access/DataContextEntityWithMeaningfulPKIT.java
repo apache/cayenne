@@ -56,7 +56,7 @@ public class DataContextEntityWithMeaningfulPKIT {
 
     @BeforeEach
     public void setUp() {
-        context = env.dataContext();
+        context = env.context();
         runtime = env.runtime();
     }
 

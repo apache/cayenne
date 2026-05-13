@@ -52,7 +52,7 @@ public class QueryWithCompoundJoinIT {
 
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.dataContext();
+        context = env.context();
         runtime = env.runtime();
         tCompoundPk = env.table("COMPOUND_PK_TEST", "KEY1", "KEY2", "NAME");
 

@@ -83,8 +83,8 @@ public class DefaultSelectTranslatorIT {
 	public void dbEntityQualifier() throws Exception {
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
-		final DbEntity entity = env.dataContext().getEntityResolver().getDbEntity("ARTIST");
-		final DbEntity middleEntity = env.dataContext().getEntityResolver().getDbEntity("ARTIST_GROUP");
+		final DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
+		final DbEntity middleEntity = env.context().getEntityResolver().getDbEntity("ARTIST_GROUP");
 
 		SelectTranslator transl = new DefaultSelectTranslator(q, env.getInstance(DataNode.class).getAdapter(), env.getInstance(DataNode.class).getEntityResolver());
 
@@ -118,8 +118,8 @@ public class DefaultSelectTranslatorIT {
 		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
 				.orderBy(Painting.TO_ARTIST.outer().dot(Artist.ARTIST_NAME).asc());
 
-		final DbEntity entity = env.dataContext().getEntityResolver().getDbEntity("ARTIST");
-		final DbEntity middleEntity = env.dataContext().getEntityResolver().getDbEntity("ARTIST_GROUP");
+		final DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
+		final DbEntity middleEntity = env.context().getEntityResolver().getDbEntity("ARTIST_GROUP");
 
 		SelectTranslator transl = new DefaultSelectTranslator(q, env.getInstance(DataNode.class).getAdapter(), env.getInstance(DataNode.class).getEntityResolver());
 
@@ -157,8 +157,8 @@ public class DefaultSelectTranslatorIT {
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class, Artist.GROUP_ARRAY.dot(ArtGroup.NAME).eq("bar"));
 
-		final DbEntity entity = env.dataContext().getEntityResolver().getDbEntity("ARTIST");
-		final DbEntity middleEntity = env.dataContext().getEntityResolver().getDbEntity("ARTIST_GROUP");
+		final DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
+		final DbEntity middleEntity = env.context().getEntityResolver().getDbEntity("ARTIST_GROUP");
 
 		SelectTranslator transl = new DefaultSelectTranslator(q, env.getInstance(DataNode.class).getAdapter(), env.getInstance(DataNode.class).getEntityResolver());
 
@@ -192,8 +192,8 @@ public class DefaultSelectTranslatorIT {
 
 		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class, Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).eq("foo"));
 
-		final DbEntity entity = env.dataContext().getEntityResolver().getDbEntity("ARTIST");
-		final DbEntity middleEntity = env.dataContext().getEntityResolver().getDbEntity("ARTIST_GROUP");
+		final DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
+		final DbEntity middleEntity = env.context().getEntityResolver().getDbEntity("ARTIST_GROUP");
 
 		SelectTranslator transl = new DefaultSelectTranslator(q, env.getInstance(DataNode.class).getAdapter(), env.getInstance(DataNode.class).getEntityResolver());
 
@@ -497,7 +497,7 @@ public class DefaultSelectTranslatorIT {
 		try {
 			ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
 					.orderBy(Artist.DATE_OF_BIRTH.asc());
-			DbEntity entity = env.dataContext().getEntityResolver().getDbEntity("ARTIST");
+			DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
 			entity.getDataMap().setQuotingSQLIdentifiers(true);
 
 			String charStart = env.getInstance(UnitDbAdapter.class).getIdentifiersStartQuote();
@@ -522,7 +522,7 @@ public class DefaultSelectTranslatorIT {
 			assertTrue(dateOfBirth2 > iOrderBy);
 
 		} finally {
-			DbEntity entity = env.dataContext().getEntityResolver().getDbEntity("ARTIST");
+			DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
 			entity.getDataMap().setQuotingSQLIdentifiers(false);
 		}
 
@@ -536,7 +536,7 @@ public class DefaultSelectTranslatorIT {
 					.where(Artist.DATE_OF_BIRTH.gt(new Date()))
 					.and(Artist.DATE_OF_BIRTH.lt(new Date()));
 
-			DbEntity entity = env.dataContext().getEntityResolver().getDbEntity("ARTIST");
+			DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
 			entity.getDataMap().setQuotingSQLIdentifiers(true);
 
 			String charStart = env.getInstance(UnitDbAdapter.class).getIdentifiersStartQuote();
@@ -567,7 +567,7 @@ public class DefaultSelectTranslatorIT {
 			assertTrue(dateOfBirth3 > iAnd);
 
 		} finally {
-			DbEntity entity = env.dataContext().getEntityResolver().getDbEntity("ARTIST");
+			DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
 			entity.getDataMap().setQuotingSQLIdentifiers(false);
 		}
 	}
@@ -582,7 +582,7 @@ public class DefaultSelectTranslatorIT {
 					.where(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).eq("a"))
 					.prefetch(Artist.PAINTING_ARRAY.joint());
 
-			DbEntity entity = env.dataContext().getEntityResolver().getDbEntity("ARTIST");
+			DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
 			entity.getDataMap().setQuotingSQLIdentifiers(true);
 
 			String charStart = env.getInstance(UnitDbAdapter.class).getIdentifiersStartQuote();
@@ -646,7 +646,7 @@ public class DefaultSelectTranslatorIT {
 			assertTrue(paintingTitle2 > iWhere, s);
 
 		} finally {
-			DbEntity entity = env.dataContext().getEntityResolver().getDbEntity("ARTIST");
+			DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
 			entity.getDataMap().setQuotingSQLIdentifiers(false);
 		}
 	}
@@ -659,7 +659,7 @@ public class DefaultSelectTranslatorIT {
 		try {
 			ObjectSelect<Painting> q = ObjectSelect.query(Painting.class).prefetch(Painting.TO_ARTIST.joint());
 
-			DbEntity entity = env.dataContext().getEntityResolver().getDbEntity("PAINTING");
+			DbEntity entity = env.context().getEntityResolver().getDbEntity("PAINTING");
 			entity.getDataMap().setQuotingSQLIdentifiers(true);
 
 			String charStart = env.getInstance(UnitDbAdapter.class).getIdentifiersStartQuote();
@@ -708,7 +708,7 @@ public class DefaultSelectTranslatorIT {
 			assertTrue(iArtistIdT1 > i || iArtistId > i, s);
 
 		} finally {
-			DbEntity entity = env.dataContext().getEntityResolver().getDbEntity("PAINTING");
+			DbEntity entity = env.context().getEntityResolver().getDbEntity("PAINTING");
 			entity.getDataMap().setQuotingSQLIdentifiers(false);
 		}
 	}
@@ -726,7 +726,7 @@ public class DefaultSelectTranslatorIT {
 		List<ColumnDescriptor> columns = Arrays.asList(tr.getResultColumns());
 		columns.sort(Comparator.comparing(ColumnDescriptor::getName));
 
-		DbEntity entity = env.dataContext().getEntityResolver().getDbEntity("PAINTING");
+		DbEntity entity = env.context().getEntityResolver().getDbEntity("PAINTING");
 		List<DbAttribute> attributes = new ArrayList<>(entity.getAttributes());
 		attributes.sort(Comparator.comparing(DbAttribute::getName));
 
@@ -756,9 +756,9 @@ public class DefaultSelectTranslatorIT {
 		List<ColumnDescriptor> columns = Arrays.asList(tr.getResultColumns());
 		columns.sort(Comparator.comparing(ColumnDescriptor::getName));
 
-		DbEntity rootEntity = env.dataContext().getEntityResolver().getDbEntity("PAINTING");
+		DbEntity rootEntity = env.context().getEntityResolver().getDbEntity("PAINTING");
 		List<DbAttribute> attributes = new ArrayList<>(rootEntity.getAttributes());
-		DbEntity joinedEntity = env.dataContext().getEntityResolver().getDbEntity("ARTIST");
+		DbEntity joinedEntity = env.context().getEntityResolver().getDbEntity("ARTIST");
 		attributes.addAll(joinedEntity.getAttributes());
 		attributes.sort(Comparator.comparing(DbAttribute::getName));
 
@@ -783,10 +783,10 @@ public class DefaultSelectTranslatorIT {
 						ExpressionFactory.matchAllExp("|awardArray", 1, 2),
 						Artist.AWARD_ARRAY.alias("aw1").dot(Award.NAME).eq("123")
 				));
-		query.select(env.dataContext());
+		query.select(env.context());
 
 		DefaultSelectTranslator translator = new DefaultSelectTranslator(query, env.getInstance(DataNode.class).getAdapter(),
-																		 env.dataContext().getEntityResolver());
+																		 env.context().getEntityResolver());
 		translator.translate();
 
 		int totalJoins = translator.getContext().getTableCount() - 1;
@@ -800,10 +800,10 @@ public class DefaultSelectTranslatorIT {
 						Artist.AWARD_ARRAY.alias("aw1").containsId(1),
 						Artist.AWARD_ARRAY.alias("aw2").dot(Award.NAME).eq("123")
 				));
-		query.select(env.dataContext());
+		query.select(env.context());
 
 		DefaultSelectTranslator translator = new DefaultSelectTranslator(query, env.getInstance(DataNode.class).getAdapter(),
-																		 env.dataContext().getEntityResolver());
+																		 env.context().getEntityResolver());
 		translator.translate();
 
 		int totalJoins = translator.getContext().getTableCount() - 1;
@@ -817,10 +817,10 @@ public class DefaultSelectTranslatorIT {
 						Artist.AWARD_ARRAY.alias("aw1").containsId(1),
 						Artist.PAINTING_ARRAY.alias("aw2").dot(Painting.PAINTING_TITLE).eq("123")
 				));
-		query.select(env.dataContext());
+		query.select(env.context());
 
 		DefaultSelectTranslator translator = new DefaultSelectTranslator(query, env.getInstance(DataNode.class).getAdapter(),
-																		 env.dataContext().getEntityResolver());
+																		 env.context().getEntityResolver());
 		translator.translate();
 
 		int totalJoins = translator.getContext().getTableCount() - 1;
@@ -833,10 +833,10 @@ public class DefaultSelectTranslatorIT {
 				.where(ExpressionFactory.and(
 						ExpressionFactory.matchAllExp("|groupArray.name", "ag1", "ag2")
 				));
-		query.select(env.dataContext());
+		query.select(env.context());
 
 		DefaultSelectTranslator translator = new DefaultSelectTranslator(query, env.getInstance(DataNode.class).getAdapter(),
-																		 env.dataContext().getEntityResolver());
+																		 env.context().getEntityResolver());
 		translator.translate();
 
 		int totalJoins = translator.getContext().getTableCount() - 1;
@@ -846,7 +846,7 @@ public class DefaultSelectTranslatorIT {
 	@Test
 	public void dbEntityQualifier_JoinQuery() throws Exception {
 
-		final DbEntity entity = env.dataContext().getEntityResolver().getDbEntity("ARTIST");
+		final DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
 		entity.setQualifier(ExpressionFactory.exp("ARTIST_NAME = 'Should be on JOIN condition and not WHERE'"));
 
 		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)

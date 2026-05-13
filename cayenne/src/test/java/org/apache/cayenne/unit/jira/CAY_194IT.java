@@ -51,7 +51,7 @@ public class CAY_194IT {
 
     @BeforeEach
     public void setUp() throws Exception {
-        context = env.dataContext();
+        context = env.context();
         dbHelper = env.dbHelper();
         TableHelper tReflexive = new TableHelper(dbHelper, "REFLEXIVE_AND_TO_ONE", "REFLEXIVE_AND_TO_ONE_ID", "PARENT_ID");
 
