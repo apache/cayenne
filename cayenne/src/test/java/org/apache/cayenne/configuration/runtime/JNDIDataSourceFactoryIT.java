@@ -21,7 +21,6 @@ package org.apache.cayenne.configuration.runtime;
 import com.mockrunner.mock.jdbc.MockDataSource;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.unit.JNDISetup;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
